@@ -120,9 +120,13 @@ export default {
             @click-row="goToComparePage"
             class="d-none d-md-block"
         >
-            <!-- --- Loading Part --- -->
+            <!-- Loading animation -->
             <template #loading>
-                <img src="/images/loading.gif" alt="loading data" />
+                <div
+                    class="d-flex justify-content-center align-items-center mt-5"
+                >
+                    <span class="loader"></span>
+                </div>
             </template>
 
             <!-- --- Question Name Router Column --- -->
@@ -147,9 +151,13 @@ export default {
             @click-row="goToComparePage"
             class="d-md-none d-block"
         >
-            <!-- --- Loading Part --- -->
+            <!-- Loading animation -->
             <template #loading>
-                <img src="/images/loading.gif" alt="loading data" />
+                <div
+                    class="d-flex justify-content-center align-items-center mt-5"
+                >
+                    <span class="loader"></span>
+                </div>
             </template>
         </Vue3EasyDataTable>
         <div class="d-none">
@@ -197,4 +205,26 @@ export default {
         padding: 0px;
     }
 }
+
+/* Loading animation */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* End of loading animation */
 </style>

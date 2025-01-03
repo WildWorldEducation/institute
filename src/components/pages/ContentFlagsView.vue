@@ -540,8 +540,8 @@ export default {
 </script>
 
 <template>
-    <div>
-        <!-- Search Table Section -->
+    <div class="mb-2">
+        <!-- Search Bar -->
         <div>
             <div class="d-flex search-bar">
                 <input type="text" v-model="searchText" />
@@ -573,9 +573,13 @@ export default {
                 buttons-pagination
                 theme-color="#a48be6"
             >
-                <!-- --- Loading Part --- -->
+                <!-- Loading animation -->
                 <template #loading>
-                    <img src="/images/loading.gif" alt="loading data" />
+                    <div
+                        class="d-flex justify-content-center align-items-center mt-5"
+                    >
+                        <span class="loader"></span>
+                    </div>
                 </template>
 
                 <!-- --- Name Router Column --- -->
@@ -603,7 +607,7 @@ export default {
                             :to="editUrl"
                             class="btn primary-btn"
                             b-tooltip.hover
-                            :title="'Go To Edit Page For This ' + type"
+                            :title="'Edit flagged item'"
                         >
                             <!-- Pencil icon -->
                             <svg
@@ -629,15 +633,15 @@ export default {
                         </router-link>
                         <button
                             b-tooltip.hover
-                            :title="'Dismiss This Flag'"
-                            class="btn red-btn h-100"
+                            :title="'Dismiss flag'"
+                            class="btn red-btn"
                             @click="handleOpenDismissModal(flagId)"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 576 512"
-                                width="14"
-                                height="16"
+                                width="16"
+                                height="17"
                                 fill="white"
                             >
                                 <path
@@ -653,8 +657,8 @@ export default {
                                 type === 'source'
                             "
                             b-tooltip.hover
-                            :title="'Delete This Content'"
-                            class="btn red-btn h-100"
+                            :title="'Delete flagged item'"
+                            class="btn red-btn"
                             @click="showWarningModal({ contentId, type })"
                         >
                             <!-- X icon -->
@@ -1442,9 +1446,13 @@ export default {
                 buttons-pagination
                 theme-color="#a48be6"
             >
-                <!-- --- Loading Part --- -->
+                <!-- Loading animation -->
                 <template #loading>
-                    <img src="/images/loading.gif" alt="loading data" />
+                    <div
+                        class="d-flex justify-content-center align-items-center mt-5"
+                    >
+                        <span class="loader"></span>
+                    </div>
                 </template>
                 <!-- --- Flag Name Column ---  -->
                 <template #item-name="{ name, nameUrl }">
@@ -1465,7 +1473,7 @@ export default {
                             class="btn primary-btn"
                             target="_blank"
                             b-tooltip.hover
-                            :title="'Go To Edit Page For This ' + type"
+                            :title="'Edit flagged item'"
                         >
                             <!-- Pencil icon -->
                             <svg
@@ -1491,7 +1499,7 @@ export default {
                         </router-link>
                         <button
                             b-tooltip.hover
-                            :title="'Dismiss This Flag'"
+                            :title="'Dismiss flag'"
                             class="btn red-btn h-100"
                             @click="handleOpenDismissModal(flagId)"
                         >
@@ -2074,6 +2082,7 @@ export default {
     padding-left: 2px;
     align-items: center;
     gap: 5px;
+    float: right;
 }
 
 .search-bar input {
@@ -2620,4 +2629,26 @@ export default {
         left: -40px;
     }
 }
+
+/* Loading animation */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* End of loading animation */
 </style>

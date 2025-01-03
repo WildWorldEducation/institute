@@ -1067,7 +1067,7 @@ export default {
 .loader {
     width: 48px;
     height: 48px;
-    border: 5px solid var(--loading-animation-colour);
+    border: 5px solid var(--primary-color);
     border-bottom-color: transparent;
     border-radius: 50%;
     display: inline-block;

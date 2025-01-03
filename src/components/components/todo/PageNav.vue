@@ -177,7 +177,7 @@ export default {
 }
 
 /* Sidebar */
-.nav-bar-container {   
+.nav-bar-container {
     background-color: #e8e2f9;
 }
 
@@ -195,7 +195,6 @@ export default {
 }
 
 .nav-button:focus {
-    border: 2px solid var(--primary-contrast-color);
     background-color: var(--primary-color);
     border: none;
 }
@@ -230,7 +229,6 @@ export default {
 }
 
 .active-item:focus {
-    border: 2px solid var(--primary-contrast-color);
 }
 
 /* Navbar slide Animation */
