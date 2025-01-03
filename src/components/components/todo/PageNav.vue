@@ -73,7 +73,7 @@ export default {
                 </button>
             </div>
             <hr />
-            <div class="d-flex flex-column gap-3">
+            <div class="d-flex flex-column gap-3 h-100">
                 <button
                     :class="{ 'active-item': activeContent === 'editList' }"
                     class="nav-button p-2"

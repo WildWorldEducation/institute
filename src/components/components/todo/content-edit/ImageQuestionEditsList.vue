@@ -15,7 +15,7 @@ export default {
             headers: [
                 { text: 'User', value: 'userName' },
                 { text: 'Name', value: 'name' },
-                { text: 'Content', value: 'question' },
+                { text: 'Question', value: 'question' },
                 { text: 'Skill', value: 'skill_name' },
                 { text: 'Comment', value: 'comment' },
                 { text: 'Date', value: 'date' }
