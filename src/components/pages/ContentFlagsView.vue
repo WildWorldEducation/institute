@@ -680,7 +680,7 @@ export default {
 
                 <!-- ---  Expand Part --- -->
                 <template #expand="{ expandContent, type, reason }">
-                    <div id="expand-div" class="p-4">
+                    <div class="p-4">
                         <!-- Reason section shared with all types of flag  -->
                         <div class="row mb-2">
                             <div class="col">
@@ -897,54 +897,73 @@ export default {
                                 </div>
                             </div>
                         </div>
-                        <!-- Skill expanded content _+_+_+_+_+_+_+_  -->
+                        <!-- Skill expanded content -->
                         <div v-if="type == 'skill'">
-                            <div id="skill-expand-head">
-                                <div class="d-flex mb-2">
-                                    <div class="expand-tile">Skill:</div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Skill:</h6>
+                                </div>
+                                <div class="col">
                                     {{ expandContent.name }}
                                 </div>
-                                <div class="mb-2 border-bottom pb-2">
-                                    {{ expandContent.description }}
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
+                                        Mastery Requirements:
+                                    </h6>
                                 </div>
-                            </div>
-                            <div class="expand-tile">Mastery Requirements:</div>
-                            <div
-                                class="expand-skill-requirement"
-                                v-html="expandContent.masteryRequirements"
-                            ></div>
-                        </div>
-                        <!-- _+_+_+_+_+_+_+_  Resource Expand content _+_+_+_+_+_+_+_  -->
-                        <div v-if="type == 'source'">
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Skill:</div>
-                                <div>{{ expandContent.skill }}</div>
-                            </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">User:</div>
-                                <div>{{ expandContent.user }}</div>
-                            </div>
-                            <div class="d-flex flex-column mb-2">
-                                <div class="expand-tile">Content:</div>
                                 <div
-                                    class="expand-skill-requirement"
+                                    class="col expand-skill-requirement"
+                                    v-html="expandContent.masteryRequirements"
+                                ></div>
+                            </div>
+                        </div>
+                        <!-- Resource expanded content -->
+                        <div v-if="type == 'source'">
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Skill:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.skill }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">User:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.user }}</div>
+                            </div>
+                            <div class="row flex-column mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Content:</h6>
+                                </div>
+                                <div
+                                    class="col expand-skill-requirement"
                                     v-html="expandContent.content"
                                 ></div>
                             </div>
                         </div>
                         <div v-if="type == 'tutor post'">
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Skill:</div>
-                                <div>{{ expandContent.skill }}</div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Skill:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.skill }}</div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">User:</div>
-                                <div>{{ expandContent.user }}</div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">User:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.user }}</div>
                             </div>
-                            <div class="d-flex flex-column mb-2">
-                                <div class="expand-tile">Description:</div>
+                            <div class="row flex-column mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
+                                        Description:
+                                    </h6>
+                                </div>
                                 <div
-                                    class="expand-skill-requirement"
+                                    class="col expand-skill-requirement"
                                     v-html="expandContent.description"
                                 ></div>
                             </div>
@@ -1585,15 +1604,17 @@ export default {
                         <!---------------------------------------------------------->
                     </div>
                 </template>
-                <!-- --- Expand Part --- -->
+                <!----- Expanded Part ----->
                 <template #expand="{ expandContent, type, reason, dateString }">
-                    <div id="expand-div" style="padding: 5px">
-                        <!-- ---- | Reason to flag | ---- -->
-                        <div class="d-flex align-items-center">
-                            <div class="expand-tile">Reason:</div>
-                            <div
-                                :class="[!reason && 'no-reason', 'flag-reason']"
-                            >
+                    <div class="p-4">
+                        <!-- ---- Reason flagged ---- -->
+                        <div class="row mb-2">
+                            <div class="col">
+                                <h6 class="secondary-heading">
+                                    Reason for flagging:
+                                </h6>
+                            </div>
+                            <div class="col" :class="[!reason && 'no-reason']">
                                 {{
                                     reason
                                         ? reason
@@ -1601,18 +1622,22 @@ export default {
                                 }}
                             </div>
                         </div>
-                        <!-- +_+_+ | Date of this flag created | +_+_+ -->
-                        <div class="d-flex mb-2">
-                            <div class="expand-tile">Date:</div>
-                            <div class="date-cell">
+                        <!-- Date this flag created -->
+                        <div class="row mb-2">
+                            <div class="col">
+                                <h6 class="secondary-heading">Date:</h6>
+                            </div>
+                            <div class="col date-cell">
                                 {{ formatDate(dateString) }}
                             </div>
                         </div>
-                        <!-- _+_+_+_+_+_+_+_ MC Question Expand _+_+_+_+_+_+_+_  -->
+                        <!-- MC question expanded content -->
                         <div v-if="type == 'mc question'">
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Belongs to skill:</div>
-                                <div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Skill:</h6>
+                                </div>
+                                <div class="col">
                                     <router-link
                                         :to="'skills/' + expandContent.url"
                                         target="_blank"
@@ -1625,67 +1650,101 @@ export default {
                                     >
                                 </div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Level:</div>
-                                {{ expandContent.level }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Level:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.level }}</div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Name:</div>
-                                <div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Name:</h6>
+                                </div>
+                                <div class="col">
                                     {{ expandContent.name }}
                                 </div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Question:</div>
-                                <div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Question:</h6>
+                                </div>
+                                <div class="col">
                                     {{ expandContent.question }}
                                 </div>
                             </div>
-                            <div class="d-flex flex-column">
-                                <div
-                                    class="d-flex mb-2 border-bottom border-opacity-75 pb-2"
-                                >
-                                    <div class="expand-tile">
+                            <div
+                                class="row mb-2 border-bottom border-opacity-75 pb-2"
+                            >
+                                <div class="col">
+                                    <h6 class="secondary-heading">
                                         Correct Answer:
-                                    </div>
+                                    </h6>
+                                </div>
+                                <div class="col">
                                     {{ expandContent.correctAnswer }}
                                 </div>
-                                <div class="d-flex mb-2 border-bottom pb-2">
-                                    <div class="expand-tile">
+                            </div>
+                            <div class="row mb-2 border-bottom pb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
                                         Incorrect Answer 1:
-                                    </div>
+                                    </h6>
+                                </div>
+                                <div class="col">
                                     {{ expandContent.incorrectAnswer1 }}
                                 </div>
-                                <div class="d-flex mb-2 border-bottom pb-2">
-                                    <div class="expand-tile">
+                            </div>
+                            <div class="row mb-2 border-bottom pb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
                                         Incorrect Answer 2:
-                                    </div>
+                                    </h6>
+                                </div>
+                                <div class="col">
                                     {{ expandContent.incorrectAnswer2 }}
                                 </div>
-                                <div class="d-flex mb-2 border-bottom pb-2">
-                                    <div class="expand-tile">
+                            </div>
+                            <div class="row mb-2 border-bottom pb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
                                         Incorrect Answer 3:
-                                    </div>
+                                    </h6>
+                                </div>
+                                <div class="col">
                                     {{ expandContent.incorrectAnswer3 }}
                                 </div>
-                                <div class="d-flex mb-2 border-bottom pb-2">
-                                    <div class="expand-tile">
+                            </div>
+                            <div class="row mb-2 border-bottom pb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
                                         Incorrect Answer 4:
-                                    </div>
+                                    </h6>
+                                </div>
+                                <div class="col">
                                     {{ expandContent.incorrectAnswer4 }}
                                 </div>
                             </div>
 
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Explanation:</div>
-                                {{ expandContent.explanation }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
+                                        Explanation:
+                                    </h6>
+                                </div>
+                                <div class="col">
+                                    {{ expandContent.explanation }}
+                                </div>
                             </div>
                         </div>
-                        <!-- _+_+_+_+_+_+_+_  Essay Expand content _+_+_+_+_+_+_+_  -->
+                        <!--- Essay expanded content -->
                         <div v-if="type == 'essay question'">
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Belong to skill:</div>
-                                <div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
+                                        Belong to skill:
+                                    </h6>
+                                </div>
+                                <div class="col">
                                     <router-link
                                         :to="'skills/' + expandContent.url"
                                         target="_blank"
@@ -1698,50 +1757,66 @@ export default {
                                     >
                                 </div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Level:</div>
-                                {{ expandContent.level }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Level:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.level }}</div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Name:</div>
-                                {{ expandContent.name }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Name:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.name }}</div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Question:</div>
-                                {{ expandContent.question }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Question:</h6>
+                                </div>
+                                <div class="col">
+                                    {{ expandContent.question }}
+                                </div>
                             </div>
                         </div>
-                        <!-- _+_+_+_+_+_+_+_  Skill Expand content _+_+_+_+_+_+_+_  -->
+                        <!-- Skill expanded content -->
                         <div v-if="type == 'skill'">
-                            <div id="skill-expand-head">
-                                <div class="d-flex mb-2">
-                                    <div class="expand-tile">Skill:</div>
-                                    {{ expandContent.name }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Skill:</h6>
                                 </div>
-                                <div class="mb-2 border-bottom pb-2">
-                                    {{ expandContent.description }}
-                                </div>
+                                <div class="col">{{ expandContent.name }}</div>
                             </div>
-                            <div class="expand-tile">Mastery Requirements:</div>
+
+                            <div class="col">
+                                <h6 class="secondary-heading">
+                                    Mastery Requirements:
+                                </h6>
+                            </div>
                             <div
-                                class="expand-skill-requirement"
+                                class="col expand-skill-requirement"
                                 v-html="expandContent.masteryRequirements"
                             ></div>
                         </div>
-                        <!-- _+_+_+_+_+_+_+_  Resource Expand content _+_+_+_+_+_+_+_  -->
+                        <!-- Resources expanded content -->
                         <div v-if="type == 'source'">
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Skill:</div>
-                                <div>{{ expandContent.skill }}</div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Skill:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.skill }}</div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">User:</div>
-                                <div>{{ expandContent.user }}</div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">User:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.user }}</div>
                             </div>
-                            <div class="d-flex flex-column mb-2">
-                                <div class="expand-tile">Content:</div>
+                            <div class="row flex-column mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Content:</h6>
+                                </div>
                                 <div
-                                    class="expand-skill-requirement"
+                                    class="col expand-skill-requirement"
                                     v-html="expandContent.content"
                                 ></div>
                             </div>
@@ -2283,9 +2358,6 @@ export default {
 }
 
 /* Expand components CSS */
-#expand-div div {
-    font-family: 'Poppins' sans-serif;
-}
 
 .date-cell {
     color: #475569;
@@ -2299,10 +2371,6 @@ export default {
     border-radius: 5px;
     background-color: #f2edffcc;
     font-family: Arial, Helvetica, sans-serif;
-}
-
-#skill-expand-head {
-    width: 50%;
 }
 
 .user-header {
