@@ -17,7 +17,7 @@ export default {
     },
     data() {
         return {
-            type: null,
+            type: this.$route.query.type,
             disableBtn: false,
             userThatSubmittedEdit: {
                 id: this.$route.params.userId,
@@ -25,7 +25,8 @@ export default {
                 reputationScore: null
             },
 
-            showReputationModal: false
+            showReputationModal: false,
+            contentId: this.$route.params.contentId
         };
     },
     components: {
@@ -36,8 +37,6 @@ export default {
     },
     async created() {
         await this.getUserThatSubmittedEditDetails();
-        // Show the correct component.
-        this.type = this.$route.query.type;
     },
     methods: {
         async getUserThatSubmittedEditDetails() {
@@ -56,10 +55,22 @@ export default {
             }
         },
         increaseUserReputation() {
+            let contentType;
+            if (this.type == 'mcquestion') contentType = 'mc_question';
+            else if (this.type == 'essayquestion')
+                contentType = 'essay_question';
+            else if (this.type == 'imagequestion')
+                contentType = 'image_question';
+            else if (this.type == 'skill') contentType = 'skill';
+
             this.showReputationModal = false;
             const requestOptions = {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contentType: contentType,
+                    contentId: this.contentId
+                })
             };
 
             var url =

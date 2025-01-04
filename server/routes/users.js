@@ -1506,20 +1506,42 @@ router.put(
     '/increase-reputation/:editorId/:userId',
     isAuthenticated,
     (req, res, next) => {
-        let sqlQuery = `
+        // Increase user reputation score.
+        let reputationSQLQuery = `
     UPDATE users
     SET reputation_score = reputation_score + 1
     WHERE id = ${conn.escape(req.params.userId)};`;
 
-        //TODO
-        // User activity report
-
-        conn.query(sqlQuery, (err) => {
+        conn.query(reputationSQLQuery, (err) => {
             try {
                 if (err) {
                     throw err;
                 }
-                res.end();
+                // Record that the user received a reputution point in the user_actions table
+                const actionData = {
+                    action: 'receive-reputation',
+                    content_id: req.body.contentId,
+                    user_id: req.params.userId,
+                    content_type: req.body.contentType
+                };
+
+                const receiveReputationActionQuery = `INSERT INTO user_actions SET ?`;
+                conn.query(receiveReputationActionQuery, actionData, (err) => {
+                    if (err) throw err;
+
+                    // Record that the editor gave a reputution point in the user_actions table
+                    const actionData = {
+                        action: 'give-reputation',
+                        content_id: req.body.contentId,
+                        user_id: req.params.editorId,
+                        content_type: req.body.contentType
+                    };
+                    const giveReputationActionQuery = `INSERT INTO user_actions SET ?`;
+                    conn.query(giveReputationActionQuery, actionData, (err) => {
+                        if (err) throw err;
+                        res.end();
+                    });
+                });
             } catch (err) {
                 next(err);
             }
