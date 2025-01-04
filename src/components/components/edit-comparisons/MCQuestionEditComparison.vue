@@ -243,7 +243,12 @@ export default {
 
 <template>
     <div class="container mb-2 bg-light rounded p-3">
-        <h1 ref="pageTile" class="heading">Compare Changes</h1>
+        <h1 ref="pageTile" class="heading">Review Suggested Update</h1>
+        <p>
+            {{ $parent.userThatSubmittedEdit.username }} (reputation score:
+            {{ $parent.userThatSubmittedEdit.reputationScore }}) suggested the
+            following question.
+        </p>
         <hr />
         <!-- Name and Level of Skill -->
         <h2 class="secondary-heading h4">Skill</h2>

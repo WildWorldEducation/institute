@@ -77,8 +77,7 @@ export default {
                                 this.usersStore.users[i].username;
                             this.studentReputation =
                                 this.usersStore.users[i].reputation_score;
-                            this.studentId = this.usersStore.users[i].id;
-                            console.log(this.usersStore.users[i]);
+                            this.studentId = this.usersStore.users[i].id;                          
                         }
                     }
                     // Get the skill's name.
@@ -107,6 +106,8 @@ export default {
             }
         },
         saveToQuestionBank() {
+            this.showReputationModal = false;
+
             this.question.name = 'User: ' + this.question.student_id;
 
             const requestOptions = {
@@ -154,10 +155,9 @@ export default {
                     this.question.correct_answer = 2;
             }
         },
-        displayReputationModal() {
-            this.showReputationModal = true;
-        },
         increaseUserReputation() {
+            this.showReputationModal = false;
+
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' }
@@ -345,7 +345,7 @@ export default {
 
                         <button
                             class="btn primary-btn"
-                            @click="displayReputationModal()"
+                            @click="this.showReputationModal = true"
                         >
                             Save
                         </button>
