@@ -11,6 +11,9 @@ router.use(bodyParser.json());
 // DB
 const conn = require('../config/db');
 
+//Middlewares
+const isAuthenticated = require('../middlewares/authMiddleware');
+
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -189,6 +192,31 @@ router.delete('/:id', (req, res, next) => {
                         else res.end();
                     });
                 }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Modify the 'is_reward_given' to positive.
+ */
+router.put('/:flagId/mark-reward-given', isAuthenticated, (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `UPDATE content_flags 
+            SET is_reward_given = 1
+            WHERE id = ${conn.escape(req.params.flagId)};`;
+
+        conn.query(sqlQuery, async (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.end();
             } catch (err) {
                 next(err);
             }

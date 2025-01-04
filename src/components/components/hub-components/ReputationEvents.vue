@@ -23,7 +23,6 @@ export default {
                 this.reputationEvents[i].create_date
             );
         }
-        console.log(this.reputationEvents);
     },
     methods: {
         formatDate(unformattedDate) {
