@@ -13,26 +13,58 @@ export default {
         };
     },
     async created() {
-        console.log(this.userDetailsStore.userId);
         const result = await fetch(
             '/users/reputation-events/' + this.userDetailsStore.userId
         );
         this.reputationEvents = await result.json();
+
+        for (let i = 0; i < this.reputationEvents.length; i++) {
+            this.reputationEvents[i].formattedDate = this.formatDate(
+                this.reputationEvents[i].create_date
+            );
+        }
         console.log(this.reputationEvents);
     },
-    methods: {}
+    methods: {
+        formatDate(unformattedDate) {
+            // Prep the date and time data ---------------
+            // Split timestamp into [ Y, M, D, h, m, s ]
+            var date = unformattedDate.replace('T', ' ');
+            date = date.replace('Z', ' ');
+            let newDate = date.split(/[- :]/);
+            // Apply each element to the Date function
+            var finalDate = new Date(
+                Date.UTC(
+                    newDate[0],
+                    newDate[1] - 1,
+                    newDate[2],
+                    newDate[3],
+                    newDate[4],
+                    newDate[5]
+                )
+            );
+            var options = {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric'
+            };
+            finalDate = finalDate.toLocaleDateString('en-US', options);
+            return finalDate;
+        }
+    }
 };
 </script>
 
 <template>
     <h2 class="secondary-heading h4">Reputation Events</h2>
-    <div id="skill-list">
+    <div id="background">
         <div v-for="reputationEvent in reputationEvents">
-            <div class="skill-link btn">
-                {{ reputationEvent.id }}
+            <div class="text-white">
+                {{ reputationEvent.content_type }} improved on
+                {{ reputationEvent.formattedDate }}
             </div>
         </div>
-        <div v-if="noSkills" id="no-skill-cell"></div>
+        <!-- <div v-if="noSkills" id="no-skill-cell"></div> -->
     </div>
 </template>
 
@@ -58,7 +90,7 @@ export default {
     flex-direction: column;
 }
 
-#skill-list {
+#background {
     overflow-y: auto;
     overflow-x: hidden;
     max-height: 300px;
@@ -66,18 +98,8 @@ export default {
     background-color: rgb(33, 37, 41);
 }
 
-#skill-list div {
+#background div {
     padding: 10px 6px;
-}
-
-.skill-link {
-    text-decoration: none !important;
-    color: black;
-}
-
-#skill-list div:hover {
-    cursor: pointer;
-    text-decoration: underline;
 }
 
 #no-skill-cell {
@@ -85,7 +107,7 @@ export default {
 }
 
 @media (max-width: 480px) {
-    #skill-list {
+    #background {
         max-height: 200px;
         margin-left: 1px;
     }
