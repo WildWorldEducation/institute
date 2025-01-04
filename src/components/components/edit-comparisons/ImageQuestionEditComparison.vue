@@ -211,7 +211,12 @@ export default {
 
 <template>
     <div class="container mb-2 bg-light rounded p-3">
-        <h1 class="heading">Compare Changes</h1>
+        <h1 class="heading">Review Suggested Update</h1>
+        <p>
+            {{ $parent.userThatSubmittedEdit.username }} (reputation score:
+            {{ $parent.userThatSubmittedEdit.reputationScore }}) suggested the
+            following changes to this question.
+        </p>
         <div class="my-3">
             <hr />
         </div>

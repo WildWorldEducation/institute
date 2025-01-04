@@ -77,7 +77,7 @@ export default {
                                 this.usersStore.users[i].username;
                             this.studentReputation =
                                 this.usersStore.users[i].reputation_score;
-                            this.studentId = this.usersStore.users[i].id;                          
+                            this.studentId = this.usersStore.users[i].id;
                         }
                     }
                     // Get the skill's name.
@@ -170,6 +170,7 @@ export default {
                 this.studentId;
 
             fetch(url, requestOptions).then(() => {
+                this.usersStore.getUsers();
                 this.saveToQuestionBank();
             });
         }

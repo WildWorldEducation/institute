@@ -36,7 +36,6 @@ export default {
     },
     async created() {
         await this.getUserThatSubmittedEditDetails();
-        console.log(this.userThatSubmittedEdit);
         // Show the correct component.
         this.type = this.$route.query.type;
     },
@@ -70,6 +69,7 @@ export default {
                 this.userThatSubmittedEdit.id;
 
             fetch(url, requestOptions).then(() => {
+                this.usersStore.getUsers();
                 this.$refs.child.saveEdit();
             });
         }
