@@ -725,7 +725,7 @@ router.put(
 
             let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
-                    (id, version_number, user_id, name, description, icon_image,
+                    (id, version_number, user_id, name, description, icon_image, icon
                     mastery_requirements, level, skill_history.order, comment)
                     VALUES
                     (${conn.escape(req.params.id)},
@@ -734,6 +734,7 @@ router.put(
                     ${conn.escape(req.body.name)},                    
                     ${conn.escape(req.body.description)},
                     ${conn.escape(iconUrl)},
+                    ${conn.escape(req.body.icon)}
                     ${conn.escape(
                 req.body.mastery_requirements
             )},                    
