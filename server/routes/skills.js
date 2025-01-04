@@ -1712,8 +1712,10 @@ router.get('/base-64-data', async (req, res, next) => {
 
 
 function insertIntoSkillIconTable(url) {
-    let sqlQuery = `INSERT INTO skill_icon
-                    VALUES (${conn.escape(url)}, ${conn.escape('iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAT0lEQVR42u3WQQoAIAhE0SY6uDe3E2huBIPvtvBlpCR3X52xV3MAAAAATABOviypkiUZye0VKMKLZ3/WkV2RmdWzR5t5pgAf9IH4eAHMBy5x3xg1taMNPwAAAABJRU5ErkJggg==')})`
+    let sqlQuery = `UPDATE skills
+                    SET skills.icon = ${conn.escape(`data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAABCUlEQVR42u2aQRKDIAxF+U5v6WW4TM+ZLhiZllLdJAr1ZVw4MiN5/gQSVWaWZrYlTW4AAAAAAAAAEGqSUACA+wJIyjmHpgEKAADA5KbQnriuP3GzLMHeWzniVlJy4Gp7ROfY3AA55+aEEALgLgClkH5PhqCtAAUAAAAAAMYDaDaB0K0ABf6yJ94JFffp/AGK993b7gyNFULWE0GSjZ8Dh16a9yePqCRuHA16/M4A1UulpM9YNzNtHb6vCP5NvX6kabnoLsXiu/joaJEpUiQ/ETwVaFxvXKyjVYqxAPph89xg1qgd7YxSQuucb6fN7PvBU8xRjXoVdnMocMI/neTA1SKgAAAAAHCtvQBYnWTAqAUI9wAAAABJRU5ErkJggg==`)}
+                    WHERE skills.url = ${conn.escape(url)}
+                    `
     conn.query(sqlQuery, (err, result) => {
         if (err) {
             throw err

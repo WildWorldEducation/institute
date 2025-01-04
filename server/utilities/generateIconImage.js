@@ -26,7 +26,7 @@ async function generateIconForSkill(skillName, skillId) {
     const promptMessage = genIconPrompt.choices[0].message;
     console.log(promptMessage)
     const iconBase64 = await openai.images.generate(
-        model = "dall-e-2",
+        model = "dall-e-3",
         prompt = genIconPrompt,
         size = "64x64",
         quality = "standard",

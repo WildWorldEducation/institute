@@ -1295,6 +1295,7 @@ export default {
         async generatePath() {
             const res = await fetch('/skills/generate-dummy-path');
             const resData = await res.json();
+            console.log(resData);
         },
         async getIconPath() {
             const res = await fetch('/skills/icon-list');
@@ -1369,6 +1370,11 @@ export default {
                 </button>
             </div> -->
             <!-- <div class="d-flex">node drew: {{ nodeDrew }}</div> -->
+            <div class="d-flex">
+                <button type="button" @click="generatePath">
+                    Click me !!!
+                </button>
+            </div>
         </div>
     </div>
 </template>
