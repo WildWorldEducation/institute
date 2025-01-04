@@ -7,6 +7,7 @@ import Notifications from '../components/hub-components/Notifications.vue';
 import News from '../components/hub-components/News.vue';
 import MarkAssessment from '../components/hub-components/MarkAssessment.vue';
 import HubStudentQuestionList from '../components/hub-components/HubStudentQuestionList.vue';
+import ReputationEvents from '../components/hub-components/ReputationEvents.vue';
 
 // Import store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
@@ -52,7 +53,8 @@ export default {
         MarkAssessment,
         LastVisitedSkills,
         Goals,
-        HubStudentQuestionList
+        HubStudentQuestionList,
+        ReputationEvents
     },
     computed: {
         name() {
@@ -336,6 +338,17 @@ export default {
             <div class="col-lg-4 col-md-6 mb-2">
                 <div class="hub-component h-100">
                     <Notifications />
+                </div>
+            </div>
+            <div
+                v-if="
+                    userDetailsStore.role == 'student' ||
+                    userDetailsStore.role == 'instructor'
+                "
+                class="col-lg-4 col-md-6 mb-2"
+            >
+                <div class="hub-component h-100">
+                    <ReputationEvents />
                 </div>
             </div>
         </div>

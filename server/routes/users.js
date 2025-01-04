@@ -39,6 +39,7 @@ const editSelfPermission = require('../middlewares/users/editSelfMiddleware');
 
 require('dotenv').config();
 const { saveUserAvatarToAWS } = require('../utilities/save-image-to-aws');
+const { sql } = require('googleapis/build/src/apis/sql');
 const userAvatarImagesBucketName = process.env.S3_USER_AVATAR_IMAGE_BUCKET_NAME;
 const bucketRegion = process.env.S3_BUCKET_REGION;
 router.post('/new-user/add', (req, res, next) => {
@@ -1548,6 +1549,26 @@ router.put(
         });
     }
 );
+
+// Show events where the user received reputation points.
+router.get('/reputation-events/:userId', isAuthenticated, (req, res, next) => {
+    res.setHeader('Content-Type', 'application/json');
+    let sqlQuery = `SELECT *
+    FROM user_actions
+    WHERE user_id = ${conn.escape(req.params.userId)}
+    AND action = 'receive-reputation';`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.json(results);
+        } catch (err) {
+            next(err);
+        }
+    });
+});
 
 // router.get('*', (req, res) => {
 //     res.redirect('/');
