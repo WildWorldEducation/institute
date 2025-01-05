@@ -1,21 +1,24 @@
 <script>
 import { useSkillsStore } from '../../stores/SkillsStore.js';
+import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
+        const userDetailsStore = useUserDetailsStore();
         return {
-            skillsStore
+            skillsStore,
+            userDetailsStore
         };
     },
     data() {
         return {
-            showChildren: false,
             showSubskills: true,
             showModal: false,
             childrenNotSubskills: [],
             subSkills: [],
-            isResult: false
+            isResult: false,
+            localShowChildren: 0
         };
     },
     props: [
@@ -29,6 +32,7 @@ export default {
         'level',
         'depth',
         'role',
+        'showChildren',
         'isFiltered',
         'DeleteSkill',
         'path'
@@ -69,6 +73,8 @@ export default {
         }
     },
     async created() {
+        this.localShowChildren = this.showChildren;
+
         for (let i = 0; i < this.children.length; i++) {
             if (this.children[i].type == 'sub') {
                 this.subSkills.push(this.children[i]);
@@ -78,19 +84,6 @@ export default {
         }
     },
     mounted() {
-        // This is to load the state of the nested skills list (which child skills are currently showing).
-        if (localStorage.getItem(this.id + 'children') == 'true') {
-            this.showChildren = true;
-        } else {
-            this.showChildren = false;
-        }
-
-        if (localStorage.getItem(this.id + 'sub') == 'false') {
-            this.showSubskills = false;
-        } else {
-            this.showSubskills = true;
-        }
-
         /*
          * Give longer node names smaller font, otherwise they look bad.
          * Do this by checking how many lines they span (by checking height.)
@@ -126,14 +119,24 @@ export default {
                 window.open('/skills/' + this.url, '_blank');
             } else this.toggleChildren();
         },
-        // Save the state of the skills list to browser storage.
+        // Save the state of the skills list to DB
         toggleChildren() {
-            if (this.showChildren == false) {
-                localStorage.setItem(this.id + 'children', true);
-                this.showChildren = true;
+            if (this.localShowChildren == 1) {
+                this.localShowChildren = 0;
+                var url =
+                    '/user-skills/hide-children/' +
+                    this.userDetailsStore.userId +
+                    '/' +
+                    this.id;
+                fetch(url);
             } else {
-                localStorage.setItem(this.id + 'children', false);
-                this.showChildren = false;
+                this.localShowChildren = 1;
+                var url =
+                    '/user-skills/show-children/' +
+                    this.userDetailsStore.userId +
+                    '/' +
+                    this.id;
+                fetch(url);
             }
         },
         // Save the state of the skills list to browser storage.
@@ -168,7 +171,7 @@ export default {
         // Expand/Collapse All Domain Descendants.
         toggleExpandAll() {
             this.recursivelySetState(this.children, !this.showChildren);
-            localStorage.setItem(this.id + 'children', !this.showChildren);
+            //localStorage.setItem(this.id + 'children', !this.showChildren);
             this.showChildren = !this.showChildren;
         }
     },
@@ -334,7 +337,7 @@ export default {
                 @click.stop="toggleExpandAll"
             >
                 <svg
-                    v-if="showChildren"
+                    v-if="localShowChildren == 1"
                     height="18"
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
@@ -347,7 +350,7 @@ export default {
                     />
                 </svg>
                 <svg
-                    v-else
+                    v-else-if="localShowChildren == 0"
                     height="18"
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
@@ -368,7 +371,7 @@ export default {
             >
                 <!-- Collapse icon -->
                 <svg
-                    v-if="!showChildren"
+                    v-if="localShowChildren == 0"
                     height="18"
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
@@ -382,7 +385,7 @@ export default {
                 </svg>
 
                 <svg
-                    v-else
+                    v-else-if="localShowChildren == 1"
                     height="18"
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
@@ -420,7 +423,7 @@ export default {
 
     <!-- Recursive nesting of component -->
     <SkillsListChildStudent
-        v-if="showChildren"
+        v-if="localShowChildren == 1"
         v-for="child in childrenNotSubskills"
         :id="child.id"
         :children="child.children"
@@ -432,6 +435,7 @@ export default {
         :url="child.url"
         :isFiltered="child.isFiltered"
         :role="role"
+        :showChildren="child.show_children"
         :depth="depth + 1"
         :path="path"
     >

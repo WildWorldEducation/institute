@@ -22,7 +22,10 @@ export default {
             isHistory: false,
             isLife: false,
             isDangerousIdeas: false,
-            showMobileFiltersModal: false
+            showMobileFiltersModal: false,
+            // Tutorial tooltips
+            isTutorialComplete: false,
+            showTutorialTip1: false
         };
     },
     created() {
@@ -51,6 +54,8 @@ export default {
                 this.isDangerousIdeas = true;
             }
         }
+
+        this.checkIfTutorialComplete();
     },
     components: { RadialTree, SkillTreeSearchBar },
     methods: {
@@ -87,6 +92,37 @@ export default {
             if (this.isLife) this.userDetailsStore.subjectFilters.push('Life');
             if (this.isDangerousIdeas)
                 this.userDetailsStore.subjectFilters.push('Dangerous Ideas');
+        },
+
+        // Tutorial
+        async checkIfTutorialComplete() {
+            const result = await fetch(
+                '/users/check-tutorial-progress/radial-tree/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            if (data == 0) {
+                this.isTutorialComplete = false;
+                this.showTutorialTip1 = true;
+            } else if (data == 1) {
+                this.isTutorialComplete = true;
+            }
+        },
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+                this.markTutorialComplete();
+            }
+        },
+        markTutorialComplete() {
+            let url =
+                '/users/mark-tutorial-complete/radial-tree/' +
+                this.userDetailsStore.userId;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch(url, requestOptions);
         }
     }
 };
@@ -625,6 +661,19 @@ export default {
             </div>
         </div>
     </div>
+
+    <!-- Introduction modal -->
+    <div v-if="showTutorialTip1" class="modal">
+        <div class="modal-content">
+            <p>
+                This page is like the Full Tree, but the skills are arranged in
+                a radial format.
+            </p>
+            <button class="btn primary-btn ms-0" @click="progressTutorial(1)">
+                close
+            </button>
+        </div>
+    </div>
 </template>
 
 <style scoped>
@@ -726,7 +775,7 @@ export default {
 .chosen-subject:focus,
 .switch-btn:hover {
     color: var(--primary-contrast-color) !important;
-    opacity: 1;
+    opacity: 1 !important;
 }
 
 .btn:active,
@@ -768,13 +817,17 @@ export default {
     margin: auto;
 }
 
+.tooltip .btn {
+    /* margin: inherit; */
+}
+
 /* Modals */
 .modal {
     display: block;
     /* Hidden by default */
     position: fixed;
     /* Stay in place */
-    z-index: 1;
+    z-index: 2000;
     /* Sit on top */
     left: 0;
     top: 0;
@@ -963,7 +1016,7 @@ export default {
     }
 
     .tablet-and-up-legend {
-        display: none;
+        display: none !important;
     }
 
     .search-mobile-row {

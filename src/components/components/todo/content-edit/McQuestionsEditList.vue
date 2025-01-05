@@ -15,7 +15,7 @@ export default {
             headers: [
                 { text: 'User', value: 'userName' },
                 { text: 'Name', value: 'name' },
-                { text: 'Content', value: 'question' },
+                { text: 'Question', value: 'question' },
                 { text: 'Skill', value: 'skill_name' },
                 { text: 'Comment', value: 'comment' },
                 { text: 'Date', value: 'date' }
@@ -94,8 +94,8 @@ export default {
                     parseInt(this.settingStore.todoMcQuestionTableRows) !==
                     parseInt(this.dataTableRefM?.rowsPerPageActiveOption)
                 ) {
-                    console.log('MOBILE CALL');
-                    console.log(this.settingStore.todoMcQuestionTableRows);
+                    // console.log('MOBILE CALL');
+                    // console.log(this.settingStore.todoMcQuestionTableRows);
                     this.settingStore.todoMcQuestionTableRows =
                         this.dataTableRefM?.rowsPerPageActiveOption;
                     this.settingStore.saveSettings();
@@ -118,15 +118,17 @@ export default {
             :loading="mcQuestionEditsLoading"
             table-class-name="customize-table"
             buttons-pagination
-            theme-color="#a48be6"
             @click-row="goToComparePage"
             class="d-none d-md-block"
         >
-            <!-- --- Loading Part --- -->
+            <!-- Loading animation -->
             <template #loading>
-                <img src="/images/loading.gif" alt="loading data" />
+                <div
+                    class="d-flex justify-content-center align-items-center mt-5"
+                >
+                    <span class="loader"></span>
+                </div>
             </template>
-
             <!-- --- Name Router Column --- -->
             <template #item-name="{ name, mc_question_id, user_id }">
                 <RouterLink
@@ -149,13 +151,16 @@ export default {
             :loading="mcQuestionEditsLoading"
             table-class-name="customize-table"
             buttons-pagination
-            theme-color="#a48be6"
             @click-row="goToComparePage"
             class="d-md-none"
         >
-            <!-- --- Loading Part --- -->
+            <!-- Loading animation -->
             <template #loading>
-                <img src="/images/loading.gif" alt="loading data" />
+                <div
+                    class="d-flex justify-content-center align-items-center mt-5"
+                >
+                    <span class="loader"></span>
+                </div>
             </template>
             <!-- --- Name Router Column --- -->
             <template #item-name="{ name, mc_question_id, user_id }">
@@ -178,7 +183,7 @@ export default {
 /* +-+-+ Vue Easy Table Custom CSS +-+-+  */
 .customize-table {
     --easy-table-body-row-font-size: 16px;
-    --easy-table-header-font-size: 16px;
+    --easy-table-header-font-size: 18px;
     --easy-table-header-font-color: var(--primary-color);
     --easy-table-header-background-color: #fefefe;
     --easy-table-header-height: 50px;
@@ -207,4 +212,26 @@ export default {
         padding: 0px;
     }
 }
+
+/* Loading animation */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* End of loading animation */
 </style>

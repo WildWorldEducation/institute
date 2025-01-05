@@ -118,7 +118,7 @@ export default {
                     height="72"
                 />
             </div>
-            <h1 class="h3 mb-3 font-weight-normal">Editor Sign up</h1>
+            <!-- <h1 class="h3 mb-3 font-weight-normal">Editor Sign up</h1> -->
 
             <div class="mt-3">
                 <div class="mb-3 text-start">
@@ -230,7 +230,7 @@ export default {
                     <CheckPasswordComplexity :formData="newEditor" />
                 </div>
                 <button class="btn btn-dark mb-2" @click="ValidateForm()">
-                    Sign up
+                    Register
                 </button>
                 <div
                     v-if="isProduction == true"
@@ -263,7 +263,7 @@ export default {
                 ></div>
                 <div class="mt-3 signup text-center">
                     Have an account?
-                    <a href="/login" class="links">Login</a>
+                    <a href="/login" class="links">Sign in</a>
                 </div>
             </div>
         </div>

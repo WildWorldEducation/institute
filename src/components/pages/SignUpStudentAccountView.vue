@@ -14,7 +14,7 @@ export default {
                 email: null,
                 password: null,
                 accountType: 'student',
-                skillTreeGradeLevel: 'middle_school'
+                skillTreeGradeLevel: null
             },
             // Validate Object flag
             validate: {
@@ -28,7 +28,8 @@ export default {
             passwordVisible: false,
             // For Google sign up absolute API url.
             isProduction: import.meta.env.PROD,
-            showVideoModal: true
+            showVideoModal: true,
+            showModalVideo: true
         };
     },
     async created() {},
@@ -41,13 +42,8 @@ export default {
         document.head.appendChild(script);
 
         if (window.innerWidth < 800) {
-            this.showVideoModal = false;
+            this.showModalVideo = false;
         }
-
-        // Close modal
-        document.addEventListener('click', () => {
-            this.toggleModal();
-        });
     },
     methods: {
         ValidateForm() {
@@ -60,8 +56,13 @@ export default {
                 this.newUser.password == null
             ) {
                 this.validate.password = true;
+            } else if (
+                this.newUser.skillTreeGradeLevel == '' ||
+                this.newUser.skillTreeGradeLevel == null
+            ) {
+                this.validate.skillTreeGradeLevel = true;
             }
-            // After all check pass we see if the password is complex enough
+            // After all checks passed we see if the password is complex enough
             else if (this.validate.passwordComplex) {
                 this.Submit();
             }
@@ -100,7 +101,7 @@ export default {
                 .then((data) => {
                     if (data.account == 'authorized') {
                         alert('Account created.');
-                        router.push({ name: 'vertical-tree' });
+                        router.push({ name: 'skill-tree' });
                     } else if (data.account == 'username already taken') {
                         alert(data.account);
                     } else if (data.account == 'email already taken') {
@@ -110,13 +111,6 @@ export default {
         },
         toggleModal() {
             this.showVideoModal = false;
-        },
-        toggleAccountType() {
-            if (this.newUser.accountType === 'student') {
-                this.newUser.accountType = 'instructor';
-            } else {
-                this.newUser.accountType = 'student';
-            }
         },
         initializeGoogleSignIn() {
             const clientId =
@@ -162,6 +156,15 @@ export default {
             document.body.appendChild(form);
 
             form.submit();
+        },
+        selectRole(role) {
+            if (role == 'student') {
+                this.newUser.accountType = 'student';
+                this.showVideoModal = false;
+            } else if (role == 'instructor') {
+                this.newUser.accountType = 'instructor';
+                this.showVideoModal = false;
+            }
         }
     }
 };
@@ -169,6 +172,7 @@ export default {
 
 <template>
     <div class="signup-page">
+        <!-- The video -->
         <div
             v-if="!showVideoModal"
             class="embed-responsive embed-responsive-16by9"
@@ -183,19 +187,9 @@ export default {
                 allowfullscreen
             ></iframe>
         </div>
+        <!-- The form -->
         <div class="form-signin mt-3">
-            <div v-if="showVideoModal" class="text-center">
-                <img
-                    class="mb-4"
-                    src="/images/logo-red.png"
-                    alt=""
-                    width="72"
-                    height="72"
-                />
-            </div>
-            <h1 class="h3 mb-3 font-weight-normal">Sign up</h1>
-
-            <div class="mt-3">
+            <div>
                 <div class="mb-3 text-start">
                     <!-- <label class="form-label">Username</label> -->
                     <input
@@ -216,7 +210,6 @@ export default {
                     </div>
                 </div>
                 <div class="mb-3 text-start">
-                    <!-- <label class="form-label">Email</label> -->
                     <input
                         v-model="newUser.email"
                         type="email"
@@ -239,7 +232,6 @@ export default {
                     </div>
                 </div>
                 <div class="mb-3 text-start">
-                    <!-- <label class="form-label">Password</label> -->
                     <div class="password-div">
                         <input
                             id="password-input"
@@ -302,20 +294,6 @@ export default {
                     <CheckPasswordComplexity :formData="newUser" />
                 </div>
 
-                <!-- Choose instructor or student -->
-                <div
-                    :class="`toggle ${
-                        newUser.accountType == 'student' ? 'left' : 'right'
-                    }`"
-                    @click="toggleAccountType"
-                >
-                    <div class="cursor"></div>
-                    <div class="labels">
-                        <div class="label-left">Student</div>
-                        <div class="label-right">Instructor</div>
-                    </div>
-                </div>
-
                 <!-- Grade level -->
                 <div
                     v-if="newUser.accountType == 'student'"
@@ -325,21 +303,32 @@ export default {
                         class="form-select"
                         v-model="newUser.skillTreeGradeLevel"
                     >
+                        <option selected value="null">Choose your level</option>
                         <option value="grade_school">Grade School</option>
                         <option value="middle_school">Middle School</option>
                         <option value="high_school">High School</option>
                         <option value="college">College</option>
                         <option value="phd">PHD</option>
                     </select>
+                    <div
+                        v-if="
+                            validate.skillTreeGradeLevel &&
+                            (newUser.skillTreeGradeLevel == '' ||
+                                newUser.skillTreeGradeLevel == null)
+                        "
+                        class="form-validate"
+                    >
+                        please choose a level!
+                    </div>
                 </div>
 
                 <button class="btn btn-dark mb-2" @click="ValidateForm()">
-                    Sign up
+                    Register
                 </button>
                 <div ref="googleSignInButton"></div>
                 <div class="mt-3 signup text-center">
                     Have an account?
-                    <a href="/login" class="links">Login</a>
+                    <a href="/login" class="links">Sign in</a>
                 </div>
             </div>
         </div>
@@ -350,29 +339,9 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-                <button
-                    type="button"
-                    class="closeBtn btn red-btn"
-                    data-dismiss="modal"
-                    aria-label="Close"
-                >
-                    <span aria-hidden="true">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 384 512"
-                            width="25"
-                            height="25"
-                        >
-                            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
-                                fill="white"
-                            />
-                        </svg>
-                    </span>
-                </button>
-
+                <!-- The video -->
                 <div
+                    v-if="showModalVideo"
                     id="modal-iframe"
                     class="embed-responsive embed-responsive-16by9"
                 >
@@ -386,30 +355,24 @@ export default {
                         allowfullscreen
                     ></iframe>
                 </div>
+                <button
+                    class="btn primary-btn mx-auto mt-2 border border-dark"
+                    @click="selectRole('student')"
+                >
+                    I'm a student
+                </button>
+                <button
+                    class="btn primary-btn mx-auto mt-2 border border-dark"
+                    @click="selectRole('instructor')"
+                >
+                    I'm an instructor
+                </button>
             </div>
         </div>
     </div>
 </template>
 
 <style>
-.closeBtn {
-    position: absolute;
-    top: -19.655px;
-    right: -25.3px;
-}
-
-.red-btn {
-    background-color: #da7033 !important;
-    color: white;
-    align-items: center;
-    max-width: fit-content;
-    display: flex;
-}
-
-.red-btn:hover {
-    background-color: rgb(209, 96, 15);
-}
-
 /* The Warning Modal */
 .modal {
     display: block;
@@ -435,8 +398,8 @@ export default {
 /* Modal Content/Box */
 .modal-content {
     background-color: #fefefe;
-    margin: 15% auto;
-    /* 15% from the top and centered */
+    margin: 5% auto;
+    /* 5% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
     width: 600px;
@@ -455,6 +418,13 @@ export default {
 @media (max-width: 800px) {
     .intro-video {
         width: 100%;
+    }
+
+    /* Modal Content/Box */
+    .modal-content {
+        margin: 40% auto;
+        /* 40% from the top and centered */
+        width: 90%;
     }
 }
 

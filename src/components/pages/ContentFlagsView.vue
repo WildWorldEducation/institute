@@ -37,17 +37,17 @@ export default {
             flagId: '',
             headers: [
                 { text: 'Type', value: 'type' },
-                { text: 'Name', value: 'name' },
-                { text: 'User', value: 'user', width: 99 },
+                { text: 'Flagged item', value: 'name' },
+                { text: 'User', value: 'user' },
                 { text: 'Date', value: 'date' },
-                { text: 'Action', value: 'action' }
+                { text: '', value: 'action' }
             ],
             // In phone version we dont show some column
             headersPhone: [
                 { text: 'Type', value: 'type' },
-                { text: 'Name', value: 'name' },
-                { text: 'User', value: 'user', width: 99 },
-                { text: 'Action', value: 'action' }
+                { text: 'Flagged item', value: 'name' },
+                { text: 'User', value: 'user' },
+                { text: '', value: 'action' }
             ],
 
             rows: [],
@@ -83,7 +83,6 @@ export default {
     components: {
         Vue3EasyDataTable
     },
-    async created() {},
     async mounted() {
         // fetch data from sever
         await this.getContentFlags();
@@ -421,13 +420,11 @@ export default {
             // parse the content data because mysql library return it as a string
             const parseDate = new Date(dateString);
             const createDate = parseDate.toLocaleString('en-gb', {
-                weekday: 'long',
                 year: 'numeric',
-                month: 'long',
+                month: 'numeric',
                 day: 'numeric'
             });
-            const createTime = parseDate.toLocaleTimeString();
-            return `${createTime}-${createDate}`;
+            return `${createDate}`;
         },
         closeAllFilter(showFilter) {
             // Do not close the current open filter
@@ -543,10 +540,9 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid p-1">
-        <!-- Search Table Section -->
+    <div class="mb-2">
+        <!-- Search Bar -->
         <div>
-            <div class="expand-tile">Search:</div>
             <div class="d-flex search-bar">
                 <input type="text" v-model="searchText" />
                 <svg
@@ -564,7 +560,7 @@ export default {
             </div>
         </div>
         <!-- Vue Data Table Desktop  -->
-        <div class="mt-5 pb-3 d-none d-md-block table-div">
+        <div class="pb-3 d-none d-md-block table-div">
             <Vue3EasyDataTable
                 ref="dataTable"
                 :headers="headers"
@@ -575,11 +571,14 @@ export default {
                 :filter-options="filterOptions()"
                 :search-value="searchText"
                 buttons-pagination
-                theme-color="#a48be6"
             >
-                <!-- --- Loading Part --- -->
+                <!-- Loading animation -->
                 <template #loading>
-                    <img src="/images/loading.gif" alt="loading data" />
+                    <div
+                        class="d-flex justify-content-center align-items-center mt-5"
+                    >
+                        <span class="loader"></span>
+                    </div>
                 </template>
 
                 <!-- --- Name Router Column --- -->
@@ -607,7 +606,7 @@ export default {
                             :to="editUrl"
                             class="btn primary-btn"
                             b-tooltip.hover
-                            :title="'Go To Edit Page For This ' + type"
+                            :title="'Edit flagged item'"
                         >
                             <!-- Pencil icon -->
                             <svg
@@ -633,15 +632,15 @@ export default {
                         </router-link>
                         <button
                             b-tooltip.hover
-                            :title="'Dismiss This Flag'"
-                            class="btn red-btn h-100"
+                            :title="'Dismiss flag'"
+                            class="btn red-btn"
                             @click="handleOpenDismissModal(flagId)"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 576 512"
-                                width="14"
-                                height="16"
+                                width="16"
+                                height="17"
                                 fill="white"
                             >
                                 <path
@@ -657,8 +656,8 @@ export default {
                                 type === 'source'
                             "
                             b-tooltip.hover
-                            :title="'Delete This Content'"
-                            class="btn red-btn h-100"
+                            :title="'Delete flagged item'"
+                            class="btn red-btn"
                             @click="showWarningModal({ contentId, type })"
                         >
                             <!-- X icon -->
@@ -680,13 +679,15 @@ export default {
 
                 <!-- ---  Expand Part --- -->
                 <template #expand="{ expandContent, type, reason }">
-                    <div id="expand-div" style="padding: 15px">
-                        <!-- ***** Reason part share with all type of flag ***** -->
-                        <div class="d-flex align-items-center">
-                            <div class="expand-tile">Reason:</div>
-                            <div
-                                :class="[!reason && 'no-reason', 'flag-reason']"
-                            >
+                    <div class="p-4">
+                        <!-- Reason section shared with all types of flag  -->
+                        <div class="row mb-2">
+                            <div class="col">
+                                <h6 class="secondary-heading">
+                                    Reason for flagging:
+                                </h6>
+                            </div>
+                            <div class="col">
                                 {{
                                     reason
                                         ? reason
@@ -694,11 +695,13 @@ export default {
                                 }}
                             </div>
                         </div>
-                        <!-- _+_+_+_+_+_+_+_ MC Question Expand _+_+_+_+_+_+_+_  -->
+                        <!-- MC Question Expand -->
                         <div v-if="type == 'mc question'">
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Belongs to skill:</div>
-                                <div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Skill:</h6>
+                                </div>
+                                <div class="col">
                                     <router-link
                                         :to="'skills/' + expandContent.url"
                                         target="_blank"
@@ -711,173 +714,255 @@ export default {
                                     >
                                 </div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Level:</div>
-                                {{ expandContent.level }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Level:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.level }}</div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Name:</div>
-                                <div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Name:</h6>
+                                </div>
+                                <div class="col">
                                     {{ expandContent.name }}
                                 </div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Question:</div>
-                                <div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Question:</h6>
+                                </div>
+                                <div class="col">
                                     {{ expandContent.question }}
                                 </div>
                             </div>
-                            <div
-                                id="expand-mc-answer"
-                                class="d-flex flex-column"
-                            >
+                            <div class="">
                                 <div
-                                    class="d-flex mb-2 border-bottom border-opacity-75 pb-2"
+                                    class="row mb-2 border-bottom border-opacity-75 pb-2"
                                 >
-                                    <div class="expand-tile">
-                                        Correct Answer:
+                                    <div class="col">
+                                        <h6 class="secondary-heading">
+                                            Correct answer number:
+                                        </h6>
                                     </div>
-                                    {{ expandContent.correctAnswer }}
+                                    <div class="col">
+                                        {{ expandContent.correctAnswer }}
+                                    </div>
                                 </div>
-                                <div class="d-flex mb-2 border-bottom pb-2">
-                                    <div class="expand-tile">
-                                        Incorrect Answer 1:
+                                <div class="row mb-2 border-bottom pb-2">
+                                    <div class="col">
+                                        <h6 class="secondary-heading">
+                                            Answer option 1:
+                                        </h6>
                                     </div>
-                                    {{ expandContent.incorrectAnswer1 }}
+                                    <div class="col">
+                                        {{ expandContent.answer1 }}
+                                    </div>
                                 </div>
-                                <div class="d-flex mb-2 border-bottom pb-2">
-                                    <div class="expand-tile">
-                                        Incorrect Answer 2:
+                                <div class="row mb-2 border-bottom pb-2">
+                                    <div class="col">
+                                        <h6 class="secondary-heading">
+                                            Answer option 2:
+                                        </h6>
                                     </div>
-                                    {{ expandContent.incorrectAnswer2 }}
+                                    <div class="col">
+                                        {{ expandContent.answer2 }}
+                                    </div>
                                 </div>
-                                <div class="d-flex mb-2 border-bottom pb-2">
-                                    <div class="expand-tile">
-                                        Incorrect Answer 3:
+                                <div class="row mb-2 border-bottom pb-2">
+                                    <div class="col">
+                                        <h6 class="secondary-heading">
+                                            Answer option 3:
+                                        </h6>
                                     </div>
-                                    {{ expandContent.incorrectAnswer3 }}
+                                    <div class="col">
+                                        {{ expandContent.answer3 }}
+                                    </div>
                                 </div>
-                                <div class="d-flex mb-2 border-bottom pb-2">
-                                    <div class="expand-tile">
-                                        Incorrect Answer 4:
+                                <div class="row mb-2 border-bottom pb-2">
+                                    <div class="col">
+                                        <h6 class="secondary-heading">
+                                            Answer option 4:
+                                        </h6>
                                     </div>
-                                    {{ expandContent.incorrectAnswer4 }}
+                                    <div class="col">
+                                        {{ expandContent.answer4 }}
+                                    </div>
+                                </div>
+                                <div class="row mb-2 </div>border-bottom pb-2">
+                                    <div class="col">
+                                        <h6 class="secondary-heading">
+                                            Answer option 5:
+                                        </h6>
+                                    </div>
+                                    <div class="col">
+                                        {{ expandContent.answer5 }}
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Explanation:</div>
-                                {{ expandContent.explanation }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
+                                        Explanation:
+                                    </h6>
+                                </div>
+                                <div class="col">
+                                    {{ expandContent.explanation }}
+                                </div>
                             </div>
                         </div>
-                        <!-- _+_+_+_+_+_+_+_  Essay Expand content _+_+_+_+_+_+_+_  -->
+                        <!-- Essay Expand content -->
                         <div v-if="type == 'essay question'">
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Belongs to skill:</div>
-                                <div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
+                                        Belongs to skill:
+                                    </h6>
+                                </div>
+                                <div class="col">
                                     <router-link
                                         :to="'skills/' + expandContent.url"
                                         target="_blank"
                                         b-tooltip.hover
                                         :style="{ color: '#8f7bd6' }"
-                                        :title="'Go To Skill'"
+                                        :title="'Skill'"
                                         >{{
                                             expandContent.skillName
                                         }}</router-link
                                     >
                                 </div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Level:</div>
-                                {{ expandContent.level }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Level:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.level }}</div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Name:</div>
-                                {{ expandContent.name }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Name:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.name }}</div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Question:</div>
-                                {{ expandContent.question }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Question:</h6>
+                                </div>
+                                <div class="col">
+                                    {{ expandContent.question }}
+                                </div>
                             </div>
                         </div>
-                        <!-- _+_+_+_+_+_+_+_  Image Expand content _+_+_+_+_+_+_+_  -->
+                        <!-- Image Expand content -->
                         <div v-if="type == 'image question'">
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Belongs to skill:</div>
-                                <div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
+                                        Belongs to skill:
+                                    </h6>
+                                </div>
+                                <div class="col">
                                     <router-link
                                         :to="'skills/' + expandContent.url"
                                         target="_blank"
                                         b-tooltip.hover
                                         :style="{ color: '#8f7bd6' }"
-                                        :title="'Go To Skill'"
+                                        :title="'Go to skill'"
                                         >{{
                                             expandContent.skillName
                                         }}</router-link
                                     >
                                 </div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Level:</div>
-                                {{ expandContent.level }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Level:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.level }}</div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Name:</div>
-                                {{ expandContent.name }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Name:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.name }}</div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Question:</div>
-                                {{ expandContent.question }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Question:</h6>
+                                </div>
+                                <div class="col">
+                                    {{ expandContent.question }}
+                                </div>
                             </div>
                         </div>
-                        <!-- _+_+_+_+_+_+_+_  Skill Expand content _+_+_+_+_+_+_+_  -->
+                        <!-- Skill expanded content -->
                         <div v-if="type == 'skill'">
-                            <div id="skill-expand-head">
-                                <div class="d-flex mb-2">
-                                    <div class="expand-tile">Skill:</div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Skill:</h6>
+                                </div>
+                                <div class="col">
                                     {{ expandContent.name }}
                                 </div>
-                                <div class="mb-2 border-bottom pb-2">
-                                    {{ expandContent.description }}
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
+                                        Mastery Requirements:
+                                    </h6>
                                 </div>
-                            </div>
-                            <div class="expand-tile">Mastery Requirements:</div>
-                            <div
-                                class="expand-skill-requirement"
-                                v-html="expandContent.masteryRequirements"
-                            ></div>
-                        </div>
-                        <!-- _+_+_+_+_+_+_+_  Resource Expand content _+_+_+_+_+_+_+_  -->
-                        <div v-if="type == 'source'">
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Skill:</div>
-                                <div>{{ expandContent.skill }}</div>
-                            </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">User:</div>
-                                <div>{{ expandContent.user }}</div>
-                            </div>
-                            <div class="d-flex flex-column mb-2">
-                                <div class="expand-tile">Content:</div>
                                 <div
-                                    class="expand-skill-requirement"
+                                    class="col expand-skill-requirement"
+                                    v-html="expandContent.masteryRequirements"
+                                ></div>
+                            </div>
+                        </div>
+                        <!-- Resource expanded content -->
+                        <div v-if="type == 'source'">
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Skill:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.skill }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">User:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.user }}</div>
+                            </div>
+                            <div class="row flex-column mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Content:</h6>
+                                </div>
+                                <div
+                                    class="col expand-skill-requirement"
                                     v-html="expandContent.content"
                                 ></div>
                             </div>
                         </div>
                         <div v-if="type == 'tutor post'">
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Skill:</div>
-                                <div>{{ expandContent.skill }}</div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Skill:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.skill }}</div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">User:</div>
-                                <div>{{ expandContent.user }}</div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">User:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.user }}</div>
                             </div>
-                            <div class="d-flex flex-column mb-2">
-                                <div class="expand-tile">Description:</div>
+                            <div class="row flex-column mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
+                                        Description:
+                                    </h6>
+                                </div>
                                 <div
-                                    class="expand-skill-requirement"
+                                    class="col expand-skill-requirement"
                                     v-html="expandContent.description"
                                 ></div>
                             </div>
@@ -888,12 +973,11 @@ export default {
                 <!-- --- User Column --- -->
                 <template #item-user="{ user }">
                     <div class="user-cell">
-                        <div class="user-name">
-                            {{ user.username }}
-                        </div>
-                        <div class="user-role">
+                        {{ user.username }}
+
+                        <span class="user-role">
                             {{ user.role }}
-                        </div>
+                        </span>
                     </div>
                 </template>
 
@@ -920,12 +1004,11 @@ export default {
                                 {{ header.text }}
                             </span>
                             <svg
-                                class="filter-icon"
+                                class="primary-icon"
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 512 512"
                                 height="16"
                                 width="14"
-                                fill="#a48be6"
                             >
                                 <path
                                     d="M3.9 54.9C10.5 40.9 24.5 32 40 32H472c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9V448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6V320.9L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z"
@@ -1075,8 +1158,7 @@ export default {
                                 viewBox="0 0 512 512"
                                 width="16"
                                 height="14"
-                                class="mb-1 filter-icon"
-                                fill="#8f7bd6"
+                                class="mb-1 primary-icon"
                             >
                                 <path
                                     d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
@@ -1218,8 +1300,7 @@ export default {
                                 viewBox="0 0 448 512"
                                 width="16"
                                 height="14"
-                                class="mb-1 filter-icon"
-                                fill="#8f7bd6"
+                                class="mb-1 primary-icon"
                             >
                                 <path
                                     d="M128 0c17.7 0 32 14.3 32 32l0 32 128 0 0-32c0-17.7 14.3-32 32-32s32 14.3 32 32l0 32 48 0c26.5 0 48 21.5 48 48l0 48L0 160l0-48C0 85.5 21.5 64 48 64l48 0 0-32c0-17.7 14.3-32 32-32zM0 192l448 0 0 272c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 192zm80 64c-8.8 0-16 7.2-16 16l0 96c0 8.8 7.2 16 16 16l96 0c8.8 0 16-7.2 16-16l0-96c0-8.8-7.2-16-16-16l-96 0z"
@@ -1445,11 +1526,14 @@ export default {
                 :filter-options="filterOptions()"
                 :search-value="searchText"
                 buttons-pagination
-                theme-color="#a48be6"
             >
-                <!-- --- Loading Part --- -->
+                <!-- Loading animation -->
                 <template #loading>
-                    <img src="/images/loading.gif" alt="loading data" />
+                    <div
+                        class="d-flex justify-content-center align-items-center mt-5"
+                    >
+                        <span class="loader"></span>
+                    </div>
                 </template>
                 <!-- --- Flag Name Column ---  -->
                 <template #item-name="{ name, nameUrl }">
@@ -1470,12 +1554,12 @@ export default {
                             class="btn primary-btn"
                             target="_blank"
                             b-tooltip.hover
-                            :title="'Go To Edit Page For This ' + type"
+                            :title="'Edit flagged item'"
                         >
                             <!-- Pencil icon -->
                             <svg
-                                width="10"
-                                height="12"
+                                width="14"
+                                height="16"
                                 viewBox="0 0 19 20"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -1496,15 +1580,15 @@ export default {
                         </router-link>
                         <button
                             b-tooltip.hover
-                            :title="'Dismiss This Flag'"
+                            :title="'Dismiss flag'"
                             class="btn red-btn h-100"
                             @click="handleOpenDismissModal(flagId)"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 576 512"
-                                width="10"
-                                height="12"
+                                width="16"
+                                height="17"
                                 fill="white"
                             >
                                 <path
@@ -1515,15 +1599,17 @@ export default {
                         <!---------------------------------------------------------->
                     </div>
                 </template>
-                <!-- --- Expand Part --- -->
+                <!----- Expanded Part ----->
                 <template #expand="{ expandContent, type, reason, dateString }">
-                    <div id="expand-div" style="padding: 5px">
-                        <!-- ---- | Reason to flag | ---- -->
-                        <div class="d-flex align-items-center">
-                            <div class="expand-tile">Reason:</div>
-                            <div
-                                :class="[!reason && 'no-reason', 'flag-reason']"
-                            >
+                    <div class="p-4">
+                        <!-- ---- Reason flagged ---- -->
+                        <div class="row mb-2">
+                            <div class="col">
+                                <h6 class="secondary-heading">
+                                    Reason for flagging:
+                                </h6>
+                            </div>
+                            <div class="col" :class="[!reason && 'no-reason']">
                                 {{
                                     reason
                                         ? reason
@@ -1531,18 +1617,22 @@ export default {
                                 }}
                             </div>
                         </div>
-                        <!-- +_+_+ | Date of this flag created | +_+_+ -->
-                        <div class="d-flex mb-2">
-                            <div class="expand-tile">Date:</div>
-                            <div class="date-cell">
+                        <!-- Date this flag created -->
+                        <div class="row mb-2">
+                            <div class="col">
+                                <h6 class="secondary-heading">Date:</h6>
+                            </div>
+                            <div class="col date-cell">
                                 {{ formatDate(dateString) }}
                             </div>
                         </div>
-                        <!-- _+_+_+_+_+_+_+_ MC Question Expand _+_+_+_+_+_+_+_  -->
+                        <!-- MC question expanded content -->
                         <div v-if="type == 'mc question'">
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Belongs to skill:</div>
-                                <div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Skill:</h6>
+                                </div>
+                                <div class="col">
                                     <router-link
                                         :to="'skills/' + expandContent.url"
                                         target="_blank"
@@ -1555,70 +1645,111 @@ export default {
                                     >
                                 </div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Level:</div>
-                                {{ expandContent.level }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Level:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.level }}</div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Name:</div>
-                                <div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Name:</h6>
+                                </div>
+                                <div class="col">
                                     {{ expandContent.name }}
                                 </div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Question:</div>
-                                <div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Question:</h6>
+                                </div>
+                                <div class="col">
                                     {{ expandContent.question }}
                                 </div>
                             </div>
                             <div
-                                id="expand-mc-answer"
-                                class="d-flex flex-column"
+                                class="row mb-2 border-bottom border-opacity-75 pb-2"
                             >
-                                <div
-                                    class="d-flex mb-2 border-bottom border-opacity-75 pb-2"
-                                >
-                                    <div class="expand-tile">
-                                        Correct Answer:
-                                    </div>
+                                <div class="col">
+                                    <h6 class="secondary-heading">
+                                        Correct answer number:
+                                    </h6>
+                                </div>
+                                <div class="col">
                                     {{ expandContent.correctAnswer }}
                                 </div>
-                                <div class="d-flex mb-2 border-bottom pb-2">
-                                    <div class="expand-tile">
-                                        Incorrect Answer 1:
-                                    </div>
-                                    {{ expandContent.incorrectAnswer1 }}
+                            </div>
+                            <div class="row mb-2 border-bottom pb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
+                                        Answer option 1:
+                                    </h6>
                                 </div>
-                                <div class="d-flex mb-2 border-bottom pb-2">
-                                    <div class="expand-tile">
-                                        Incorrect Answer 2:
-                                    </div>
-                                    {{ expandContent.incorrectAnswer2 }}
+                                <div class="col">
+                                    {{ expandContent.answer1 }}
                                 </div>
-                                <div class="d-flex mb-2 border-bottom pb-2">
-                                    <div class="expand-tile">
-                                        Incorrect Answer 3:
-                                    </div>
-                                    {{ expandContent.incorrectAnswer3 }}
+                            </div>
+                            <div class="row mb-2 border-bottom pb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
+                                        Answer option 2:
+                                    </h6>
                                 </div>
-                                <div class="d-flex mb-2 border-bottom pb-2">
-                                    <div class="expand-tile">
-                                        Incorrect Answer 4:
-                                    </div>
-                                    {{ expandContent.incorrectAnswer4 }}
+                                <div class="col">
+                                    {{ expandContent.answer2 }}
+                                </div>
+                            </div>
+                            <div class="row mb-2 border-bottom pb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
+                                        Answer option 3:
+                                    </h6>
+                                </div>
+                                <div class="col">
+                                    {{ expandContent.answer3 }}
+                                </div>
+                            </div>
+                            <div class="row mb-2 border-bottom pb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
+                                        Answer option 4:
+                                    </h6>
+                                </div>
+                                <div class="col">
+                                    {{ expandContent.answer4 }}
+                                </div>
+                            </div>
+                            <div class="row mb-2 border-bottom pb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
+                                        Answer option 5:
+                                    </h6>
+                                </div>
+                                <div class="col">
+                                    {{ expandContent.answer5 }}
                                 </div>
                             </div>
 
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Explanation:</div>
-                                {{ expandContent.explanation }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
+                                        Explanation:
+                                    </h6>
+                                </div>
+                                <div class="col">
+                                    {{ expandContent.explanation }}
+                                </div>
                             </div>
                         </div>
-                        <!-- _+_+_+_+_+_+_+_  Essay Expand content _+_+_+_+_+_+_+_  -->
+                        <!--- Essay expanded content -->
                         <div v-if="type == 'essay question'">
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Belong to skill:</div>
-                                <div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
+                                        Belong to skill:
+                                    </h6>
+                                </div>
+                                <div class="col">
                                     <router-link
                                         :to="'skills/' + expandContent.url"
                                         target="_blank"
@@ -1631,50 +1762,66 @@ export default {
                                     >
                                 </div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Level:</div>
-                                {{ expandContent.level }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Level:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.level }}</div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Name:</div>
-                                {{ expandContent.name }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Name:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.name }}</div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Question:</div>
-                                {{ expandContent.question }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Question:</h6>
+                                </div>
+                                <div class="col">
+                                    {{ expandContent.question }}
+                                </div>
                             </div>
                         </div>
-                        <!-- _+_+_+_+_+_+_+_  Skill Expand content _+_+_+_+_+_+_+_  -->
+                        <!-- Skill expanded content -->
                         <div v-if="type == 'skill'">
-                            <div id="skill-expand-head">
-                                <div class="d-flex mb-2">
-                                    <div class="expand-tile">Skill:</div>
-                                    {{ expandContent.name }}
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Skill:</h6>
                                 </div>
-                                <div class="mb-2 border-bottom pb-2">
-                                    {{ expandContent.description }}
-                                </div>
+                                <div class="col">{{ expandContent.name }}</div>
                             </div>
-                            <div class="expand-tile">Mastery Requirements:</div>
+
+                            <div class="col">
+                                <h6 class="secondary-heading">
+                                    Mastery Requirements:
+                                </h6>
+                            </div>
                             <div
-                                class="expand-skill-requirement"
+                                class="col expand-skill-requirement"
                                 v-html="expandContent.masteryRequirements"
                             ></div>
                         </div>
-                        <!-- _+_+_+_+_+_+_+_  Resource Expand content _+_+_+_+_+_+_+_  -->
+                        <!-- Resources expanded content -->
                         <div v-if="type == 'source'">
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">Skill:</div>
-                                <div>{{ expandContent.skill }}</div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Skill:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.skill }}</div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="expand-tile">User:</div>
-                                <div>{{ expandContent.user }}</div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">User:</h6>
+                                </div>
+                                <div class="col">{{ expandContent.user }}</div>
                             </div>
-                            <div class="d-flex flex-column mb-2">
-                                <div class="expand-tile">Content:</div>
+                            <div class="row flex-column mb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">Content:</h6>
+                                </div>
                                 <div
-                                    class="expand-skill-requirement"
+                                    class="col expand-skill-requirement"
                                     v-html="expandContent.content"
                                 ></div>
                             </div>
@@ -1684,13 +1831,11 @@ export default {
                 <!-- --- User Column --- -->
                 <template #item-user="{ user }">
                     <div class="user-cell">
-                        <div class="user-name">
-                            {{ user.username }}
-                        </div>
+                        {{ user.username }}
 
-                        <div class="user-role">
+                        <span class="user-role">
                             {{ user.role }}
-                        </div>
+                        </span>
                     </div>
                 </template>
 
@@ -1988,7 +2133,7 @@ export default {
         <div class="d-none">{{ rowsPerPage }} {{ rowsPerPageM }}</div>
     </div>
 
-    <!-- Modal of dismiss flagging content -->
+    <!-- Warning modal for dismissing flagged content -->
     <div v-if="showDismissModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
@@ -1997,64 +2142,42 @@ export default {
                 <div class="d-flex justify-content-between">
                     <button
                         type="button"
-                        class="btn red-btn"
+                        class="btn primary-btn"
                         @click="showDismissModal = false"
                     >
                         <span class="me-2 d-none d-md-block"> No </span>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            width="18"
-                            height="18"
-                            fill="white"
-                        >
-                            <path
-                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
-                            />
-                        </svg>
                     </button>
                     <button
                         type="button"
-                        class="btn green-btn"
+                        class="btn red-btn"
                         @click="dismissFlag(flagId)"
                     >
                         <span class="me-2 d-none d-md-block"> Yes </span>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            width="18"
-                            height="18"
-                            fill="white"
-                        >
-                            <path
-                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
-                            />
-                        </svg>
                     </button>
                 </div>
             </div>
         </div>
     </div>
-    <!-- The Modal -->
+    <!-- Warning modal for deleting flagged content -->
     <div v-if="showModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
                 <p>Are you sure you want to delete this {{ source.type }}?</p>
-                <div style="display: flex; gap: 10px">
+                <div class="d-flex justify-content-between">
                     <button
                         type="button"
-                        class="btn btn-danger"
-                        @click="deletePost(this.source)"
-                    >
-                        Yes
-                    </button>
-                    <button
-                        type="button"
-                        class="btn btn-dark"
+                        class="btn primary-btn"
                         @click="showModal = false"
                     >
                         No
+                    </button>
+                    <button
+                        type="button"
+                        class="btn red-btn"
+                        @click="deletePost(this.source)"
+                    >
+                        Yes
                     </button>
                 </div>
             </div>
@@ -2063,16 +2186,6 @@ export default {
 </template>
 
 <style scoped>
-div {
-    font-family: 'Poppins', sans-serif !important;
-}
-
-.page-title {
-    color: var(--primary-color);
-    font-size: 30px;
-    font-weight: 600;
-}
-
 .flag-container {
     background-color: #f2edff;
     border-radius: 12px;
@@ -2091,42 +2204,11 @@ div {
     padding-left: 2px;
     align-items: center;
     gap: 5px;
+    float: right;
 }
 
 .search-bar input {
     outline: none;
-}
-
-.red-btn {
-    background-color: #e24d4d;
-    color: white;
-    border: 1px solid #d33622;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-}
-
-.red-btn:hover {
-    background-color: #cc3535;
-    color: white;
-}
-
-.green-btn {
-    background-color: #36c1af;
-    color: white;
-    border: 1px solid #2ca695;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-}
-
-.green-btn:hover {
-    background-color: #3eb3a3;
-    color: white;
 }
 
 .btn:focus {
@@ -2142,18 +2224,12 @@ div {
 }
 
 .flag-name {
-    text-decoration: none;
-    font-family: 'Poppins';
-    color: var(--primary-color);
     text-overflow: ellipsis;
     /* Needed to make the over flow work */
     overflow: hidden;
-    white-space: nowrap;
-    width: 200px;
 }
 
 .flag-name:hover {
-    color: var(--primary-color);
     text-decoration: underline;
 }
 
@@ -2257,7 +2333,7 @@ div {
 /* +-+-+ Vue Easy Table Custom CSS +-+-+  */
 .customize-table {
     --easy-table-body-row-font-size: 16px;
-    --easy-table-header-font-size: 16px;
+    --easy-table-header-font-size: 18px;
     --easy-table-header-font-color: var(--primary-color);
     --easy-table-header-background-color: #fefefe;
     --easy-table-header-height: 50px;
@@ -2265,13 +2341,6 @@ div {
 }
 
 /* Expand components CSS */
-#expand-div div {
-    font-family: 'Poppins' sans-serif;
-}
-
-#expand-mc-answer {
-    width: fit-content;
-}
 
 .date-cell {
     color: #475569;
@@ -2287,10 +2356,6 @@ div {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-#skill-expand-head {
-    width: 50%;
-}
-
 .user-header {
     padding-left: 10px;
 }
@@ -2299,26 +2364,12 @@ div {
     display: flex;
     flex-direction: column;
     padding: 10px 0px;
-    width: 60px;
     margin-left: 0px;
-}
-
-.user-name {
-    text-align: center;
-    color: var(--primary-color);
-    /* text-decoration: underline; */
-    /* cursor: pointer; */
-    width: 100%;
 }
 
 .user-role {
     color: #475569;
     font-size: 15px;
-    text-align: center;
-}
-
-.filter-icon {
-    cursor: pointer;
 }
 
 .header-btn {
@@ -2372,15 +2423,6 @@ div {
 
 .flag-type-filter {
     left: -10px;
-}
-
-.flag-reason {
-    margin-left: 10px;
-    margin-bottom: 10px;
-    padding: 5px 10px;
-    border: 3px double #c2c9cc;
-    border-radius: 8px;
-    background-color: #edf2fa;
 }
 
 .no-reason {
@@ -2685,4 +2727,26 @@ div {
         left: -40px;
     }
 }
+
+/* Loading animation */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* End of loading animation */
 </style>

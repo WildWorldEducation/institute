@@ -40,6 +40,7 @@ export default {
 
 <template>
     <div class="container mt-4">
+        <!-- Admins -->
         <div
             v-if="userDetailsStore.role == 'admin'"
             v-for="user in usersStore.users"
@@ -66,6 +67,7 @@ export default {
             <!-- divide line for phone view specific -->
             <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
         </div>
+        <!-- Instructors -->
         <div
             v-else-if="userDetailsStore.role == 'instructor'"
             v-for="student in $parent.students"
@@ -87,9 +89,6 @@ export default {
                     {{ student.username }}
                 </button>
             </div>
-            <hr class="border border-1 opacity-0 w-75 d-none d-md-block" />
-            <!-- divide line for phone view specific -->
-            <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
         </div>
         <RouterLink
             v-if="userDetailsStore.role == 'instructor'"
@@ -98,6 +97,7 @@ export default {
         >
             Add Student
         </RouterLink>
+        <!-- Editors -->
         <div
             v-if="userDetailsStore.role == 'editor'"
             v-for="editor in $parent.usersStore.editors"

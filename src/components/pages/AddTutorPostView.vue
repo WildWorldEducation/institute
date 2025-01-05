@@ -147,23 +147,6 @@ h2 {
     font-weight: 700;
 }
 
-.red-btn {
-    background-color: #e24d4d;
-    color: white;
-    border: 1px solid #d33622;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.red-btn:hover {
-    background-color: #cc3535;
-    color: white;
-}
-
 .form-validate {
     font-size: 0.75rem;
     color: red;

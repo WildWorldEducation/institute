@@ -41,7 +41,8 @@ export default {
             isEditMode: false,
             studentName: null,
             skillName: null,
-            skillId: null
+            skillId: null,
+            isMobileCheck: window.innerWidth
         };
     },
     async created() {
@@ -224,33 +225,36 @@ export default {
                         </div>
                     </div>
 
-                    <!-- Remove Answer Button (visible only if more than 2 answers) -->
-                    <button
-                        v-if="answers[2].show == true"
-                        @click="removeAnswer()"
-                        data-v-ea3cd1bf=""
-                        type="button"
-                        class="btn btn red-btn p-2"
-                        title="Delete answer"
-                        :disabled="!isEditMode"
-                    >
-                        <svg
+                    <div class="d-flex">
+                        <!-- Remove Answer Button (visible only if more than 2 answers) -->
+                        <button
+                            v-if="answers[2].show == true"
+                            @click="removeAnswer()"
                             data-v-ea3cd1bf=""
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            width="15"
-                            height="15"
-                            fill="white"
+                            type="button"
+                            class="btn red-btn me-2"
+                            title="Delete answer"
+                            :disabled="!isEditMode"
                         >
-                            <path
+                            <svg
                                 data-v-ea3cd1bf=""
-                                d="M170.5 51.6L151.5 80h145l-19-28.4c-1.5-2.2-4-3.6-6.7-3.6H177.1c-2.7 0-5.2 1.3-6.7 3.6zm147-26.6L354.2 80H368h48 8c13.3 0 24 10.7 24 24s-10.7 24-24 24h-8V432c0 44.2-35.8 80-80 80H112c-44.2 0-80-35.8-80-80V128H24c-13.3 0-24-10.7-24-24S10.7 80 24 80h8H80 93.8l36.7-55.1C140.9 9.4 158.4 0 177.1 0h93.7c18.7 0 36.2 9.4 46.6 24.9zM80 128V432c0 17.7 14.3 32 32 32H336c17.7 0 32-14.3 32-32V128H80zm80 64V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16z"
-                            ></path></svg
-                        >&nbsp;Remove Answer
-                    </button>
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="15"
+                                height="15"
+                                fill="white"
+                            >
+                                <path
+                                    data-v-ea3cd1bf=""
+                                    d="M170.5 51.6L151.5 80h145l-19-28.4c-1.5-2.2-4-3.6-6.7-3.6H177.1c-2.7 0-5.2 1.3-6.7 3.6zm147-26.6L354.2 80H368h48 8c13.3 0 24 10.7 24 24s-10.7 24-24 24h-8V432c0 44.2-35.8 80-80 80H112c-44.2 0-80-35.8-80-80V128H24c-13.3 0-24-10.7-24-24S10.7 80 24 80h8H80 93.8l36.7-55.1C140.9 9.4 158.4 0 177.1 0h93.7c18.7 0 36.2 9.4 46.6 24.9zM80 128V432c0 17.7 14.3 32 32 32H336c17.7 0 32-14.3 32-32V128H80zm80 64V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16z"
+                                ></path>
+                            </svg>
+                            <span v-if="isMobileCheck > 576"
+                                >&nbsp;Remove Answer</span
+                            >
+                        </button>
 
-                    <!-- Add Answer Button (max 5 answers) -->
-                    <div class="mb-3">
+                        <!-- Add Answer Button (max 5 answers) -->
                         <button
                             v-if="answers[4].show == false"
                             @click="addAnswer"
@@ -269,12 +273,11 @@ export default {
                                     d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
                                 />
                             </svg>
-                            Add Answer
+                            <span v-if="isMobileCheck > 576">Add Answer</span>
                         </button>
                     </div>
-
                     <!-- Random Order Toggle -->
-                    <div class="mb-3 form-check">
+                    <div class="mt-2 mb-3 form-check">
                         <input
                             :disabled="!isEditMode"
                             type="checkbox"
@@ -308,22 +311,19 @@ export default {
                     </div>
 
                     <div
-                        v-if="
-                            userDetailsStore.role == 'admin' ||
-                            userDetailsStore.role == 'editor'
-                        "
+                        v-if="userDetailsStore.role != 'student'"
                         class="d-flex justify-content-end gap-4"
                     >
-                        <a class="btn red-btn" @click="editMode()">Edit</a>
-                        <a class="btn red-btn" @click="deleteStudentQuestion()"
-                            >Delete</a
-                        >
+                        <a class="btn primary-btn" @click="editMode()">Edit</a>
                         <button
                             class="btn primary-btn"
                             @click="saveToQuestionBank()"
                         >
                             Save
                         </button>
+                        <a class="btn red-btn" @click="deleteStudentQuestion()"
+                            >Delete</a
+                        >
                     </div>
                 </div>
             </div>
@@ -423,24 +423,6 @@ export default {
 
 .green-btn:hover {
     background-color: #46f7df;
-}
-
-.red-btn {
-    background-color: #e24d4d;
-    color: white;
-    border: 1px solid #2ca695;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-    height: 44px;
-}
-
-.red-btn:hover {
-    background-color: #fc7d7d;
 }
 
 /* The Warning Modal */

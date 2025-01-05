@@ -7,9 +7,27 @@ export const useSkillsStore = defineStore('skills', {
         nestedSkillsList: [],
         filteredNestedSkillsList: [],
         skillsList: [],
+        guestModeVerticalTreeSkills: [],
         findNodeLoading: false
     }),
     actions: {
+        // For guest mode of Vertical Tree (for users not logged in).
+        async getGuestModeVerticalTreeSkills(level, subjects) {
+            if (subjects != null) {
+                // To deal with the "&" sign in "Science & Invention".
+                for (let i = 0; i < subjects.length; i++) {
+                    subjects[i] = subjects[i].replace(/&/g, '%26');
+                }
+            }
+
+            const result = await fetch(
+                '/skills/guest-mode/full-vertical-tree?level=' +
+                    level +
+                    '&subjects=' +
+                    subjects
+            );
+            this.guestModeVerticalTreeSkills = await result.json();
+        },
         // For 'Admin' role
         async getNestedSkillsList() {
             const result = await fetch('/skills/nested-list');
@@ -17,9 +35,8 @@ export const useSkillsStore = defineStore('skills', {
 
             this.nestedSkillsList = data;
         },
-        // For 'Instructor' and 'Editor' role of Collapsible Tree/ For guest mode of Vertical Tree
+        // For 'Instructor' and 'Editor' role of Collapsible Tree
         async getFilteredNestedSkillsList() {
-            // API call for skill tree.
             const userDetailsStore = useUserDetailsStore();
             let level = userDetailsStore.gradeFilter;
 
@@ -27,8 +44,6 @@ export const useSkillsStore = defineStore('skills', {
                 '/skills/filtered-nested-list?level=' + level
             );
             const data = await result.json();
-
-            // Default is all levels.
             this.filteredNestedSkillsList = data;
         },
         async getSkillsList() {
@@ -124,14 +139,14 @@ export const useSkillsStore = defineStore('skills', {
                 await this.getSkillsList();
             }
             const nameList = this.skillsList.filter((skill) => {
-                return skill.is_filtered === 'available'
+                return skill.is_filtered === 'available';
             });
             return nameList;
         },
         async getCohortNameList() {
             const result = await fetch('/skills/name-list');
             const data = await result.json();
-            return data
+            return data;
         }
     }
 });

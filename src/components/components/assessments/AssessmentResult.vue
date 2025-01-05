@@ -432,22 +432,6 @@ export default {
 }
 
 /* Button Styling */
-.red-btn {
-    background-color: #ee1710;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-}
-
-.red-btn:hover {
-    background-color: #c5140e;
-}
 
 .green-btn {
     background-color: #36c1af;

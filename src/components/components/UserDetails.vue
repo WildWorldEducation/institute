@@ -4,7 +4,7 @@ import { useUsersStore } from '../../stores/UsersStore';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 
 export default {
-    props: ['userId', 'userRole'],
+    props: ['userId'],
     setup() {
         const usersStore = useUsersStore();
         const userDetailsStore = useUserDetailsStore();
@@ -107,34 +107,44 @@ export default {
                         </svg>
                     </button>
                 </div>
-                <!-- Vertical Tree -->
-                <router-link
-                    v-if="userRole == 'student'"
-                    :to="`/student/${this.$parent.user.id}/skill-tree`"
-                    class="btn secondary-btn mt-2"
-                    target="_blank"
+                <!-- Instructors -->
+                <h2
+                    v-if="this.userDetailsStore.role == 'instructor'"
+                    class="secondary-heading h4"
                 >
-                    Vertical tree
-                </router-link>
-                <!-- Collapsible skill tree -->
-                <router-link
-                    v-if="userRole == 'student'"
-                    :to="'/student/' + this.$parent.user.id + '/skills'"
-                    class="btn secondary-btn mt-2"
-                    target="_blank"
+                    Progress
+                </h2>
+                <div
+                    v-if="this.userDetailsStore.role == 'instructor'"
+                    class="d-flex flex-column"
                 >
-                    Collapsible tree
-                </router-link>
-                <!-- Goals -->
-                <router-link
-                    v-if="userRole == 'student'"
-                    :to="'/student/' + this.$parent.user.id + '/goals'"
-                    class="btn secondary-btn mt-2"
-                    target="_blank"
-                >
-                    Goals
-                </router-link>
-                <div class="d-flex justify-content-center mt-2">
+                    <!-- Vertical Tree -->
+                    <router-link
+                        :to="`/student/${this.$parent.user.id}/skill-tree`"
+                        class="btn primary-btn mt-2"
+                        target="_blank"
+                    >
+                        Vertical tree
+                    </router-link>
+                    <!-- Collapsible skill tree -->
+                    <router-link
+                        :to="'/student/' + this.$parent.user.id + '/skills'"
+                        class="btn primary-btn mt-2"
+                        target="_blank"
+                    >
+                        Collapsible tree
+                    </router-link>
+                    <!-- Goals -->
+                    <router-link
+                        :to="'/student/' + this.$parent.user.id + '/goals'"
+                        class="btn primary-btn mt-2"
+                        target="_blank"
+                    >
+                        Goals
+                    </router-link>
+                </div>
+                <!-- Editors -->
+                <div class="mt-2">
                     <router-link
                         v-if="
                             userDetailsStore.role == 'admin' ||
@@ -150,20 +160,11 @@ export default {
             </div>
             <div class="col-12 col-md-7">
                 <div class="mb-3">
-                    <h2 class="secondary-heading h4">First name</h2>
+                    <h2 class="secondary-heading h4">Name</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"
-                        v-model="this.$parent.user.firstName"
-                        disabled
-                    />
-                </div>
-                <div class="mb-3">
-                    <h2 class="secondary-heading h4">Last name</h2>
-                    <input
-                        class="form-control user-input-information"
-                        type="text"
-                        v-model="this.$parent.user.lastName"
+                        :value="`${this.$parent.user.firstName || ''} ${this.$parent.user.lastName || ''}`.trim()"
                         disabled
                     />
                 </div>
@@ -277,22 +278,7 @@ export default {
     font-weight: 600;
     font-family: 'Poppins' sans-serif;
 }
-.red-btn {
-    background-color: #da7033;
-    color: white;
-    border: 1px solid var(--primary-color);
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-}
 
-.red-btn:hover {
-    background-color: rgb(209, 96, 15);
-}
 .green-btn {
     background-color: #36c1af;
     color: white;

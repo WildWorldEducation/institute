@@ -19,7 +19,7 @@ export default {
     },
     data() {
         return {
-            width: 6000,
+            width: null,
             height: null,
             skill: {
                 id: null,
@@ -56,7 +56,13 @@ export default {
             yPos: 0,
             showAnimation: false,
             showSkillPanel: false,
-            resultNode: null
+            resultNode: null,
+            // transform object use to translate canvas context
+            transformData: {
+                x: 0,
+                y: 0,
+                k: 0
+            }
         };
     },
     components: {
@@ -66,17 +72,30 @@ export default {
         JoystickControl
     },
     async mounted() {
-        if (this.skillsStore.filteredNestedSkillsList.length == 0) {
-            await this.skillsStore.getFilteredNestedSkillsList();
+        let subjects = [
+            'Language',
+            'Mathematics',
+            'Science & Invention',
+            'Computer Science',
+            'History',
+            'Life',
+            'Dangerous Ideas'
+        ];
+        if (this.skillsStore.guestModeVerticalTreeSkills.length == 0) {
+            await this.skillsStore.getGuestModeVerticalTreeSkills(
+                'phd',
+                subjects
+            );
         }
 
         // Specify the chart’s dimensions.
         this.height = window.innerHeight;
+        this.width = window.innerWidth;
 
         this.skill = {
             name: 'SKILLS',
             sprite: null,
-            children: this.skillsStore.filteredNestedSkillsList
+            children: this.skillsStore.guestModeVerticalTreeSkills
         };
 
         this.getAlgorithm();
@@ -172,8 +191,12 @@ export default {
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(this.data);
+
+            // Node width and height
+            // Height
             const dx = 24;
-            const dy = this.width / (this.root.height + 1);
+            // Width
+            const dy = 270;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);
@@ -234,12 +257,32 @@ export default {
             const links = this.root.links();
             this.context.beginPath();
             for (const link of links) {
+                // Check if the links are in view.
+                // Dont render them if they are not, for performance benefit.
+                const targetNodeInView = this.checkingIfNodeInView(
+                    link.target,
+                    transform
+                );
+                const sourceNodeInView = this.checkingIfNodeInView(
+                    link.source,
+                    transform
+                );
+                if (!targetNodeInView && !sourceNodeInView) {
+                    continue;
+                }
                 this.drawLink(link);
             }
 
             // Draw nodes.
             this.context.beginPath();
             for (const node of this.nodes) {
+                // Check if the nodes are in view.
+                // Dont render them if they are not, for performance benefit.
+                const nodeInView = this.checkingIfNodeInView(node, transform);
+                if (!nodeInView) {
+                    continue;
+                }
+
                 if (node.renderCol) {
                     // Render clicked nodes in the color of their corresponding node
                     // on the hidden canvas.
@@ -278,7 +321,6 @@ export default {
 
             // Visible context.
             // If not a domain, make node a circle.
-            // console.log(node.data.is_mastered);
             if (node.data.type != 'domain') {
                 ctx1.beginPath();
                 // Node size
@@ -570,21 +612,16 @@ export default {
             document.querySelector('#SVGskilltree').append(svg.node());
         },
         resetPos() {
-            let screenWidth = window.innerWidth;
-            let shift = 143;
-            if (screenWidth > 480) {
-                shift = 100;
-            }
-            if (screenWidth > 1024) {
-                shift = 10;
-            }
             d3.select(this.context.canvas)
                 .transition()
                 .duration(700)
                 .call(
                     this.d3Zoom.transform,
                     d3.zoomIdentity
-                        .translate(0, this.context.canvas.height / 2 - shift)
+                        .translate(
+                            this.context.canvas.width / 2,
+                            this.context.canvas.height / 2
+                        )
                         .scale(0.3)
                 );
             this.$refs.sliderControl.showScaleLabel();
@@ -619,23 +656,6 @@ export default {
                     return '#33A133';
                 case 'phd':
                     return '#FF0000';
-                default:
-                    break;
-            }
-        },
-        // We using a darker color for node border when it is mastered
-        hexBorderColor(skillLevel) {
-            switch (skillLevel) {
-                case 'college':
-                    return '#CC8400';
-                case 'grade_school':
-                    return '#33B3A6';
-                case 'high_school':
-                    return '#CCAC00';
-                case 'middle_school':
-                    return '#006400';
-                case 'phd':
-                    return '#CC0000';
                 default:
                     break;
             }
@@ -693,10 +713,18 @@ export default {
             });
             return results;
         },
-        async reloadTree() {
+        async reloadTree(gradeFilter, subjectFilters) {
+            // Close skill panel, if open.
             this.showSkillPanel = false;
 
-            let skills = this.skillsStore.filteredNestedSkillsList;
+            // Query the API for the correct level
+            await this.skillsStore.getGuestModeVerticalTreeSkills(
+                gradeFilter,
+                subjectFilters
+            );
+
+            // Get the updated data
+            let skills = this.skillsStore.guestModeVerticalTreeSkills;
 
             this.skill = {
                 name: 'SKILLS',
@@ -712,10 +740,12 @@ export default {
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(this.data);
+
+            // Node width and height
+            // Height
             const dx = 24;
-            // Shorten lines based on truncate level.
-            let divideBy = 1;
-            const dy = this.width / (this.root.height + 1) / divideBy;
+            // Width
+            const dy = 270;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);
@@ -747,6 +777,35 @@ export default {
                         .scale(this.scale)
                 );
             this.resetPos();
+        },
+        async filter(gradeFilter, subjectFilters) {
+            this.skill.children = await this.reloadTree(
+                gradeFilter,
+                subjectFilters
+            );
+        },
+        checkingIfNodeInView(node, transformData) {
+            // Calculate max visible range
+            // Visible range is the rectangle with width and height equal to canvas context
+            // Every time context is translate the visible range is changing too
+
+            const visibleRangeY = transformData.y - this.height;
+            // Calculate real position of node with current scale
+            let realPositionX = node.y * transformData.k;
+            let realPositionY = -node.x * transformData.k;
+
+            // I acctually come up with this fomula base on obserse the changing of translate and node position when translate context
+            // It dosen`t make sense to me but some how woking correctly
+            let combinePosition = transformData.x + realPositionX;
+            if (
+                combinePosition > 0 &&
+                combinePosition < this.width &&
+                transformData.y > realPositionY &&
+                realPositionY > visibleRangeY
+            ) {
+                return true;
+            }
+            return false;
         }
     }
 };

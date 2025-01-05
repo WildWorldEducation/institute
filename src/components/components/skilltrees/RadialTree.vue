@@ -19,9 +19,9 @@ export default {
     },
     data() {
         return {
-            width: 6000,
+            width: null,
             height: null,
-            radius: 0,
+            radius: 1000,
             radiusMultiplier: 96,
             skill: {
                 id: null,
@@ -82,7 +82,6 @@ export default {
         // Specify the chart’s dimensions.
         this.width = window.innerWidth;
         this.height = window.innerHeight;
-        this.radius = Math.min(this.width, this.height) / 2 - 30;
 
         this.skill = {
             name: 'SKILLS',
@@ -192,23 +191,25 @@ export default {
             // To determine the size of the skill tree based on the number of skills showing.
             // It should not be too big, compared to the number of nodes,
             // or the nodes will be too far a part.
+
             const skillCount =
                 this.skillTreeStore.userSkillsSubSkillsSeparate.count;
+
             if (skillCount > 2000) {
-                this.radiusMultiplier = 96;
-                this.resetPosZoom = 0.05;
+                this.radiusMultiplier = 50;
+                this.resetPosZoom = 0.03;
             } else if (skillCount > 1000) {
-                this.radiusMultiplier = 60;
-                this.resetPosZoom = 0.1;
+                this.radiusMultiplier = 28;
+                this.resetPosZoom = 0.05;
             } else if (skillCount > 500) {
-                this.radiusMultiplier = 30;
-                this.resetPosZoom = 0.1;
+                this.radiusMultiplier = 20;
+                this.resetPosZoom = 0.05;
             } else if (skillCount > 100) {
                 this.radiusMultiplier = 6;
-                this.resetPosZoom = 0.4;
+                this.resetPosZoom = 0.1;
             } else {
                 this.radiusMultiplier = 4;
-                this.resetPosZoom = 0.4;
+                this.resetPosZoom = 0.1;
             }
 
             // Create a radial tree layout. The layout’s first dimension (x)

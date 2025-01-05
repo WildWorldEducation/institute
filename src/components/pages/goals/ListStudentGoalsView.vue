@@ -1,21 +1,27 @@
 <script>
 import { useUserSkillsStore } from '../../../stores/UserSkillsStore.js';
 import { useUsersStore } from '../../../stores/UsersStore.js';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 
 export default {
     setup() {
         const userSkillsStore = useUserSkillsStore();
         const usersStore = useUsersStore();
+        const userDetailsStore = useUserDetailsStore();
         return {
             userSkillsStore,
-            usersStore
+            usersStore,
+            userDetailsStore
         };
     },
     data() {
         return {
             studentId: this.$route.params.studentId,
             studentName: '',
-            goals: []
+            goals: [],
+            // Tutorial tooltips
+            isTutorialComplete: false,
+            showTutorialTip1: false
         };
     },
     async created() {
@@ -31,6 +37,9 @@ export default {
         }
         await this.userSkillsStore.getFilteredUnnestedList(this.studentId);
         await this.getGoals();
+
+        // Check if tutorial has been seen.
+        this.checkIfTutorialComplete();
     },
     methods: {
         async getGoals() {
@@ -84,6 +93,37 @@ export default {
 
                 await this.getGoals();
             }
+        },
+
+        // Tutorial
+        async checkIfTutorialComplete() {
+            const result = await fetch(
+                '/users/check-tutorial-progress/student-goals/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            if (data == 0) {
+                this.isTutorialComplete = false;
+                this.showTutorialTip1 = true;
+            } else if (data == 1) {
+                this.isTutorialComplete = true;
+            }
+        },
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+                this.markTutorialComplete();
+            }
+        },
+        markTutorialComplete() {
+            let url =
+                '/users/mark-tutorial-complete/student-goals/' +
+                this.userDetailsStore.userId;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch(url, requestOptions);
         }
     }
 };
@@ -91,13 +131,13 @@ export default {
 
 <template>
     <div class="container p-3 bg-light rounded">
-        <h1 class="heading">{{ studentName }}: Goal Progress</h1>
+        <h1 class="heading">{{ studentName }}</h1>
+        <h2 class="secondary-heading">Goal Progress</h2>
         <div id="goal-list">
             <div v-for="goal in goals">
                 <div class="d-flex">
-                    <h2 class="goal secondary-heading h4">
+                    <h2 class="goal h4">
                         {{ goal.name }}
-
                         <!-- Expand/Collapse button -->
                         <button
                             class="btn"
@@ -142,7 +182,7 @@ export default {
                                 height="18"
                                 class="primary-icon"
                             >
-                                <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <!-- !Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                 <path
                                     d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 296.3 0 284.2 0L163.8 0c-12.1 0-23.2 6.8-28.6 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"
                                 />
@@ -160,7 +200,7 @@ export default {
                             width="20"
                             height="20"
                         >
-                            <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                            <!-- !Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                             <path
                                 d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"
                             />
@@ -173,7 +213,7 @@ export default {
                             width="20"
                             height="20"
                         >
-                            <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                            <!-- !Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                             <path
                                 d="M64 80c-8.8 0-16 7.2-16 16l0 320c0 8.8 7.2 16 16 16l320 0c8.8 0 16-7.2 16-16l0-320c0-8.8-7.2-16-16-16L64 80zM0 96C0 60.7 28.7 32 64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
                             />
@@ -192,6 +232,25 @@ export default {
                         >
                     </li>
                 </ul>
+            </div>
+        </div>
+
+        <!-- Tooltip modal -->
+        <div v-if="showTutorialTip1" class="modal">
+            <div class="modal-content">
+                <div v-if="showTutorialTip1">
+                    <p>
+                        On this page, you can see a list of any goals that
+                        either you have set for your student, or they have set
+                        for themselves.
+                    </p>
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        close
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -223,5 +282,49 @@ export default {
 .phd {
     background-color: #ff0000;
     color: white;
+}
+
+/* For tutorial */
+/* Modals */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 2000;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 520px;
+    font-size: 18px;
+    /* Could be more or less, depending on screen size */
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 480px) {
+    /* Modal Content/Box */
+    .modal-content {
+        width: 90%;
+        margin-top: 30%;
+    }
 }
 </style>

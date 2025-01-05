@@ -173,7 +173,7 @@ export default {
                 this.skill.id = node.data.id;
                 this.skill.type = node.data.type;
                 // For the collapsing nodes
-                this.skill.show_children = node.data.show_children;
+                //   this.skill.show_children = node.data.show_children;
                 this.skill.hasChildren = false;
                 if (
                     node.data.children.length > 0 ||
@@ -225,16 +225,6 @@ export default {
     },
     methods: {
         getAlgorithm() {
-            /* Determine width of tree, based on how many nodes are showing
-             * used for the various types of filters,
-             * including: collapsable nodes, grade level filter, and instructors filters skills for students
-             *
-             * The fewer nodes, the less wide the tree should be, otherwise nodes are too far spaced apart.
-             */
-            let count = 0;
-            // Height: remains constant
-            const dx = 24;
-
             // Create a tree layout.
             this.data = {
                 skill_name: 'My skills',
@@ -243,34 +233,17 @@ export default {
 
             this.root = d3.hierarchy(this.data);
 
-            //Shorten lines based on truncate level.
-            let multiplyBy = 10;
-            if (count < 70) {
-                multiplyBy = 1;
-            } else if (count < 300) {
-                multiplyBy = 3;
-            } else if (
-                this.userDetailsStore.gradeFilter == 'grade_school' ||
-                count < 1000
-            ) {
-                multiplyBy = 5;
-            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
-                multiplyBy = 7;
-            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
-                multiplyBy = 8;
-            } else if (
-                this.userDetailsStore.gradeFilter == 'college' ||
-                count < 2000
-            ) {
-                multiplyBy = 9;
-            }
-            const dy = (this.width / (this.root.height + 1)) * multiplyBy;
+            // Node height and width
+            // Height
+            const dx = 24;
+            // Width
+            const dy = 270;
 
             // THIS NEEDED TO BE REFACTOR LATER
             this.tree = d3.tree().nodeSize([this.nodeWidth, this.nodeHeight]);
 
             // Sort the tree and apply the layout.
-            this.root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
+            this.root.sort((a, b) => d3.ascending(a.x, b.x));
             this.tree(this.root);
 
             // Compute the extent of the tree. Note that x and y are swapped here
@@ -325,6 +298,8 @@ export default {
             const links = this.root.links();
             this.context.beginPath();
             for (const link of links) {
+                // Do not render parts of tree not in the canvas
+                // to improve performance.
                 const targetNodeInView = this.checkingIfNodeInView(
                     link.target,
                     transform
@@ -345,6 +320,13 @@ export default {
             // Calculate max visible range
             this.nodeDrew = 0;
             for (const node of this.nodes) {
+                // Do not render parts of tree not in the canvas
+                // to improve performance.
+                const nodeInView = this.checkingIfNodeInView(node, transform);
+                if (!nodeInView) {
+                    continue;
+                }
+
                 if (node.renderCol) {
                     // Render clicked nodes in the color of their corresponding node
                     // on the hidden canvas.
@@ -397,12 +379,6 @@ export default {
                     radius = 10;
                 }
 
-                // If child nodes are collapsed.
-                if (node.data.show_children) {
-                    if (node.data.show_children == 0) {
-                        radius = 20;
-                    }
-                }
                 ctx1.beginPath();
                 // ctx1.arc(node.y, node.x, radius * 1.5, 0, 2 * Math.PI);
                 let xPosition = node.y;
@@ -434,26 +410,26 @@ export default {
                     ctx1.stroke();
                 }
             }
-            // If child nodes are collapsed.
-            if (node.data.show_children) {
-                if (node.data.show_children == 0) {
-                    // Set line properties
-                    ctx1.lineWidth = 2;
-                    ctx1.strokeStyle = 'black';
+            // // If child nodes are collapsed.
+            // if (node.data.show_children) {
+            //     if (node.data.show_children == 0) {
+            //         // Set line properties
+            //         ctx1.lineWidth = 2;
+            //         ctx1.strokeStyle = 'black';
 
-                    // Draw vertical line
-                    ctx1.beginPath();
-                    ctx1.moveTo(node.y - 10, node.x);
-                    ctx1.lineTo(node.y + 10, node.x); // Draw to the bottom-middle
-                    ctx1.stroke();
+            //         // Draw vertical line
+            //         ctx1.beginPath();
+            //         ctx1.moveTo(node.y - 10, node.x);
+            //         ctx1.lineTo(node.y + 10, node.x); // Draw to the bottom-middle
+            //         ctx1.stroke();
 
-                    // Draw horizontal line
-                    ctx1.beginPath();
-                    ctx1.moveTo(node.y, node.x - 10);
-                    ctx1.lineTo(node.y, node.x + 10); // Draw to the middle-right
-                    ctx1.stroke();
-                }
-            }
+            //         // Draw horizontal line
+            //         ctx1.beginPath();
+            //         ctx1.moveTo(node.y, node.x - 10);
+            //         ctx1.lineTo(node.y, node.x + 10); // Draw to the middle-right
+            //         ctx1.stroke();
+            //     }
+            // }
 
             // Drawing Image
             if (node.data.type != 'domain') {
@@ -764,21 +740,16 @@ export default {
             document.querySelector('#SVGskilltree').append(svg.node());
         },
         resetPos() {
-            let screenWidth = window.innerWidth;
-            let shift = 143;
-            if (screenWidth > 480) {
-                shift = 100;
-            }
-            if (screenWidth > 1024) {
-                shift = 10;
-            }
             d3.select(this.context.canvas)
                 .transition()
                 .duration(700)
                 .call(
                     this.d3Zoom.transform,
                     d3.zoomIdentity
-                        .translate(0, this.context.canvas.height / 2 - shift)
+                        .translate(
+                            this.context.canvas.width / 2,
+                            this.context.canvas.height / 2
+                        )
                         .scale(0.3)
                 );
             this.$refs.sliderControl.showScaleLabel();
@@ -1186,21 +1157,11 @@ export default {
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(this.data);
 
-            // Height is constant
+            // Node width and height
+            // Height
             const dx = 24;
-
-            //Shorten lines based on truncate level.
-            let multiplyBy = 5;
-            if (this.userDetailsStore.gradeFilter == 'grade_school') {
-                multiplyBy = 1;
-            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
-                multiplyBy = 2;
-            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
-                multiplyBy = 3;
-            } else if (this.userDetailsStore.gradeFilter == 'college') {
-                multiplyBy = 4;
-            }
-            const dy = (this.width / (this.root.height + 1)) * multiplyBy;
+            // Width
+            const dy = 270;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([this.nodeWidth, this.nodeHeight]);
@@ -1232,14 +1193,6 @@ export default {
                         .scale(this.scale)
                 );
             this.resetPos();
-        },
-        expandAllChildren() {
-            var url =
-                '/user-skills/expand-all-children/' +
-                this.userDetailsStore.userId;
-            fetch(url).then(() => {
-                this.reloadTree();
-            });
         },
         // Grade level and root subject filter
         async filter() {
@@ -1383,7 +1336,7 @@ export default {
 .loader {
     width: 48px;
     height: 48px;
-    border: 5px solid var(--loading-animation-colour);
+    border: 5px solid var(--primary-color);
     border-bottom-color: transparent;
     border-radius: 50%;
     display: inline-block;
@@ -1451,8 +1404,7 @@ export default {
 
 #wrapper {
     width: 100%;
-    /* height: calc(100% - 130px); */
-    height: calc(100%);
+    height: 100%;
     overflow: hidden;
     position: relative;
 }

@@ -22,6 +22,7 @@ export default {
             lastChooseResult: '',
             showResult: false,
             showConfirmModal: false,
+            // Filters
             isGradeFilter: true,
             isSubjectFilter: true,
             isLanguage: false,
@@ -31,35 +32,85 @@ export default {
             isHistory: false,
             isLife: false,
             isDangerousIdeas: false,
-            showMobileFiltersModal: false
+            showMobileFiltersModal: false,
+            // For guest mode only
+            gradeFilter: 'phd',
+            subjectFilters: [],
+            // Tutorial tooltips
+            isTutorialComplete: false,
+            showTutorialTip1: false,
+            showTutorialTip2: false,
+            showTutorialTip3: false,
+            showTutorialTip4: false,
+            showMobileTutorialTip4: false,
+            showTutorialTip5: false,
+            showMobileTutorialTip5: false,
+            showTutorialTip6: false,
+            showMobileTutorialTip6: false,
+            showTutorialTip7: false,
+            showTutorialTip8: false,
+            isMobileCheck: window.innerWidth
         };
     },
     created() {
-        for (let i = 0; i < this.userDetailsStore.subjectFilters.length; i++) {
-            if (this.userDetailsStore.subjectFilters[i] == 'Language') {
-                this.isLanguage = true;
-            }
-            if (this.userDetailsStore.subjectFilters[i] == 'Mathematics') {
-                this.isMathematics = true;
-            }
-            if (
-                this.userDetailsStore.subjectFilters[i] == 'Science & Invention'
+        // Turn this on only if user is logged in.
+        if (this.sessionDetailsStore.isLoggedIn == true) {
+            // Subject filters
+            for (
+                let i = 0;
+                i < this.userDetailsStore.subjectFilters.length;
+                i++
             ) {
-                this.isScienceAndInvention = true;
+                if (this.userDetailsStore.subjectFilters[i] == 'Language') {
+                    this.isLanguage = true;
+                }
+                if (this.userDetailsStore.subjectFilters[i] == 'Mathematics') {
+                    this.isMathematics = true;
+                }
+                if (
+                    this.userDetailsStore.subjectFilters[i] ==
+                    'Science & Invention'
+                ) {
+                    this.isScienceAndInvention = true;
+                }
+                if (
+                    this.userDetailsStore.subjectFilters[i] ==
+                    'Computer Science'
+                ) {
+                    this.isComputerScience = true;
+                }
+                if (this.userDetailsStore.subjectFilters[i] == 'History') {
+                    this.isHistory = true;
+                }
+                if (this.userDetailsStore.subjectFilters[i] == 'Life') {
+                    this.isLife = true;
+                }
+                if (
+                    this.userDetailsStore.subjectFilters[i] == 'Dangerous Ideas'
+                ) {
+                    this.isDangerousIdeas = true;
+                }
             }
-            if (this.userDetailsStore.subjectFilters[i] == 'Computer Science') {
-                this.isComputerScience = true;
-            }
-            if (this.userDetailsStore.subjectFilters[i] == 'History') {
-                this.isHistory = true;
-            }
-            if (this.userDetailsStore.subjectFilters[i] == 'Life') {
-                this.isLife = true;
-            }
-            if (this.userDetailsStore.subjectFilters[i] == 'Dangerous Ideas') {
-                this.isDangerousIdeas = true;
-            }
+        } else {
+            this.isLanguage = true;
+            this.isMathematics = true;
+            this.isScienceAndInvention = true;
+            this.isComputerScience = true;
+            this.isHistory = true;
+            this.isLife = true;
+            this.isDangerousIdeas = true;
+            this.subjectFilters = [
+                'Language',
+                'Mathematics',
+                'Science & Invention',
+                'Computer Science',
+                'History',
+                'Life',
+                'Dangerous Ideas'
+            ];
         }
+
+        this.checkIfTutorialComplete();
     },
     mounted() {
         this.GetGoogleLoginResult();
@@ -81,13 +132,6 @@ export default {
             // go to the skill position
             this.$refs.childComponent.goToLocation(node);
         },
-        expandAllNodesWarning() {
-            this.showConfirmModal = true;
-        },
-        expandAllNodes() {
-            this.showConfirmModal = false;
-            this.$refs.childComponent.expandAllChildren();
-        },
         GetGoogleLoginResult() {
             fetch('/google-login-result')
                 .then(function (response) {
@@ -102,23 +146,114 @@ export default {
             this.$refs.childComponent.resetPos();
         },
         updateSubjectFilters() {
-            this.userDetailsStore.subjectFilters = [];
+            // If user is logged in.
+            if (this.sessionDetailsStore.isLoggedIn) {
+                this.userDetailsStore.subjectFilters = [];
+                if (this.isLanguage)
+                    this.userDetailsStore.subjectFilters.push('Language');
+                if (this.isMathematics)
+                    this.userDetailsStore.subjectFilters.push('Mathematics');
+                if (this.isScienceAndInvention)
+                    this.userDetailsStore.subjectFilters.push(
+                        'Science & Invention'
+                    );
+                if (this.isComputerScience)
+                    this.userDetailsStore.subjectFilters.push(
+                        'Computer Science'
+                    );
+                if (this.isHistory)
+                    this.userDetailsStore.subjectFilters.push('History');
+                if (this.isLife)
+                    this.userDetailsStore.subjectFilters.push('Life');
+                if (this.isDangerousIdeas)
+                    this.userDetailsStore.subjectFilters.push(
+                        'Dangerous Ideas'
+                    );
+            }
+            // Not logged in
+            else {
+                this.subjectFilters = [];
+                if (this.isLanguage) this.subjectFilters.push('Language');
+                if (this.isMathematics) this.subjectFilters.push('Mathematics');
+                if (this.isScienceAndInvention)
+                    this.subjectFilters.push('Science & Invention');
+                if (this.isComputerScience)
+                    this.subjectFilters.push('Computer Science');
+                if (this.isHistory) this.subjectFilters.push('History');
+                if (this.isLife) this.subjectFilters.push('Life');
+                if (this.isDangerousIdeas)
+                    this.subjectFilters.push('Dangerous Ideas');
+            }
+        },
 
-            if (this.isLanguage)
-                this.userDetailsStore.subjectFilters.push('Language');
-            if (this.isMathematics)
-                this.userDetailsStore.subjectFilters.push('Mathematics');
-            if (this.isScienceAndInvention)
-                this.userDetailsStore.subjectFilters.push(
-                    'Science & Invention'
-                );
-            if (this.isComputerScience)
-                this.userDetailsStore.subjectFilters.push('Computer Science');
-            if (this.isHistory)
-                this.userDetailsStore.subjectFilters.push('History');
-            if (this.isLife) this.userDetailsStore.subjectFilters.push('Life');
-            if (this.isDangerousIdeas)
-                this.userDetailsStore.subjectFilters.push('Dangerous Ideas');
+        // Tutorial
+        async checkIfTutorialComplete() {
+            const result = await fetch(
+                '/users/check-tutorial-progress/vertical-tree/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            if (data == 0) {
+                this.isTutorialComplete = false;
+                this.showTutorialTip1 = true;
+            } else if (data == 1) {
+                this.isTutorialComplete = true;
+            }
+        },
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+                this.showTutorialTip2 = true;
+            } else if (step == 2) {
+                this.showTutorialTip2 = false;
+                this.showTutorialTip3 = true;
+            } else if (step == 3) {
+                this.showTutorialTip3 = false;
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip4 = true;
+                } else {
+                    this.showMobileTutorialTip4 = true;
+                }
+            } else if (step == 4) {
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip4 = false;
+                    this.showTutorialTip5 = true;
+                } else {
+                    this.showMobileTutorialTip4 = false;
+                    this.showMobileTutorialTip5 = true;
+                }
+            } else if (step == 5) {
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip5 = false;
+                    this.showTutorialTip6 = true;
+                } else {
+                    this.showMobileTutorialTip5 = false;
+                    this.showMobileTutorialTip6 = true;
+                }
+            } else if (step == 6) {
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip6 = false;
+                    this.showTutorialTip7 = true;
+                } else {
+                    this.showMobileTutorialTip6 = false;
+                }
+            } else if (step == 7) {
+                this.showTutorialTip7 = false;
+                this.showTutorialTip8 = true;
+            } else if (step == 8) {
+                this.showTutorialTip8 = false;
+                this.markTutorialComplete();
+            }
+        },
+        markTutorialComplete() {
+            let url =
+                '/users/mark-tutorial-complete/vertical-tree/' +
+                this.userDetailsStore.userId;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch(url, requestOptions);
         }
     }
 };
@@ -126,7 +261,7 @@ export default {
 
 <template>
     <div class="container-fluid position-absolute legend-div">
-        <div v-if="sessionDetailsStore.isLoggedIn" class="mobile-legend">
+        <div class="mobile-legend">
             <div class="search-mobile-row">
                 <!-- Search feature -->
                 <SkillTreeSearchBar
@@ -146,7 +281,7 @@ export default {
                 </button>
             </div>
         </div>
-        <div v-if="sessionDetailsStore.isLoggedIn" class="tablet-and-up-legend">
+        <div class="tablet-and-up-legend">
             <div class="d-flex justify-content-between">
                 <!-- Search bar, reset, expand all, print buttons -->
                 <!-- Search Feature -->
@@ -160,24 +295,6 @@ export default {
                     <button class="btn primary-btn me-2" @click="resetPos()">
                         Center
                     </button>
-                    <!-- Expand all nodes -->
-                    <button
-                        class="btn primary-btn me-2"
-                        @click="expandAllNodesWarning()"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 448 512"
-                            width="20"
-                            height="20"
-                        >
-                            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="M32 32C14.3 32 0 46.3 0 64l0 96c0 17.7 14.3 32 32 32s32-14.3 32-32l0-64 64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 32zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 96c0 17.7 14.3 32 32 32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0 0-64zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32l64 0 0 64c0 17.7 14.3 32 32 32s32-14.3 32-32l0-96c0-17.7-14.3-32-32-32l-96 0zM448 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c17.7 0 32-14.3 32-32l0-96z"
-                                fill="white"
-                            />
-                        </svg>
-                    </button>
                     <!-- Print Button -->
                     <button
                         class="btn primary-btn me-2"
@@ -187,53 +304,31 @@ export default {
                     </button>
                 </div>
             </div>
-        </div>
-        <div v-else class="alert alert-warning" role="alert">
-            You cannot interact with the tree until signed in
+            <!-- Tooltips -->
+            <div
+                v-if="showTutorialTip6"
+                class="info-panel bg-light rounded p-2 mb-2"
+            >
+                <p>Use the search field to search for specific skills.</p>
+                <button class="btn primary-btn" @click="progressTutorial(6)">
+                    next
+                </button>
+            </div>
+            <div
+                v-else-if="showTutorialTip7"
+                class="info-panel bg-light rounded p-2 mb-2 mt-2 float-right"
+            >
+                <p>
+                    Use the center button to center the skill tree,<br />
+                    and the print button to print a PDF.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(7)">
+                    next
+                </button>
+            </div>
         </div>
     </div>
 
-    <div
-        v-if="showConfirmModal"
-        @click="showConfirmModal = false"
-        class="modal"
-    >
-        <!-- Confirm Modal -->
-        <div class="modal-content asking-modal">
-            <div class="d-flex gap-4">
-                <!-- Warn Triangle Icon -->
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    fill="grey"
-                    width="45"
-                    height="45"
-                >
-                    <path
-                        d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
-                    />
-                </svg>
-                <p>Are you sure you want to expand all skills?</p>
-            </div>
-            <!-- Buttons row -->
-            <div class="d-flex justify-content-end gap-2">
-                <button
-                    type="button"
-                    class="btn red-btn modal-btn"
-                    @click="showConfirmModal = false"
-                >
-                    <span> No </span>
-                </button>
-                <button
-                    type="button"
-                    class="btn green-btn modal-btn"
-                    @click="expandAllNodes()"
-                >
-                    <span> OK </span>
-                </button>
-            </div>
-        </div>
-    </div>
     <!-- Display loading screen while asynchronous call is made. -->
     <Suspense>
         <template #default>
@@ -248,257 +343,408 @@ export default {
         </template>
     </Suspense>
 
-    <!-- Bottom grade level truncation filters
-        Not available on phone view -->
-    <div
-        v-if="sessionDetailsStore.isLoggedIn"
-        class="tablet-and-up-legend position-absolute bottom-legend-div d-flex"
-    >
-        <div v-if="isGradeFilter" class="legend">
-            <!-- Grade buttons -->
-            <button
-                class="btn grade-school me-2"
-                :class="{
-                    'active-grade-filter':
-                        this.userDetailsStore.gradeFilter == 'grade_school'
-                }"
-                @click="
-                    this.userDetailsStore.gradeFilter = 'grade_school';
-                    $refs.childComponent.filter();
-                "
-            >
-                Grade school
-            </button>
-            <button
-                class="btn middle-school me-2"
-                :class="{
-                    'active-grade-filter':
-                        this.userDetailsStore.gradeFilter == 'middle_school'
-                }"
-                @click="
-                    this.userDetailsStore.gradeFilter = 'middle_school';
-                    $refs.childComponent.filter();
-                "
-            >
-                Middle school
-            </button>
-            <button
-                class="btn high-school me-2"
-                :class="{
-                    'active-grade-filter':
-                        this.userDetailsStore.gradeFilter == 'high_school'
-                }"
-                @click="
-                    this.userDetailsStore.gradeFilter = 'high_school';
-                    $refs.childComponent.filter();
-                "
-            >
-                High school
-            </button>
-            <button
-                class="btn college me-2"
-                :class="{
-                    'active-grade-filter':
-                        this.userDetailsStore.gradeFilter == 'college'
-                }"
-                @click="
-                    this.userDetailsStore.gradeFilter = 'college';
-                    $refs.childComponent.filter();
-                "
-            >
-                College
-            </button>
-            <button
-                class="btn phd me-2"
-                :class="{
-                    'active-grade-filter':
-                        this.userDetailsStore.gradeFilter == 'phd'
-                }"
-                @click="
-                    this.userDetailsStore.gradeFilter = 'phd';
-                    $refs.childComponent.filter();
-                "
-            >
-                PHD
+    <!-- Bottom grade level truncation filters -->
+    <div class="tablet-and-up-legend position-absolute bottom-legend-div">
+        <!-- Tooltip -->
+        <div
+            v-if="showTutorialTip5"
+            class="info-panel bg-light rounded p-2 mb-2"
+        >
+            <p>Use the buttons below to filter the skills by level.</p>
+            <button class="btn primary-btn" @click="progressTutorial(5)">
+                next
             </button>
         </div>
-        <button
-            class="btn switch-btn me-2"
-            @click="isGradeFilter = !isGradeFilter"
-        >
-            <!-- Plus sign -->
-            <svg
-                v-if="!isGradeFilter"
-                width="18"
-                height="18"
-                fill="white"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 448 512"
+        <!-- Grade buttons -->
+        <!-- If user is logged in -->
+        <div v-if="sessionDetailsStore.isLoggedIn" class="d-flex">
+            <div v-if="isGradeFilter" class="legend">
+                <button
+                    class="btn grade-school me-2"
+                    :class="{
+                        'active-grade-filter':
+                            this.userDetailsStore.gradeFilter == 'grade_school'
+                    }"
+                    @click="
+                        this.userDetailsStore.gradeFilter = 'grade_school';
+                        $refs.childComponent.filter();
+                    "
+                >
+                    Grade school
+                </button>
+                <button
+                    class="btn middle-school me-2"
+                    :class="{
+                        'active-grade-filter':
+                            this.userDetailsStore.gradeFilter == 'middle_school'
+                    }"
+                    @click="
+                        this.userDetailsStore.gradeFilter = 'middle_school';
+                        $refs.childComponent.filter();
+                    "
+                >
+                    Middle school
+                </button>
+                <button
+                    class="btn high-school me-2"
+                    :class="{
+                        'active-grade-filter':
+                            this.userDetailsStore.gradeFilter == 'high_school'
+                    }"
+                    @click="
+                        this.userDetailsStore.gradeFilter = 'high_school';
+                        $refs.childComponent.filter();
+                    "
+                >
+                    High school
+                </button>
+                <button
+                    class="btn college me-2"
+                    :class="{
+                        'active-grade-filter':
+                            this.userDetailsStore.gradeFilter == 'college'
+                    }"
+                    @click="
+                        this.userDetailsStore.gradeFilter = 'college';
+                        $refs.childComponent.filter();
+                    "
+                >
+                    College
+                </button>
+                <button
+                    class="btn phd me-2"
+                    :class="{
+                        'active-grade-filter':
+                            this.userDetailsStore.gradeFilter == 'phd'
+                    }"
+                    @click="
+                        this.userDetailsStore.gradeFilter = 'phd';
+                        $refs.childComponent.filter();
+                    "
+                >
+                    PHD
+                </button>
+            </div>
+            <button
+                class="btn switch-btn me-2"
+                @click="isGradeFilter = !isGradeFilter"
             >
-                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                <path
-                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
-                />
-            </svg>
-            <!-- Minus sign -->
-            <svg
-                v-else
-                width="18"
-                height="18"
-                fill="white"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 448 512"
+                <!-- Plus sign -->
+                <svg
+                    v-if="!isGradeFilter"
+                    width="18"
+                    height="18"
+                    fill="white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                >
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                    <path
+                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                    />
+                </svg>
+                <!-- Minus sign -->
+                <svg
+                    v-else
+                    width="18"
+                    height="18"
+                    fill="white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                >
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                    <path
+                        d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                    />
+                </svg>
+            </button>
+        </div>
+        <!-- If user is not logged in -->
+        <div v-else class="d-flex">
+            <div v-if="isGradeFilter" class="legend">
+                <button
+                    class="btn grade-school me-2"
+                    :class="{
+                        'active-grade-filter':
+                            this.gradeFilter == 'grade_school'
+                    }"
+                    @click="
+                        this.gradeFilter = 'grade_school';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Grade school
+                </button>
+                <button
+                    class="btn middle-school me-2"
+                    :class="{
+                        'active-grade-filter':
+                            this.gradeFilter == 'middle_school'
+                    }"
+                    @click="
+                        this.gradeFilter = 'middle_school';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Middle school
+                </button>
+                <button
+                    class="btn high-school me-2"
+                    :class="{
+                        'active-grade-filter': this.gradeFilter == 'high_school'
+                    }"
+                    @click="
+                        this.gradeFilter = 'high_school';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    High school
+                </button>
+                <button
+                    class="btn college me-2"
+                    :class="{
+                        'active-grade-filter': this.gradeFilter == 'college'
+                    }"
+                    @click="
+                        this.gradeFilter = 'college';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    College
+                </button>
+                <button
+                    class="btn phd me-2"
+                    :class="{
+                        'active-grade-filter': this.gradeFilter == 'phd'
+                    }"
+                    @click="
+                        this.gradeFilter = 'phd';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    PHD
+                </button>
+            </div>
+            <button
+                class="btn switch-btn me-2"
+                @click="isGradeFilter = !isGradeFilter"
             >
-                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                <path
-                    d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                />
-            </svg>
-        </button>
+                <!-- Plus sign -->
+                <svg
+                    v-if="!isGradeFilter"
+                    width="18"
+                    height="18"
+                    fill="white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                >
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                    <path
+                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                    />
+                </svg>
+                <!-- Minus sign -->
+                <svg
+                    v-else
+                    width="18"
+                    height="18"
+                    fill="white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                >
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                    <path
+                        d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                    />
+                </svg>
+            </button>
+        </div>
     </div>
     <!-- Left root subject filters  -->
-    <div
-        v-if="sessionDetailsStore.isLoggedIn"
-        class="tablet-and-up-legend position-absolute left-legend-div"
-    >
-        <div v-if="isSubjectFilter" class="d-flex flex-column">
+    <div class="tablet-and-up-legend position-absolute left-legend-div">
+        <div>
+            <div v-if="isSubjectFilter" class="d-flex flex-column">
+                <button
+                    class="btn mb-2"
+                    :class="{
+                        'chosen-subject': isLanguage,
+                        'hidden-subject': !isLanguage
+                    }"
+                    @click="
+                        this.isLanguage = !this.isLanguage;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Language
+                </button>
+                <button
+                    class="btn mb-2"
+                    :class="{
+                        'chosen-subject': isMathematics,
+                        'hidden-subject': !isMathematics
+                    }"
+                    @click="
+                        this.isMathematics = !this.isMathematics;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Math
+                </button>
+                <button
+                    class="btn mb-2"
+                    :class="{
+                        'chosen-subject': isHistory,
+                        'hidden-subject': !isHistory
+                    }"
+                    @click="
+                        this.isHistory = !this.isHistory;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    History
+                </button>
+                <button
+                    class="btn mb-2"
+                    :class="{
+                        'chosen-subject': isLife,
+                        'hidden-subject': !isLife
+                    }"
+                    @click="
+                        this.isLife = !this.isLife;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Life
+                </button>
+                <button
+                    class="btn mb-2"
+                    :class="{
+                        'chosen-subject': isComputerScience,
+                        'hidden-subject': !isComputerScience
+                    }"
+                    @click="
+                        this.isComputerScience = !this.isComputerScience;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Computer Science
+                </button>
+                <button
+                    class="btn mb-2"
+                    :class="{
+                        'chosen-subject': isScienceAndInvention,
+                        'hidden-subject': !isScienceAndInvention
+                    }"
+                    @click="
+                        this.isScienceAndInvention =
+                            !this.isScienceAndInvention;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Science & Invention
+                </button>
+                <button
+                    class="btn mb-2"
+                    :class="{
+                        'chosen-subject': isDangerousIdeas,
+                        'hidden-subject': !isDangerousIdeas
+                    }"
+                    @click="
+                        this.isDangerousIdeas = !this.isDangerousIdeas;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Dangerous Ideas
+                </button>
+            </div>
             <button
-                class="btn mb-2"
-                :class="{
-                    'chosen-subject': isLanguage,
-                    'hidden-subject': !isLanguage
-                }"
-                @click="
-                    this.isLanguage = !this.isLanguage;
-                    this.updateSubjectFilters();
-                    $refs.childComponent.filter();
-                "
+                class="btn switch-btn"
+                @click="isSubjectFilter = !isSubjectFilter"
             >
-                Language
-            </button>
-            <button
-                class="btn mb-2"
-                :class="{
-                    'chosen-subject': isMathematics,
-                    'hidden-subject': !isMathematics
-                }"
-                @click="
-                    this.isMathematics = !this.isMathematics;
-                    this.updateSubjectFilters();
-                    $refs.childComponent.filter();
-                "
-            >
-                Math
-            </button>
-            <button
-                class="btn mb-2"
-                :class="{
-                    'chosen-subject': isHistory,
-                    'hidden-subject': !isHistory
-                }"
-                @click="
-                    this.isHistory = !this.isHistory;
-                    this.updateSubjectFilters();
-                    $refs.childComponent.filter();
-                "
-            >
-                History
-            </button>
-            <button
-                class="btn mb-2"
-                :class="{
-                    'chosen-subject': isLife,
-                    'hidden-subject': !isLife
-                }"
-                @click="
-                    this.isLife = !this.isLife;
-                    this.updateSubjectFilters();
-                    $refs.childComponent.filter();
-                "
-            >
-                Life
-            </button>
-            <button
-                class="btn mb-2"
-                :class="{
-                    'chosen-subject': isComputerScience,
-                    'hidden-subject': !isComputerScience
-                }"
-                @click="
-                    this.isComputerScience = !this.isComputerScience;
-                    this.updateSubjectFilters();
-                    $refs.childComponent.filter();
-                "
-            >
-                Computer Science
-            </button>
-            <button
-                class="btn mb-2"
-                :class="{
-                    'chosen-subject': isScienceAndInvention,
-                    'hidden-subject': !isScienceAndInvention
-                }"
-                @click="
-                    this.isScienceAndInvention = !this.isScienceAndInvention;
-                    this.updateSubjectFilters();
-                    $refs.childComponent.filter();
-                "
-            >
-                Science & Invention
-            </button>
-            <button
-                class="btn mb-2"
-                :class="{
-                    'chosen-subject': isDangerousIdeas,
-                    'hidden-subject': !isDangerousIdeas
-                }"
-                @click="
-                    this.isDangerousIdeas = !this.isDangerousIdeas;
-                    this.updateSubjectFilters();
-                    $refs.childComponent.filter();
-                "
-            >
-                Dangerous Ideas
+                <!-- Plus sign -->
+                <svg
+                    v-if="!isSubjectFilter"
+                    width="18"
+                    height="18"
+                    fill="white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                >
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                    <path
+                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                    />
+                </svg>
+                <!-- Minus sign -->
+                <svg
+                    v-else
+                    width="18"
+                    height="18"
+                    fill="white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                >
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                    <path
+                        d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                    />
+                </svg>
             </button>
         </div>
-        <button
-            class="btn switch-btn"
-            @click="isSubjectFilter = !isSubjectFilter"
-        >
-            <!-- Plus sign -->
-            <svg
-                v-if="!isSubjectFilter"
-                width="18"
-                height="18"
-                fill="white"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 448 512"
-            >
-                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                <path
-                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
-                />
-            </svg>
-            <!-- Minus sign -->
-            <svg
-                v-else
-                width="18"
-                height="18"
-                fill="white"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 448 512"
-            >
-                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                <path
-                    d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                />
-            </svg>
-        </button>
+        <!-- Tooltip -->
+        <div v-if="showTutorialTip4" class="info-panel bg-light rounded p-2">
+            Use the buttons on the left to filter the skills by subject.<br />
+            <button class="btn primary-btn" @click="progressTutorial(4)">
+                next
+            </button>
+        </div>
     </div>
 
     <!-- Filters Modal for Mobile Phone View.-->
     <div v-if="showMobileFiltersModal" class="modal">
-        <!-- Confirm Modal -->
         <div class="modal-content">
             <div class="d-flex flex-column">
                 <button class="btn" @click="showMobileFiltersModal = false">
@@ -516,7 +762,11 @@ export default {
                     </svg>
                 </button>
             </div>
-            <div class="d-flex flex-column">
+
+            <div
+                v-if="sessionDetailsStore.isLoggedIn"
+                class="d-flex flex-column"
+            >
                 <!-- Subject buttons -->
                 <button
                     class="btn"
@@ -684,13 +934,313 @@ export default {
                     PHD
                 </button>
             </div>
+            <div v-else class="d-flex flex-column">
+                <!-- Subject buttons -->
+                <button
+                    class="btn"
+                    :class="{
+                        'chosen-subject': isLanguage,
+                        'hidden-subject': !isLanguage
+                    }"
+                    @click="
+                        this.isLanguage = !this.isLanguage;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Language
+                </button>
+                <button
+                    class="btn"
+                    :class="{
+                        'chosen-subject': isMathematics,
+                        'hidden-subject': !isMathematics
+                    }"
+                    @click="
+                        this.isMathematics = !this.isMathematics;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Math
+                </button>
+                <button
+                    class="btn"
+                    :class="{
+                        'chosen-subject': isHistory,
+                        'hidden-subject': !isHistory
+                    }"
+                    @click="
+                        this.isHistory = !this.isHistory;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    History
+                </button>
+                <button
+                    class="btn"
+                    :class="{
+                        'chosen-subject': isLife,
+                        'hidden-subject': !isLife
+                    }"
+                    @click="
+                        this.isLife = !this.isLife;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Life
+                </button>
+                <button
+                    class="btn"
+                    :class="{
+                        'chosen-subject': isComputerScience,
+                        'hidden-subject': !isComputerScience
+                    }"
+                    @click="
+                        this.isComputerScience = !this.isComputerScience;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Computer Science
+                </button>
+                <button
+                    class="btn"
+                    :class="{
+                        'chosen-subject': isScienceAndInvention,
+                        'hidden-subject': !isScienceAndInvention
+                    }"
+                    @click="
+                        this.isScienceAndInvention =
+                            !this.isScienceAndInvention;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Science & Invention
+                </button>
+                <button
+                    class="btn mb-2"
+                    :class="{
+                        'chosen-subject': isDangerousIdeas,
+                        'hidden-subject': !isDangerousIdeas
+                    }"
+                    @click="
+                        this.isDangerousIdeas = !this.isDangerousIdeas;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Dangerous Ideas
+                </button>
+                <!-- Grade buttons -->
+                <button
+                    class="btn grade-school"
+                    :class="{
+                        'active-grade-filter':
+                            this.gradeFilter == 'grade_school'
+                    }"
+                    @click="
+                        this.gradeFilter = 'grade_school';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Grade school
+                </button>
+                <button
+                    class="btn middle-school"
+                    :class="{
+                        'active-grade-filter':
+                            this.gradeFilter == 'middle_school'
+                    }"
+                    @click="
+                        this.gradeFilter = 'middle_school';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Middle school
+                </button>
+                <button
+                    class="btn high-school"
+                    :class="{
+                        'active-grade-filter': this.gradeFilter == 'high_school'
+                    }"
+                    @click="
+                        this.gradeFilter = 'high_school';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    High school
+                </button>
+                <button
+                    class="btn college"
+                    :class="{
+                        'active-grade-filter': this.gradeFilter == 'college'
+                    }"
+                    @click="
+                        this.gradeFilter = 'college';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    College
+                </button>
+                <button
+                    class="btn phd"
+                    :class="{
+                        'active-grade-filter': this.gradeFilter == 'phd'
+                    }"
+                    @click="
+                        this.gradeFilter = 'phd';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    PHD
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tooltip modal -->
+    <div
+        v-if="
+            showTutorialTip1 ||
+            showTutorialTip2 ||
+            showTutorialTip3 ||
+            showTutorialTip8 ||
+            showMobileTutorialTip4 ||
+            showMobileTutorialTip5 ||
+            showMobileTutorialTip6
+        "
+        class="modal"
+    >
+        <div class="modal-content">
+            <div v-if="showTutorialTip1">
+                <p>Welcome to the Collins Institute!</p>
+                <p>
+                    Click
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        next
+                    </button>
+                    to start the tutorial.
+                </p>
+            </div>
+            <div v-else-if="showTutorialTip2">
+                <p>
+                    This page provides a look at all the skills one can study
+                    here.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(2)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showTutorialTip3">
+                <p>
+                    On a computer, use the mouse to navigate around. Zoom in and
+                    out using the mousewheel.
+                </p>
+                <p>
+                    On a tablet or phone, navigate by dragging the screen, or
+                    use the thumbstick at the bottom right. Zoom in and out by
+                    pinching and zooming.
+                </p>
+                <p>
+                    There is also a slider bar at the bottom right, that ca be
+                    used for zooming.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(3)">
+                    next
+                </button>
+            </div>
+            <div v-if="showTutorialTip8">
+                <p>
+                    When you're ready, try another page by clicking one in the
+                    navigation bar at the top right.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(8)">
+                    close
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip4">
+                <p>Use the search field to search for specific skills.</p>
+                <button class="btn primary-btn" @click="progressTutorial(4)">
+                    next
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip5">
+                <p>
+                    The filter button will show ways to filter the skill tree by
+                    both subjects and levels.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(5)">
+                    next
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip6">
+                <p>The center button will recenter the tree</p>
+                <button class="btn primary-btn" @click="progressTutorial(6)">
+                    close
+                </button>
+            </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+/* Tooltips */
+.info-panel {
+    border-color: var(--primary-color);
+    border-width: 2px;
+    border-style: solid;
+    width: fit-content;
+}
+
+.float-right {
+    float: right;
+}
+
 /*
- * Filters 
+ * Filters
  */
 
 /* Grade level filter */
@@ -781,13 +1331,14 @@ export default {
 .switch-btn {
     background-color: var(--primary-color) !important;
     color: var(--primary-contrast-color) !important;
+    opacity: 1;
 }
 
 .chosen-subject:active,
 .chosen-subject:focus,
 .switch-btn:hover {
     color: var(--primary-contrast-color) !important;
-    opacity: 1;
+    opacity: 1 !important;
 }
 
 .btn:active,
@@ -833,6 +1384,9 @@ export default {
     top: 50%;
     transform: translateY(-50%);
     left: 3px;
+    /* For the tooltip */
+    display: flex;
+    align-items: center;
 }
 
 .left-legend-div button {
@@ -953,7 +1507,7 @@ export default {
     /* Hidden by default */
     position: fixed;
     /* Stay in place */
-    z-index: 1;
+    z-index: 2000;
     /* Sit on top */
     left: 0;
     top: 0;
@@ -1023,40 +1577,5 @@ export default {
 
 .modal-btn {
     width: fit-content;
-}
-
-.green-btn {
-    background-color: #36c1af;
-    color: white;
-    border: 1px solid #2ca695;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    height: auto;
-    align-items: center;
-    justify-content: center;
-    max-width: fit-content;
-}
-
-.green-btn:hover {
-    background-color: #3eb3a3;
-}
-.red-btn {
-    background-color: #e24d4d;
-    color: white;
-    border: 1px solid #d33622;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.red-btn:hover {
-    background-color: #cc3535;
-    color: white;
 }
 </style>

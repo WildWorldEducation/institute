@@ -10,10 +10,16 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-            path: '/vertical-tree',
-            name: 'vertical-tree',
+            path: '/skill-tree',
+            name: 'skill-tree',
             component: () => import('../components/pages/TidyTreeView.vue'),
             meta: { preventZoom: true, title: 'Skill tree' }
+        },
+        {
+            path: '/my-skill-tree',
+            name: 'my-skill-tree',
+            component: () => import('../components/pages/MyTidyTreeView.vue'),
+            meta: { preventZoom: true, title: 'My skill tree' }
         },
         {
             path: '/student/:studentId/skill-tree',
@@ -21,7 +27,7 @@ const router = createRouter({
             component: () =>
                 import('../components/pages/StudentTidyTreeView.vue'),
             meta: {
-                title: 'Skill tree',
+                title: 'Student skill tree',
                 requiresAuth: true,
                 roles: ['instructor', 'admin']
             }
@@ -36,12 +42,6 @@ const router = createRouter({
             name: 'radial-tree',
             component: () => import('../components/pages/RadialTreeView.vue'),
             meta: { preventZoom: true, title: 'Radial skill tree' }
-        },
-        {
-            path: '/:id/skill-tree',
-            name: 'student-skill-tree',
-            component: () =>
-                import('../components/pages/SkillTreeStudentView.vue')
         },
         {
             path: '/login',
@@ -442,9 +442,7 @@ router.beforeEach(async (to, from, next) => {
 
     if (to.name == 'show-skill') {
         const skillsStore = useSkillsStore();
-
         await skillsStore.getSkillsList();
-
         const currentSkill = skillsStore.skillsList.find(
             (item) => item.URL == to.params.skillUrl
         );
@@ -455,12 +453,13 @@ router.beforeEach(async (to, from, next) => {
         }
     }
 
+    // To prevent the background image (from certain themes) from flashing when switching between skill tree pages.
     if (
-        (to.name == 'vertical-tree' && from.name == 'radial-tree') ||
-        (from.name == 'vertical-tree' && to.name == 'radial-tree')
+        (to.name == 'skill-tree' && from.name == 'radial-tree') ||
+        (from.name == 'skill-tree' && to.name == 'radial-tree')
     ) {
         document.body.classList.add('skill-tree-transition');
-    } else if (from.name == 'radial-tree' || from.name == 'vertical-tree') {
+    } else if (from.name == 'radial-tree' || from.name == 'skill-tree') {
         document.body.classList.remove('skill-tree-transition');
     }
 
@@ -473,10 +472,10 @@ router.beforeEach(async (to, from, next) => {
         to.name !== 'password-reset' &&
         to.name !== 'reset-password' &&
         // For guest access.
-        to.name !== 'vertical-tree' &&
+        to.name !== 'skill-tree' &&
         to.name !== 'show-skill'
     ) {
-        next({ name: 'vertical-tree' });
+        next({ name: 'skill-tree' });
         return;
     }
 
@@ -499,7 +498,8 @@ router.beforeEach(async (to, from, next) => {
 
     // To remove the vertical scroll bar.
     if (
-        to.name == 'vertical-tree' ||
+        to.name == 'skill-tree' ||
+        to.name == 'my-skill-tree' ||
         to.name == 'radial-tree' ||
         to.name == 'skills' ||
         to.name == 'student-skills' ||

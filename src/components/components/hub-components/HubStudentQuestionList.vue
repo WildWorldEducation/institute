@@ -1,24 +1,10 @@
 <script>
-// import store
-
 export default {
-    setup() {
-        return {};
-    },
-    data() {
-        return {
-            questions: null
-        };
-    },
-    components: {},
-
-    async created() {
-        // Question list needs to be created for both admins (all questions), and instructors
-        // (only their students' questions).
-
-        // Create the questions array ---------------------------------
-        // Get unchecked questions.
-        await this.getStudentMCQuestions();
+    props: {
+        questions: {
+            type: Array,
+            required: true
+        }
     },
     methods: {
         formatDate(unformattedDate) {
@@ -48,13 +34,6 @@ export default {
             };
             finalDate = finalDate.toLocaleDateString('en-US', options);
             return finalDate;
-        },
-        async getStudentMCQuestions() {
-            const result = await fetch(
-                '/questions/student-mc-questions/full-data-list'
-            );
-            const data = await result.json();
-            this.questions = data;
         }
     }
 };

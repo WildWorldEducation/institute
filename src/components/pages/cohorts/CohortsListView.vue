@@ -22,55 +22,69 @@ export default {
         return {
             showInformationModal: false,
             selectedCohortId: null,
-            showDetails: false
+            // Tutorial tooltips
+            isTutorialComplete: false,
+            showTutorialTip1: false,
+            showTutorialTip2: false,
+            showTutorialTip3: false,
+            showTutorialTip4: false
         };
     },
     async created() {
         await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
         // Check if user has visited before
-        const hasVisited = localStorage.getItem('hasVisited');
-        if (!hasVisited) {
-            // Show the modal on the first visit
-            this.showInformationModal = true;
-            // Save a flag for local storage
-            localStorage.setItem('hasVisited', 'true');
-        }
+        this.checkIfTutorialComplete();
     },
-    mounted() {
-        // Close modal by clicking outside it.
-        document.getElementById('myModal').addEventListener('click', (e) => {
-            if (!e.target.classList.contains('modal-content')) {
-                this.showInformationModal = false;
-            }
-        });
-        // The above should not work on the modal content.
-        document.getElementById('modal-content').addEventListener(
-            'click',
-            function (e) {
-                e.stopPropagation();
-            },
-            false
-        );
-    },
-    computed: {
-        getSelectedCohort() {
-            return this.cohortsStore.cohorts.find(
-                (cohort) => cohort.id === this.selectedCohortId
-            );
-        }
-    },
+
     methods: {
-        toggleInformationModal() {
-            this.showInformationModal = !this.showInformationModal;
-        },
-        selectCohort(cohortId) {
-            if (this.selectedCohortId !== cohortId) {
-                this.selectedCohortId = cohortId;
-                this.showDetails = true;
-            }
+        restartTutorial() {
+            this.showTutorialTip2 = false;
+            this.showTutorialTip3 = false;
+            this.showTutorialTip4 = false;
+            this.showTutorialTip1 = true;
         },
         closeMobileDetail() {
             this.showDetails = false; // Hide the mobile cohort detail modal
+        },
+
+        // Tutorial
+        async checkIfTutorialComplete() {
+            const result = await fetch(
+                '/users/check-tutorial-progress/cohorts/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            if (data == 0) {
+                this.isTutorialComplete = false;
+                this.showTutorialTip1 = true;
+            } else if (data == 1) {
+                this.isTutorialComplete = true;
+            }
+        },
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+                this.showTutorialTip2 = true;
+            } else if (step == 2) {
+                this.showTutorialTip2 = false;
+                this.showTutorialTip3 = true;
+            } else if (step == 3) {
+                this.showTutorialTip3 = false;
+                this.showTutorialTip4 = true;
+            } else if (step == 4) {
+                this.showTutorialTip4 = false;
+                this.markTutorialComplete();
+            }
+        },
+        markTutorialComplete() {
+            let url =
+                '/users/mark-tutorial-complete/cohorts/' +
+                this.userDetailsStore.userId;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch(url, requestOptions);
         }
     }
 };
@@ -79,7 +93,7 @@ export default {
 <template>
     <div class="container-fluid mobile-container">
         <div class="d-flex justify-content-between mb-2">
-            <router-link class="btn primary-btn" to="/cohorts/add"
+            <router-link class="btn primary-btn me-2" to="/cohorts/add"
                 >Add&nbsp;
                 <!-- Plus sign -->
                 <svg
@@ -95,10 +109,7 @@ export default {
                     />
                 </svg>
             </router-link>
-            <button
-                class="btn primary-btn me-1"
-                @click="toggleInformationModal"
-            >
+            <button class="btn primary-btn me-1" @click="restartTutorial">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 192 512"
@@ -116,7 +127,7 @@ export default {
         <div class="row gx-1">
             <!-- Left Container -->
             <div class="col-lg-3 col-md-4">
-                <button
+                <router-link
                     v-for="cohort in cohortsStore.cohorts"
                     :key="cohort.id"
                     :class="
@@ -125,99 +136,71 @@ export default {
                             : 'cohort-buttons'
                     "
                     class="mb-1"
-                    @click="selectCohort(cohort.id)"
+                    :to="'/cohort/' + cohort.id"
                 >
                     {{ cohort.name }}
-                </button>
-            </div>
-
-            <!-- Right Container -->
-            <div class="col-lg-9 col-md-8 d-none d-md-block">
-                <div v-if="selectedCohortId">
-                    <div>
-                        <CohortDetail :cohort="getSelectedCohort" />
-                    </div>
-                </div>
-            </div>
-            <div v-if="showDetails" class="col-md-8 d-block d-md-none modal">
-                <div
-                    class="modal-content contact-modal-content"
-                    id="cohort-details-container"
-                >
-                    <button
-                        type="button"
-                        @click="closeMobileDetail"
-                        class="close closeBtn"
-                        aria-label="Close"
-                    >
-                        <span aria-hidden="true">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 384 512"
-                                width="25"
-                                height="25"
-                            >
-                                <path
-                                    d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
-                                    fill="black"
-                                />
-                            </svg>
-                        </span>
-                    </button>
-                    <CohortDetail :cohort="getSelectedCohort" />
-                </div>
+                </router-link>
             </div>
         </div>
     </div>
 
-    <!-- The Contact Advice Modal -->
-    <div v-show="showInformationModal">
-        <div id="myModal" class="modal">
-            <!-- Modal content -->
-            <div id="modal-content" class="modal-content contact-modal-content">
-                <button
-                    type="button"
-                    @click="toggleInformationModal"
-                    class="close closeBtn"
-                    aria-label="Close"
-                >
-                    <span aria-hidden="true">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 384 512"
-                            width="25"
-                            height="25"
-                        >
-                            <path
-                                d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
-                                fill="black"
-                            />
-                        </svg>
-                    </span>
+    <!-- Instructor Tutorial modal -->
+    <div
+        v-if="
+            userDetailsStore.role == 'instructor' &&
+            (showTutorialTip1 ||
+                showTutorialTip2 ||
+                showTutorialTip3 ||
+                showTutorialTip4)
+        "
+        class="modal"
+    >
+        <div class="modal-content bg-light">
+            <div v-if="showTutorialTip1">
+                <p>This is your Cohorts page.</p>
+
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
                 </button>
-                <section>
-                    <p>
-                        Cohorts allow you, as an instructor, to present the same
-                        filtered version of a skill tree to a selective group of
-                        handpicked students. For example, if you are guiding
-                        students through a math class, each student can create a
-                        math-specific account and you can add those accounts to
-                        your math class cohort, updating the nodes as your
-                        instruction progresses.
-                    </p>
-                    <p>
-                        To leverage this feature, create a cohort, add relevant
-                        students, and filter the tree they are to see as
-                        desired. You can update the filtered skill tree nodes in
-                        your cohort, plus the cohort's members, whenever you
-                        please.
-                    </p>
-                    <p>
-                        Before adding a student to your cohort, make sure they
-                        are in no other cohorts; students can only be in one
-                        cohort at a time.
-                    </p>
-                </section>
+            </div>
+            <div v-if="showTutorialTip2">
+                <p>
+                    Cohorts allow you, as an instructor, to present the same
+                    filtered version of a skill tree to a selective group of
+                    handpicked students.
+                </p>
+                <p>
+                    For example, if you are guiding students through a math
+                    class, each student can create a math-specific account and
+                    you can add those accounts to your math class cohort,
+                    updating the nodes as your instruction progresses.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(2)">
+                    next
+                </button>
+            </div>
+            <div v-if="showTutorialTip3">
+                <p>
+                    To leverage this feature, create a cohort, add relevant
+                    students, and filter the tree they are to see as desired.
+                </p>
+                <p>
+                    You can update the filtered skill tree nodes in your cohort,
+                    plus the cohort's members, whenever you please.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(3)">
+                    next
+                </button>
+            </div>
+            <div v-if="showTutorialTip4">
+                <p>
+                    Before adding a student to your cohort, make sure they are
+                    in no other cohorts; students can only be in one cohort at a
+                    time.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(4)">
+                    close
+                </button>
             </div>
         </div>
     </div>
@@ -263,19 +246,30 @@ export default {
     align-items: center;
     justify-content: center;
 }
-.closeBtn {
-    position: absolute;
-    top: 5px;
-    right: 5px;
+
+ul li {
+    list-style: none;
 }
 
-/* The Warning Modal */
+/* Mobile */
+@media (max-width: 480px) {
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 1023px) {
+}
+
+/* Desktops/laptops */
+@media (min-width: 1025px) {
+}
+
+/* Modals */
 .modal {
     display: block;
     /* Hidden by default */
     position: fixed;
     /* Stay in place */
-    z-index: 1;
+    z-index: 2000;
     /* Sit on top */
     left: 0;
     top: 0;
@@ -283,7 +277,7 @@ export default {
     /* Full width */
     height: 100%;
     /* Full height */
-    overflow: hidden;
+    overflow: auto;
     /* Enable scroll if needed */
     background-color: rgb(0, 0, 0);
     /* Fallback color */
@@ -291,49 +285,24 @@ export default {
     /* Black w/ opacity */
 }
 
-ul li {
-    list-style: none;
-}
-
 /* Modal Content/Box */
-.contact-modal-content {
+.modal-content {
     background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
-    width: 600px !important;
+    width: 520px;
     font-size: 18px;
     /* Could be more or less, depending on screen size */
 }
 
-/* Mobile */
+/* Small devices (portrait phones) */
 @media (max-width: 480px) {
-    .contact-modal-content {
-        margin: 30% auto !important;
-        width: 90% !important;
-    }
-    .mobile-container {
-        display: flex;
-        flex-direction: column;
-        max-width: 100%;
-        justify-content: center;
-        align-items: center;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-    }
-}
-
-/* Tablets */
-@media (min-width: 481px) and (max-width: 1023px) {
-    .contact-modal-content {
-        margin: 15% auto !important;
-        width: 90% !important;
-    }
-}
-
-/* Desktops/laptops */
-@media (min-width: 1025px) {
-    .contact-modal-content {
-        margin: 10% auto;
+    /* Modal Content/Box */
+    .modal-content {
+        width: 90%;
+        margin-top: 30%;
     }
 }
 </style>

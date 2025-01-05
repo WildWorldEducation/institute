@@ -13,6 +13,11 @@ export default {
             userDetailsStore
         };
     },
+    data() {
+        return {
+            isMobileCheck: window.innerWidth
+        };
+    },
     async mounted() {
         await this.userDetailsStore.getUserDetails();
 
@@ -28,8 +33,53 @@ export default {
             document.body.classList.remove('scholar-theme');
             document.body.classList.remove('apprentice-theme');
         }
+        this.closeNavbarOnClick();
     },
-    methods: {}
+    watch: {
+        $route() {
+            this.closeNavbarWithAnimation();
+        }
+    },
+    methods: {
+        closeNavbarOnClick() {
+            const links = document.querySelectorAll('.close-on-click');
+            const navbarToggler = document.querySelector('.navbar-toggler');
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            links.forEach((link) => {
+                link.addEventListener('click', function () {
+                    if (
+                        navbarCollapse &&
+                        navbarCollapse.classList.contains('show')
+                    ) {
+                        navbarToggler.click();
+                    }
+                });
+            });
+            document.addEventListener('click', (e) => {
+                if (
+                    navbarCollapse &&
+                    !navbarCollapse.contains(e.target) &&
+                    !navbarToggler.contains(e.target) &&
+                    navbarCollapse.classList.contains('show')
+                ) {
+                    navbarToggler.click();
+                }
+            });
+        },
+
+        closeNavbarWithAnimation() {
+            const navbarToggler = document.querySelector('.navbar-toggler');
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                navbarToggler.click();
+                setTimeout(() => {
+                    if (navbarCollapse.classList.contains('show')) {
+                        navbarToggler.click();
+                    }
+                }, 300);
+            }
+        }
+    }
 };
 </script>
 
@@ -40,7 +90,8 @@ export default {
             class="navbar navbar-expand-sm nav-bar"
             :class="{
                 'fixed-top':
-                    $route.name == 'vertical-tree' ||
+                    $route.name == 'skill-tree' ||
+                    $route.name == 'my-skill-tree' ||
                     $route.name == 'radial-tree' ||
                     $route.name == 'student-vertical-tree'
             }"
@@ -78,7 +129,17 @@ export default {
                     id="navbarSupportedContent"
                 >
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
-                    <ul class="navbar-nav d-flex bg-light rounded p-2">
+                    <ul class="navbar-nav d-flex bg-white rounded p-2">
+                        <div
+                            v-if="
+                                !sessionDetailsStore.isLoggedIn &&
+                                this.$route.name == 'skill-tree'
+                            "
+                            class="p-2 rounded me-2 mb-1"
+                            style="background-color: #fff3cd; height: 37.6px"
+                        >
+                            You cannot master skills until signed in
+                        </div>
                         <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
@@ -86,20 +147,51 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/" class="nav-link">Hub</RouterLink>
+                            <RouterLink to="/" class="nav-link close-on-click"
+                                >Hub</RouterLink
+                            >
                         </li>
                         <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
                                 (userDetailsStore.role == 'admin' ||
                                     userDetailsStore.role == 'editor') &&
-                                this.$route.name != 'todo'
+                                this.$route.name != 'todo-list'
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/todo" class="nav-link">
+                            <RouterLink
+                                to="/todo"
+                                class="nav-link close-on-click"
+                            >
                                 <span>Todo</span>
                             </RouterLink>
+                        </li>
+                        <li
+                            v-if="
+                                userDetailsStore.role == 'student' &&
+                                this.$route.name != 'my-skill-tree'
+                            "
+                            class="nav-item"
+                        >
+                            <RouterLink
+                                to="/my-skill-tree"
+                                class="nav-link close-on-click"
+                                >My Tree</RouterLink
+                            >
+                        </li>
+                        <li
+                            v-if="
+                                userDetailsStore.role == 'student' &&
+                                this.$route.name != 'skill-tree'
+                            "
+                            class="nav-item"
+                        >
+                            <RouterLink
+                                to="/skill-tree"
+                                class="nav-link close-on-click"
+                                >Full Tree</RouterLink
+                            >
                         </li>
                         <li
                             v-if="
@@ -108,30 +200,25 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/skills" class="nav-link">
+                            <RouterLink
+                                to="/skills"
+                                class="nav-link close-on-click"
+                            >
                                 <span>Collapsible Tree</span>
                             </RouterLink>
                         </li>
-                        <li
-                            v-if="
-                                userDetailsStore.role == 'student' &&
-                                this.$route.name != 'vertical-tree'
-                            "
-                            class="nav-item"
-                        >
-                            <RouterLink to="/vertical-tree" class="nav-link"
-                                >Vertical Tree</RouterLink
-                            >
-                        </li>
+
                         <li
                             v-if="
                                 !sessionDetailsStore.isLoggedIn &&
-                                this.$route.name != 'vertical-tree'
+                                this.$route.name != 'skill-tree'
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/vertical-tree" class="nav-link"
-                                >Vertical Tree</RouterLink
+                            <RouterLink
+                                to="/skill-tree"
+                                class="nav-link close-on-click"
+                                >Skill Tree</RouterLink
                             >
                         </li>
                         <li
@@ -141,7 +228,9 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/radial-tree" class="nav-link"
+                            <RouterLink
+                                to="/radial-tree"
+                                class="nav-link close-on-click"
                                 >Radial Tree (Alpha Version)</RouterLink
                             >
                         </li>
@@ -154,7 +243,10 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/users" class="nav-link">
+                            <RouterLink
+                                to="/users"
+                                class="nav-link close-on-click"
+                            >
                                 <span v-if="userDetailsStore.role == 'admin'"
                                     >Users
                                 </span>
@@ -179,7 +271,10 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/cohorts" class="nav-link">
+                            <RouterLink
+                                to="/cohorts"
+                                class="nav-link close-on-click"
+                            >
                                 <span>Cohorts</span>
                             </RouterLink>
                         </li>
@@ -189,7 +284,7 @@ export default {
                         >
                             <RouterLink
                                 to="/profile-settings"
-                                class="nav-link profile-btn"
+                                class="nav-link profile-btn close-on-click"
                             >
                                 <img
                                     id="user-avatar"
@@ -202,7 +297,10 @@ export default {
                             class="nav-item"
                             v-if="!sessionDetailsStore.isLoggedIn"
                         >
-                            <RouterLink to="/login" class="btn me-2 signin-btn">
+                            <RouterLink
+                                to="/login"
+                                class="btn me-2 mb-1 signin-btn"
+                            >
                                 Sign in
                             </RouterLink>
                         </li>
@@ -334,7 +432,6 @@ p {
     font-weight: 500;
     font-size: 16px;
     line-height: 24px;
-    display: flex;
     align-items: center;
     max-width: fit-content;
     max-height: 40px;
@@ -344,7 +441,7 @@ p {
 .primary-btn:hover,
 .primary-btn:focus,
 .primary-btn:active {
-    border-color: var(--primary-contrast-color) !important;
+    border-color: var(--secondary-contrast-color) !important;
     color: var(--primary-contrast-color);
 }
 
@@ -380,7 +477,28 @@ p {
     fill: var(--secondary-color) !important;
 }
 
+.tertiary-icon {
+    fill: var(--primary-contrast-color) !important;
+}
+
 /* End of themes section */
+
+.red-btn {
+    background-color: #e24d4d;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    /* display: flex; */
+    align-items: center;
+}
+
+.red-btn:hover {
+    color: white;
+    background-color: #e24d4d;
+    border: 1px solid black;
+}
 
 .navbar-toggler {
     background-color: white;

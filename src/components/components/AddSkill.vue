@@ -1042,21 +1042,6 @@ export default {
     border: 1px solid #f2f4f7;
 }
 
-.red-btn {
-    background-color: #e24d4d;
-    color: white;
-    border: 1px solid #d33622;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.red-btn:hover {
-    background-color: #cc3535;
-}
 /* ----------------- a lot of css style for all the various input style ----------------------------  */
 
 /* Parent skill input dropdown elements */

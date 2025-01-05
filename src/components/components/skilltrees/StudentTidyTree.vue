@@ -54,7 +54,13 @@ export default {
             d3Zoom: null,
             // For the loading animation.
             isLoading: true,
-            showSkillPanel: false
+            showSkillPanel: false,
+            // transform object use to translate canvas context
+            transformData: {
+                x: 0,
+                y: 0,
+                k: 0
+            }
         };
     },
     props: ['studentId', 'studentName'],
@@ -145,99 +151,20 @@ export default {
     },
     methods: {
         getAlgorithm() {
-            var skillsWithSubSkillsMoved = [];
-            skillsWithSubSkillsMoved = JSON.parse(
-                JSON.stringify(this.skill.children)
-            );
-
-            // Duplicate super skill node, and make second one a child of the first.
-            // Put all the subskills of the node in the second version.
-            // This is an attempt to show the subskills using only D3.
-            // Other options, such as having them circle around the super skill,
-            // like the D3 and Pixi version, were too complex.
-            function moveSubSkills(parentChildren) {
-                var i = parentChildren.length;
-                while (i--) {
-                    // If the skill is a super skill, and not an "end" super skill.
-                    if (
-                        parentChildren[i].type == 'super' &&
-                        parentChildren[i].position != 'end'
-                    ) {
-                        // Separate the child nodes.
-                        var subSkills = [];
-                        var regularChildSkills = [];
-                        for (
-                            let j = 0;
-                            j < parentChildren[i].children.length;
-                            j++
-                        ) {
-                            if (parentChildren[i].children[j].type == 'sub') {
-                                subSkills.push(parentChildren[i].children[j]);
-                            } else {
-                                regularChildSkills.push(
-                                    parentChildren[i].children[j]
-                                );
-                            }
-                        }
-
-                        // Create a new child node, with the subskills in it.
-                        var superSkillEndNode = {
-                            skill_name: parentChildren[i].skill_name,
-                            type: 'super',
-                            position: 'end',
-                            children: subSkills
-                        };
-
-                        // Empty the child nodes.
-                        parentChildren[i].children = [];
-                        // Add the new node.
-                        parentChildren[i].children.push(superSkillEndNode);
-                        // Add the other child nodes, excluding subskills.
-                        for (let j = 0; j < regularChildSkills.length; j++) {
-                            parentChildren[i].children.push(
-                                regularChildSkills[j]
-                            );
-                        }
-                    }
-
-                    if (typeof parentChildren[i] !== 'undefined') {
-                        /*
-                         * Run the above function again recursively.
-                         */
-                        if (
-                            parentChildren[i].children &&
-                            Array.isArray(parentChildren[i].children) &&
-                            parentChildren[i].children.length > 0
-                        )
-                            moveSubSkills(parentChildren[i].children);
-                    }
-                }
-            }
-
-            moveSubSkills(skillsWithSubSkillsMoved);
-
-            /* Determine width of tree, based on how many nodes are showing
-             * used for the various types of filters,
-             * including: collapsable nodes, grade level filter, and instructors filters skills for students
-             *
-             * The fewer nodes, the less wide the tree should be, otherwise nodes are too far spaced apart.
-             */
-
-            // Height: remains constant
-            const dx = 24;
-
             this.data = {
                 skill_name: 'My skills',
-                children: skillsWithSubSkillsMoved
+                children: this.skill.children
             };
 
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(this.data);
 
-            // Calculate width.
-            let multiplyBy = 5;
-            const dy = (this.width / (this.root.height + 1)) * multiplyBy;
+            // Node width and height
+            // Height
+            const dx = 24;
+            // Width
+            const dy = 270;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);
@@ -298,12 +225,33 @@ export default {
             const links = this.root.links();
             this.context.beginPath();
             for (const link of links) {
+                // Check if the links are in view.
+                // Dont render them if they are not, for performance benefit.
+                const targetNodeInView = this.checkingIfNodeInView(
+                    link.target,
+                    transform
+                );
+                const sourceNodeInView = this.checkingIfNodeInView(
+                    link.source,
+                    transform
+                );
+                if (!targetNodeInView && !sourceNodeInView) {
+                    continue;
+                }
+
                 this.drawLink(link);
             }
 
             // Draw nodes.
             this.context.beginPath();
             for (const node of this.nodes) {
+                // Check if the nodes are in view.
+                // Dont render them if they are not, for performance benefit.
+                const nodeInView = this.checkingIfNodeInView(node, transform);
+                if (!nodeInView) {
+                    continue;
+                }
+
                 if (node.renderCol) {
                     // Render clicked nodes in the color of their corresponding node
                     // on the hidden canvas.
@@ -342,7 +290,14 @@ export default {
             // console.log(node.data.is_mastered);
             if (node.data.type != 'domain') {
                 ctx1.beginPath();
-                ctx1.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+                // Node size
+                let radius;
+                if (node.data.type == 'sub') {
+                    radius = 7.5;
+                } else {
+                    radius = 10;
+                }
+                ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
                 // get the color associate with skill level
                 const skillColor = node.data.level
                     ? this.hexColor(node.data.level)
@@ -381,6 +336,11 @@ export default {
                     ctx1.fillStyle = '#000';
                     ctx1.font = 'normal';
                     ctx1.direction = 'ltr';
+                    // Font size
+                    ctx1.font = '12px Arial';
+                    if (node.data.type == 'sub') {
+                        ctx1.font = '10px Arial';
+                    }
                     ctx1.strokeText(
                         node.data.skill_name,
                         node.y + 15,
@@ -436,8 +396,18 @@ export default {
                 .context(this.context);
 
             // If skill is mastered.
-            if (link.target.data.is_mastered == 1) this.context.lineWidth = 4;
-            else this.context.lineWidth = 1;
+            if (link.target.data.is_mastered == 1) {
+                this.context.lineWidth = 4;
+                this.context.strokeStyle = '#8d6ce7';
+            } else {
+                this.context.lineWidth = 2;
+                // Determine colour of links based on user's theme
+                if (this.userDetailsStore.theme == 'original')
+                    this.context.strokeStyle = '#000';
+                else if (this.userDetailsStore.theme == 'apprentice') {
+                    this.context.strokeStyle = '#000';
+                } else this.context.strokeStyle = '#fff';
+            }
 
             if (
                 (link.source.data.type == 'super' &&
@@ -451,13 +421,6 @@ export default {
 
             this.context.beginPath();
             linkGenerator(link);
-            // Determine colour of links based on user's theme
-            if (this.userDetailsStore.theme == 'original')
-                this.context.strokeStyle = '#000';
-            else if (this.userDetailsStore.theme == 'apprentice') {
-                this.context.strokeStyle = '#950200';
-                this.context.lineWidth = 3;
-            } else this.context.strokeStyle = '#fff';
             this.context.stroke();
         },
         genColor() {
@@ -648,7 +611,12 @@ export default {
                 .duration(700)
                 .call(
                     this.d3Zoom.transform,
-                    d3.zoomIdentity.translate(0, 0).scale(0.3)
+                    d3.zoomIdentity
+                        .translate(
+                            this.context.canvas.width / 2,
+                            this.context.canvas.height / 2
+                        )
+                        .scale(0.3)
                 );
             this.$refs.sliderControl.showScaleLabel();
         },
@@ -702,6 +670,29 @@ export default {
                 default:
                     break;
             }
+        },
+        checkingIfNodeInView(node, transformData) {
+            // Calculate max visible range
+            // Visible range is the rectangle with width and height equal to canvas context
+            // Every time context is translate the visible range is changing too
+
+            const visibleRangeY = transformData.y - this.height;
+            // Calculate real position of node with current scale
+            let realPositionX = node.y * transformData.k;
+            let realPositionY = -node.x * transformData.k;
+
+            // I acctually come up with this fomula base on obserse the changing of translate and node position when translate context
+            // It dosen`t make sense to me but some how woking correctly
+            let combinePosition = transformData.x + realPositionX;
+            if (
+                combinePosition > 0 &&
+                combinePosition < this.width &&
+                transformData.y > realPositionY &&
+                realPositionY > visibleRangeY
+            ) {
+                return true;
+            }
+            return false;
         }
     }
 };

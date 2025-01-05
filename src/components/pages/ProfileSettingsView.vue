@@ -27,14 +27,14 @@ export default {
         DeleteDownVotedSources
     },
     methods: {
-        CheckMCQuestions() {          
+        CheckMCQuestions() {
             fetch('/questions/check-questions');
         }
     }
 };
 </script>
 
-<template>    
+<template>
     <!-- Profile Section -->
     <ProfileDetails />
     <ThemeDetails />
@@ -46,7 +46,13 @@ export default {
     <!-- Bulk upload multiple choice questions --->
     <BulkQuestionsUpload v-if="userDetailsStore.role == 'admin'" />
     <!-- Delete all sources with negative vote amount --->
-    <DeleteDownVotedSources v-if="userDetailsStore.role == 'admin' || userDetailsStore.userName == 'Sgt. Dysxleia' || userDetailsStore.userName =='jonathandyason@gmail.com'" />
+    <DeleteDownVotedSources
+        v-if="
+            userDetailsStore.role == 'admin' ||
+            userDetailsStore.userName == 'Sgt. Dysxleia' ||
+            userDetailsStore.userName == 'jonathandyason@gmail.com'
+        "
+    />
     <!-- 
     Hidden from all users 
     --->
@@ -62,35 +68,18 @@ export default {
         </button>
         <div style="font-size: 14px" class="mt-2">
             <ul>
-            <li><em>To be done by devs and not admins.</em></li>
-            <li><em>
-                Note that this will check ALL unchecked multiple-choice
-                questions, and can be expensive.</em
-            ></li>
+                <li><em>To be done by devs and not admins.</em></li>
+                <li>
+                    <em>
+                        Note that this will check ALL unchecked multiple-choice
+                        questions, and can be expensive.</em
+                    >
+                </li>
             </ul>
         </div>
     </section>
-    <!-- Autogenerate sources for all skills. At the moment, has to be done by programmer --->     
-    <AutoGenerateSources v-if="userDetailsStore.role == 'dev'" />    
+    <!-- Autogenerate sources for all skills. At the moment, has to be done by programmer --->
+    <AutoGenerateSources v-if="userDetailsStore.role == 'dev'" />
 </template>
 
-<style>
-.green-btn {
-    background-color: #36c1af;
-    color: white;
-    border: 1px solid #2ca695;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 1rem;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    height: auto;
-    width: fit-content;
-}
-
-.green-btn:hover {
-    background-color: #3eb3a3;
-    color: white;
-}
-</style>
+<style></style>

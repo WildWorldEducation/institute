@@ -15,14 +15,14 @@ export default {
         return {
             headers: [
                 { text: 'User', value: 'userName' },
-                { text: 'Skill Name', value: 'name' },
-                { text: 'Skill Level', value: 'level' },
+                { text: 'Name', value: 'name' },
+                { text: 'Level', value: 'level' },
                 { text: 'Comment', value: 'comment' },
                 { text: 'Date', value: 'date' }
             ],
             mobileHeaders: [
                 { text: 'User', value: 'userName' },
-                { text: 'Skill Name', value: 'name' },
+                { text: 'Name', value: 'name' },
                 { text: 'Comment', value: 'comment' }
             ],
             dataTableRef: null,
@@ -117,12 +117,9 @@ export default {
                 )
             );
             var options = {
-                weekday: 'long',
                 year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric'
+                month: 'numeric',
+                day: 'numeric'
             };
             finalDate = finalDate.toLocaleDateString('en-US', options);
             return finalDate;
@@ -142,13 +139,16 @@ export default {
             :loading="skillEditsLoading"
             table-class-name="customize-table"
             buttons-pagination
-            theme-color="#a48be6"
             @click-row="goToComparePage"
             class="d-none d-md-block"
         >
-            <!-- --- Loading Part --- -->
+            <!-- Loading animation -->
             <template #loading>
-                <img src="/images/loading.gif" alt="loading data" />
+                <div
+                    class="d-flex justify-content-center align-items-center mt-5"
+                >
+                    <span class="loader"></span>
+                </div>
             </template>
             <!-- --- Skill Name Router Column --- -->
             <template #item-name="{ name, skill_id, user_id }">
@@ -171,13 +171,16 @@ export default {
             :loading="skillEditsLoading"
             table-class-name="customize-table"
             buttons-pagination
-            theme-color="#a48be6"
             @click-row="goToComparePage"
             class="d-md-none d-block"
         >
-            <!-- --- Loading Part --- -->
+            <!-- Loading animation -->
             <template #loading>
-                <img src="/images/loading.gif" alt="loading data" />
+                <div
+                    class="d-flex justify-content-center align-items-center mt-5"
+                >
+                    <span class="loader"></span>
+                </div>
             </template>
         </Vue3EasyDataTable>
     </div>
@@ -192,7 +195,7 @@ export default {
 /* +-+-+ Vue Easy Table Custom CSS +-+-+  */
 .customize-table {
     --easy-table-body-row-font-size: 16px;
-    --easy-table-header-font-size: 16px;
+    --easy-table-header-font-size: 18px;
     --easy-table-header-font-color: var(--primary-color);
     --easy-table-header-background-color: #fefefe;
     --easy-table-header-height: 50px;
@@ -221,4 +224,26 @@ export default {
         padding: 0px;
     }
 }
+
+/* Loading animation */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* End of loading animation */
 </style>

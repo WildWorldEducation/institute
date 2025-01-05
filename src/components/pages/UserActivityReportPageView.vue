@@ -1,7 +1,7 @@
 <script>
 // Import the stores.
 import { useUsersStore } from '../../stores/UsersStore';
-
+import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 // Components
 import UserFlagActions from '../components/user-activity-report/UserFlagActions.vue';
 import UserResourceActions from '../components/user-activity-report/UserResourceActions.vue';
@@ -13,8 +13,10 @@ import UserSkillAwaitingForApprovalActions from '../components/user-activity-rep
 export default {
     setup() {
         const usersStore = useUsersStore();
+        const userDetailsStore = useUserDetailsStore();
         return {
-            usersStore
+            usersStore,
+            userDetailsStore
         };
     },
     data() {
@@ -36,7 +38,10 @@ export default {
             mcQuestions: [],
             resources: [],
             flags: [],
-            skillEdits: []
+            skillEdits: [],
+            // Tutorial tooltips
+            isTutorialComplete: false,
+            showTutorialTip1: false
         };
     },
     components: {
@@ -50,6 +55,7 @@ export default {
     async created() {
         // Get the user's details.
         await this.getUserDetails();
+        this.checkIfTutorialComplete();
     },
     methods: {
         async getUserDetails() {
@@ -65,6 +71,36 @@ export default {
                     this.user.avatar = this.usersStore.users[i].avatar;
                 }
             }
+        },
+        // Tutorial
+        async checkIfTutorialComplete() {
+            const result = await fetch(
+                '/users/check-tutorial-progress/user-activity-report/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            if (data == 0) {
+                this.isTutorialComplete = false;
+                this.showTutorialTip1 = true;
+            } else if (data == 1) {
+                this.isTutorialComplete = true;
+            }
+        },
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+                this.markTutorialComplete();
+            }
+        },
+        markTutorialComplete() {
+            let url =
+                '/users/mark-tutorial-complete/user-activity-report/' +
+                this.userDetailsStore.userId;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch(url, requestOptions);
         }
     }
 };
@@ -346,6 +382,20 @@ export default {
             </div>
         </div>
     </div>
+
+    <!-- Editor Introduction modal -->
+    <div v-if="showTutorialTip1" class="modal">
+        <div class="modal-content">
+            <div v-if="showTutorialTip1">
+                <p>This is the User Activity List page.</p>
+                <p>It shows what editors have been up to on the site.</p>
+
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style>
@@ -624,6 +674,15 @@ export default {
 
     .modal-content {
         top: 25%;
+    }
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 480px) {
+    /* Modal Content/Box */
+    .modal-content {
+        width: 90%;
+        margin-top: 30%;
     }
 }
 </style>

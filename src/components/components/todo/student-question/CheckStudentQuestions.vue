@@ -109,103 +109,11 @@ export default {
 
 <template>
     <div>
-        <div class="container-fluid">
-            <StudentQuestionList
-                :studentQuestion="questions"
-                :loadingQuestion="loadingQuestion"
-            />
-        </div>
+        <StudentQuestionList
+            :studentQuestion="questions"
+            :loadingQuestion="loadingQuestion"
+        />
     </div>
 </template>
 
-<style>
-.assessment {
-    border: 1px solid #dbd0f9;
-    margin: 0px;
-    padding: 10px 6px;
-}
-
-#assessment-tile {
-    font-family: 'Poppins';
-    font-size: 20px;
-    font-weight: 900;
-    line-height: 28px;
-    letter-spacing: 0em;
-    text-align: left;
-    color: #ad9af3;
-}
-
-.assessment-link {
-    font-family: 'Poppins';
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 28px;
-    letter-spacing: 0em;
-    text-align: left;
-    text-decoration: none;
-    color: #667085;
-}
-
-#student-name {
-    color: var(--primary-color);
-}
-
-#date {
-    color: #dbd0f9;
-}
-
-.assessment-link:hover #date {
-    color: var(--primary-color);
-    cursor: pointer;
-}
-
-.assessment-link:hover {
-    color: var(--primary-color);
-    cursor: pointer;
-}
-
-.assessment-link:hover #student-name {
-    color: var(--primary-color);
-    cursor: pointer;
-}
-
-#question-header {
-    padding-top: 6px;
-    padding-bottom: 6px;
-    padding-left: 20px;
-    background: #e8e2f9;
-    border: 1px solid #dbd0f9;
-}
-
-#list-body {
-    height: 340px;
-    overflow: auto;
-}
-
-.green-btn {
-    background-color: #36c1af;
-    color: white;
-    border: 1px solid #2ca695;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-    height: 44px;
-}
-
-.red-btn {
-    background-color: #da7033;
-    color: white;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-    height: 44px;
-}
-</style>
+<style></style>
