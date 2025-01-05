@@ -1748,7 +1748,7 @@ router.get('/generate-dummy-path', async (req, res) => {
 })
 
 router.get('/icon-list', (req, res) => {
-    let sqlQuery = "SELECT * FROM skill_icon"
+    let sqlQuery = "SELECT skills.url, skills.icon FROM skills"
     try {
         conn.query(sqlQuery, (err, result) => {
             if (err) {

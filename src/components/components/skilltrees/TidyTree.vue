@@ -219,7 +219,7 @@ export default {
 
         // =================================================================================
         // For the loading animation.
-        // this.getIconPath()
+        await this.getIconPath();
 
         this.isLoading = false;
     },
@@ -405,11 +405,11 @@ export default {
                 }
                 ctx1.beginPath();
                 // ctx1.arc(node.y, node.x, radius * 1.5, 0, 2 * Math.PI);
-                let xPostion = node.y;
+                let xPosition = node.y;
                 if (node.data.children.length > 0) {
-                    xPostion = xPostion - 180;
+                    xPosition = xPosition - 180;
                 }
-                ctx1.roundRect(xPostion, node.x - 20, 180, 40, 5);
+                ctx1.roundRect(xPosition, node.x - 20, 180, 40, 5);
                 // get the color associate with skill level
                 const skillColor = node.data.level
                     ? this.hexColor(node.data.level)
@@ -459,17 +459,17 @@ export default {
             if (node.data.type != 'domain') {
                 if (this.scale >= 0.75 && this.iconDictionary) {
                     // find path in skill icon dictionary
-                    // const path = this.iconDictionary[node.data.url];
+                    const path = this.iconDictionary[node.data.url];
 
                     const img = new Image();
 
-                    // img.src = 'data:image/png;base64,' + path;
-                    img.src = this.base64Image;
-                    let xPostion = node.y + 2;
+                    img.src = path;
+                    //img.src = this.base64Image;
+                    let xPosition = node.y + 2;
                     if (node.data.children.length > 0) {
-                        xPostion = xPostion - 178;
+                        xPosition = xPosition - 178;
                     }
-                    ctx1.drawImage(img, xPostion, node.x - 17, 32, 32);
+                    ctx1.drawImage(img, xPosition, node.x - 17, 32, 32);
                 }
             }
 
@@ -499,12 +499,12 @@ export default {
                     const showName = isSearched
                         ? `${node.data.skill_name} ◀`
                         : node.data.skill_name;
-                    let xPostion = node.y + 45;
+                    let xPosition = node.y + 45;
                     if (node.data.children.length > 0) {
-                        xPostion = xPostion - 180;
+                        xPosition = xPosition - 180;
                     }
-                    ctx1.strokeText(showName, xPostion, node.x + 2, 120);
-                    ctx1.fillText(showName, xPostion, node.x + 2, 120);
+                    ctx1.strokeText(showName, xPosition, node.x + 4, 120);
+                    ctx1.fillText(showName, xPosition, node.x + 4, 120);
                 } else {
                     ctx1.beginPath();
                     ctx1.strokeStyle = '#FFF';
@@ -514,10 +514,10 @@ export default {
                     const showName = isSearched
                         ? `${node.data.skill_name} ▶`
                         : node.data.skill_name;
-                    let xPostion = node.y + 5;
+                    let xPosition = node.y + 5;
 
-                    ctx1.strokeText(showName, xPostion, node.x + 2);
-                    ctx1.fillText(showName, xPostion, node.x + 2);
+                    ctx1.strokeText(showName, xPosition, node.x + 2);
+                    ctx1.fillText(showName, xPosition, node.x + 2);
                 }
             }
 
@@ -1302,7 +1302,7 @@ export default {
             const resData = await res.json();
             // Prepare the icon path array into a hashmap/dictionary for even better performant
             this.iconDictionary = Object.fromEntries(
-                resData.map((icon) => [icon.skill_url, icon.path])
+                resData.map((icon) => [icon.url, icon.icon])
             );
         },
         async fetchIcon() {
@@ -1370,11 +1370,11 @@ export default {
                 </button>
             </div> -->
             <!-- <div class="d-flex">node drew: {{ nodeDrew }}</div> -->
-            <div class="d-flex">
+            <!-- <div class="d-flex">
                 <button type="button" @click="generatePath">
                     Click me !!!
                 </button>
-            </div>
+            </div> -->
         </div>
     </div>
 </template>
