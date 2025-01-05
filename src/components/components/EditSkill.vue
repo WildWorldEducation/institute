@@ -7,6 +7,7 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 
 import { useRouter } from 'vue-router';
 import LoadingModal from './skill-edit/loadingModal.vue';
+import FailsModal from './share-components/FailsModal.vue';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
@@ -103,7 +104,8 @@ export default {
             loadingStatus: '',
             showLoadingModal: false,
             originalSkill: {},
-            parentLevel: ''
+            parentLevel: '',
+            showImageSizeWarn: false
         };
     },
     async mounted() {
@@ -254,9 +256,12 @@ export default {
             var vm = this;
 
             reader.onload = (e) => {
+                if (e.target.result.length > 255) {
+                    this.showImageSizeWarn = true;
+                    return;
+                }
                 vm.image = e.target.result;
                 this.skillNodeIcon = e.target.result;
-
                 this.skill.icon = this.skillNodeIcon;
             };
             reader.readAsDataURL(file);
@@ -547,10 +552,14 @@ export default {
         },
         closeModal() {
             this.showLoadingModal = false;
+        },
+        closeImageSizeWarnModal() {
+            this.showImageSizeWarn = false;
         }
     },
     components: {
-        LoadingModal
+        LoadingModal,
+        FailsModal
     },
     computed: {
         isFormChanged() {
@@ -1281,6 +1290,7 @@ export default {
             </div>
         </div>
     </div>
+    <!-- ================ || Modal Components || ================ -->
     <!-- Warning Modal  -->
     <div v-if="showModal" id="myModal" class="modal">
         <!-- Modal content -->
@@ -1351,6 +1361,12 @@ export default {
         :loadingStatus="loadingStatus"
         :showLoadingModal="showLoadingModal"
         :closeModal="closeModal"
+    />
+    <!-- Warn The User if the node icon is too big -->
+    <FailsModal
+        v-if="showImageSizeWarn"
+        :handleOkClick="closeImageSizeWarnModal"
+        message="Your image is too big !"
     />
 </template>
 
