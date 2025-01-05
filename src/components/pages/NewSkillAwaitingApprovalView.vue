@@ -1,5 +1,4 @@
 <script>
-import { RouterLink } from 'vue-router';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUsersStore } from '../../stores/UsersStore.js';
 import ApproveNewSkillModal from '../components/newSkillDetails/modals/ApproveNewSkillModal.vue';
@@ -313,7 +312,7 @@ export default {
                 >
                     Edit
                 </router-link>
-                <button class="btn secondary-btn" @click="handleSaveBtnClick">
+                <button class="btn primary-btn" @click="handleSaveBtnClick">
                     Approve
                 </button>
             </div>
