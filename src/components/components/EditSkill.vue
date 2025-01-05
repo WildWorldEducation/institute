@@ -8,6 +8,7 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import { useRouter } from 'vue-router';
 import LoadingModal from './skill-edit/loadingModal.vue';
 import FailsModal from './share-components/FailsModal.vue';
+import TooltipBtn from './share-components/TooltipBtn.vue';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
@@ -559,7 +560,8 @@ export default {
     },
     components: {
         LoadingModal,
-        FailsModal
+        FailsModal,
+        TooltipBtn
     },
     computed: {
         isFormChanged() {
@@ -879,7 +881,19 @@ export default {
                     <div
                         class="mb-3 row d-flex justify-content-center justify-content-md-start w-100"
                     >
-                        <h2 class="secondary-heading h4">Image</h2>
+                        <div
+                            class="d-flex flex-row gap-2 align-items-start my-3"
+                        >
+                            <h2 class="secondary-heading h4">Image</h2>
+                            <TooltipBtn
+                                class="mt-1"
+                                toolTipText="A detailed image to use on the forum page."
+                                bubbleWidth="350px"
+                                trianglePosition="left"
+                                absoluteTop="37px"
+                            />
+                        </div>
+
                         <div v-if="!iconImage">
                             <input
                                 class="form-control d-none"
@@ -979,7 +993,18 @@ export default {
                     <div
                         class="mb-3 row d-flex justify-content-center justify-content-md-start w-100"
                     >
-                        <h2 class="secondary-heading h4">Icon</h2>
+                        <div
+                            class="d-flex flex-row gap-2 align-items-start my-3"
+                        >
+                            <h2 class="secondary-heading h4">Icon</h2>
+                            <TooltipBtn
+                                class="mt-1"
+                                toolTipText="A simple icon to use in a vertical or radial tree."
+                                bubbleWidth="350px"
+                                trianglePosition="left"
+                                absoluteTop="37px"
+                            />
+                        </div>
                         <div v-if="!skillNodeIcon">
                             <input
                                 class="form-control d-none"
