@@ -37,15 +37,17 @@ export default {
                 });
         },
         async addUserNameToSkillArray() {
-            const resultArray = this.newSkillsAwaitingApproval.map((skill) => {
-                const user = this.usersStore.findUserById(skill.user_id);
-
-                return { ...skill, username: user.username };
-            });
-
-            this.newSkillsAwaitingApproval = resultArray;
-            console.log('anc nsl mkd');
-            console.log(this.newSkillsAwaitingApproval);
+            for (let i = 0; i < this.newSkillsAwaitingApproval.length; i++) {
+                for (let j = 0; j < this.usersStore.users.length; j++) {
+                    if (
+                        this.newSkillsAwaitingApproval[i].user_id ==
+                        this.usersStore.users[j].id
+                    ) {
+                        this.newSkillsAwaitingApproval[i].username =
+                            this.usersStore.users[j].username;
+                    }
+                }
+            }
         }
     }
 };
