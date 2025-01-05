@@ -725,7 +725,7 @@ router.put(
 
             let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
-                    (id, version_number, user_id, name, description, icon_image, icon
+                    (id, version_number, user_id, name, description, icon_image, icon,
                     mastery_requirements, level, skill_history.order, comment)
                     VALUES
                     (${conn.escape(req.params.id)},
@@ -734,13 +734,14 @@ router.put(
                     ${conn.escape(req.body.name)},                    
                     ${conn.escape(req.body.description)},
                     ${conn.escape(iconUrl)},
-                    ${conn.escape(req.body.icon)}
+                    ${conn.escape(req.body.icon)},
                     ${conn.escape(
                 req.body.mastery_requirements
             )},                    
                     ${conn.escape(req.body.level)},                    
                     ${conn.escape(req.body.order)},
                     ${conn.escape(req.body.comment)});`;
+
             conn.query(addVersionHistoryInsertSQLQuery, async (err) => {
                 try {
                     if (err) {
@@ -763,7 +764,8 @@ router.put(
                         skills.order = ${conn.escape(req.body.order)}, 
                         version_number = ${conn.escape(versionNumber)}, 
                         edited_date = current_timestamp, 
-                        is_human_edited = 1
+                        is_human_edited = 1,
+                        icon = ${conn.escape(req.body.icon)}
                         WHERE id = ${conn.escape(req.params.id)};`;
 
                     conn.query(updateRecordSQLQuery, async (err, results) => {
@@ -1660,6 +1662,7 @@ const openai = new OpenAI({
 // })
 const vectorList = require('../../vector.json');
 const { generateIconForSkill } = require('../utilities/generateIconImage');
+const { reactive } = require('vue');
 
 router.get('/insert-vectors-to-db', async (req, res) => {
     try {
