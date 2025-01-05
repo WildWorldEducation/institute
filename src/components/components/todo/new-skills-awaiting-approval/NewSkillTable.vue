@@ -147,8 +147,8 @@ export default {
             @click-row="goToSkillDetail"
             class="d-none d-md-block"
         >
-            <!-- --- Loading Part --- -->
-            <template #loading>
+            <!-- --- Loading Spinner --- -->
+            <template v-if="$parent.loadingSkill" #loading>
                 <LoadingSpinner />
             </template>
         </Vue3EasyDataTable>
