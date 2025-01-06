@@ -442,6 +442,14 @@ export default {
     gap: 3px;
 }
 
+.btn:disabled {
+    background-color: #d6d6d6 !important;
+    border-color: #d6d6d6 !important;
+    color: #999 !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+}
+
 #header-tile {
     color: #667085;
     font-family: 'Poppins' sans-serif;
