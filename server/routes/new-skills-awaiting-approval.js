@@ -13,7 +13,10 @@ const conn = require('../config/db');
 
 //Middlewares
 const isAuthenticated = require('../middlewares/authMiddleware');
-const { sendMail, sendNewSkillNotificationMail } = require('../utilities/mailSender');
+const {
+    sendMail,
+    sendNewSkillNotificationMail
+} = require('../utilities/mailSender');
 const { recordUserAction } = require('../utilities/record-user-action');
 const { stringToSnakeCase } = require('../utilities/formatter');
 
@@ -86,7 +89,7 @@ router.get('/show/:id', (req, res, next) => {
                 if (results[0]) {
                     return res.json(results[0]);
                 }
-                return res.json({ mess: 'no result' })
+                return res.json({ mess: 'no result' });
             } catch (err) {
                 next(err);
             }
@@ -133,21 +136,27 @@ router.post(
                         if (err) {
                             throw err;
                         } else {
-                            sqlQuery = `SELECT users.username FROM users WHERE users.id = ${conn.escape(data.user_id)}`
+                            sqlQuery = `SELECT users.username FROM users WHERE users.id = ${conn.escape(
+                                data.user_id
+                            )}`;
                             conn.query(sqlQuery, async (err, result) => {
-                                if (err)
-                                    throw err;
+                                if (err) throw err;
                                 const userName = result[0].username;
-                                const newSkillData = { ...data, userName: userName }
+                                const newSkillData = {
+                                    ...data,
+                                    userName: userName
+                                };
                                 // send notification email to web master
-                                await sendNewSkillNotificationMail(newSkillData);
+                                await sendNewSkillNotificationMail(
+                                    newSkillData
+                                );
                                 res.end();
-                            })
+                            });
                         }
                     }
                 );
             } catch (err) {
-                console.error(err)
+                console.error(err);
                 next(err);
             }
         });
@@ -164,7 +173,7 @@ router.delete('/:id', (req, res, next) => {
         const deleteQuery = `DELETE 
                              FROM new_skills_awaiting_approval
                              WHERE id = ${conn.escape(req.params.id)}`;
-        const action = req.query.action
+        const action = req.query.action;
 
         // Only record delete action if new skill is dismiss because if it is approve then delete we only record approve action
 
@@ -174,7 +183,6 @@ router.delete('/:id', (req, res, next) => {
                     throw err;
                 }
                 if (action === 'dismiss') {
-
                     recordUserAction(
                         {
                             userId: req.session.userId,
@@ -186,7 +194,7 @@ router.delete('/:id', (req, res, next) => {
                             if (err) {
                                 throw err;
                             } else {
-                                res.end()
+                                res.end();
                             }
                         }
                     );
@@ -196,7 +204,6 @@ router.delete('/:id', (req, res, next) => {
                 next(err);
             }
         });
-
     } else {
         res.redirect('/login');
     }
@@ -218,13 +225,13 @@ router.post('/accept/:id', async (req, res, next) => {
             mastery_requirements: req.body.mastery_requirements,
             type: req.body.type,
             level: req.body.level,
-            is_human_edited: true,
+            is_human_edited: true
         };
 
         try {
             /*
-         * Send icon image to S3
-         */
+             * Send icon image to S3
+             */
             // Check if empty.
             if (req.body.icon_image.length > 1) {
                 // Get file from Base64 encoding (client sends as base64)
@@ -271,10 +278,8 @@ router.post('/accept/:id', async (req, res, next) => {
             const insertQuery = `INSERT INTO skills SET ?;`;
 
             conn.query(insertQuery, data, (err, result) => {
-
                 if (err) {
                     throw err;
-
                 }
                 recordUserAction(
                     {
@@ -287,13 +292,12 @@ router.post('/accept/:id', async (req, res, next) => {
                         if (err) {
                             throw err;
                         }
-                        res.json({ mess: 'ok' })
+                        res.json({ newSkillId: result.insertId });
                     }
                 );
-
             });
         } catch (error) {
-            console.error(error)
+            console.error(error);
             res.status = 500;
             res.end;
         }
@@ -301,9 +305,6 @@ router.post('/accept/:id', async (req, res, next) => {
         res.redirect('/login');
     }
 });
-
-
-
 
 /**
  * Edit skill submitted for review.
@@ -316,8 +317,12 @@ router.put('/:id', (req, res, next) => {
                              UPDATE new_skills_awaiting_approval
                              SET name = ${conn.escape(req.body.name)},
                                  parent = ${conn.escape(req.body.parent)},
-                                 mastery_requirements = ${conn.escape(req.body.mastery_requirements)},
-                                 icon_image = ${conn.escape(req.body.icon_image)},
+                                 mastery_requirements = ${conn.escape(
+                                     req.body.mastery_requirements
+                                 )},
+                                 icon_image = ${conn.escape(
+                                     req.body.icon_image
+                                 )},
                                  type = ${conn.escape(req.body.type)},
                                  level = ${conn.escape(req.body.level)},
                                  user_id = ${conn.escape(req.body.user_id)}
@@ -338,13 +343,13 @@ router.put('/:id', (req, res, next) => {
                         if (err) {
                             throw err;
                         } else {
-                            res.end()
+                            res.end();
                         }
                     }
                 );
                 res.end();
             } catch (err) {
-                console.error(err)
+                console.error(err);
                 next(err);
             }
         });
@@ -352,7 +357,6 @@ router.put('/:id', (req, res, next) => {
         res.redirect('/login');
     }
 });
-
 
 // Export the router for app to use.
 module.exports = router;

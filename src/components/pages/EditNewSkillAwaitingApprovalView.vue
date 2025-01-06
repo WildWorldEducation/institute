@@ -422,7 +422,7 @@ export default {
 </script>
 
 <template>
-    <div class="container p-2 bg-light rounded">
+    <div class="container p-3 bg-light rounded">
         <!-- Page Heading -->
         <h1 class="heading">
             <span v-if="skillAwaitingApproval.type != 'domain'"
@@ -437,7 +437,7 @@ export default {
                 <div class="row mt-3">
                     <div class="col-12 col-md-8 col-lg-5">
                         <div class="mb-3">
-                            <h2 class="heading h4">Name</h2>
+                            <h2 class="secondary-heading h4">Name</h2>
                             <input
                                 v-model="skillAwaitingApproval.name"
                                 class="form-control"
@@ -467,7 +467,7 @@ export default {
                     >
                         <div class="col col-md-8 col-lg-5 mt-2">
                             <!-- Custom Dropdown -->
-                            <h2 class="heading h4">Level</h2>
+                            <h2 class="secondary-heading h4">Level</h2>
                             <div class="d-flex flex-column position-relative">
                                 <div
                                     :class="[
@@ -518,7 +518,7 @@ export default {
             <!-- Skills Types Radio choose -->
             <div class="row">
                 <div class="col-12 col-md-8 col-lg-5 mt-3">
-                    <h2 class="heading h4">Node Type</h2>
+                    <h2 class="secondary-heading h4">Node Type</h2>
                     <div class="row p-0 m-0">
                         <div class="form-check col-6 col-md-5 my-2">
                             <label class="control control-checkbox">
@@ -615,7 +615,7 @@ export default {
                         v-if="skillAwaitingApproval.type != 'sub'"
                         class="mb-3"
                     >
-                        <h2 class="heading h4">Parent</h2>
+                        <h2 class="secondary-heading h4">Parent</h2>
                         <div class="row mt-3">
                             <div class="col position-relative">
                                 <input
@@ -681,7 +681,7 @@ export default {
                     <div
                         class="mb-3 row d-flex justify-content-center justify-content-md-start w-100"
                     >
-                        <h2 class="heading h4">Icon</h2>
+                        <h2 class="secondary-heading h4">Icon</h2>
                         <div v-if="!iconImage">
                             <input
                                 class="form-control d-none"
@@ -770,7 +770,7 @@ export default {
             <!-- Mastery Requirement summernote -->
             <div v-if="skillAwaitingApproval.type != 'domain'" class="mb-3">
                 <div class="d-flex justify-content-between">
-                    <h2 class="heading h4">Mastery Requirements</h2>
+                    <h2 class="secondary-heading h4">Mastery Requirements</h2>
                 </div>
 
                 <textarea

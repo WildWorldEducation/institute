@@ -19,7 +19,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
             isGoogleAuth: null,
             theme: 'original',
             gradeFilter: null,
-            subjectFilters: []
+            subjectFilters: [],
+            reputationScore: null
         };
     },
     actions: {
@@ -46,6 +47,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.gradeFilter = data.grade_filter;
                 this.theme = data.theme;
                 this.subjectFilters = data.subjectFilters;
+                this.reputationScore = data.reputation_score;
 
                 if (this.role == 'student') {
                     await this.getInstructor();

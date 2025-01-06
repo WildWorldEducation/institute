@@ -39,6 +39,7 @@ const editSelfPermission = require('../middlewares/users/editSelfMiddleware');
 
 require('dotenv').config();
 const { saveUserAvatarToAWS } = require('../utilities/save-image-to-aws');
+const { sql } = require('googleapis/build/src/apis/sql');
 const userAvatarImagesBucketName = process.env.S3_USER_AVATAR_IMAGE_BUCKET_NAME;
 const bucketRegion = process.env.S3_BUCKET_REGION;
 router.post('/new-user/add', (req, res, next) => {
@@ -476,7 +477,7 @@ router.get('/list', isAuthenticated, (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // Note: avatar has query param to deal with image caching by browser,
         // in case image is changed.
-        let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role 
+        let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, reputation_score
         FROM users
         WHERE is_deleted = 0;`;
 
@@ -571,7 +572,7 @@ router.get('/show/:id', (req, res, next) => {
         // in case image is changed.
         let sqlQuery = `
     SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, is_deleted, is_google_auth, grade_filter, theme,
-    is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter
+    is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter, reputation_score
     FROM users        
     WHERE id = ${conn.escape(req.params.id)} 
     AND is_deleted = 0
@@ -1497,6 +1498,77 @@ router.put(
         });
     }
 );
+
+/*
+ * Reputation system
+ */
+// Increase reputation score.
+router.put(
+    '/increase-reputation/:editorId/:userId',
+    isAuthenticated,
+    (req, res, next) => {
+        // Increase user reputation score.
+        let reputationSQLQuery = `
+    UPDATE users
+    SET reputation_score = reputation_score + 1
+    WHERE id = ${conn.escape(req.params.userId)};`;
+
+        conn.query(reputationSQLQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                // Record that the user received a reputution point in the user_actions table
+                const actionData = {
+                    action: 'receive-reputation',
+                    content_id: req.body.contentId,
+                    user_id: req.params.userId,
+                    content_type: req.body.contentType
+                };
+
+                const receiveReputationActionQuery = `INSERT INTO user_actions SET ?`;
+                conn.query(receiveReputationActionQuery, actionData, (err) => {
+                    if (err) throw err;
+
+                    // Record that the editor gave a reputution point in the user_actions table
+                    const actionData = {
+                        action: 'give-reputation',
+                        content_id: req.body.contentId,
+                        user_id: req.params.editorId,
+                        content_type: req.body.contentType
+                    };
+                    const giveReputationActionQuery = `INSERT INTO user_actions SET ?`;
+                    conn.query(giveReputationActionQuery, actionData, (err) => {
+                        if (err) throw err;
+                        res.end();
+                    });
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+);
+
+// Show events where the user received reputation points.
+router.get('/reputation-events/:userId', isAuthenticated, (req, res, next) => {
+    res.setHeader('Content-Type', 'application/json');
+    let sqlQuery = `SELECT *
+    FROM user_actions
+    WHERE user_id = ${conn.escape(req.params.userId)}
+    AND action = 'receive-reputation';`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.json(results);
+        } catch (err) {
+            next(err);
+        }
+    });
+});
 
 // router.get('*', (req, res) => {
 //     res.redirect('/');

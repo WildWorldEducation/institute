@@ -134,7 +134,7 @@ export default {
             <template #item-name="{ name, essay_question_id, user_id }">
                 <RouterLink
                     class="cell-link"
-                    :to="`/content-edit/${essay_question_id}/${user_id}/comparison?type=mcquestion`"
+                    :to="`/content-edit/${essay_question_id}/${user_id}/comparison?type=essayquestion`"
                     >{{ name }}</RouterLink
                 >
             </template>

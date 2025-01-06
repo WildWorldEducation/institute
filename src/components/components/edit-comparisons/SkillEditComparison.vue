@@ -199,7 +199,12 @@ export default {
 
 <template>
     <div class="mb-2 container-fluid bg-light rounded p-3">
-        <h1 class="heading">Compare Changes</h1>
+        <h1 class="heading">Review Suggested Update</h1>
+        <p>
+            {{ $parent.userThatSubmittedEdit.username }} (reputation score:
+            {{ $parent.userThatSubmittedEdit.reputationScore }}) suggested the
+            following changes to this skill page.
+        </p>
         <hr />
         <!-- ---General info of skills -->
         <h2 class="secondary-heading h4">Skill</h2>
