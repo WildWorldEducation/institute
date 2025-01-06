@@ -536,4 +536,9 @@ p {
 .signin-btn {
     border: 1px solid var(--primary-color);
 }
+/* Tooltip Style */
+.tooltip-inner {
+  background-color: var(--primary-color);
+  color: var(--primary-contrast-color);
+}
 </style>

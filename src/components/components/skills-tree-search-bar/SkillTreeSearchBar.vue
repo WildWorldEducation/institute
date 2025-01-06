@@ -8,7 +8,6 @@ import AiSearchSuggestToolTip from './tooltips/AiSearchSuggestToolTip.vue';
 import LoginWarningToolTip from './tooltips/LoginWarningToolTip.vue';
 import TurnOffAiModeToolTip from './tooltips/TurnOffAiModeToolTip.vue';
 import TurnOnAiModeToolTip from './tooltips/TurnOnAiModeToolTip.vue';
-
 export default {
     setup() {
         const skillsStore = useSkillsStore();
@@ -25,6 +24,8 @@ export default {
     props: ['findNode', 'clearResults', 'skillTreeNode'],
     data: () => {
         return {
+            tooltipInstance: null, // To keep track of the tooltip instance
+            tooltipTimeout: null, // To store the timeout ID
             resultsSkills: [],
             aiMode: false,
             searchText: '',
@@ -64,7 +65,12 @@ export default {
             this.isLogin = true;
         }
     },
-
+    mounted() {
+        this.initializeTooltip(); // Initialize the tooltip when the component mounts
+    },
+    beforeDestroy() {
+        this.cleanupTooltip(); // Cleanup the tooltip when the component is destroyed
+    },
     methods: {
         getKeyWordResults(searchText) {
             let results = [];
@@ -237,6 +243,44 @@ export default {
                     block: 'nearest'
                 });
             }
+        },
+        initializeTooltip() {
+            // Initialize tooltip inside the component
+            const tooltipTriggerElement = this.$refs.searchBar;
+            if (tooltipTriggerElement) {
+                // Create tooltip instance only inside the component
+                this.tooltipInstance = new bootstrap.Tooltip(
+                    tooltipTriggerElement,
+                    {
+                        placement: 'bottom',
+                        title: 'Type here to search for skills.',
+                        trigger: 'manual', // Manual trigger for better control
+                        container: this.$refs.searchBar
+                    }
+                );
+
+                // Show the tooltip
+                this.tooltipInstance.show();
+
+                // Set timeout to hide the tooltip after 3 seconds
+                this.tooltipTimeout = setTimeout(() => {
+                    if (this.tooltipInstance) {
+                        this.tooltipInstance.hide();
+                    }
+                }, 3000);
+            }
+        },
+        cleanupTooltip() {
+            // Destroy the tooltip immediately when the component is destroyed
+            if (this.tooltipInstance) {
+                this.tooltipInstance.hide(); // Hide tooltip immediately
+                this.tooltipInstance.dispose(); // Dispose the tooltip
+            }
+
+            // Clear timeout if it's still pending
+            if (this.tooltipTimeout) {
+                clearTimeout(this.tooltipTimeout);
+            }
         }
     },
     components: {
@@ -247,7 +291,6 @@ export default {
         TurnOnAiModeToolTip,
         LoginWarningToolTip
     },
-
     watch: {
         // We use watcher instead of compute because we made API call
         searchText: {
@@ -278,7 +321,13 @@ export default {
 
 <template>
     <!-- Search Feature -->
-    <div :class="['search-bar', resultsSkills.length > 0 && 'have-results']">
+    <div
+        :class="['search-bar', resultsSkills.length > 0 && 'have-results']"
+        ref="searchBar"
+        data-bs-toggle="tooltip"
+        data-bs-placement="bottom"
+        title="Type here to search for skills."
+    >
         <div class="d-flex align-items-center p-1">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -362,24 +411,7 @@ export default {
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(140, 108, 228, 0.5);
-    animation: pulse 2s infinite;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
-
-@keyframes pulse {
-    0%,
-    100% {
-        box-shadow: 0 4px 15px rgba(140, 108, 228, 0.5);
-    }
-    50% {
-        box-shadow: 0 6px 20px rgba(140, 108, 228, 0.8);
-    }
-}
-
-/* .search-bar:hover {
-    transform: scale(1.02);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-} */
 
 .have-results {
     border-bottom: 0px !important ;
