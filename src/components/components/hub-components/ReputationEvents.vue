@@ -62,7 +62,8 @@ export default {
     <h2 class="secondary-heading h4">Reputation Awards</h2>
     <div id="background">
         <div v-for="reputationEvent in reputationEvents">
-            <div class="text-white">
+            <div class="text-white bg-success rounded">
+                <span class="badge text-bg-light">+1</span>
                 {{ reputationEvent.formattedContentType }}
                 <span v-if="reputationEvent.content_type != 'new_skill'"
                     >improved</span
