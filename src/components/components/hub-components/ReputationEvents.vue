@@ -22,7 +22,11 @@ export default {
             this.reputationEvents[i].formattedDate = this.formatDate(
                 this.reputationEvents[i].create_date
             );
+            this.reputationEvents[i].formattedContentType =
+                this.reputationEvents[i].content_type.replace(/_/g, ' ');
         }
+
+        console.log(this.reputationEvents);
     },
     methods: {
         formatDate(unformattedDate) {
@@ -55,11 +59,14 @@ export default {
 </script>
 
 <template>
-    <h2 class="secondary-heading h4">Reputation Events</h2>
+    <h2 class="secondary-heading h4">Reputation Awards</h2>
     <div id="background">
         <div v-for="reputationEvent in reputationEvents">
             <div class="text-white">
-                {{ reputationEvent.content_type }} improved on
+                {{ reputationEvent.formattedContentType }}
+                <span v-if="reputationEvent.content_type != 'new_skill'"
+                    >improved</span
+                ><span v-else>added</span> on
                 {{ reputationEvent.formattedDate }}
             </div>
         </div>
