@@ -103,7 +103,7 @@ export default {
                     />
                 </div>
                 <div class="d-flex password-extras">
-                    <div class="form-check">
+                    <!-- <div class="form-check">
                         <input
                             class="form-check-input"
                             type="checkbox"
@@ -112,7 +112,7 @@ export default {
                         <label class="form-check-label" for="flexCheckDefault">
                             Remember for 30 days
                         </label>
-                    </div>
+                    </div> -->
                     <div style="color: rgba(164, 139, 229, 1)">
                         <a href="/password-reset" class="links"
                             >Forgot password</a
@@ -159,29 +159,28 @@ export default {
 }
 
 .welcome-message {
-    color: rgba(102, 112, 133, 1);
+    color: var(--primary-color);
     font-size: 16px;
 }
 
 h1 {
-    color: #8f7bd6;
+    color: var(--primary-color);
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
 }
 
 .password-extras {
     font-size: 14px;
-    justify-content: space-between;
+    justify-content: end;
 }
 
 .signup {
     font-size: 14px;
-    color: rgba(102, 112, 133, 1);
+    color: var(--primary-color);
 }
 
 .links {
-    color: rgba(164, 139, 229, 1);
-    text-decoration: none;
+    color: var(--primary-color);
 }
 
 /* Mobile */
@@ -224,9 +223,8 @@ h1 {
 
 .form-signin button {
     width: 100%;
-    background-color: #a48be6;
+    background-color: var(--primary-color);
     color: white;
-    border: 1px solid #7f56d9;
     font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 16px;
