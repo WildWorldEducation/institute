@@ -331,7 +331,7 @@ Themes
 */
 /* The Original theme */
 :root {
-    --primary-color: #8d6ce7;
+    --primary-color: #5f31dd;
     --primary-contrast-color: white;
 
     --secondary-color: #c6e76c;

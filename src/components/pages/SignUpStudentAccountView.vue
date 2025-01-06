@@ -445,7 +445,7 @@ export default {
 }
 
 .welcome-message {
-    color: rgba(102, 112, 133, 1);
+    color: var(--primary-color);
     font-size: 16px;
 }
 
@@ -456,18 +456,17 @@ export default {
 
 .signup {
     font-size: 14px;
-    color: rgba(102, 112, 133, 1);
+    color: var(--primary-color);
 }
 
 h1 {
-    color: #8f7bd6;
+    color: var(--primary-color);
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
 }
 
 .links {
-    color: rgba(164, 139, 229, 1);
-    text-decoration: none;
+    color: var(--primary-color);
 }
 
 .password-div {
