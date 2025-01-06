@@ -307,7 +307,7 @@ export default {
                 <!-- Modal content -->
                 <div class="modal-content">
                     <p>Are you sure you want to delete this question ?</p>
-                    <div style="display: flex; gap: 10px; justify-content: end">
+                    <div style="display: flex; gap: 10px; justify-content: space-between">
                         <button
                             type="button"
                             class="btn red-btn"
@@ -334,7 +334,7 @@ export default {
                 <!-- Modal content -->
                 <div class="modal-content">
                     <p>Are you sure you want to delete this question ?</p>
-                    <div style="display: flex; gap: 10px; justify-content: end">
+                    <div style="display: flex; gap: 10px; justify-content: space-between">
                         <button
                             type="button"
                             class="btn red-btn"
@@ -361,7 +361,7 @@ export default {
                 <!-- Modal content -->
                 <div class="modal-content">
                     <p>Are you sure you want to delete this question ?</p>
-                    <div style="display: flex; gap: 10px; justify-content: end">
+                    <div style="display: flex; gap: 10px; justify-content: space-between">
                         <button
                             type="button"
                             class="btn red-btn"
@@ -444,7 +444,7 @@ export default {
     width: 300px;
     /* Could be more or less, depending on screen size */
     display: flex;
-    justify-content: end;
+    justify-content: space-between;
 }
 /* | End Of Warning Model Styling | */
 </style>
