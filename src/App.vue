@@ -434,7 +434,7 @@ p {
     line-height: 24px;
     align-items: center;
     max-width: fit-content;
-    max-height: 40px;
+    max-height: 44px;
     text-wrap: nowrap;
 }
 
