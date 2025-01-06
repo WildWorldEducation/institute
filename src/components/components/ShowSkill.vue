@@ -669,8 +669,12 @@ export default {
                     >
                         <p>
                             Here you can suggest an edit to this skill page or
-                            quiz, or create a goal for this skill, so you can
-                            work your way towards it.
+                            quiz, from which you could increase your reputation
+                            score.
+                        </p>
+                        <p>
+                            You can also create a goal for this skill, in case
+                            it is locked for you at the moment.
                         </p>
                         <button
                             class="btn primary-btn"

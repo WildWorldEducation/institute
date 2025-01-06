@@ -198,6 +198,9 @@ export default {
                 this.showTutorialTip4 = true;
             } else if (step == 4) {
                 this.showTutorialTip4 = false;
+                this.showTutorialTip5 = true;
+            } else if (step == 5) {
+                this.showTutorialTip5 = false;
                 this.markTutorialComplete();
             }
         },
@@ -349,6 +352,29 @@ export default {
             >
                 <div class="hub-component h-100">
                     <ReputationEvents />
+                    <!-- Tooltip -->
+                    <div
+                        v-if="
+                            showTutorialTip5 &&
+                            userDetailsStore.role == 'student'
+                        "
+                        class="info-panel bg-light rounded p-2 mb-2"
+                    >
+                        <p>
+                            This section shows any increases to your repuation
+                            score.
+                        </p>
+                        <p>
+                            You can increase your reputation score by helping to
+                            improve the platform in a variety of ways.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(5)"
+                        >
+                            next
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
