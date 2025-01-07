@@ -1748,7 +1748,7 @@ const openai = new OpenAI({
 //     }
 // })
 const vectorList = require('../../vector.json');
-const { generateIconForSkill } = require('../utilities/generateIconImage');
+const { generateIconForSkill, convertImageTo64X64 } = require('../utilities/generateIconImage');
 const { reactive } = require('vue');
 
 router.get('/insert-vectors-to-db', async (req, res) => {
@@ -1854,7 +1854,8 @@ router.get('/icon-list', (req, res) => {
 
 router.get('/generate-skill-icon', async (req, res) => {
     try {
-        await generateIconForSkill('Exoplanets', 99)
+        //await generateIconForSkill('Exoplanets', 99)
+        await convertImageTo64X64()
         res.json({ mess: 'kab' })
     } catch (error) {
         console.error(error)

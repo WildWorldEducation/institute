@@ -1323,11 +1323,11 @@ export default {
                 </button>
             </div> -->
             <!-- <div class="d-flex">node drew: {{ nodeDrew }}</div> -->
-            <!-- <div class="d-flex">
-                <button type="button" @click="generatePath">
-                    Click me !!!
+            <div class="d-flex h-25">
+                <button type="button" @click="fetchIcon">
+                    Click me to generate an icon !!!
                 </button>
-            </div> -->
+            </div>
         </div>
     </div>
 </template>

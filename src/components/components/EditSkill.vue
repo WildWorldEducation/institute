@@ -887,7 +887,7 @@ export default {
                             <h2 class="secondary-heading h4">Image</h2>
                             <TooltipBtn
                                 class="mt-1"
-                                toolTipText="A detailed image to use on the forum page."
+                                toolTipText="A detailed image to use on the Skill description page."
                                 bubbleWidth="350px"
                                 trianglePosition="left"
                                 absoluteTop="37px"
