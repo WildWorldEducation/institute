@@ -245,13 +245,12 @@ export default {
                 this.markTutorialComplete();
             }
         },
-        restartTutorial(){
-          if(this.isMobileCheck < 768){
-            this.restartMobileTutorial();
-          } else
-          this.restartTabletUpTutorial();
+        restartTutorial() {
+            if (this.isMobileCheck < 768) {
+                this.restartMobileTutorial();
+            } else this.restartTabletUpTutorial();
         },
-        restartTabletUpTutorial(){
+        restartTabletUpTutorial() {
             this.showTutorialTip1 = true;
             this.showTutorialTip2 = false;
             this.showTutorialTip3 = false;
@@ -261,8 +260,8 @@ export default {
             this.showTutorialTip7 = false;
             this.showTutorialTip8 = false;
             this.isTutorialComplete = false;
-        }, 
-        restartMobileTutorial(){
+        },
+        restartMobileTutorial() {
             this.showTutorialTip1 = true;
             this.showTutorialTip2 = false;
             this.showTutorialTip3 = false;
@@ -305,7 +304,9 @@ export default {
                 <button class="btn primary-btn" @click="resetPos()">
                     Center
                 </button>
+                <!-- Restart tutorial button -->
                 <button
+                    v-if="sessionDetailsStore.isLoggedIn"
                     class="btn primary-btn"
                     @click="restartTutorial"
                 >
@@ -345,23 +346,21 @@ export default {
                     >
                         Print
                     </button>
-                    <button
-                    class="btn primary-btn"
-                    @click="restartTutorial"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 192 512"
-                        width="20"
-                        height="20"
-                        fill="white"
-                    >
-                        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                        <path
-                            d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
-                        />
-                    </svg>
-                </button>
+                    <!-- Restart tutorial button -->
+                    <button v-if="sessionDetailsStore.isLoggedIn" class="btn primary-btn" @click="restartTutorial">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 192 512"
+                            width="20"
+                            height="20"
+                            fill="white"
+                        >
+                            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                            <path
+                                d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                            />
+                        </svg>
+                    </button>
                 </div>
             </div>
             <!-- Tooltips -->
