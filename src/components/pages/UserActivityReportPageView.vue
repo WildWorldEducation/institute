@@ -412,7 +412,7 @@ export default {
                 <p>It shows what editors have been up to on the site.</p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
-                    next
+                    close
                 </button>
             </div>
         </div>
@@ -635,6 +635,7 @@ export default {
     border: 1px solid #888;
     width: 300px;
     /* Could be more or less, depending on screen size */
+    font-size: 18px;
 }
 
 .modal-btn {
