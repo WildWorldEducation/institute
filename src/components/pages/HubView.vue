@@ -385,7 +385,7 @@ export default {
                         class="info-panel bg-light rounded p-2 mb-2"
                     >
                         <p>
-                            This section shows any increases to your repuation
+                            This section shows any increases to your reputation
                             score.
                         </p>
                         <p>
