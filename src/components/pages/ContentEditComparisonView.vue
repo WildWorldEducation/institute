@@ -106,7 +106,7 @@ export default {
                 :class="['btn', disableBtn ? 'disable-btn' : 'red-btn']"
                 @click="$refs.child.dismissEdit()"
             >
-                Dismiss Edit
+                Dismiss
             </button>
             <button
                 :disabled="disableBtn"
@@ -117,10 +117,10 @@ export default {
             </button>
             <button
                 :disabled="disableBtn"
-                :class="['btn', disableBtn ? 'disable-btn' : 'green-btn']"
+                :class="['btn', disableBtn ? 'disable-btn' : 'primary-btn']"
                 @click="showReputationModal = true"
             >
-                Save Edit
+                Save
             </button>
         </div>
         <p>&nbsp;</p>
