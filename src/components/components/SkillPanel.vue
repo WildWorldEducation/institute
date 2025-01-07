@@ -121,7 +121,7 @@ export default {
                 <!-- Mastery requirements -->
                 <div
                     v-if="skill?.type != 'domain'"
-                    class="skill-mastery-requirement text-start mt-1"
+                    class="skill-mastery-requirement text-start mt-1 mb-4"
                     v-html="skill.masteryRequirements"
                 ></div>
                 <div
