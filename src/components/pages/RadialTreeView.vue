@@ -949,13 +949,6 @@ export default {
     justify-content: center;
 }
 
-.search-bar {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #dce2f2;
-    border-radius: 8px;
-}
-
 .have-results {
     border-bottom: 0px !important ;
     border-bottom-left-radius: 0px;
@@ -1047,9 +1040,6 @@ export default {
     }
     .legend span {
         flex-shrink: 0;
-    }
-
-    .search-bar {
     }
 }
 </style>
