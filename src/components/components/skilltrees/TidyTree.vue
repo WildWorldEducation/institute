@@ -24,7 +24,7 @@ export default {
             width: null,
             height: null,
             nodeWidth: 80,
-            nodeHeight: 200,
+            nodeHeight: 800,
             skill: {
                 id: null,
                 children: [],
