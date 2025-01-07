@@ -229,12 +229,6 @@ export default {
     margin: auto;
 }
 
-.search-bar {
-    border: 1px solid #dce2f2;
-    border-radius: 8px;
-    height: 40px;
-}
-
 .have-results {
     border-bottom: 0px !important ;
     border-bottom-left-radius: 0px;
