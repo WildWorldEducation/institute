@@ -359,7 +359,7 @@ export default {
     display: flex;
     flex-direction: column;
     /* border: 1px solid #dce2f2; */
-    border: 1px solid black;
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
     background-color: white;
 }

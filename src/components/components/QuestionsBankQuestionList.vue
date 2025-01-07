@@ -307,7 +307,14 @@ export default {
                 <!-- Modal content -->
                 <div class="modal-content">
                     <p>Are you sure you want to delete this question ?</p>
-                    <div style="display: flex; gap: 10px; justify-content: end">
+                    <div style="display: flex; justify-content: space-between">
+                        <button
+                            type="button"
+                            class="btn primary-btn"
+                            @click="showMCModal = false"
+                        >
+                            No
+                        </button>
                         <button
                             type="button"
                             class="btn red-btn"
@@ -318,13 +325,6 @@ export default {
                         >
                             Yes
                         </button>
-                        <button
-                            type="button"
-                            class="btn green-btn"
-                            @click="showMCModal = false"
-                        >
-                            No
-                        </button>
                     </div>
                 </div>
             </div>
@@ -334,7 +334,14 @@ export default {
                 <!-- Modal content -->
                 <div class="modal-content">
                     <p>Are you sure you want to delete this question ?</p>
-                    <div style="display: flex; gap: 10px; justify-content: end">
+                    <div style="display: flex; justify-content: space-between">
+                        <button
+                            type="button"
+                            class="btn primary-btn"
+                            @click="showEssayModal = false"
+                        >
+                            No
+                        </button>
                         <button
                             type="button"
                             class="btn red-btn"
@@ -345,13 +352,6 @@ export default {
                         >
                             Yes
                         </button>
-                        <button
-                            type="button"
-                            class="btn green-btn"
-                            @click="showEssayModal = false"
-                        >
-                            No
-                        </button>
                     </div>
                 </div>
             </div>
@@ -361,7 +361,14 @@ export default {
                 <!-- Modal content -->
                 <div class="modal-content">
                     <p>Are you sure you want to delete this question ?</p>
-                    <div style="display: flex; gap: 10px; justify-content: end">
+                    <div style="display: flex; justify-content: space-between">
+                        <button
+                            type="button"
+                            class="btn primary-btn"
+                            @click="showImageModal = false"
+                        >
+                            No
+                        </button>
                         <button
                             type="button"
                             class="btn red-btn"
@@ -371,13 +378,6 @@ export default {
                             "
                         >
                             Yes
-                        </button>
-                        <button
-                            type="button"
-                            class="btn green-btn"
-                            @click="showImageModal = false"
-                        >
-                            No
                         </button>
                     </div>
                 </div>
@@ -390,7 +390,6 @@ export default {
 .question-data-cell {
     width: 90% !important;
 }
-
 
 .green-btn {
     background-color: #36c1af;
@@ -444,7 +443,7 @@ export default {
     width: 300px;
     /* Could be more or less, depending on screen size */
     display: flex;
-    justify-content: end;
+    justify-content: space-between;
 }
 /* | End Of Warning Model Styling | */
 </style>
