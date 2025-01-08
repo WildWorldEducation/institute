@@ -139,7 +139,7 @@ export default {
     </div>
 </template>
 
-<style>
+<style scoped>
 .login-page {
     height: 100%;
     padding: 10px;
@@ -213,6 +213,10 @@ h1 {
     .login-page {
         background-image: none;
     }
+
+    .form-signin {
+        width: 420px;
+    }
 }
 
 /* Desktops/laptops */
@@ -226,6 +230,7 @@ h1 {
 
 .app-logo-wrapper {
     overflow: auto;
+    flex: 2;
 }
 
 .app-logo-wrapper img {

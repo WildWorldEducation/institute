@@ -372,7 +372,7 @@ export default {
     </div>
 </template>
 
-<style>
+<style scoped>
 /* The Warning Modal */
 .modal {
     display: block;
