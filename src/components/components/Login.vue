@@ -65,18 +65,18 @@ export default {
 <template>
     <div class="login-page">
         <div class="form-signin">
-            <div class="text-center">
+            <!-- Image -->
+            <div class="text-center app-logo-wrapper">
                 <img
-                    class="mb-4"
-                    src="/images/logo-red.png"
-                    alt=""
-                    width="72"
-                    height="72"
+                    class=""
+                    src="/images/app-logo.jpg"
+                    alt="icon of a skill tree"
                 />
             </div>
-            <h1 class="h3 mb-3 font-weight-normal">Student sign in</h1>
-
-            <div class="mt-3">
+            <!-- Heading -->
+            <h1 class="h3 mt-2 font-weight-normal">Student sign in</h1>
+            <!-- Form -->
+            <div class="form">
                 <label class="mb-4 welcome-message"
                     >Welcome back! Please enter your details.</label
                 >
@@ -103,16 +103,6 @@ export default {
                     />
                 </div>
                 <div class="d-flex password-extras">
-                    <!-- <div class="form-check">
-                        <input
-                            class="form-check-input"
-                            type="checkbox"
-                            id="flexCheckDefault"
-                        />
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Remember for 30 days
-                        </label>
-                    </div> -->
                     <div style="color: rgba(164, 139, 229, 1)">
                         <a href="/password-reset" class="links"
                             >Forgot password</a
@@ -163,6 +153,34 @@ export default {
     font-size: 16px;
 }
 
+.form-signin {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    width: 100%;
+    height: 90%;
+    width: 360px;
+    padding: 15px;
+    margin: 0 auto;
+    /* border: 1px solid black; */
+    border-radius: 25px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.form-signin button {
+    width: 100%;
+    background-color: var(--primary-color);
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.form {
+    flex: 1;
+}
+
 h1 {
     color: var(--primary-color);
     font-family: 'Poppins', sans-serif;
@@ -186,48 +204,42 @@ h1 {
 /* Mobile */
 @media (max-width: 480px) {
     .login-page {
-        background-image: url('/images/login-page.svg');
-        background-size: contain;
-        background-position: center bottom;
+        background-image: none;
     }
 }
 
 /* Tablets */
 @media (min-width: 481px) and (max-width: 1024px) {
     .login-page {
-        background-image: url('/images/login-page.svg');
-        background-size: contain;
-        background-position: center bottom;
+        background-image: none;
     }
 }
 
 /* Desktops/laptops */
 @media (min-width: 1025px) {
     .login-page {
-        background-image: url('/images/login-page.svg');
+        background-image: url('/images/background-landscape.jpg');
         background-size: cover;
         background-position: center bottom;
     }
 }
 
-.form-signin {
-    background-color: white;
-    width: 100%;
-    width: 360px;
-    padding: 15px;
-    margin: 0 auto;
-    /* border: 1px solid black; */
-    border-radius: 25px;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+.app-logo-wrapper {
+    overflow: auto;
 }
 
-.form-signin button {
-    width: 100%;
-    background-color: var(--primary-color);
-    color: white;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
+.app-logo-wrapper img {
+    margin: auto;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.app-icon {
+    /* max-height: 100% !important;
+    height: 100%; */
+    /* width: 100%;
+    height: 100%;
+    object-fit: cover;
+    overflow: hidden; */
 }
 </style>
