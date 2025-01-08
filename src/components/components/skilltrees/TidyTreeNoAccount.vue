@@ -5,6 +5,7 @@ import { useSkillsStore } from '../../../stores/SkillsStore';
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';
 import SliderControl from './SliderControl.vue';
+import JoystickControl from './JoystickControl.vue';
 
 // Algorithm.
 import * as d3 from 'd3';
@@ -67,7 +68,8 @@ export default {
     components: {
         SkillPanel,
         SkillPanel,
-        SliderControl
+        SliderControl,
+        JoystickControl
     },
     async mounted() {
         let subjects = [
@@ -836,6 +838,7 @@ export default {
         <div id="SVGskilltree"></div>
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
+        <JoystickControl class="d-none" />
     </div>
 </template>
 

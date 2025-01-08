@@ -5,6 +5,7 @@ import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';
 import SliderControl from './SliderControl.vue';
+import JoystickControl from './JoystickControl.vue';
 
 // Algorithm.
 import * as d3 from 'd3';
@@ -71,7 +72,8 @@ export default {
     },
     components: {
         SkillPanel,
-        SliderControl
+        SliderControl,
+        JoystickControl
     },
     async mounted() {
         // Check if store is empty,
@@ -1057,6 +1059,7 @@ export default {
         <div id="SVGskilltree"></div>
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
+        <JoystickControl class="d-none" />
     </div>
 </template>
 

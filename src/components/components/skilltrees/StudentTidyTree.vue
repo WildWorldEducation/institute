@@ -6,6 +6,7 @@ import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import SkillPanel from './../SkillPanel.vue';
 import NewSkillPanel from '../NewSkillPanel.vue';
 import SliderControl from './SliderControl.vue';
+import JoystickControl from './JoystickControl.vue';
 
 // Algorithm.
 import * as d3 from 'd3';
@@ -66,7 +67,8 @@ export default {
     components: {
         SkillPanel,
         NewSkillPanel,
-        SliderControl
+        SliderControl,
+        JoystickControl
     },
     async mounted() {
         await this.skillTreeStore.getStudentSkills(this.studentId);
@@ -728,6 +730,7 @@ export default {
         <div id="SVGskilltree"></div>
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
+        <JoystickControl class="d-none" />
     </div>
 </template>
 
