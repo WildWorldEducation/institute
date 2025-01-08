@@ -487,7 +487,7 @@ h1 {
 /* Mobile */
 @media (max-width: 480px) {
     .signup-page {
-        background-image: url('/images/login-page.svg');
+        background-image: url('/images/app-logo.jpg');
         background-size: contain;
         background-position: center bottom;
     }
@@ -496,7 +496,7 @@ h1 {
 /* Tablets */
 @media (min-width: 481px) and (max-width: 1024px) {
     .signup-page {
-        background-image: url('/images/login-page.svg');
+        background-image: url('/images/app-logo.jpg');
         background-size: contain;
         background-position: center bottom;
     }
@@ -505,7 +505,7 @@ h1 {
 /* Desktops/laptops */
 @media (min-width: 1025px) {
     .signup-page {
-        background-image: url('/images/login-page.svg');
+        background-image: url('/images/background-landscape.jpg');
         background-size: cover;
         background-position: center bottom;
     }
