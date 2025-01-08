@@ -6,7 +6,6 @@ import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import SkillPanel from './../SkillPanel.vue';
 import NewSkillPanel from '../NewSkillPanel.vue';
 import SliderControl from './SliderControl.vue';
-import JoystickControl from './JoystickControl.vue';
 
 // Algorithm.
 import * as d3 from 'd3';
@@ -67,8 +66,7 @@ export default {
     components: {
         SkillPanel,
         NewSkillPanel,
-        SliderControl,
-        JoystickControl
+        SliderControl
     },
     async mounted() {
         await this.skillTreeStore.getStudentSkills(this.studentId);
@@ -628,7 +626,7 @@ export default {
             );
             this.$refs.sliderControl.showScaleLabel();
         },
-        // Pan with arrow keys and joystick.
+        // Pan with arrow keys.
         panInD3() {
             d3.select(this.context.canvas).call(
                 this.d3Zoom.transform,
@@ -728,7 +726,6 @@ export default {
         ></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
-        <JoystickControl class="d-lg-none" />
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
     </div>
@@ -771,11 +768,6 @@ canvas {
     width: 200px;
     bottom: 2px;
     left: 2px;
-}
-
-#panJoystick {
-    width: 100px;
-    height: 100px;
 }
 
 .slidecontainer {
