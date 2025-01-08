@@ -11,6 +11,10 @@ const openai = new OpenAI({
 // Database connection
 const conn = require('../config/db');
 const sharp = require('sharp');
+const fs = require('fs');
+
+let rawdata = fs.readFileSync('imageData.json');
+const iconImage = JSON.parse(fs.readFileSync('aiIcon.json', 'utf8'));
 
 
 
@@ -27,7 +31,7 @@ async function generateIconForSkill(skillName, skillId) {
     // });
     // const promptMessage = genIconPrompt.choices[0].message;
     // console.log(promptMessage)
-    const prompt = "Create a simple icon representing the subject 'Using AI to Code.' The icon should feature a white background with black details. It should depict a clear and minimalistic design, such as a stylized AI brain or robot combined with coding symbols like brackets, lines of code, or a computer screen. Ensure the design is straightforward, focused on the single subject, and easily relatable to 'Using AI to Code"
+    const prompt = "Create a black object on a white background representing the concept 'Power Tool' The design should feature a combination of elements like a stylized AI brain, a circuit, or a robot integrated with coding-related symbols such as brackets, lines of code, or a computer screen. The symbol should be abstract, minimalistic, and visually distinct, avoiding any use of text."
     const iconBase64 = await openai.images.generate({
         model: "dall-e-2",
         prompt: prompt,
@@ -37,16 +41,21 @@ async function generateIconForSkill(skillName, skillId) {
     })
     // const imgSrc = `data:image/jpeg;base64,${iconBase64.data[0].b64_json}`;
     console.log(iconBase64)
+    fs.writeFileSync('aiIcon.json', JSON.stringify(iconBase64));
 }
 
+
 async function convertImageTo64X64() {
-    const sampleImage = 'poo'
-    console.log(typeof (sampleImage))
+    const sampleImage = iconImage.data[0].b64_json;
+
+
     let imgBuffer = Buffer.from(sampleImage, 'base64');
-    const data = await sharp(imgBuffer).resize({ width: 32, height: 32 }).toBuffer();
+    const data = await sharp(imgBuffer).resize({ width: 64, height: 64 }).toBuffer();
     const resultBase64 = `data:image/png;base64,${data.toString('base64')}`
-    console.log(resultBase64.length)
+    console.log(typeof (resultBase64));
     console.log(resultBase64);
+    const writeObj = JSON.stringify({ image: resultBase64 })
+    fs.writeFileSync('rawImage.json', writeObj);
 }
 
 

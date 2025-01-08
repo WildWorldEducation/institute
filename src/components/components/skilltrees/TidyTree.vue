@@ -829,7 +829,7 @@ export default {
                     break;
             }
         },
-        hexBackGroundColor(skilllevel) {
+        hexBackGroundColor(skillLevel) {
             const opacity = 0.7;
             switch (skillLevel) {
                 case 'college':

@@ -1801,16 +1801,18 @@ router.get('/base-64-data', async (req, res, next) => {
 });
 
 
-
+const fs1 = require('fs');
 function insertIntoSkillIconTable(url) {
+    const iconImage = JSON.parse(fs1.readFileSync('rawImage.json', 'utf8'));
     let sqlQuery = `UPDATE skills
-                    SET skills.icon = ${conn.escape(`data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAABCUlEQVR42u2aQRKDIAxF+U5v6WW4TM+ZLhiZllLdJAr1ZVw4MiN5/gQSVWaWZrYlTW4AAAAAAAAAEGqSUACA+wJIyjmHpgEKAADA5KbQnriuP3GzLMHeWzniVlJy4Gp7ROfY3AA55+aEEALgLgClkH5PhqCtAAUAAAAAAMYDaDaB0K0ABf6yJ94JFffp/AGK993b7gyNFULWE0GSjZ8Dh16a9yePqCRuHA16/M4A1UulpM9YNzNtHb6vCP5NvX6kabnoLsXiu/joaJEpUiQ/ETwVaFxvXKyjVYqxAPph89xg1qgd7YxSQuucb6fN7PvBU8xRjXoVdnMocMI/neTA1SKgAAAAAHCtvQBYnWTAqAUI9wAAAABJRU5ErkJggg==`)}
+                    SET skills.icon = ${conn.escape(iconImage.image)}
                     WHERE skills.url = ${conn.escape(url)}
                     `
     conn.query(sqlQuery, (err, result) => {
         if (err) {
             throw err
         }
+        console.log('Done For: ' + url)
         console.log(result)
     })
 }
@@ -1827,7 +1829,6 @@ router.get('/generate-dummy-path', async (req, res) => {
                 promises.push(insertIntoSkillIconTable(element.url))
             });
             Promise.all(promises).then(res.json({ mess: 'ok' }))
-
         });
 
     } catch (error) {
@@ -1842,11 +1843,10 @@ router.get('/icon-list', (req, res) => {
     try {
         conn.query(sqlQuery, (err, result) => {
             if (err) {
-                throw err
+                err
             }
             res.json(result)
         })
-
     } catch (error) {
         console.error()
     }
