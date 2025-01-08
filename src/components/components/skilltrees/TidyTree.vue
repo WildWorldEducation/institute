@@ -5,7 +5,6 @@ import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';
 import SliderControl from './SliderControl.vue';
-import JoystickControl from './JoystickControl.vue';
 
 // Algorithm.
 import * as d3 from 'd3';
@@ -72,8 +71,7 @@ export default {
     },
     components: {
         SkillPanel,
-        SliderControl,
-        JoystickControl
+        SliderControl
     },
     async mounted() {
         // Check if store is empty,
@@ -726,7 +724,7 @@ export default {
                         .scale(zoomedScale)
                 );
         },
-        // Pan with arrow keys and joystick.
+        // Pan with arrow keys.
         panInD3() {
             d3.select(this.context.canvas).call(
                 this.d3Zoom.transform,
@@ -1059,7 +1057,6 @@ export default {
         <div id="SVGskilltree"></div>
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
-        <JoystickControl class="d-lg-none" />
     </div>
 </template>
 
