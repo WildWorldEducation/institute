@@ -536,4 +536,11 @@ p {
 .signin-btn {
     border: 1px solid var(--primary-color);
 }
+.btn:disabled {
+    background-color: #b0b0b0 !important; 
+    border-color: #a0a0a0 !important;
+    color: #4d4d4d !important;
+    cursor: not-allowed !important;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2) !important;
+}
 </style>
