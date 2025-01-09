@@ -572,7 +572,7 @@ router.get('/show/:id', (req, res, next) => {
         // in case image is changed.
         let sqlQuery = `
     SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, is_deleted, is_google_auth, grade_filter, theme,
-    is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter, reputation_score
+    is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter, reputation_score, is_unlocked_skills_only_filter
     FROM users        
     WHERE id = ${conn.escape(req.params.id)} 
     AND is_deleted = 0
@@ -894,7 +894,9 @@ router.put('/:userId/skill-tree-filters', isAuthenticated, (req, res, next) => {
             is_science_and_invention_filter = 
             ${conn.escape(req.body.is_science_and_invention_filter)},
             is_dangerous_ideas_filter = 
-            ${conn.escape(req.body.is_dangerous_ideas_filter)}
+            ${conn.escape(req.body.is_dangerous_ideas_filter)},
+            is_unlocked_skills_only_filter = 
+            ${conn.escape(req.body.is_unlocked_skills_only_filter)}
             WHERE id = ${conn.escape(req.params.userId)};`;
 
     conn.query(sqlQuery, (err) => {

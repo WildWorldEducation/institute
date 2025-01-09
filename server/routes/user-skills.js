@@ -419,9 +419,10 @@ router.get('/filter-by-cohort/:userId', (req, res, next) => {
 // For Full Vertical Tree - includes filters.
 router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
     if (req.session.userName) {
-        /* Apply grade level and subject filters
+        /* Apply grade level, subject and isUnlockedOnly filters
          */
         let subjects = req.query.subjects;
+        let isUnlockedOnly = req.query.isUnlockedOnly;
 
         // Level will be sent in query param (eg: ?level='middle_school')
         const level = req.query.level;
@@ -455,6 +456,7 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                     throw err;
                 }
 
+                // If no results, set to -1, as this basically skip this part of the query.
                 let cohortId;
                 if (results.length == 0) {
                     cohortId = -1;
@@ -537,10 +539,33 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                             ) {
                                 var parentId = results[i].parent;
 
-                                // Go through all rows again, add children
-                                for (let j = 0; j < results.length; j++) {
-                                    if (results[j].id == parentId) {
-                                        results[j].children.push(results[i]);
+                                // Only unlocked skills
+                                if (isUnlockedOnly == 'true') {
+                                    // Go through all rows again, add children
+                                    for (let j = 0; j < results.length; j++) {
+                                        if (results[j].id == parentId) {
+                                            if (
+                                                results[i].is_accessible == 1 ||
+                                                (results[i].type == 'super' &&
+                                                    results[j].is_accessible ==
+                                                        1)
+                                            ) {
+                                                results[j].children.push(
+                                                    results[i]
+                                                );
+                                            }
+                                        }
+                                    }
+                                }
+                                // Locked and unlocked skills
+                                else {
+                                    // Go through all rows again, add children
+                                    for (let j = 0; j < results.length; j++) {
+                                        if (results[j].id == parentId) {
+                                            results[j].children.push(
+                                                results[i]
+                                            );
+                                        }
                                     }
                                 }
                             }
@@ -556,7 +581,7 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                             ) {
                                 studentSkills.push(results[i]);
                             }
-                        }                      
+                        }
 
                         res.json(studentSkills);
                     } catch (err) {

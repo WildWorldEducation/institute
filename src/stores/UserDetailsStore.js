@@ -20,6 +20,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
             theme: 'original',
             gradeFilter: null,
             subjectFilters: [],
+            isUnlockedSkillsOnlyFilter: null,
             reputationScore: null
         };
     },
@@ -48,6 +49,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.theme = data.theme;
                 this.subjectFilters = data.subjectFilters;
                 this.reputationScore = data.reputation_score;
+                this.isUnlockedSkillsOnlyFilter =
+                    data.is_unlocked_skills_only_filter;
 
                 if (this.role == 'student') {
                     await this.getInstructor();
