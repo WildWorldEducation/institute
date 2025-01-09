@@ -540,7 +540,7 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                                 var parentId = results[i].parent;
 
                                 // Only unlocked skills
-                                if (isUnlockedOnly == 'true') {
+                                if (isUnlockedOnly == 1) {
                                     // Go through all rows again, add children
                                     for (let j = 0; j < results.length; j++) {
                                         if (results[j].id == parentId) {
