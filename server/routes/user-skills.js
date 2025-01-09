@@ -463,10 +463,7 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                 } else cohortId = results[0].cohort_id;
 
                 // Check what skills are available for this cohort.
-                let sqlQuery;
-                // Filter locked skills if true.
-                if (isUnlockedOnly != 'true') {
-                    sqlQuery = `
+                let sqlQuery = `
             SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
             FROM skills
             LEFT OUTER JOIN user_skills
@@ -501,52 +498,52 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                          
             ORDER BY skillorder, id;
             `;
-                } else {
-                    sqlQuery = `
-                    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
-                    FROM skills
-                    LEFT OUTER JOIN user_skills
-                    ON skills.id = user_skills.skill_id
-                    WHERE user_skills.user_id = ${conn.escape(
-                        req.params.userId
-                    )}
-                    AND is_filtered = 'available' 
-                    AND is_deleted = 0
-                    AND level IN (${levelsToShow})
-                    AND is_accessible = 1
-                    AND skills.id NOT IN 
-                    (SELECT skill_id 
-                    FROM cohort_skill_filters
-                    WHERE cohort_id = ${conn.escape(cohortId)})
-                    
-                    UNION
-                    SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
-                    FROM skills
-                    WHERE level IN (${levelsToShow})
-                    AND
-                    skills.id NOT IN 
-                    
-                    (SELECT skills.id
-                    FROM skills
-                    LEFT OUTER JOIN user_skills
-                    ON skills.id = user_skills.skill_id
-                    WHERE user_skills.user_id = ${conn.escape(
-                        req.params.userId
-                    )}) 
-                    AND is_filtered = 'available' 
-                    AND is_deleted = 0           
-                    AND skills.id NOT IN 
-                    (SELECT skill_id 
-                    FROM cohort_skill_filters
-                    WHERE cohort_id = ${conn.escape(cohortId)})    
-                    AND skills.id IN
-                    (SELECT skill_id FROM user_skills
-                    WHERE is_accessible = 1
-                    AND user_id = ${conn.escape(req.params.userId)})
-                                 
-                    ORDER BY skillorder, id;
-                    `;
-                }
+                // } else {
+                //     sqlQuery = `
+                //     SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
+                //     FROM skills
+                //     LEFT OUTER JOIN user_skills
+                //     ON skills.id = user_skills.skill_id
+                //     WHERE user_skills.user_id = ${conn.escape(
+                //         req.params.userId
+                //     )}
+                //     AND is_filtered = 'available'
+                //     AND is_deleted = 0
+                //     AND level IN (${levelsToShow})
+                //     AND is_accessible = 1
+                //     AND skills.id NOT IN
+                //     (SELECT skill_id
+                //     FROM cohort_skill_filters
+                //     WHERE cohort_id = ${conn.escape(cohortId)})
+
+                //     UNION
+                //     SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
+                //     FROM skills
+                //     WHERE level IN (${levelsToShow})
+                //     AND
+                //     skills.id NOT IN
+
+                //     (SELECT skills.id
+                //     FROM skills
+                //     LEFT OUTER JOIN user_skills
+                //     ON skills.id = user_skills.skill_id
+                //     WHERE user_skills.user_id = ${conn.escape(
+                //         req.params.userId
+                //     )})
+                //     AND is_filtered = 'available'
+                //     AND is_deleted = 0
+                //     AND skills.id NOT IN
+                //     (SELECT skill_id
+                //     FROM cohort_skill_filters
+                //     WHERE cohort_id = ${conn.escape(cohortId)})
+                //     AND skills.id IN
+                //     (SELECT skill_id FROM user_skills
+                //     WHERE is_accessible = 1
+                //     AND user_id = ${conn.escape(req.params.userId)})
+
+                //     ORDER BY skillorder, id;
+                //     `;
+                // }
 
                 conn.query(sqlQuery, (err, results) => {
                     try {
@@ -588,10 +585,33 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                             ) {
                                 var parentId = results[i].parent;
 
-                                // Go through all rows again, add children
-                                for (let j = 0; j < results.length; j++) {
-                                    if (results[j].id == parentId) {
-                                        results[j].children.push(results[i]);
+                                // Only unlocked skills
+                                if (isUnlockedOnly == 'true') {
+                                    // Go through all rows again, add children
+                                    for (let j = 0; j < results.length; j++) {
+                                        if (results[j].id == parentId) {
+                                            if (
+                                                results[i].is_accessible == 1 ||
+                                                (results[i].type == 'super' &&
+                                                    results[j].is_accessible ==
+                                                        1)
+                                            ) {
+                                                results[j].children.push(
+                                                    results[i]
+                                                );
+                                            }
+                                        }
+                                    }
+                                }
+                                // Locked and unlocked skills
+                                else {
+                                    // Go through all rows again, add children
+                                    for (let j = 0; j < results.length; j++) {
+                                        if (results[j].id == parentId) {
+                                            results[j].children.push(
+                                                results[i]
+                                            );
+                                        }
                                     }
                                 }
                             }
