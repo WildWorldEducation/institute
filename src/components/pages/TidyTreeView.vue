@@ -32,8 +32,7 @@ export default {
             isHistory: false,
             isLife: false,
             isDangerousIdeas: false,
-            showMobileFiltersModal: false,
-            isUnlockedOnly: false,
+            showMobileFiltersModal: false,          
             // For guest mode only
             gradeFilter: 'phd',
             subjectFilters: [],
@@ -112,6 +111,8 @@ export default {
         }
 
         this.checkIfTutorialComplete();
+
+        console.log(this.userDetailsStore.isUnlockedSkillsOnlyFilter);
     },
     mounted() {
         this.GetGoogleLoginResult();
@@ -770,7 +771,7 @@ export default {
                 />
             </svg>
             <svg
-                v-if="!userDetailsStore.isUnlockedSkillsOnlyFilter"
+                v-else
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"
                 width="18"
