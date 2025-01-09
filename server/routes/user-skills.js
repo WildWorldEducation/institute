@@ -419,9 +419,10 @@ router.get('/filter-by-cohort/:userId', (req, res, next) => {
 // For Full Vertical Tree - includes filters.
 router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
     if (req.session.userName) {
-        /* Apply grade level and subject filters
+        /* Apply grade level, subject and isUnlockedOnly filters
          */
         let subjects = req.query.subjects;
+        let isUnlockedOnly = req.query.isUnlockedOnly;
 
         // Level will be sent in query param (eg: ?level='middle_school')
         const level = req.query.level;
@@ -461,7 +462,10 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                 } else cohortId = results[0].cohort_id;
 
                 // Check what skills are available for this cohort.
-                let sqlQuery = `
+                let sqlQuery;
+                // Filter locked skills if true.
+                if (isUnlockedOnly != 'true') {
+                    sqlQuery = `
             SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
             FROM skills
             LEFT OUTER JOIN user_skills
@@ -496,6 +500,52 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                          
             ORDER BY skillorder, id;
             `;
+                } else {
+                    sqlQuery = `
+                    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
+                    FROM skills
+                    LEFT OUTER JOIN user_skills
+                    ON skills.id = user_skills.skill_id
+                    WHERE user_skills.user_id = ${conn.escape(
+                        req.params.userId
+                    )}
+                    AND is_filtered = 'available' 
+                    AND is_deleted = 0
+                    AND level IN (${levelsToShow})
+                    AND is_accessible = 1
+                    AND skills.id NOT IN 
+                    (SELECT skill_id 
+                    FROM cohort_skill_filters
+                    WHERE cohort_id = ${conn.escape(cohortId)})
+                    
+                    UNION
+                    SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
+                    FROM skills
+                    WHERE level IN (${levelsToShow})
+                    AND
+                    skills.id NOT IN 
+                    
+                    (SELECT skills.id
+                    FROM skills
+                    LEFT OUTER JOIN user_skills
+                    ON skills.id = user_skills.skill_id
+                    WHERE user_skills.user_id = ${conn.escape(
+                        req.params.userId
+                    )}) 
+                    AND is_filtered = 'available' 
+                    AND is_deleted = 0           
+                    AND skills.id NOT IN 
+                    (SELECT skill_id 
+                    FROM cohort_skill_filters
+                    WHERE cohort_id = ${conn.escape(cohortId)})    
+                    AND skills.id IN
+                    (SELECT skill_id FROM user_skills
+                    WHERE is_accessible = 1
+                    AND user_id = ${conn.escape(req.params.userId)})
+                                 
+                    ORDER BY skillorder, id;
+                    `;
+                }
 
                 conn.query(sqlQuery, (err, results) => {
                     try {
@@ -556,7 +606,7 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                             ) {
                                 studentSkills.push(results[i]);
                             }
-                        }                      
+                        }
 
                         res.json(studentSkills);
                     } catch (err) {

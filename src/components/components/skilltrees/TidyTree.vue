@@ -904,7 +904,8 @@ export default {
             this.showSkillPanel = false;
             await this.skillTreeStore.getVerticalTreeUserSkills(
                 this.userDetailsStore.gradeFilter,
-                this.userDetailsStore.subjectFilters
+                this.userDetailsStore.subjectFilters,
+                this.userDetailsStore.isUnlockedSkillsOnlyFilter
             );
 
             // If the student clicks a button on the grade level key,
@@ -996,7 +997,9 @@ export default {
                     is_computer_science_filter: this.$parent.isComputerScience,
                     is_science_and_invention_filter:
                         this.$parent.isScienceAndInvention,
-                    is_dangerous_ideas_filter: this.$parent.isDangerousIdeas
+                    is_dangerous_ideas_filter: this.$parent.isDangerousIdeas,
+                    is_unlocked_skills_only_filter:
+                        this.userDetailsStore.isUnlockedSkillsOnlyFilter
                 })
             };
             var url =

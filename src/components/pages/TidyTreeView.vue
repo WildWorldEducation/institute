@@ -33,6 +33,7 @@ export default {
             isLife: false,
             isDangerousIdeas: false,
             showMobileFiltersModal: false,
+            isUnlockedOnly: false,
             // For guest mode only
             gradeFilter: 'phd',
             subjectFilters: [],
@@ -575,6 +576,7 @@ export default {
             </button>
         </div>
     </div>
+
     <!-- Left root subject filters  -->
     <div class="tablet-and-up-legend position-absolute left-legend-div">
         <div>
@@ -741,6 +743,46 @@ export default {
                 next
             </button>
         </div>
+    </div>
+
+    <!-- Filter for showing only unlocked skills in bottom left corner -->
+    <div v-if="sessionDetailsStore.isLoggedIn" class="unlocked-filter">
+        <button
+            class="btn primary-btn"
+            @click="
+                userDetailsStore.isUnlockedSkillsOnlyFilter =
+                    !userDetailsStore.isUnlockedSkillsOnlyFilter;
+                $refs.childComponent.filter();
+            "
+        >
+            <svg
+                v-if="userDetailsStore.isUnlockedSkillsOnlyFilter"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 576 512"
+                width="18"
+                height="18"
+                fill="white"
+            >
+                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                <path
+                    class=""
+                    d="M352 144c0-44.2 35.8-80 80-80s80 35.8 80 80l0 48c0 17.7 14.3 32 32 32s32-14.3 32-32l0-48C576 64.5 511.5 0 432 0S288 64.5 288 144l0 48L64 192c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-192c0-35.3-28.7-64-64-64l-32 0 0-48z"
+                />
+            </svg>
+            <svg
+                v-if="!userDetailsStore.isUnlockedSkillsOnlyFilter"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+                width="18"
+                height="18"
+                fill="white"
+            >
+                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                <path
+                    d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"
+                />
+            </svg>
+        </button>
     </div>
 
     <!-- Filters Modal for Mobile Phone View.-->
@@ -1138,7 +1180,7 @@ export default {
         </div>
     </div>
 
-    <!-- Tooltip modal -->
+    <!-- Onboarding tooltip modal -->
     <div
         v-if="
             showTutorialTip1 ||
@@ -1242,6 +1284,15 @@ export default {
 /*
  * Filters
  */
+
+.unlocked-filter {
+    position: fixed;
+    bottom: 10px;
+    left: 3px;
+}
+.unlocked-filter button {
+    border: 1px solid black;
+}
 
 /* Grade level filter */
 .grade-school {

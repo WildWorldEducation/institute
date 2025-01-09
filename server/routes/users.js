@@ -894,7 +894,9 @@ router.put('/:userId/skill-tree-filters', isAuthenticated, (req, res, next) => {
             is_science_and_invention_filter = 
             ${conn.escape(req.body.is_science_and_invention_filter)},
             is_dangerous_ideas_filter = 
-            ${conn.escape(req.body.is_dangerous_ideas_filter)}
+            ${conn.escape(req.body.is_dangerous_ideas_filter)},
+            is_unlocked_skills_only_filter = 
+            ${conn.escape(req.body.is_unlocked_skills_only_filter)}
             WHERE id = ${conn.escape(req.params.userId)};`;
 
     conn.query(sqlQuery, (err) => {
