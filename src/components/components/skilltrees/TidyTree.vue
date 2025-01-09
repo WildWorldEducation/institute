@@ -81,7 +81,8 @@ export default {
         if (this.skillTreeStore.verticalTreeUserSkills.length == 0) {
             await this.skillTreeStore.getVerticalTreeUserSkills(
                 this.userDetailsStore.gradeFilter,
-                this.userDetailsStore.subjectFilters
+                this.userDetailsStore.subjectFilters,
+                this.userDetailsStore.isUnlockedSkillsOnlyFilter
             );
         }
 

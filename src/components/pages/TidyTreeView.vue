@@ -32,7 +32,7 @@ export default {
             isHistory: false,
             isLife: false,
             isDangerousIdeas: false,
-            showMobileFiltersModal: false,          
+            showMobileFiltersModal: false,
             // For guest mode only
             gradeFilter: 'phd',
             subjectFilters: [],
@@ -111,8 +111,6 @@ export default {
         }
 
         this.checkIfTutorialComplete();
-
-        console.log(this.userDetailsStore.isUnlockedSkillsOnlyFilter);
     },
     mounted() {
         this.GetGoogleLoginResult();
