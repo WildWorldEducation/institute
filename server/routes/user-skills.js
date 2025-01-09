@@ -456,6 +456,7 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                     throw err;
                 }
 
+                // If no results, set to -1, as this basically skip this part of the query.
                 let cohortId;
                 if (results.length == 0) {
                     cohortId = -1;

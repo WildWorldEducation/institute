@@ -978,7 +978,7 @@ export default {
                 );
             this.resetPos();
         },
-        // Grade level and root subject filter
+        // Grade level, root subject, unlocked skills filters
         async filter() {
             this.skill.children = await this.reloadTree(null);
             this.saveSkillTreeFilters();

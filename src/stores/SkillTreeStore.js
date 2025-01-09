@@ -44,7 +44,6 @@ export const useSkillTreeStore = defineStore('skillTree', {
                 subjects[i] = subjects[i].replace(/&/g, '%26');
             }
 
-            console.log(isUnlockedOnly);
             const userDetailsStore = useUserDetailsStore();
 
             const result = await fetch(
