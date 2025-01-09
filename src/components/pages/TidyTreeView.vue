@@ -185,7 +185,13 @@ export default {
                     this.subjectFilters.push('Dangerous Ideas');
             }
         },
-
+        toggleisUnlockedSkillsFilter() {
+            if (this.userDetailsStore.isUnlockedSkillsOnlyFilter == 1) {
+                this.userDetailsStore.isUnlockedSkillsOnlyFilter = 0;
+            } else if (this.userDetailsStore.isUnlockedSkillsOnlyFilter == 0) {
+                this.userDetailsStore.isUnlockedSkillsOnlyFilter = 1;
+            }
+        },
         // Tutorial
         async checkIfTutorialComplete() {
             const result = await fetch(
@@ -749,8 +755,7 @@ export default {
         <button
             class="btn primary-btn"
             @click="
-                userDetailsStore.isUnlockedSkillsOnlyFilter =
-                    !userDetailsStore.isUnlockedSkillsOnlyFilter;
+                toggleisUnlockedSkillsFilter();
                 $refs.childComponent.filter();
             "
         >
