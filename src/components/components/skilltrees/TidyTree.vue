@@ -446,9 +446,9 @@ export default {
                         xPosition = xPosition - 178;
                     }
                     ctx1.save();
-                    this.roundedImage(ctx1, xPosition, node.x - 19, 38, 38, 20);
+                    this.roundedImage(ctx1, xPosition, node.x - 18, 36, 36, 20);
                     ctx1.clip();
-                    ctx1.drawImage(img, xPosition, node.x - 19, 38, 38);
+                    ctx1.drawImage(img, xPosition - 3, node.x - 18, 38, 38);
                     ctx1.restore();
                 }
             }
@@ -506,7 +506,12 @@ export default {
                 ctx2.beginPath();
                 ctx2.moveTo(node.y, node.x);
                 //ctx2.arc(node.y, node.x, 20, 0, 2 * Math.PI);
-                ctx2.roundRect(node.y, node.x - 20, 180, 40, 20);
+                let xPosition = node.y;
+                if (node.data.children.length > 0) {
+                    xPosition = xPosition - 180;
+                }
+                ctx2.roundRect(xPosition, node.x - 20, 180, 40, 20);
+
                 ctx2.fill();
             } else {
                 ctx2.beginPath();
@@ -1269,20 +1274,9 @@ export default {
         // Draw a round rectangle and using clip to make image rounded
         roundedImage(ctx, x, y, width, height, radius) {
             ctx.beginPath();
-            ctx.moveTo(x + radius, y);
-            ctx.lineTo(x + width - radius, y);
-            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-            ctx.lineTo(x + width, y + height - radius);
-            ctx.quadraticCurveTo(
-                x + width,
-                y + height,
-                x + width - radius,
-                y + height
-            );
-            ctx.lineTo(x + radius, y + height);
-            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-            ctx.lineTo(x, y + radius);
-            ctx.quadraticCurveTo(x, y, x + radius, y);
+
+            ctx.roundRect(x, y, width, height, radius);
+
             ctx.closePath();
         }
     }
