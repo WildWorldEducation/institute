@@ -15,7 +15,7 @@ const fs = require('fs');
 
 let rawdata = fs.readFileSync('imageData.json');
 const iconImage = JSON.parse(fs.readFileSync('aiIcon.json', 'utf8'));
-
+let rawIcon = '';
 
 
 async function generateIconForSkill(skillName, skillId) {
@@ -24,33 +24,32 @@ async function generateIconForSkill(skillName, skillId) {
     //         { role: 'system', content: 'You are a helpful assistant.' },
     //         {
     //             role: 'user',
-    //             content: `write an instruction prompt for an AI to create a base64 encode string for a an icon with 64X64 pixels that have symbol relate to subject "${skillName}" that human can associate to big subject this subject are fall into.  Make sure the string is the short in length for to store in a data base efficiency. The icon should have mono color only`,
+    //             content: `Write a prompt for dall-e-2 to draw a symbol for learn subject "${skillName}". Make sure the background color is #FFFFFF and do not create any text on the result. The symbol need to related to the subject. The result image should have only one big symbol`,
     //         }
     //     ],
     //     model: 'gpt-4',
     // });
     // const promptMessage = genIconPrompt.choices[0].message;
     // console.log(promptMessage)
-    const prompt = "Create a black object on a white background representing the concept 'Power Tool' The design should feature a combination of elements like a stylized AI brain, a circuit, or a robot integrated with coding-related symbols such as brackets, lines of code, or a computer screen. The symbol should be abstract, minimalistic, and visually distinct, avoiding any use of text."
+    const prompt = "Design an icon representing the study subject 'Confucius.' The icon should feature simple, minimalistic shapes inspired by Confucian philosophy, such as a stylized scroll, a wise figure, or elements like bamboo or yin-yang. Ensure the design is easy to recognize and retains clarity even when scaled down. The background should be pure white, and the icon should avoid any text or unnecessary details."
     const iconBase64 = await openai.images.generate({
-        model: "dall-e-2",
+        model: "dall-e-3",
         prompt: prompt,
         n: 1,
-        size: '256x256',
+        size: '1024x1024',
         response_format: 'b64_json'
     })
+    rawIcon = iconBase64.data[0].b64_json;
     // const imgSrc = `data:image/jpeg;base64,${iconBase64.data[0].b64_json}`;
-    console.log(iconBase64)
     fs.writeFileSync('aiIcon.json', JSON.stringify(iconBase64));
 }
 
 
 async function convertImageTo64X64() {
-    const sampleImage = iconImage.data[0].b64_json;
-
-
+    const sampleImage = rawIcon;
+    //const sampleImage = iconImage.data[0].b64_json
     let imgBuffer = Buffer.from(sampleImage, 'base64');
-    const data = await sharp(imgBuffer).resize({ width: 64, height: 64 }).toBuffer();
+    const data = await sharp(imgBuffer).resize({ width: 50, height: 50 }).toBuffer();
     const resultBase64 = `data:image/png;base64,${data.toString('base64')}`
     console.log(typeof (resultBase64));
     console.log(resultBase64);

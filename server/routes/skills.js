@@ -1854,7 +1854,7 @@ router.get('/icon-list', (req, res) => {
 
 router.get('/generate-skill-icon', async (req, res) => {
     try {
-        //await generateIconForSkill('Exoplanets', 99)
+        await generateIconForSkill('Exoplanets', 99)
         await convertImageTo64X64()
         res.json({ mess: 'kab' })
     } catch (error) {
