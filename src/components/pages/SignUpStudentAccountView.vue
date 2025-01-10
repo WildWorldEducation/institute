@@ -14,7 +14,7 @@ export default {
                 email: null,
                 password: null,
                 accountType: 'student',
-                skillTreeGradeLevel: null
+                skillTreeGradeLevel: 'phd'
             },
             // Validate Object flag
             validate: {
@@ -90,7 +90,7 @@ export default {
                     email: this.newUser.email,
                     password: this.newUser.password,
                     account_type: this.newUser.accountType,
-                    skill_tree_level: this.newUser.skillTreeGradeLevel
+                    grade_filter: this.newUser.skillTreeGradeLevel
                 })
             };
             var url = '/users/new-user/add';
@@ -303,7 +303,7 @@ export default {
                         class="form-select"
                         v-model="newUser.skillTreeGradeLevel"
                     >
-                        <option selected value="null">Choose your level</option>
+                        <option selected value="phd">Choose your level</option>
                         <option value="grade_school">Grade School</option>
                         <option value="middle_school">Middle School</option>
                         <option value="high_school">High School</option>
