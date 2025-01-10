@@ -1324,8 +1324,8 @@ export default {
             </div> -->
             <!-- <div class="d-flex">node drew: {{ nodeDrew }}</div> -->
             <div class="d-flex h-25">
-                <button type="button" @click="fetchIcon">
-                    Click me to generate an icon !!!
+                <button type="button" @click="generatePath">
+                    Click me to test things !!!
                 </button>
             </div>
         </div>

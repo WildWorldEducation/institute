@@ -24,10 +24,10 @@ async function generateIconForSkill(skillName, skillId) {
     //         { role: 'system', content: 'You are a helpful assistant.' },
     //         {
     //             role: 'user',
-    //             content: `Write a prompt for dall-e-2 to draw a symbol for learn subject "${skillName}". Make sure the background color is #FFFFFF and do not create any text on the result. The symbol need to related to the subject. The result image should have only one big symbol`,
+    //             content: `write a prompt for dall-e-3 to design an icon for study subject "${skillname}". Make sure the background is white and the icon have easy to recognize shapes even if scale down to smaller size `,
     //         }
     //     ],
-    //     model: 'gpt-4',
+    //     model: 'gpt-4-o',
     // });
     // const promptMessage = genIconPrompt.choices[0].message;
     // console.log(promptMessage)
@@ -41,7 +41,7 @@ async function generateIconForSkill(skillName, skillId) {
     })
     rawIcon = iconBase64.data[0].b64_json;
     // const imgSrc = `data:image/jpeg;base64,${iconBase64.data[0].b64_json}`;
-    fs.writeFileSync('aiIcon.json', JSON.stringify(iconBase64));
+    fs.writeFileSync('aiIcon.json', { openAI: JSON.stringify(iconBase64) });
 }
 
 
