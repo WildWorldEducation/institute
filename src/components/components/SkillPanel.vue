@@ -110,7 +110,6 @@ export default {
                     {{ skill?.name }}
                 </h1>
                 <img
-                    v-if="skill?.type != 'domain'"
                     :src="
                         'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
                         skill.url
