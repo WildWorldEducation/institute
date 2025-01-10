@@ -1312,34 +1312,6 @@ export default {
         <div id="sidepanel-backdrop"></div>
         <JoystickControl class="d-lg-none" />
         <div class="debug-console">
-            <!-- <div class="d-flex">
-                <div>Translate X:</div>
-                <div>{{ transformData.x }}</div>
-                ||
-                <div>Translate Y:</div>
-                <div>{{ transformData.y }}</div>
-                ||
-                <div>scale:</div>
-                <div>{{ transformData.k }}</div>
-            </div>
-            <div class="d-flex">
-                <div>Node X:</div>
-                <div>{{ currentNodeY * transformData.k }}</div>
-                ||
-                <div>Node Y:</div>
-                <div>{{ -currentNodeX * transformData.k }}</div>
-            </div>
-            <div class="d-flex">
-                <div>Visible X:</div>
-                <div>{{ visibleRangeX }}</div>
-                ||
-                <div>Visible Y:</div>
-                <div>{{ visibleRangeY }}</div>
-                <button type="button" @click="generatePath">
-                    Click me !!!
-                </button>
-            </div> -->
-            <!-- <div class="d-flex">node drew: {{ nodeDrew }}</div> -->
             <div class="d-flex h-25">
                 <button type="button" @click="generatePath">
                     Click me to test things !!!
