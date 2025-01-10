@@ -1788,6 +1788,4 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
     }
 });
 
-openAIGenSkillIconImages();
-
 module.exports = router;
