@@ -221,7 +221,22 @@ export default {
             // Width
             const dy = 270;
 
-            this.tree = d3.tree().nodeSize([dx, dy]);
+            this.tree = d3
+                .tree()
+                .nodeSize([dx, dy])
+                // Attempting to create increased height spacing for super skills
+                .separation(function (a, b) {
+                    let separationAmount;
+                    if (a.data.type == 'super' || b.data.type == 'super') {
+                        separationAmount = 4;
+                    } else if (a.parent != b.parent) {
+                        separationAmount = 2;
+                    } else {
+                        separationAmount = 1;
+                    }
+                    console.log(a.data.type);
+                    return separationAmount;
+                });
 
             // Sort the tree and apply the layout.
             this.root.sort((a, b) => d3.ascending(a.x, b.x));
