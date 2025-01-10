@@ -31,7 +31,7 @@ async function generateIconForSkill(skillName, skillId) {
     // });
     // const promptMessage = genIconPrompt.choices[0].message;
     // console.log(promptMessage)
-    const prompt = "Design an icon representing the study subject 'Confucius.' The icon should feature simple, minimalistic shapes inspired by Confucian philosophy, such as a stylized scroll, a wise figure, or elements like bamboo or yin-yang. Ensure the design is easy to recognize and retains clarity even when scaled down. The background should be pure white, and the icon should avoid any text or unnecessary details."
+    const prompt = "Design an icon representing the study subject 'Nutrition & Digestion.' The icon should feature simple and bold shapes, such as a stylized stomach, fork and spoon, or food items like fruits, vegetables, or a plate, symbolizing nutrition and the digestive process. Ensure the design is minimalistic, easy to recognize, and retains clarity even when scaled down. The background must be pure white, and the icon should not include any text or unnecessary details"
     const iconBase64 = await openai.images.generate({
         model: "dall-e-3",
         prompt: prompt,
@@ -41,7 +41,7 @@ async function generateIconForSkill(skillName, skillId) {
     })
     rawIcon = iconBase64.data[0].b64_json;
     // const imgSrc = `data:image/jpeg;base64,${iconBase64.data[0].b64_json}`;
-    fs.writeFileSync('aiIcon.json', { openAI: JSON.stringify(iconBase64) });
+    fs.writeFileSync('aiIcon.json', JSON.stringify(iconBase64));
 }
 
 
