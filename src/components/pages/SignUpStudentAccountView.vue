@@ -56,11 +56,6 @@ export default {
                 this.newUser.password == null
             ) {
                 this.validate.password = true;
-            } else if (
-                this.newUser.skillTreeGradeLevel == '' ||
-                this.newUser.skillTreeGradeLevel == null
-            ) {
-                this.validate.skillTreeGradeLevel = true;
             }
             // After all checks passed we see if the password is complex enough
             else if (this.validate.passwordComplex) {
@@ -310,16 +305,6 @@ export default {
                         <option value="college">College</option>
                         <option value="phd">PHD</option>
                     </select>
-                    <div
-                        v-if="
-                            validate.skillTreeGradeLevel &&
-                            (newUser.skillTreeGradeLevel == '' ||
-                                newUser.skillTreeGradeLevel == null)
-                        "
-                        class="form-validate"
-                    >
-                        please choose a level!
-                    </div>
                 </div>
 
                 <button class="btn btn-dark mb-2" @click="ValidateForm()">
