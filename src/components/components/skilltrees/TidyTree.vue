@@ -289,9 +289,9 @@ export default {
                     link.source,
                     transform
                 );
-                if (!targetNodeInView && !sourceNodeInView) {
-                    continue;
-                }
+                // if (!targetNodeInView && !sourceNodeInView) {
+                //     continue;
+                // }
                 this.drawLink(link);
             }
 
