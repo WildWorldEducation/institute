@@ -371,6 +371,8 @@ export default {
 
             if (this.scale > 0.6) {
                 this.drawRoundRectNode(ctx1, node);
+            } else {
+                this.drawNodeCircle(ctx1, node);
             }
             // Visible context.
             // If not a domain, make node a circle.
@@ -507,32 +509,35 @@ export default {
             }
 
             // Hidden context.
-            if (node.data.type != 'domain') {
-                ctx2.beginPath();
-                ctx2.moveTo(node.y, node.x);
-                //ctx2.arc(node.y, node.x, 20, 0, 2 * Math.PI);
-                let xPosition = node.y;
-                if (node.data.children.length > 0) {
-                    xPosition = xPosition - 180;
-                }
-                ctx2.roundRect(xPosition, node.x - 20, 180, 40, 20);
-
-                ctx2.fill();
-            } else {
-                ctx2.beginPath();
-                ctx2.moveTo(node.y, node.x - 10);
-                // top left edge.
-                ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
-                // bottom left edge.
-                ctx2.lineTo(node.y, node.x - 10 + 20);
-                // bottom right edge.
-                ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
-                // closing the path automatically creates the top right edge.
-                ctx2.closePath();
-                ctx2.lineWidth = 2;
-                ctx2.fill();
-                ctx2.stroke();
+            if (this.scale > 0.6) {
+                this.drawNodeOnHiddenCanvas(ctx2, node);
             }
+            // if (node.data.type != 'domain') {
+            //     ctx2.beginPath();
+            //     ctx2.moveTo(node.y, node.x);
+            //     //ctx2.arc(node.y, node.x, 20, 0, 2 * Math.PI);
+            //     let xPosition = node.y;
+            //     if (node.data.children.length > 0) {
+            //         xPosition = xPosition - 180;
+            //     }
+            //     ctx2.roundRect(xPosition, node.x - 20, 180, 40, 20);
+
+            //     ctx2.fill();
+            // } else {
+            //     ctx2.beginPath();
+            //     ctx2.moveTo(node.y, node.x - 10);
+            //     // top left edge.
+            //     ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
+            //     // bottom left edge.
+            //     ctx2.lineTo(node.y, node.x - 10 + 20);
+            //     // bottom right edge.
+            //     ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
+            //     // closing the path automatically creates the top right edge.
+            //     ctx2.closePath();
+            //     ctx2.lineWidth = 2;
+            //     ctx2.fill();
+            //     ctx2.stroke();
+            // }
         },
 
         drawLink(link) {
@@ -1275,6 +1280,73 @@ export default {
         async fetchIcon() {
             const res = await fetch('/skills/generate-skill-icon');
             const resData = await res.json();
+        },
+
+        drawNodeCircle(ctx, node) {
+            const ctx1 = ctx;
+            if (node.data.type != 'domain') {
+                // Node size
+                let radius;
+                if (node.data.type == 'sub') {
+                    radius = 7.5;
+                } else {
+                    radius = 10;
+                }
+
+                ctx1.beginPath();
+                ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
+                // get the color associate with skill level
+                const skillColor = node.data.level
+                    ? this.hexColor(node.data.level)
+                    : '#000';
+
+                // If mastered, make a solid shape.
+                if (node.data.is_mastered == 1) {
+                    ctx1.fillStyle = skillColor;
+                    ctx1.fill();
+                    const outlineColor = this.hexBorderColor(node.data.level);
+                    ctx1.lineWidth = 2;
+                    ctx1.strokeStyle = outlineColor;
+                    ctx1.stroke();
+                }
+                // If not, just an outline.
+                else {
+                    ctx1.lineWidth = 2;
+                    ctx1.fillStyle = '#FFF';
+                    ctx1.fill();
+                    ctx1.strokeStyle = skillColor;
+                    ctx1.stroke();
+                }
+            }
+        },
+        drawNodeOnHiddenCanvas(ctx, node) {
+            const ctx2 = ctx;
+            if (node.data.type != 'domain') {
+                ctx2.beginPath();
+                ctx2.moveTo(node.y, node.x);
+                //ctx2.arc(node.y, node.x, 20, 0, 2 * Math.PI);
+                let xPosition = node.y;
+                if (node.data.children.length > 0) {
+                    xPosition = xPosition - 180;
+                }
+                ctx2.roundRect(xPosition, node.x - 20, 180, 40, 20);
+
+                ctx2.fill();
+            } else {
+                ctx2.beginPath();
+                ctx2.moveTo(node.y, node.x - 10);
+                // top left edge.
+                ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
+                // bottom left edge.
+                ctx2.lineTo(node.y, node.x - 10 + 20);
+                // bottom right edge.
+                ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
+                // closing the path automatically creates the top right edge.
+                ctx2.closePath();
+                ctx2.lineWidth = 2;
+                ctx2.fill();
+                ctx2.stroke();
+            }
         },
         // Draw round rectangle node
         drawRoundRectNode(ctx, node) {
