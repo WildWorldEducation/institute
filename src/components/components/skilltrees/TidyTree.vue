@@ -368,48 +368,52 @@ export default {
             // A flag to determine if this node was searched by user
             const isSearched =
                 node.data.skill_name === this.resultNode?.data.skill_name;
+
+            if (this.scale > 0.6) {
+                this.drawRoundRectNode(ctx1, node);
+            }
             // Visible context.
             // If not a domain, make node a circle.
-            if (node.data.type != 'domain') {
-                // Node size
-                let radius;
-                if (node.data.type == 'sub') {
-                    radius = 7.5;
-                } else {
-                    radius = 10;
-                }
+            // if (node.data.type != 'domain') {
+            //     // Node size
+            //     let radius;
+            //     if (node.data.type == 'sub') {
+            //         radius = 7.5;
+            //     } else {
+            //         radius = 10;
+            //     }
 
-                ctx1.beginPath();
-                // ctx1.arc(node.y, node.x, radius * 1.5, 0, 2 * Math.PI);
-                let xPosition = node.y;
-                if (node.data.children.length > 0) {
-                    xPosition = xPosition - 180;
-                }
-                ctx1.roundRect(xPosition, node.x - 20, 180, 40, 20);
-                // get the color associate with skill level
-                const skillColor = node.data.level
-                    ? this.hexColor(node.data.level)
-                    : '#000';
+            //     ctx1.beginPath();
+            //     // ctx1.arc(node.y, node.x, radius * 1.5, 0, 2 * Math.PI);
+            //     let xPosition = node.y;
+            //     if (node.data.children.length > 0) {
+            //         xPosition = xPosition - 180;
+            //     }
+            //     ctx1.roundRect(xPosition, node.x - 20, 180, 40, 20);
+            //     // get the color associate with skill level
+            //     const skillColor = node.data.level
+            //         ? this.hexColor(node.data.level)
+            //         : '#000';
 
-                // If mastered, make a solid shape.
-                if (node.data.is_mastered == 1) {
-                    ctx1.fillStyle = skillColor;
-                    ctx1.fill();
-                    const outlineColor = this.hexBorderColor(node.data.level);
-                    ctx1.lineWidth = 2;
-                    ctx1.strokeStyle = outlineColor;
-                    ctx1.stroke();
-                }
+            //     // If mastered, make a solid shape.
+            //     if (node.data.is_mastered == 1) {
+            //         ctx1.fillStyle = skillColor;
+            //         ctx1.fill();
+            //         const outlineColor = this.hexBorderColor(node.data.level);
+            //         ctx1.lineWidth = 2;
+            //         ctx1.strokeStyle = outlineColor;
+            //         ctx1.stroke();
+            //     }
 
-                // If not, just an outline.
-                else {
-                    ctx1.lineWidth = 4;
-                    ctx1.fillStyle = '#FFF';
-                    ctx1.fill();
-                    ctx1.strokeStyle = skillColor;
-                    ctx1.stroke();
-                }
-            }
+            //     // If not, just an outline.
+            //     else {
+            //         ctx1.lineWidth = 4;
+            //         ctx1.fillStyle = '#FFF';
+            //         ctx1.fill();
+            //         ctx1.strokeStyle = skillColor;
+            //         ctx1.stroke();
+            //     }
+            // }
             // // If child nodes are collapsed.
             // if (node.data.show_children) {
             //     if (node.data.show_children == 0) {
@@ -1272,6 +1276,51 @@ export default {
             const res = await fetch('/skills/generate-skill-icon');
             const resData = await res.json();
         },
+        // Draw round rectangle node
+        drawRoundRectNode(ctx, node) {
+            const ctx1 = ctx;
+            if (node.data.type != 'domain') {
+                // Node size
+                let radius;
+                if (node.data.type == 'sub') {
+                    radius = 7.5;
+                } else {
+                    radius = 10;
+                }
+
+                ctx1.beginPath();
+                // ctx1.arc(node.y, node.x, radius * 1.5, 0, 2 * Math.PI);
+                let xPosition = node.y;
+                if (node.data.children.length > 0) {
+                    xPosition = xPosition - 180;
+                }
+                ctx1.roundRect(xPosition, node.x - 20, 180, 40, 20);
+                // get the color associate with skill level
+                const skillColor = node.data.level
+                    ? this.hexColor(node.data.level)
+                    : '#000';
+
+                // If mastered, make a solid shape.
+                if (node.data.is_mastered == 1) {
+                    ctx1.fillStyle = skillColor;
+                    ctx1.fill();
+                    const outlineColor = this.hexBorderColor(node.data.level);
+                    ctx1.lineWidth = 2;
+                    ctx1.strokeStyle = outlineColor;
+                    ctx1.stroke();
+                }
+
+                // If not, just an outline.
+                else {
+                    ctx1.lineWidth = 4;
+                    ctx1.fillStyle = '#FFF';
+                    ctx1.fill();
+                    ctx1.strokeStyle = skillColor;
+                    ctx1.stroke();
+                }
+            }
+        },
+
         // Draw a round rectangle and using clip to make image rounded
         roundedImage(ctx, x, y, width, height, radius) {
             ctx.beginPath();
@@ -1405,7 +1454,7 @@ export default {
 
                 firstLineYposition: node.x - 5,
                 secondLineYposition: node.x + 12,
-                lenghtRatio: node.data.skill_name.length / 19
+                lengthRatio: node.data.skill_name.length / 19
             };
 
             const ctx1 = ctx;
@@ -1422,7 +1471,7 @@ export default {
             ctx1.lineWidth = 4;
             // Font size
             const largeSkillFontSize =
-                Math.floor(11 / textDrawData.lenghtRatio) + 4;
+                Math.floor(11 / textDrawData.lengthRatio) + 4;
 
             ctx1.font = `${largeSkillFontSize}px Verdana`;
             if (node.data.type == 'sub') {
@@ -1443,6 +1492,7 @@ export default {
                 xPosition = xPosition - 180;
             }
 
+            // draw the first line of text
             ctx1.strokeText(
                 string1,
                 xPosition,
@@ -1450,7 +1500,7 @@ export default {
             );
             ctx1.fillText(string1, xPosition, textDrawData.firstLineYposition);
 
-            //
+            // draw second line of text
 
             ctx1.strokeText(
                 string2,
