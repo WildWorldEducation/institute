@@ -460,31 +460,32 @@ export default {
                 // we move the skill name to the left and change the color if it a domain node
                 // using the non domain as if condition will save us some compute time as none domain node is more common
                 if (node.data.type != 'domain') {
-                    ctx1.beginPath();
-                    // Background stroke
-                    ctx1.strokeStyle = '#FFF';
-                    ctx1.lineWidth = 4;
-                    // Font size
-                    ctx1.font = '12px Arial';
-                    if (node.data.type == 'sub') {
-                        ctx1.font = '14px Verdana';
-                    }
+                    // ctx1.beginPath();
+                    // // Background stroke
+                    // ctx1.strokeStyle = '#FFF';
+                    // ctx1.lineWidth = 4;
+                    // // Font size
+                    // ctx1.font = '12px Arial';
+                    // if (node.data.type == 'sub') {
+                    //     ctx1.font = '14px Verdana';
+                    // }
 
-                    // High light the text if user search for it
-                    ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
-                    ctx1.font = isSearched ? 'bold' : 'normal';
-                    ctx1.direction = 'ltr';
+                    // // High light the text if user search for it
+                    // ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
+                    // ctx1.font = isSearched ? 'bold' : 'normal';
+                    // ctx1.direction = 'ltr';
 
-                    //  also added a triangle to the end of skill name
-                    const showName = isSearched
-                        ? `${node.data.skill_name} ◀`
-                        : node.data.skill_name;
-                    let xPosition = node.y + 45;
-                    if (node.data.children.length > 0) {
-                        xPosition = xPosition - 180;
-                    }
-                    ctx1.strokeText(showName, xPosition, node.x + 4, 120);
-                    ctx1.fillText(showName, xPosition, node.x + 4, 120);
+                    // //  also added a triangle to the end of skill name
+                    // const showName = isSearched
+                    //     ? `${node.data.skill_name} ◀`
+                    //     : node.data.skill_name;
+                    // let xPosition = node.y + 45;
+                    // if (node.data.children.length > 0) {
+                    //     xPosition = xPosition - 180;
+                    // }
+                    // ctx1.strokeText(showName, xPosition, node.x + 4, 120);
+                    // ctx1.fillText(showName, xPosition, node.x + 4, 120);
+                    this.drawSkillName(node, ctx1, isSearched);
                 } else {
                     ctx1.beginPath();
                     ctx1.strokeStyle = '#FFF';
@@ -1278,6 +1279,118 @@ export default {
             ctx.roundRect(x, y, width, height, radius);
 
             ctx.closePath();
+        },
+        // draw skill name based on it lenght
+        drawSkillName(node, ctx, isSearched) {
+            if (node.data.skill_name.length < 10) {
+                this.drawShortSkillName(node, ctx, isSearched);
+            } else {
+                this.drawMediumSkillName(node, ctx, isSearched);
+            }
+        },
+        drawShortSkillName(node, ctx, isSearched) {
+            const ctx1 = ctx;
+            // to avoid sharp artifacts with the stroke of the text.
+            ctx1.lineJoin = 'bevel';
+            // we move the skill name to the left and change the color if it a domain node
+            // using the non domain as if condition will save us some compute time as none domain node is more common
+            if (node.data.type != 'domain') {
+                ctx1.beginPath();
+                // Background stroke
+                ctx1.strokeStyle = '#FFF';
+                ctx1.lineWidth = 4;
+                // Font size
+                ctx1.font = '12px Arial';
+                if (node.data.type == 'sub') {
+                    ctx1.font = '14px Verdana';
+                }
+
+                // High light the text if user search for it
+                ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
+                ctx1.font = isSearched ? 'bold' : 'normal';
+                ctx1.direction = 'ltr';
+
+                //  also added a triangle to the end of skill name
+                const showName = isSearched
+                    ? `${node.data.skill_name} ◀`
+                    : node.data.skill_name;
+                let xPosition = node.y + 45;
+                if (node.data.children.length > 0) {
+                    xPosition = xPosition - 180;
+                }
+                ctx1.strokeText(showName, xPosition, node.x + 4);
+                ctx1.fillText(showName, xPosition, node.x + 4);
+            } else {
+                ctx1.beginPath();
+                ctx1.strokeStyle = '#FFF';
+                ctx1.lineWidth = 4;
+                ctx1.fillStyle = isSearched ? '#ff0000' : '#849cab';
+                ctx1.direction = 'rtl';
+                const showName = isSearched
+                    ? `${node.data.skill_name} ▶`
+                    : node.data.skill_name;
+                let xPosition = node.y + 5;
+
+                ctx1.strokeText(showName, xPosition, node.x + 2);
+                ctx1.fillText(showName, xPosition, node.x + 2);
+            }
+        },
+        drawMediumSkillName(node, ctx, isSearched) {
+            // Number use to fit text into node
+            const textDrawData = {
+                // Maximum lenght for text to be consider a short name
+                shortTextMaxLenght: 20,
+
+                firstLineYposition: node.x - 5,
+                secondLineYposition: node.x + 12
+            };
+            const ctx1 = ctx;
+            const splitIndex = node.data.skill_name.lastIndexOf(
+                ' ',
+                textDrawData.shortTextMaxLenght
+            );
+            const string1 = node.data.skill_name.substring(0, splitIndex);
+            const string2 = node.data.skill_name.substring(splitIndex + 1);
+
+            ctx1.beginPath();
+            // Background stroke
+            ctx1.strokeStyle = '#FFF';
+            ctx1.lineWidth = 4;
+            // Font size
+            ctx1.font = '12px Arial';
+            if (node.data.type == 'sub') {
+                ctx1.font = '14px Verdana';
+            }
+
+            // High light the text if user search for it
+            ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
+            ctx1.font = isSearched ? 'bold' : 'normal';
+            ctx1.direction = 'ltr';
+
+            //  also added a triangle to the end of skill name
+            const showName = isSearched
+                ? `${node.data.skill_name} ◀`
+                : node.data.skill_name;
+            let xPosition = node.y + 45;
+            if (node.data.children.length > 0) {
+                xPosition = xPosition - 180;
+            }
+
+            ctx1.strokeText(
+                string1,
+                xPosition,
+                textDrawData.firstLineYposition
+            );
+            ctx1.fillText(string1, xPosition, textDrawData.firstLineYposition);
+
+            //
+
+            ctx1.strokeText(
+                string2,
+                xPosition,
+                textDrawData.secondLineYposition
+            );
+            ctx1.fillText(string2, xPosition, textDrawData.secondLineYposition);
         }
     }
 };
