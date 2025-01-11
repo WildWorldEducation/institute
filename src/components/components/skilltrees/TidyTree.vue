@@ -1282,10 +1282,15 @@ export default {
         },
         // draw skill name based on it lenght
         drawSkillName(node, ctx, isSearched) {
-            if (node.data.skill_name.length < 10) {
+            if (node.data.skill_name.length < 19) {
                 this.drawShortSkillName(node, ctx, isSearched);
-            } else {
+            } else if (
+                node.data.skill_name.length >= 19 &&
+                node.data.skill_name.length < 33
+            ) {
                 this.drawMediumSkillName(node, ctx, isSearched);
+            } else {
+                this.drawLargeSkillName(node, ctx, isSearched);
             }
         },
         drawShortSkillName(node, ctx, isSearched) {
@@ -1300,9 +1305,9 @@ export default {
                 ctx1.strokeStyle = '#FFF';
                 ctx1.lineWidth = 4;
                 // Font size
-                ctx1.font = '12px Arial';
+                ctx1.font = '11px Verdana';
                 if (node.data.type == 'sub') {
-                    ctx1.font = '14px Verdana';
+                    ctx1.font = '11px Verdana';
                 }
 
                 // High light the text if user search for it
@@ -1339,7 +1344,7 @@ export default {
             // Number use to fit text into node
             const textDrawData = {
                 // Maximum lenght for text to be consider a short name
-                shortTextMaxLenght: 20,
+                shortTextMaxLenght: 19,
 
                 firstLineYposition: node.x - 5,
                 secondLineYposition: node.x + 12
@@ -1357,9 +1362,71 @@ export default {
             ctx1.strokeStyle = '#FFF';
             ctx1.lineWidth = 4;
             // Font size
-            ctx1.font = '12px Arial';
+            ctx1.font = '11px Verdana';
             if (node.data.type == 'sub') {
-                ctx1.font = '14px Verdana';
+                ctx1.font = '11px Verdana';
+            }
+
+            // High light the text if user search for it
+            ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
+            ctx1.font = isSearched ? 'bold' : 'normal';
+            ctx1.direction = 'ltr';
+
+            //  also added a triangle to the end of skill name
+            const showName = isSearched
+                ? `${node.data.skill_name} ◀`
+                : node.data.skill_name;
+            let xPosition = node.y + 45;
+            if (node.data.children.length > 0) {
+                xPosition = xPosition - 180;
+            }
+
+            ctx1.strokeText(
+                string1,
+                xPosition,
+                textDrawData.firstLineYposition
+            );
+            ctx1.fillText(string1, xPosition, textDrawData.firstLineYposition);
+
+            //
+
+            ctx1.strokeText(
+                string2,
+                xPosition,
+                textDrawData.secondLineYposition
+            );
+            ctx1.fillText(string2, xPosition, textDrawData.secondLineYposition);
+        },
+        drawLargeSkillName(node, ctx, isSearched) {
+            // Number use to fit text into node
+            const textDrawData = {
+                // Maximum lenght for text to be consider a short name
+                mediumTextMaxLenght: 19,
+
+                firstLineYposition: node.x - 5,
+                secondLineYposition: node.x + 12,
+                lenghtRatio: node.data.skill_name.length / 19
+            };
+
+            const ctx1 = ctx;
+            const splitIndex = node.data.skill_name.lastIndexOf(
+                ' ',
+                Math.floor(node.data.skill_name.length / 1.5)
+            );
+            const string1 = node.data.skill_name.substring(0, splitIndex);
+            const string2 = node.data.skill_name.substring(splitIndex + 1);
+
+            ctx1.beginPath();
+            // Background stroke
+            ctx1.strokeStyle = '#FFF';
+            ctx1.lineWidth = 4;
+            // Font size
+            const largeSkillFontSize =
+                Math.floor(11 / textDrawData.lenghtRatio) + 4;
+
+            ctx1.font = `${largeSkillFontSize}px Verdana`;
+            if (node.data.type == 'sub') {
+                ctx1.font = `${largeSkillFontSize}px Verdana`;
             }
 
             // High light the text if user search for it
