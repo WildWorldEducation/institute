@@ -331,7 +331,7 @@ export default {
                             class="btn primary-btn"
                             @click="progressTutorial(4)"
                         >
-                            close
+                            next
                         </button>
                     </div>
                 </div>
@@ -372,7 +372,7 @@ export default {
                             class="btn primary-btn"
                             @click="progressTutorial(5)"
                         >
-                            next
+                            close
                         </button>
                     </div>
                 </div>
