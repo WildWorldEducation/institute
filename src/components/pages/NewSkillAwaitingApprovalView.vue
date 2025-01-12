@@ -1,7 +1,7 @@
 <script>
-import { RouterLink } from 'vue-router';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUsersStore } from '../../stores/UsersStore.js';
+import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import ApproveNewSkillModal from '../components/newSkillDetails/modals/ApproveNewSkillModal.vue';
 import DismissModal from '../components/newSkillDetails/modals/DismissModal.vue';
 import WaitLoadingModal from '../components/share-components/WaitLoadingModal.vue';
@@ -12,10 +12,12 @@ export default {
     setup() {
         const skillsStore = useSkillsStore();
         const usersStore = useUsersStore();
+        const userDetailsStore = useUserDetailsStore();
 
         return {
             skillsStore,
-            usersStore
+            usersStore,
+            userDetailsStore
         };
     },
     data() {
@@ -27,7 +29,8 @@ export default {
             severLoading: false,
             showSuccessModal: false,
             showFailsModal: false,
-            message: ''
+            message: '',
+            newSkillId: null
         };
     },
     async created() {
@@ -118,33 +121,59 @@ export default {
 
             var url = `/new-skills-awaiting-approval/accept/${this.newSkillAwaitingApproval.id}`;
 
-            fetch(url, requestOptions).then((response) => {
-                console.log('Fetched');
-                if (response.error || response.status === 500) {
-                    this.message = 'Failed to add new skill';
-                    this.showFailsModal = true;
-                }
-                // Delete it afterwards.
-                const result = fetch(
-                    '/new-skills-awaiting-approval/' +
-                        this.id +
-                        '?action=approve',
-                    {
-                        method: 'DELETE'
+            fetch(url, requestOptions)
+                .then((response) => {
+                    // check for errors
+                    if (response.error || response.status === 500) {
+                        this.message = 'Failed to add new skill';
+                        this.showFailsModal = true;
                     }
-                );
 
-                if (result.error) {
-                    console.err(result.error);
-                    this.message =
-                        'Failed to remove from list of suggested new skills';
-                    this.showFailsModal = true;
-                    return;
-                }
-                this.message = 'Successfully added skill';
-                this.severLoading = false;
-                this.showSuccessModal = true;
-            });
+                    return response.json();
+                })
+                .then((data) => {
+                    // Get the id of the new skill
+                    this.newSkillId = data.newSkillId;
+                })
+                .then(() => {
+                    // Delete it afterwards.
+                    const result = fetch(
+                        '/new-skills-awaiting-approval/' +
+                            this.id +
+                            '?action=approve',
+                        {
+                            method: 'DELETE'
+                        }
+                    );
+
+                    if (result.error) {
+                        console.err(result.error);
+                        this.message =
+                            'Failed to remove from list of suggested new skills';
+                        this.showFailsModal = true;
+                        return;
+                    }
+                    this.message = 'Successfully added skill';
+                    this.severLoading = false;
+                    this.showSuccessModal = true;
+                })
+                .then(() => {
+                    const requestOptions = {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contentType: 'new_skill',
+                            contentId: this.newSkillId
+                        })
+                    };
+                    var url =
+                        '/users/increase-reputation/' +
+                        this.userDetailsStore.userId +
+                        '/' +
+                        this.newSkillAwaitingApproval.user_id;
+
+                    fetch(url, requestOptions);
+                });
         },
         handleSaveBtnClick() {
             this.showApproveModal = true;
@@ -313,7 +342,7 @@ export default {
                 >
                     Edit
                 </router-link>
-                <button class="btn secondary-btn" @click="handleSaveBtnClick">
+                <button class="btn primary-btn" @click="handleSaveBtnClick">
                     Approve
                 </button>
             </div>

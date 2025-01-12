@@ -218,32 +218,18 @@ export default {
                     break;
             }
         }
-        // TODO later
-        // addAnswer() {
-        //     if (this.tempAnswersEdit.length < 5) {
-        //         this.tempAnswersEdit.push({ text: '' });
-        //     }
-        // },
-        // removeAnswer(index) {
-        //     if (this.tempAnswersEdit.length > 2) {
-        //         this.tempAnswersEdit.splice(index, 1);
-        //         // Adjust correct answer selection if necessary
-        //         if (
-        //             this.tempMcQuestionEdit.correct_answer >
-        //             this.tempAnswersEdit.length
-        //         ) {
-        //             this.tempMcQuestionEdit.correct_answer =
-        //                 this.tempAnswersEdit.length;
-        //         }
-        //     }
-        // }
     }
 };
 </script>
 
 <template>
     <div class="container mb-2 bg-light rounded p-3">
-        <h1 ref="pageTile" class="heading">Compare Changes</h1>
+        <h1 ref="pageTile" class="heading">Review Suggested Update</h1>
+        <p>
+            {{ $parent.userThatSubmittedEdit.username }} (reputation score:
+            {{ $parent.userThatSubmittedEdit.reputationScore }}) suggested the
+            following changes to this question.
+        </p>
         <hr />
         <!-- Name and Level of Skill -->
         <h2 class="secondary-heading h4">Skill</h2>

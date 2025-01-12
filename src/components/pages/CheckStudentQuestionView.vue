@@ -40,9 +40,12 @@ export default {
             },
             isEditMode: false,
             studentName: null,
+            studentReputation: null,
+            studentId: null,
             skillName: null,
             skillId: null,
-            isMobileCheck: window.innerWidth
+            isMobileCheck: window.innerWidth,
+            showReputationModal: false
         };
     },
     async created() {
@@ -64,7 +67,7 @@ export default {
                     this.question = data.question;
                     this.answers = data.answers;
 
-                    // Get the student's name.
+                    // Get the student's details.
                     for (let i = 0; i < this.usersStore.users.length; i++) {
                         if (
                             this.question.student_id ==
@@ -72,6 +75,9 @@ export default {
                         ) {
                             this.studentName =
                                 this.usersStore.users[i].username;
+                            this.studentReputation =
+                                this.usersStore.users[i].reputation_score;
+                            this.studentId = this.usersStore.users[i].id;
                         }
                     }
                     // Get the skill's name.
@@ -100,6 +106,8 @@ export default {
             }
         },
         saveToQuestionBank() {
+            this.showReputationModal = false;
+
             this.question.name = 'User: ' + this.question.student_id;
 
             const requestOptions = {
@@ -146,6 +154,25 @@ export default {
                 if (this.question.correct_answer == 3)
                     this.question.correct_answer = 2;
             }
+        },
+        increaseUserReputation() {
+            this.showReputationModal = false;
+
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+
+            var url =
+                '/users/increase-reputation/' +
+                this.userDetailsStore.userId +
+                '/' +
+                this.studentId;
+
+            fetch(url, requestOptions).then(() => {
+                this.usersStore.getUsers();
+                this.saveToQuestionBank();
+            });
         }
     }
 };
@@ -155,7 +182,8 @@ export default {
     <div class="container p-3 bg-light rounded">
         <h1 class="heading">Review Suggested Question</h1>
         <p>
-            {{ studentName }} suggested the following question, for the skill
+            {{ studentName }} (reputation score: {{ studentReputation }})
+            suggested the following question, for the skill
             {{ skillName }}
         </p>
 
@@ -312,19 +340,44 @@ export default {
 
                     <div
                         v-if="userDetailsStore.role != 'student'"
-                        class="d-flex justify-content-end gap-4"
+                        class="d-flex justify-content-end gap-2"
                     >
                         <a class="btn primary-btn" @click="editMode()">Edit</a>
+
                         <button
                             class="btn primary-btn"
-                            @click="saveToQuestionBank()"
+                            @click="this.showReputationModal = true"
                         >
                             Save
                         </button>
+
                         <a class="btn red-btn" @click="deleteStudentQuestion()"
                             >Delete</a
                         >
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reputation modal -->
+    <div v-if="showReputationModal" class="modal">
+        <div class="modal-content">
+            <div>
+                <p>Give {{ studentName }} a reputation point?</p>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="increaseUserReputation()"
+                    >
+                        yes
+                    </button>
+                    <button
+                        class="btn primary-btn"
+                        @click="saveToQuestionBank()"
+                    >
+                        no
+                    </button>
                 </div>
             </div>
         </div>
@@ -461,6 +514,15 @@ export default {
     font-size: 20px;
     font-weight: 500;
     color: #667085;
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 480px) {
+    /* Modal Content/Box */
+    .modal-content {
+        width: 90%;
+        margin-top: 5%;
+    }
 }
 
 /* Styling for phone */

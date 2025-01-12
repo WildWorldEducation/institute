@@ -119,11 +119,12 @@ export default {
                 />
                 <!-- Mastery requirements -->
                 <div
-                    class="skill-mastery-requirement text-start mt-1"
+                    v-if="skill?.type != 'domain'"
+                    class="skill-mastery-requirement text-start mt-1 mb-4"
                     v-html="skill.masteryRequirements"
                 ></div>
                 <div
-                    v-if="skill?.type == 'domain'"
+                    v-else-if="skill?.type == 'domain'"
                     class="skill-mastery-requirement"
                 >
                     <p>
@@ -140,9 +141,11 @@ export default {
                     <h2 class="h4">Subskills</h2>
                     <ul class="list-container">
                         <li v-for="subskill in skill.subskills">
-                            <router-link class="btn mb-2" :to="'/skills/' + subskill.url">{{
-                                subskill.name
-                            }}</router-link>
+                            <router-link
+                                class="btn mb-2"
+                                :to="'/skills/' + subskill.url"
+                                >{{ subskill.name }}</router-link
+                            >
                         </li>
                     </ul>
                 </div>
@@ -217,13 +220,13 @@ img {
     margin-left: 20px;
     margin-right: 5px;
 }
-.list-container{
+.list-container {
     list-style: none;
     padding: 0;
     text-align: start;
 }
 
-.list-container a{
+.list-container a {
     text-decoration: none;
 }
 

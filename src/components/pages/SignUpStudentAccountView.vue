@@ -14,7 +14,7 @@ export default {
                 email: null,
                 password: null,
                 accountType: 'student',
-                skillTreeGradeLevel: null
+                skillTreeGradeLevel: 'phd'
             },
             // Validate Object flag
             validate: {
@@ -56,11 +56,6 @@ export default {
                 this.newUser.password == null
             ) {
                 this.validate.password = true;
-            } else if (
-                this.newUser.skillTreeGradeLevel == '' ||
-                this.newUser.skillTreeGradeLevel == null
-            ) {
-                this.validate.skillTreeGradeLevel = true;
             }
             // After all checks passed we see if the password is complex enough
             else if (this.validate.passwordComplex) {
@@ -90,7 +85,7 @@ export default {
                     email: this.newUser.email,
                     password: this.newUser.password,
                     account_type: this.newUser.accountType,
-                    skill_tree_level: this.newUser.skillTreeGradeLevel
+                    grade_filter: this.newUser.skillTreeGradeLevel
                 })
             };
             var url = '/users/new-user/add';
@@ -303,23 +298,13 @@ export default {
                         class="form-select"
                         v-model="newUser.skillTreeGradeLevel"
                     >
-                        <option selected value="null">Choose your level</option>
+                        <option selected value="phd">Choose your level</option>
                         <option value="grade_school">Grade School</option>
                         <option value="middle_school">Middle School</option>
                         <option value="high_school">High School</option>
                         <option value="college">College</option>
                         <option value="phd">PHD</option>
                     </select>
-                    <div
-                        v-if="
-                            validate.skillTreeGradeLevel &&
-                            (newUser.skillTreeGradeLevel == '' ||
-                                newUser.skillTreeGradeLevel == null)
-                        "
-                        class="form-validate"
-                    >
-                        please choose a level!
-                    </div>
                 </div>
 
                 <button class="btn btn-dark mb-2" @click="ValidateForm()">
@@ -372,7 +357,7 @@ export default {
     </div>
 </template>
 
-<style>
+<style scoped>
 /* The Warning Modal */
 .modal {
     display: block;
@@ -445,7 +430,7 @@ export default {
 }
 
 .welcome-message {
-    color: rgba(102, 112, 133, 1);
+    color: var(--primary-color);
     font-size: 16px;
 }
 
@@ -456,18 +441,17 @@ export default {
 
 .signup {
     font-size: 14px;
-    color: rgba(102, 112, 133, 1);
+    color: var(--primary-color);
 }
 
 h1 {
-    color: #8f7bd6;
+    color: var(--primary-color);
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
 }
 
 .links {
-    color: rgba(164, 139, 229, 1);
-    text-decoration: none;
+    color: var(--primary-color);
 }
 
 .password-div {
@@ -488,7 +472,7 @@ h1 {
 /* Mobile */
 @media (max-width: 480px) {
     .signup-page {
-        background-image: url('/images/login-page.svg');
+        background-image: url('/images/app-logo.jpg');
         background-size: contain;
         background-position: center bottom;
     }
@@ -497,7 +481,7 @@ h1 {
 /* Tablets */
 @media (min-width: 481px) and (max-width: 1024px) {
     .signup-page {
-        background-image: url('/images/login-page.svg');
+        background-image: url('/images/app-logo.jpg');
         background-size: contain;
         background-position: center bottom;
     }
@@ -506,7 +490,7 @@ h1 {
 /* Desktops/laptops */
 @media (min-width: 1025px) {
     .signup-page {
-        background-image: url('/images/login-page.svg');
+        background-image: url('/images/background-landscape.jpg');
         background-size: cover;
         background-position: center bottom;
     }

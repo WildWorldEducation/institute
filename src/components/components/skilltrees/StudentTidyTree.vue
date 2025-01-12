@@ -628,7 +628,7 @@ export default {
             );
             this.$refs.sliderControl.showScaleLabel();
         },
-        // Pan with arrow keys and joystick.
+        // Pan with arrow keys.
         panInD3() {
             d3.select(this.context.canvas).call(
                 this.d3Zoom.transform,
@@ -728,9 +728,9 @@ export default {
         ></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
-        <JoystickControl class="d-lg-none" />
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
+        <JoystickControl class="d-none" />
     </div>
 </template>
 
@@ -771,11 +771,6 @@ canvas {
     width: 200px;
     bottom: 2px;
     left: 2px;
-}
-
-#panJoystick {
-    width: 100px;
-    height: 100px;
 }
 
 .slidecontainer {

@@ -280,13 +280,13 @@ export default {
 }
 
 h1 {
-    color: #8f7bd6;
+    color: var(--primary-color);
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
 }
 
 .welcome-message {
-    color: rgba(102, 112, 133, 1);
+    color: var(--primary-color);
     font-size: 16px;
 }
 
@@ -297,12 +297,11 @@ h1 {
 
 .signup {
     font-size: 14px;
-    color: rgba(102, 112, 133, 1);
+    color: var(--primary-color);
 }
 
 .links {
-    color: rgba(164, 139, 229, 1);
-    text-decoration: none;
+    color: var(--primary-color);
 }
 
 .password-div {
@@ -363,7 +362,6 @@ h1 {
     width: 100%;
     background-color: var(--primary-color);
     color: white;
-    border: 1px solid #7f56d9;
     font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 16px;

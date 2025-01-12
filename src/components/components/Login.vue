@@ -65,18 +65,18 @@ export default {
 <template>
     <div class="login-page">
         <div class="form-signin">
-            <div class="text-center">
+            <!-- Image -->
+            <div class="text-center app-logo-wrapper">
                 <img
-                    class="mb-4"
-                    src="/images/logo-red.png"
-                    alt=""
-                    width="72"
-                    height="72"
+                    class=""
+                    src="/images/app-logo.jpg"
+                    alt="icon of a skill tree"
                 />
             </div>
-            <h1 class="h3 mb-3 font-weight-normal">Student sign in</h1>
-
-            <div class="mt-3">
+            <!-- Heading -->
+            <h1 class="h3 mt-2 font-weight-normal">Student sign in</h1>
+            <!-- Form -->
+            <div class="form">
                 <label class="mb-4 welcome-message"
                     >Welcome back! Please enter your details.</label
                 >
@@ -103,16 +103,6 @@ export default {
                     />
                 </div>
                 <div class="d-flex password-extras">
-                    <div class="form-check">
-                        <input
-                            class="form-check-input"
-                            type="checkbox"
-                            id="flexCheckDefault"
-                        />
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Remember for 30 days
-                        </label>
-                    </div>
                     <div style="color: rgba(164, 139, 229, 1)">
                         <a href="/password-reset" class="links"
                             >Forgot password</a
@@ -149,7 +139,7 @@ export default {
     </div>
 </template>
 
-<style>
+<style scoped>
 .login-page {
     height: 100%;
     padding: 10px;
@@ -159,61 +149,16 @@ export default {
 }
 
 .welcome-message {
-    color: rgba(102, 112, 133, 1);
+    color: var(--primary-color);
     font-size: 16px;
 }
 
-h1 {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
-.password-extras {
-    font-size: 14px;
-    justify-content: space-between;
-}
-
-.signup {
-    font-size: 14px;
-    color: rgba(102, 112, 133, 1);
-}
-
-.links {
-    color: rgba(164, 139, 229, 1);
-    text-decoration: none;
-}
-
-/* Mobile */
-@media (max-width: 480px) {
-    .login-page {
-        background-image: url('/images/login-page.svg');
-        background-size: contain;
-        background-position: center bottom;
-    }
-}
-
-/* Tablets */
-@media (min-width: 481px) and (max-width: 1024px) {
-    .login-page {
-        background-image: url('/images/login-page.svg');
-        background-size: contain;
-        background-position: center bottom;
-    }
-}
-
-/* Desktops/laptops */
-@media (min-width: 1025px) {
-    .login-page {
-        background-image: url('/images/login-page.svg');
-        background-size: cover;
-        background-position: center bottom;
-    }
-}
-
 .form-signin {
+    display: flex;
+    flex-direction: column;
     background-color: white;
     width: 100%;
+    height: 90%;
     width: 360px;
     padding: 15px;
     margin: 0 auto;
@@ -224,12 +169,82 @@ h1 {
 
 .form-signin button {
     width: 100%;
-    background-color: #a48be6;
+    background-color: var(--primary-color);
     color: white;
-    border: 1px solid #7f56d9;
     font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 16px;
     line-height: 24px;
+}
+
+.form {
+    flex: 1;
+}
+
+h1 {
+    color: var(--primary-color);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+}
+
+.password-extras {
+    font-size: 14px;
+    justify-content: end;
+}
+
+.signup {
+    font-size: 14px;
+    color: var(--primary-color);
+}
+
+.links {
+    color: var(--primary-color);
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .login-page {
+        background-image: none;
+    }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .login-page {
+        background-image: none;
+    }
+
+    .form-signin {
+        width: 420px;
+    }
+}
+
+/* Desktops/laptops */
+@media (min-width: 1025px) {
+    .login-page {
+        background-image: url('/images/background-landscape.jpg');
+        background-size: cover;
+        background-position: center bottom;
+    }
+}
+
+.app-logo-wrapper {
+    overflow: auto;
+    flex: 2;
+}
+
+.app-logo-wrapper img {
+    margin: auto;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.app-icon {
+    /* max-height: 100% !important;
+    height: 100%; */
+    /* width: 100%;
+    height: 100%;
+    object-fit: cover;
+    overflow: hidden; */
 }
 </style>

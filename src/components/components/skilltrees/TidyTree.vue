@@ -89,7 +89,8 @@ export default {
         if (this.skillTreeStore.verticalTreeUserSkills.length == 0) {
             await this.skillTreeStore.getVerticalTreeUserSkills(
                 this.userDetailsStore.gradeFilter,
-                this.userDetailsStore.subjectFilters
+                this.userDetailsStore.subjectFilters,
+                this.userDetailsStore.isUnlockedSkillsOnlyFilter
             );
         }
 
@@ -308,9 +309,9 @@ export default {
                     link.source,
                     transform
                 );
-                if (!targetNodeInView && !sourceNodeInView) {
-                    continue;
-                }
+                // if (!targetNodeInView && !sourceNodeInView) {
+                //     continue;
+                // }
                 this.drawLink(link);
             }
 
@@ -804,7 +805,7 @@ export default {
                         .scale(zoomedScale)
                 );
         },
-        // Pan with arrow keys and joystick.
+        // Pan with arrow keys.
         panInD3() {
             d3.select(this.context.canvas).call(
                 this.d3Zoom.transform,
@@ -1140,7 +1141,8 @@ export default {
             this.showSkillPanel = false;
             await this.skillTreeStore.getVerticalTreeUserSkills(
                 this.userDetailsStore.gradeFilter,
-                this.userDetailsStore.subjectFilters
+                this.userDetailsStore.subjectFilters,
+                this.userDetailsStore.isUnlockedSkillsOnlyFilter
             );
 
             // If the student clicks a button on the grade level key,
@@ -1213,7 +1215,7 @@ export default {
                 );
             this.resetPos();
         },
-        // Grade level and root subject filter
+        // Grade level, root subject, unlocked skills filters
         async filter() {
             this.skill.children = await this.reloadTree(null);
             this.saveSkillTreeFilters();
@@ -1232,7 +1234,9 @@ export default {
                     is_computer_science_filter: this.$parent.isComputerScience,
                     is_science_and_invention_filter:
                         this.$parent.isScienceAndInvention,
-                    is_dangerous_ideas_filter: this.$parent.isDangerousIdeas
+                    is_dangerous_ideas_filter: this.$parent.isDangerousIdeas,
+                    is_unlocked_skills_only_filter:
+                        this.userDetailsStore.isUnlockedSkillsOnlyFilter
                 })
             };
             var url =

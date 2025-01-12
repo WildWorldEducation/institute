@@ -15,7 +15,8 @@ export default {
     },
     data() {
         return {
-            isMobileCheck: window.innerWidth
+            isMobileCheck: window.innerWidth,
+            currentTab: null
         };
     },
     async mounted() {
@@ -141,10 +142,7 @@ export default {
                             You cannot master skills until signed in
                         </div>
                         <li
-                            v-if="
-                                sessionDetailsStore.isLoggedIn &&
-                                this.$route.name != 'hub'
-                            "
+                            v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item"
                         >
                             <RouterLink to="/" class="nav-link close-on-click"
@@ -155,8 +153,7 @@ export default {
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
                                 (userDetailsStore.role == 'admin' ||
-                                    userDetailsStore.role == 'editor') &&
-                                this.$route.name != 'todo-list'
+                                    userDetailsStore.role == 'editor')
                             "
                             class="nav-item"
                         >
@@ -168,51 +165,40 @@ export default {
                             </RouterLink>
                         </li>
                         <li
-                            v-if="
-                                userDetailsStore.role == 'student' &&
-                                this.$route.name != 'my-skill-tree'
-                            "
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                to="/my-skill-tree"
-                                class="nav-link close-on-click"
-                                >My Tree</RouterLink
-                            >
-                        </li>
-                        <li
-                            v-if="
-                                userDetailsStore.role == 'student' &&
-                                this.$route.name != 'skill-tree'
-                            "
+                            v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
                             <RouterLink
                                 to="/skill-tree"
                                 class="nav-link close-on-click"
-                                >Full Tree</RouterLink
+                                >Vertical</RouterLink
                             >
                         </li>
                         <li
-                            v-if="
-                                sessionDetailsStore.isLoggedIn &&
-                                this.$route.name != 'skills'
-                            "
+                            v-if="userDetailsStore.role == 'student'"
+                            class="nav-item"
+                        >
+                            <RouterLink
+                                to="/my-skill-tree"
+                                class="nav-link close-on-click"
+                                >Customizable</RouterLink
+                            >
+                        </li>
+
+                        <li
+                            v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item"
                         >
                             <RouterLink
                                 to="/skills"
                                 class="nav-link close-on-click"
                             >
-                                <span>Collapsible Tree</span>
+                                <span>Collapsible</span>
                             </RouterLink>
                         </li>
 
                         <li
-                            v-if="
-                                !sessionDetailsStore.isLoggedIn &&
-                                this.$route.name != 'skill-tree'
-                            "
+                            v-if="!sessionDetailsStore.isLoggedIn"
                             class="nav-item"
                         >
                             <RouterLink
@@ -221,11 +207,8 @@ export default {
                                 >Skill Tree</RouterLink
                             >
                         </li>
-                        <li
-                            v-if="
-                                userDetailsStore.role == 'student' &&
-                                this.$route.name != 'radial-tree'
-                            "
+                        <!-- <li
+                            v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
                             <RouterLink
@@ -233,13 +216,12 @@ export default {
                                 class="nav-link close-on-click"
                                 >Radial Tree (Alpha Version)</RouterLink
                             >
-                        </li>
+                        </li> -->
                         <li
                             v-if="
-                                (userDetailsStore.role == 'instructor' ||
-                                    userDetailsStore.role == 'admin' ||
-                                    userDetailsStore.role == 'editor') &&
-                                this.$route.name != 'users'
+                                userDetailsStore.role == 'instructor' ||
+                                userDetailsStore.role == 'admin' ||
+                                userDetailsStore.role == 'editor'
                             "
                             class="nav-item"
                         >
@@ -265,10 +247,7 @@ export default {
                             </RouterLink>
                         </li>
                         <li
-                            v-if="
-                                userDetailsStore.role == 'instructor' &&
-                                this.$route.name != 'cohorts'
-                            "
+                            v-if="userDetailsStore.role == 'instructor'"
                             class="nav-item"
                         >
                             <RouterLink
@@ -331,7 +310,7 @@ Themes
 */
 /* The Original theme */
 :root {
-    --primary-color: #8d6ce7;
+    --primary-color: #5f31dd;
     --primary-contrast-color: white;
 
     --secondary-color: #c6e76c;
@@ -394,7 +373,8 @@ Themes
     color: darkorange !important;
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.nav-link:focus {
     color: darkorange;
     text-decoration: underline;
 }
@@ -483,6 +463,11 @@ p {
 
 /* End of themes section */
 
+.router-link-active {
+    text-decoration: underline;
+    color: var(--primary-color);
+}
+
 .red-btn {
     background-color: #e24d4d;
     color: white;
@@ -535,5 +520,12 @@ p {
 
 .signin-btn {
     border: 1px solid var(--primary-color);
+}
+.btn:disabled {
+    background-color: #b0b0b0 !important;
+    border-color: #a0a0a0 !important;
+    color: #4d4d4d !important;
+    cursor: not-allowed !important;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2) !important;
 }
 </style>
