@@ -1613,13 +1613,13 @@ export default {
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
         <JoystickControl class="d-lg-none" />
-        <div class="debug-console">
+        <!-- <div class="debug-console">
             <div class="d-flex h-25">
                 <button type="button" @click="generatePath">
                     Click me to test things !!!
                 </button>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 
