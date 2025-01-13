@@ -208,7 +208,7 @@ export default {
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
-                    next
+                    close
                 </button>
             </div>
         </div>
