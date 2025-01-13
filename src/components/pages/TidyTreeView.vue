@@ -25,13 +25,6 @@ export default {
             // Filters
             isGradeFilter: true,
             isSubjectFilter: true,
-            // isLanguage: false,
-            // isMathematics: false,
-            // isScienceAndInvention: false,
-            // isComputerScience: false,
-            // isHistory: false,
-            // isLife: false,
-            // isDangerousIdeas: false,
             showMobileFiltersModal: false,
             // For guest mode only
             gradeFilter: 'phd',
@@ -69,7 +62,9 @@ export default {
             ];
         }
 
-        this.checkIfTutorialComplete();
+        if (this.sessionDetailsStore.isLoggedIn) {
+            this.checkIfTutorialComplete();
+        }
     },
     mounted() {
         this.GetGoogleLoginResult();
@@ -153,6 +148,8 @@ export default {
                 if (this.subjectFilters.length == 7) {
                     this.subjectFilters = [];
                     this.subjectFilters.push(subject);
+                    console.log(subject);
+                    console.log(this.subjectFilters);
                 }
 
                 // Check if filter already present.
@@ -1220,14 +1217,8 @@ export default {
                 <button
                     class="btn"
                     :class="{
-                        'chosen-subject':
-                            userDetailsStore.subjectFilters.includes(
-                                'Language'
-                            ),
-                        'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes(
-                                'Language'
-                            )
+                        'chosen-subject': subjectFilters.includes('Language'),
+                        'hidden-subject': !subjectFilters.includes('Language')
                     }"
                     @click="
                         this.updateSubjectFilters('Language');
@@ -1243,13 +1234,9 @@ export default {
                     class="btn"
                     :class="{
                         'chosen-subject':
-                            userDetailsStore.subjectFilters.includes(
-                                'Mathematics'
-                            ),
+                            subjectFilters.includes('Mathematics'),
                         'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes(
-                                'Mathematics'
-                            )
+                            !subjectFilters.includes('Mathematics')
                     }"
                     @click="
                         this.updateSubjectFilters('Mathematics');
@@ -1264,10 +1251,8 @@ export default {
                 <button
                     class="btn"
                     :class="{
-                        'chosen-subject':
-                            userDetailsStore.subjectFilters.includes('History'),
-                        'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes('History')
+                        'chosen-subject': subjectFilters.includes('History'),
+                        'hidden-subject': !subjectFilters.includes('History')
                     }"
                     @click="
                         this.updateSubjectFilters('History');
@@ -1282,17 +1267,11 @@ export default {
                 <button
                     class="btn"
                     :class="{
-                        'chosen-subject':
-                            userDetailsStore.subjectFilters.includes(
-                                'Computer Science'
-                            ),
-                        'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes(
-                                'Computer Science'
-                            )
+                        'chosen-subject': subjectFilters.includes('Life'),
+                        'hidden-subject': !subjectFilters.includes('Life')
                     }"
                     @click="
-                        this.updateSubjectFilters('Computer Science');
+                        this.updateSubjectFilters('Life');
                         $refs.childComponent.filter(
                             this.gradeFilter,
                             this.subjectFilters
@@ -1305,13 +1284,9 @@ export default {
                     class="btn"
                     :class="{
                         'chosen-subject':
-                            userDetailsStore.subjectFilters.includes(
-                                'Computer Science'
-                            ),
+                            subjectFilters.includes('Computer Science'),
                         'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes(
-                                'Computer Science'
-                            )
+                            !subjectFilters.includes('Computer Science')
                     }"
                     @click="
                         this.updateSubjectFilters('Computer Science');
@@ -1326,14 +1301,12 @@ export default {
                 <button
                     class="btn"
                     :class="{
-                        'chosen-subject':
-                            userDetailsStore.subjectFilters.includes(
-                                'Science and Invention'
-                            ),
-                        'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes(
-                                'Science and Invention'
-                            )
+                        'chosen-subject': subjectFilters.includes(
+                            'Science and Invention'
+                        ),
+                        'hidden-subject': !subjectFilters.includes(
+                            'Science and Invention'
+                        )
                     }"
                     @click="
                         this.updateSubjectFilters('Science and Invention');
@@ -1349,13 +1322,9 @@ export default {
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
-                            userDetailsStore.subjectFilters.includes(
-                                'Dangerous Ideas'
-                            ),
+                            subjectFilters.includes('Dangerous Ideas'),
                         'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes(
-                                'Dangerous Ideas'
-                            )
+                            !subjectFilters.includes('Dangerous Ideas')
                     }"
                     @click="
                         this.updateSubjectFilters('Dangerous Ideas');

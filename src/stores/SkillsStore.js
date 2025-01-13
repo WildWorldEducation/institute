@@ -16,7 +16,7 @@ export const useSkillsStore = defineStore('skills', {
             if (subjects != null) {
                 // To deal with the "&" sign in "Science & Invention".
                 for (let i = 0; i < subjects.length; i++) {
-                    subjects[i] = subjects[i].replace(/&/g, '%26');
+                    subjects[i] = subjects[i].replace(/and/g, '%26');
                 }
             }
 
