@@ -171,7 +171,7 @@ export default {
                             <RouterLink
                                 to="/skill-tree"
                                 class="nav-link close-on-click"
-                                >Vertical</RouterLink
+                                >Skill Tree</RouterLink
                             >
                         </li>
                         <li
@@ -181,7 +181,7 @@ export default {
                             <RouterLink
                                 to="/my-skill-tree"
                                 class="nav-link close-on-click"
-                                >Customizable</RouterLink
+                                >Customizable Tree</RouterLink
                             >
                         </li>
 
@@ -193,7 +193,7 @@ export default {
                                 to="/skills"
                                 class="nav-link close-on-click"
                             >
-                                <span>Collapsible</span>
+                                <span>Skills</span>
                             </RouterLink>
                         </li>
 
@@ -207,16 +207,6 @@ export default {
                                 >Skill Tree</RouterLink
                             >
                         </li>
-                        <!-- <li
-                            v-if="userDetailsStore.role == 'student'"
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                to="/radial-tree"
-                                class="nav-link close-on-click"
-                                >Radial Tree (Alpha Version)</RouterLink
-                            >
-                        </li> -->
                         <li
                             v-if="
                                 userDetailsStore.role == 'instructor' ||

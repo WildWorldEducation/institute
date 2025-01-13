@@ -813,7 +813,7 @@ export default {
                 }
             }
         },
-        // if search skill get filtered out by level or subject we remove it
+        // If searched for skill gets filtered out by level or subject we remove it:
         async removeFilterForHiddenSkill(searchName) {
             const node = await this.skillTreeStore.findInStudentSkill(
                 searchName,
@@ -881,26 +881,26 @@ export default {
                 }
             }
         },
-        toggleHideChildren(node) {
-            var url =
-                '/user-skills/hide-children/' +
-                this.userDetailsStore.userId +
-                '/' +
-                node.id;
-            fetch(url).then(() => {
-                this.reloadTree(node, this.truncateLevel, this.subjectFilters);
-            });
-        },
-        toggleShowChildren(node) {
-            var url =
-                '/user-skills/show-children/' +
-                this.userDetailsStore.userId +
-                '/' +
-                node.id;
-            fetch(url).then(() => {
-                this.reloadTree(node, this.truncateLevel, this.subjectFilters);
-            });
-        },
+        // toggleHideChildren(node) {
+        //     var url =
+        //         '/user-skills/hide-children/' +
+        //         this.userDetailsStore.userId +
+        //         '/' +
+        //         node.id;
+        //     fetch(url).then(() => {
+        //         this.reloadTree(node, this.truncateLevel, this.subjectFilters);
+        //     });
+        // },
+        // toggleShowChildren(node) {
+        //     var url =
+        //         '/user-skills/show-children/' +
+        //         this.userDetailsStore.userId +
+        //         '/' +
+        //         node.id;
+        //     fetch(url).then(() => {
+        //         this.reloadTree(node, this.truncateLevel, this.subjectFilters);
+        //     });
+        // },
         async reloadTree(node) {
             this.showSkillPanel = false;
             await this.skillTreeStore.getVerticalTreeUserSkills(
@@ -991,14 +991,32 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     level: this.userDetailsStore.gradeFilter,
-                    is_language_filter: this.$parent.isLanguage,
-                    is_math_filter: this.$parent.isMathematics,
-                    is_history_filter: this.$parent.isHistory,
-                    is_life_filter: this.$parent.isLife,
-                    is_computer_science_filter: this.$parent.isComputerScience,
+                    is_language_filter:
+                        this.userDetailsStore.subjectFilters.includes(
+                            'Language'
+                        ),
+                    is_math_filter:
+                        this.userDetailsStore.subjectFilters.includes(
+                            'Mathematics'
+                        ),
+                    is_history_filter:
+                        this.userDetailsStore.subjectFilters.includes(
+                            'History'
+                        ),
+                    is_life_filter:
+                        this.userDetailsStore.subjectFilters.includes('Life'),
+                    is_computer_science_filter:
+                        this.userDetailsStore.subjectFilters.includes(
+                            'Computer Science'
+                        ),
                     is_science_and_invention_filter:
-                        this.$parent.isScienceAndInvention,
-                    is_dangerous_ideas_filter: this.$parent.isDangerousIdeas,
+                        this.userDetailsStore.subjectFilters.includes(
+                            'Science and Invention'
+                        ),
+                    is_dangerous_ideas_filter:
+                        this.userDetailsStore.subjectFilters.includes(
+                            'Dangerous Ideas'
+                        ),
                     is_unlocked_skills_only_filter:
                         this.userDetailsStore.isUnlockedSkillsOnlyFilter
                 })
