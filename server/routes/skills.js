@@ -20,6 +20,7 @@ const skillInfoboxImageThumbnailsBucketName =
     process.env.S3_SKILL_INFOBOX_IMAGE_THUMBNAILS_BUCKET_NAME;
 const userAvatarImageThumbnailsBucketName =
     process.env.S3_USER_AVATAR_IMAGE_THUMBNAILS_BUCKET_NAME;
+const skillIconBucketName = process.env.S3_SKILL_ICON_BUCKET_NAME;
 const bucketRegion = process.env.S3_BUCKET_REGION;
 const accessKeyId = process.env.S3_ACCESS_KEY_ID;
 const accessSecretKey = process.env.S3_SECRET_ACCESS_KEY;
@@ -43,7 +44,7 @@ const checkRoleHierarchy = require('../middlewares/roleMiddleware');
 const { recordUserAction } = require('../utilities/record-user-action');
 
 // Helper Function
-const { saveIconToAWS } = require('../utilities/save-image-to-aws');
+const { saveIconToAWS, saveBase64ImageToBucket } = require('../utilities/save-image-to-aws');
 const {
     getVectorData,
     insertSkillsVectorIntoDataBase
@@ -1864,4 +1865,31 @@ router.get('/generate-skill-icon', async (req, res) => {
     }
 })
 
+// ======================================================================================
+
+
+router.get('/get-aws-bucket', async (req, res) => {
+    s3.listBuckets(function (err, data) {
+        if (err) {
+            console.log("Error", err);
+        } else {
+            console.log("Success", data.Buckets);
+            res.json({ data: data })
+        }
+    });
+})
+
+router.post('/add-icon-to-aws', async (req, res) => {
+    try {
+        const iconName = req.body.skillUrl;
+        const base64String = req.body.imageData;
+
+        await saveBase64ImageToBucket(base64String, iconName, skillIconBucketName);
+        res.json({ mess: 'ok la' })
+    } catch (error) {
+        console.error(error);
+        res.status = 500;
+        res.json({ err: error })
+    }
+})
 module.exports = router;

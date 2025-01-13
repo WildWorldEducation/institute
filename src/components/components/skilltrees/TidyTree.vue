@@ -1295,6 +1295,24 @@ export default {
             const resData = await res.json();
         },
 
+        async uploadIcon() {
+            const fetchOption = {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    skillUrl: '13_Century_British_Life',
+                    imageData: this.iconDictionary['13_Century_British_Life']
+                })
+            };
+
+            const res = await fetch('/skills/add-icon-to-aws', fetchOption);
+            const resData = await res.json();
+            console.log(resData);
+        },
+
         drawNodeCircle(ctx, node) {
             const ctx1 = ctx;
             if (node.data.type != 'domain') {
@@ -1628,13 +1646,13 @@ export default {
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
         <JoystickControl class="d-lg-none" />
-        <!-- <div class="debug-console">
+        <div class="debug-console">
             <div class="d-flex h-25">
-                <button type="button" @click="generatePath">
+                <button type="button" @click="uploadIcon">
                     Click me to test things !!!
                 </button>
             </div>
-        </div> -->
+        </div>
     </div>
 </template>
 

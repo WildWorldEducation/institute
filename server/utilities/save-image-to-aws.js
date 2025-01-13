@@ -114,6 +114,14 @@ const updateSkillIcon = async (sourceImageURL, destinationImageURL) => {
     }
 
 }
+
+/**
+ * Add skill icon base64 string into AWS 
+ *
+ * @param {*} base64Image - base64 string of the image
+ * @param {*} imageName - name of the image to store in AWS
+ * @param {*} bucket - bucket name where the icon will be stored
+ */
 const saveBase64ImageToBucket = async (base64Image, imageName, bucket) => {
     if (!base64Image) return null;
 
@@ -181,4 +189,6 @@ const saveUserAvatarToAWS = async (userId, base64Image) => {
         throw error;
     }
 };
+
+
 module.exports = { saveIconToAWS, updateSkillIcon, saveBase64ImageToBucket, saveUserAvatarToAWS }
