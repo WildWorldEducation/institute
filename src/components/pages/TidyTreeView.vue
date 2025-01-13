@@ -53,6 +53,8 @@ export default {
         };
     },
     created() {
+        console.log(this.userDetailsStore.subjectFilters);
+
         // Turn this on only if user is logged in.
         if (this.sessionDetailsStore.isLoggedIn == true) {
             // Subject filters
@@ -145,45 +147,49 @@ export default {
         clearResult() {
             this.$refs.childComponent.resetPos();
         },
-        updateSubjectFilters() {
-            // If user is logged in.
-            if (this.sessionDetailsStore.isLoggedIn) {
-                this.userDetailsStore.subjectFilters = [];
-                if (this.isLanguage)
-                    this.userDetailsStore.subjectFilters.push('Language');
-                if (this.isMathematics)
-                    this.userDetailsStore.subjectFilters.push('Mathematics');
-                if (this.isScienceAndInvention)
-                    this.userDetailsStore.subjectFilters.push(
-                        'Science & Invention'
-                    );
-                if (this.isComputerScience)
-                    this.userDetailsStore.subjectFilters.push(
-                        'Computer Science'
-                    );
-                if (this.isHistory)
-                    this.userDetailsStore.subjectFilters.push('History');
-                if (this.isLife)
-                    this.userDetailsStore.subjectFilters.push('Life');
-                if (this.isDangerousIdeas)
-                    this.userDetailsStore.subjectFilters.push(
-                        'Dangerous Ideas'
-                    );
-            }
-            // Not logged in
-            else {
-                this.subjectFilters = [];
-                if (this.isLanguage) this.subjectFilters.push('Language');
-                if (this.isMathematics) this.subjectFilters.push('Mathematics');
-                if (this.isScienceAndInvention)
-                    this.subjectFilters.push('Science & Invention');
-                if (this.isComputerScience)
-                    this.subjectFilters.push('Computer Science');
-                if (this.isHistory) this.subjectFilters.push('History');
-                if (this.isLife) this.subjectFilters.push('Life');
-                if (this.isDangerousIdeas)
-                    this.subjectFilters.push('Dangerous Ideas');
-            }
+        // Filters
+        updateSubjectFilters(subject) {
+            this.userDetailsStore.subjectFilters = [];
+            this.userDetailsStore.subjectFilters.push(subject);
+            console.log(this.userDetailsStore.subjectFilters);
+            // // If user is logged in.
+            // if (this.sessionDetailsStore.isLoggedIn) {
+            //     this.userDetailsStore.subjectFilters = [];
+            //     if (this.isLanguage)
+            //         this.userDetailsStore.subjectFilters.push('Language');
+            //     if (this.isMathematics)
+            //         this.userDetailsStore.subjectFilters.push('Mathematics');
+            //     if (this.isScienceAndInvention)
+            //         this.userDetailsStore.subjectFilters.push(
+            //             'Science & Invention'
+            //         );
+            //     if (this.isComputerScience)
+            //         this.userDetailsStore.subjectFilters.push(
+            //             'Computer Science'
+            //         );
+            //     if (this.isHistory)
+            //         this.userDetailsStore.subjectFilters.push('History');
+            //     if (this.isLife)
+            //         this.userDetailsStore.subjectFilters.push('Life');
+            //     if (this.isDangerousIdeas)
+            //         this.userDetailsStore.subjectFilters.push(
+            //             'Dangerous Ideas'
+            //         );
+            // }
+            // // Not logged in
+            // else {
+            //     this.subjectFilters = [];
+            //     if (this.isLanguage) this.subjectFilters.push('Language');
+            //     if (this.isMathematics) this.subjectFilters.push('Mathematics');
+            //     if (this.isScienceAndInvention)
+            //         this.subjectFilters.push('Science & Invention');
+            //     if (this.isComputerScience)
+            //         this.subjectFilters.push('Computer Science');
+            //     if (this.isHistory) this.subjectFilters.push('History');
+            //     if (this.isLife) this.subjectFilters.push('Life');
+            //     if (this.isDangerousIdeas)
+            //         this.subjectFilters.push('Dangerous Ideas');
+            // }
         },
         toggleisUnlockedSkillsFilter() {
             if (this.userDetailsStore.isUnlockedSkillsOnlyFilter == 1) {
@@ -192,7 +198,7 @@ export default {
                 this.userDetailsStore.isUnlockedSkillsOnlyFilter = 1;
             }
         },
-        // Tutorial
+        // Onboardning tutorials
         async checkIfTutorialComplete() {
             const result = await fetch(
                 '/users/check-tutorial-progress/vertical-tree/' +
@@ -353,7 +359,11 @@ export default {
                         Print
                     </button>
                     <!-- Restart tutorial button -->
-                    <button v-if="sessionDetailsStore.isLoggedIn" class="btn primary-btn" @click="restartTutorial">
+                    <button
+                        v-if="sessionDetailsStore.isLoggedIn"
+                        class="btn primary-btn"
+                        @click="restartTutorial"
+                    >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 192 512"
@@ -648,12 +658,17 @@ export default {
                 <button
                     class="btn mb-2"
                     :class="{
-                        'chosen-subject': isLanguage,
-                        'hidden-subject': !isLanguage
+                        'chosen-subject':
+                            userDetailsStore.subjectFilters.includes(
+                                'Language'
+                            ),
+                        'hidden-subject':
+                            !userDetailsStore.subjectFilters.includes(
+                                'Language'
+                            )
                     }"
                     @click="
-                        this.isLanguage = !this.isLanguage;
-                        this.updateSubjectFilters();
+                        this.updateSubjectFilters('Language');
                         $refs.childComponent.filter(
                             this.gradeFilter,
                             this.subjectFilters
@@ -665,12 +680,17 @@ export default {
                 <button
                     class="btn mb-2"
                     :class="{
-                        'chosen-subject': isMathematics,
-                        'hidden-subject': !isMathematics
+                        'chosen-subject':
+                            userDetailsStore.subjectFilters.includes(
+                                'Mathematics'
+                            ),
+                        'hidden-subject':
+                            !userDetailsStore.subjectFilters.includes(
+                                'Mathematics'
+                            )
                     }"
                     @click="
-                        this.isMathematics = !this.isMathematics;
-                        this.updateSubjectFilters();
+                        this.updateSubjectFilters('Mathematics');
                         $refs.childComponent.filter(
                             this.gradeFilter,
                             this.subjectFilters
@@ -682,12 +702,13 @@ export default {
                 <button
                     class="btn mb-2"
                     :class="{
-                        'chosen-subject': isHistory,
-                        'hidden-subject': !isHistory
+                        'chosen-subject':
+                            userDetailsStore.subjectFilters.includes('History'),
+                        'hidden-subject':
+                            !userDetailsStore.subjectFilters.includes('History')
                     }"
                     @click="
-                        this.isHistory = !this.isHistory;
-                        this.updateSubjectFilters();
+                        this.updateSubjectFilters('History');
                         $refs.childComponent.filter(
                             this.gradeFilter,
                             this.subjectFilters
@@ -699,12 +720,13 @@ export default {
                 <button
                     class="btn mb-2"
                     :class="{
-                        'chosen-subject': isLife,
-                        'hidden-subject': !isLife
+                        'chosen-subject':
+                            userDetailsStore.subjectFilters.includes('Life'),
+                        'hidden-subject':
+                            !userDetailsStore.subjectFilters.includes('Life')
                     }"
                     @click="
-                        this.isLife = !this.isLife;
-                        this.updateSubjectFilters();
+                        this.updateSubjectFilters('Life');
                         $refs.childComponent.filter(
                             this.gradeFilter,
                             this.subjectFilters
@@ -716,12 +738,17 @@ export default {
                 <button
                     class="btn mb-2"
                     :class="{
-                        'chosen-subject': isComputerScience,
-                        'hidden-subject': !isComputerScience
+                        'chosen-subject':
+                            userDetailsStore.subjectFilters.includes(
+                                'Computer Science'
+                            ),
+                        'hidden-subject':
+                            !userDetailsStore.subjectFilters.includes(
+                                'Computer Science'
+                            )
                     }"
                     @click="
-                        this.isComputerScience = !this.isComputerScience;
-                        this.updateSubjectFilters();
+                        this.updateSubjectFilters('Computer Science');
                         $refs.childComponent.filter(
                             this.gradeFilter,
                             this.subjectFilters
@@ -733,13 +760,17 @@ export default {
                 <button
                     class="btn mb-2"
                     :class="{
-                        'chosen-subject': isScienceAndInvention,
-                        'hidden-subject': !isScienceAndInvention
+                        'chosen-subject':
+                            userDetailsStore.subjectFilters.includes(
+                                'Science %26 Invention'
+                            ),
+                        'hidden-subject':
+                            !userDetailsStore.subjectFilters.includes(
+                                'Science %26 Invention'
+                            )
                     }"
                     @click="
-                        this.isScienceAndInvention =
-                            !this.isScienceAndInvention;
-                        this.updateSubjectFilters();
+                        this.updateSubjectFilters('Science & Invention');
                         $refs.childComponent.filter(
                             this.gradeFilter,
                             this.subjectFilters
@@ -751,12 +782,17 @@ export default {
                 <button
                     class="btn mb-2"
                     :class="{
-                        'chosen-subject': isDangerousIdeas,
-                        'hidden-subject': !isDangerousIdeas
+                        'chosen-subject':
+                            userDetailsStore.subjectFilters.includes(
+                                'Dangerous Ideas'
+                            ),
+                        'hidden-subject':
+                            !userDetailsStore.subjectFilters.includes(
+                                'Dangerous Ideas'
+                            )
                     }"
                     @click="
-                        this.isDangerousIdeas = !this.isDangerousIdeas;
-                        this.updateSubjectFilters();
+                        this.updateSubjectFilters('Dangerous Ideas');
                         $refs.childComponent.filter(
                             this.gradeFilter,
                             this.subjectFilters
