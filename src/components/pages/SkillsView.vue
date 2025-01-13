@@ -190,6 +190,35 @@ export default {
                 this.markTutorialComplete();
             }
         },
+        restartTutorial() {
+            if (this.instructorMode) {
+                this.restartInstructorTutorial();
+            } else {
+                this.restartStudentTutorial();
+                this.restartMobileTutorial();
+            }
+        },
+        restartStudentTutorial() {
+            this.showTutorialTip1 = true;
+            this.showTutorialTip2 = false;
+            this.showTutorialTip3 = false;
+            this.showTutorialTip4 = false;
+            this.showTutorialTip5 = false;
+            this.isTutorialComplete = false;
+        },
+        restartMobileTutorial() {
+            this.showTutorialTip1 = true;
+            this.showMobileTutorialTip2 = false;
+            this.showMobileTutorialTip3 = false;
+            this.showMobileTutorialTip4 = false;
+            this.showMobileTutorialTip5 = false;
+            this.isTutorialComplete = false;
+        },
+        restartInstructorTutorial() {
+            this.showInstructorModeTutorialTip1 = true;
+            this.showInstructorModeTutorialTip2 = false;
+            this.isInstructorModeTutorialComplete = false;
+        },
         markTutorialComplete() {
             let url =
                 '/users/mark-tutorial-complete/collapsible-tree/' +
@@ -246,6 +275,23 @@ export default {
                         :clearResults="clearResults"
                     />
                 </div>
+                <button
+                    class="btn primary-btn"
+                    @click="restartTutorial"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 192 512"
+                        width="20"
+                        height="20"
+                        fill="white"
+                    >
+                        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                        <path
+                            d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                        />
+                    </svg>
+                </button>
             </div>
             <!-- Tablet and up -->
             <div id="tablet-and-up-legend">
@@ -332,6 +378,27 @@ export default {
                                 :findNode="findNode"
                                 :clearResults="clearResults"
                             />
+                        </div>
+                        <div>
+                            <button
+                                class="btn primary-btn"
+                                @click="
+                                    restartTutorial
+                                "
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 192 512"
+                                    width="20"
+                                    height="20"
+                                    fill="white"
+                                >
+                                    <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                    <path
+                                        d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                                    />
+                                </svg>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -864,6 +931,10 @@ export default {
     max-width: unset !important;
 }
 
+.search-bar-container {
+    padding-right: 10px;
+}
+
 /* Small devices (portrait phones) */
 @media (max-width: 480px) {
     h1 {
@@ -886,6 +957,7 @@ export default {
         width: 96%;
         margin-left: 0px;
         margin-right: auto;
+        padding-right: 10px;
     }
 }
 
