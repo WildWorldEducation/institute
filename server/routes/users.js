@@ -590,7 +590,7 @@ router.get('/show/:id', (req, res, next) => {
                 if (results[0].is_math_filter == 1)
                     results[0].subjectFilters.push('Mathematics');
                 if (results[0].is_science_and_invention_filter == 1)
-                    results[0].subjectFilters.push('Science & Invention');
+                    results[0].subjectFilters.push('Science and Invention');
                 if (results[0].is_computer_science_filter == 1)
                     results[0].subjectFilters.push('Computer Science');
                 if (results[0].is_history_filter == 1)
