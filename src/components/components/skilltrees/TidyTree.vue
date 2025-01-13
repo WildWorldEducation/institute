@@ -228,13 +228,13 @@ export default {
                 .separation(function (a, b) {
                     let separationAmount;
                     if (a.data.type == 'super' || b.data.type == 'super') {
-                        separationAmount = 4;
+                        separationAmount = 2;
                     } else if (a.parent != b.parent) {
                         separationAmount = 2;
                     } else {
                         separationAmount = 1;
                     }
-                    console.log(a.data.type);
+                    //console.log(a.data.type);
                     return separationAmount;
                 });
 
@@ -296,14 +296,14 @@ export default {
             for (const link of links) {
                 // Do not render parts of tree not in the canvas
                 // to improve performance.
-                const targetNodeInView = this.checkingIfNodeInView(
-                    link.target,
-                    transform
-                );
-                const sourceNodeInView = this.checkingIfNodeInView(
-                    link.source,
-                    transform
-                );
+                // const targetNodeInView = this.checkingIfNodeInView(
+                //     link.target,
+                //     transform
+                // );
+                // const sourceNodeInView = this.checkingIfNodeInView(
+                //     link.source,
+                //     transform
+                // );
                 // if (!targetNodeInView && !sourceNodeInView) {
                 //     continue;
                 // }
@@ -364,6 +364,48 @@ export default {
                 let radius;
                 if (node.data.type == 'sub') {
                     radius = 7.5;
+                } else if (node.data.type == 'super') {
+                    radius = 20;
+
+                    function drawSubSkill(y, x, radius, fillC, strokeC, lineW) {
+                        ctx1.fillStyle = fillC;
+                        ctx1.strokeStyle = strokeC;
+                        ctx1.lineWidth = isNaN(lineW) ? ctx1.lineWidth : lineW;
+
+                        ctx1.beginPath();
+                        ctx1.arc(y, x, radius, 0, 2 * Math.PI);
+
+                        if (fillC !== null && fillC !== undefined) {
+                            ctx1.fill();
+                        }
+                        if (strokeC !== null && strokeC !== undefined) {
+                            ctx1.stroke();
+                        }
+                    }
+                    let subSkills = [];
+                    // Get subskills for this super skill node.
+                    for (
+                        var i = 0;
+                        i < this.skillTreeStore.subSkills.length;
+                        i++
+                    ) {
+                        if (
+                            this.skillTreeStore.subSkills[i].id == node.data.id
+                        ) {
+                            subSkills =
+                                this.skillTreeStore.subSkills[i].subSkills;
+                            break;
+                        }
+                    }
+
+                    for (var i = 0; i < subSkills.length; i++) {
+                        var ang =
+                            i * ((Math.PI * 2) / subSkills.length) +
+                            Math.PI * -0.5;
+                        var x = Math.cos(ang) * radius + node.y;
+                        var y = Math.sin(ang) * radius + node.x;
+                        drawSubSkill(x, y, 5, 'red', 'white', 3);
+                    }
                 } else {
                     radius = 10;
                 }
@@ -393,26 +435,6 @@ export default {
                     ctx1.stroke();
                 }
             }
-            // // If child nodes are collapsed.
-            // if (node.data.show_children) {
-            //     if (node.data.show_children == 0) {
-            //         // Set line properties
-            //         ctx1.lineWidth = 2;
-            //         ctx1.strokeStyle = 'black';
-
-            //         // Draw vertical line
-            //         ctx1.beginPath();
-            //         ctx1.moveTo(node.y - 10, node.x);
-            //         ctx1.lineTo(node.y + 10, node.x); // Draw to the bottom-middle
-            //         ctx1.stroke();
-
-            //         // Draw horizontal line
-            //         ctx1.beginPath();
-            //         ctx1.moveTo(node.y, node.x - 10);
-            //         ctx1.lineTo(node.y, node.x + 10); // Draw to the middle-right
-            //         ctx1.stroke();
-            //     }
-            // }
 
             // Text.
             if (this.scale > 0.6) {

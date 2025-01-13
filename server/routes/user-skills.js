@@ -471,6 +471,7 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
             WHERE user_skills.user_id = ${conn.escape(req.params.userId)}
             AND is_filtered = 'available' 
             AND is_deleted = 0
+            AND type <> 'sub'
             AND level IN (${levelsToShow})
             AND skills.id NOT IN 
             (SELECT skill_id 
@@ -491,6 +492,7 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
             WHERE user_skills.user_id = ${conn.escape(req.params.userId)}) 
             AND is_filtered = 'available' 
             AND is_deleted = 0           
+            AND type <> 'sub'
             AND skills.id NOT IN 
             (SELECT skill_id 
             FROM cohort_skill_filters
@@ -584,6 +586,127 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                         }
 
                         res.json(studentSkills);
+                    } catch (err) {
+                        next(err);
+                    }
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+// Get just the subskills
+router.get('/subskills/:userId', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        // Level will be sent in query param (eg: ?level='middle_school')
+        const level = req.query.level;
+        // Default is to show all.
+        let levelsToShow =
+            "'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
+        if (level == 'grade_school') {
+            levelsToShow = "'grade_school'";
+        } else if (level == 'middle_school') {
+            levelsToShow = "'grade_school', 'middle_school'";
+        } else if (level == 'high_school') {
+            levelsToShow = "'grade_school', 'middle_school', 'high_school'";
+        } else if (level == 'college') {
+            levelsToShow =
+                "'grade_school', 'middle_school', 'high_school', 'college'";
+        } else if (level == 'phd') {
+            levelsToShow =
+                "'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
+        }
+
+        // Check if student is member of a cohort
+        let isInCohortSQLQuery = `
+ SELECT cohort_id 
+ FROM skill_tree.cohorts_users
+ WHERE user_id = ${conn.escape(req.params.userId)};
+ `;
+
+        conn.query(isInCohortSQLQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                // If no results, set to -1, as this basically skip this part of the query.
+                let cohortId;
+                if (results.length == 0) {
+                    cohortId = -1;
+                } else cohortId = results[0].cohort_id;
+
+                // Check what skills are available for this cohort.
+                let sqlQuery = `
+            SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, level, display_name, is_copy_of_skill_id, url, type
+            FROM skills
+            LEFT OUTER JOIN user_skills
+            ON skills.id = user_skills.skill_id
+            WHERE user_skills.user_id = ${conn.escape(req.params.userId)}
+            AND is_filtered = 'available' 
+            AND is_deleted = 0
+            AND (type = 'sub' OR type = 'super')
+            AND level IN (${levelsToShow})
+            AND skills.id NOT IN 
+            (SELECT skill_id 
+            FROM cohort_skill_filters
+            WHERE cohort_id = ${conn.escape(cohortId)})
+            
+            UNION
+            SELECT skills.id, name, parent, "", "", level, display_name, is_copy_of_skill_id, url, type
+            FROM skills
+            WHERE level IN (${levelsToShow})
+            AND
+            skills.id NOT IN 
+            
+            (SELECT skills.id
+            FROM skills
+            LEFT OUTER JOIN user_skills
+            ON skills.id = user_skills.skill_id
+            WHERE user_skills.user_id = ${conn.escape(req.params.userId)}) 
+            AND is_filtered = 'available' 
+            AND is_deleted = 0           
+            AND (type = 'sub' OR type = 'super')
+            AND skills.id NOT IN 
+            (SELECT skill_id 
+            FROM cohort_skill_filters
+            WHERE cohort_id = ${conn.escape(cohortId)})    
+                         
+            ORDER BY id;
+            `;
+
+                conn.query(sqlQuery, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        let superSkillArray = [];
+                        for (var i = 0; i < results.length; i++) {
+                            if (results[i].type == 'super') {
+                                superSkillArray.push(results[i]);
+                            }
+                        }
+
+                        for (var i = 0; i < superSkillArray.length; i++) {
+                            superSkillArray[i].subSkills = [];
+
+                            for (var j = 0; j < results.length; j++) {
+                                if (
+                                    results[j].parent == superSkillArray[i].id
+                                ) {
+                                    superSkillArray[i].subSkills.push(
+                                        results[j]
+                                    );
+                                }
+                            }
+                        }
+
+                        res.json(superSkillArray);
                     } catch (err) {
                         next(err);
                     }

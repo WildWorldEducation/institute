@@ -14,6 +14,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
         collegeVerticalTreeUserSkills: [],
         // For My Vertical/Tidy Tree
         myVerticalTreeUserSkills: [],
+        subSkills: [],
         // --
         userSkillsNoSubSkills: [],
         // For Radial Tree
@@ -46,6 +47,8 @@ export const useSkillTreeStore = defineStore('skillTree', {
 
             const userDetailsStore = useUserDetailsStore();
 
+            await this.getSubSkills(userDetailsStore.userId, level);
+
             const result = await fetch(
                 '/user-skills/filter-by-cohort/full-vertical-tree/' +
                     userDetailsStore.userId +
@@ -70,6 +73,12 @@ export const useSkillTreeStore = defineStore('skillTree', {
             }
             // Default is all levels.
             else this.verticalTreeUserSkills = await result.json();
+        },
+        async getSubSkills(userId, level) {
+            const result = await fetch(
+                '/user-skills/subskills/' + userId + '?level=' + level
+            );
+            this.subSkills = await result.json();
         },
         // API call for Full Vertical skill tree.
         async getMyVerticalTreeUserSkills() {
