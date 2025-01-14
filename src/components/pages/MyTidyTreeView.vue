@@ -201,7 +201,7 @@ export default {
     <div v-if="showTutorialTip1" class="modal">
         <div class="modal-content">
             <div v-if="showTutorialTip1">
-                <p>This page shows your skill tree closed.</p>
+                <p>This page shows your skill tree in its closed state.</p>
                 <p>
                     Click on the plus signs to open the side panel, then click
                     on the "expand" button to expand the node.
