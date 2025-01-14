@@ -39,12 +39,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
         },
         // API call for Full Vertical skill tree.
         async getVerticalTreeUserSkills(level, subjects, isUnlockedOnly) {
-            // To deal with the "&" sign in "Science & Invention".
-            for (let i = 0; i < subjects.length; i++) {
-                subjects[i] = subjects[i].replace(/&/g, '%26');
-            }
-
-            const userDetailsStore = useUserDetailsStore();
+            const userDetailsStore = useUserDetailsStore();           
 
             const result = await fetch(
                 '/user-skills/filter-by-cohort/full-vertical-tree/' +

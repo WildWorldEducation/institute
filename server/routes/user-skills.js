@@ -422,6 +422,12 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
         /* Apply grade level, subject and isUnlockedOnly filters
          */
         let subjects = req.query.subjects;
+        // To deal with problems related to the "&" sign in "Science & Invention".
+        subjects = subjects.replace(
+            'Science and Invention',
+            'Science & Invention'
+        );
+
         let isUnlockedOnly = req.query.isUnlockedOnly;
 
         // Level will be sent in query param (eg: ?level='middle_school')

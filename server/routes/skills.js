@@ -415,6 +415,8 @@ router.get('/guest-mode/full-vertical-tree', (req, res, next) => {
     // Level and subjects will be sent in query param (eg: ?level='middle_school')
     const level = req.query.level;
     let subjects = req.query.subjects;
+    // To deal with problems related to the "&" sign in "Science & Invention".
+    subjects = subjects.replace('Science and Invention', 'Science & Invention');
 
     // Default is to show all.
     let levelsToShow =
