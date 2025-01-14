@@ -95,8 +95,11 @@ export default {
                 title="add this resource to it associated skill"
                 class="d-flex flex-row-reverse"
             >
-                <button class="btn primary-btn" @click="Submit()">
+                <button class="btn primary-btn ms-2" @click="Submit()">
                     Submit
+                </button>
+                <button class="btn red-btn" @click="$router.back()">
+                    Cancel
                 </button>
             </div>
         </div>
