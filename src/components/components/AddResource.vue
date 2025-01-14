@@ -93,13 +93,13 @@ export default {
             <div
                 b-on-hover
                 title="add this resource to it associated skill"
-                class="d-flex flex-row-reverse"
+                class="d-flex justify-content-end"
             >
-                <button class="btn primary-btn ms-2" @click="Submit()">
-                    Submit
-                </button>
-                <button class="btn red-btn" @click="$router.back()">
+                <button class="btn red-btn me-2" @click="$router.go(-1)">
                     Cancel
+                </button>
+                <button class="btn primary-btn" @click="Submit()">
+                    Submit
                 </button>
             </div>
         </div>
