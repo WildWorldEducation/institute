@@ -1008,8 +1008,9 @@ export default {
         <div class="modal-content">
             <div v-if="showTutorialTip1">
                 <p>
-                    This page is where you can learn about, and take a test to
-                    try to master, this skill.
+                    Here is where you can learn about a subject, find resources
+                    for mastering it, and take a test to demonstrate your
+                    mastery.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(1)">
                     next
