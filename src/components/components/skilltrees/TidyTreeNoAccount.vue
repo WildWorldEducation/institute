@@ -32,7 +32,8 @@ export default {
                 description: null,
                 tagIDs: [],
                 sprite: null,
-                type: null
+                type: null,
+                subskills: []
             },
             tree: {},
             root: {},
@@ -146,7 +147,6 @@ export default {
                 this.skill.name = node.data.name;
                 this.skill.id = node.data.id;
                 this.skill.type = node.data.type;
-
                 // Get the mastery requirements data separately.
                 // Because this is so much data, we do not send it with the rest of the skill tree,
                 // or it will slow the load down too much.
@@ -154,6 +154,14 @@ export default {
                     '/skills/mastery-requirements-and-url/' + this.skill.id
                 );
                 const result2 = await result.json();
+                if (this.skill.type == 'super') {
+                    // Get urls of subskills, if a super skill
+                    const subSkillsResult = await fetch(
+                        '/skills/sub-skills/' + this.skill.id
+                    );
+                    const subSkillsResultJson = await subSkillsResult.json();
+                    this.skill.subskills = subSkillsResultJson;
+                }
                 this.skill.masteryRequirements = result2.mastery_requirements;
                 this.skill.url = result2.url;
                 this.showSkillPanel = true;
