@@ -1487,7 +1487,7 @@ export default {
                     pinching and zooming.
                 </p>
                 <p>
-                    There is also a slider bar at the bottom right, that ca be
+                    There is also a slider bar at the bottom right, that can be
                     used for zooming.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(3)">
