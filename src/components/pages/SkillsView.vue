@@ -413,9 +413,8 @@ export default {
                         class="info-text mt-1 rounded p-2"
                     >
                         <p>
-                            Greyed out nodes are locked. You need to unlock them
-                            by passing the quizzes of the skills that come
-                            before them.
+                            Greyed out nodes are locked until you pass the tests
+                            of the skills that precede them.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -600,8 +599,8 @@ export default {
                     This page shows the skills in a drop-down hierarchical list.
                 </p>
                 <p>
-                    Click on the down arrows to expand them so as to access the
-                    descendant skills of the 7 subjects.
+                    Click on the down arrows to expand a subject and access its
+                    descendant skills.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
@@ -610,8 +609,8 @@ export default {
             </div>
             <div v-else-if="showMobileTutorialTip2">
                 <p>
-                    Greyed out nodes are locked. You need to unlock them by
-                    passing the quizzes of the skills that come before them.
+                    Greyed out nodes are locked until you pass the tests of the
+                    skills that precede them.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(2)">
@@ -669,8 +668,8 @@ export default {
                     This page shows the skills in a drop-down hierarchical list.
                 </p>
                 <p>
-                    Click on the down arrows to expand them so as to access the
-                    descendant skills of the 7 subjects.
+                    Click on the down arrows to expand a subject and access its
+                    descendant skills.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
@@ -755,8 +754,8 @@ export default {
                     This page shows the skills in a drop-down hierarchical list.
                 </p>
                 <p>
-                    Click on the down arrows to expand them so as to access the
-                    descendant skills of the 7 subjects.
+                    Click on the down arrows to expand a subject and access its
+                    descendant skills.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
