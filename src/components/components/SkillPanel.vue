@@ -228,6 +228,7 @@ img {
 
 .list-container a {
     text-decoration: none;
+    text-align: start;
 }
 
 /* Slide left animation */
