@@ -40,8 +40,10 @@ export default {
             showMobileTutorialTip5: false,
             showTutorialTip6: false,
             showMobileTutorialTip6: false,
+            showMobileTutorialTip7: false,
             showTutorialTip7: false,
             showTutorialTip8: false,
+            showTutorialTip9: false,
             isMobileCheck: window.innerWidth
         };
     },
@@ -228,12 +230,21 @@ export default {
                     this.showTutorialTip7 = true;
                 } else {
                     this.showMobileTutorialTip6 = false;
+                    this.showMobileTutorialTip7 = true;
                 }
             } else if (step == 7) {
-                this.showTutorialTip7 = false;
-                this.showTutorialTip8 = true;
+                if(this.isMobileCheck > 576){
+                    this.showTutorialTip7 = false;
+                    this.showTutorialTip8 = true;
+                } else{
+                    this.showMobileTutorialTip7 = false;
+                    this.markTutorialComplete();
+                }           
             } else if (step == 8) {
                 this.showTutorialTip8 = false;
+                this.showTutorialTip9 = true;
+            } else if (step == 9) {
+                this.showTutorialTip9 = false;
                 this.markTutorialComplete();
             }
         },
@@ -260,6 +271,7 @@ export default {
             this.showMobileTutorialTip4 = false;
             this.showMobileTutorialTip5 = false;
             this.showMobileTutorialTip6 = false;
+            this.showMobileTutorialTip7 = false;
             this.isTutorialComplete = false;
         },
         markTutorialComplete() {
@@ -361,23 +373,23 @@ export default {
             </div>
             <!-- Tooltips -->
             <div
-                v-if="showTutorialTip6"
+                v-if="showTutorialTip7"
                 class="info-panel bg-light rounded p-2 mb-2"
             >
                 <p>Use the search field to search for specific skills.</p>
-                <button class="btn primary-btn" @click="progressTutorial(6)">
+                <button class="btn primary-btn" @click="progressTutorial(7)">
                     next
                 </button>
             </div>
             <div
-                v-else-if="showTutorialTip7"
+                v-else-if="showTutorialTip8"
                 class="info-panel bg-light rounded p-2 mb-2 mt-2 float-right"
             >
                 <p>
                     Use the center button to center the skill tree,<br />
                     and the print button to print a PDF.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(7)">
+                <button class="btn primary-btn" @click="progressTutorial(8)">
                     next
                 </button>
             </div>
@@ -402,11 +414,11 @@ export default {
     <div class="tablet-and-up-legend position-absolute bottom-legend-div">
         <!-- Tooltip -->
         <div
-            v-if="showTutorialTip5"
+            v-if="showTutorialTip6"
             class="info-panel bg-light rounded p-2 mb-2"
         >
             <p>Use the buttons below to filter the skills by level.</p>
-            <button class="btn primary-btn" @click="progressTutorial(5)">
+            <button class="btn primary-btn" @click="progressTutorial(6)">
                 next
             </button>
         </div>
@@ -953,42 +965,53 @@ export default {
     </div>
 
     <!-- Filter for showing only unlocked skills in bottom left corner -->
-    <div v-if="sessionDetailsStore.isLoggedIn" class="unlocked-filter">
-        <button
-            class="btn primary-btn"
-            @click="
-                toggleisUnlockedSkillsFilter();
-                $refs.childComponent.filter();
-            "
+    <div v-if="sessionDetailsStore.isLoggedIn" class="unlocked-filter d-flex">
+        <div>
+            <button
+                class="btn primary-btn"
+                @click="
+                    toggleisUnlockedSkillsFilter();
+                    $refs.childComponent.filter();
+                "
+            >
+                <svg
+                    v-if="userDetailsStore.isUnlockedSkillsOnlyFilter"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 576 512"
+                    width="18"
+                    height="18"
+                    fill="white"
+                >
+                    <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                    <path
+                        class=""
+                        d="M352 144c0-44.2 35.8-80 80-80s80 35.8 80 80l0 48c0 17.7 14.3 32 32 32s32-14.3 32-32l0-48C576 64.5 511.5 0 432 0S288 64.5 288 144l0 48L64 192c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-192c0-35.3-28.7-64-64-64l-32 0 0-48z"
+                    />
+                </svg>
+                <svg
+                    v-else
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                    width="18"
+                    height="18"
+                    fill="white"
+                >
+                    <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                    <path
+                        d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"
+                    />
+                </svg>
+            </button>
+        </div>
+        <div
+            v-if="showTutorialTip5"
+            class="info-panel bg-light rounded p-2 mb-2"
         >
-            <svg
-                v-if="userDetailsStore.isUnlockedSkillsOnlyFilter"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 576 512"
-                width="18"
-                height="18"
-                fill="white"
-            >
-                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                <path
-                    class=""
-                    d="M352 144c0-44.2 35.8-80 80-80s80 35.8 80 80l0 48c0 17.7 14.3 32 32 32s32-14.3 32-32l0-48C576 64.5 511.5 0 432 0S288 64.5 288 144l0 48L64 192c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-192c0-35.3-28.7-64-64-64l-32 0 0-48z"
-                />
-            </svg>
-            <svg
-                v-else
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 448 512"
-                width="18"
-                height="18"
-                fill="white"
-            >
-                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                <path
-                    d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"
-                />
-            </svg>
-        </button>
+            <p>Use the buttons below to toggle between unlocked and locked skills.</p>
+            <button class="btn primary-btn" @click="progressTutorial(5)">
+                next
+            </button>
+        </div>
     </div>
 
     <!-- Filters Modal for Mobile Phone View.-->
@@ -1420,10 +1443,11 @@ export default {
             showTutorialTip1 ||
             showTutorialTip2 ||
             showTutorialTip3 ||
-            showTutorialTip8 ||
+            showTutorialTip9 ||
             showMobileTutorialTip4 ||
             showMobileTutorialTip5 ||
-            showMobileTutorialTip6
+            showMobileTutorialTip6 || 
+            showMobileTutorialTip7
         "
         class="modal"
     >
@@ -1468,12 +1492,12 @@ export default {
                     next
                 </button>
             </div>
-            <div v-if="showTutorialTip8">
+            <div v-if="showTutorialTip9">
                 <p>
                     When you're ready, try another page by clicking one in the
                     navigation bar at the top right.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(8)">
+                <button class="btn primary-btn" @click="progressTutorial(9)">
                     close
                 </button>
             </div>
@@ -1495,6 +1519,12 @@ export default {
             <div v-if="showMobileTutorialTip6">
                 <p>The center button will recenter the tree</p>
                 <button class="btn primary-btn" @click="progressTutorial(6)">
+                    next
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip7">
+                <p>Use the lock button below on the lower left side of the screen to toggle between unlocked and locked skills.</p>
+                <button class="btn primary-btn" @click="progressTutorial(7)">
                     close
                 </button>
             </div>
