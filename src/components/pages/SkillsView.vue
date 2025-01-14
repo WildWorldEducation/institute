@@ -275,10 +275,7 @@ export default {
                         :clearResults="clearResults"
                     />
                 </div>
-                <button
-                    class="btn primary-btn"
-                    @click="restartTutorial"
-                >
+                <button class="btn primary-btn" @click="restartTutorial">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 192 512"
@@ -382,9 +379,7 @@ export default {
                         <div>
                             <button
                                 class="btn primary-btn"
-                                @click="
-                                    restartTutorial
-                                "
+                                @click="restartTutorial"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -418,9 +413,8 @@ export default {
                         class="info-text mt-1 rounded p-2"
                     >
                         <p>
-                            Greyed out nodes are locked. You need to unlock them
-                            by passing the quizzes of the skills that come
-                            before them.
+                            Greyed out nodes are locked until you pass the tests
+                            of the skills that precede them.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -434,10 +428,10 @@ export default {
                         class="info-text mt-1 rounded p-2"
                     >
                         <p>
-                            Sad face icons mean that the skill has not yet been
-                            mastered. When you master a skill, that face will
-                            become happy.
+                            A sad face icon indicates that the skill has not yet
+                            been mastered.
                         </p>
+                        <p>Every mastered skill has a happy face icon.</p>
                         <button
                             class="btn primary-btn"
                             @click="progressTutorial(3)"
@@ -449,11 +443,11 @@ export default {
                         v-else-if="showTutorialTip4"
                         class="info-text mt-1 rounded p-2"
                     >
-                        <p>Some nodes have a plus or minus sign.</p>
+                        <p>Some nodes feature a plus or minus sign.</p>
                         <p>
                             This indicates that the skill contains mini-skills
-                            that need to be mastered, before mastery of the main
-                            skill can be attempted.
+                            that need to be mastered before you can take an
+                            assessment to prove mastery of that larger skill.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -512,11 +506,11 @@ export default {
                         v-else-if="showTutorialTip3"
                         class="info-text mt-1 rounded p-2"
                     >
-                        <p>Some nodes have a plus or minus sign.</p>
+                        <p>Some nodes feature a plus or minus sign.</p>
                         <p>
                             This indicates that the skill contains mini-skills
-                            that your students will need to master, before
-                            mastery of the main skill can be attempted.
+                            that need to be mastered before you can take an
+                            assessment to prove mastery of that larger skill.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -568,7 +562,7 @@ export default {
                         v-else-if="showTutorialTip3"
                         class="info-text mt-1 rounded p-2"
                     >
-                        <p>Some nodes have a plus or minus sign.</p>
+                        <p>Some nodes feature a plus or minus sign.</p>
                         <p>
                             This indicates that the skill contains mini-skills.
                         </p>
@@ -605,8 +599,8 @@ export default {
                     This page shows the skills in a drop-down hierarchical list.
                 </p>
                 <p>
-                    Click on the down arrows to expand them so as to access the
-                    descendant skills of the 7 subjects.
+                    Click on the down arrows to expand a subject and access its
+                    descendant skills.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
@@ -615,8 +609,8 @@ export default {
             </div>
             <div v-else-if="showMobileTutorialTip2">
                 <p>
-                    Greyed out nodes are locked. You need to unlock them by
-                    passing the quizzes of the skills that come before them.
+                    Greyed out nodes are locked until you pass the tests of the
+                    skills that precede them.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(2)">
@@ -625,21 +619,21 @@ export default {
             </div>
             <div v-else-if="showMobileTutorialTip3">
                 <p>
-                    Sad face icons mean that the skill has not yet been
-                    mastered. When you master a skill, that face will become
-                    happy.
+                    A sad face icon indicates that the skill has not yet been
+                    mastered.
                 </p>
+                <p>Every mastered skill has a happy face icon.</p>
 
                 <button class="btn primary-btn" @click="progressTutorial(3)">
                     next
                 </button>
             </div>
             <div v-else-if="showMobileTutorialTip4">
-                <p>Some nodes have a plus or minus sign.</p>
+                <p>Some nodes feature a plus or minus sign.</p>
                 <p>
                     This indicates that the skill contains mini-skills that need
-                    to be mastered, before mastery of the main skill can be
-                    attempted.
+                    to be mastered before you can take an assessment to prove
+                    mastery of that larger skill.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(4)">
@@ -674,8 +668,8 @@ export default {
                     This page shows the skills in a drop-down hierarchical list.
                 </p>
                 <p>
-                    Click on the down arrows to expand them so as to access the
-                    descendant skills of the 7 subjects.
+                    Click on the down arrows to expand a subject and access its
+                    descendant skills.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
@@ -692,11 +686,11 @@ export default {
                 </button>
             </div>
             <div v-if="showMobileTutorialTip3">
-                <p>Some nodes have a plus or minus sign.</p>
+                <p>Some nodes feature a plus or minus sign.</p>
                 <p>
-                    This indicates that the skill contains mini-skills that your
-                    students will need to master, before mastery of the main
-                    skill can be attempted.
+                    This indicates that the skill contains mini-skills that need
+                    to be mastered before you can take an assessment to prove
+                    mastery of that larger skill.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(3)">
                     next
@@ -760,8 +754,8 @@ export default {
                     This page shows the skills in a drop-down hierarchical list.
                 </p>
                 <p>
-                    Click on the down arrows to expand them so as to access the
-                    descendant skills of the 7 subjects.
+                    Click on the down arrows to expand a subject and access its
+                    descendant skills.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
@@ -778,7 +772,7 @@ export default {
                 </button>
             </div>
             <div v-if="showMobileTutorialTip3">
-                <p>Some nodes have a plus or minus sign.</p>
+                <p>Some nodes feature a plus or minus sign.</p>
                 <p>This indicates that the skill contains mini-skills.</p>
                 <button class="btn primary-btn" @click="progressTutorial(3)">
                     close

@@ -35,7 +35,8 @@ export default {
                 tagIDs: [],
                 sprite: null,
                 type: null,
-                hasChildren: false
+                hasChildren: false,
+                subskills: []
             },
             tree: {},
             root: {},
@@ -176,6 +177,14 @@ export default {
                     '/skills/mastery-requirements-and-url/' + this.skill.id
                 );
                 const result2 = await result.json();
+                if (this.skill.type == 'super') {
+                    // Get urls of subskills, if a super skill
+                    const subSkillsResult = await fetch(
+                        '/skills/sub-skills/' + this.skill.id
+                    );
+                    const subSkillsResultJson = await subSkillsResult.json();
+                    this.skill.subskills = subSkillsResultJson;
+                }
                 this.skill.masteryRequirements = result2.mastery_requirements;
                 this.skill.url = result2.url;
                 this.showSkillPanel = true;
