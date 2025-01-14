@@ -46,8 +46,6 @@ export default {
         };
     },
     created() {
-        console.log(this.userDetailsStore.subjectFilters);
-
         // Turn this on only if user is logged in.
         if (this.sessionDetailsStore.isLoggedIn == true) {
         } else {
@@ -148,8 +146,6 @@ export default {
                 if (this.subjectFilters.length == 7) {
                     this.subjectFilters = [];
                     this.subjectFilters.push(subject);
-                    console.log(subject);
-                    console.log(this.subjectFilters);
                 }
 
                 // Check if filter already present.
