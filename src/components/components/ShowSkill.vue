@@ -694,13 +694,12 @@ export default {
                         class="info-panel bg-light rounded p-2 mb-2 narrow-info-panel"
                     >
                         <p>
-                            Here you can suggest an edit to this skill page or
-                            quiz, from which you could increase your reputation
-                            score.
+                            Suggesting edits to this page or its test can
+                            increase your reputation score.
                         </p>
                         <p>
-                            You can also create a goal for this skill, in case
-                            it is locked for you at the moment.
+                            If this skill is marked as locked, you can also
+                            bookmark this skill by marking it as a goal.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -721,7 +720,7 @@ export default {
                     >
                         <p>
                             Here you can share a link to this skill with a
-                            friend, or flag this page as problematic.
+                            friend, or flag this page as unhelpful or incorrect.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -759,8 +758,8 @@ export default {
                         class="info-panel bg-light rounded p-2 mb-2 narrow-info-panel"
                     >
                         <p>
-                            Here you can share a link to this skill, or flag
-                            this page as problematic.
+                            Here you can share a link to this skill with a
+                            friend, or flag this page as unhelpful or incorrect.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -802,7 +801,7 @@ export default {
                     >
                         <p>
                             Here you can share a link to this skill with a
-                            friend, or flag this page as problematic.
+                            friend, or flag this page as unhelpful or incorrect.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -1049,8 +1048,9 @@ export default {
         <div class="modal-content">
             <div v-if="showTutorialTip1">
                 <p>
-                    This page is where students can learn about, and take a test
-                    to try to master, this skill.
+                    Here is where you can learn about a subject, find resources
+                    for mastering it, and take a test to demonstrate your
+                    mastery.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(1)">
                     next
