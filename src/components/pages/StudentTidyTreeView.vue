@@ -94,6 +94,7 @@ export default {
             <StudentTidyTree
                 :studentId="$route.params.studentId"
                 :studentName="studentName"
+                :restartTutorial="restartTutorial"
             />
         </template>
         <template #fallback>
