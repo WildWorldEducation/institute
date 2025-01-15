@@ -358,6 +358,11 @@ const router = createRouter({
             }
         },
         {
+            path: '/generate-skill-icon',
+            name: 'generate icon',
+            component: () => import('../components/pages/generateSkillIconView.vue')
+        },
+        {
             path: '/:pathMatch(.*)*',
             name: 'not-found',
             component: () => import('../components/pages/PageNotFoundView.vue')

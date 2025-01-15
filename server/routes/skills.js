@@ -1853,11 +1853,22 @@ router.get('/icon-list', (req, res) => {
     }
 })
 
-router.get('/generate-skill-icon', async (req, res) => {
+router.post('/generate-skill-icon', async (req, res) => {
     try {
-        await generateIconForSkill('Exoplanets', 99)
-        await convertImageTo64X64()
-        res.json({ mess: 'kab' })
+        const skillName = req.body.name;
+        const skillUrl = req.body.url;
+        const skillId = req.body.id;
+
+        const smallImage = await generateIconForSkill(skillName, skillUrl)
+        let sqlQuery = `UPDATE skills
+                    SET skills.icon = ${conn.escape(smallImage)}
+                    WHERE skills.url = ${conn.escape(skillUrl)}
+                    `
+        conn.query(sqlQuery, (err, result) => {
+            if (err)
+                throw err
+            res.json({ mess: `work done for skill: ${skillName}` })
+        })
     } catch (error) {
         console.error(error)
         res.status = 500;
@@ -1866,6 +1877,20 @@ router.get('/generate-skill-icon', async (req, res) => {
 })
 
 // ======================================================================================
+router.get('/url-list', async (req, res) => {
+    try {
+        let sqlUrl = 'SELECT skills.`url`, skills.`name`, skills.icon FROM skills ORDER BY skills.`url` asc'
+        conn.query(sqlUrl, (err, result) => {
+            if (err)
+                throw err
+            res.json(result);
+        })
+    } catch (error) {
+        console.error(error)
+        res.status = 500;
+        res.json(error)
+    }
+})
 
 
 router.get('/get-aws-bucket', async (req, res) => {

@@ -126,7 +126,11 @@ const saveBase64ImageToBucket = async (base64Image, imageName, bucket) => {
     if (!base64Image) return null;
 
     // Validate base64 format and extract MIME type
+    console.log('from ai')
+    console.log(base64Image.substring(0, 50))
+    console.log(imageName);
     const match = base64Image.match(/^data:(image\/(jpeg|png));base64,/);
+
     if (!match) {
         throw new Error('Invalid Base64 image format or unsupported image type (only JPEG and PNG are allowed)');
     }
@@ -137,6 +141,7 @@ const saveBase64ImageToBucket = async (base64Image, imageName, bucket) => {
     if (!imageName) throw new Error('Image name is required');
     if (!bucket) throw new Error('Bucket name is required');
 
+    console.log(fileData)
     const imageData = {
         Key: imageName,
         Body: fileData,
@@ -160,6 +165,7 @@ const saveUserAvatarToAWS = async (userId, base64Image) => {
     }
 
     // Extract MIME type and decode Base64
+
     const match = base64Image.match(/^data:(image\/(jpeg|png));base64,/);
     if (!match) {
         throw new Error('Invalid Base64 image format or unsupported image type (only JPEG and PNG are allowed)');
@@ -179,6 +185,7 @@ const saveUserAvatarToAWS = async (userId, base64Image) => {
 
         // Convert thumbnail buffer to Base64 string
         const thumbnailBase64 = `data:${contentType};base64,${thumbnailBuffer.toString('base64')}`;
+
 
         // Save thumbnail image
         await saveBase64ImageToBucket(thumbnailBase64, userId, userAvatarImageThumbnailsBucketName);
