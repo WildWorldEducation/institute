@@ -606,6 +606,7 @@ export default {
                                 skill.type != 'domain' &&
                                 sessionDetailsStore.isLoggedIn &&
                                 isMastered == false &&
+                                isUnlocked == false &&
                                 goalExists == false &&
                                 userDetailsStore.role == 'student'
                             "
