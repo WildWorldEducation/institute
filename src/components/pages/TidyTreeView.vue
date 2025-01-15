@@ -44,6 +44,7 @@ export default {
             showTutorialTip7: false,
             showTutorialTip8: false,
             showTutorialTip9: false,
+            showTutorialTip10: false,
             isMobileCheck: window.innerWidth
         };
     },
@@ -245,6 +246,9 @@ export default {
                 this.showTutorialTip9 = true;
             } else if (step == 9) {
                 this.showTutorialTip9 = false;
+                this.showTutorialTip10 = true;
+            } else if (step == 10) {
+                this.showTutorialTip10 = false;
                 this.markTutorialComplete();
             }
         },
@@ -262,6 +266,8 @@ export default {
             this.showTutorialTip6 = false;
             this.showTutorialTip7 = false;
             this.showTutorialTip8 = false;
+            this.showTutorialTip9 = false;
+            this.showTutorialTip10 = false;
             this.isTutorialComplete = false;
         },
         restartMobileTutorial() {
@@ -1446,6 +1452,7 @@ export default {
             showTutorialTip2 ||
             showTutorialTip3 ||
             showTutorialTip9 ||
+            showTutorialTip10 ||
             showMobileTutorialTip4 ||
             showMobileTutorialTip5 ||
             showMobileTutorialTip6 ||
@@ -1496,10 +1503,20 @@ export default {
             </div>
             <div v-if="showTutorialTip9">
                 <p>
+                    You can zoom in by pressing the <strong>PageUp</strong> key
+                    and zoom out by pressing the <strong>PageDown</strong> key
+                    on your keyboard.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(9)">
+                    next
+                </button>
+            </div>
+            <div v-if="showTutorialTip10">
+                <p>
                     When you're ready, try another page by clicking one in the
                     navigation bar at the top right.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(9)">
+                <button class="btn primary-btn" @click="progressTutorial(10)">
                     close
                 </button>
             </div>
