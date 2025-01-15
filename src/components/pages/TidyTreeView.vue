@@ -18,6 +18,7 @@ export default {
     },
     data() {
         return {
+            showWelcomeModal: false, // Modal to ask for tutorial preference.
             searchText: '',
             lastChooseResult: '',
             showResult: false,
@@ -49,7 +50,9 @@ export default {
     },
     created() {
         // Turn this on only if user is logged in.
-        if (this.sessionDetailsStore.isLoggedIn == true) {
+        const tutorialStatus = localStorage.getItem('tutorialStatus');
+        if (this.sessionDetailsStore.isLoggedIn && tutorialStatus !== 'no') {
+            this.showWelcomeModal = true;
         } else {
             this.subjectFilters = [
                 'Language',
@@ -60,10 +63,6 @@ export default {
                 'Life',
                 'Dangerous Ideas'
             ];
-        }
-
-        if (this.sessionDetailsStore.isLoggedIn) {
-            this.checkIfTutorialComplete();
         }
     },
     mounted() {
@@ -283,6 +282,45 @@ export default {
                 headers: { 'Content-Type': 'application/json' }
             };
             fetch(url, requestOptions);
+        },
+        startTutorial() {
+            this.checkIfTutorialComplete();
+            this.showWelcomeModal = false;
+        },
+        closeTutorial() {
+            // Close the welcome modal
+            this.showWelcomeModal = false;
+
+            // Mark the tutorial as complete in localStorage if user clicks "No"
+            localStorage.setItem('tutorialStatus', 'no');
+
+            // Call the API to mark all tutorials as completed for the user
+            this.markAllTutorialsComplete();
+        },
+
+        async markAllTutorialsComplete() {
+            try {
+                // API call to mark all tutorials as complete
+                const response = await fetch(
+                    `/users/mark-all-tutorials-complete/${this.userDetailsStore.userId}`,
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+
+                // Check if the API call was successful
+                if (response.ok) {
+                    // Handle success, update frontend state to reflect completion
+                    this.isTutorialComplete = true;
+                } else {
+                    console.error('Error marking tutorials as complete.');
+                }
+            } catch (error) {
+                console.error('API request failed:', error);
+            }
         }
     }
 };
@@ -290,6 +328,20 @@ export default {
 
 <template>
     <div class="container-fluid position-absolute legend-div">
+        <div v-if="showWelcomeModal" class="modal">
+            <div class="modal-content">
+                <h2>Welcome to the Colins Institute</h2>
+                <p>Would you like to go through the walkthrough tutorial?</p>
+                <div class="d-flex justify-content-between">
+                    <button class="btn primary-btn mx-0" @click="startTutorial">
+                        Yes
+                    </button>
+                    <button class="btn primary-btn mx-0" @click="closeTutorial">
+                        No
+                    </button>
+                </div>
+            </div>
+        </div>
         <div class="mobile-legend">
             <div class="search-mobile-row">
                 <!-- Search feature -->

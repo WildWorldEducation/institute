@@ -35,6 +35,7 @@ export default {
     },
     data() {
         return {
+            showWelcomeModal: false, // Modal to ask for tutorial preference
             assessments: [],
             questions: [],
             studentIds: [],
@@ -66,12 +67,14 @@ export default {
         }
     },
     async created() {
+        const tutorialStatus = localStorage.getItem('tutorialStatus');
+        if (this.userDetailsStore.role != 'student' && tutorialStatus !== 'no') {
+            this.showWelcomeModal = true;
+    }
         if (this.userDetailsStore.role == 'instructor') {
             await this.fetchAssessments();
             await this.getStudentMCQuestions();
-        }
-
-        await this.checkIfTutorialComplete();
+        };   
     },
     methods: {
         async fetchAssessments() {
@@ -221,6 +224,35 @@ export default {
                 headers: { 'Content-Type': 'application/json' }
             };
             fetch(url, requestOptions);
+        },
+        startTutorial() {
+            this.checkIfTutorialComplete();
+            this.showWelcomeModal = false;
+        },
+
+        closeTutorial() {
+            this.showWelcomeModal = false;
+            localStorage.setItem('tutorialStatus', 'no');
+            this.markAllTutorialsComplete();
+        },
+
+        async markAllTutorialsComplete() {
+            try {
+                const response = await fetch(
+                    `/users/mark-all-tutorials-complete/${this.userDetailsStore.userId}`,
+                    {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' }
+                    }
+                );
+                if (response.ok) {
+                    this.isTutorialComplete = true;
+                } else {
+                    console.error('Error marking tutorials as complete.');
+                }
+            } catch (error) {
+                console.error('API request failed:', error);
+            }
         }
     }
 };
@@ -228,6 +260,28 @@ export default {
 
 <template>
     <div class="container min-vh-100">
+        <div v-if="showWelcomeModal" class="modal">
+                <div class="modal-content">
+                    <h2>Welcome to the Colins Institute</h2>
+                    <p>
+                        Would you like to go through the walkthrough tutorial?
+                    </p>
+                    <div class="d-flex justify-content-between">
+                        <button
+                            class="btn primary-btn mx-0"
+                            @click="startTutorial"
+                        >
+                            Yes
+                        </button>
+                        <button
+                            class="btn primary-btn mx-0"
+                            @click="closeTutorial"
+                        >
+                            No
+                        </button>
+                    </div>
+                </div>
+            </div>
         <div class="d-flex justify-content-end my-1">
             <button class="btn primary-btn" @click="restartTutorial">
                 <svg
@@ -244,7 +298,7 @@ export default {
                 </svg>
             </button>
         </div>
-        <div class="row content-row">
+        <div class="row content-row">  
             <!-- Available Skills / Mark Assessments -->
             <div
                 class="col-lg-4 col-md-6 mb-2"
