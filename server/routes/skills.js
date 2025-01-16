@@ -1895,6 +1895,6 @@ async function getIntroduction(index, skillsLength) {
     }
 }
 
-//generateIntroductionText();
+generateIntroductionText();
 
 module.exports = router;
