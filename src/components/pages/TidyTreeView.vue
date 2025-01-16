@@ -1483,11 +1483,11 @@ export default {
             <h1 class="heading h3">Welcome to the Collins Institute</h1>
             <p>Would you like to go through the walkthrough tutorial?</p>
             <div class="d-flex justify-content-between">
+                <button class="btn red-btn mx-0" @click="closeTutorial">
+                    No
+                </button>
                 <button class="btn primary-btn mx-0" @click="startTutorial">
                     Yes
-                </button>
-                <button class="btn primary-btn mx-0" @click="closeTutorial">
-                    No
                 </button>
             </div>
         </div>
