@@ -1790,4 +1790,106 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
     }
 });
 
+/**
+ To generate text for the "Introduction" field
+ */
+// Import OpenAI package.
+// Include API key.
+// To access the .env file.
+
+let skills;
+async function generateIntroductionText() {
+    let sqlQuery = `SELECT id, level, name, mastery_requirements FROM skills 
+        WHERE is_deleted = 0
+        AND id BETWEEN 26 AND 50`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+
+            skills = results;
+
+            // For going through all skills.
+            let index = 0;
+
+            // We go through all skills sequencially, one at a time.
+            getIntroduction(index);
+        } catch (err) {
+            console.log(err);
+        }
+    });
+}
+
+// Get source from ChatGPT.
+async function getIntroduction(index) {
+    // Get the skill data.-----
+    let id = skills[index].id;
+    // Replace underscore with space.
+    let level = skills[index].level.replace(/_/g, ' ');
+    let name = skills[index].name;
+    // Remove HTML formatting from mastery requirements.
+    let masteryRequirements = skills[index].mastery_requirements.replace(
+        /<[^>]*>?/gm,
+        ''
+    );
+
+    // Create prompt for ChatGPT.
+    let prompt = `        
+        Please provide them with a single JSON object containing an html text field, named "introduction",
+        that explains why the subject ${name} is so cool, interesting and useful. Please space out any paragraphs.
+
+        If the subject is not clear, please read this text: "${masteryRequirements}" to get greater context on what it is about.
+    `;
+
+    //console.log(prompt);
+    index++;
+
+    // Attempting to prevent the app from crashing if anything goes wrong with the API call.
+    // ie, error handling.
+    try {
+        console.log('Get intro for: ' + name);
+
+        let content = `You are talking to a ${level} level student.`;
+        const completion = await openai.chat.completions.create({
+            messages: [
+                { role: 'system', content: content },
+                {
+                    role: 'user',
+                    content: prompt + ` Please respond with a JSON object.`
+                }
+            ],
+            model: 'gpt-4o',
+            response_format: { type: 'json_object' }
+        });
+        let responseJSON = completion.choices[0].message.content;
+        // Escape newline characters in response.
+        responseJSON = responseJSON.replace(/\\n/g, '\\n');
+        // Convert string to object.       ;
+        let introductionObject = JSON.parse(responseJSON);
+        console.log(introductionObject);
+        let introduction = introductionObject.introduction;
+
+        let sqlQuery = `UPDATE skills SET introduction = "${introduction}" WHERE id = ${id};`;
+
+        conn.query(sqlQuery, (err, next) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    getIntroduction(index);
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        });
+    } catch (err) {
+        console.log('Error with ChatGPT API call: ' + err);
+        return;
+    }
+}
+
+//generateIntroductionText();
+
 module.exports = router;
