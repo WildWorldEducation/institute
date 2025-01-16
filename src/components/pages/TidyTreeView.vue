@@ -44,6 +44,7 @@ export default {
             showTutorialTip7: false,
             showTutorialTip8: false,
             showTutorialTip9: false,
+            showTutorialTip10: false,
             isMobileCheck: window.innerWidth
         };
     },
@@ -205,6 +206,7 @@ export default {
                 this.showTutorialTip3 = false;
                 if (this.isMobileCheck > 576) {
                     this.showTutorialTip4 = true;
+                    console.log(this.showTutorialTip4);
                 } else {
                     this.showMobileTutorialTip4 = true;
                 }
@@ -245,6 +247,9 @@ export default {
                 this.showTutorialTip9 = true;
             } else if (step == 9) {
                 this.showTutorialTip9 = false;
+                this.showTutorialTip10 = true;
+            } else if (step == 10) {
+                this.showTutorialTip10 = false;
                 this.markTutorialComplete();
             }
         },
@@ -262,6 +267,8 @@ export default {
             this.showTutorialTip6 = false;
             this.showTutorialTip7 = false;
             this.showTutorialTip8 = false;
+            this.showTutorialTip9 = false;
+            this.showTutorialTip10 = false;
             this.isTutorialComplete = false;
         },
         restartMobileTutorial() {
@@ -373,23 +380,23 @@ export default {
             </div>
             <!-- Tooltips -->
             <div
-                v-if="showTutorialTip7"
+                v-if="showTutorialTip8"
                 class="info-panel bg-light rounded p-2 mb-2"
             >
                 <p>Use the search field to search for specific skills.</p>
-                <button class="btn primary-btn" @click="progressTutorial(7)">
+                <button class="btn primary-btn" @click="progressTutorial(8)">
                     next
                 </button>
             </div>
             <div
-                v-else-if="showTutorialTip8"
+                v-else-if="showTutorialTip9"
                 class="info-panel bg-light rounded p-2 mb-2 mt-2 float-right"
             >
                 <p>
                     Use the center button to center the skill tree,<br />
                     and the print button to print a PDF.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(8)">
+                <button class="btn primary-btn" @click="progressTutorial(9)">
                     next
                 </button>
             </div>
@@ -956,9 +963,9 @@ export default {
             </button>
         </div>
         <!-- Tooltip -->
-        <div v-if="showTutorialTip4" class="info-panel bg-light rounded p-2">
+        <div v-if="showTutorialTip5" class="info-panel bg-light rounded p-2">
             Use the buttons on the left to filter the skills by subject.<br />
-            <button class="btn primary-btn" @click="progressTutorial(4)">
+            <button class="btn primary-btn" @click="progressTutorial(5)">
                 next
             </button>
         </div>
@@ -1006,11 +1013,11 @@ export default {
         </button>
 
         <div
-            v-if="showTutorialTip5"
+            v-if="showTutorialTip7"
             class="info-panel bg-light rounded p-2 mb-2"
         >
             <p>Use this button to toggle between unlocked and locked skills.</p>
-            <button class="btn primary-btn" @click="progressTutorial(5)">
+            <button class="btn primary-btn" @click="progressTutorial(7)">
                 next
             </button>
         </div>
@@ -1445,7 +1452,8 @@ export default {
             showTutorialTip1 ||
             showTutorialTip2 ||
             showTutorialTip3 ||
-            showTutorialTip9 ||
+            showTutorialTip4 ||
+            showTutorialTip10 ||
             showMobileTutorialTip4 ||
             showMobileTutorialTip5 ||
             showMobileTutorialTip6 ||
@@ -1477,39 +1485,49 @@ export default {
                 </button>
             </div>
             <div v-else-if="showTutorialTip3">
+                <strong v-if="isMobileCheck > 576">Navigation</strong>
                 <p>
-                    On a computer, use the mouse to navigate around. Zoom in and
-                    out using the mousewheel.
-                </p>
-                <p>
-                    On a tablet or phone, navigate by dragging the screen, or
-                    use the thumbstick at the bottom right. Zoom in and out by
-                    pinching and zooming.
-                </p>
-                <p>
-                    There is also a slider bar at the bottom right, that can be
-                    used for zooming.
+                    If you know how to use Google Maps, you should know how to
+                    navigate here.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(3)">
                     next
                 </button>
             </div>
-            <div v-if="showTutorialTip9">
+            <div v-else-if="showTutorialTip4">
+                <p>On a computer, use the mouse to navigate around.</p>
+                <p>
+                    Zoom in and out using the mousewheel, or by pressing the
+                    <em>PageUp</em> and <em>PageDown</em> keys.
+                </p>
+                <p>
+                    On a tablet or phone, navigate by dragging the screen. Zoom
+                    in and out by pinching and zooming.
+                </p>
+                <p>
+                    For computers and tablets, there is also a zoom slider bar
+                    at the bottom right.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(4)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showTutorialTip10">
                 <p>
                     When you're ready, try another page by clicking one in the
                     navigation bar at the top right.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(9)">
+                <button class="btn primary-btn" @click="progressTutorial(10)">
                     close
                 </button>
             </div>
-            <div v-if="showMobileTutorialTip4">
+            <div v-else-if="showMobileTutorialTip4">
                 <p>Use the search field to search for specific skills.</p>
                 <button class="btn primary-btn" @click="progressTutorial(4)">
                     next
                 </button>
             </div>
-            <div v-if="showMobileTutorialTip5">
+            <div v-else-if="showMobileTutorialTip5">
                 <p>
                     The filter button will show ways to filter the skill tree by
                     both subjects and levels.

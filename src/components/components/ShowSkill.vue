@@ -77,15 +77,15 @@ export default {
     },
 
     async created() {
-        // Turn this on only if user is logged in.
-        if (this.sessionDetailsStore.isLoggedIn == true) {
-            this.checkIfTutorialComplete();
-        }
-
         await this.getSkill();
         this.isSkillLoaded = true;
         if (this.sessionDetailsStore.isLoggedIn) {
             await this.getUserSkills();
+        }
+
+        // Turn this on only if user is logged in.
+        if (this.sessionDetailsStore.isLoggedIn == true) {
+            this.checkIfTutorialComplete();
         }
 
         if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
@@ -314,28 +314,6 @@ export default {
                 alert('A goal for this skill has been added on the Hub page.');
             });
         },
-        progressTutorial(step) {
-            if (step == 1) {
-                this.showTutorialTip1 = false;
-                this.showTutorialTip2 = true;
-            } else if (step == 2) {
-                this.showTutorialTip2 = false;
-                this.showTutorialTip3 = true;
-            } else if (step == 3) {
-                this.showTutorialTip3 = false;
-                this.showTutorialTip4 = true;
-            } else if (step == 4) {
-                this.showTutorialTip4 = false;
-                this.showTutorialTip5 = true;
-            } else if (step == 5) {
-                this.showTutorialTip5 = false;
-                this.showTutorialTip6 = true;
-            } else if (step == 6) {
-                this.showTutorialTip6 = false;
-                // Store
-                localStorage.setItem('isSkillPageTutorialCompleted', 'true');
-            }
-        },
 
         // Tutorial
         async checkIfTutorialComplete() {
@@ -354,7 +332,8 @@ export default {
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
-                this.showTutorialTip2 = true;
+                if (!this.isMastered) this.showTutorialTip2 = true;
+                else this.showTutorialTip3 = true;
             } else if (step == 2) {
                 this.showTutorialTip2 = false;
                 this.showTutorialTip3 = true;
@@ -527,8 +506,12 @@ export default {
                 >
                     <div class="info-panel bg-light rounded p-2 mb-2">
                         <p>
-                            This is where you can take the assessment for the
-                            skill.
+                            This is where you can take an assessment for this
+                            skill, if it is unlocked.
+                        </p>
+                        <p>
+                            If it's locked, this button will instead take you to
+                            the closest unlocked skill.
                         </p>
                         <button
                             class="btn primary-btn"
