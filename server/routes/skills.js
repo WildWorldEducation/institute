@@ -1840,7 +1840,7 @@ async function getIntroduction(index, skillsLength) {
     // Create prompt for ChatGPT.
     let prompt = `        
         Please provide them with a single JSON object containing an html text field, named "introduction",
-        that explains why the subject ${name} is so cool, interesting and useful. Please space out any paragraphs.
+        that briefly explains why the subject ${name} is so interesting and useful. This text should ideally be 2 or 3 short paragraphs only.
 
         If the subject is not clear, please read this text: "${masteryRequirements}" to get greater context on what it is about.
     `;
