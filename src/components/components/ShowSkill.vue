@@ -855,10 +855,6 @@ export default {
                             >
                             <span v-else-if="skill.level == 'phd'">PHD</span>
                         </div>
-                        <span v-if="skill.type == 'super'"
-                            >This assessment will draw questions from its
-                            cluster nodes' question banks.</span
-                        >
                         <div class="mt-2">
                             <h2 class="h4 secondary-heading">Author</h2>
                             <!-- Author Icon -->
