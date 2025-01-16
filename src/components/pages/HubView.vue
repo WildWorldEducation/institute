@@ -35,6 +35,7 @@ export default {
     },
     data() {
         return {
+            showWelcomeModal: false, // Modal to ask for tutorial preference
             assessments: [],
             questions: [],
             studentIds: [],
@@ -66,12 +67,17 @@ export default {
         }
     },
     async created() {
+        const tutorialStatus = localStorage.getItem('tutorialStatus');
+        if (
+            this.userDetailsStore.role != 'student' &&
+            tutorialStatus !== 'no'
+        ) {
+            this.showWelcomeModal = true;
+        }
         if (this.userDetailsStore.role == 'instructor') {
             await this.fetchAssessments();
             await this.getStudentMCQuestions();
         }
-
-        await this.checkIfTutorialComplete();
     },
     methods: {
         async fetchAssessments() {
@@ -221,6 +227,35 @@ export default {
                 headers: { 'Content-Type': 'application/json' }
             };
             fetch(url, requestOptions);
+        },
+        startTutorial() {
+            this.checkIfTutorialComplete();
+            this.showWelcomeModal = false;
+        },
+
+        closeTutorial() {
+            this.showWelcomeModal = false;
+            localStorage.setItem('tutorialStatus', 'no');
+            this.markAllTutorialsComplete();
+        },
+
+        async markAllTutorialsComplete() {
+            try {
+                const response = await fetch(
+                    `/users/mark-all-tutorials-complete/${this.userDetailsStore.userId}`,
+                    {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' }
+                    }
+                );
+                if (response.ok) {
+                    this.isTutorialComplete = true;
+                } else {
+                    console.error('Error marking tutorials as complete.');
+                }
+            } catch (error) {
+                console.error('API request failed:', error);
+            }
         }
     }
 };
@@ -412,6 +447,18 @@ export default {
     </div>
 
     <!-- Tutorial introduction modals -->
+    <div v-if="showWelcomeModal" class="modal">
+        <div class="modal-content">
+            <h1 class="heading h3">Welcome to the Collins Institute</h1>
+            <p>Would you like to go through the walkthrough tutorial?</p>
+            <div class="d-flex justify-content-between">
+                <button class="btn red-btn" @click="closeTutorial">No</button>
+                <button class="btn primary-btn" @click="startTutorial">
+                    Yes
+                </button>
+            </div>
+        </div>
+    </div>
     <!-- Student -->
     <div
         v-if="userDetailsStore.role == 'student' && showTutorialTip1"
