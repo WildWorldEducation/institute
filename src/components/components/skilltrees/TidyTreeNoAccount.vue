@@ -151,7 +151,7 @@ export default {
                 // Because this is so much data, we do not send it with the rest of the skill tree,
                 // or it will slow the load down too much.
                 const result = await fetch(
-                    '/skills/mastery-requirements-and-url/' + this.skill.id
+                    '/skills/introduction-and-url/' + this.skill.id
                 );
                 const result2 = await result.json();
                 if (this.skill.type == 'super') {
@@ -162,7 +162,7 @@ export default {
                     const subSkillsResultJson = await subSkillsResult.json();
                     this.skill.subskills = subSkillsResultJson;
                 }
-                this.skill.masteryRequirements = result2.mastery_requirements;
+                this.skill.introduction = result2.introduction;
                 this.skill.url = result2.url;
                 this.showSkillPanel = true;
             }
