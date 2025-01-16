@@ -330,7 +330,7 @@ export default {
     <div class="container-fluid position-absolute legend-div">
         <div v-if="showWelcomeModal" class="modal">
             <div class="modal-content">
-                <h2>Welcome to the Colins Institute</h2>
+                <h1 class="heading h3">Welcome to the Collins Institute</h1>
                 <p>Would you like to go through the walkthrough tutorial?</p>
                 <div class="d-flex justify-content-between">
                     <button class="btn primary-btn mx-0" @click="startTutorial">
