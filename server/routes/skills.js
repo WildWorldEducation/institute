@@ -690,11 +690,11 @@ router.get('/url/:skillUrl', (req, res, next) => {
 // For sending the mastery requirements data separately to the skill tree skill panels.
 // We send it separately because otherwise, if we send it with the other data, it slows
 // down the page load of the skill trees.
-router.get('/mastery-requirements-and-url/:id', (req, res, next) => {
+router.get('/introduction-and-url/:id', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     // Get skill.
-    const sqlQuery = `SELECT mastery_requirements, url
+    const sqlQuery = `SELECT introduction, url
     FROM skills
     WHERE skills.id = ${conn.escape(req.params.id)}
      AND skills.is_deleted = 0;`;
@@ -1895,6 +1895,6 @@ async function getIntroduction(index, skillsLength) {
     }
 }
 
-generateIntroductionText();
+//generateIntroductionText();
 
 module.exports = router;
