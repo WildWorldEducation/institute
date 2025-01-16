@@ -801,16 +801,20 @@ export default {
             </div>
             <!-- Content -->
             <div class="row">
-                <!-- Mastery Requirements -->
                 <div class="col-md-8 order-2 order-md-1">
+                    <!-- Introduction -->
+                    <div class="">
+                        <h2 class="h4 secondary-heading">Introduction</h2>
+                        <div v-html="skill.introduction"></div>
+                    </div>
+
+                    <!-- Mastery Requirements -->
                     <div v-if="skill.type != 'domain'">
-                        <div class="d-flex flex-column">
-                            <div class="mastery-requirements">
-                                <h2 class="h4 secondary-heading">
-                                    Requirements for mastery
-                                </h2>
-                                <div v-html="skill.mastery_requirements"></div>
-                            </div>
+                        <div class="mastery-requirements">
+                            <h2 class="h4 secondary-heading">
+                                Requirements for mastery
+                            </h2>
+                            <div v-html="skill.mastery_requirements"></div>
                         </div>
                     </div>
                 </div>
@@ -1143,10 +1147,6 @@ export default {
 }
 
 .mastery-requirements {
-    padding-left: 30px;
-    padding-right: 30px;
-    padding-top: 10px;
-    padding-bottom: 10px;
     background-color: rgba(255, 255, 255, 0.692);
     border-radius: 5px;
     width: 98%;

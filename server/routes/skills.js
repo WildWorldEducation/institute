@@ -1798,10 +1798,11 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
 // To access the .env file.
 
 let skills;
+let skillsLength;
 async function generateIntroductionText() {
     let sqlQuery = `SELECT id, level, name, mastery_requirements FROM skills 
         WHERE is_deleted = 0
-        AND id BETWEEN 26 AND 50`;
+        AND id BETWEEN 45 AND 50`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -1810,12 +1811,13 @@ async function generateIntroductionText() {
             }
 
             skills = results;
+            skillsLength = results.length;
 
             // For going through all skills.
             let index = 0;
 
             // We go through all skills sequencially, one at a time.
-            getIntroduction(index);
+            getIntroduction(index, skillsLength);
         } catch (err) {
             console.log(err);
         }
@@ -1823,7 +1825,7 @@ async function generateIntroductionText() {
 }
 
 // Get source from ChatGPT.
-async function getIntroduction(index) {
+async function getIntroduction(index, skillsLength) {
     // Get the skill data.-----
     let id = skills[index].id;
     // Replace underscore with space.
@@ -1870,15 +1872,18 @@ async function getIntroduction(index) {
         let introductionObject = JSON.parse(responseJSON);
         console.log(introductionObject);
         let introduction = introductionObject.introduction;
+        introduction = introduction.replace(/"/g, "'");
 
         let sqlQuery = `UPDATE skills SET introduction = "${introduction}" WHERE id = ${id};`;
 
-        conn.query(sqlQuery, (err, next) => {
+        conn.query(sqlQuery, (err) => {
             try {
                 if (err) {
                     throw err;
                 } else {
-                    getIntroduction(index);
+                    if (index < skillsLength)
+                        getIntroduction(index, skillsLength);
+                    else console.log('batch completed');
                 }
             } catch (err) {
                 console.log(err);
@@ -1890,6 +1895,6 @@ async function getIntroduction(index) {
     }
 }
 
-//generateIntroductionText();
+generateIntroductionText();
 
 module.exports = router;
