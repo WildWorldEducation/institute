@@ -506,8 +506,12 @@ export default {
                 >
                     <div class="info-panel bg-light rounded p-2 mb-2">
                         <p>
-                            This is where you can take an assessment for the
+                            This is where you can take an assessment for this
                             skill, if it is unlocked.
+                        </p>
+                        <p>
+                            If it's locked, this button will instead take you to
+                            the closest unlocked skill.
                         </p>
                         <button
                             class="btn primary-btn"
