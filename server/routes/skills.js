@@ -1802,7 +1802,7 @@ let skillsLength;
 async function generateIntroductionText() {
     let sqlQuery = `SELECT id, level, name, mastery_requirements FROM skills 
         WHERE is_deleted = 0
-        AND id BETWEEN 45 AND 50`;
+        AND id BETWEEN 0 AND 500`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
