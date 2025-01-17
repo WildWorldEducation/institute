@@ -13,7 +13,20 @@ function unlockInitialSkills(userId) {
             let firstLevelSkills = [];
             for (let i = 0; i < skills.length; i++) {
                 if (skills[i].parent == 0) {
-                    firstLevelSkills.push(skills[i]);
+                    // if the node is not a super skill, make it unlocked
+                    if (skills[i].type != 'super')
+                        firstLevelSkills.push(skills[i]);
+                    else {
+                        // if the node is a super skill, make its subskills unlocked
+                        for (let j = 0; j < skills.length; j++) {
+                            if (
+                                skills[j].parent == skills[i].id &&
+                                skills[j].type == 'sub'
+                            ) {
+                                firstLevelSkills.push(skills[j]);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -43,25 +56,25 @@ function unlockInitialSkills(userId) {
                 });
             }
 
-            function makeAccessible(userId, skillId) {
-                // Make this skill accessible.
-                let sqlQuery3 = `
-        INSERT INTO user_skills (user_id, skill_id, is_accessible) 
-        VALUES(${conn.escape(userId)}, 
-        ${conn.escape(skillId)},
-        1) 
-        ON DUPLICATE KEY UPDATE is_accessible=1;
-        `;
-                conn.query(sqlQuery3, (err, results) => {
-                    try {
-                        if (err) {
-                            throw err;
-                        }
-                    } catch (err) {
-                        console.log('error:' + err);
-                    }
-                });
-            }
+            //     function makeAccessible(userId, skillId) {
+            //         // Make this skill accessible.
+            //         let sqlQuery3 = `
+            // INSERT INTO user_skills (user_id, skill_id, is_accessible)
+            // VALUES(${conn.escape(userId)},
+            // ${conn.escape(skillId)},
+            // 1)
+            // ON DUPLICATE KEY UPDATE is_accessible=1;
+            // `;
+            //         conn.query(sqlQuery3, (err, results) => {
+            //             try {
+            //                 if (err) {
+            //                     throw err;
+            //                 }
+            //             } catch (err) {
+            //                 console.log('error:' + err);
+            //             }
+            //         });
+            //     }
         } catch (err) {
             console.log('error:' + err);
         }
