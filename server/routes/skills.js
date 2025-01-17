@@ -1867,6 +1867,7 @@ router.post('/generate-skill-icon', async (req, res) => {
         conn.query(sqlQuery, (err, result) => {
             if (err)
                 throw err
+            console.log('')
             res.json({ mess: `work done for skill: ${skillName}` })
         })
     } catch (error) {
@@ -1910,7 +1911,7 @@ router.post('/add-icon-to-aws', async (req, res) => {
         const base64String = req.body.imageData;
 
         await saveBase64ImageToBucket(base64String, iconName, skillIconBucketName);
-        res.json({ mess: 'ok la' })
+        res.json({ mess: 'ok' })
     } catch (error) {
         console.error(error);
         res.status = 500;
