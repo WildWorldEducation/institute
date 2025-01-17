@@ -154,7 +154,6 @@ export default {
 <style scoped>
 .skill-panel-container {
     background-color: #e4ecf4;
-    color: #888;
     z-index: 1072;
     position: absolute;
     top: 0px;
