@@ -1832,10 +1832,13 @@ async function getIntroduction(index, skillsLength) {
     let level = skills[index].level.replace(/_/g, ' ');
     let name = skills[index].name;
     // Remove HTML formatting from mastery requirements.
-    let masteryRequirements = skills[index].mastery_requirements.replace(
-        /<[^>]*>?/gm,
-        ''
-    );
+    let masteryRequirements;
+    if (skills[index].mastery_requirements) {
+        masteryRequirements = skills[index].mastery_requirements.replace(
+            /<[^>]*>?/gm,
+            ''
+        );
+    }
 
     // Create prompt for ChatGPT.
     let prompt = `        
@@ -1867,12 +1870,16 @@ async function getIntroduction(index, skillsLength) {
         });
         let responseJSON = completion.choices[0].message.content;
         // Escape newline characters in response.
-        responseJSON = responseJSON.replace(/\\n/g, '\\n');
+        if (responseJSON) {
+            responseJSON = responseJSON.replace(/\\n/g, '\\n');
+        }
         // Convert string to object.       ;
         let introductionObject = JSON.parse(responseJSON);
         console.log(introductionObject);
         let introduction = introductionObject.introduction;
-        introduction = introduction.replace(/"/g, "'");
+        if (introduction) {
+            introduction = introduction.replace(/"/g, "'");
+        }
 
         let sqlQuery = `UPDATE skills SET introduction = "${introduction}" WHERE id = ${id};`;
 
