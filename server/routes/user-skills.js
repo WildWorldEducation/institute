@@ -550,12 +550,7 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                                     // Go through all rows again, add children
                                     for (let j = 0; j < results.length; j++) {
                                         if (results[j].id == parentId) {
-                                            if (
-                                                results[i].is_accessible == 1 ||
-                                                (results[i].type == 'super' &&
-                                                    results[j].is_accessible ==
-                                                        1)
-                                            ) {
+                                            if (results[i].is_accessible == 1) {
                                                 results[j].children.push(
                                                     results[i]
                                                 );
@@ -588,7 +583,7 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                                 studentSkills.push(results[i]);
                             }
                         }
-
+                        console.log(studentSkills);
                         res.json(studentSkills);
                     } catch (err) {
                         next(err);
@@ -751,7 +746,6 @@ router.get('/filter-by-cohort/my-vertical-tree/:userId', (req, res, next) => {
                         // }
 
                         // determineDepth(studentSkills, depth);
-
                         res.json(studentSkills);
                     } catch (err) {
                         next(err);
