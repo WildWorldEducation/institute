@@ -14,22 +14,17 @@ export default {
     },
     methods: {
         scaleTree(step){
+            const canvaCenterX = this.$parent.context.canvas.width / 2
+            const canvaCenterY = this.$parent.context.canvas.height / 2
             const newScale = this.$parent.scale + step
+
             // calculate the proportion of new scale and ole scale
-            const scaleProportion = this.oldScale / this.$parent.scale;
-            // just like the panning we have to multiple the pan value when scale is smaller than 0
-            // because in the d3 handler we divide the value with scale
-            let panX =
-                newScale >= 1
-                    ? this.$parent.panX
-                    : this.$parent.panX * newScale;
-            let panY =
-                newScale >= 1
-                    ? this.$parent.panY
-                    : this.$parent.panY * newScale;
-            // calculate pan value so we can zoom into center of the screen
-            panX = panX * scaleProportion;
-            panY = panY * scaleProportion;
+            const scaleProportion = newScale / this.$parent.scale;
+            
+            // Calculate the appropriate panning after scaling to maintain the canvas center
+            let panX = canvaCenterX + ((this.$parent.panX - canvaCenterX)*scaleProportion)
+            let panY = canvaCenterY + ((this.$parent.panY - canvaCenterY)*scaleProportion)
+            
             this.$parent.scale = newScale;
             // store new scale value
             this.oldScale = newScale;
