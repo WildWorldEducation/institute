@@ -88,4 +88,9 @@ export default {
     width: 75%;
     background-color: #c6c6c6;
 }
+@media screen and (max-width: 769px){
+    #zoomcontrols{
+        display: none;
+    }
+}
 </style>
