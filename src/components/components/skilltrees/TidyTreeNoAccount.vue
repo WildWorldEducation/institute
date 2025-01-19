@@ -192,7 +192,7 @@ export default {
     methods: {
         getAlgorithm() {
             this.data = {
-                skill_name: 'My skills',
+                name: 'My skills',
                 children: this.skill.children
             };
 
