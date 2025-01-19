@@ -801,16 +801,20 @@ export default {
             </div>
             <!-- Content -->
             <div class="row">
-                <!-- Mastery Requirements -->
                 <div class="col-md-8 order-2 order-md-1">
+                    <!-- Introduction -->
+                    <div class="">
+                        <h2 class="h4 secondary-heading">Introduction</h2>
+                        <div v-html="skill.introduction"></div>
+                    </div>
+
+                    <!-- Mastery Requirements -->
                     <div v-if="skill.type != 'domain'">
-                        <div class="d-flex flex-column">
-                            <div class="mastery-requirements">
-                                <h2 class="h4 secondary-heading">
-                                    Requirements for mastery
-                                </h2>
-                                <div v-html="skill.mastery_requirements"></div>
-                            </div>
+                        <div class="mastery-requirements">
+                            <h2 class="h4 secondary-heading">
+                                Requirements for mastery
+                            </h2>
+                            <div v-html="skill.mastery_requirements"></div>
                         </div>
                     </div>
                 </div>
@@ -855,10 +859,6 @@ export default {
                             >
                             <span v-else-if="skill.level == 'phd'">PHD</span>
                         </div>
-                        <span v-if="skill.type == 'super'"
-                            >This assessment will draw questions from its
-                            cluster nodes' question banks.</span
-                        >
                         <div class="mt-2">
                             <h2 class="h4 secondary-heading">Author</h2>
                             <!-- Author Icon -->
@@ -1147,10 +1147,6 @@ export default {
 }
 
 .mastery-requirements {
-    padding-left: 30px;
-    padding-right: 30px;
-    padding-top: 10px;
-    padding-bottom: 10px;
     background-color: rgba(255, 255, 255, 0.692);
     border-radius: 5px;
     width: 98%;

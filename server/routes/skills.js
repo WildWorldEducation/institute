@@ -690,11 +690,11 @@ router.get('/url/:skillUrl', (req, res, next) => {
 // For sending the mastery requirements data separately to the skill tree skill panels.
 // We send it separately because otherwise, if we send it with the other data, it slows
 // down the page load of the skill trees.
-router.get('/mastery-requirements-and-url/:id', (req, res, next) => {
+router.get('/introduction-and-url/:id', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     // Get skill.
-    const sqlQuery = `SELECT mastery_requirements, url
+    const sqlQuery = `SELECT introduction, url
     FROM skills
     WHERE skills.id = ${conn.escape(req.params.id)}
      AND skills.is_deleted = 0;`;
@@ -1789,5 +1789,119 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
         res.end;
     }
 });
+
+/**
+ To generate text for the "Introduction" field
+ */
+// Import OpenAI package.
+// Include API key.
+// To access the .env file.
+
+let skills;
+let skillsLength;
+async function generateIntroductionText() {
+    let sqlQuery = `SELECT id, level, name, mastery_requirements FROM skills 
+        WHERE is_deleted = 0
+        AND id BETWEEN 3001 AND 4072`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+
+            skills = results;
+            skillsLength = results.length;
+
+            // For going through all skills.
+            let index = 0;
+
+            // We go through all skills sequencially, one at a time.
+            getIntroduction(index, skillsLength);
+        } catch (err) {
+            console.log(err);
+        }
+    });
+}
+
+// Get source from ChatGPT.
+async function getIntroduction(index, skillsLength) {
+    // Get the skill data.-----
+    let id = skills[index].id;
+    // Replace underscore with space.
+    let level = skills[index].level.replace(/_/g, ' ');
+    let name = skills[index].name;
+    // Remove HTML formatting from mastery requirements.
+    let masteryRequirements;
+    if (skills[index].mastery_requirements) {
+        masteryRequirements = skills[index].mastery_requirements.replace(
+            /<[^>]*>?/gm,
+            ''
+        );
+    }
+
+    // Create prompt for ChatGPT.
+    let prompt = `        
+        Please provide them with a single JSON object containing an html text field, named "introduction",
+        that briefly explains why the subject ${name} is so interesting and useful. This text should ideally be 2 or 3 short paragraphs only.
+
+        If the subject is not clear, please read this text: "${masteryRequirements}" to get greater context on what it is about.
+    `;
+
+    //console.log(prompt);
+    index++;
+
+    // Attempting to prevent the app from crashing if anything goes wrong with the API call.
+    // ie, error handling.
+    try {
+        console.log('Get intro for: ' + name);
+
+        let content = `You are talking to a ${level} level student.`;
+        const completion = await openai.chat.completions.create({
+            messages: [
+                { role: 'system', content: content },
+                {
+                    role: 'user',
+                    content: prompt + ` Please respond with a JSON object.`
+                }
+            ],
+            model: 'gpt-4o',
+            response_format: { type: 'json_object' }
+        });
+        let responseJSON = completion.choices[0].message.content;
+        // Escape newline characters in response.
+        if (responseJSON) {
+            responseJSON = responseJSON.replace(/\\n/g, '\\n');
+        }
+        // Convert string to object.       ;
+        let introductionObject = JSON.parse(responseJSON);
+        console.log(introductionObject);
+        let introduction = introductionObject.introduction;
+        if (introduction) {
+            introduction = introduction.replace(/"/g, "'");
+        }
+
+        let sqlQuery = `UPDATE skills SET introduction = "${introduction}" WHERE id = ${id};`;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    if (index < skillsLength)
+                        getIntroduction(index, skillsLength);
+                    else console.log('batch completed');
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        });
+    } catch (err) {
+        console.log('Error with ChatGPT API call: ' + err);
+        return;
+    }
+}
+
+generateIntroductionText();
 
 module.exports = router;
