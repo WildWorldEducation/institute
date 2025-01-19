@@ -4,7 +4,7 @@ import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';
-import SliderControl from './SliderControl.vue';
+import ZoomControl from './ZoomControl.vue';
 import JoystickControl from './JoystickControl.vue';
 
 // Algorithm.
@@ -73,7 +73,7 @@ export default {
     },
     components: {
         SkillPanel,
-        SliderControl,
+        ZoomControl,
         JoystickControl
     },
     async mounted() {
@@ -202,7 +202,6 @@ export default {
                 this.transformY = transform.y;
                 this.drawTree(transform);
                 // update slider percent ( Handle by us not d3 but will invoke when the d3 zoom event is call )
-                this.$refs.sliderControl.changeGradientBG();
             });
 
         // Bind the above object to canvas so it can zoom the tree
@@ -703,7 +702,6 @@ export default {
                         )
                         .scale(0.3)
                 );
-            this.$refs.sliderControl.showScaleLabel();
         },
         // programmatic d3 zoom
         zoomInD3(scale, panX, panY) {
@@ -711,7 +709,6 @@ export default {
                 this.d3Zoom.transform,
                 d3.zoomIdentity.translate(panX, panY).scale(scale)
             );
-            this.$refs.sliderControl.showScaleLabel();
         },
         // zoom and pan to a node
         goToLocation(node) {
@@ -1088,7 +1085,7 @@ export default {
         ></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
-        <SliderControl ref="sliderControl" />
+        <ZoomControl ref="ZoomControl" />
         <div id="sidepanel-backdrop"></div>
         <JoystickControl class="d-none" />
     </div>
