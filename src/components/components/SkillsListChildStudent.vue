@@ -18,7 +18,8 @@ export default {
             childrenNotSubskills: [],
             subSkills: [],
             isResult: false,
-            localShowChildren: 0
+            localShowChildren: 0,
+            localIsExpandedAll: false
         };
     },
     props: [
@@ -35,7 +36,8 @@ export default {
         'showChildren',
         'isFiltered',
         'DeleteSkill',
-        'path'
+        'path',
+        'isExpandedAll'
     ],
     computed: {
         indent() {
@@ -74,6 +76,10 @@ export default {
     },
     async created() {
         this.localShowChildren = this.showChildren;
+        if(this.isExpandedAll){
+            this.localShowChildren = 1
+        }
+        this.localIsExpandedAll = this.isExpandedAll;
 
         for (let i = 0; i < this.children.length; i++) {
             if (this.children[i].type == 'sub') {
@@ -138,6 +144,9 @@ export default {
                     this.id;
                 fetch(url);
             }
+            if(this.localShowChildren == 0){
+                this.localIsExpandedAll = 0;
+            }
         },
         // Save the state of the skills list to browser storage.
         toggleSubSkills() {
@@ -155,24 +164,15 @@ export default {
         HideMobileButtonsModal() {
             this.showModal = false;
         },
-        recursivelySetState(items, state) {
-            items.forEach((element) => {
-                if (
-                    element.type == 'domain' ||
-                    element.type == 'super' ||
-                    element.type == 'regular'
-                ) {
-                    localStorage.setItem(element.id + 'children', state);
-                }
-
-                this.recursivelySetState(element.children, state);
-            });
-        },
         // Expand/Collapse All Domain Descendants.
         toggleExpandAll() {
-            this.recursivelySetState(this.children, !this.showChildren);
-            //localStorage.setItem(this.id + 'children', !this.showChildren);
-            this.showChildren = !this.showChildren;
+            if(this.localShowChildren == 1){
+                this.localShowChildren = 0;
+                this.localIsExpandedAll = 0;
+            }else{
+                this.localShowChildren = 1;
+                this.localIsExpandedAll = 1;
+            }
         }
     },
     watch: {
@@ -423,7 +423,7 @@ export default {
 
     <!-- Recursive nesting of component -->
     <SkillsListChildStudent
-        v-if="localShowChildren == 1"
+        v-if="localShowChildren == 1 || localIsExpandedAll"
         v-for="child in childrenNotSubskills"
         :id="child.id"
         :children="child.children"
@@ -438,6 +438,12 @@ export default {
         :showChildren="child.show_children"
         :depth="depth + 1"
         :path="path"
+        :isExpandedAll="(
+                child.type == 'domain' 
+                // || child.type == 'super' 
+                // || child.type == 'regular'
+            ) 
+            && localIsExpandedAll"
     >
     </SkillsListChildStudent>
 </template>
