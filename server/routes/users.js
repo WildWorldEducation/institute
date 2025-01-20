@@ -1350,6 +1350,38 @@ router.put('/mark-all-tutorials-complete/:userId', isAuthenticated, (req, res, n
         }
     });
 });
+// Reset all tutorials to incomplete state
+router.put('/reset-all-tutorials/:userId', isAuthenticated, (req, res, next) => {
+    let sqlQuery = `
+        UPDATE users
+        SET 
+            is_radial_tree_tutorial_complete = 0,
+            is_skill_tutorial_complete = 0,
+            is_users_tutorial_complete = 0,
+            is_cohorts_tutorial_complete = 0,
+            is_student_vertical_tree_tutorial_complete = 0,
+            is_student_collapsible_tree_tutorial_complete = 0,
+            is_student_goals_tutorial_complete = 0,
+            is_todo_tutorial_complete = 0,
+            is_activity_report_tutorial_complete = 0,
+            is_hub_tutorial_complete = 0,
+            is_vertical_tree_tutorial_complete = 0,
+            is_my_tree_tutorial_complete = 0,
+            is_collapsible_tree_tutorial_complete = 0
+        WHERE id = ${conn.escape(req.params.userId)};`;
+
+    conn.query(sqlQuery, (err) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.end(); // Successful reset
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
 
 // Student Collapsible Tree page.
 router.get(

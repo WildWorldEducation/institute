@@ -45,15 +45,13 @@ export default {
             showTutorialTip7: false,
             showTutorialTip8: false,
             showTutorialTip9: false,
-            showTutorialTip10: false,
             isMobileCheck: window.innerWidth
         };
     },
     created() {
         // Turn this on only if user is logged in.
-        const tutorialStatus = localStorage.getItem('tutorialStatus');
-        if (this.sessionDetailsStore.isLoggedIn && tutorialStatus !== 'no') {
-            this.showWelcomeModal = true;
+        if (this.sessionDetailsStore.isLoggedIn) {
+            this.checkIfTutorialComplete();
         } else {
             this.subjectFilters = [
                 'Language',
@@ -182,16 +180,21 @@ export default {
         },
         // Onboardning tutorials
         async checkIfTutorialComplete() {
-            const result = await fetch(
-                '/users/check-tutorial-progress/vertical-tree/' +
-                    this.userDetailsStore.userId
-            );
-            const data = await result.json();
-            if (data == 0) {
-                this.isTutorialComplete = false;
-                this.showTutorialTip1 = true;
-            } else if (data == 1) {
-                this.isTutorialComplete = true;
+            try {
+                const result = await fetch(
+                    '/users/check-tutorial-progress/vertical-tree/' +
+                        this.userDetailsStore.userId
+                );
+                const data = await result.json();
+
+                // Check for students only
+                if (data === 0) {
+                    this.showWelcomeModal = true;
+                } else if (data === 1) {
+                    this.isTutorialComplete = true;
+                }
+            } catch (error) {
+                console.error('Error checking tutorial progress:', error);
             }
         },
         progressTutorial(step) {
@@ -205,7 +208,6 @@ export default {
                 this.showTutorialTip3 = false;
                 if (this.isMobileCheck > 576) {
                     this.showTutorialTip4 = true;
-                    console.log(this.showTutorialTip4);
                 } else {
                     this.showMobileTutorialTip4 = true;
                 }
@@ -246,9 +248,6 @@ export default {
                 this.showTutorialTip9 = true;
             } else if (step == 9) {
                 this.showTutorialTip9 = false;
-                this.showTutorialTip10 = true;
-            } else if (step == 10) {
-                this.showTutorialTip10 = false;
                 this.markTutorialComplete();
             }
         },
@@ -267,7 +266,6 @@ export default {
             this.showTutorialTip7 = false;
             this.showTutorialTip8 = false;
             this.showTutorialTip9 = false;
-            this.showTutorialTip10 = false;
             this.isTutorialComplete = false;
         },
         restartMobileTutorial() {
@@ -290,26 +288,18 @@ export default {
             };
             fetch(url, requestOptions);
         },
-        startTutorial() {
-            this.checkIfTutorialComplete();
+        async startTutorial() {
+            // Show the tutorial tooltips and mark tutorial as not complete
+            this.showTutorialTip1 = true;
+            this.isTutorialComplete = false;
             this.showWelcomeModal = false;
+            // Reset tutorial fields for the user
+            await this.resetTutorialProgress();
         },
-        closeTutorial() {
-            // Close the welcome modal
-            this.showWelcomeModal = false;
-
-            // Mark the tutorial as complete in localStorage if user clicks "No"
-            localStorage.setItem('tutorialStatus', 'no');
-
-            // Call the API to mark all tutorials as completed for the user
-            this.markAllTutorialsComplete();
-        },
-
-        async markAllTutorialsComplete() {
+        async resetTutorialProgress() {
             try {
-                // API call to mark all tutorials as complete
-                const response = await fetch(
-                    `/users/mark-all-tutorials-complete/${this.userDetailsStore.userId}`,
+                await fetch(
+                    `/users/reset-all-tutorials/${this.userDetailsStore.userId}`,
                     {
                         method: 'PUT',
                         headers: {
@@ -317,17 +307,32 @@ export default {
                         }
                     }
                 );
+            } catch (error) {
+                console.error('Error resetting tutorials:', error);
+            }
+        },
+        async closeTutorial() {
+            // Close the welcome modal
+            this.showWelcomeModal = false;
+            // Mark all tutorials as complete
+            await this.markAllTutorialsComplete();
+        },
 
-                // Check if the API call was successful
+        async markAllTutorialsComplete() {
+            try {
+                const response = await fetch(
+                    `/users/mark-all-tutorials-complete/${this.userDetailsStore.userId}`,
+                    { method: 'PUT' }
+                );
                 if (response.ok) {
-                    // Handle success, update frontend state to reflect completion
                     this.isTutorialComplete = true;
-                } else {
-                    console.error('Error marking tutorials as complete.');
                 }
             } catch (error) {
-                console.error('API request failed:', error);
+                console.error('Error marking tutorials as complete:', error);
             }
+        },
+        restartTutorial() {
+            this.startTutorial();
         }
     }
 };
@@ -418,23 +423,23 @@ export default {
             </div>
             <!-- Tooltips -->
             <div
-                v-if="showTutorialTip8"
+                v-if="showTutorialTip7"
                 class="info-panel bg-light rounded p-2 mb-2"
             >
                 <p>Use the search field to search for specific skills.</p>
-                <button class="btn primary-btn" @click="progressTutorial(8)">
+                <button class="btn primary-btn" @click="progressTutorial(7)">
                     next
                 </button>
             </div>
             <div
-                v-else-if="showTutorialTip9"
+                v-else-if="showTutorialTip8"
                 class="info-panel bg-light rounded p-2 mb-2 mt-2 float-right"
             >
                 <p>
                     Use the center button to center the skill tree,<br />
                     and the print button to print a PDF.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(9)">
+                <button class="btn primary-btn" @click="progressTutorial(8)">
                     next
                 </button>
             </div>
@@ -459,11 +464,11 @@ export default {
     <div class="tablet-and-up-legend position-absolute bottom-legend-div">
         <!-- Tooltip -->
         <div
-            v-if="showTutorialTip6"
+            v-if="showTutorialTip5"
             class="info-panel bg-light rounded p-2 mb-2"
         >
             <p>Use the buttons below to filter the skills by level.</p>
-            <button class="btn primary-btn" @click="progressTutorial(6)">
+            <button class="btn primary-btn" @click="progressTutorial(5)">
                 next
             </button>
         </div>
@@ -1001,9 +1006,9 @@ export default {
             </button>
         </div>
         <!-- Tooltip -->
-        <div v-if="showTutorialTip5" class="info-panel bg-light rounded p-2">
+        <div v-if="showTutorialTip4" class="info-panel bg-light rounded p-2">
             Use the buttons on the left to filter the skills by subject.<br />
-            <button class="btn primary-btn" @click="progressTutorial(5)">
+            <button class="btn primary-btn" @click="progressTutorial(4)">
                 next
             </button>
         </div>
@@ -1028,11 +1033,11 @@ export default {
         </button>
 
         <div
-            v-if="showTutorialTip7"
+            v-if="showTutorialTip6"
             class="info-panel bg-light rounded p-2 mb-2"
         >
             <p>Use this button to toggle between unlocked and locked skills.</p>
-            <button class="btn primary-btn" @click="progressTutorial(7)">
+            <button class="btn primary-btn" @click="progressTutorial(6)">
                 next
             </button>
         </div>
@@ -1465,7 +1470,11 @@ export default {
     <div v-if="showWelcomeModal" class="modal">
         <div class="modal-content">
             <h1 class="heading h3">Welcome to the Collins Institute</h1>
-            <p>Would you like to go through the walkthrough tutorial?</p>
+            <p>Would you like to go through the tutorial?</p>
+            <p>
+                You can start or restart it anytime by clicking the "i" button
+                on any page.
+            </p>
             <div class="d-flex justify-content-between">
                 <button class="btn red-btn mx-0" @click="closeTutorial">
                     No
@@ -1481,8 +1490,7 @@ export default {
             showTutorialTip1 ||
             showTutorialTip2 ||
             showTutorialTip3 ||
-            showTutorialTip4 ||
-            showTutorialTip10 ||
+            showTutorialTip9 ||
             showMobileTutorialTip4 ||
             showMobileTutorialTip5 ||
             showMobileTutorialTip6 ||
@@ -1492,38 +1500,25 @@ export default {
     >
         <div class="modal-content">
             <div v-if="showTutorialTip1">
-                <p>Welcome to the Collins Institute!</p>
-                <p>
-                    Click
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(1)"
-                    >
-                        next
-                    </button>
-                    to start the tutorial.
-                </p>
-            </div>
-            <div v-else-if="showTutorialTip2">
                 <p>
                     This page provides a look at all the skills one can study
                     here.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showTutorialTip2">
+                <strong v-if="isMobileCheck > 576">Navigation</strong>
+                <p>
+                    If you know how to use Google Maps, you should know how to
+                    navigate here.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(2)">
                     next
                 </button>
             </div>
             <div v-else-if="showTutorialTip3">
-                <strong v-if="isMobileCheck > 576">Navigation</strong>
-                <p>
-                    If you know how to use Google Maps, you should know how to
-                    navigate here.
-                </p>
-                <button class="btn primary-btn" @click="progressTutorial(3)">
-                    next
-                </button>
-            </div>
-            <div v-else-if="showTutorialTip4">
                 <p>On a computer, use the mouse to navigate around.</p>
                 <p>
                     Zoom in and out using the mousewheel, or by pressing the
@@ -1537,16 +1532,16 @@ export default {
                     For computers and tablets, there is also a zoom slider bar
                     at the bottom right.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(4)">
+                <button class="btn primary-btn" @click="progressTutorial(3)">
                     next
                 </button>
             </div>
-            <div v-else-if="showTutorialTip10">
+            <div v-else-if="showTutorialTip9">
                 <p>
                     When you're ready, try another page by clicking one in the
                     navigation bar at the top right.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(10)">
+                <button class="btn primary-btn" @click="progressTutorial(9)">
                     close
                 </button>
             </div>
