@@ -68,13 +68,16 @@ export default {
     },
     async created() {
         const tutorialStatus = localStorage.getItem('tutorialStatus');
-        if (this.userDetailsStore.role != 'student' && tutorialStatus !== 'no') {
+        if (
+            this.userDetailsStore.role != 'student' &&
+            tutorialStatus !== 'no'
+        ) {
             this.showWelcomeModal = true;
-    }
+        }
         if (this.userDetailsStore.role == 'instructor') {
             await this.fetchAssessments();
             await this.getStudentMCQuestions();
-        };   
+        }
     },
     methods: {
         async fetchAssessments() {
@@ -260,28 +263,6 @@ export default {
 
 <template>
     <div class="container min-vh-100">
-        <div v-if="showWelcomeModal" class="modal">
-                <div class="modal-content">
-                    <h2>Welcome to the Colins Institute</h2>
-                    <p>
-                        Would you like to go through the walkthrough tutorial?
-                    </p>
-                    <div class="d-flex justify-content-between">
-                        <button
-                            class="btn primary-btn mx-0"
-                            @click="startTutorial"
-                        >
-                            Yes
-                        </button>
-                        <button
-                            class="btn primary-btn mx-0"
-                            @click="closeTutorial"
-                        >
-                            No
-                        </button>
-                    </div>
-                </div>
-            </div>
         <div class="d-flex justify-content-end my-1">
             <button class="btn primary-btn" @click="restartTutorial">
                 <svg
@@ -298,7 +279,7 @@ export default {
                 </svg>
             </button>
         </div>
-        <div class="row content-row">  
+        <div class="row content-row">
             <!-- Available Skills / Mark Assessments -->
             <div
                 class="col-lg-4 col-md-6 mb-2"
@@ -466,6 +447,18 @@ export default {
     </div>
 
     <!-- Tutorial introduction modals -->
+    <div v-if="showWelcomeModal" class="modal">
+        <div class="modal-content">
+            <h1 class="heading h3">Welcome to the Collins Institute</h1>
+            <p>Would you like to go through the walkthrough tutorial?</p>
+            <div class="d-flex justify-content-between">
+                <button class="btn red-btn" @click="closeTutorial">No</button>
+                <button class="btn primary-btn" @click="startTutorial">
+                    Yes
+                </button>
+            </div>
+        </div>
+    </div>
     <!-- Student -->
     <div
         v-if="userDetailsStore.role == 'student' && showTutorialTip1"
