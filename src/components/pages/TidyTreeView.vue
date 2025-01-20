@@ -49,6 +49,11 @@ export default {
         };
     },
     created() {
+        // Hide subject filters for subjects that have been filtered from student, by instructor.
+        if (this.sessionDetailsStore.isLoggedIn == true) {
+            console.log(this.userDetailsStore.cohortId);
+        }
+
         // Turn this on only if user is logged in.
         if (this.sessionDetailsStore.isLoggedIn == true) {
         } else {

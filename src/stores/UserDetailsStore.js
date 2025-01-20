@@ -21,7 +21,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
             gradeFilter: null,
             subjectFilters: [],
             isUnlockedSkillsOnlyFilter: null,
-            reputationScore: null
+            reputationScore: null,
+            cohortId: null
         };
     },
     actions: {
@@ -49,6 +50,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.theme = data.theme;
                 this.subjectFilters = data.subjectFilters;
                 this.reputationScore = data.reputation_score;
+                this.cohortId = data.cohort_id;
                 this.isUnlockedSkillsOnlyFilter =
                     data.is_unlocked_skills_only_filter;
 
