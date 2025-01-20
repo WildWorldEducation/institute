@@ -118,13 +118,13 @@ export default {
                     v-if="this.userDetailsStore.role == 'instructor'"
                     class="d-flex flex-column"
                 >
-                    <!-- Vertical Tree -->
+                    <!-- Skill Tree -->
                     <router-link
                         :to="`/student/${this.$parent.user.id}/skill-tree`"
                         class="btn primary-btn mt-2"
                         target="_blank"
                     >
-                        Vertical tree
+                        Skill tree
                     </router-link>
                     <!-- Collapsible skill tree -->
                     <router-link
@@ -164,7 +164,11 @@ export default {
                     <input
                         class="form-control user-input-information"
                         type="text"
-                        :value="`${this.$parent.user.firstName || ''} ${this.$parent.user.lastName || ''}`.trim()"
+                        :value="
+                            `${this.$parent.user.firstName || ''} ${
+                                this.$parent.user.lastName || ''
+                            }`.trim()
+                        "
                         disabled
                     />
                 </div>

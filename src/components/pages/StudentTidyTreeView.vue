@@ -68,6 +68,11 @@ export default {
                 this.markTutorialComplete();
             }
         },
+        restartTutorial(){
+            this.showTutorialTip1 = true;
+            this.showTutorialTip2 = false;
+            this.isTutorialComplete = false;
+        },
         markTutorialComplete() {
             let url =
                 '/users/mark-tutorial-complete/student-vertical-tree/' +
@@ -89,13 +94,13 @@ export default {
             <StudentTidyTree
                 :studentId="$route.params.studentId"
                 :studentName="studentName"
+                :restartTutorial="restartTutorial"
             />
         </template>
         <template #fallback>
             <span>Loading...</span>
         </template>
     </Suspense>
-
     <!-- Tooltip modal -->
     <div v-if="showTutorialTip1 || showTutorialTip2" class="modal">
         <div class="modal-content">
