@@ -77,15 +77,15 @@ export default {
     },
 
     async created() {
-        // Turn this on only if user is logged in.
-        if (this.sessionDetailsStore.isLoggedIn == true) {
-            this.checkIfTutorialComplete();
-        }
-
         await this.getSkill();
         this.isSkillLoaded = true;
         if (this.sessionDetailsStore.isLoggedIn) {
             await this.getUserSkills();
+        }
+
+        // Turn this on only if user is logged in.
+        if (this.sessionDetailsStore.isLoggedIn == true) {
+            this.checkIfTutorialComplete();
         }
 
         if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
@@ -314,28 +314,6 @@ export default {
                 alert('A goal for this skill has been added on the Hub page.');
             });
         },
-        progressTutorial(step) {
-            if (step == 1) {
-                this.showTutorialTip1 = false;
-                this.showTutorialTip2 = true;
-            } else if (step == 2) {
-                this.showTutorialTip2 = false;
-                this.showTutorialTip3 = true;
-            } else if (step == 3) {
-                this.showTutorialTip3 = false;
-                this.showTutorialTip4 = true;
-            } else if (step == 4) {
-                this.showTutorialTip4 = false;
-                this.showTutorialTip5 = true;
-            } else if (step == 5) {
-                this.showTutorialTip5 = false;
-                this.showTutorialTip6 = true;
-            } else if (step == 6) {
-                this.showTutorialTip6 = false;
-                // Store
-                localStorage.setItem('isSkillPageTutorialCompleted', 'true');
-            }
-        },
 
         // Tutorial
         async checkIfTutorialComplete() {
@@ -354,7 +332,8 @@ export default {
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
-                this.showTutorialTip2 = true;
+                if (!this.isMastered) this.showTutorialTip2 = true;
+                else this.showTutorialTip3 = true;
             } else if (step == 2) {
                 this.showTutorialTip2 = false;
                 this.showTutorialTip3 = true;
@@ -376,6 +355,15 @@ export default {
                 this.showTutorialTip6 = false;
                 this.markTutorialComplete();
             }
+        },
+        restartTutorial() {
+            this.showTutorialTip1 = true;
+            this.showTutorialTip2 = false;
+            this.showTutorialTip3 = false;
+            this.showTutorialTip4 = false;
+            this.showTutorialTip5 = false;
+            this.showTutorialTip6 = false;
+            this.isTutorialComplete = false;
         },
         markTutorialComplete() {
             let url =
@@ -518,8 +506,12 @@ export default {
                 >
                     <div class="info-panel bg-light rounded p-2 mb-2">
                         <p>
-                            This is where you can take the assessment for the
-                            skill.
+                            This is where you can take an assessment for this
+                            skill, if it is unlocked.
+                        </p>
+                        <p>
+                            If it's locked, this button will instead take you to
+                            the closest unlocked skill.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -597,6 +589,7 @@ export default {
                                 skill.type != 'domain' &&
                                 sessionDetailsStore.isLoggedIn &&
                                 isMastered == false &&
+                                isUnlocked == false &&
                                 goalExists == false &&
                                 userDetailsStore.role == 'student'
                             "
@@ -655,6 +648,23 @@ export default {
                                 />
                             </svg>
                         </button>
+                        <button
+                            class="btn primary-btn me-1"
+                            @click="restartTutorial"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 192 512"
+                                width="20"
+                                height="20"
+                                fill="white"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                <path
+                                    d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                                />
+                            </svg>
+                        </button>
                     </div>
                 </div>
                 <!-- Student tooltips -->
@@ -668,13 +678,12 @@ export default {
                         class="info-panel bg-light rounded p-2 mb-2 narrow-info-panel"
                     >
                         <p>
-                            Here you can suggest an edit to this skill page or
-                            quiz, from which you could increase your reputation
-                            score.
+                            Suggesting edits to this page or its test can
+                            increase your reputation score.
                         </p>
                         <p>
-                            You can also create a goal for this skill, in case
-                            it is locked for you at the moment.
+                            If this skill is marked as locked, you can also
+                            bookmark this skill by marking it as a goal.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -695,7 +704,7 @@ export default {
                     >
                         <p>
                             Here you can share a link to this skill with a
-                            friend, or flag this page as problematic.
+                            friend, or flag this page as unhelpful or incorrect.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -733,8 +742,8 @@ export default {
                         class="info-panel bg-light rounded p-2 mb-2 narrow-info-panel"
                     >
                         <p>
-                            Here you can share a link to this skill, or flag
-                            this page as problematic.
+                            Here you can share a link to this skill with a
+                            friend, or flag this page as unhelpful or incorrect.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -776,7 +785,7 @@ export default {
                     >
                         <p>
                             Here you can share a link to this skill with a
-                            friend, or flag this page as problematic.
+                            friend, or flag this page as unhelpful or incorrect.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -792,16 +801,20 @@ export default {
             </div>
             <!-- Content -->
             <div class="row">
-                <!-- Mastery Requirements -->
                 <div class="col-md-8 order-2 order-md-1">
+                    <!-- Introduction -->
+                    <div class="">
+                        <h2 class="h4 secondary-heading">Introduction</h2>
+                        <div v-html="skill.introduction"></div>
+                    </div>
+
+                    <!-- Mastery Requirements -->
                     <div v-if="skill.type != 'domain'">
-                        <div class="d-flex flex-column">
-                            <div class="mastery-requirements">
-                                <h2 class="h4 secondary-heading">
-                                    Requirements for mastery
-                                </h2>
-                                <div v-html="skill.mastery_requirements"></div>
-                            </div>
+                        <div class="mastery-requirements">
+                            <h2 class="h4 secondary-heading">
+                                Requirements for mastery
+                            </h2>
+                            <div v-html="skill.mastery_requirements"></div>
                         </div>
                     </div>
                 </div>
@@ -846,10 +859,6 @@ export default {
                             >
                             <span v-else-if="skill.level == 'phd'">PHD</span>
                         </div>
-                        <span v-if="skill.type == 'super'"
-                            >This assessment will draw questions from its
-                            cluster nodes' question banks.</span
-                        >
                         <div class="mt-2">
                             <h2 class="h4 secondary-heading">Author</h2>
                             <!-- Author Icon -->
@@ -982,8 +991,9 @@ export default {
         <div class="modal-content">
             <div v-if="showTutorialTip1">
                 <p>
-                    This page is where you can learn about, and take a test to
-                    try to master, this skill.
+                    Here is where you can learn about a subject, find resources
+                    for mastering it, and take a test to demonstrate your
+                    mastery.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(1)">
                     next
@@ -1022,8 +1032,9 @@ export default {
         <div class="modal-content">
             <div v-if="showTutorialTip1">
                 <p>
-                    This page is where students can learn about, and take a test
-                    to try to master, this skill.
+                    Here is where you can learn about a subject, find resources
+                    for mastering it, and take a test to demonstrate your
+                    mastery.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(1)">
                     next
@@ -1136,10 +1147,6 @@ export default {
 }
 
 .mastery-requirements {
-    padding-left: 30px;
-    padding-right: 30px;
-    padding-top: 10px;
-    padding-bottom: 10px;
     background-color: rgba(255, 255, 255, 0.692);
     border-radius: 5px;
     width: 98%;

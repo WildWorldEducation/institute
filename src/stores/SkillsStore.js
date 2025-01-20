@@ -13,13 +13,6 @@ export const useSkillsStore = defineStore('skills', {
     actions: {
         // For guest mode of Vertical Tree (for users not logged in).
         async getGuestModeVerticalTreeSkills(level, subjects) {
-            if (subjects != null) {
-                // To deal with the "&" sign in "Science & Invention".
-                for (let i = 0; i < subjects.length; i++) {
-                    subjects[i] = subjects[i].replace(/&/g, '%26');
-                }
-            }
-
             const result = await fetch(
                 '/skills/guest-mode/full-vertical-tree?level=' +
                     level +

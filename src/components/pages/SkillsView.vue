@@ -190,6 +190,35 @@ export default {
                 this.markTutorialComplete();
             }
         },
+        restartTutorial() {
+            if (this.instructorMode) {
+                this.restartInstructorTutorial();
+            } else {
+                this.restartStudentTutorial();
+                this.restartMobileTutorial();
+            }
+        },
+        restartStudentTutorial() {
+            this.showTutorialTip1 = true;
+            this.showTutorialTip2 = false;
+            this.showTutorialTip3 = false;
+            this.showTutorialTip4 = false;
+            this.showTutorialTip5 = false;
+            this.isTutorialComplete = false;
+        },
+        restartMobileTutorial() {
+            this.showTutorialTip1 = true;
+            this.showMobileTutorialTip2 = false;
+            this.showMobileTutorialTip3 = false;
+            this.showMobileTutorialTip4 = false;
+            this.showMobileTutorialTip5 = false;
+            this.isTutorialComplete = false;
+        },
+        restartInstructorTutorial() {
+            this.showInstructorModeTutorialTip1 = true;
+            this.showInstructorModeTutorialTip2 = false;
+            this.isInstructorModeTutorialComplete = false;
+        },
         markTutorialComplete() {
             let url =
                 '/users/mark-tutorial-complete/collapsible-tree/' +
@@ -246,6 +275,20 @@ export default {
                         :clearResults="clearResults"
                     />
                 </div>
+                <button class="btn primary-btn" @click="restartTutorial">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 192 512"
+                        width="20"
+                        height="20"
+                        fill="white"
+                    >
+                        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                        <path
+                            d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                        />
+                    </svg>
+                </button>
             </div>
             <!-- Tablet and up -->
             <div id="tablet-and-up-legend">
@@ -333,6 +376,25 @@ export default {
                                 :clearResults="clearResults"
                             />
                         </div>
+                        <div>
+                            <button
+                                class="btn primary-btn"
+                                @click="restartTutorial"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 192 512"
+                                    width="20"
+                                    height="20"
+                                    fill="white"
+                                >
+                                    <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                    <path
+                                        d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <!-- Student Tooltips -->
@@ -351,9 +413,8 @@ export default {
                         class="info-text mt-1 rounded p-2"
                     >
                         <p>
-                            Greyed out nodes are locked. You need to unlock them
-                            by passing the quizzes of the skills that come
-                            before them.
+                            Greyed out nodes are locked until you pass the tests
+                            of the skills that precede them.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -367,10 +428,10 @@ export default {
                         class="info-text mt-1 rounded p-2"
                     >
                         <p>
-                            Sad face icons mean that the skill has not yet been
-                            mastered. When you master a skill, that face will
-                            become happy.
+                            A sad face icon indicates that the skill has not yet
+                            been mastered.
                         </p>
+                        <p>Every mastered skill has a happy face icon.</p>
                         <button
                             class="btn primary-btn"
                             @click="progressTutorial(3)"
@@ -382,11 +443,11 @@ export default {
                         v-else-if="showTutorialTip4"
                         class="info-text mt-1 rounded p-2"
                     >
-                        <p>Some nodes have a plus or minus sign.</p>
+                        <p>Some nodes feature a plus or minus sign.</p>
                         <p>
                             This indicates that the skill contains mini-skills
-                            that need to be mastered, before mastery of the main
-                            skill can be attempted.
+                            that need to be mastered before you can take an
+                            assessment to prove mastery of that larger skill.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -445,11 +506,11 @@ export default {
                         v-else-if="showTutorialTip3"
                         class="info-text mt-1 rounded p-2"
                     >
-                        <p>Some nodes have a plus or minus sign.</p>
+                        <p>Some nodes feature a plus or minus sign.</p>
                         <p>
                             This indicates that the skill contains mini-skills
-                            that your students will need to master, before
-                            mastery of the main skill can be attempted.
+                            that need to be mastered before you can take an
+                            assessment to prove mastery of that larger skill.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -501,7 +562,7 @@ export default {
                         v-else-if="showTutorialTip3"
                         class="info-text mt-1 rounded p-2"
                     >
-                        <p>Some nodes have a plus or minus sign.</p>
+                        <p>Some nodes feature a plus or minus sign.</p>
                         <p>
                             This indicates that the skill contains mini-skills.
                         </p>
@@ -538,8 +599,8 @@ export default {
                     This page shows the skills in a drop-down hierarchical list.
                 </p>
                 <p>
-                    Click on the down arrows to expand them so as to access the
-                    descendant skills of the 7 subjects.
+                    Click on the down arrows to expand a subject and access its
+                    descendant skills.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
@@ -548,8 +609,8 @@ export default {
             </div>
             <div v-else-if="showMobileTutorialTip2">
                 <p>
-                    Greyed out nodes are locked. You need to unlock them by
-                    passing the quizzes of the skills that come before them.
+                    Greyed out nodes are locked until you pass the tests of the
+                    skills that precede them.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(2)">
@@ -558,21 +619,21 @@ export default {
             </div>
             <div v-else-if="showMobileTutorialTip3">
                 <p>
-                    Sad face icons mean that the skill has not yet been
-                    mastered. When you master a skill, that face will become
-                    happy.
+                    A sad face icon indicates that the skill has not yet been
+                    mastered.
                 </p>
+                <p>Every mastered skill has a happy face icon.</p>
 
                 <button class="btn primary-btn" @click="progressTutorial(3)">
                     next
                 </button>
             </div>
             <div v-else-if="showMobileTutorialTip4">
-                <p>Some nodes have a plus or minus sign.</p>
+                <p>Some nodes feature a plus or minus sign.</p>
                 <p>
                     This indicates that the skill contains mini-skills that need
-                    to be mastered, before mastery of the main skill can be
-                    attempted.
+                    to be mastered before you can take an assessment to prove
+                    mastery of that larger skill.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(4)">
@@ -607,8 +668,8 @@ export default {
                     This page shows the skills in a drop-down hierarchical list.
                 </p>
                 <p>
-                    Click on the down arrows to expand them so as to access the
-                    descendant skills of the 7 subjects.
+                    Click on the down arrows to expand a subject and access its
+                    descendant skills.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
@@ -625,11 +686,11 @@ export default {
                 </button>
             </div>
             <div v-if="showMobileTutorialTip3">
-                <p>Some nodes have a plus or minus sign.</p>
+                <p>Some nodes feature a plus or minus sign.</p>
                 <p>
-                    This indicates that the skill contains mini-skills that your
-                    students will need to master, before mastery of the main
-                    skill can be attempted.
+                    This indicates that the skill contains mini-skills that need
+                    to be mastered before you can take an assessment to prove
+                    mastery of that larger skill.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(3)">
                     next
@@ -693,8 +754,8 @@ export default {
                     This page shows the skills in a drop-down hierarchical list.
                 </p>
                 <p>
-                    Click on the down arrows to expand them so as to access the
-                    descendant skills of the 7 subjects.
+                    Click on the down arrows to expand a subject and access its
+                    descendant skills.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
@@ -711,7 +772,7 @@ export default {
                 </button>
             </div>
             <div v-if="showMobileTutorialTip3">
-                <p>Some nodes have a plus or minus sign.</p>
+                <p>Some nodes feature a plus or minus sign.</p>
                 <p>This indicates that the skill contains mini-skills.</p>
                 <button class="btn primary-btn" @click="progressTutorial(3)">
                     close
@@ -864,6 +925,10 @@ export default {
     max-width: unset !important;
 }
 
+.search-bar-container {
+    padding-right: 10px;
+}
+
 /* Small devices (portrait phones) */
 @media (max-width: 480px) {
     h1 {
@@ -886,6 +951,7 @@ export default {
         width: 96%;
         margin-left: 0px;
         margin-right: auto;
+        padding-right: 10px;
     }
 }
 
