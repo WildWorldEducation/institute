@@ -67,12 +67,8 @@ export default {
         }
     },
     async created() {
-        const tutorialStatus = localStorage.getItem('tutorialStatus');
-        if (
-            this.userDetailsStore.role != 'student' &&
-            tutorialStatus !== 'no'
-        ) {
-            this.showWelcomeModal = true;
+        if (this.userDetailsStore.role != 'student') {
+            this.checkIfTutorialComplete();
         }
         if (this.userDetailsStore.role == 'instructor') {
             await this.fetchAssessments();
@@ -172,16 +168,20 @@ export default {
         },
         // Tutorial
         async checkIfTutorialComplete() {
-            const result = await fetch(
-                '/users/check-tutorial-progress/hub/' +
-                    this.userDetailsStore.userId
-            );
-            const data = await result.json();
-            if (data == 0) {
-                this.isTutorialComplete = false;
-                this.showTutorialTip1 = true;
-            } else if (data == 1) {
-                this.isTutorialComplete = true;
+            try {
+                const result = await fetch(
+                    '/users/check-tutorial-progress/hub/' +
+                        this.userDetailsStore.userId
+                );
+                const data = await result.json();
+
+                if (data === 0) {
+                    this.showWelcomeModal = true;
+                } else if (data === 1) {
+                    this.isTutorialComplete = true;
+                }
+            } catch (error) {
+                console.error('Error checking tutorial progress:', error);
             }
         },
         progressTutorial(step) {
@@ -194,13 +194,14 @@ export default {
                     this.markTutorialComplete();
                     return;
                 }
-                this.showTutorialTip3 = true;
-            } else if (step == 3) {
-                this.showTutorialTip3 = false;
                 if (this.userDetailsStore.role == 'instructor') {
                     this.markTutorialComplete();
                     return;
                 }
+                this.showTutorialTip3 = true;
+            } else if (step == 3) {
+                this.showTutorialTip3 = false;
+
                 this.showTutorialTip4 = true;
             } else if (step == 4) {
                 this.showTutorialTip4 = false;
@@ -209,14 +210,6 @@ export default {
                 this.showTutorialTip5 = false;
                 this.markTutorialComplete();
             }
-        },
-        restartTutorial() {
-            this.showTutorialTip1 = true;
-            this.showTutorialTip2 = false;
-            this.showTutorialTip3 = false;
-            this.showTutorialTip4 = false;
-            this.showTutorialTip5 = false;
-            this.isTutorialComplete = false;
         },
         markTutorialComplete() {
             let url =
@@ -228,17 +221,38 @@ export default {
             };
             fetch(url, requestOptions);
         },
-        startTutorial() {
-            this.checkIfTutorialComplete();
+        async startTutorial() {
+            // Show the tutorial tooltips and mark tutorial as not complete
+            this.showTutorialTip1 = true;
+            this.isTutorialComplete = false;
             this.showWelcomeModal = false;
+            // Reset tutorial fields for the user
+            await this.resetTutorialProgress();
         },
-
-        closeTutorial() {
+        async resetTutorialProgress() {
+            try {
+                await fetch(
+                    `/users/reset-all-tutorials/${this.userDetailsStore.userId}`,
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+            } catch (error) {
+                console.error('Error resetting tutorials:', error);
+            }
+        },
+        async closeTutorial() {
+            // Close the welcome modal
             this.showWelcomeModal = false;
-            localStorage.setItem('tutorialStatus', 'no');
-            this.markAllTutorialsComplete();
+            // Mark all tutorials as complete
+            await this.markAllTutorialsComplete();
         },
-
+        restartTutorial() {
+            this.startTutorial();
+        },
         async markAllTutorialsComplete() {
             try {
                 const response = await fetch(
@@ -446,14 +460,20 @@ export default {
         </div>
     </div>
 
-    <!-- Tutorial introduction modals -->
+    <!-- Onboarding tooltip modals -->
     <div v-if="showWelcomeModal" class="modal">
         <div class="modal-content">
             <h1 class="heading h3">Welcome to the Collins Institute</h1>
-            <p>Would you like to go through the walkthrough tutorial?</p>
+            <p>Would you like to go through the tutorial?</p>
+            <p>
+                You can start or restart it anytime by clicking the "i" button
+                on any page.
+            </p>
             <div class="d-flex justify-content-between">
-                <button class="btn red-btn" @click="closeTutorial">No</button>
-                <button class="btn primary-btn" @click="startTutorial">
+                <button class="btn red-btn mx-0" @click="closeTutorial">
+                    No
+                </button>
+                <button class="btn primary-btn mx-0" @click="startTutorial">
                     Yes
                 </button>
             </div>
@@ -481,7 +501,7 @@ export default {
     <div
         v-if="
             userDetailsStore.role == 'instructor' &&
-            (showTutorialTip1 || showTutorialTip2 || showTutorialTip3)
+            (showTutorialTip1 || showTutorialTip2)
         "
         class="modal"
     >
@@ -489,35 +509,20 @@ export default {
             <div
                 v-if="showTutorialTip1 && userDetailsStore.role == 'instructor'"
             >
-                <p>Welcome to the Collins Institute!</p>
-                <p>
-                    Click
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(1)"
-                    >
-                        next
-                    </button>
-                    to start the tutorial.
-                </p>
-            </div>
-            <div
-                v-if="showTutorialTip2 && userDetailsStore.role == 'instructor'"
-            >
                 <p>This is your hub page.</p>
-                <button class="btn primary-btn" @click="progressTutorial(2)">
+                <button class="btn primary-btn" @click="progressTutorial(1)">
                     next
                 </button>
             </div>
             <div
-                v-if="showTutorialTip3 && userDetailsStore.role == 'instructor'"
+                v-if="showTutorialTip2 && userDetailsStore.role == 'instructor'"
             >
                 <p>
                     On this page you can read news and notifications, check if
                     you have any quizzes to mark, or questions that your
                     students have added to the question bank you need approve.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(3)">
+                <button class="btn primary-btn" @click="progressTutorial(2)">
                     close
                 </button>
             </div>
