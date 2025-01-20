@@ -6,6 +6,7 @@ export default {
     setup() {
         const skillsStore = useSkillsStore();
         const userDetailsStore = useUserDetailsStore();
+
         return {
             skillsStore,
             userDetailsStore
@@ -120,7 +121,7 @@ export default {
             } else this.toggleChildren();
         },
         // Save the state of the skills list to DB
-        toggleChildren() {
+        async toggleChildren() {
             if (this.localShowChildren == 1) {
                 this.localShowChildren = 0;
                 var url =
@@ -138,6 +139,7 @@ export default {
                     this.id;
                 fetch(url);
             }
+            // await this.skillTreeStore.getUserSkills();
         },
         // Save the state of the skills list to browser storage.
         toggleSubSkills() {
@@ -155,24 +157,35 @@ export default {
         HideMobileButtonsModal() {
             this.showModal = false;
         },
-        recursivelySetState(items, state) {
-            items.forEach((element) => {
+        // Expand / Collapse all.
+        // TODO: optimise. This will result in lots of API calls, need to make it just one.
+        // For a subject like history, this could take forever.
+        async recursivelySetState(nodeChildren, state) {
+            for (let node of nodeChildren) {
                 if (
-                    element.type == 'domain' ||
-                    element.type == 'super' ||
-                    element.type == 'regular'
+                    node.type == 'domain' ||
+                    node.type == 'super' ||
+                    node.type == 'regular'
                 ) {
-                    localStorage.setItem(element.id + 'children', state);
+                    console.log(node);
                 }
 
-                this.recursivelySetState(element.children, state);
-            });
+                this.recursivelySetState(node.children, state);
+            }
         },
         // Expand/Collapse All Domain Descendants.
-        toggleExpandAll() {
-            this.recursivelySetState(this.children, !this.showChildren);
-            //localStorage.setItem(this.id + 'children', !this.showChildren);
-            this.showChildren = !this.showChildren;
+        async toggleExpandAll() {
+            if (this.localShowChildren == 1) {
+                this.localShowChildren = 0;
+            } else {
+                this.localShowChildren = 1;
+            }
+
+            await this.recursivelySetState(
+                this.children,
+                this.localShowChildren
+            );
+            // await this.skillTreeStore.getUserSkills();
         }
     },
     watch: {
