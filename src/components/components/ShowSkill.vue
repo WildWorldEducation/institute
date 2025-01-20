@@ -158,14 +158,12 @@ export default {
             }
         },
         async MakeMastered() {
+            console.log(this.skillId);
             await this.userSkillsStore.MakeMastered(
                 this.userDetailsStore.userId,
                 this.skillId
             );
             this.getUserSkills();
-        },
-        async markComplete() {
-            console.log('test');
         },
         closeFlagModal() {
             this.showModal = false;
@@ -473,7 +471,7 @@ export default {
                             !isMastered &&
                             skill.type == 'domain'
                         "
-                        @click="markComplete()"
+                        @click="MakeMastered()"
                         class="btn me-1 assessment-btn secondary-btn"
                     >
                         <!-- Half star icon -->

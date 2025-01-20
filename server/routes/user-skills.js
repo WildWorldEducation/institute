@@ -1235,21 +1235,18 @@ router.get('/unmastered/:userId/:skillId', (req, res, next) => {
 /**
  * For making a skill mastered.
  *
- * 1) Making descendants unlocked.
- ** If children are categories, the function is applied to them recursively also. They are only unlocked.
- ** If children are regular skills, they become unlocked.
+ * 1) Making descendants accessible.
+ ** If children are regular skills or categories, they become unlocked.
  ** If children are super skills (inner cluster nodes), their sub skills become unlocked.
  ** If the skill this is applied to is a sub skill, and all its sibling skills are also mastered,
  ** its parent (super skill) becomes mastered.
  *
- * 2) making ancestor domains unlocked.
  *
  */
 router.post('/make-mastered/:userId', (req, res, next) => {
     if (req.session.userName) {
         // Store the skill data.
         let skill = req.body.skill;
-        let userId = req.params.userId;
 
         // Get a list of all skills.
         let sqlQuery1 = 'SELECT * FROM skills;';
@@ -1311,25 +1308,13 @@ router.post('/make-mastered/:userId', (req, res, next) => {
 
                         // Functions that are called recursively.
                         function makeMastered(userId, skill) {
-                            // We only unlock domains here because for domains we need to
-                            // check their descendants recursively, while we dont do this
-                            // for skills.
-                            let value;
-                            if (skill.type == 'domain') {
-                                value = 0;
-                            } else {
-                                value = 1;
-                            }
-
                             let sqlQuery = `
                             INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible) 
                             VALUES(${conn.escape(req.params.userId)},
                             ${conn.escape(skill.id)},
-                            ${conn.escape(value)},
+                            1,
                             1) 
-                            ON DUPLICATE KEY UPDATE is_mastered= ${conn.escape(
-                                value
-                            )}, is_accessible=1;
+                            ON DUPLICATE KEY UPDATE is_mastered= 1, is_accessible=1;
                             `;
 
                             conn.query(sqlQuery, (err) => {
@@ -1359,18 +1344,13 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                             i++
                                         ) {
                                             if (
-                                                childSkills[i].type == 'regular'
+                                                childSkills[i].type ==
+                                                    'regular' ||
+                                                childSkills[i].type == 'domain'
                                             ) {
                                                 makeAccessible(
                                                     userId,
                                                     childSkills[i].id
-                                                );
-                                            } else if (
-                                                childSkills[i].type == 'domain'
-                                            ) {
-                                                makeMastered(
-                                                    userId,
-                                                    childSkills[i]
                                                 );
                                             }
                                             // If super type skills, make their subskills accessible.
@@ -1483,9 +1463,6 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                 }
                             });
                         }
-
-                        // This is to make any ancestor domains mastered.
-                        MakeAncestorDomainsMastered(skill, userId);
                     } catch (err) {
                         next(err);
                     }
