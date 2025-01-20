@@ -134,6 +134,7 @@ export default {
                     })
                 });
                 const data = await response.json();
+                console.log(data);
                 if (
                     data.username === 'username already taken' ||
                     data.email === 'email already taken'
@@ -142,8 +143,6 @@ export default {
                     return;
                 }
                 alert('account created');
-                this.usersStore.getUsers();
-                this.$router.push({ name: 'users' });
                 this.isValidated = true;
                 this.newUserId = data.id;
                 // Make all relevant skills and domains available or mastered if validated
@@ -163,6 +162,8 @@ export default {
                 });
                 // Update instructor's student list
                 await this.instructorStudentsStore.getInstructorStudentsList();
+                await this.usersStore.getUsers();
+                this.$router.push({ name: 'users' });
             } catch (err) {
                 console.error('Error creating user ', err);
             }
@@ -627,7 +628,6 @@ export default {
     letter-spacing: 0em;
     text-align: left;
 }
-
 
 .green-btn {
     background-color: #36c1af;
