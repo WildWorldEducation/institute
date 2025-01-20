@@ -139,7 +139,6 @@ export default {
                     this.id;
                 fetch(url);
             }
-            // await this.skillTreeStore.getUserSkills();
         },
         // Save the state of the skills list to browser storage.
         toggleSubSkills() {
@@ -158,34 +157,25 @@ export default {
             this.showModal = false;
         },
         // Expand / Collapse all.
-        // TODO: optimise. This will result in lots of API calls, need to make it just one.
-        // For a subject like history, this could take forever.
-        async recursivelySetState(nodeChildren, state) {
+        recursivelySetState(nodeChildren, state) {
             for (let node of nodeChildren) {
-                if (
-                    node.type == 'domain' ||
-                    node.type == 'super' ||
-                    node.type == 'regular'
-                ) {
-                    console.log(node);
+                if (node.type == 'domain') {
+                    continue;
+                } else if (node.type == 'super' || node.type == 'regular') {
+                    node.show_children = state;
                 }
 
                 this.recursivelySetState(node.children, state);
             }
         },
-        // Expand/Collapse All Domain Descendants.
+        // Expand/Collapse All Domain Descendants, only to the next domain.
         async toggleExpandAll() {
             if (this.localShowChildren == 1) {
                 this.localShowChildren = 0;
             } else {
                 this.localShowChildren = 1;
             }
-
-            await this.recursivelySetState(
-                this.children,
-                this.localShowChildren
-            );
-            // await this.skillTreeStore.getUserSkills();
+            this.recursivelySetState(this.children, this.localShowChildren);
         }
     },
     watch: {
