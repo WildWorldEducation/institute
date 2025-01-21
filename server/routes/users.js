@@ -572,7 +572,7 @@ router.get('/show/:id', (req, res, next) => {
         // in case image is changed.
         let sqlQuery = `
     SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, is_deleted, is_google_auth, grade_filter, theme,
-    is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter, reputation_score, is_unlocked_skills_only_filter
+    is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter, reputation_score, is_unlocked_skills_only_filter, cohort_id
     FROM users        
     WHERE id = ${conn.escape(req.params.id)} 
     AND is_deleted = 0
@@ -1318,6 +1318,70 @@ router.put(
         });
     }
 );
+
+// MarkAllTutorials as complete call.
+router.put('/mark-all-tutorials-complete/:userId', isAuthenticated, (req, res, next) => {
+    let sqlQuery = `
+        UPDATE users
+        SET 
+            is_radial_tree_tutorial_complete = 1,
+            is_skill_tutorial_complete = 1,
+            is_users_tutorial_complete = 1,
+            is_cohorts_tutorial_complete = 1,
+            is_student_vertical_tree_tutorial_complete = 1,
+            is_student_collapsible_tree_tutorial_complete = 1,
+            is_student_goals_tutorial_complete = 1,
+            is_todo_tutorial_complete = 1,
+            is_activity_report_tutorial_complete = 1,
+            is_hub_tutorial_complete = 1,
+            is_vertical_tree_tutorial_complete = 1,
+            is_my_tree_tutorial_complete = 1 ,
+            is_collapsible_tree_tutorial_complete = 1
+        WHERE id = ${conn.escape(req.params.userId)};`;
+
+    conn.query(sqlQuery, (err) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.end(); // Successful update
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+// Reset all tutorials to incomplete state
+router.put('/reset-all-tutorials/:userId', isAuthenticated, (req, res, next) => {
+    let sqlQuery = `
+        UPDATE users
+        SET 
+            is_radial_tree_tutorial_complete = 0,
+            is_skill_tutorial_complete = 0,
+            is_users_tutorial_complete = 0,
+            is_cohorts_tutorial_complete = 0,
+            is_student_vertical_tree_tutorial_complete = 0,
+            is_student_collapsible_tree_tutorial_complete = 0,
+            is_student_goals_tutorial_complete = 0,
+            is_todo_tutorial_complete = 0,
+            is_activity_report_tutorial_complete = 0,
+            is_hub_tutorial_complete = 0,
+            is_vertical_tree_tutorial_complete = 0,
+            is_my_tree_tutorial_complete = 0,
+            is_collapsible_tree_tutorial_complete = 0
+        WHERE id = ${conn.escape(req.params.userId)};`;
+
+    conn.query(sqlQuery, (err) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.end(); // Successful reset
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
 
 // Student Collapsible Tree page.
 router.get(
