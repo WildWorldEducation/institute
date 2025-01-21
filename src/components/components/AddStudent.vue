@@ -279,16 +279,17 @@ export default {
 </script>
 
 <template>
-    <div class="container rounded bg-light p-3">
+    <div
+        v-if="isLoading == true"
+        class="loading-animation d-flex justify-content-center align-items-center py-4"
+    >
+        <span class="loader"></span>
+    </div>
+    <div v-else class="container rounded bg-light p-3">
         <h1 class="heading">Add Student</h1>
         <!-- Loading animation -->
-        <div
-            v-if="isLoading == true"
-            class="loading-animation d-flex justify-content-center align-items-center py-4"
-        >
-            <span class="loader"></span>
-        </div>
-        <div v-else class="main-content-container container-fluid p-4">
+
+        <div class="main-content-container container-fluid p-4">
             <div class="row">
                 <div class="col-lg-4">
                     <div class="mb-3 row">
@@ -624,10 +625,10 @@ export default {
 }
 
 @keyframes rotation {
-    0% {
+    100% {
         transform: rotate(0deg);
     }
-    100% {
+    0% {
         transform: rotate(360deg);
     }
 }
@@ -759,27 +760,6 @@ export default {
     font-size: 0.75rem;
     color: red;
     font-weight: 300;
-}
-
-/* The animation key frame */
-@keyframes rotation {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(180deg);
-    }
-}
-
-@keyframes rotationBack {
-    from {
-        transform: rotate(180deg);
-    }
-
-    to {
-        transform: rotate(0deg);
-    }
 }
 
 .custom-select-button-focus:hover {
