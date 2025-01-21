@@ -121,10 +121,6 @@ export default {
 
         // Listen for clicks on the main canvas
         canvas.addEventListener('click', async (e) => {
-            // We actually only need to draw the hidden canvas when
-            // there is an interaction. This sketch can draw it on
-            // each loop, but that is only for demonstration.
-
             //Figure out where the mouse click occurred.
             var mouseX = e.layerX;
             var mouseY = e.layerY;
@@ -287,16 +283,17 @@ export default {
             const links = this.root.links();
             this.context.beginPath();
             for (const link of links) {
+                // Commented out as is buggy, lines that should be showing are disappearing on pan or zoom
                 // Do not render parts of tree not in the canvas
                 // to improve performance.
-                const targetNodeInView = this.checkingIfNodeInView(
-                    link.target,
-                    transform
-                );
-                const sourceNodeInView = this.checkingIfNodeInView(
-                    link.source,
-                    transform
-                );
+                // const targetNodeInView = this.checkingIfNodeInView(
+                //     link.target,
+                //     transform
+                // );
+                // const sourceNodeInView = this.checkingIfNodeInView(
+                //     link.source,
+                //     transform
+                // );
                 // if (!targetNodeInView && !sourceNodeInView) {
                 //     continue;
                 // }
@@ -352,40 +349,40 @@ export default {
                 node.data.skill_name === this.resultNode?.data.skill_name;
             // Visible context.
             // If not a domain, make node a circle.
-            if (node.data.type != 'domain') {
-                // Node size
-                let radius;
-                if (node.data.type == 'sub') {
-                    radius = 7.5;
-                } else {
-                    radius = 10;
-                }
-
-                ctx1.beginPath();
-                ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
-                // get the color associate with skill level
-                const skillColor = node.data.level
-                    ? this.hexColor(node.data.level)
-                    : '#000';
-
-                // If mastered, make a solid shape.
-                if (node.data.is_mastered == 1) {
-                    ctx1.fillStyle = skillColor;
-                    ctx1.fill();
-                    const outlineColor = this.hexBorderColor(node.data.level);
-                    ctx1.lineWidth = 2;
-                    ctx1.strokeStyle = outlineColor;
-                    ctx1.stroke();
-                }
-                // If not, just an outline.
-                else {
-                    ctx1.lineWidth = 2;
-                    ctx1.fillStyle = '#FFF';
-                    ctx1.fill();
-                    ctx1.strokeStyle = skillColor;
-                    ctx1.stroke();
-                }
+            //   if (node.data.type != 'domain') {
+            // Node size
+            let radius;
+            if (node.data.type == 'sub') {
+                radius = 7.5;
+            } else {
+                radius = 10;
             }
+
+            ctx1.beginPath();
+            ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
+            // get the color associate with skill level
+            const skillColor = node.data.level
+                ? this.hexColor(node.data.level)
+                : '#000';
+
+            // If mastered, make a solid shape.
+            if (node.data.is_mastered == 1) {
+                ctx1.fillStyle = skillColor;
+                ctx1.fill();
+                const outlineColor = this.hexBorderColor(node.data.level);
+                ctx1.lineWidth = 2;
+                ctx1.strokeStyle = outlineColor;
+                ctx1.stroke();
+            }
+            // If not, just an outline.
+            else {
+                ctx1.lineWidth = 2;
+                ctx1.fillStyle = '#FFF';
+                ctx1.fill();
+                ctx1.strokeStyle = skillColor;
+                ctx1.stroke();
+            }
+            //  }
             // // If child nodes are collapsed.
             // if (node.data.show_children) {
             //     if (node.data.show_children == 0) {
