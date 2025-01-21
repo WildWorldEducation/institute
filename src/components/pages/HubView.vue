@@ -67,9 +67,8 @@ export default {
         }
     },
     async created() {
-        if (this.userDetailsStore.role != 'student') {
-            this.checkIfTutorialComplete();
-        }
+        this.checkIfTutorialComplete();
+
         if (this.userDetailsStore.role == 'instructor') {
             await this.fetchAssessments();
             await this.getStudentMCQuestions();
@@ -175,8 +174,13 @@ export default {
                 );
                 const data = await result.json();
 
-                if (data === 0) {
+                if (data === 0 && this.userDetailsStore.role != 'student') {
                     this.showWelcomeModal = true;
+                } else if (
+                    data === 0 &&
+                    this.userDetailsStore.role == 'student'
+                ) {
+                    this.showTutorialTip1 = true;
                 } else if (data === 1) {
                     this.isTutorialComplete = true;
                 }

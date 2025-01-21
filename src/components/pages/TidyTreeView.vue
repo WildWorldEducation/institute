@@ -188,7 +188,7 @@ export default {
                 const data = await result.json();
 
                 // Check for students only
-                if (data === 0) {
+                if (data === 0 && this.userDetailsStore.role == 'student') {
                     this.showWelcomeModal = true;
                 } else if (data === 1) {
                     this.isTutorialComplete = true;
