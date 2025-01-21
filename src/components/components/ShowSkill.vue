@@ -151,9 +151,7 @@ export default {
                 }
                 // also get the accessible skill list of this user for the find nearest accessible ancestor method
                 if (this.userSkills[i].is_accessible == 1) {
-                    if (this.userSkills[i].type != 'domain') {
-                        this.accessibleSkills.push(this.userSkills[i]);
-                    }
+                    this.accessibleSkills.push(this.userSkills[i]);
                 }
             }
         },
