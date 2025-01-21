@@ -465,8 +465,10 @@ p {
     font-weight: 500;
     font-size: 16px;
     line-height: 24px;
+    max-width: fit-content;
     /* display: flex; */
     align-items: center;
+    max-height: 40px;
 }
 
 .red-btn:hover {

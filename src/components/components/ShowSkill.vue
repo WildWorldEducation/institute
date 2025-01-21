@@ -77,15 +77,15 @@ export default {
     },
 
     async created() {
-        // Turn this on only if user is logged in.
-        if (this.sessionDetailsStore.isLoggedIn == true) {
-            this.checkIfTutorialComplete();
-        }
-
         await this.getSkill();
         this.isSkillLoaded = true;
         if (this.sessionDetailsStore.isLoggedIn) {
             await this.getUserSkills();
+        }
+
+        // Turn this on only if user is logged in.
+        if (this.sessionDetailsStore.isLoggedIn == true) {
+            this.checkIfTutorialComplete();
         }
 
         if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
@@ -151,9 +151,7 @@ export default {
                 }
                 // also get the accessible skill list of this user for the find nearest accessible ancestor method
                 if (this.userSkills[i].is_accessible == 1) {
-                    if (this.userSkills[i].type != 'domain') {
-                        this.accessibleSkills.push(this.userSkills[i]);
-                    }
+                    this.accessibleSkills.push(this.userSkills[i]);
                 }
             }
         },
@@ -162,9 +160,10 @@ export default {
                 this.userDetailsStore.userId,
                 this.skillId
             );
+            alert(`You have complete ${this.skill.name}!`);
+            this.isMastered = true;
             this.getUserSkills();
         },
-
         closeFlagModal() {
             this.showModal = false;
         },
@@ -314,28 +313,6 @@ export default {
                 alert('A goal for this skill has been added on the Hub page.');
             });
         },
-        progressTutorial(step) {
-            if (step == 1) {
-                this.showTutorialTip1 = false;
-                this.showTutorialTip2 = true;
-            } else if (step == 2) {
-                this.showTutorialTip2 = false;
-                this.showTutorialTip3 = true;
-            } else if (step == 3) {
-                this.showTutorialTip3 = false;
-                this.showTutorialTip4 = true;
-            } else if (step == 4) {
-                this.showTutorialTip4 = false;
-                this.showTutorialTip5 = true;
-            } else if (step == 5) {
-                this.showTutorialTip5 = false;
-                this.showTutorialTip6 = true;
-            } else if (step == 6) {
-                this.showTutorialTip6 = false;
-                // Store
-                localStorage.setItem('isSkillPageTutorialCompleted', 'true');
-            }
-        },
 
         // Tutorial
         async checkIfTutorialComplete() {
@@ -354,7 +331,8 @@ export default {
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
-                this.showTutorialTip2 = true;
+                if (!this.isMastered) this.showTutorialTip2 = true;
+                else this.showTutorialTip3 = true;
             } else if (step == 2) {
                 this.showTutorialTip2 = false;
                 this.showTutorialTip3 = true;
@@ -452,7 +430,8 @@ export default {
                         v-else-if="
                             userDetailsStore.role == 'student' &&
                             isUnlocked &&
-                            !isMastered
+                            !isMastered &&
+                            skill.type != 'domain'
                         "
                         class="btn me-1 assessment-btn secondary-btn"
                         :to="skill.id + '/assessment'"
@@ -484,6 +463,43 @@ export default {
                             />
                         </svg>
                     </router-link>
+                    <button
+                        v-else-if="
+                            userDetailsStore.role == 'student' &&
+                            isUnlocked &&
+                            !isMastered &&
+                            skill.type == 'domain'
+                        "
+                        @click="MakeMastered()"
+                        class="btn me-1 assessment-btn secondary-btn"
+                    >
+                        <!-- Half star icon -->
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 576 512"
+                            width="22"
+                            class="primary-icon"
+                        >
+                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                            <path
+                                d="M288 0c-12.2 .1-23.3 7-28.6 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3L288 439.8 288 0zM429.9 512c1.1 .1 2.1 .1 3.2 0l-3.2 0z"
+                            />
+                        </svg>
+                        Mark complete
+                        <!-- Half star icon -->
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 576 512"
+                            width="22"
+                            class="primary-icon"
+                        >
+                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                            <path
+                                d="m 169.24356,0 c 12.2,0.1 23.3,7 28.6,18 l 64.4,132.3 143.6,21.2 c 12,1.8 22,10.2 25.7,21.7 3.7,11.5 0.7,24.2 -7.9,32.7 l -104.2,103.1 24.6,145.7 c 2,12 -3,24.2 -12.9,31.3 -9.9,7.1 -23,8 -33.8,2.3 l -128.1,-68.5 z M 27.343555,512 c -1.1,0.1 -2.1,0.1 -3.2,0 z"
+                                id="path17"
+                            />
+                        </svg>
+                    </button>
                     <!-- If not logged in, go to Login page -->
                     <router-link
                         v-else-if="!sessionDetailsStore.isLoggedIn"
@@ -502,7 +518,8 @@ export default {
                                 d="M288 0c-12.2 .1-23.3 7-28.6 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3L288 439.8 288 0zM429.9 512c1.1 .1 2.1 .1 3.2 0l-3.2 0z"
                             />
                         </svg>
-                        Take the Test
+                        <span v-if="skill.type != 'domain'">Take the Test</span
+                        ><span v-else>Mark Complete</span>
                         <!-- Half star icon -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -527,8 +544,12 @@ export default {
                 >
                     <div class="info-panel bg-light rounded p-2 mb-2">
                         <p>
-                            This is where you can take the assessment for the
-                            skill.
+                            This is where you can take an assessment for this
+                            skill, if it is unlocked.
+                        </p>
+                        <p>
+                            If it's locked, this button will instead take you to
+                            the closest unlocked skill.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -818,17 +839,22 @@ export default {
             </div>
             <!-- Content -->
             <div class="row">
-                <!-- Mastery Requirements -->
                 <div class="col-md-8 order-2 order-md-1">
-                    <div v-if="skill.type != 'domain'">
-                        <div class="d-flex flex-column">
-                            <div class="mastery-requirements">
-                                <h2 class="h4 secondary-heading">
-                                    Requirements for mastery
-                                </h2>
-                                <div v-html="skill.mastery_requirements"></div>
-                            </div>
-                        </div>
+                    <!-- Introduction -->
+                    <div class="">
+                        <h2 class="h4 secondary-heading">Introduction</h2>
+                        <div v-html="skill.introduction"></div>
+                    </div>
+
+                    <!-- Mastery Requirements -->
+                    <div
+                        v-if="skill.type != 'domain'"
+                        class="mastery-requirements mt-4"
+                    >
+                        <h2 class="h4 secondary-heading">
+                            Requirements for mastery
+                        </h2>
+                        <div v-html="skill.mastery_requirements"></div>
                     </div>
                 </div>
                 <!-- Infobox -->
@@ -872,10 +898,6 @@ export default {
                             >
                             <span v-else-if="skill.level == 'phd'">PHD</span>
                         </div>
-                        <span v-if="skill.type == 'super'"
-                            >This assessment will draw questions from its
-                            cluster nodes' question banks.</span
-                        >
                         <div class="mt-2">
                             <h2 class="h4 secondary-heading">Author</h2>
                             <!-- Author Icon -->
@@ -1164,10 +1186,6 @@ export default {
 }
 
 .mastery-requirements {
-    padding-left: 30px;
-    padding-right: 30px;
-    padding-top: 10px;
-    padding-bottom: 10px;
     background-color: rgba(255, 255, 255, 0.692);
     border-radius: 5px;
     width: 98%;

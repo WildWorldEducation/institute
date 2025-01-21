@@ -5,7 +5,7 @@ import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';
 import NewSkillPanel from '../NewSkillPanel.vue';
-import SliderControl from './SliderControl.vue';
+import ZoomControl from './ZoomControl.vue';
 import JoystickControl from './JoystickControl.vue';
 
 // Algorithm.
@@ -67,7 +67,7 @@ export default {
     components: {
         SkillPanel,
         NewSkillPanel,
-        SliderControl,
+        ZoomControl,
         JoystickControl
     },
     async mounted() {
@@ -137,7 +137,6 @@ export default {
             .on('zoom', ({ transform }) => {
                 this.drawTree(transform);
                 // update slider percent ( Handle by us not d3 but will invoke when the d3 zoom event is call )
-                this.$refs.sliderControl.changeGradientBG();
             });
 
         // Bind the above object to canvas so it can zoom the tree
@@ -225,19 +224,20 @@ export default {
             const links = this.root.links();
             this.context.beginPath();
             for (const link of links) {
+                // Commented out as is buggy, lines that should be showing are disappearing on pan or zoom
                 // Check if the links are in view.
                 // Dont render them if they are not, for performance benefit.
-                const targetNodeInView = this.checkingIfNodeInView(
-                    link.target,
-                    transform
-                );
-                const sourceNodeInView = this.checkingIfNodeInView(
-                    link.source,
-                    transform
-                );
-                if (!targetNodeInView && !sourceNodeInView) {
-                    continue;
-                }
+                // const targetNodeInView = this.checkingIfNodeInView(
+                //     link.target,
+                //     transform
+                // );
+                // const sourceNodeInView = this.checkingIfNodeInView(
+                //     link.source,
+                //     transform
+                // );
+                // if (!targetNodeInView && !sourceNodeInView) {
+                //     continue;
+                // }
 
                 this.drawLink(link);
             }
@@ -618,7 +618,6 @@ export default {
                         )
                         .scale(0.3)
                 );
-            this.$refs.sliderControl.showScaleLabel();
         },
         // programmatic d3 zoom
         zoomInD3(scale, panX, panY) {
@@ -626,7 +625,6 @@ export default {
                 this.d3Zoom.transform,
                 d3.zoomIdentity.translate(panX, panY).scale(scale)
             );
-            this.$refs.sliderControl.showScaleLabel();
         },
         // Pan with arrow keys.
         panInD3() {
@@ -707,23 +705,20 @@ export default {
         <p class="">Student: {{ studentName }}</p>
         <button class="btn primary-btn ms-2" @click="printPDF()">Print</button>
         <button class="btn primary-btn ms-2" @click="resetPos()">Reset</button>
-        <button
-                    class="btn primary-btn ms-2"
-                    @click="restartTutorial"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 192 512"
-                        width="20"
-                        height="20"
-                        fill="white"
-                    >
-                        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                        <path
-                            d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
-                        />
-                    </svg>
-                </button>
+        <button class="btn primary-btn ms-2" @click="restartTutorial">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 192 512"
+                width="20"
+                height="20"
+                fill="white"
+            >
+                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                <path
+                    d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                />
+            </svg>
+        </button>
     </div>
     <!-- Loading animation -->
     <div
@@ -745,7 +740,7 @@ export default {
         ></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
-        <SliderControl ref="sliderControl" />
+        <ZoomControl ref="ZoomControl" />
         <div id="sidepanel-backdrop"></div>
         <JoystickControl class="d-none" />
     </div>

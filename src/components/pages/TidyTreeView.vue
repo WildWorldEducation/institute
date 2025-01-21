@@ -1,6 +1,7 @@
 <script>
 import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import { useCohortsStore } from '../../stores/CohortsStore.js';
 
 import SkillTreeSearchBar from '../components/skills-tree-search-bar/SkillTreeSearchBar.vue';
 import TidyTree from '../components/skilltrees/TidyTree.vue';
@@ -10,14 +11,17 @@ export default {
     setup() {
         const sessionDetailsStore = useSessionDetailsStore();
         const userDetailsStore = useUserDetailsStore();
+        const cohortsStore = useCohortsStore();
 
         return {
             sessionDetailsStore,
-            userDetailsStore
+            userDetailsStore,
+            cohortsStore
         };
     },
     data() {
         return {
+            showWelcomeModal: false, // Modal to ask for tutorial preference.
             searchText: '',
             lastChooseResult: '',
             showResult: false,
@@ -47,9 +51,19 @@ export default {
             isMobileCheck: window.innerWidth
         };
     },
-    created() {
-        // Turn this on only if user is logged in.
+    async created() {
+        // Hide subject filters for subjects that have been filtered from student, by instructor.
         if (this.sessionDetailsStore.isLoggedIn == true) {
+            if (this.cohortsStore.cohortFilteredSubjects.length == 0) {
+                await this.cohortsStore.getCohortFilteredSubjects(
+                    this.userDetailsStore.cohortId
+                );
+            }
+        }
+
+        // Turn this on only if user is logged in.
+        if (this.sessionDetailsStore.isLoggedIn) {
+            this.checkIfTutorialComplete();
         } else {
             this.subjectFilters = [
                 'Language',
@@ -60,10 +74,6 @@ export default {
                 'Life',
                 'Dangerous Ideas'
             ];
-        }
-
-        if (this.sessionDetailsStore.isLoggedIn) {
-            this.checkIfTutorialComplete();
         }
     },
     mounted() {
@@ -182,16 +192,21 @@ export default {
         },
         // Onboardning tutorials
         async checkIfTutorialComplete() {
-            const result = await fetch(
-                '/users/check-tutorial-progress/vertical-tree/' +
-                    this.userDetailsStore.userId
-            );
-            const data = await result.json();
-            if (data == 0) {
-                this.isTutorialComplete = false;
-                this.showTutorialTip1 = true;
-            } else if (data == 1) {
-                this.isTutorialComplete = true;
+            try {
+                const result = await fetch(
+                    '/users/check-tutorial-progress/vertical-tree/' +
+                        this.userDetailsStore.userId
+                );
+                const data = await result.json();
+
+                // Check for students only
+                if (data === 0 && this.userDetailsStore.role == 'student') {
+                    this.showWelcomeModal = true;
+                } else if (data === 1) {
+                    this.isTutorialComplete = true;
+                }
+            } catch (error) {
+                console.error('Error checking tutorial progress:', error);
             }
         },
         progressTutorial(step) {
@@ -262,6 +277,7 @@ export default {
             this.showTutorialTip6 = false;
             this.showTutorialTip7 = false;
             this.showTutorialTip8 = false;
+            this.showTutorialTip9 = false;
             this.isTutorialComplete = false;
         },
         restartMobileTutorial() {
@@ -283,6 +299,52 @@ export default {
                 headers: { 'Content-Type': 'application/json' }
             };
             fetch(url, requestOptions);
+        },
+        async startTutorial() {
+            // Show the tutorial tooltips and mark tutorial as not complete
+            this.showTutorialTip1 = true;
+            this.isTutorialComplete = false;
+            this.showWelcomeModal = false;
+            // Reset tutorial fields for the user
+            await this.resetTutorialProgress();
+        },
+        async resetTutorialProgress() {
+            try {
+                await fetch(
+                    `/users/reset-all-tutorials/${this.userDetailsStore.userId}`,
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+            } catch (error) {
+                console.error('Error resetting tutorials:', error);
+            }
+        },
+        async closeTutorial() {
+            // Close the welcome modal
+            this.showWelcomeModal = false;
+            // Mark all tutorials as complete
+            await this.markAllTutorialsComplete();
+        },
+
+        async markAllTutorialsComplete() {
+            try {
+                const response = await fetch(
+                    `/users/mark-all-tutorials-complete/${this.userDetailsStore.userId}`,
+                    { method: 'PUT' }
+                );
+                if (response.ok) {
+                    this.isTutorialComplete = true;
+                }
+            } catch (error) {
+                console.error('Error marking tutorials as complete:', error);
+            }
+        },
+        restartTutorial() {
+            this.startTutorial();
         }
     }
 };
@@ -414,11 +476,11 @@ export default {
     <div class="tablet-and-up-legend position-absolute bottom-legend-div">
         <!-- Tooltip -->
         <div
-            v-if="showTutorialTip6"
+            v-if="showTutorialTip5"
             class="info-panel bg-light rounded p-2 mb-2"
         >
             <p>Use the buttons below to filter the skills by level.</p>
-            <button class="btn primary-btn" @click="progressTutorial(6)">
+            <button class="btn primary-btn" @click="progressTutorial(5)">
                 next
             </button>
         </div>
@@ -651,6 +713,11 @@ export default {
                 class="d-flex flex-column"
             >
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Language'
+                        )
+                    "
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
@@ -673,6 +740,11 @@ export default {
                     Language
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Mathematics'
+                        )
+                    "
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
@@ -695,6 +767,9 @@ export default {
                     Math
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes('History')
+                    "
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
@@ -713,6 +788,7 @@ export default {
                     History
                 </button>
                 <button
+                    v-if="!cohortsStore.cohortFilteredSubjects.includes('Life')"
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
@@ -731,6 +807,11 @@ export default {
                     Life
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Computer Science'
+                        )
+                    "
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
@@ -753,6 +834,11 @@ export default {
                     Computer Science
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Science & Invention'
+                        )
+                    "
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
@@ -775,6 +861,11 @@ export default {
                     Science & Invention
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Dangerous Ideas'
+                        )
+                    "
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
@@ -976,41 +1067,18 @@ export default {
                 $refs.childComponent.filter();
             "
         >
-            <svg
-                v-if="userDetailsStore.isUnlockedSkillsOnlyFilter"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 576 512"
-                width="18"
-                height="18"
-                fill="white"
+            <span v-if="userDetailsStore.isUnlockedSkillsOnlyFilter"
+                >All skills</span
             >
-                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                <path
-                    class=""
-                    d="M352 144c0-44.2 35.8-80 80-80s80 35.8 80 80l0 48c0 17.7 14.3 32 32 32s32-14.3 32-32l0-48C576 64.5 511.5 0 432 0S288 64.5 288 144l0 48L64 192c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-192c0-35.3-28.7-64-64-64l-32 0 0-48z"
-                />
-            </svg>
-            <svg
-                v-else
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 448 512"
-                width="18"
-                height="18"
-                fill="white"
-            >
-                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                <path
-                    d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"
-                />
-            </svg>
+            <span v-else>Available skills only</span>
         </button>
 
         <div
-            v-if="showTutorialTip5"
+            v-if="showTutorialTip6"
             class="info-panel bg-light rounded p-2 mb-2"
         >
             <p>Use this button to toggle between unlocked and locked skills.</p>
-            <button class="btn primary-btn" @click="progressTutorial(5)">
+            <button class="btn primary-btn" @click="progressTutorial(6)">
                 next
             </button>
         </div>
@@ -1042,6 +1110,11 @@ export default {
             >
                 <!-- Subject buttons -->
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Language'
+                        )
+                    "
                     class="btn"
                     :class="{
                         'chosen-subject':
@@ -1061,6 +1134,11 @@ export default {
                     Language
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Mathematics'
+                        )
+                    "
                     class="btn"
                     :class="{
                         'chosen-subject':
@@ -1080,6 +1158,9 @@ export default {
                     Math
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes('History')
+                    "
                     class="btn"
                     :class="{
                         'chosen-subject':
@@ -1095,6 +1176,7 @@ export default {
                     History
                 </button>
                 <button
+                    v-if="!cohortsStore.cohortFilteredSubjects.includes('Life')"
                     class="btn"
                     :class="{
                         'chosen-subject':
@@ -1110,6 +1192,11 @@ export default {
                     Life
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Computer Science'
+                        )
+                    "
                     class="btn"
                     :class="{
                         'chosen-subject':
@@ -1129,6 +1216,11 @@ export default {
                     Computer Science
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Science & Invention'
+                        )
+                    "
                     class="btn"
                     :class="{
                         'chosen-subject':
@@ -1148,6 +1240,11 @@ export default {
                     Science & Invention
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Dangerous Ideas'
+                        )
+                    "
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
@@ -1439,7 +1536,25 @@ export default {
         </div>
     </div>
 
-    <!-- Onboarding tooltip modal -->
+    <!-- Onboarding tooltip modals -->
+    <div v-if="showWelcomeModal" class="modal">
+        <div class="modal-content">
+            <h1 class="heading h3">Welcome to the Collins Institute</h1>
+            <p>Would you like to go through the tutorial?</p>
+            <p>
+                You can start or restart it anytime by clicking the "i" button
+                on any page.
+            </p>
+            <div class="d-flex justify-content-between">
+                <button class="btn red-btn mx-0" @click="closeTutorial">
+                    No
+                </button>
+                <button class="btn primary-btn mx-0" @click="startTutorial">
+                    Yes
+                </button>
+            </div>
+        </div>
+    </div>
     <div
         v-if="
             showTutorialTip1 ||
@@ -1455,46 +1570,43 @@ export default {
     >
         <div class="modal-content">
             <div v-if="showTutorialTip1">
-                <p>Welcome to the Collins Institute!</p>
-                <p>
-                    Click
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(1)"
-                    >
-                        next
-                    </button>
-                    to start the tutorial.
-                </p>
-            </div>
-            <div v-else-if="showTutorialTip2">
                 <p>
                     This page provides a look at all the skills one can study
                     here.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showTutorialTip2">
+                <strong v-if="isMobileCheck > 576">Navigation</strong>
+                <p>
+                    If you know how to use Google Maps, you should know how to
+                    navigate here.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(2)">
                     next
                 </button>
             </div>
             <div v-else-if="showTutorialTip3">
+                <p>On a computer, use the mouse to navigate around.</p>
                 <p>
-                    On a computer, use the mouse to navigate around. Zoom in and
-                    out using the mousewheel.
+                    Zoom in and out using the mousewheel, or by pressing the
+                    <em>PageUp</em> and <em>PageDown</em> keys.
                 </p>
                 <p>
-                    On a tablet or phone, navigate by dragging the screen, or
-                    use the thumbstick at the bottom right. Zoom in and out by
-                    pinching and zooming.
+                    On a tablet or phone, navigate by dragging the screen. Zoom
+                    in and out by pinching and zooming.
                 </p>
                 <p>
-                    There is also a slider bar at the bottom right, that can be
-                    used for zooming.
+                    For computers and tablets, there is also a zoom slider bar
+                    at the bottom right.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(3)">
                     next
                 </button>
             </div>
-            <div v-if="showTutorialTip9">
+            <div v-else-if="showTutorialTip9">
                 <p>
                     When you're ready, try another page by clicking one in the
                     navigation bar at the top right.
@@ -1503,13 +1615,13 @@ export default {
                     close
                 </button>
             </div>
-            <div v-if="showMobileTutorialTip4">
+            <div v-else-if="showMobileTutorialTip4">
                 <p>Use the search field to search for specific skills.</p>
                 <button class="btn primary-btn" @click="progressTutorial(4)">
                     next
                 </button>
             </div>
-            <div v-if="showMobileTutorialTip5">
+            <div v-else-if="showMobileTutorialTip5">
                 <p>
                     The filter button will show ways to filter the skill tree by
                     both subjects and levels.
