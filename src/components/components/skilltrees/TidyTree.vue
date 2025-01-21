@@ -287,16 +287,17 @@ export default {
             const links = this.root.links();
             this.context.beginPath();
             for (const link of links) {
+                // Commented out as is buggy, lines that should be showing are disappearing on pan or zoom
                 // Do not render parts of tree not in the canvas
                 // to improve performance.
-                const targetNodeInView = this.checkingIfNodeInView(
-                    link.target,
-                    transform
-                );
-                const sourceNodeInView = this.checkingIfNodeInView(
-                    link.source,
-                    transform
-                );
+                // const targetNodeInView = this.checkingIfNodeInView(
+                //     link.target,
+                //     transform
+                // );
+                // const sourceNodeInView = this.checkingIfNodeInView(
+                //     link.source,
+                //     transform
+                // );
                 // if (!targetNodeInView && !sourceNodeInView) {
                 //     continue;
                 // }
