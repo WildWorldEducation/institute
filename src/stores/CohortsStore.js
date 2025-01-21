@@ -22,6 +22,7 @@ export const useCohortsStore = defineStore('cohorts', {
             );
             this.cohortSkills = await result.json();
         },
+        // To hide the relevant root subjects on the skill tree, if they have been filtered
         async getCohortFilteredSubjects(cohortId) {
             const result = await fetch(
                 '/cohorts/' + cohortId + '/filteredSubjects'
