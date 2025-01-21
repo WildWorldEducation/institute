@@ -480,11 +480,12 @@ export default {
                         <p>
                             If you think a skill is missing (either from the
                             site in general or from a certain branch of the
-                            tree).
+                            tree) you can propose its addition with the "New
+                            Skill" button
                         </p>
                         <p>
-                            You can propose its addition here—just make sure you
-                            run a thorough search before making your suggestion.
+                            —just make sure you run a thorough search before
+                            making your suggestion.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -564,12 +565,12 @@ export default {
                         <p>
                             If you think a skill is missing (either from the
                             site in general or from a certain branch of the
-                            tree).
+                            tree) you can propose its addition with the "New
+                            Skill" button
                         </p>
                         <p>
-                            You can propose its addition by click the New Skill
-                            button—just make sure you run a thorough search
-                            before making your suggestion.
+                            —just make sure you run a thorough search before
+                            making your suggestion.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -626,12 +627,12 @@ export default {
                         <p>
                             If you think a skill is missing (either from the
                             site in general or from a certain branch of the
-                            tree).
+                            tree) you can propose its addition with the "New
+                            Skill" button
                         </p>
                         <p>
-                            You can propose its addition by click the New Skill
-                            button—just make sure you run a thorough search
-                            before making your suggestion.
+                            —just make sure you run a thorough search before
+                            making your suggestion.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -726,12 +727,12 @@ export default {
             <div v-else-if="showMobileTutorialTip5">
                 <p>
                     If you think a skill is missing (either from the site in
-                    general or from a certain branch of the tree).
+                    general or from a certain branch of the tree) you can
+                    propose its addition with the "New Skill" button
                 </p>
                 <p>
-                    You can propose its addition by clicking the New Skill
-                    button—just make sure you run a thorough search before
-                    making your suggestion.
+                    —just make sure you run a thorough search before making your
+                    suggestion.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(5)">
                     next
@@ -797,12 +798,12 @@ export default {
             <div v-if="showMobileTutorialTip4">
                 <p>
                     If you think a skill is missing (either from the site in
-                    general or from a certain branch of the tree).
+                    general or from a certain branch of the tree) you can
+                    propose its addition with the "New Skill" button
                 </p>
                 <p>
-                    You can propose its addition by clicking the New Skill
-                    button—just make sure you run a thorough search before
-                    making your suggestion.
+                    —just make sure you run a thorough search before making your
+                    suggestion.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(4)">
                     next
@@ -887,12 +888,12 @@ export default {
             <div v-else-if="showMobileTutorialTip3">
                 <p>
                     If you think a skill is missing (either from the site in
-                    general or from a certain branch of the tree).
+                    general or from a certain branch of the tree) you can
+                    propose its addition with the "New Skill" button
                 </p>
                 <p>
-                    You can propose its addition by clicking the New Skill
-                    button—just make sure you run a thorough search before
-                    making your suggestion.
+                    —just make sure you run a thorough search before making your
+                    suggestion.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(3)">
                     next
