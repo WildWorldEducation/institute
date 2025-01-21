@@ -163,6 +163,7 @@ export default {
                 this.skillId
             );
             alert(`You have complete ${this.skill.name}!`);
+            this.isMastered = true;
             this.getUserSkills();
         },
         closeFlagModal() {
