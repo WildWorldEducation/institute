@@ -158,11 +158,11 @@ export default {
             }
         },
         async MakeMastered() {
-            console.log(this.skillId);
             await this.userSkillsStore.MakeMastered(
                 this.userDetailsStore.userId,
                 this.skillId
             );
+            alert(`You have complete ${this.skill.name}!`);
             this.getUserSkills();
         },
         closeFlagModal() {
