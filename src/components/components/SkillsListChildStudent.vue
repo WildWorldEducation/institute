@@ -114,10 +114,8 @@ export default {
         }
     },
     methods: {
-        mainButtonPress() {
-            if (this.type != 'domain') {
-                window.open('/skills/' + this.url, '_blank');
-            } else this.toggleChildren();
+        mainButtonPress() {           
+            window.open('/skills/' + this.url, '_blank');            
         },
         // Save the state of the skills list to DB
         toggleChildren() {
