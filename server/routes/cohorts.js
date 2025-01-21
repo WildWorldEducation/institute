@@ -95,6 +95,42 @@ router.get('/:cohortId/members', (req, res, next) => {
 });
 
 /**
+ * Get All Root Subjects Filters in a Cohort
+ * Used to hide relevant subject filters on the Skill Tree view
+ *
+ * @return response()
+ */
+router.get('/:cohortId/filteredSubjects', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT skills.name
+        FROM cohort_skill_filters
+        JOIN skills
+        ON skill_id = skills.id        
+        WHERE cohort_id = ${conn.escape(req.params.cohortId)}
+        AND skills.parent = 0;
+        `;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                let filteredSubjectArray = [];
+                for (let i = 0; i < results.length; i++) {
+                    filteredSubjectArray.push(results[i].name);
+                }
+
+                res.json(filteredSubjectArray);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+// WHERE IS THE BELOW ROUTE USED? CAN IT BE DELETED?
+/**
  * Get Cohort Skill Filters
  *
  * @return response()

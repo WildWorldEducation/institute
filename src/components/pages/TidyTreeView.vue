@@ -1,6 +1,7 @@
 <script>
 import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import { useCohortsStore } from '../../stores/CohortsStore.js';
 
 import SkillTreeSearchBar from '../components/skills-tree-search-bar/SkillTreeSearchBar.vue';
 import TidyTree from '../components/skilltrees/TidyTree.vue';
@@ -10,10 +11,12 @@ export default {
     setup() {
         const sessionDetailsStore = useSessionDetailsStore();
         const userDetailsStore = useUserDetailsStore();
+        const cohortsStore = useCohortsStore();
 
         return {
             sessionDetailsStore,
-            userDetailsStore
+            userDetailsStore,
+            cohortsStore
         };
     },
     data() {
@@ -48,10 +51,14 @@ export default {
             isMobileCheck: window.innerWidth
         };
     },
-    created() {
+    async created() {
         // Hide subject filters for subjects that have been filtered from student, by instructor.
         if (this.sessionDetailsStore.isLoggedIn == true) {
-            console.log(this.userDetailsStore.cohortId);
+            if (this.cohortsStore.cohortFilteredSubjects.length == 0) {
+                await this.cohortsStore.getCohortFilteredSubjects(
+                    this.userDetailsStore.cohortId
+                );
+            }
         }
 
         // Turn this on only if user is logged in.
@@ -663,6 +670,11 @@ export default {
                 class="d-flex flex-column"
             >
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Language'
+                        )
+                    "
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
@@ -685,6 +697,11 @@ export default {
                     Language
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Mathematics'
+                        )
+                    "
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
@@ -707,6 +724,9 @@ export default {
                     Math
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes('History')
+                    "
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
@@ -725,6 +745,7 @@ export default {
                     History
                 </button>
                 <button
+                    v-if="!cohortsStore.cohortFilteredSubjects.includes('Life')"
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
@@ -743,6 +764,11 @@ export default {
                     Life
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Computer Science'
+                        )
+                    "
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
@@ -765,6 +791,11 @@ export default {
                     Computer Science
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Science & Invention'
+                        )
+                    "
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
@@ -787,6 +818,11 @@ export default {
                     Science & Invention
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Dangerous Ideas'
+                        )
+                    "
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
@@ -1031,6 +1067,11 @@ export default {
             >
                 <!-- Subject buttons -->
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Language'
+                        )
+                    "
                     class="btn"
                     :class="{
                         'chosen-subject':
@@ -1050,6 +1091,11 @@ export default {
                     Language
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Mathematics'
+                        )
+                    "
                     class="btn"
                     :class="{
                         'chosen-subject':
@@ -1069,6 +1115,9 @@ export default {
                     Math
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes('History')
+                    "
                     class="btn"
                     :class="{
                         'chosen-subject':
@@ -1084,6 +1133,7 @@ export default {
                     History
                 </button>
                 <button
+                    v-if="!cohortsStore.cohortFilteredSubjects.includes('Life')"
                     class="btn"
                     :class="{
                         'chosen-subject':
@@ -1099,6 +1149,11 @@ export default {
                     Life
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Computer Science'
+                        )
+                    "
                     class="btn"
                     :class="{
                         'chosen-subject':
@@ -1118,6 +1173,11 @@ export default {
                     Computer Science
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Science & Invention'
+                        )
+                    "
                     class="btn"
                     :class="{
                         'chosen-subject':
@@ -1137,6 +1197,11 @@ export default {
                     Science & Invention
                 </button>
                 <button
+                    v-if="
+                        !cohortsStore.cohortFilteredSubjects.includes(
+                            'Dangerous Ideas'
+                        )
+                    "
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
