@@ -467,7 +467,7 @@ p {
     line-height: 24px;
     /* display: flex; */
     align-items: center;
-    max-height: 44px;
+    max-height: 40px;
 }
 
 .red-btn:hover {
