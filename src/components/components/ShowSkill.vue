@@ -847,13 +847,14 @@ export default {
                     </div>
 
                     <!-- Mastery Requirements -->
-                    <div v-if="skill.type != 'domain'">
-                        <div class="mastery-requirements">
-                            <h2 class="h4 secondary-heading">
-                                Requirements for mastery
-                            </h2>
-                            <div v-html="skill.mastery_requirements"></div>
-                        </div>
+                    <div
+                        v-if="skill.type != 'domain'"
+                        class="mastery-requirements mt-4"
+                    >
+                        <h2 class="h4 secondary-heading">
+                            Requirements for mastery
+                        </h2>
+                        <div v-html="skill.mastery_requirements"></div>
                     </div>
                 </div>
                 <!-- Infobox -->

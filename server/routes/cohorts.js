@@ -77,7 +77,7 @@ router.get('/:cohortId/members', (req, res, next) => {
         FROM cohorts_users
         JOIN users
         ON cohorts_users.user_id = users.id
-        WHERE cohort_id = ${conn.escape(req.params.cohortId)}
+        WHERE cohorts_users.cohort_id = ${conn.escape(req.params.cohortId)}
         AND users.is_deleted = 0;
         `;
         conn.query(sqlQuery, (err, results) => {
@@ -94,6 +94,42 @@ router.get('/:cohortId/members', (req, res, next) => {
     }
 });
 
+/**
+ * Get All Root Subjects Filters in a Cohort
+ * Used to hide relevant subject filters on the Skill Tree view
+ *
+ * @return response()
+ */
+router.get('/:cohortId/filteredSubjects', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT skills.name
+        FROM cohort_skill_filters
+        JOIN skills
+        ON skill_id = skills.id        
+        WHERE cohort_id = ${conn.escape(req.params.cohortId)}
+        AND skills.parent = 0;
+        `;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                let filteredSubjectArray = [];
+                for (let i = 0; i < results.length; i++) {
+                    filteredSubjectArray.push(results[i].name);
+                }
+
+                res.json(filteredSubjectArray);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+// WHERE IS THE BELOW ROUTE USED? CAN IT BE DELETED?
 /**
  * Get Cohort Skill Filters
  *
@@ -222,12 +258,33 @@ router.put('/edit/:cohortId', (req, res, next) => {
             AND user_id =  ${conn.escape(req.body.studentId)};`;
         }
 
-        conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err) => {
             try {
                 if (err) {
                     throw err;
                 }
-                res.end();
+                let cohortId;
+                if (req.body.isMember) {
+                    cohortId = req.params.cohortId;
+                } else {
+                    cohortId = null;
+                }
+
+                let updateUserSQLQuery = `UPDATE users
+                SET cohort_id = ${cohortId} 
+                WHERE id = ${conn.escape(req.body.studentId)};`;
+
+                conn.query(updateUserSQLQuery, (err) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        res.end();
+                    } catch (err) {
+                        next(err);
+                    }
+                });
             } catch (err) {
                 next(err);
             }
