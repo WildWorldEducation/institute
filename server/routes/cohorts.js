@@ -77,7 +77,7 @@ router.get('/:cohortId/members', (req, res, next) => {
         FROM cohorts_users
         JOIN users
         ON cohorts_users.user_id = users.id
-        WHERE cohort_id = ${conn.escape(req.params.cohortId)}
+        WHERE cohorts_users.cohort_id = ${conn.escape(req.params.cohortId)}
         AND users.is_deleted = 0;
         `;
         conn.query(sqlQuery, (err, results) => {
@@ -222,12 +222,33 @@ router.put('/edit/:cohortId', (req, res, next) => {
             AND user_id =  ${conn.escape(req.body.studentId)};`;
         }
 
-        conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err) => {
             try {
                 if (err) {
                     throw err;
                 }
-                res.end();
+                let cohortId;
+                if (req.body.isMember) {
+                    cohortId = req.params.cohortId;
+                } else {
+                    cohortId = null;
+                }
+
+                let updateUserSQLQuery = `UPDATE users
+                SET cohort_id = ${cohortId} 
+                WHERE id = ${conn.escape(req.body.studentId)};`;
+
+                conn.query(updateUserSQLQuery, (err) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        res.end();
+                    } catch (err) {
+                        next(err);
+                    }
+                });
             } catch (err) {
                 next(err);
             }
