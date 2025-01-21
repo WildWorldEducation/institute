@@ -1246,7 +1246,7 @@ router.get('/unmastered/:userId/:skillId', (req, res, next) => {
 router.post('/make-mastered/:userId', (req, res, next) => {
     if (req.session.userName) {
         // Store the skill data.
-        let skill = req.body.skill;
+        let skillId = req.body.skill;
 
         // Get a list of all skills.
         let sqlQuery1 = 'SELECT * FROM skills;';
@@ -1257,12 +1257,15 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                 }
                 let skills = results;
 
-                // Check if the skill that was mastered has any copies in the tree,
+                // Check if the skill that is getting mastered has any copies in the tree,
                 // that also need to be made mastered now.
                 let allSkillsToBeMadeMastered = [];
-                allSkillsToBeMadeMastered.push(skill);
+
                 for (let i = 0; i < skills.length; i++) {
-                    if (skills[i].is_copy_of_skill_id == skill.id) {
+                    if (
+                        skills[i].is_copy_of_skill_id == skillId ||
+                        skills[i].id == skillId
+                    ) {
                         allSkillsToBeMadeMastered.push(skills[i]);
                     }
                 }
@@ -1306,7 +1309,6 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                             );
                         }
 
-                        // Functions that are called recursively.
                         function makeMastered(userId, skill) {
                             let sqlQuery = `
                             INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible) 
