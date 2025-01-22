@@ -700,7 +700,7 @@ export default {
     <!-- Student name, print and reset position buttons -->
     <div
         id="overlay"
-        class="d-flex position-absolute bottom-0 start-50 translate-middle-x bg-light p-1 rounded mb-2"
+        class="skilltree-btns d-flex position-absolute start-50 translate-middle-x bg-light p-1 rounded mb-2"
     >
         <p class="">Student: {{ studentName }}</p>
         <button class="btn primary-btn ms-2" @click="printPDF()">Print</button>
@@ -747,6 +747,10 @@ export default {
 </template>
 
 <style scoped>
+.skilltree-btns {
+    top: 72px;
+}
+
 #overlay {
     z-index: 2;
 }
@@ -924,10 +928,7 @@ input[type='button'] {
 @media (max-width: 820px) {
     .flex-container {
         flex-direction: column;
-    }
-    #wrapper {
-        height: calc(100% - 86px);
-    }
+    }    
 }
 
 @media screen and (min-width: 992px) {

@@ -20,7 +20,9 @@ export default {
             showTutorialTip1: false,
             showTutorialTip2: false,
             showTutorialTip3: false,
-            isGradeFilter: true
+            showTutorialTip4: false,
+            isGradeFilter: true,
+            isSubjectFilter: true
         };
     },
     async created() {
@@ -221,6 +223,201 @@ export default {
         </div>
     </div>
 
+    <!-- Left root subject filters  -->
+    <div class="tablet-and-up-legend position-absolute left-legend-div">
+        <div>
+            <div v-if="isSubjectFilter" class="d-flex flex-column">
+                <button
+                    class="btn mb-2"
+                    :class="{
+                        'chosen-subject':
+                            userDetailsStore.subjectFilters.includes(
+                                'Language'
+                            ),
+                        'hidden-subject':
+                            !userDetailsStore.subjectFilters.includes(
+                                'Language'
+                            )
+                    }"
+                    @click="
+                        this.updateSubjectFilters('Language');
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Language
+                </button>
+                <button
+                    class="btn mb-2"
+                    :class="{
+                        'chosen-subject':
+                            userDetailsStore.subjectFilters.includes(
+                                'Mathematics'
+                            ),
+                        'hidden-subject':
+                            !userDetailsStore.subjectFilters.includes(
+                                'Mathematics'
+                            )
+                    }"
+                    @click="
+                        this.updateSubjectFilters('Mathematics');
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Math
+                </button>
+                <button
+                    class="btn mb-2"
+                    :class="{
+                        'chosen-subject':
+                            userDetailsStore.subjectFilters.includes('History'),
+                        'hidden-subject':
+                            !userDetailsStore.subjectFilters.includes('History')
+                    }"
+                    @click="
+                        this.updateSubjectFilters('History');
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    History
+                </button>
+                <button
+                    class="btn mb-2"
+                    :class="{
+                        'chosen-subject':
+                            userDetailsStore.subjectFilters.includes('Life'),
+                        'hidden-subject':
+                            !userDetailsStore.subjectFilters.includes('Life')
+                    }"
+                    @click="
+                        this.updateSubjectFilters('Life');
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Life
+                </button>
+                <button
+                    class="btn mb-2"
+                    :class="{
+                        'chosen-subject':
+                            userDetailsStore.subjectFilters.includes(
+                                'Computer Science'
+                            ),
+                        'hidden-subject':
+                            !userDetailsStore.subjectFilters.includes(
+                                'Computer Science'
+                            )
+                    }"
+                    @click="
+                        this.updateSubjectFilters('Computer Science');
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Computer Science
+                </button>
+                <button
+                    class="btn mb-2"
+                    :class="{
+                        'chosen-subject':
+                            userDetailsStore.subjectFilters.includes(
+                                'Science and Invention'
+                            ),
+                        'hidden-subject':
+                            !userDetailsStore.subjectFilters.includes(
+                                'Science and Invention'
+                            )
+                    }"
+                    @click="
+                        this.updateSubjectFilters('Science and Invention');
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Science & Invention
+                </button>
+                <button
+                    class="btn mb-2"
+                    :class="{
+                        'chosen-subject':
+                            userDetailsStore.subjectFilters.includes(
+                                'Dangerous Ideas'
+                            ),
+                        'hidden-subject':
+                            !userDetailsStore.subjectFilters.includes(
+                                'Dangerous Ideas'
+                            )
+                    }"
+                    @click="
+                        this.updateSubjectFilters('Dangerous Ideas');
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Dangerous Ideas
+                </button>
+            </div>
+
+            <button
+                class="btn switch-btn"
+                @click="isSubjectFilter = !isSubjectFilter"
+            >
+                <!-- Plus sign -->
+                <svg
+                    v-if="!isSubjectFilter"
+                    width="18"
+                    height="18"
+                    fill="white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                >
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                    <path
+                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                    />
+                </svg>
+                <!-- Minus sign -->
+                <svg
+                    v-else
+                    width="18"
+                    height="18"
+                    fill="white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                >
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                    <path
+                        d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                    />
+                </svg>
+            </button>
+        </div>
+        <!-- Tooltip -->
+        <div v-if="showTutorialTip4" class="info-panel bg-light rounded p-2">
+            Use the buttons on the left to filter the skills by subject.<br />
+            <button class="btn primary-btn" @click="progressTutorial(4)">
+                next
+            </button>
+        </div>
+    </div>
+
     <!-- Tooltip modal -->
     <div v-if="showTutorialTip1 || showTutorialTip2" class="modal">
         <div class="modal-content">
@@ -287,6 +484,18 @@ export default {
 }
 
 /* Filters */
+.switch-btn {
+    max-height: 38px;
+    margin: auto;
+}
+
+/* Root subject filters */
+.chosen-subject,
+.switch-btn {
+    background-color: var(--primary-color) !important;
+    color: var(--primary-contrast-color) !important;
+    opacity: 1;
+}
 
 .legend {
     display: flex;
@@ -420,5 +629,21 @@ export default {
 .switch-btn {
     max-height: 38px;
     margin: auto;
+}
+
+/* Subject filters */
+
+.left-legend-div {
+    top: 50%;
+    transform: translateY(-50%);
+    left: 3px;
+    /* For the tooltip */
+    display: flex;
+    align-items: center;
+}
+
+.left-legend-div button {
+    border: 1px solid black;
+    width: fit-content;
 }
 </style>
