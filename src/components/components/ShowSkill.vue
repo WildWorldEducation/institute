@@ -61,6 +61,8 @@ export default {
             randomNum: 0,
             goalSteps: [],
             goalExists: false,
+            toggleModal: false, // Controls the modal visibility
+            selectedSkill: null, // Stores the selected skill for modal context
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false,
@@ -231,16 +233,31 @@ export default {
             const data = await result.json();
             this.goalExists = data.goalExists;
         },
+        openModal(skill) {
+            this.selectedSkill = skill;
+            this.toggleModal = true;
+        },
 
-        async confirmCreateGoal(skill) {
-            let text = `Are you sure you want to create a goal for ${skill.name}?`;
-            if (confirm(text) == true) {
-                // Will need this list to create the goal steps.
-                await this.userSkillsStore.getFilteredUnnestedList(
-                    this.userDetailsStore.userId
-                );
-                this.createGoal(skill);
-            }
+        // Close the modal
+        closeModal() {
+            this.toggleModal = false;
+            this.selectedSkill = null;
+        },
+
+        // Confirm create goal and execute the necessary logic
+        async confirmCreateGoal() {
+            if (!this.selectedSkill) return; // Ensure a skill is selected
+
+            // Create goal logic
+            await this.userSkillsStore.getFilteredUnnestedList(
+                this.userDetailsStore.userId
+            );
+
+            // Call the method to create the goal
+            this.createGoal(this.selectedSkill);
+
+            // Close the modal after confirming
+            this.closeModal();
         },
         createGoal(skill) {
             if (skill.type != 'domain') {
@@ -632,7 +649,7 @@ export default {
                                 userDetailsStore.role == 'student'
                             "
                             class="btn primary-btn"
-                            @click="confirmCreateGoal(this.skill)"
+                            @click="openModal(skill)"
                         >
                             Create goal&nbsp;
                             <svg
@@ -640,14 +657,45 @@ export default {
                                 viewBox="0 0 512 512"
                                 fill="white"
                                 width="20"
-                                heigth="20"
+                                height="20"
                             >
-                                <!-- !Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                 <path
                                     d="M448 256A192 192 0 1 0 64 256a192 192 0 1 0 384 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm0-224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zM224 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
                                 />
                             </svg>
                         </button>
+
+                        <!-- Modal -->
+                        <div
+                            v-if="toggleModal"
+                            @click.self="closeModal"
+                            class="modal"
+                        >
+                            <div class="modal-content">
+                                <p>
+                                    Are you sure you want to create a goal for
+                                    <span style="color: var(--primary-color)">
+                                        {{ selectedSkill?.name }} </span
+                                    >?
+                                </p>
+                                <div
+                                    class="modal-btns d-flex justify-content-between mt-3"
+                                >
+                                    <button
+                                        class="btn red-btn"
+                                        @click="closeModal"
+                                    >
+                                        No
+                                    </button>
+                                    <button
+                                        class="btn primary-btn"
+                                        @click="confirmCreateGoal"
+                                    >
+                                        Yes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="d-flex justify-content-end">
                         <!-- Sharable URL -->
