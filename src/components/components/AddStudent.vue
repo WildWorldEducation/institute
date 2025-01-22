@@ -25,7 +25,6 @@ export default {
             userSkillsStore
         };
     },
-
     data() {
         return {
             user: {
@@ -49,9 +48,7 @@ export default {
             validate: {
                 first_name: false,
                 last_name: false,
-                email: false,
                 username: false,
-                emailFormat: false,
                 password: false,
                 // this validate is fire when image profile upload is not square
                 notSquareImg: false,
@@ -97,64 +94,44 @@ export default {
             }
         }
     },
-    async mounted() {},
     methods: {
         async ValidateForm() {
-            if (this.user.username == '' || this.user.username == null) {
+            if (
+                this.user.username == '' ||
+                this.user.username == null ||
+                this.user.username == this.userDetailsStore.userName
+            ) {
                 this.validate.username = true;
                 return;
-            } else if (this.user.email == '' || this.user.email == null) {
-                this.validate.email = true;
-                return;
-            } else {
-                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (emailPattern.test(this.user.email) == true) {
-                    this.validate.emailFormat = false;
-                } else {
-                    this.validate.emailFormat = true;
-                }
-                if (!this.validate.emailFormat) {
-                    if (this.validate.passwordComplex) {
-                        this.Submit();
-                    }
-                }
-            }
-        },
-        async ValidateEmail() {
-            // If email field is not empty, check if it matches a valid email format
-            if (this.user.email) {
-            } else {
-                // Reset email format validation if email is empty
-                this.validate.emailFormat = false;
-                return;
+            } else if (this.validate.passwordComplex) {
+                this.Submit();
             }
         },
         async Submit() {
             try {
                 this.isLoading = true;
-                const response = await fetch('/users/add', {
+                const response = await fetch('/users/instructor-add-student', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         username: this.user.username,
-                        email: this.user.email,
                         avatar: this.user.avatar,
                         password: this.user.password,
-                        role: this.user.role
+                        role: this.user.role,
+                        // This student will share the same email address as their instructor
+                        email: this.userDetailsStore.email
                     })
                 });
 
                 const data = await response.json();
                 this.isLoading = false;
-                if (
-                    data.account === 'username already taken' ||
-                    data.account === 'email already taken'
-                ) {
+                if (data.account === 'username already taken') {
                     alert(data.account);
                     return;
                 }
                 this.isLoading = true;
                 this.newUserId = data.id;
+                console.log(this.newUserId);
                 // Make all relevant skills and domains available or mastered if validated
                 this.firstLevelSkills.forEach((skill) =>
                     this.userSkillsStore.MakeMastered(this.newUserId, skill)
@@ -279,16 +256,16 @@ export default {
 </script>
 
 <template>
+    <!-- Loading animation -->
     <div
         v-if="isLoading == true"
         class="loading-animation d-flex justify-content-center align-items-center py-4"
     >
         <span class="loader"></span>
     </div>
+    <!-- Form -->
     <div v-else class="container rounded bg-light p-3">
         <h1 class="heading">Add Student</h1>
-        <!-- Loading animation -->
-
         <div class="main-content-container container-fluid p-4">
             <div class="row">
                 <div class="col-lg-4">
@@ -384,7 +361,9 @@ export default {
                 </div>
                 <div class="col-lg-4">
                     <div class="mb-3">
-                        <h2 class="secondary-heading h4">Username</h2>
+                        <h2 class="secondary-heading h4">
+                            Username {{ userDetailsStore.userName }}
+                        </h2>
                         <input
                             v-model="user.username"
                             type="text"
@@ -400,26 +379,11 @@ export default {
                         >
                             Please enter a username!
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <h2 class="secondary-heading h4">Email address</h2>
-                        <input
-                            v-model="user.email"
-                            type="email"
-                            class="form-control"
-                            @blur="ValidateEmail"
-                        />
                         <div
-                            v-if="
-                                validate.email &&
-                                (user.email == '' || user.email == null)
-                            "
+                            v-if="user.username == userDetailsStore.userName"
                             class="form-validate"
                         >
-                            please enter an email address!
-                        </div>
-                        <div v-if="validate.emailFormat" class="form-validate">
-                            please enter a valid email address!
+                            Please use a different username!
                         </div>
                     </div>
                     <!-- Password Section -->
