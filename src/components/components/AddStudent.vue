@@ -358,9 +358,7 @@ export default {
                 </div>
                 <div class="col-lg-4">
                     <div class="mb-3">
-                        <h2 class="secondary-heading h4">
-                            Username {{ userDetailsStore.userName }}
-                        </h2>
+                        <h2 class="secondary-heading h4">Username</h2>
                         <input
                             v-model="user.username"
                             type="text"
