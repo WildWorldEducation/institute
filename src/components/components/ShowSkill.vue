@@ -672,12 +672,12 @@ export default {
                             class="modal"
                         >
                             <div class="modal-content">
-                                <h3>
+                                <p>
                                     Are you sure you want to create a goal for
                                     <span style="color: var(--primary-color)">
                                         {{ selectedSkill?.name }} </span
                                     >?
-                                </h3>
+                                </p>
                                 <div
                                     class="modal-btns d-flex justify-content-between mt-3"
                                 >
