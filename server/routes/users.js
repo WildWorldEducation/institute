@@ -475,8 +475,6 @@ router.post(
                     first_name: req.body.firstname,
                     last_name: req.body.lastname,
                     username: req.body.username,
-                    // They use the instructor's email address.
-                    email: req.body.email,
                     role: req.body.role,
                     password: hashedPassword
                 };
@@ -495,95 +493,32 @@ router.post(
 
                         if (results.length > 0) {
                             res.json({ account: 'username already taken' });
-                        }
-                        // Check if student existed but was deleted.
-                        else {
-                            let checkDeletedStudentSQLQuery = `SELECT * 
-                            FROM users 
-                            WHERE email = ${conn.escape(req.body.email)}
-                            AND username = ${conn.escape(req.body.username)};`;
-
+                        } else {
+                            // Remove the backslash from username.
+                            // Using '?', so dont need to escape it.
+                            data.username = data.username.replace(/\\/g, '');
+                            // Set the primary key.
+                            data.id = uuidv7();
+                            // If not, add to database.
+                            let AddStudentSQLQuery = 'INSERT INTO users SET ?';
                             conn.query(
-                                checkDeletedStudentSQLQuery,
+                                AddStudentSQLQuery,
                                 data,
-                                (err, results) => {
+                                async (err) => {
                                     try {
                                         if (err) {
                                             throw err;
                                         } else {
-                                            // If so, restore student.
-                                            if (results.length > 0) {
-                                                if (results[0].is_deleted) {
-                                                    let restoreSql =
-                                                        'UPDATE users SET ? , is_deleted = 0 WHERE email = ? AND username = ?';
-
-                                                    conn.query(
-                                                        restoreSql,
-                                                        [
-                                                            data,
-                                                            data.email,
-                                                            data.username
-                                                        ],
-                                                        (err) => {
-                                                            if (err) {
-                                                                throw err;
-                                                            } else {
-                                                                res.json({
-                                                                    account:
-                                                                        'account created',
-                                                                    id: results[0]
-                                                                        .id
-                                                                });
-                                                            }
-                                                        }
-                                                    );
-                                                } else {
-                                                    res.json({
-                                                        account:
-                                                            'email already taken'
-                                                    });
-                                                }
-                                            } else {
-                                                // Remove the backslash from username.
-                                                // Using '?', so dont need to escape it.
-                                                data.username =
-                                                    data.username.replace(
-                                                        /\\/g,
-                                                        ''
-                                                    );
-                                                // Set the primary key.
-                                                data.id = uuidv7();
-                                                // If not, add to database.
-                                                let AddStudentSQLQuery =
-                                                    'INSERT INTO users SET ?';
-                                                conn.query(
-                                                    AddStudentSQLQuery,
-                                                    data,
-                                                    async (err) => {
-                                                        try {
-                                                            if (err) {
-                                                                throw err;
-                                                            } else {
-                                                                // Upload avatar to AWS
-                                                                await saveUserAvatarToAWS(
-                                                                    data.id,
-                                                                    req.body
-                                                                        .avatar
-                                                                );
-                                                                let newUserId =
-                                                                    data.id;
-                                                                res.json({
-                                                                    account:
-                                                                        'account created',
-                                                                    id: newUserId
-                                                                });
-                                                            }
-                                                        } catch (err) {
-                                                            next(err);
-                                                        }
-                                                    }
-                                                );
-                                            }
+                                            // Upload avatar to AWS
+                                            await saveUserAvatarToAWS(
+                                                data.id,
+                                                req.body.avatar
+                                            );
+                                            let newUserId = data.id;
+                                            res.json({
+                                                account: 'account created',
+                                                id: newUserId
+                                            });
                                         }
                                     } catch (err) {
                                         next(err);

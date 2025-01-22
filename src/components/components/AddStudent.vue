@@ -117,9 +117,7 @@ export default {
                         username: this.user.username,
                         avatar: this.user.avatar,
                         password: this.user.password,
-                        role: this.user.role,
-                        // This student will share the same email address as their instructor
-                        email: this.userDetailsStore.email
+                        role: this.user.role
                     })
                 });
 
@@ -131,7 +129,6 @@ export default {
                 }
                 this.isLoading = true;
                 this.newUserId = data.id;
-                console.log(this.newUserId);
                 // Make all relevant skills and domains available or mastered if validated
                 this.firstLevelSkills.forEach((skill) =>
                     this.userSkillsStore.MakeMastered(this.newUserId, skill)
