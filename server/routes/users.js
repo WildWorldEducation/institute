@@ -515,6 +515,10 @@ router.post(
                                                 req.body.avatar
                                             );
                                             let newUserId = data.id;
+
+                                            // Unlock skills here
+                                            unlockInitialSkills(newUserId);
+
                                             res.json({
                                                 account: 'account created',
                                                 id: newUserId
