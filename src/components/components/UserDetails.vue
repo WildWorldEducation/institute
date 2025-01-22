@@ -158,7 +158,9 @@ export default {
                     </router-link>
                 </div>
             </div>
+            <!-- Right column -->
             <div class="col-12 col-md-7">
+                <!-- Name -->
                 <div class="mb-3">
                     <h2 class="secondary-heading h4">Name</h2>
                     <input
@@ -172,6 +174,7 @@ export default {
                         disabled
                     />
                 </div>
+                <!-- Username -->
                 <div class="mb-3">
                     <h2 class="secondary-heading h4">Username</h2>
                     <input
@@ -181,7 +184,8 @@ export default {
                         disabled
                     />
                 </div>
-                <div class="mb-3">
+                <!-- Email (not for instructors, as their students will share their emails) -->
+                <div v-if="userDetailsStore.role != 'instructor'" class="mb-3">
                     <h2 class="secondary-heading h4">Email</h2>
                     <input
                         class="form-control user-input-information"
@@ -190,6 +194,7 @@ export default {
                         disabled
                     />
                 </div>
+                <!-- Role (admins only) -->
                 <div v-if="userDetailsStore.role == 'admin'" class="mb-3">
                     <label class="form-label">Role</label>
                     <input
