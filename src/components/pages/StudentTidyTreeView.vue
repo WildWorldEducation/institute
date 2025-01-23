@@ -21,8 +21,19 @@ export default {
             showTutorialTip2: false,
             showTutorialTip3: false,
             showTutorialTip4: false,
+            showTutorialTip5: false,
             isGradeFilter: true,
-            isSubjectFilter: true
+            isSubjectFilter: true,
+            gradeFilter: 'phd',
+            subjectFilters: [
+                'Language',
+                'Mathematics',
+                'Science and Invention',
+                'Computer Science',
+                'History',
+                'Life',
+                'Dangerous Ideas'
+            ]
         };
     },
     async created() {
@@ -49,6 +60,43 @@ export default {
         StudentTidyTree
     },
     methods: {
+        // Filters
+        updateSubjectFilters(subject) {
+            // if all subjects are selected, show only the clicked subject
+            if (this.subjectFilters.length == 7) {
+                this.subjectFilters = [];
+                this.subjectFilters.push(subject);
+            }
+
+            // Check if filter already present.
+            else if (this.subjectFilters.includes(subject)) {
+                // remove it
+                this.subjectFilters = this.subjectFilters.filter(
+                    (e) => e !== subject
+                );
+
+                // if array is empty, add all subjects.
+                if (this.subjectFilters.length == 0) {
+                    this.subjectFilters.push('Language');
+                    this.subjectFilters.push('Mathematics');
+                    this.subjectFilters.push('Science and Invention');
+                    this.subjectFilters.push('Computer Science');
+                    this.subjectFilters.push('History');
+                    this.subjectFilters.push('Life');
+                    this.subjectFilters.push('Dangerous Ideas');
+                }
+            } else {
+                // add it
+                this.subjectFilters.push(subject);
+            }
+        },
+        toggleisUnlockedSkillsFilter() {
+            if (this.isUnlockedSkillsOnlyFilter == 1) {
+                this.isUnlockedSkillsOnlyFilter = 0;
+            } else if (this.isUnlockedSkillsOnlyFilter == 0) {
+                this.isUnlockedSkillsOnlyFilter = 1;
+            }
+        },
         // Tutorial
         async checkIfTutorialComplete() {
             const result = await fetch(
@@ -125,10 +173,10 @@ export default {
                     class="btn grade-school me-2"
                     :class="{
                         'active-grade-filter':
-                            this.userDetailsStore.gradeFilter == 'grade_school'
+                            this.gradeFilter == 'grade_school'
                     }"
                     @click="
-                        this.userDetailsStore.gradeFilter = 'grade_school';
+                        this.gradeFilter = 'grade_school';
                         $refs.childComponent.filter();
                     "
                 >
@@ -138,10 +186,10 @@ export default {
                     class="btn middle-school me-2"
                     :class="{
                         'active-grade-filter':
-                            this.userDetailsStore.gradeFilter == 'middle_school'
+                            this.gradeFilter == 'middle_school'
                     }"
                     @click="
-                        this.userDetailsStore.gradeFilter = 'middle_school';
+                        this.gradeFilter = 'middle_school';
                         $refs.childComponent.filter();
                     "
                 >
@@ -150,11 +198,10 @@ export default {
                 <button
                     class="btn high-school me-2"
                     :class="{
-                        'active-grade-filter':
-                            this.userDetailsStore.gradeFilter == 'high_school'
+                        'active-grade-filter': this.gradeFilter == 'high_school'
                     }"
                     @click="
-                        this.userDetailsStore.gradeFilter = 'high_school';
+                        this.gradeFilter = 'high_school';
                         $refs.childComponent.filter();
                     "
                 >
@@ -163,11 +210,10 @@ export default {
                 <button
                     class="btn college me-2"
                     :class="{
-                        'active-grade-filter':
-                            this.userDetailsStore.gradeFilter == 'college'
+                        'active-grade-filter': this.gradeFilter == 'college'
                     }"
                     @click="
-                        this.userDetailsStore.gradeFilter = 'college';
+                        this.gradeFilter = 'college';
                         $refs.childComponent.filter();
                     "
                 >
@@ -176,11 +222,10 @@ export default {
                 <button
                     class="btn phd me-2"
                     :class="{
-                        'active-grade-filter':
-                            this.userDetailsStore.gradeFilter == 'phd'
+                        'active-grade-filter': this.gradeFilter == 'phd'
                     }"
                     @click="
-                        this.userDetailsStore.gradeFilter = 'phd';
+                        this.gradeFilter = 'phd';
                         $refs.childComponent.filter();
                     "
                 >
@@ -230,14 +275,8 @@ export default {
                 <button
                     class="btn mb-2"
                     :class="{
-                        'chosen-subject':
-                            userDetailsStore.subjectFilters.includes(
-                                'Language'
-                            ),
-                        'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes(
-                                'Language'
-                            )
+                        'chosen-subject': subjectFilters.includes('Language'),
+                        'hidden-subject': !subjectFilters.includes('Language')
                     }"
                     @click="
                         this.updateSubjectFilters('Language');
@@ -253,13 +292,9 @@ export default {
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
-                            userDetailsStore.subjectFilters.includes(
-                                'Mathematics'
-                            ),
+                            subjectFilters.includes('Mathematics'),
                         'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes(
-                                'Mathematics'
-                            )
+                            !subjectFilters.includes('Mathematics')
                     }"
                     @click="
                         this.updateSubjectFilters('Mathematics');
@@ -274,10 +309,8 @@ export default {
                 <button
                     class="btn mb-2"
                     :class="{
-                        'chosen-subject':
-                            userDetailsStore.subjectFilters.includes('History'),
-                        'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes('History')
+                        'chosen-subject': subjectFilters.includes('History'),
+                        'hidden-subject': !subjectFilters.includes('History')
                     }"
                     @click="
                         this.updateSubjectFilters('History');
@@ -292,10 +325,8 @@ export default {
                 <button
                     class="btn mb-2"
                     :class="{
-                        'chosen-subject':
-                            userDetailsStore.subjectFilters.includes('Life'),
-                        'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes('Life')
+                        'chosen-subject': subjectFilters.includes('Life'),
+                        'hidden-subject': !subjectFilters.includes('Life')
                     }"
                     @click="
                         this.updateSubjectFilters('Life');
@@ -311,13 +342,9 @@ export default {
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
-                            userDetailsStore.subjectFilters.includes(
-                                'Computer Science'
-                            ),
+                            subjectFilters.includes('Computer Science'),
                         'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes(
-                                'Computer Science'
-                            )
+                            !subjectFilters.includes('Computer Science')
                     }"
                     @click="
                         this.updateSubjectFilters('Computer Science');
@@ -332,14 +359,12 @@ export default {
                 <button
                     class="btn mb-2"
                     :class="{
-                        'chosen-subject':
-                            userDetailsStore.subjectFilters.includes(
-                                'Science and Invention'
-                            ),
-                        'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes(
-                                'Science and Invention'
-                            )
+                        'chosen-subject': subjectFilters.includes(
+                            'Science and Invention'
+                        ),
+                        'hidden-subject': !subjectFilters.includes(
+                            'Science and Invention'
+                        )
                     }"
                     @click="
                         this.updateSubjectFilters('Science and Invention');
@@ -355,13 +380,9 @@ export default {
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
-                            userDetailsStore.subjectFilters.includes(
-                                'Dangerous Ideas'
-                            ),
+                            subjectFilters.includes('Dangerous Ideas'),
                         'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes(
-                                'Dangerous Ideas'
-                            )
+                            !subjectFilters.includes('Dangerous Ideas')
                     }"
                     @click="
                         this.updateSubjectFilters('Dangerous Ideas');
@@ -413,6 +434,30 @@ export default {
         <div v-if="showTutorialTip4" class="info-panel bg-light rounded p-2">
             Use the buttons on the left to filter the skills by subject.<br />
             <button class="btn primary-btn" @click="progressTutorial(4)">
+                next
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter for showing only unlocked skills in bottom left corner -->
+    <div class="unlocked-filter d-flex flex-column-reverse">
+        <button
+            class="btn primary-btn"
+            @click="
+                toggleisUnlockedSkillsFilter();
+                $refs.childComponent.filter();
+            "
+        >
+            <span v-if="isUnlockedSkillsOnlyFilter">All skills</span>
+            <span v-else>Available skills only</span>
+        </button>
+
+        <div
+            v-if="showTutorialTip5"
+            class="info-panel bg-light rounded p-2 mb-2"
+        >
+            <p>Use this button to toggle between unlocked and locked skills.</p>
+            <button class="btn primary-btn" @click="progressTutorial(5)">
                 next
             </button>
         </div>
@@ -645,5 +690,62 @@ export default {
 .left-legend-div button {
     border: 1px solid black;
     width: fit-content;
+}
+
+/* Root subject filters */
+.chosen-subject,
+.switch-btn {
+    background-color: var(--primary-color) !important;
+    color: var(--primary-contrast-color) !important;
+    opacity: 1;
+}
+
+.chosen-subject:active,
+.chosen-subject:focus,
+.switch-btn:hover {
+    color: var(--primary-contrast-color) !important;
+    opacity: 1 !important;
+}
+
+.btn:active,
+.btn:focus {
+    color: var(--primary-contrast-color);
+    border: 1px solid black;
+}
+
+.chosen-subject:hover {
+    opacity: 0.5;
+    color: var(--primary-contrast-color) !important;
+    border: 1px solid black;
+}
+
+.hidden-subject {
+    color: var(--primary-contrast-color);
+    background-color: var(--primary-color) !important;
+    opacity: 0.5;
+}
+
+.hidden-subject:hover {
+    background-color: var(--primary-color) !important;
+    color: var(--primary-contrast-color);
+    border: 1px solid black;
+    opacity: 1;
+}
+
+.hidden-subject:active,
+.hidden-subject:focus {
+    background-color: var(--primary-color) !important;
+    color: var(--primary-contrast-color);
+    border: 1px solid black;
+    opacity: 0.5;
+}
+
+.unlocked-filter {
+    position: fixed;
+    bottom: 10px;
+    left: 3px;
+}
+.unlocked-filter button {
+    border: 1px solid black;
 }
 </style>
