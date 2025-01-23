@@ -34,7 +34,8 @@ export default {
                 'Life',
                 'Dangerous Ideas'
             ],
-            isUnlockedSkillsOnlyFilter: false
+            isUnlockedSkillsOnlyFilter: false,
+            showMobileFiltersModal: false
         };
     },
     async created() {
@@ -141,6 +142,85 @@ export default {
 </script>
 
 <template>
+    <div class="container-fluid position-absolute legend-div">
+        <div class="mobile-legend">
+            <div class="d-flex">
+                <p class="">Student: {{ studentName }}</p>
+                <button
+                    class="btn primary-btn me-1"
+                    @click="showMobileFiltersModal = true"
+                >
+                    Filters
+                </button>
+                <button
+                    class="btn primary-btn"
+                    @click="$refs.childComponent.resetPos()"
+                >
+                    Center
+                </button>
+                <button
+                    class="btn primary-btn ms-2"
+                    @click="$refs.childComponent.restartTutorial()"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 192 512"
+                        width="20"
+                        height="20"
+                        fill="white"
+                    >
+                        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                        <path
+                            d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                        />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="tablet-and-up-legend">
+            <div class="d-flex justify-content-between">
+                <!-- Center, expand all, print buttons -->
+                <div class="d-flex justify-content-between w-100">
+                    <h1 class="heading h2">{{ studentName }}</h1>
+                    <div>
+                        <!-- Reset Button -->
+                        <button
+                            class="btn primary-btn me-2"
+                            @click="$refs.childComponent.resetPos()"
+                        >
+                            Center
+                        </button>
+                        <!-- Print Button -->
+                        <button
+                            class="btn primary-btn me-2"
+                            @click="$refs.childComponent.printPDF()"
+                        >
+                            Print
+                        </button>
+                        <!-- Restart Tutorial Button -->
+                        <button
+                            class="btn primary-btn"
+                            @click="$refs.childComponent.restartTutorial()"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 192 512"
+                                width="20"
+                                height="20"
+                                fill="white"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                <path
+                                    d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                                />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Display loading screen while asynchronous call is made. -->
     <Suspense>
         <template #default>
@@ -509,6 +589,256 @@ export default {
         </div>
     </div>
 
+    <!-- Filters Modal for Mobile Phone View.-->
+    <div v-if="showMobileFiltersModal" class="modal">
+        <div class="modal-content">
+            <div class="d-flex flex-column">
+                <button class="btn" @click="showMobileFiltersModal = false">
+                    <!-- Close icon -->
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="25"
+                        height="25"
+                        fill="#ef4444"
+                    >
+                        <path
+                            d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z"
+                        />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="d-flex flex-column">
+                <!-- Subject buttons -->
+                <button
+                    class="btn"
+                    :class="{
+                        'chosen-subject': subjectFilters.includes('Language'),
+                        'hidden-subject': !subjectFilters.includes('Language')
+                    }"
+                    @click="
+                        this.updateSubjectFilters('Language');
+                        $refs.childComponent.filter(
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
+                        );
+                    "
+                >
+                    Language
+                </button>
+                <button
+                    class="btn"
+                    :class="{
+                        'chosen-subject':
+                            subjectFilters.includes('Mathematics'),
+                        'hidden-subject':
+                            !subjectFilters.includes('Mathematics')
+                    }"
+                    @click="
+                        this.updateSubjectFilters('Mathematics');
+                        $refs.childComponent.filter(
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
+                        );
+                    "
+                >
+                    Math
+                </button>
+                <button
+                    class="btn"
+                    :class="{
+                        'chosen-subject': subjectFilters.includes('History'),
+                        'hidden-subject': !subjectFilters.includes('History')
+                    }"
+                    @click="
+                        this.updateSubjectFilters('History');
+                        $refs.childComponent.filter(
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
+                        );
+                    "
+                >
+                    History
+                </button>
+                <button
+                    class="btn"
+                    :class="{
+                        'chosen-subject': subjectFilters.includes('Life'),
+                        'hidden-subject': !subjectFilters.includes('Life')
+                    }"
+                    @click="
+                        this.updateSubjectFilters('Life');
+                        $refs.childComponent.filter(
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
+                        );
+                    "
+                >
+                    Life
+                </button>
+                <button
+                    class="btn"
+                    :class="{
+                        'chosen-subject':
+                            subjectFilters.includes('Computer Science'),
+                        'hidden-subject':
+                            !subjectFilters.includes('Computer Science')
+                    }"
+                    @click="
+                        this.updateSubjectFilters('Computer Science');
+                        $refs.childComponent.filter(
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
+                        );
+                    "
+                >
+                    Computer Science
+                </button>
+                <button
+                    class="btn"
+                    :class="{
+                        'chosen-subject': subjectFilters.includes(
+                            'Science and Invention'
+                        ),
+                        'hidden-subject': !subjectFilters.includes(
+                            'Science and Invention'
+                        )
+                    }"
+                    @click="
+                        this.updateSubjectFilters('Science and Invention');
+                        $refs.childComponent.filter(
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
+                        );
+                    "
+                >
+                    Science & Invention
+                </button>
+                <button
+                    class="btn mb-2"
+                    :class="{
+                        'chosen-subject':
+                            subjectFilters.includes('Dangerous Ideas'),
+                        'hidden-subject':
+                            !subjectFilters.includes('Dangerous Ideas')
+                    }"
+                    @click="
+                        this.updateSubjectFilters('Dangerous Ideas');
+                        $refs.childComponent.filter(
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
+                        );
+                    "
+                >
+                    Dangerous Ideas
+                </button>
+                <!-- Grade buttons -->
+                <button
+                    class="btn grade-school"
+                    :class="{
+                        'active-grade-filter':
+                            this.gradeFilter == 'grade_school'
+                    }"
+                    @click="
+                        this.gradeFilter = 'grade_school';
+                        $refs.childComponent.filter(
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
+                        );
+                    "
+                >
+                    Grade school
+                </button>
+                <button
+                    class="btn middle-school"
+                    :class="{
+                        'active-grade-filter':
+                            this.gradeFilter == 'middle_school'
+                    }"
+                    @click="
+                        this.gradeFilter = 'middle_school';
+                        $refs.childComponent.filter(
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
+                        );
+                    "
+                >
+                    Middle school
+                </button>
+                <button
+                    class="btn high-school"
+                    :class="{
+                        'active-grade-filter': this.gradeFilter == 'high_school'
+                    }"
+                    @click="
+                        this.gradeFilter = 'high_school';
+                        $refs.childComponent.filter(
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
+                        );
+                    "
+                >
+                    High school
+                </button>
+                <button
+                    class="btn college"
+                    :class="{
+                        'active-grade-filter': this.gradeFilter == 'college'
+                    }"
+                    @click="
+                        this.gradeFilter = 'college';
+                        $refs.childComponent.filter(
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
+                        );
+                    "
+                >
+                    College
+                </button>
+                <button
+                    class="btn phd"
+                    :class="{
+                        'active-grade-filter': this.gradeFilter == 'phd'
+                    }"
+                    @click="
+                        this.gradeFilter = 'phd';
+                        $refs.childComponent.filter(
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
+                        );
+                    "
+                >
+                    PHD
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Tooltip modal -->
     <div v-if="showTutorialTip1 || showTutorialTip2" class="modal">
         <div class="modal-content">
@@ -531,6 +861,10 @@ export default {
 </template>
 
 <style scoped>
+.mobile-legend {
+    display: none;
+}
+
 /* Modals */
 .modal {
     display: block;
@@ -572,6 +906,10 @@ export default {
         width: 90%;
         margin-top: 30%;
     }
+
+    .mobile-legend {
+        display: flex;
+    }
 }
 
 /* Filters */
@@ -609,6 +947,12 @@ export default {
     .tablet-and-up-legend {
         display: none !important;
     }
+}
+
+.legend-div {
+    width: 100%;
+    z-index: 2;
+    top: 70px;
 }
 
 .bottom-legend-div {
