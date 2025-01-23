@@ -1683,21 +1683,22 @@ router.get(
     (req, res, next) => {
         if (req.session.userName) {
             let sqlQuery = `
-        	SELECT skills.id, name, url
+        	SELECT skills.id, name, url, level
             FROM skills
             JOIN user_skills
             ON skills.id = user_skills.skill_id
             WHERE user_id = '${req.params.userId}'
-            AND skills.parent = ${req.params.skillId}                           
-            AND is_accessible = 1            
-			AND (is_mastered IS NULL OR is_mastered <> 1);            
-        `;
+            AND skills.parent = ${req.params.skillId}
+            AND is_accessible = 1
+            AND (is_mastered IS NULL OR is_mastered <> 1);
+            `;
 
             conn.query(sqlQuery, (err, results) => {
                 try {
                     if (err) {
                         throw err;
                     }
+
                     res.json(results);
                 } catch (err) {
                     next(err);

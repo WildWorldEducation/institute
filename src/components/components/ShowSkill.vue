@@ -92,9 +92,9 @@ export default {
         }
 
         if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
-        await this.checkIfGoalExists();
+        await this.checkIfGoalExists();    
     },
-    methods: {
+    methods: {       
         async getGoals() {
             const result = await fetch(
                 '/goals/' + this.userDetailsStore.userId + '/list'

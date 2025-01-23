@@ -20,6 +20,8 @@ export default {
     },
     methods: {
         async getNextSkillsInBranch() {
+            console.log(this.userDetailsStore.userId);
+            console.log(this.skillId);
             // query user skills
             // skills whose parent is just mastered skill
             // who are not subskills
@@ -30,15 +32,31 @@ export default {
                     this.skillId
             );
             this.nextSkillsInBranch = await result.json();
-            console.log(this.nextSkillsInBranch);
         }
     }
 };
 </script>
 
 <template>
-    <h2 class="secondary-heading h4">Choose Next Skill</h2>
-    <div class="wrapper"></div>
+    <h2 class="secondary-heading h4">Next skills in this branch</h2>
+    <div class="wrapper">
+        <div v-for="nextSkill in nextSkillsInBranch">
+            <router-link
+                :class="{
+                    'grade-school': nextSkill.level == 'grade_school',
+                    'middle-school': nextSkill.level == 'middle_school',
+                    'high-school': nextSkill.level == 'high_school',
+                    college: nextSkill.level == 'college',
+                    phd: nextSkill.level == 'phd'
+                }"
+                class="skill-link btn"
+                :to="`/skills/${nextSkill.url}`"
+                target="_blank"
+            >
+                {{ nextSkill.name }}
+            </router-link>
+        </div>
+    </div>
 </template>
 
 <style scoped>
@@ -53,5 +71,24 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+
+/* Level colors */
+.grade-school {
+    background-color: #40e0d0;
+}
+.middle-school {
+    background-color: #33a133;
+    color: white;
+}
+.high-school {
+    background-color: #ffd700;
+}
+.college {
+    background-color: #ffa500;
+}
+.phd {
+    background-color: #ff0000;
+    color: white;
 }
 </style>
