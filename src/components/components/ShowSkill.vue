@@ -1106,6 +1106,12 @@ export default {
                     {{ nextSkill.name }}
                 </router-link>
             </div>
+            <button
+                class="btn primary-btn ms-auto me-0"
+                @click="showCategoryCompletedModal = false"
+            >
+                Close
+            </button>
         </div>
     </div>
 
