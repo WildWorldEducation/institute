@@ -104,7 +104,7 @@ export default {
         async getSkill() {
             // solution for image to be changed when we change it from AWS
             this.randomNum = Math.random();
-            // // Load the skill data
+            // Load the skill data
             await this.showSkillStore.findSkill(this.skillUrl);
             this.skill = this.showSkillStore.skill;
             this.skillId = this.skill.id;

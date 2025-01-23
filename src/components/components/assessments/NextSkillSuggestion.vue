@@ -1,16 +1,36 @@
 <script>
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+
 export default {
-    setup() {},
+    setup() {
+        const userDetailsStore = useUserDetailsStore();
+        return {
+            userDetailsStore
+        };
+    },
     components: {},
     data() {
-        return {};
+        return {
+            skillId: this.$route.params.id,
+            nextSkillsInBranch: []
+        };
     },
-    mounted() {},
+    created() {
+        this.getNextSkillsInBranch();
+    },
     methods: {
-        getNextSkillsInBranch() {
+        async getNextSkillsInBranch() {
             // query user skills
             // skills whose parent is just mastered skill
             // who are not subskills
+            const result = await fetch(
+                '/user-skills/get-next-accessible-in-branch/' +
+                    this.userDetailsStore.userId +
+                    '/' +
+                    this.skillId
+            );
+            this.nextSkillsInBranch = await result.json();
+            console.log(this.nextSkillsInBranch);
         }
     }
 };
