@@ -169,7 +169,7 @@ export default {
                 this.userDetailsStore.userId,
                 this.skillId
             );
-            alert(`You have complete ${this.skill.name}!`);
+            alert(`You have completed ${this.skill.name}!`);
             this.isMastered = true;
             this.getUserSkills();
         },
