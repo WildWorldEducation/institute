@@ -1693,12 +1693,15 @@ router.get(
             AND (is_mastered IS NULL OR is_mastered <> 1);
             `;
 
+            console.log(sqlQuery);
+
             conn.query(sqlQuery, (err, results) => {
                 try {
                     if (err) {
                         throw err;
                     }
 
+                    console.log(results);
                     res.json(results);
                 } catch (err) {
                     next(err);
