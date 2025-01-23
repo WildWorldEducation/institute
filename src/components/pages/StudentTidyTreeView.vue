@@ -144,8 +144,8 @@ export default {
 <template>
     <div class="container-fluid position-absolute legend-div">
         <div class="mobile-legend">
-            <div class="d-flex">
-                <p class="">Student: {{ studentName }}</p>
+            <div class="d-flex justify-content-between w-100">
+                <h1 class="heading h2">{{ studentName }}</h1>
                 <button
                     class="btn primary-btn me-1"
                     @click="showMobileFiltersModal = true"
@@ -153,13 +153,13 @@ export default {
                     Filters
                 </button>
                 <button
-                    class="btn primary-btn"
+                    class="btn primary-btn me-1"
                     @click="$refs.childComponent.resetPos()"
                 >
                     Center
                 </button>
                 <button
-                    class="btn primary-btn ms-2"
+                    class="btn primary-btn"
                     @click="$refs.childComponent.restartTutorial()"
                 >
                     <svg
@@ -178,44 +178,42 @@ export default {
             </div>
         </div>
         <div class="tablet-and-up-legend">
-            <div class="d-flex justify-content-between">
-                <!-- Center, expand all, print buttons -->
-                <div class="d-flex justify-content-between w-100">
-                    <h1 class="heading h2">{{ studentName }}</h1>
-                    <div>
-                        <!-- Reset Button -->
-                        <button
-                            class="btn primary-btn me-2"
-                            @click="$refs.childComponent.resetPos()"
+            <!-- Center, expand all, print buttons -->
+            <div class="d-flex justify-content-between w-100">
+                <h1 class="heading h2">{{ studentName }}</h1>
+                <div>
+                    <!-- Reset Button -->
+                    <button
+                        class="btn primary-btn me-2"
+                        @click="$refs.childComponent.resetPos()"
+                    >
+                        Center
+                    </button>
+                    <!-- Print Button -->
+                    <button
+                        class="btn primary-btn me-2"
+                        @click="$refs.childComponent.printPDF()"
+                    >
+                        Print
+                    </button>
+                    <!-- Restart Tutorial Button -->
+                    <button
+                        class="btn primary-btn"
+                        @click="$refs.childComponent.restartTutorial()"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 192 512"
+                            width="20"
+                            height="20"
+                            fill="white"
                         >
-                            Center
-                        </button>
-                        <!-- Print Button -->
-                        <button
-                            class="btn primary-btn me-2"
-                            @click="$refs.childComponent.printPDF()"
-                        >
-                            Print
-                        </button>
-                        <!-- Restart Tutorial Button -->
-                        <button
-                            class="btn primary-btn"
-                            @click="$refs.childComponent.restartTutorial()"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 192 512"
-                                width="20"
-                                height="20"
-                                fill="white"
-                            >
-                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                <path
-                                    d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
-                                />
-                            </svg>
-                        </button>
-                    </div>
+                            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                            <path
+                                d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                            />
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>
