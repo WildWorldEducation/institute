@@ -33,7 +33,8 @@ export default {
                 'History',
                 'Life',
                 'Dangerous Ideas'
-            ]
+            ],
+            isUnlockedSkillsOnlyFilter: false
         };
     },
     async created() {
@@ -147,6 +148,7 @@ export default {
                 :studentId="$route.params.studentId"
                 :studentName="studentName"
                 :restartTutorial="restartTutorial"
+                ref="childComponent"
             />
         </template>
         <template #fallback>
@@ -177,7 +179,12 @@ export default {
                     }"
                     @click="
                         this.gradeFilter = 'grade_school';
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
+                        );
                     "
                 >
                     Grade school
@@ -190,7 +197,12 @@ export default {
                     }"
                     @click="
                         this.gradeFilter = 'middle_school';
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
+                        );
                     "
                 >
                     Middle school
@@ -202,7 +214,12 @@ export default {
                     }"
                     @click="
                         this.gradeFilter = 'high_school';
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
+                        );
                     "
                 >
                     High school
@@ -214,7 +231,12 @@ export default {
                     }"
                     @click="
                         this.gradeFilter = 'college';
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
+                        );
                     "
                 >
                     College
@@ -226,7 +248,12 @@ export default {
                     }"
                     @click="
                         this.gradeFilter = 'phd';
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
+                        );
                     "
                 >
                     PHD
@@ -281,8 +308,10 @@ export default {
                     @click="
                         this.updateSubjectFilters('Language');
                         $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
                         );
                     "
                 >
@@ -299,8 +328,10 @@ export default {
                     @click="
                         this.updateSubjectFilters('Mathematics');
                         $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
                         );
                     "
                 >
@@ -315,8 +346,10 @@ export default {
                     @click="
                         this.updateSubjectFilters('History');
                         $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
                         );
                     "
                 >
@@ -331,8 +364,10 @@ export default {
                     @click="
                         this.updateSubjectFilters('Life');
                         $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
                         );
                     "
                 >
@@ -349,8 +384,10 @@ export default {
                     @click="
                         this.updateSubjectFilters('Computer Science');
                         $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
                         );
                     "
                 >
@@ -369,8 +406,10 @@ export default {
                     @click="
                         this.updateSubjectFilters('Science and Invention');
                         $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
                         );
                     "
                 >
@@ -387,8 +426,10 @@ export default {
                     @click="
                         this.updateSubjectFilters('Dangerous Ideas');
                         $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
+                            $route.params.studentId,
+                            gradeFilter,
+                            subjectFilters,
+                            isUnlockedSkillsOnlyFilter
                         );
                     "
                 >
@@ -445,7 +486,12 @@ export default {
             class="btn primary-btn"
             @click="
                 toggleisUnlockedSkillsFilter();
-                $refs.childComponent.filter();
+                $refs.childComponent.filter(
+                    $route.params.studentId,
+                    gradeFilter,
+                    subjectFilters,
+                    isUnlockedSkillsOnlyFilter
+                );
             "
         >
             <span v-if="isUnlockedSkillsOnlyFilter">All skills</span>
