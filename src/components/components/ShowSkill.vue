@@ -61,6 +61,7 @@ export default {
             randomNum: 0,
             goalSteps: [],
             goalExists: false,
+            goals: [],
             toggleModal: false, // Controls the modal visibility
             selectedSkill: null, // Stores the selected skill for modal context
             // Tutorial tooltips
@@ -94,6 +95,12 @@ export default {
         await this.checkIfGoalExists();
     },
     methods: {
+        async getGoals() {
+            const result = await fetch(
+                '/goals/' + this.userDetailsStore.userId + '/list'
+            );
+            this.goals = await result.json();
+        },
         async getSkill() {
             // solution for image to be changed when we change it from AWS
             this.randomNum = Math.random();
@@ -264,7 +271,6 @@ export default {
                 // Add ancestor skill to array.
                 this.goalSteps.push(skill);
             }
-
             // Add ancestor subskills to array.
             let isSubSkillUnlocked = false;
             if (skill.type == 'super') {
@@ -328,6 +334,14 @@ export default {
             const url = '/goals/' + this.userDetailsStore.userId + '/add';
             fetch(url, requestOptions).then(() => {
                 alert('A goal for this skill has been added on the Hub page.');
+                this.getGoals().then(() => {
+                    const createdGoal = this.goals.find(
+                        (goal) => goal.skill_id === this.skillId
+                    );
+                    if (createdGoal) {
+                        this.$router.push(`/goals/${createdGoal.id}`);
+                    }
+                });
             });
         },
 
