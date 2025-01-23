@@ -71,7 +71,9 @@ export default {
             showTutorialTip3: false,
             showTutorialTip4: false,
             showTutorialTip5: false,
-            showTutorialTip6: false
+            showTutorialTip6: false,
+            showCategoryCompletedModal: false,
+            nextSkillsInBranch: []
         };
     },
     components: {
@@ -92,9 +94,9 @@ export default {
         }
 
         if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
-        await this.checkIfGoalExists();    
+        await this.checkIfGoalExists();
     },
-    methods: {       
+    methods: {
         async getGoals() {
             const result = await fetch(
                 '/goals/' + this.userDetailsStore.userId + '/list'
@@ -167,11 +169,12 @@ export default {
         async MakeMastered() {
             await this.userSkillsStore.MakeMastered(
                 this.userDetailsStore.userId,
-                this.skillId
+                this.skill
             );
-            alert(`You have completed ${this.skill.name}!`);
             this.isMastered = true;
             this.getUserSkills();
+            await this.getNextSkillsInBranch();
+            this.showCategoryCompletedModal = true;
         },
         closeFlagModal() {
             this.showModal = false;
@@ -404,6 +407,16 @@ export default {
                 headers: { 'Content-Type': 'application/json' }
             };
             fetch(url, requestOptions);
+        },
+        async getNextSkillsInBranch() {
+            const result = await fetch(
+                '/user-skills/get-next-accessible-in-branch/' +
+                    this.userDetailsStore.userId +
+                    '/' +
+                    this.skillId
+            );
+            this.nextSkillsInBranch = await result.json();
+            console.log(this.nextSkillsInBranch);
         }
     },
     /**
@@ -1072,6 +1085,30 @@ export default {
             </div>
         </div>
     </div>
+
+    <!-- Category skill completed, and next skills in branch modal -->
+    <div v-if="showCategoryCompletedModal" class="modal">
+        <div class="modal-content">
+            <p>You have completed {{ skill.name }}!</p>
+            <div v-for="nextSkill in nextSkillsInBranch">
+                <router-link
+                    :class="{
+                        'grade-school': nextSkill.level == 'grade_school',
+                        'middle-school': nextSkill.level == 'middle_school',
+                        'high-school': nextSkill.level == 'high_school',
+                        college: nextSkill.level == 'college',
+                        phd: nextSkill.level == 'phd'
+                    }"
+                    class="skill-link btn"
+                    :to="`/skills/${nextSkill.url}`"
+                    target="_blank"
+                >
+                    {{ nextSkill.name }}
+                </router-link>
+            </div>
+        </div>
+    </div>
+
     <!-- flag modals component -->
     <FlagModals
         v-if="showFlaggingModal"

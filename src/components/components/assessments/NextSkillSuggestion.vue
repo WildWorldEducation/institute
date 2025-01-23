@@ -20,11 +20,6 @@ export default {
     },
     methods: {
         async getNextSkillsInBranch() {
-            console.log(this.userDetailsStore.userId);
-            console.log(this.skillId);
-            // query user skills
-            // skills whose parent is just mastered skill
-            // who are not subskills
             const result = await fetch(
                 '/user-skills/get-next-accessible-in-branch/' +
                     this.userDetailsStore.userId +
