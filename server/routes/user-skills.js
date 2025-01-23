@@ -580,6 +580,7 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                                                             ].children.push(
                                                                 results[i]
                                                             );
+                                                            break;
                                                         }
                                                     }
                                                 }
