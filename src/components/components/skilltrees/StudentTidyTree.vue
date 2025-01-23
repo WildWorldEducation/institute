@@ -247,7 +247,7 @@ export default {
             let ctx2 = this.hiddenCanvasContext;
 
             // Visible context.
-            / If not a domain, make node a circle.
+            // If not a domain, make node a circle.
 
             if (node.data.type != 'domain') {
                 ctx1.beginPath();
