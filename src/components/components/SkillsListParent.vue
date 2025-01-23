@@ -54,7 +54,6 @@ export default {
                 //if (this.skillTreeStore.userSkills.length == 0) {
                 await this.skillTreeStore.getUserSkills();
                 // }
-                this.userSkills = this.skillTreeStore.userSkills;
             }
         }
         // For instructors to view student's skill trees
@@ -84,7 +83,7 @@ export default {
                 else if (this.userDetailsStore.role == 'student') {
                     this.path = this.findPathInNestedSkillTree(
                         name,
-                        this.userSkills
+                        this.skillTreeStore.userSkills
                     );
                 }
                 // Instructor and editor
@@ -168,9 +167,9 @@ export default {
         },
         async filter() {
             if (this.userDetailsStore.role == 'student') {
-                this.userSkills = [];
+                this.skillTreeStore.userSkills = [];
                 await this.skillTreeStore.getUserSkills();
-                this.userSkills = this.skillTreeStore.userSkills;
+                
             } else if (
                 this.userDetailsStore.role == 'instructor' ||
                 this.userDetailsStore.role == 'editor'
@@ -210,7 +209,7 @@ export default {
             <!-- Students -->
             <div
                 v-if="this.userDetailsStore.role == 'student'"
-                v-for="skill in this.userSkills"
+                v-for="skill in this.skillTreeStore.userSkills"
             >
                 <SkillsListChildStudent
                     :id="skill.id"

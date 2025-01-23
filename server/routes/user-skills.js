@@ -552,12 +552,7 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                                     // Go through all rows again, add children
                                     for (let j = 0; j < results.length; j++) {
                                         if (results[j].id == parentId) {
-                                            if (
-                                                results[i].is_accessible == 1 ||
-                                                (results[i].type == 'super' &&
-                                                    results[j].is_accessible ==
-                                                        1)
-                                            ) {
+                                            if (results[i].is_accessible == 1) {
                                                 results[j].children.push(
                                                     results[i]
                                                 );
@@ -874,7 +869,6 @@ router.get('/filter-by-cohort/my-vertical-tree/:userId', (req, res, next) => {
                         // }
 
                         // determineDepth(studentSkills, depth);
-
                         res.json(studentSkills);
                     } catch (err) {
                         next(err);
@@ -1058,6 +1052,202 @@ router.get('/separate-subskills/filter-by-cohort/:userId', (req, res, next) => {
         });
     }
 });
+
+/* Nested list of user-skills, filtered by 1 cohort that student is a member of*/
+// For Instructor Student Skill Tree - includes filters.
+router.get(
+    '/filter-by-cohort/instructor-student-vertical-tree/:studentId',
+    (req, res, next) => {
+        if (req.session.userName) {
+            /* Apply grade level, subject and isUnlockedOnly filters
+             */
+            let subjects = req.query.subjects;
+            // To deal with problems related to the "&" sign in "Science & Invention".
+            subjects = subjects.replace(
+                'Science and Invention',
+                'Science & Invention'
+            );
+
+            let isUnlockedOnly = req.query.isUnlockedOnly;
+
+            // Level will be sent in query param (eg: ?level='middle_school')
+            const level = req.query.level;
+            // Default is to show all.
+            let levelsToShow =
+                "'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
+            if (level == 'grade_school') {
+                levelsToShow = "'grade_school'";
+            } else if (level == 'middle_school') {
+                levelsToShow = "'grade_school', 'middle_school'";
+            } else if (level == 'high_school') {
+                levelsToShow = "'grade_school', 'middle_school', 'high_school'";
+            } else if (level == 'college') {
+                levelsToShow =
+                    "'grade_school', 'middle_school', 'high_school', 'college'";
+            } else if (level == 'phd') {
+                levelsToShow =
+                    "'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
+            }
+
+            res.setHeader('Content-Type', 'application/json');
+            // Check if student is member of a cohort
+            let isInCohortSQLQuery = `
+        SELECT cohort_id 
+        FROM skill_tree.cohorts_users
+        WHERE user_id = ${conn.escape(req.params.userId)};
+        `;
+            conn.query(isInCohortSQLQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    // If no results, set to -1, as this basically skip this part of the query.
+                    let cohortId;
+                    if (results.length == 0) {
+                        cohortId = -1;
+                    } else cohortId = results[0].cohort_id;
+
+                    // Check what skills are available for this cohort.
+                    let sqlQuery = `
+            SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
+            FROM skills
+            LEFT OUTER JOIN user_skills
+            ON skills.id = user_skills.skill_id
+            WHERE user_skills.user_id = ${conn.escape(req.params.userId)}
+            AND is_filtered = 'available' 
+            AND is_deleted = 0
+            AND level IN (${levelsToShow})
+            AND skills.id NOT IN 
+            (SELECT skill_id 
+            FROM cohort_skill_filters
+            WHERE cohort_id = ${conn.escape(cohortId)})
+            
+            UNION
+            SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
+            FROM skills
+            WHERE level IN (${levelsToShow})
+            AND
+            skills.id NOT IN 
+            
+            (SELECT skills.id
+            FROM skills
+            LEFT OUTER JOIN user_skills
+            ON skills.id = user_skills.skill_id
+            WHERE user_skills.user_id = ${conn.escape(req.params.userId)}) 
+            AND is_filtered = 'available' 
+            AND is_deleted = 0           
+            AND skills.id NOT IN 
+            (SELECT skill_id 
+            FROM cohort_skill_filters
+            WHERE cohort_id = ${conn.escape(cohortId)})    
+                         
+            ORDER BY skillorder, id;
+            `;
+
+                    conn.query(sqlQuery, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            }
+
+                            // Give each object a 'children' element.
+                            for (var i = 0; i < results.length; i++) {
+                                results[i].children = [];
+                            }
+
+                            // Deal with skills that have multiple parents.
+                            // These skills have secret copies in the table.
+                            for (var i = 0; i < results.length; i++) {
+                                if (results[i].display_name != null) {
+                                    results[i].skill_name =
+                                        results[i].display_name;
+
+                                    for (var j = 0; j < results.length; j++) {
+                                        if (
+                                            results[i].is_copy_of_skill_id ==
+                                            results[j].id
+                                        ) {
+                                            results[i].is_accessible =
+                                                results[j].is_accessible;
+                                            results[i].is_mastered =
+                                                results[j].is_mastered;
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Assign children to parent skills.
+                            for (var i = 0; i < results.length; i++) {
+                                // Check that not first level nodes.
+                                if (
+                                    results[i].parent != null &&
+                                    results[i].parent != 0
+                                ) {
+                                    var parentId = results[i].parent;
+
+                                    // Only unlocked skills
+                                    if (isUnlockedOnly == 1) {
+                                        // Go through all rows again, add children
+                                        for (
+                                            let j = 0;
+                                            j < results.length;
+                                            j++
+                                        ) {
+                                            if (results[j].id == parentId) {
+                                                if (
+                                                    results[i].is_accessible ==
+                                                    1
+                                                ) {
+                                                    results[j].children.push(
+                                                        results[i]
+                                                    );
+                                                }
+                                            }
+                                        }
+                                    }
+                                    // Locked and unlocked skills
+                                    else {
+                                        // Go through all rows again, add children
+                                        for (
+                                            let j = 0;
+                                            j < results.length;
+                                            j++
+                                        ) {
+                                            if (results[j].id == parentId) {
+                                                results[j].children.push(
+                                                    results[i]
+                                                );
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            let studentSkills = [];
+                            for (var i = 0; i < results.length; i++) {
+                                if (
+                                    (results[i].parent == null ||
+                                        results[i].parent == 0) &&
+                                    // Filter by subject.
+                                    subjects.includes(results[i].skill_name)
+                                ) {
+                                    studentSkills.push(results[i]);
+                                }
+                            }
+
+                            res.json(studentSkills);
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
 
 /**
  * Make skill accessible.
@@ -1364,21 +1554,16 @@ router.get('/unmastered/:userId/:skillId', (req, res, next) => {
 /**
  * For making a skill mastered.
  *
- * 1) Making descendants unlocked.
- ** If children are categories, the function is applied to them recursively also. They are only unlocked.
- ** If children are regular skills, they become unlocked.
+ * Making descendants accessible:
+ ** If children are regular skills or categories, they become unlocked.
  ** If children are super skills (inner cluster nodes), their sub skills become unlocked.
  ** If the skill this is applied to is a sub skill, and all its sibling skills are also mastered,
- ** its parent (super skill) becomes mastered.
- *
- * 2) making ancestor domains unlocked.
- *
+ ** its parent (super skill) becomes unlocked.
  */
 router.post('/make-mastered/:userId', (req, res, next) => {
     if (req.session.userName) {
         // Store the skill data.
-        let skill = req.body.skill;
-        let userId = req.params.userId;
+        let skillId = req.body.skill.id;
 
         // Get a list of all skills.
         let sqlQuery1 = 'SELECT * FROM skills;';
@@ -1389,12 +1574,15 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                 }
                 let skills = results;
 
-                // Check if the skill that was mastered has any copies in the tree,
+                // Check if the skill that is getting mastered has any copies in the tree,
                 // that also need to be made mastered now.
                 let allSkillsToBeMadeMastered = [];
-                allSkillsToBeMadeMastered.push(skill);
+
                 for (let i = 0; i < skills.length; i++) {
-                    if (skills[i].is_copy_of_skill_id == skill.id) {
+                    if (
+                        skills[i].is_copy_of_skill_id == skillId ||
+                        skills[i].id == skillId
+                    ) {
                         allSkillsToBeMadeMastered.push(skills[i]);
                     }
                 }
@@ -1438,27 +1626,14 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                             );
                         }
 
-                        // Functions that are called recursively.
                         function makeMastered(userId, skill) {
-                            // We only unlock domains here because for domains we need to
-                            // check their descendants recursively, while we dont do this
-                            // for skills.
-                            let value;
-                            if (skill.type == 'domain') {
-                                value = 0;
-                            } else {
-                                value = 1;
-                            }
-
                             let sqlQuery = `
                             INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible) 
                             VALUES(${conn.escape(req.params.userId)},
                             ${conn.escape(skill.id)},
-                            ${conn.escape(value)},
+                            1,
                             1) 
-                            ON DUPLICATE KEY UPDATE is_mastered= ${conn.escape(
-                                value
-                            )}, is_accessible=1;
+                            ON DUPLICATE KEY UPDATE is_mastered= 1, is_accessible=1;
                             `;
 
                             conn.query(sqlQuery, (err) => {
@@ -1488,18 +1663,13 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                             i++
                                         ) {
                                             if (
-                                                childSkills[i].type == 'regular'
+                                                childSkills[i].type ==
+                                                    'regular' ||
+                                                childSkills[i].type == 'domain'
                                             ) {
                                                 makeAccessible(
                                                     userId,
                                                     childSkills[i].id
-                                                );
-                                            } else if (
-                                                childSkills[i].type == 'domain'
-                                            ) {
-                                                makeMastered(
-                                                    userId,
-                                                    childSkills[i]
                                                 );
                                             }
                                             // If super type skills, make their subskills accessible.
@@ -1612,9 +1782,6 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                 }
                             });
                         }
-
-                        // This is to make any ancestor domains mastered.
-                        MakeAncestorDomainsMastered(skill, userId);
                     } catch (err) {
                         next(err);
                     }
@@ -1630,207 +1797,41 @@ router.post('/make-mastered/:userId', (req, res, next) => {
     }
 });
 
-function MakeAncestorDomainsMastered(skill, userId) {
-    // Exit if this is a first level node.
-    if (skill.parent == 0) {
-        return;
-    }
-
-    // Get an updated list of user skills.
-    let sqlQuery = `
-SELECT skills.id, name, is_accessible, is_mastered, type, parent
-FROM skills
-LEFT OUTER JOIN user_skills
-ON skills.id = user_skills.skill_id
-WHERE user_skills.user_id = ${conn.escape(userId)}
-
-UNION
-SELECT skills.id, name, "", "", type, parent
-FROM skills
-WHERE skills.id NOT IN 
-
-(SELECT skills.id
-FROM skills
-LEFT OUTER JOIN user_skills
-ON skills.id = user_skills.skill_id
-WHERE user_skills.user_id = ${conn.escape(userId)})
-ORDER BY id;`;
-
-    conn.query(sqlQuery, (err, results) => {
-        try {
-            if (err) {
-                throw err;
-            }
-            let userSkills = results;
-
-            // Go up hierarchy to find the first category node we can.
-            for (let i = 0; i < userSkills.length; i++) {
-                // Find recently mastered skill's parent.
-                if (skill.parent == userSkills[i].id) {
-                    let parent = userSkills[i];
-
-                    // Check if it is a category.
-                    if (parent.type == 'domain') {
-                        // If it is, make it mastered.
-                        let sqlQuery = `
-                        INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible) 
-                        VALUES(${conn.escape(userId)},
-                        ${conn.escape(parent.id)},
-                        1, 1) 
-                        ON DUPLICATE KEY UPDATE is_mastered= 1, is_accessible=1;
-                        `;
-                        conn.query(sqlQuery, (err) => {
-                            try {
-                                if (err) {
-                                    throw err;
-                                }
-                                // Run again for parent.
-                                MakeAncestorDomainsMastered(parent, userId);
-                            } catch (err) {
-                                console.log(err);
-                                return;
-                            }
-                        });
-                    } else {
-                        return;
-                    }
-                }
-            }
-        } catch (err) {
-            console.log(err);
-        }
-    });
-}
-
 /*
- * TODO or TO DELETE.
- * For mastering domains. This has not been implemented and is not working.
- * The idea is that categories / domains get mastered only when all of the descendant skills
- * have been mastered.
- *
- * This is currently replaced by the above function, which simply makes a domain/category mastered
- * as soon as any of its descendants are mastered. This is done so as to get a line on the skill trees
- * that comes from the root node to the mastered node.
+ * To recommend the next skill after completing one.
+ * Shows the next node in the "branch".
  */
+router.get(
+    '/get-next-accessible-in-branch/:userId/:skillId',
+    (req, res, next) => {
+        if (req.session.userName) {
+            let sqlQuery = `
+        	SELECT skills.id, name, url, level
+            FROM skills
+            JOIN user_skills
+            ON skills.id = user_skills.skill_id
+            WHERE user_id = '${req.params.userId}'
+            AND skills.parent = ${req.params.skillId}
+            AND is_accessible = 1
+            AND (is_mastered IS NULL OR is_mastered <> 1);
+            `;
 
-function FindFirstAncestorDomain(skill, userId) {
-    // Exit if this is a first level node.
-    if (skill.parent == 0) {
-        return;
-    }
-
-    // Get an updated list of user skills.
-
-    let sqlQuery = `
-SELECT skills.id, name, is_accessible, is_mastered, type, parent
-FROM skills
-LEFT OUTER JOIN user_skills
-ON skills.id = user_skills.skill_id
-WHERE user_skills.user_id = ${conn.escape(userId)}
-
-UNION
-SELECT skills.id, name, "", "", type, parent
-FROM skills
-WHERE skills.id NOT IN 
-
-(SELECT skills.id
-FROM skills
-LEFT OUTER JOIN user_skills
-ON skills.id = user_skills.skill_id
-WHERE user_skills.user_id = ${conn.escape(userId)})
-ORDER BY id;`;
-
-    conn.query(sqlQuery, (err, results) => {
-        try {
-            if (err) {
-                throw err;
-            }
-
-            let userSkills = results;
-            // Go up hierarchy to find the first category node we can.
-            // Store that as "domain".
-            //
-            // Go through all skills.
-            for (let i = 0; i < userSkills.length; i++) {
-                // Find skill parent.
-                if (skill.parent == userSkills[i].id) {
-                    let parent = userSkills[i];
-                    if (parent.type == 'domain') {
-                        // Get all of the domain's children.
-                        let domainChildren = [];
-                        for (let j = 0; j < userSkills.length; j++) {
-                            if (userSkills[j].parent == parent.id) {
-                                domainChildren.push(userSkills[j]);
-                            }
-                        }
-                        // Save it and move to next function.
-                        CheckIfDomainIsMastered(parent, domainChildren, userId);
-                    } else {
-                        // Run again for parent.
-                        FindFirstAncestorDomain(userSkills, parent);
+            conn.query(sqlQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
                     }
-                }
-            }
-        } catch (err) {
-            console.log(err);
-        }
-    });
-}
 
-// Recursively check the domain's children, excluding subskills, including domains.
-// If they are all mastered, the domain gets mastered.
-// If the domain gets mastered, function then needs to find the next domain up and
-// go again with that one.
-function CheckIfDomainIsMastered(domain, parentChildren, userId) {
-    let domainIsNowMastered = true;
-    var i = parentChildren.length;
-    while (i--) {
-        // Check if mastered.
-        // If not, exit.
-        if (parentChildren[i].is_mastered != 1) {
-            domainIsNowMastered = false;
-            return;
-        }
-        // If yes, check if its descendants are also mastered.
-        else {
-            if (typeof parentChildren[i] !== 'undefined') {
-                /*
-                 * Run the above function again recursively.
-                 */
-                if (
-                    parentChildren[i].children &&
-                    Array.isArray(parentChildren[i].children) &&
-                    parentChildren[i].children.length > 0
-                )
-                    CheckIfDomainIsMastered(parentChildren[i].children);
-            }
+                    res.json(results);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        } else {
+            res.redirect('/login');
         }
     }
-    MakeDomainMastered(domain, userId);
-}
-
-// Need to make the domain mastered,
-// and then check its first ancestor domain, to see if it should
-// be made mastered.
-function MakeDomainMastered(domain, userId) {
-    let sqlQuery = `
-INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible) 
-VALUES(${conn.escape(userId)}, ${conn.escape(domain.id)}, 1, 1) 
-ON DUPLICATE KEY UPDATE is_mastered= 1, is_accessible=1;
-`;
-
-    conn.query(sqlQuery, (err, results) => {
-        try {
-            if (err) {
-                throw err;
-            }
-            // Then need to check if this domain's parent is ready to become mastered.
-            FindFirstAncestorDomain(domain, userId);
-        } catch (err) {
-            console.log(err);
-        }
-    });
-}
+);
 
 router.get('*', (req, res) => {
     res.redirect('/');

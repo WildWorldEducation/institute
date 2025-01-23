@@ -437,7 +437,7 @@ export default {
                     (this.score / this.numMCQuestions) * 100 >=
                     this.settingsStore.passMark
                 ) {
-                    this.MakeMastered(this.skill);
+                    await this.MakeMastered(this.skill);
                     this.isQuizPassed = true;
                     // show result page and hide assessment part
                     this.assessmentStatus = 'pass';
@@ -580,7 +580,7 @@ export default {
                         (this.score / this.questions.length) * 100 >=
                         this.settingsStore.passMark
                     ) {
-                        this.MakeMastered(this.skill);
+                        await this.MakeMastered(this.skill);
                         this.isQuizPassed = true;
                         // show result page and hide assessment part
                         this.assessmentStatus = 'pass';
