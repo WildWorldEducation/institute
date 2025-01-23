@@ -81,7 +81,6 @@ export default {
 
     async created() {
         await this.getSkill();
-        await this.getGoals();
         this.isSkillLoaded = true;
         if (this.sessionDetailsStore.isLoggedIn) {
             await this.getUserSkills();
