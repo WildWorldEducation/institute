@@ -884,26 +884,6 @@ export default {
                 }
             }
         },
-        // toggleHideChildren(node) {
-        //     var url =
-        //         '/user-skills/hide-children/' +
-        //         this.userDetailsStore.userId +
-        //         '/' +
-        //         node.id;
-        //     fetch(url).then(() => {
-        //         this.reloadTree(node, this.truncateLevel, this.subjectFilters);
-        //     });
-        // },
-        // toggleShowChildren(node) {
-        //     var url =
-        //         '/user-skills/show-children/' +
-        //         this.userDetailsStore.userId +
-        //         '/' +
-        //         node.id;
-        //     fetch(url).then(() => {
-        //         this.reloadTree(node, this.truncateLevel, this.subjectFilters);
-        //     });
-        // },
         async reloadTree(node) {
             this.showSkillPanel = false;
             await this.skillTreeStore.getVerticalTreeUserSkills(

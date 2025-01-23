@@ -19,6 +19,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
         // For Radial Tree
         userSkillsSubSkillsSeparate: [],
         studentSkills: [],
+        studentSkillTree: [],
         // WE Save the node that can appear in result for later use
         searchResultNodes: null
     }),
@@ -39,7 +40,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
         },
         // API call for Full Vertical skill tree.
         async getVerticalTreeUserSkills(level, subjects, isUnlockedOnly) {
-            const userDetailsStore = useUserDetailsStore();           
+            const userDetailsStore = useUserDetailsStore();
 
             const result = await fetch(
                 '/user-skills/filter-by-cohort/full-vertical-tree/' +
@@ -96,6 +97,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
             );
             this.userSkillsSubSkillsSeparate = await result.json();
         },
+        // API call for instructor student Collapsible Tree
         async getStudentSkills(studentId) {
             // API call for skill tree.
             const result = await fetch(
@@ -103,6 +105,22 @@ export const useSkillTreeStore = defineStore('skillTree', {
             );
 
             this.studentSkills = await result.json();
+        },
+        // API call for student ree that instructor uses to monitor progress.
+        async getStudentSkillTree(studentId, level, subjects, isUnlockedOnly) {
+            // API call for skill tree.
+            const result = await fetch(
+                '/user-skills/filter-by-cohort/instructor-student-vertical-tree/' +
+                    studentId +
+                    '?level=' +
+                    level +
+                    '&subjects=' +
+                    subjects +
+                    '&isUnlockedOnly=' +
+                    isUnlockedOnly
+            );
+
+            this.studentSkillTree = await result.json();
         },
         async findInStudentSkill(skillName) {
             const result = this.searchResultNodes.find(

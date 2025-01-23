@@ -122,8 +122,6 @@ export default {
             // turn on the show details flag
             this.showDetails = true;
             if (this.user.role == 'student') this.getInstructor();
-            console.log('details change avatar: ');
-            console.log(user);
         },
         getInstructor() {
             // Get the instructor's user id.
