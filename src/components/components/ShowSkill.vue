@@ -172,9 +172,18 @@ export default {
                 this.skill
             );
             this.isMastered = true;
-            this.getUserSkills();
+            await this.getUserSkills();
             await this.getNextSkillsInBranch();
             this.showCategoryCompletedModal = true;
+        },
+        async getNextSkillsInBranch() {
+            const result = await fetch(
+                '/user-skills/get-next-accessible-in-branch/' +
+                    this.userDetailsStore.userId +
+                    '/' +
+                    this.skillId
+            );
+            this.nextSkillsInBranch = await result.json();
         },
         closeFlagModal() {
             this.showModal = false;
@@ -347,7 +356,6 @@ export default {
                 });
             });
         },
-
         // Tutorial
         async checkIfTutorialComplete() {
             const result = await fetch(
@@ -407,16 +415,6 @@ export default {
                 headers: { 'Content-Type': 'application/json' }
             };
             fetch(url, requestOptions);
-        },
-        async getNextSkillsInBranch() {
-            const result = await fetch(
-                '/user-skills/get-next-accessible-in-branch/' +
-                    this.userDetailsStore.userId +
-                    '/' +
-                    this.skillId
-            );
-            this.nextSkillsInBranch = await result.json();
-            console.log(this.nextSkillsInBranch);
         }
     },
     /**
@@ -1089,7 +1087,8 @@ export default {
     <!-- Category skill completed, and next skills in branch modal -->
     <div v-if="showCategoryCompletedModal" class="modal">
         <div class="modal-content">
-            <p>You have completed {{ skill.name }}!</p>
+            <h1 class="heading h5">You have completed {{ skill.name }}!</h1>
+            <p>The next skills in this branch are:</p>
             <div v-for="nextSkill in nextSkillsInBranch">
                 <router-link
                     :class="{
@@ -1099,7 +1098,7 @@ export default {
                         college: nextSkill.level == 'college',
                         phd: nextSkill.level == 'phd'
                     }"
-                    class="skill-link btn"
+                    class="skill-link btn mb-1"
                     :to="`/skills/${nextSkill.url}`"
                     target="_blank"
                 >
@@ -1379,7 +1378,6 @@ export default {
 /* Tablet Styling */
 @media (min-width: 577px) and (max-width: 1023px) {
     .modal-content {
-        margin-top: 60%;
         width: 70%;
     }
 
@@ -1401,5 +1399,29 @@ export default {
         margin: auto;
         margin-top: 30%;
     }
+}
+
+/* For next skill in branch suggestion */
+/* Level colors */
+.grade-school {
+    background-color: #40e0d0;
+}
+.middle-school {
+    background-color: #33a133;
+    color: white;
+}
+.high-school {
+    background-color: #ffd700;
+}
+.college {
+    background-color: #ffa500;
+}
+.phd {
+    background-color: #ff0000;
+    color: white;
+}
+
+.skill-link:hover {
+    border: 1px solid black;
 }
 </style>
