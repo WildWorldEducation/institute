@@ -129,7 +129,8 @@ export default {
 
 <template>
     <div class="container-fluid position-absolute legend-div">
-        <div v-if="sessionDetailsStore.isLoggedIn" class="mobile-legend">
+        <!-- Mobile view: Search bar and centre  -->
+        <div class="mobile-legend">
             <div class="search-mobile-row">
                 <!-- Search feature -->
                 <SkillTreeSearchBar
@@ -143,15 +144,24 @@ export default {
                 </button>
             </div>
         </div>
-        <div v-if="sessionDetailsStore.isLoggedIn" class="tablet-and-up-legend">
+        <!-- Tablet and up view: Search bar, centre, expand all, print buttons -->
+        <div class="tablet-and-up-legend">
             <div class="d-flex justify-content-between">
-                <!-- Search bar, reset, expand all, print buttons -->
-                <!-- Search Feature -->
-                <SkillTreeSearchBar
-                    class="ms-2"
-                    :findNode="handleChooseResult"
-                    :clearResults="clearResult"
-                />
+                <div>
+                    <!-- Search bar -->
+                    <SkillTreeSearchBar
+                        class=""
+                        :findNode="handleChooseResult"
+                        :clearResults="clearResult"
+                    />
+                    <select class="form-select">
+                        <option selected value="custom">
+                            Choose your level
+                        </option>
+                        <option value="custom">Custom pathway</option>
+                    </select>
+                </div>
+                <!-- Buttons -->
                 <div class="d-flex justify-content-end">
                     <!-- Reset Button -->
                     <button class="btn primary-btn me-2" @click="resetPos()">
@@ -164,6 +174,7 @@ export default {
                     >
                         Print
                     </button>
+                    <!-- Restart Tutorial button -->
                     <button class="btn primary-btn" @click="restartTutorial">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -180,9 +191,6 @@ export default {
                     </button>
                 </div>
             </div>
-        </div>
-        <div v-else class="alert alert-warning" role="alert">
-            You cannot interact with the tree until signed in
         </div>
     </div>
 
