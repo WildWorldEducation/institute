@@ -3,7 +3,7 @@ import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 
 import SkillTreeSearchBar from '../components/skills-tree-search-bar/SkillTreeSearchBar.vue';
-import MyTidyTree from '../components/skilltrees/MyTidyTree.vue';
+import Pathways from '../components/skilltrees/Pathways.vue';
 
 export default {
     setup() {
@@ -58,7 +58,7 @@ export default {
     mounted() {
         this.GetGoogleLoginResult();
     },
-    components: { MyTidyTree, SkillTreeSearchBar },
+    components: { Pathways, SkillTreeSearchBar },
     methods: {
         resetPos() {
             this.$refs.childComponent.resetPos();
@@ -189,7 +189,7 @@ export default {
     <!-- Display loading screen while asynchronous call is made. -->
     <Suspense>
         <template #default>
-            <MyTidyTree ref="childComponent" />
+            <Pathways ref="childComponent" />
         </template>
         <template #fallback>
             <span>Loading...</span>
