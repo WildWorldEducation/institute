@@ -243,8 +243,11 @@ export default {
             this.hiddenCanvasContext.restore();
         },
         drawNode(node) {
+            // Make sure the nodes have solid outlines
+            this.context.setLineDash([]);
+
             let ctx1 = this.context;
-            let ctx2 = this.hiddenCanvasContext;
+            //   let ctx2 = this.hiddenCanvasContext;
 
             // Visible context.
             // If not a domain, make node a circle.
@@ -328,26 +331,26 @@ export default {
             }
 
             // Hidden context.
-            if (node.data.type != 'domain') {
-                ctx2.beginPath();
-                ctx2.moveTo(node.y, node.x);
-                ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
-                ctx2.fill();
-            } else {
-                ctx2.beginPath();
-                ctx2.moveTo(node.y, node.x - 10);
-                // top left edge.
-                ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
-                // bottom left edge.
-                ctx2.lineTo(node.y, node.x - 10 + 20);
-                // bottom right edge.
-                ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
-                // closing the path automatically creates the top right edge.
-                ctx2.closePath();
-                ctx2.lineWidth = 2;
-                ctx2.fill();
-                ctx2.stroke();
-            }
+            // if (node.data.type != 'domain') {
+            //     ctx2.beginPath();
+            //     ctx2.moveTo(node.y, node.x);
+            //     ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+            //     ctx2.fill();
+            // } else {
+            //     ctx2.beginPath();
+            //     ctx2.moveTo(node.y, node.x - 10);
+            //     // top left edge.
+            //     ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
+            //     // bottom left edge.
+            //     ctx2.lineTo(node.y, node.x - 10 + 20);
+            //     // bottom right edge.
+            //     ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
+            //     // closing the path automatically creates the top right edge.
+            //     ctx2.closePath();
+            //     ctx2.lineWidth = 2;
+            //     ctx2.fill();
+            //     ctx2.stroke();
+            // }
         },
         drawLink(link) {
             const linkGenerator = d3
@@ -711,7 +714,7 @@ export default {
 };
 </script>
 
-<template>   
+<template>
     <!-- Loading animation -->
     <div
         v-if="isLoading == true"
