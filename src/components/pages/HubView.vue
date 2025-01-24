@@ -8,6 +8,7 @@ import News from '../components/hub-components/News.vue';
 import MarkAssessment from '../components/hub-components/MarkAssessment.vue';
 import HubStudentQuestionList from '../components/hub-components/HubStudentQuestionList.vue';
 import ReputationEvents from '../components/hub-components/ReputationEvents.vue';
+import PathwayGenerator from '../components/hub-components/PathwayGenerator.vue';
 
 // Import store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
@@ -55,7 +56,8 @@ export default {
         LastVisitedSkills,
         Goals,
         HubStudentQuestionList,
-        ReputationEvents
+        ReputationEvents,
+        PathwayGenerator
     },
     computed: {
         name() {
@@ -290,15 +292,25 @@ export default {
                 height="20"
                 fill="white"
             >
-                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                 <path
                     d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
                 />
             </svg>
         </button>
     </div>
+
     <div class="container min-vh-100">
-        <div class="row content-row">
+        <!-- Generate pathway bar -->
+        <div class="row mb-2">
+            <div class="col">
+                <PathwayGenerator />
+            </div>
+        </div>
+        <!-- Available Skills / Mark Assessments, 
+          Last Visited Skills / Student Suggested Questions,
+          Goals -->
+        <div class="row">
             <!-- Available Skills / Mark Assessments -->
             <div
                 class="col-lg-4 col-md-6 mb-2"
@@ -415,6 +427,7 @@ export default {
                 </div>
             </div>
         </div>
+        <!-- Notifications and Reputation Events -->
         <div class="row">
             <div class="col-lg-4 col-md-6 mb-2">
                 <div class="hub-component h-100">
@@ -456,6 +469,7 @@ export default {
                 </div>
             </div>
         </div>
+        <!-- News -->
         <div class="row">
             <div class="col">
                 <div class="hub-component h-100">
@@ -617,14 +631,6 @@ export default {
     max-width: 520px;
     font-size: 18px;
     /* Could be more or less, depending on screen size */
-}
-
-/* View Specific On Tablet */
-@media (min-width: 577px) and (max-width: 1023px) {
-    .content-row {
-        padding-bottom: 0px;
-        /* margin-bottom: 39px; */
-    }
 }
 
 /* Small devices (portrait phones) */

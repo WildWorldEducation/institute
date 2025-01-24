@@ -150,14 +150,13 @@ export default {
                 <div>
                     <!-- Search bar -->
                     <SkillTreeSearchBar
-                        class=""
+                        class="mb-2"
                         :findNode="handleChooseResult"
                         :clearResults="clearResult"
                     />
+                    <!-- Pathways selector -->
                     <select class="form-select">
-                        <option selected value="custom">
-                            Choose your level
-                        </option>
+                        <option selected value="custom">Choose pathway</option>
                         <option value="custom">Custom pathway</option>
                     </select>
                 </div>
