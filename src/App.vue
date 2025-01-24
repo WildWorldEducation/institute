@@ -130,7 +130,7 @@ export default {
                     id="navbarSupportedContent"
                 >
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
-                    <ul class="navbar-nav d-flex bg-white rounded p-2">
+                    <ul class="navbar-nav d-flex bg-white rounded pt-2 pb-2">
                         <div
                             v-if="
                                 !sessionDetailsStore.isLoggedIn &&
