@@ -1102,6 +1102,7 @@ router.get(
                                             j++
                                         ) {
                                             if (results[j].id == parentId) {
+                                                // Add accessible nodes
                                                 if (
                                                     results[i].is_accessible ==
                                                     1
@@ -1109,6 +1110,36 @@ router.get(
                                                     results[j].children.push(
                                                         results[i]
                                                     );
+                                                }
+                                                // For the case of super skills that are not accessible,
+                                                // but have accessible sub skills that should show
+                                                else {
+                                                    for (
+                                                        let k = 0;
+                                                        k < results.length;
+                                                        k++
+                                                    ) {
+                                                        if (
+                                                            results[k].parent ==
+                                                            results[i].id
+                                                        ) {
+                                                            if (
+                                                                results[k]
+                                                                    .type ==
+                                                                    'sub' &&
+                                                                results[k]
+                                                                    .is_accessible ==
+                                                                    1
+                                                            ) {
+                                                                results[
+                                                                    j
+                                                                ].children.push(
+                                                                    results[i]
+                                                                );
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
