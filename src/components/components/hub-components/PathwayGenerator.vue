@@ -61,4 +61,15 @@ export default {
     width: 100%;
     margin-top: 2px;
 }
+
+/* Search bar placeholder */
+::placeholder {
+    color: black;
+    opacity: 1; /* Firefox */
+}
+
+::-ms-input-placeholder {
+    /* Edge 12 -18 */
+    color: black;
+}
 </style>

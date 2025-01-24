@@ -38,7 +38,7 @@ export default {
 </script>
 
 <template>
-    <h2 class="secondary-heading h4">Available Skills</h2>
+    <h2 class="secondary-heading h5">Available Skills</h2>
     <div id="skill-list">
         <div v-for="availableSkill in availableSkills">
             <router-link
@@ -87,7 +87,7 @@ export default {
     overflow-x: hidden;
     max-height: 300px;
     border-radius: 10px;
-    background-color: rgb(33, 37, 41);
+    /* background-color: rgb(33, 37, 41); */
 }
 
 #skill-list div {

@@ -486,7 +486,7 @@ p {
 }
 
 .profile-btn {
-    padding: 0px;
+    padding: 0px !important;
     background-color: transparent;
 }
 

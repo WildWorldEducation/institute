@@ -42,7 +42,7 @@ export default {
 </script>
 
 <template>
-    <h2 class="secondary-heading h4">Goals</h2>
+    <h2 class="secondary-heading h5">Goals</h2>
     <div id="goal-list">
         <div v-for="goal in goals">
             <router-link
@@ -94,7 +94,7 @@ export default {
 #goal-list {
     overflow-y: auto;
     max-height: 300px;
-    background-color: rgb(33, 37, 41);
+    /* background-color: rgb(33, 37, 41); */
     border-radius: 10px;
 }
 

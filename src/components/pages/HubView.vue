@@ -3,11 +3,9 @@
 import StudentProgress from '../components/hub-components/StudentProgress.vue';
 import LastVisitedSkills from '../components/hub-components/LastVisitedSkills.vue';
 import Goals from '../components/hub-components/Goals.vue';
-import Notifications from '../components/hub-components/Notifications.vue';
-import News from '../components/hub-components/News.vue';
 import MarkAssessment from '../components/hub-components/MarkAssessment.vue';
 import HubStudentQuestionList from '../components/hub-components/HubStudentQuestionList.vue';
-import ReputationEvents from '../components/hub-components/ReputationEvents.vue';
+
 import PathwayGenerator from '../components/hub-components/PathwayGenerator.vue';
 
 // Import store.
@@ -49,14 +47,11 @@ export default {
         };
     },
     components: {
-        News,
-        Notifications,
         StudentProgress,
         MarkAssessment,
         LastVisitedSkills,
         Goals,
         HubStudentQuestionList,
-        ReputationEvents,
         PathwayGenerator
     },
     computed: {
@@ -284,13 +279,13 @@ export default {
 <template>
     <!-- Tutorial button -->
     <div class="container-fluid d-flex justify-content-end my-1">
-        <button class="btn primary-btn" @click="restartTutorial">
+        <button class="btn" @click="restartTutorial">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 192 512"
                 width="20"
                 height="20"
-                fill="white"
+                class="primary-icon"
             >
                 <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                 <path
@@ -302,7 +297,7 @@ export default {
 
     <div class="container min-vh-100">
         <!-- Generate pathway bar -->
-        <div class="row mb-2">
+        <div class="row mb-5">
             <div class="col">
                 <PathwayGenerator />
             </div>
@@ -424,56 +419,6 @@ export default {
                             next
                         </button>
                     </div>
-                </div>
-            </div>
-        </div>
-        <!-- Notifications and Reputation Events -->
-        <div class="row">
-            <div class="col-lg-4 col-md-6 mb-2">
-                <div class="hub-component h-100">
-                    <Notifications />
-                </div>
-            </div>
-            <div
-                v-if="
-                    userDetailsStore.role == 'student' ||
-                    userDetailsStore.role == 'instructor'
-                "
-                class="col-lg-4 col-md-6 mb-2"
-            >
-                <div class="hub-component h-100">
-                    <ReputationEvents />
-                    <!-- Tooltip -->
-                    <div
-                        v-if="
-                            showTutorialTip5 &&
-                            userDetailsStore.role == 'student'
-                        "
-                        class="info-panel bg-light rounded p-2 mb-2"
-                    >
-                        <p>
-                            This section shows any increases to your reputation
-                            score.
-                        </p>
-                        <p>
-                            You can increase your reputation score by helping to
-                            improve the platform in a variety of ways.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(5)"
-                        >
-                            close
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- News -->
-        <div class="row">
-            <div class="col">
-                <div class="hub-component h-100">
-                    <News />
                 </div>
             </div>
         </div>
