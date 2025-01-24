@@ -1001,7 +1001,7 @@ router.get(
             let isInCohortSQLQuery = `
         SELECT cohort_id 
         FROM skill_tree.cohorts_users
-        WHERE user_id = ${conn.escape(req.params.userId)};
+        WHERE user_id = ${conn.escape(req.params.studentId)};
         `;
             conn.query(isInCohortSQLQuery, (err, results) => {
                 try {
@@ -1021,7 +1021,7 @@ router.get(
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id
-            WHERE user_skills.user_id = ${conn.escape(req.params.userId)}
+            WHERE user_skills.user_id = ${conn.escape(req.params.studentId)}
             AND is_filtered = 'available' 
             AND is_deleted = 0
             AND level IN (${levelsToShow})
@@ -1041,7 +1041,7 @@ router.get(
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id
-            WHERE user_skills.user_id = ${conn.escape(req.params.userId)}) 
+            WHERE user_skills.user_id = ${conn.escape(req.params.studentId)}) 
             AND is_filtered = 'available' 
             AND is_deleted = 0           
             AND skills.id NOT IN 
