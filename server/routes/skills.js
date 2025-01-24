@@ -55,7 +55,6 @@ Routes
 --------------------------------------------*/
 /**
  * Create New Item
- *
  */
 router.post(
     '/add',
@@ -326,8 +325,6 @@ router.post(
 
 /**
  * Get All Items
- *
- * @return response()
  */
 // Used for choosing parent skill when adding a new skill.
 router.get('/list', (req, res, next) => {
@@ -496,9 +493,7 @@ router.get('/guest-mode/full-vertical-tree', (req, res, next) => {
 // Filtered Nested List - for "Instructor" and "Editor" roles - Collapsable Tree.
 router.get('/filtered-nested-list', (req, res, next) => {
     if (req.session.userName) {
-        /*
-         * Apply grade level filters
-         */
+        //Apply grade level filters
         // Level will be sent in query param (eg: ?level='middle_school')
         const level = req.query.level;
 
@@ -577,8 +572,6 @@ router.get('/filtered-nested-list', (req, res, next) => {
 
 /**
  * Get Single Item
- *
- * @return response()
  */
 router.get('/show/:id', (req, res, next) => {
     let skill;
@@ -789,8 +782,6 @@ router.get('/last-visited', (req, res, next) => {
 
 /**
  * Edit Skill
- *
- * @return response()
  */
 router.put(
     '/:id/edit',
@@ -897,8 +888,6 @@ router.put(
 
 /**
  * Submit skill edit for review.
- *
- * @return response()
  */
 router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {
@@ -952,8 +941,6 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
 
 /**
  * Accept skill submitted for review.
- *
- * @return response()
  */
 router.put(
     '/:id/edit-for-review/save',
@@ -1116,8 +1103,6 @@ router.put(
 
 /**
  * Get all skills submitted for review.
- *
- * @return response()
  */
 // Used for choosing parent skill when adding a new skill.
 router.get('/submitted-for-review/list', (req, res, next) => {
@@ -1453,6 +1438,9 @@ router.post(
     }
 );
 
+/*
+ * Search
+ */
 // For the search feature on the Collapsable Skill Tree.
 router.get('/name-list', (req, res, next) => {
     if (req.session) {
