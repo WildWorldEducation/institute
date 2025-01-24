@@ -1001,7 +1001,7 @@ router.get(
             let isInCohortSQLQuery = `
         SELECT cohort_id 
         FROM skill_tree.cohorts_users
-        WHERE user_id = ${conn.escape(req.params.userId)};
+        WHERE user_id = ${conn.escape(req.params.studentId)};
         `;
             conn.query(isInCohortSQLQuery, (err, results) => {
                 try {
@@ -1021,7 +1021,7 @@ router.get(
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id
-            WHERE user_skills.user_id = ${conn.escape(req.params.userId)}
+            WHERE user_skills.user_id = ${conn.escape(req.params.studentId)}
             AND is_filtered = 'available' 
             AND is_deleted = 0
             AND level IN (${levelsToShow})
@@ -1041,7 +1041,7 @@ router.get(
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id
-            WHERE user_skills.user_id = ${conn.escape(req.params.userId)}) 
+            WHERE user_skills.user_id = ${conn.escape(req.params.studentId)}) 
             AND is_filtered = 'available' 
             AND is_deleted = 0           
             AND skills.id NOT IN 
@@ -1102,6 +1102,7 @@ router.get(
                                             j++
                                         ) {
                                             if (results[j].id == parentId) {
+                                                // Add accessible nodes
                                                 if (
                                                     results[i].is_accessible ==
                                                     1
@@ -1109,6 +1110,36 @@ router.get(
                                                     results[j].children.push(
                                                         results[i]
                                                     );
+                                                }
+                                                // For the case of super skills that are not accessible,
+                                                // but have accessible sub skills that should show
+                                                else {
+                                                    for (
+                                                        let k = 0;
+                                                        k < results.length;
+                                                        k++
+                                                    ) {
+                                                        if (
+                                                            results[k].parent ==
+                                                            results[i].id
+                                                        ) {
+                                                            if (
+                                                                results[k]
+                                                                    .type ==
+                                                                    'sub' &&
+                                                                results[k]
+                                                                    .is_accessible ==
+                                                                    1
+                                                            ) {
+                                                                results[
+                                                                    j
+                                                                ].children.push(
+                                                                    results[i]
+                                                                );
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }

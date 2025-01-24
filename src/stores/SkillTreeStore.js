@@ -106,7 +106,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
 
             this.studentSkills = await result.json();
         },
-        // API call for student ree that instructor uses to monitor progress.
+        // API call for student tree that instructor uses to monitor progress.
         async getStudentSkillTree(studentId, level, subjects, isUnlockedOnly) {
             // API call for skill tree.
             const result = await fetch(

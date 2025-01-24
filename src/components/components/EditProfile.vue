@@ -783,7 +783,11 @@ export default {
                     </div>
                 </div>
                 <div class="d-flex flex-row-reverse gap-2">
-                    <div type="button" class="btn green-btn" @click="Submit()">
+                    <div
+                        type="button"
+                        class="btn primary-btn"
+                        @click="Submit()"
+                    >
                         Yes
                     </div>
                     <div class="btn red-btn" @click="showWarnModal = false">
