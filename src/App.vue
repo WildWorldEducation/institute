@@ -92,7 +92,7 @@ export default {
             :class="{
                 'fixed-top':
                     $route.name == 'skill-tree' ||
-                    $route.name == 'my-skill-tree' ||
+                    $route.name == 'pathways' ||
                     $route.name == 'radial-tree' ||
                     $route.name == 'student-vertical-tree'
             }"
@@ -179,9 +179,9 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink
-                                to="/my-skill-tree"
+                                to="/pathways"
                                 class="nav-link close-on-click"
-                                >Customizable Tree</RouterLink
+                                >Pathways</RouterLink
                             >
                         </li>
 
