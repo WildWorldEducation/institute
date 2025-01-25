@@ -1761,7 +1761,7 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
         const inputVector = response.data[0].embedding;
         let sqlQuery = `SELECT *
                     FROM skills_vector
-                    ORDER BY VEC_DISTANCE(skills_vector.embedding,
+                    ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
                           VEC_FromText('[${inputVector}]'))
                     LIMIT 25`;
         // sql for instructor and editor account

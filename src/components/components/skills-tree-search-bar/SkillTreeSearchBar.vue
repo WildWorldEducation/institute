@@ -146,7 +146,7 @@ export default {
         },
         async getContextResults(searchText) {
             this.waitForSever = true;
-            const url = `/skills//find-with-context`;
+            const url = `/skills/find-with-context`;
             const requestOption = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
