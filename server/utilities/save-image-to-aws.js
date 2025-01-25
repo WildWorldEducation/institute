@@ -166,6 +166,7 @@ const saveUserAvatarToAWS = async (userId, base64Image) => {
 
     // Extract MIME type and decode Base64
 
+
     const match = base64Image.match(/^data:(image\/(jpeg|png));base64,/);
     if (!match) {
         throw new Error('Invalid Base64 image format or unsupported image type (only JPEG and PNG are allowed)');
