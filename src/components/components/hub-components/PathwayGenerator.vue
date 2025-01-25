@@ -68,7 +68,6 @@ export default {
     .search-bar {
         margin-left: auto;
         margin-right: auto;
-        max-width: 260px;
     }
 }
 
