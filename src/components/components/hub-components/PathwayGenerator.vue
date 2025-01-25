@@ -2,10 +2,26 @@
 export default {
     setup() {},
     data() {
-        return {};
+        return {
+            query: ''
+        };
     },
     async created() {},
-    methods: {}
+    methods: {
+        async createPathway() {
+            let url = '/skills/find-skills-for-pathway';
+            const requestOption = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    query: this.query
+                })
+            };
+            const result = await fetch(url, requestOption);
+            const readableResult = await result.json();
+            console.log(readableResult);
+        }
+    }
 };
 </script>
 
@@ -16,9 +32,10 @@ export default {
             <input
                 type="text"
                 class="pathways-input"
-                placeholder="What do you want to learn?"
+                placeholder="What skill or profession do you want to learn?"
+                v-model="query"
             />
-            <button class="btn primary-btn rounded p-2">
+            <button @click="createPathway" class="btn primary-btn rounded p-2">
                 <!-- Magnifying glass icon -->
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

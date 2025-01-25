@@ -1781,6 +1781,37 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
     }
 });
 
+// For the Pathways feature, to take a search query and return the most suitable skills
+router.post(
+    '/find-skills-for-pathway',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const response = await openai.embeddings.create({
+                model: 'text-embedding-3-small',
+                input: req.body.query,
+                dimensions: 720
+            });
 
+            const inputVector = response.data[0].embedding;
+            let sqlQuery = `SELECT *
+                    FROM skills_vector
+                    ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
+                          VEC_FromText('[${inputVector}]'))
+                    LIMIT 25`;
+            // sql for instructor and editor account
+            conn.query(sqlQuery, (err, results) => {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            });
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.end;
+        }
+    }
+);
 
 module.exports = router;
