@@ -222,7 +222,7 @@ export default {
 
         // =================================================================================
         // For the loading animation.
-        await this.getIconPath();
+        await this.getIconData();
 
         this.isLoading = false;
     },
@@ -1282,7 +1282,7 @@ export default {
             const resData = await res.json();
             console.log(resData);
         },
-        async getIconPath() {
+        async getIconData() {
             const res = await fetch('/skills/icon-list');
             const resData = await res.json();
             // Prepare the icon path array into a hashmap/dictionary for even better performant
@@ -1290,29 +1290,6 @@ export default {
                 resData.map((icon) => [icon.url, icon.icon])
             );
         },
-        async fetchIcon() {
-            const res = await fetch('/skills/generate-skill-icon');
-            const resData = await res.json();
-        },
-
-        async uploadIcon() {
-            const fetchOption = {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    skillUrl: '13_Century_British_Life',
-                    imageData: this.iconDictionary['13_Century_British_Life']
-                })
-            };
-
-            const res = await fetch('/skills/add-icon-to-aws', fetchOption);
-            const resData = await res.json();
-            console.log(resData);
-        },
-
         drawNodeCircle(ctx, node) {
             const ctx1 = ctx;
             if (node.data.type != 'domain') {
@@ -1607,11 +1584,14 @@ export default {
         drawPointingHand(node, ctx) {
             const img = new Image();
             img.src = this.handIcon;
-
-            if (node.children) {
-                ctx.drawImage(img, node.y + 3, node.x - 10, 20, 20);
+            if (this.scale > 0.6) {
+                if (node.children) {
+                    ctx.drawImage(img, node.y + 6, node.x - 10, 20, 20);
+                } else {
+                    ctx.drawImage(img, node.y + 185, node.x - 10, 20, 20);
+                }
             } else {
-                ctx.drawImage(img, node.y + 183, node.x - 10, 20, 20);
+                ctx.drawImage(img, node.y + 13, node.x - 10, 20, 20);
             }
         }
     }
