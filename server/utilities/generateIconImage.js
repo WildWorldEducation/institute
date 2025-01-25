@@ -15,7 +15,6 @@ const fs = require('fs');
 const { saveBase64ImageToBucket } = require('./save-image-to-aws');
 
 
-const iconImage = JSON.parse(fs.readFileSync('aiIcon.json', 'utf8'));
 
 const skillIconBucketName = process.env.S3_SKILL_ICON_BUCKET_NAME;
 
@@ -55,7 +54,6 @@ async function generateIconForSkill(skillName, skillUrl) {
 
 
 async function convertImageTo64X64(rawIcon, skillName) {
-    //const sampleImage = iconImage.data[0].b64_json
     let imgBuffer = Buffer.from(rawIcon, 'base64');
     const data = await sharp(imgBuffer).resize({ width: 50, height: 50 }).toBuffer();
     const resultBase64 = `data:image/png;base64,${data.toString('base64')}`
@@ -63,6 +61,8 @@ async function convertImageTo64X64(rawIcon, skillName) {
     console.log(resultBase64)
     return resultBase64;
 }
+
+
 
 
 module.exports = { generateIconForSkill, convertImageTo64X64 }

@@ -1748,24 +1748,11 @@ const openai = new OpenAI({
 //         res.json({ mess: 'fails' })
 //     }
 // })
-const vectorList = require('../../vector.json');
+
 const { generateIconForSkill, convertImageTo64X64 } = require('../utilities/generateIconImage');
 const { reactive } = require('vue');
 
-router.get('/insert-vectors-to-db', async (req, res) => {
-    try {
-        console.log(vectorList.rows.length);
-        const promises = [];
-        vectorList.rows.forEach((skillVector) => {
-            promises.push(insertSkillsVectorIntoDataBase(skillVector));
-        });
-        Promise.all(promises).then(res.json({ mess: 'seem good' }));
-    } catch (error) {
-        res.status = 500;
-        res.end;
-        console.error(error);
-    }
-});
+
 
 router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
     try {
