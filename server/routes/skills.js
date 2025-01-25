@@ -1733,8 +1733,9 @@ const openai = new OpenAI({
 //         res.json({ mess: 'fails' })
 //     }
 // })
-const vectorList = require('../../vector.json');
 
+// To insert vectors in the vector table in the DB.
+const vectorList = require('../../vector.json');
 router.get('/insert-vectors-to-db', async (req, res) => {
     try {
         console.log(vectorList.rows.length);
@@ -1750,6 +1751,8 @@ router.get('/insert-vectors-to-db', async (req, res) => {
     }
 });
 
+// Semantic search route, using the vector table
+// For the search bars in the skill tree and collapsible tree.
 router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
     try {
         const response = await openai.embeddings.create({
@@ -1777,5 +1780,7 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
         res.end;
     }
 });
+
+
 
 module.exports = router;
