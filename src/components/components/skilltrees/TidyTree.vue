@@ -7,9 +7,7 @@ import SkillPanel from './../SkillPanel.vue';
 import SliderControl from './SliderControl.vue';
 import JoystickControl from './JoystickControl.vue';
 
-// Algorithm.
 import * as d3 from 'd3';
-import { contours } from 'd3';
 
 export default {
     setup() {
@@ -382,80 +380,13 @@ export default {
             // Drawing Image
             if (node.data.type != 'domain') {
                 if (this.scale >= 0.75 && this.iconDictionary) {
-                    // find path in skill icon dictionary
-                    let path = this.iconDictionary[node.data.url];
-
-                    if (!path) {
-                        path = this.defaultIconImage;
-                        const img = new Image();
-
-                        img.src = path;
-
-                        let xPosition = node.y + 2;
-                        if (node.data.children.length > 0) {
-                            xPosition = xPosition - 178;
-                        }
-                        ctx1.save();
-                        this.roundedImage(
-                            ctx1,
-                            xPosition,
-                            node.x - 18,
-                            36,
-                            36,
-                            20
-                        );
-                        ctx1.clip();
-                        ctx1.drawImage(img, xPosition + 7, node.x - 10, 20, 20);
-                        ctx1.restore();
-                    } else {
-                        const img = new Image();
-
-                        img.src = path;
-
-                        let xPosition = node.y + 2;
-                        if (node.data.children.length > 0) {
-                            xPosition = xPosition - 178;
-                        }
-                        ctx1.save();
-                        this.roundedImage(
-                            ctx1,
-                            xPosition,
-                            node.x - 18,
-                            36,
-                            36,
-                            20
-                        );
-                        ctx1.clip();
-                        ctx1.drawImage(img, xPosition - 3, node.x - 18, 38, 38);
-                        ctx1.restore();
-                    }
+                    this.drawImage(node, ctx1);
                 }
             }
 
-            // Text.
+            // Drawing Text.
             if (this.scale > 0.6) {
-                // to avoid sharp artifacts with the stroke of the text.
-                ctx1.lineJoin = 'bevel';
-                // we move the skill name to the left and change the color if it a domain node
-                // using the non domain as if condition will save us some compute time as none domain node is more common
-                if (node.data.type != 'domain') {
-                    this.drawSkillName(node, ctx1, isSearched);
-                } else {
-                    ctx1.beginPath();
-                    ctx1.strokeStyle = '#FFF';
-                    ctx1.lineWidth = 4;
-                    ctx1.fillStyle = isSearched ? '#ff0000' : '#849cab';
-                    ctx1.direction = 'rtl';
-
-                    let xPosition = node.y + 5;
-
-                    ctx1.strokeText(
-                        node.data.skill_name,
-                        xPosition,
-                        node.x + 2
-                    );
-                    ctx1.fillText(node.data.skill_name, xPosition, node.x + 2);
-                }
+                this.drawNodeText(node, ctx1);
             }
 
             // If user currently searching for the node we draw addition details
@@ -1512,6 +1443,63 @@ export default {
             } else {
                 ctx.drawImage(img, node.y + 13, node.x - 10, 20, 20);
             }
+        },
+        drawImage(node, ctx1) {
+            // find path in skill icon dictionary
+            let path = this.iconDictionary[node.data.url];
+
+            if (!path) {
+                path = this.defaultIconImage;
+                const img = new Image();
+
+                img.src = path;
+
+                let xPosition = node.y + 2;
+                if (node.data.children.length > 0) {
+                    xPosition = xPosition - 178;
+                }
+                ctx1.save();
+                this.roundedImage(ctx1, xPosition, node.x - 18, 36, 36, 20);
+                ctx1.clip();
+                ctx1.drawImage(img, xPosition + 7, node.x - 10, 20, 20);
+                ctx1.restore();
+            }
+            // Draw a default error image if skill do not have icon
+            else {
+                const img = new Image();
+
+                img.src = path;
+
+                let xPosition = node.y + 2;
+                if (node.data.children.length > 0) {
+                    xPosition = xPosition - 178;
+                }
+                ctx1.save();
+                this.roundedImage(ctx1, xPosition, node.x - 18, 36, 36, 20);
+                ctx1.clip();
+                ctx1.drawImage(img, xPosition - 3, node.x - 18, 38, 38);
+                ctx1.restore();
+            }
+        },
+        drawNodeText(node, ctx1) {
+            // to avoid sharp artifacts with the stroke of the text.
+            ctx1.lineJoin = 'bevel';
+            // we move the skill name to the left and change the color if it a domain node
+            // using the non domain as if condition will save us some compute time as none domain node is more common
+            if (node.data.type != 'domain') {
+                this.drawSkillName(node, ctx1, isSearched);
+            } else {
+                ctx1.beginPath();
+                ctx1.strokeStyle = '#FFF';
+                ctx1.lineWidth = 4;
+                ctx1.fillStyle = isSearched ? '#ff0000' : '#849cab';
+                ctx1.direction = 'rtl';
+
+                let xPosition = node.y + 5;
+
+                ctx1.strokeText(node.data.skill_name, xPosition, node.x + 2);
+                ctx1.fillText(node.data.skill_name, xPosition, node.x + 2);
+            }
         }
     }
 };
@@ -1545,13 +1533,6 @@ export default {
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
         <JoystickControl class="d-lg-none" />
-        <div class="debug-console">
-            <div class="d-flex h-25">
-                <button type="button" @click="uploadIcon">
-                    Click me to test things !!!
-                </button>
-            </div>
-        </div>
     </div>
 </template>
 
@@ -1565,16 +1546,6 @@ export default {
     display: inline-block;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
-}
-
-.debug-console {
-    position: absolute;
-    left: 400px;
-    bottom: 100px;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    background-color: rgb(127, 255, 212);
 }
 
 @keyframes rotation {
