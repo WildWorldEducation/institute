@@ -42,7 +42,7 @@ export default {
 </script>
 
 <template>
-    <h2 class="secondary-heading h5">Goals</h2>
+    <h2 class="secondary-heading h5 bg-white rounded p-2">Goals</h2>
     <div id="goal-list">
         <div v-for="goal in goals">
             <router-link

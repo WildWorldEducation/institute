@@ -19,7 +19,9 @@ export default {
 </script>
 
 <template>
-    <h2 class="secondary-heading h5">Last Visited Skills</h2>
+    <h2 class="secondary-heading h5 bg-white rounded p-2">
+        Last Visited Skills
+    </h2>
     <div id="skill-list">
         <div v-for="skill in visitedSkills">
             <router-link

@@ -316,7 +316,7 @@ export default {
                         assessments.length === 0
                 }"
             >
-                <div class="hub-component h-100">
+                <div class="h-100">
                     <StudentProgress
                         v-if="userDetailsStore.role == 'student'"
                         :userId="userDetailsStore.userId"
@@ -361,7 +361,7 @@ export default {
                         questions.length === 0
                 }"
             >
-                <div class="hub-component h-100">
+                <div class="h-100">
                     <LastVisitedSkills
                         v-if="userDetailsStore.role == 'student'"
                         :userId="userDetailsStore.userId"
@@ -397,7 +397,7 @@ export default {
                 v-if="userDetailsStore.role == 'student'"
                 class="col-lg-4 col-md-6 mb-2"
             >
-                <div class="hub-component h-100">
+                <div class="h-100">
                     <Goals />
                     <!-- Tooltip -->
                     <div
@@ -536,12 +536,6 @@ export default {
     border-width: 2px;
     border-style: solid;
     z-index: 2001;
-}
-
-.hub-component {
-    background-color: white;
-    border-radius: 10px;
-    padding: 10px;
 }
 
 /* Modals */
