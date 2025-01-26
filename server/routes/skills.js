@@ -1749,8 +1749,8 @@ const openai = new OpenAI({
 //     }
 // })
 
-const { generateIconForSkill, convertImageTo64X64 } = require('../utilities/generateIconImage');
-const { reactive } = require('vue');
+const { convertImageTo64X64 } = require('../utilities/generateIconImage');
+
 
 
 
@@ -1782,50 +1782,6 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
     }
 });
 
-router.get('/base-64-data', async (req, res, next) => {
-
-    const base64 = await getImageBase64Data();
-    res.json({ result: base64 })
-});
-
-
-const fs1 = require('fs');
-function insertIntoSkillIconTable(url) {
-    const iconImage = JSON.parse(fs1.readFileSync('rawImage.json', 'utf8'));
-    let sqlQuery = `UPDATE skills
-                    SET skills.icon = ${conn.escape(iconImage.image)}
-                    WHERE skills.url = ${conn.escape(url)}
-                    `
-    conn.query(sqlQuery, (err, result) => {
-        if (err) {
-            throw err
-        }
-        console.log('Done For: ' + url)
-        console.log(result)
-    })
-}
-
-router.get('/generate-dummy-path', async (req, res) => {
-    let sqlQuery = "SELECT skills.url FROM skills  "
-    try {
-        conn.query(sqlQuery, (err, results) => {
-            if (err) {
-                throw err;
-            }
-            let promises = [];
-            results.forEach(element => {
-                promises.push(insertIntoSkillIconTable(element.url))
-            });
-            Promise.all(promises).then(res.json({ mess: 'ok' }))
-        });
-
-    } catch (error) {
-        console.error(error)
-        res.status = 500;
-        res.json({ mess: 'error' })
-    }
-})
-
 router.get('/icon-list', (req, res) => {
     let sqlQuery = "SELECT skills.url, skills.icon FROM skills"
     try {
@@ -1837,30 +1793,6 @@ router.get('/icon-list', (req, res) => {
         })
     } catch (error) {
         console.error()
-    }
-})
-
-router.post('/generate-skill-icon', async (req, res) => {
-    try {
-        const skillName = req.body.name;
-        const skillUrl = req.body.url;
-        const skillId = req.body.id;
-
-        const smallImage = await generateIconForSkill(skillName, skillUrl)
-        let sqlQuery = `UPDATE skills
-                    SET skills.icon = ${conn.escape(smallImage)}
-                    WHERE skills.url = ${conn.escape(skillUrl)}
-                    `
-        conn.query(sqlQuery, (err, result) => {
-            if (err)
-                throw err
-            console.log('')
-            res.json({ mess: `work done for skill: ${skillName}` })
-        })
-    } catch (error) {
-        console.error(error)
-        res.status = 500;
-        res.end
     }
 })
 
@@ -1880,29 +1812,4 @@ router.get('/url-list', async (req, res) => {
     }
 })
 
-
-router.get('/get-aws-bucket', async (req, res) => {
-    s3.listBuckets(function (err, data) {
-        if (err) {
-            console.log("Error", err);
-        } else {
-            console.log("Success", data.Buckets);
-            res.json({ data: data })
-        }
-    });
-})
-
-router.post('/add-icon-to-aws', async (req, res) => {
-    try {
-        const iconName = req.body.skillUrl;
-        const base64String = req.body.imageData;
-
-        await saveBase64ImageToBucket(base64String, iconName, skillIconBucketName);
-        res.json({ mess: 'ok' })
-    } catch (error) {
-        console.error(error);
-        res.status = 500;
-        res.json({ err: error })
-    }
-})
 module.exports = router;

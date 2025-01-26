@@ -218,11 +218,9 @@ export default {
         // Set initial zoom value.
         this.resetPos();
 
-        // await this.fetchIcon();
-
-        // =================================================================================
-        // For the loading animation.
         await this.getIconData();
+
+        // For the loading animation.
 
         this.isLoading = false;
     },
@@ -386,7 +384,7 @@ export default {
 
             // Drawing Text.
             if (this.scale > 0.6) {
-                this.drawNodeText(node, ctx1);
+                this.drawNodeText(node, ctx1, isSearched);
             }
 
             // If user currently searching for the node we draw addition details
@@ -1127,11 +1125,7 @@ export default {
             }
             return false;
         },
-        async generatePath() {
-            const res = await fetch('/skills/generate-dummy-path');
-            const resData = await res.json();
-            console.log(resData);
-        },
+
         async getIconData() {
             const res = await fetch('/skills/icon-list');
             const resData = await res.json();
@@ -1481,7 +1475,7 @@ export default {
                 ctx1.restore();
             }
         },
-        drawNodeText(node, ctx1) {
+        drawNodeText(node, ctx1, isSearched) {
             // to avoid sharp artifacts with the stroke of the text.
             ctx1.lineJoin = 'bevel';
             // we move the skill name to the left and change the color if it a domain node
