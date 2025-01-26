@@ -1787,6 +1787,35 @@ router.post(
     isAuthenticated,
     async (req, res, next) => {
         try {
+            let query = req.body.query;
+
+            let prompt = `        
+            From the following string, please extract what skill or career the writer wants to learn. Please return only this
+            skill or career. Please return this in a JSON object, and name the response "subject".
+
+            String: ${query}
+        `;
+
+            const subject = await openai.chat.completions.create({
+                messages: [
+                    {
+                        role: 'user',
+                        content: prompt + ` Please respond with a JSON object.`
+                    }
+                ],
+                model: 'gpt-4o',
+                response_format: { type: 'json_object' }
+            });
+            let responseJSON = subject.choices[0].message.content;
+            // Escape newline characters in response.
+            if (responseJSON) {
+                responseJSON = responseJSON.replace(/\\n/g, '\\n');
+            }
+            // Convert string to object.       ;
+            let subjectObject = JSON.parse(responseJSON);
+            console.log(subjectObject.subject);
+
+            return;
             const response = await openai.embeddings.create({
                 model: 'text-embedding-3-small',
                 input: req.body.query,
