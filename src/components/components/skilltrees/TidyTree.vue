@@ -970,8 +970,6 @@ export default {
             this.tree(this.root);
 
             this.zoomInD3(this.scale, this.panX, this.panY);
-            console.log('Tree get redraw, here is the context: ');
-            console.log(this.context);
         },
 
         toggleHideChildren(node) {
