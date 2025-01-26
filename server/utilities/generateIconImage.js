@@ -10,8 +10,7 @@ async function convertImageTo64X64(rawIcon, skillName) {
     let imgBuffer = Buffer.from(rawIcon, 'base64');
     const data = await sharp(imgBuffer).resize({ width: 50, height: 50 }).toBuffer();
     const resultBase64 = `data:image/png;base64,${data.toString('base64')}`
-    console.log('base-64 for skill: ' + skillName)
-    console.log(resultBase64)
+
     return resultBase64;
 }
 
