@@ -1815,10 +1815,9 @@ router.post(
             let subjectObject = JSON.parse(responseJSON);
             console.log(subjectObject.subject);
 
-            return;
             const response = await openai.embeddings.create({
                 model: 'text-embedding-3-small',
-                input: req.body.query,
+                input: subjectObject.subject,
                 dimensions: 720
             });
 
