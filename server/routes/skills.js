@@ -1791,7 +1791,11 @@ router.post(
 
             let prompt = `        
             From the following string, please extract what skill or career the writer wants to learn. Please return only this
-            skill or career. Please return this in a JSON object, and name the response "subject".
+            skill or career, and refer to this as the "subject".
+            If the query relates to a career, please phrase this as "skills related to being a 'subject'",
+            while if the query relates to a skill, please phrase this as "skills related to 'subject'".
+
+            Please return this in a JSON object, and name the response "subjectResponse".
 
             String: ${query}
         `;
@@ -1813,20 +1817,24 @@ router.post(
             }
             // Convert string to object.       ;
             let subjectObject = JSON.parse(responseJSON);
-            console.log(subjectObject.subject);
+            console.log(subjectObject.subjectResponse);
 
             const response = await openai.embeddings.create({
                 model: 'text-embedding-3-small',
-                input: subjectObject.subject,
+                input: subjectObject.subjectResponse,
                 dimensions: 720
             });
 
             const inputVector = response.data[0].embedding;
+
             let sqlQuery = `SELECT *
                     FROM skills_vector
+                    WHERE VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
+                          VEC_FromText('[${inputVector}]')) < 1.17
                     ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
                           VEC_FromText('[${inputVector}]'))
-                    LIMIT 25`;
+                          LIMIT 50
+                    `;
             // sql for instructor and editor account
             conn.query(sqlQuery, (err, results) => {
                 if (err) {
