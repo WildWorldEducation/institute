@@ -24,7 +24,7 @@ export default {
         const sessionDetailsStore = useSessionDetailsStore();
         const showSkillStore = useShowSkillStore();
 
-        // If method hasnt been run before.
+        // If method hasn`t been run before.
         if (tagsStore.tagsList.length == 0) {
             // Run the GET request.
             tagsStore.getTagsList();

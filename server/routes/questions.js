@@ -321,9 +321,8 @@ router.put('/mc/:id/approve-edits', (req, res, next) => {
                     recordUserAction(
                         {
                             userId: req.session.userId,
-                            userAction: `${
-                                req.body.edit ? 'edit_and_approve' : 'approve'
-                            }`,
+                            userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'
+                                }`,
                             contentId: req.params.id,
                             contentType: 'mc_question'
                         },
@@ -427,8 +426,8 @@ router.get(
             const sqlQuery = `SELECT *
                           FROM mc_questions_awaiting_approval
                           WHERE mc_question_id = ${conn.escape(
-                              req.params.mcQuestionId
-                          )}
+                req.params.mcQuestionId
+            )}
                           AND user_id = ${conn.escape(req.params.userId)};`;
 
             conn.query(sqlQuery, (err, results) => {
@@ -482,8 +481,8 @@ router.get(
             const sqlQuery = `SELECT *
                           FROM essay_questions_awaiting_approval
                           WHERE essay_question_id = ${conn.escape(
-                              req.params.essayQuestionId
-                          )}
+                req.params.essayQuestionId
+            )}
                           AND user_id = ${conn.escape(req.params.userId)};`;
 
             conn.query(sqlQuery, (err, results) => {
@@ -516,8 +515,8 @@ router.get(
             const sqlQuery = `SELECT *
                               FROM image_questions_awaiting_approval
                               WHERE image_question_id = ${conn.escape(
-                                  req.params.imageQuestionId
-                              )}
+                req.params.imageQuestionId
+            )}
                               AND user_id = ${conn.escape(req.params.userId)};`;
 
             conn.query(sqlQuery, (err, results) => {
@@ -547,8 +546,8 @@ router.delete(
             const deleteQuery = `DELETE 
                              FROM mc_questions_awaiting_approval
                              WHERE mc_question_id = ${conn.escape(
-                                 req.params.mcQuestionId
-                             )}
+                req.params.mcQuestionId
+            )}
                              AND user_id  = ${conn.escape(req.params.userId)};`;
 
             conn.query(deleteQuery, (err) => {
@@ -593,8 +592,8 @@ router.delete(
             const deleteQuery = `DELETE 
                              FROM essay_questions_awaiting_approval
                              WHERE essay_question_id = ${conn.escape(
-                                 req.params.essayQuestionId
-                             )}
+                req.params.essayQuestionId
+            )}
                              AND user_id  = ${conn.escape(req.params.userId)};`;
 
             conn.query(deleteQuery, (err) => {
@@ -639,8 +638,8 @@ router.delete(
             const deleteQuery = `DELETE 
                              FROM image_questions_awaiting_approval
                              WHERE image_question_id = ${conn.escape(
-                                 req.params.imageQuestionId
-                             )}
+                req.params.imageQuestionId
+            )}
                              AND user_id = ${conn.escape(req.params.userId)};`;
 
             conn.query(deleteQuery, (err) => {
@@ -758,9 +757,8 @@ router.put('/essay/:id/approve-edits', (req, res, next) => {
                     recordUserAction(
                         {
                             userId: req.session.userId,
-                            userAction: `${
-                                req.body.edit ? 'edit_and_approve' : 'approve'
-                            }`,
+                            userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'
+                                }`,
                             contentId: req.params.id,
                             contentType: 'essay_question'
                         },
@@ -1016,9 +1014,8 @@ router.put('/image/:id/approve-edits', (req, res, next) => {
                     recordUserAction(
                         {
                             userId: req.session.userId,
-                            userAction: `${
-                                req.body.edit ? 'edit_and_approve' : 'approve'
-                            }`,
+                            userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'
+                                }`,
                             contentId: req.params.id,
                             contentType: 'image_question'
                         },
@@ -1381,8 +1378,8 @@ router.get('/student-mc-questions/full-data-list', (req, res, next) => {
                             JOIN skills ON student_mc_questions.skill_id = skills.id 
                             JOIN instructor_students ON instructor_students.student_id = student_mc_questions.student_id 
                             WHERE instructor_students.instructor_id = ${conn.escape(
-                                req.session.userId
-                            )};`;
+                req.session.userId
+            )};`;
 
             conn.query(sqlQuery, (err, results) => {
                 try {
@@ -1883,8 +1880,8 @@ async function checkQuestion(index, userId) {
                             }
                             console.log(
                                 'MC question ' +
-                                    mcQuestions[index].id +
-                                    ' complete'
+                                mcQuestions[index].id +
+                                ' complete'
                             );
                             // Check the next question.
                             index++;

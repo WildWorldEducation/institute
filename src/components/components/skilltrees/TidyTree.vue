@@ -7,7 +7,6 @@ import SkillPanel from './../SkillPanel.vue';
 import ZoomControl from './ZoomControl.vue';
 import JoystickControl from './JoystickControl.vue';
 
-// Algorithm.
 import * as d3 from 'd3';
 
 export default {
@@ -23,6 +22,8 @@ export default {
         return {
             width: null,
             height: null,
+            nodeWidth: 80,
+            nodeHeight: 800,
             skill: {
                 id: null,
                 children: [],
@@ -62,13 +63,22 @@ export default {
             showSkillPanel: false,
             resultNode: null,
             clickMode: 'showPanel',
-            // transform object use to translate canvas context
-            // used to avoid rendering parts of tree not displayed on the canvas
+            // Default skill icon to show if the skill don`t have any
+            defaultIconImage:
+                'data:image/png;base64,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',
             transformData: {
                 x: 0,
                 y: 0,
                 k: 0
-            }
+            },
+            handIcon:
+                'data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAMAAADDpiTIAAAB+FBMVEUAAAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD///+5InsqAAAApnRSTlMAAQIDBAUGBwgJCgsMDQ4PEBESExQVFxkaGxwdHyAjJCgpKisuMTI2ODlBQkhJSktOT1VXWF1eYWJkZWZnaGlvcHJzdHd4eXp8fX6AgYOFiouMkZKTlJWWmJmbnJ2en6CipaqrrK2usLGytLW2t7i5uru8vb6/wMHCw8TFxsnKzc/Q0dLV2Nna29zd3t/g4+Xm5+jp6uvs7fDx8vP09fb3+fr7/P3+vGYUqgAAAAFiS0dEp8C3KwMAAAi2SURBVHja7dxnd5VFGEZhSUBOCAQL9oLYG/besLegolEUbKjYQVARFAuCLVYUsSCgiDK/04TlFxUkWW/OO+eZufYvuNfsPXOSkHDYYQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHJIjhuyvkmln3Pjo2q92pTF+GV09cvV8+ytixsXPbE//Yuvy8/vsr4ITH/wxHZCtw/PsL55TntqTDsrukWPtL5qB23em/+Xn2w+3v1zO/SIdks0L7C/1K/9Fe9IE+G2R/UXSeT5NkMf67S+POWvThHlxwP7SmLc5TYI3Oz33vf+62Ptzc8yWNClemt5j/l+IvT/7/Z+k/5SWhvbfa/uj3f9xrgztv7f2R/Sfdp0W2n8v7Y/3/u/ng77I/ntof8j7P851of33zP6w/tNPR4f23yP7g77/+7k/tP/e2B/3/o//09rc0P57YX/k+z/GraH998D+0Pd/jE9i+8++P7r/lM4O7T/3/uDv/zhLYvvPuz/+/U9pS2z/WfeX4D/tOzq0/5z7C3j/x7k0tP+M+4u4/2PcHdt/tv2l+E9Px/afa38h7/8Y78b2n2l/Mfc/pc9i+8+zvyD/6bvY/rPsL+f9H/+9mtj+c+wv6f6P/fF9bP8Z9pflP22N7b/9/YX5T5/G9t/6/tL8pw2x/be9vzj/6fHY/lveX57/dEds/+3uL+r7v79ZGNt/q/sLvP9p71Bs/3uH+G/EB7H9t7m/xPc/pcWx/be4v8j7n9Lpsf23t79Q/5uC+9/EfzOuj+2/tf2l+t82ENv/tkr+r6h5XfLf1k9RuuW/lp8Cdev+p28GY/tvaX+x/tNlsf23tL/Y9z+9Htz/6+5/I7YfH9t/O/vL9b/vktj+29lf7vuf7o3tv5395d7/tCy4/2XufyNW9sf2v7Lf/W/CKzNj+29lP//8888///zzzz///PPPfwH+Xw3u/1X++eeff/75559//vnnn3/++eeff/75559//g/IquD+V/HPP//8888///zzzz///PPPP//8888///zzzz///z2/TnD/Hf75559//vnnn3/+J8Pq4P5X888///zzzz///PPPP//8888///zzzz///PPPP//8888///zzzz//6bXg/l/jn3/++eeff/75559//vnnn3/++eeff/755/+ArAnufw3//PPPP//8888///zzzz//Ezu/geD+B/jnn3/++eeff/75559//vnnn3/++eef/4OxNrj/tfzzzz///PPPP//8888///zzzz///PPPP//8888///z/gw2Dsf23sp9//vnnn3/++eeff/75559//vnnn3/+o/qfHdz/bP75559//vnnf7K8Hdz/2/zzzz///PPPP//8888///zzXwr967p2futmtbF/Zez92Xk4+P152P1vxOLg92ex+9+Ihfti35/o+3Nzwg+xzy/6/uy80a3ze2uW/QG4Ivj9ucL9b8Ssr2OfX/T92bmrW+/noP0R6HzXnfN7Z7b9Ibgp+PndxH8zNgc/v838N2JB8PNbwH8z7gv+9dN9vv5rxqbg92eT+9+IoT9in1/0/dlZOPXnt37Q/jjcGfz+3On+N+PJ4Of3JP/N2Bj8/Dby34zR4Oc3yn8zpvYH6e/MsT8YO4Of307+m7FrKg8ww3+gE31/drZN6RO6cY79wfg8xT7B6Puz894UfxvV9isafX92Vkz1D1JavkPR92fnnhT7BKPvz84lU/+PKa2+otH3Z+eoP1PoOxR9f34+SrFPMPr+7DzQjV+pavEVjb4/O2d15Zcq27tD0ffn5+PgJ/ixAppxS3f+sKK1VzT6/uwM/phC36Ho+/Nzf4p9h6Lvz86R21PoOxR9f36uT7FPMPr+7PS9n0K/otH352f+jth3KPr+/FyeYp9g9P35WZpiv6LR9+f/MuDZ2Hco+v78dN6KfYei78/PrHWx71D0/QpQgAIUoAAFKEABClCAAhSgAAUoQAEKUIACFKAABShAAQpQgAIUoAAFKEABTlABTlABTlABTlABTlABTlABTlABTlABTlABTlABTlABTlABTlABTlABTlABTlABTlABClCAAhSgAAUoQAEKUIACFKAABShAAQpQgAIUoAAFKEABClCAAhSgAAUoQAEKUIACFKAABShAAQpQgAIUoAAFKEABClCAAhSgAAUoQAEKUIACFKAABShAAQpQgAIUoAAFKEABClCAAhSgAAUoQAEKUIACFKAABShAAQpQgAIUoAAFKEABClCAAhSgAAUoQAEKUIACFKAABShAAQpQgAIUoAAFKEABClCAAhSgAAUoQAEKUIACFKAABShAAQpQgAIUoAAFKEABClCAAhSgAAUoQAEKUIACFKAABdjf+wxu6NoJru/YX/cb8PJ0++t+A5bZX/kbcK39dRfw25n21/0psGWG/XW/ATfbX3cBO46zv+5PgRH7634Ddh9jf90FDNtfdwHf9ttfdwEX2F/3V4LL7a/7DfjW/soLONX+uj8FrrG/7jfgIfvrLmCV/XUXMGp/3QX8Yn/dBfzZZ3/dBcy2v+7vBufYX/UbsK/P/qoL2Gl/3Z8CX9pf9xuwxv66C3jE/ro/BW6wv+434DT7qy5g+zT7q/4UWGF/3W/AhfZXXcAPM+yv+lNgif1VvwG/n2R/1W/AE/ZX/Qb8eor9VRdwj/1Vfwp83rG/5jdg73n2V13AbfZX/Snw3DT7a34Deu0/242+vwfu0PrJnN+Hc+0vjZnPTuL+zLW/PPqXTfjzc6b9RXLVrgl9/zTcZ3+hnL5lAj8/Ocf+cpm+6OdD/Px8uGN/0Rw7svvgx7fniZPtL555w1sP8vszS06wvwr6Llj+nzP8fsVFM+yviPlXj6we3bH/7ye/XLP0hgX218nQXPsBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAN3nLw3s+6qhCaLsAAAAAElFTkSuQmCC',
+            currentNodeX: 0,
+            currentNodeY: 0,
+            visibleRangeX: 0,
+            visibleRangeY: 0,
+            iconDictionary: [],
+            nodeDrew: 0
         };
     },
     components: {
@@ -117,7 +127,13 @@ export default {
         this.hiddenCanvasContext = hiddenCanvas.getContext('2d', {
             willReadFrequently: true
         });
+
         hiddenCanvas.style.display = 'none';
+
+        var canvas = document.getElementById('canvas');
+        this.context = canvas.getContext('2d', {
+            willReadFrequently: true
+        });
 
         // Listen for clicks on the main canvas
         canvas.addEventListener('click', async (e) => {
@@ -149,6 +165,8 @@ export default {
                 // we also have access to the data associated with it, which in
                 // this case is just its original index in the data array.
                 node.renderCol = node.__pickColor;
+                this.currentNodeX = node.x;
+                this.currentNodeY = node.y;
 
                 //Update the display with some data
                 this.skill.name = node.data.skill_name;
@@ -193,9 +211,7 @@ export default {
             .zoom()
             .scaleExtent([0.1, 5])
             .on('zoom', ({ transform }) => {
-                this.debugScale = transform.k;
-                this.transformX = transform.x;
-                this.transformY = transform.y;
+                this.transformData = transform;
                 this.drawTree(transform);
                 // update slider percent ( Handle by us not d3 but will invoke when the d3 zoom event is call )
             });
@@ -206,7 +222,10 @@ export default {
         // Set initial zoom value.
         this.resetPos();
 
+        await this.getIconData();
+
         // For the loading animation.
+
         this.isLoading = false;
     },
     methods: {
@@ -225,7 +244,8 @@ export default {
             // Width
             const dy = 270;
 
-            this.tree = d3.tree().nodeSize([dx, dy]);
+            // THIS NEEDED TO BE REFACTOR LATER
+            this.tree = d3.tree().nodeSize([this.nodeWidth, this.nodeHeight]);
 
             // Sort the tree and apply the layout.
             this.root.sort((a, b) => d3.ascending(a.x, b.x));
@@ -252,7 +272,7 @@ export default {
         },
         drawTree(transform) {
             this.nodes = this.root.descendants();
-
+            this.transformData = transform;
             // Zoom and pan.
             this.context.save();
             this.hiddenCanvasContext.save();
@@ -302,6 +322,9 @@ export default {
 
             // Draw nodes.
             this.context.beginPath();
+
+            // Calculate max visible range
+            this.nodeDrew = 0;
             for (const node of this.nodes) {
                 // Do not render parts of tree not in the canvas
                 // to improve performance.
@@ -332,8 +355,11 @@ export default {
                 }
                 // On the hidden canvas each rectangle gets a unique color.
                 this.hiddenCanvasContext.fillStyle = node.__pickColor;
-                // Draw the actual shape
-                this.drawNode(node);
+
+                // Only drawing node if it is in visible range. This help improve performance
+                if (this.checkingIfNodeInView(node, transform)) {
+                    this.drawNode(node);
+                }
             }
 
             this.context.restore();
@@ -347,127 +373,36 @@ export default {
             // A flag to determine if this node was searched by user
             const isSearched =
                 node.data.skill_name === this.resultNode?.data.skill_name;
-            // Visible context.
-            // If not a domain, make node a circle.
-            //   if (node.data.type != 'domain') {
-            // Node size
-            let radius;
-            if (node.data.type == 'sub') {
-                radius = 7.5;
-            } else {
-                radius = 10;
-            }
 
-            ctx1.beginPath();
-            ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
-            // get the color associate with skill level
-            const skillColor = node.data.level
-                ? this.hexColor(node.data.level)
-                : '#000';
-
-            // If mastered, make a solid shape.
-            if (node.data.is_mastered == 1) {
-                ctx1.fillStyle = skillColor;
-                ctx1.fill();
-                const outlineColor = this.hexBorderColor(node.data.level);
-                ctx1.lineWidth = 2;
-                ctx1.strokeStyle = outlineColor;
-                ctx1.stroke();
-            }
-            // If not, just an outline.
-            else {
-                ctx1.lineWidth = 2;
-                ctx1.fillStyle = '#FFF';
-                ctx1.fill();
-                ctx1.strokeStyle = skillColor;
-                ctx1.stroke();
-            }
-            //  }
-            // // If child nodes are collapsed.
-            // if (node.data.show_children) {
-            //     if (node.data.show_children == 0) {
-            //         // Set line properties
-            //         ctx1.lineWidth = 2;
-            //         ctx1.strokeStyle = 'black';
-
-            //         // Draw vertical line
-            //         ctx1.beginPath();
-            //         ctx1.moveTo(node.y - 10, node.x);
-            //         ctx1.lineTo(node.y + 10, node.x); // Draw to the bottom-middle
-            //         ctx1.stroke();
-
-            //         // Draw horizontal line
-            //         ctx1.beginPath();
-            //         ctx1.moveTo(node.y, node.x - 10);
-            //         ctx1.lineTo(node.y, node.x + 10); // Draw to the middle-right
-            //         ctx1.stroke();
-            //     }
-            // }
-
-            // Text.
             if (this.scale > 0.6) {
-                // to avoid sharp artifacts with the stroke of the text.
-                ctx1.lineJoin = 'bevel';
-                // we move the skill name to the left and change the color if it a domain node
-                // using the non domain as if condition will save us some compute time as none domain node is more common
-                if (node.data.type != 'domain') {
-                    ctx1.beginPath();
-                    // Background stroke
-                    ctx1.strokeStyle = '#FFF';
-                    ctx1.lineWidth = 4;
-                    // Font size
-                    ctx1.font = '12px Arial';
-                    if (node.data.type == 'sub') {
-                        ctx1.font = '10px Arial';
-                    }
+                this.drawRoundRectNode(ctx1, node);
+            } else {
+                this.drawNodeCircle(ctx1, node);
+            }
 
-                    // High light the text if user search for it
-                    ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
-                    ctx1.font = isSearched ? 'bold' : 'normal';
-                    ctx1.direction = 'ltr';
-
-                    //  also added a triangle to the end of skill name
-                    const showName = isSearched
-                        ? `${node.data.skill_name} ◀`
-                        : node.data.skill_name;
-                    ctx1.strokeText(showName, node.y + 15, node.x + 2);
-                    ctx1.fillText(showName, node.y + 15, node.x + 2);
-                } else {
-                    ctx1.beginPath();
-                    ctx1.strokeStyle = '#FFF';
-                    ctx1.lineWidth = 4;
-                    ctx1.fillStyle = isSearched ? '#ff0000' : '#849cab';
-                    ctx1.direction = 'rtl';
-                    const showName = isSearched
-                        ? `${node.data.skill_name} ▶`
-                        : node.data.skill_name;
-                    ctx1.strokeText(showName, node.y - 5, node.x + 2);
-                    ctx1.fillText(showName, node.y - 5, node.x + 2);
+            // Drawing Image
+            if (node.data.type != 'domain') {
+                if (this.scale >= 0.75 && this.iconDictionary) {
+                    this.drawImage(node, ctx1);
                 }
             }
 
+            // Drawing Text.
+            if (this.scale > 0.6) {
+                this.drawNodeText(node, ctx1, isSearched);
+            }
+
+            // If user currently searching for the node we draw addition details
+            if (isSearched) {
+                this.drawPointingHand(node, ctx1);
+            }
+
             // Hidden context.
-            if (node.data.type != 'domain') {
-                ctx2.beginPath();
-                ctx2.moveTo(node.y, node.x);
-                ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
-                ctx2.fill();
-            } else {
-                ctx2.beginPath();
-                ctx2.moveTo(node.y, node.x - 10);
-                // top left edge.
-                ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
-                // bottom left edge.
-                ctx2.lineTo(node.y, node.x - 10 + 20);
-                // bottom right edge.
-                ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
-                // closing the path automatically creates the top right edge.
-                ctx2.closePath();
-                ctx2.lineWidth = 2;
-                ctx2.fill();
-                ctx2.stroke();
+            if (this.scale > 0.6) {
+                this.drawNodeOnHiddenCanvas(ctx2, node);
             }
         },
+
         drawLink(link) {
             const linkGenerator = d3
                 .linkHorizontal()
@@ -577,7 +512,7 @@ export default {
             const dx = 15;
             const dy = this.width / (root.height + 1);
             // Create a tree layout.
-            const tree = d3.tree().nodeSize([dx, dy]);
+            const tree = d3.tree().nodeSize([this.nodeWidth, this.nodeHeight]);
             // Sort the tree and apply the layout.
             tree(root);
 
@@ -756,6 +691,7 @@ export default {
                     break;
             }
         },
+
         // We using a darker color for node border when it is mastered
         hexBorderColor(skillLevel) {
             switch (skillLevel) {
@@ -769,6 +705,23 @@ export default {
                     return '#006400';
                 case 'phd':
                     return '#CC0000';
+                default:
+                    break;
+            }
+        },
+        hexBackGroundColor(skillLevel) {
+            const opacity = 0.7;
+            switch (skillLevel) {
+                case 'college':
+                    return `rgba(204, 132, 0, ${opacity})`;
+                case 'grade_school':
+                    return `rgba(51, 1 79, 166, ${opacity})`;
+                case 'high_school':
+                    return `rgba(204, 172, 0, ${opacity})`;
+                case 'middle_school':
+                    return `rgba(0, 100, 0, ${opacity})`;
+                case 'phd':
+                    return `rgba(204, 0, 0, ${opacity})`;
                 default:
                     break;
             }
@@ -884,6 +837,164 @@ export default {
                 }
             }
         },
+
+        async redrawTree(level, subject) {
+            this.showSkillPanel = false;
+            await this.skillTreeStore.getVerticalTreeUserSkills(level, subject);
+
+            // If the student clicks a button on the grade level key,
+            // this will truncate the tree to that level.
+            let userSkills = [];
+            if (this.truncateLevel == 'grade_school') {
+                userSkills =
+                    this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
+            } else if (this.truncateLevel == 'middle_school') {
+                userSkills =
+                    this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
+            } else if (this.truncateLevel == 'high_school') {
+                userSkills =
+                    this.skillTreeStore.highSchoolVerticalTreeUserSkills;
+            } else if (this.truncateLevel == 'college') {
+                userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
+            } else {
+                userSkills = this.skillTreeStore.verticalTreeUserSkills;
+            }
+
+            this.skill = {
+                name: 'SKILLS',
+                sprite: null,
+                children: userSkills
+            };
+
+            var skillsWithSubSkillsMoved = [];
+            skillsWithSubSkillsMoved = JSON.parse(
+                JSON.stringify(this.skill.children)
+            );
+
+            // Duplicate super skill node, and make second one a child of the first.
+            // Put all the subskills of the node in the second version.
+            // This is an attempt to show the subskills using D3.
+            function moveSubSkills(parentChildren) {
+                var i = parentChildren.length;
+                while (i--) {
+                    // If the skill is a super skill, and not an "end" super skill.
+                    if (
+                        parentChildren[i].type == 'super' &&
+                        parentChildren[i].position != 'end'
+                    ) {
+                        if (parentChildren[i].show_children) {
+                            if (parentChildren[i].show_children == 0) {
+                                return;
+                            }
+                        }
+                        // Separate the child nodes.
+                        var subSkills = [];
+                        var regularChildSkills = [];
+                        for (
+                            let j = 0;
+                            j < parentChildren[i].children.length;
+                            j++
+                        ) {
+                            if (parentChildren[i].children[j].type == 'sub') {
+                                subSkills.push(parentChildren[i].children[j]);
+                            } else {
+                                regularChildSkills.push(
+                                    parentChildren[i].children[j]
+                                );
+                            }
+                        }
+
+                        // Create a new child node, with the subskills in it.
+                        var superSkillEndNode = {
+                            skill_name: parentChildren[i].skill_name,
+                            type: 'super',
+                            position: 'end',
+                            children: subSkills
+                        };
+
+                        // Empty the child nodes.
+                        parentChildren[i].children = [];
+                        // Add the new node.
+                        parentChildren[i].children.push(superSkillEndNode);
+                        // Add the other child nodes, excluding subskills.
+                        for (let j = 0; j < regularChildSkills.length; j++) {
+                            parentChildren[i].children.push(
+                                regularChildSkills[j]
+                            );
+                        }
+                    }
+
+                    if (typeof parentChildren[i] !== 'undefined') {
+                        /*
+                         * Run the above function again recursively.
+                         */
+                        if (
+                            parentChildren[i].children &&
+                            Array.isArray(parentChildren[i].children) &&
+                            parentChildren[i].children.length > 0
+                        )
+                            moveSubSkills(parentChildren[i].children);
+                    }
+                }
+            }
+
+            moveSubSkills(skillsWithSubSkillsMoved);
+
+            this.data = {
+                skill_name: 'My skills',
+                children: skillsWithSubSkillsMoved
+            };
+
+            // Compute the tree height; this approach will allow the height of the
+            // SVG to scale according to the breadth (width) of the tree layout.
+            this.root = d3.hierarchy(this.data);
+
+            // Height is constant
+            const dx = 24;
+
+            //Shorten lines based on truncate level.
+            let multiplyBy = 5;
+            if (this.truncateLevel == 'grade_school') {
+                multiplyBy = 1;
+            } else if (this.truncateLevel == 'middle_school') {
+                multiplyBy = 2;
+            } else if (this.truncateLevel == 'high_school') {
+                multiplyBy = 3;
+            } else if (this.truncateLevel == 'college') {
+                multiplyBy = 4;
+            }
+            const dy = (this.width / (this.root.height + 1)) * multiplyBy;
+
+            // Create a tree layout.
+            this.tree = d3.tree().nodeSize([this.nodeWidth, this.nodeHeight]);
+
+            // Sort the tree and apply the layout.
+            this.root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
+            this.tree(this.root);
+
+            this.zoomInD3(this.scale, this.panX, this.panY);
+        },
+
+        toggleHideChildren(node) {
+            var url =
+                '/user-skills/hide-children/' +
+                this.userDetailsStore.userId +
+                '/' +
+                node.id;
+            fetch(url).then(() => {
+                this.reloadTree(node, this.truncateLevel, this.subjectFilters);
+            });
+        },
+        toggleShowChildren(node) {
+            var url =
+                '/user-skills/show-children/' +
+                this.userDetailsStore.userId +
+                '/' +
+                node.id;
+            fetch(url).then(() => {
+                this.reloadTree(node, this.truncateLevel, this.subjectFilters);
+            });
+        },
         async reloadTree(node) {
             this.showSkillPanel = false;
             await this.skillTreeStore.getVerticalTreeUserSkills(
@@ -932,7 +1043,7 @@ export default {
             const dy = 270;
 
             // Create a tree layout.
-            this.tree = d3.tree().nodeSize([dx, dy]);
+            this.tree = d3.tree().nodeSize([this.nodeWidth, this.nodeHeight]);
 
             // Sort the tree and apply the layout.
             this.root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
@@ -1020,8 +1131,8 @@ export default {
             let realPositionX = node.y * transformData.k;
             let realPositionY = -node.x * transformData.k;
 
-            // I acctually come up with this fomula base on obserse the changing of translate and node position when translate context
-            // It dosen`t make sense to me but some how woking correctly
+            // I actually come up with this formula base on observe the changing of translate and node position when translate context
+            // It doesn`t make sense to me but some how working correctly
             let combinePosition = transformData.x + realPositionX;
             if (
                 combinePosition > 0 &&
@@ -1032,6 +1143,376 @@ export default {
                 return true;
             }
             return false;
+        },
+
+        async getIconData() {
+            const res = await fetch('/skills/icon-list');
+            const resData = await res.json();
+            // Prepare the icon path array into a hashmap/dictionary for even better performant
+            this.iconDictionary = Object.fromEntries(
+                resData.map((icon) => [icon.url, icon.icon])
+            );
+        },
+        drawNodeCircle(ctx, node) {
+            const ctx1 = ctx;
+            if (node.data.type != 'domain') {
+                // Node size
+                let radius;
+                if (node.data.type == 'sub') {
+                    radius = 7.5;
+                } else {
+                    radius = 10;
+                }
+
+                ctx1.beginPath();
+                ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
+                // get the color associate with skill level
+                const skillColor = node.data.level
+                    ? this.hexColor(node.data.level)
+                    : '#000';
+
+                // If mastered, make a solid shape.
+                if (node.data.is_mastered == 1) {
+                    ctx1.fillStyle = skillColor;
+                    ctx1.fill();
+                    const outlineColor = this.hexBorderColor(node.data.level);
+                    ctx1.lineWidth = 2;
+                    ctx1.strokeStyle = outlineColor;
+                    ctx1.stroke();
+                }
+                // If not, just an outline.
+                else {
+                    ctx1.lineWidth = 2;
+                    ctx1.fillStyle = '#FFF';
+                    ctx1.fill();
+                    ctx1.strokeStyle = skillColor;
+                    ctx1.stroke();
+                }
+            }
+        },
+        drawNodeOnHiddenCanvas(ctx, node) {
+            const ctx2 = ctx;
+            if (node.data.type != 'domain') {
+                ctx2.beginPath();
+                ctx2.moveTo(node.y, node.x);
+                //ctx2.arc(node.y, node.x, 20, 0, 2 * Math.PI);
+                let xPosition = node.y;
+                if (node.data.children.length > 0) {
+                    xPosition = xPosition - 180;
+                }
+                ctx2.roundRect(xPosition, node.x - 20, 180, 40, 20);
+
+                ctx2.fill();
+            } else {
+                ctx2.beginPath();
+                ctx2.moveTo(node.y, node.x - 10);
+                // top left edge.
+                ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
+                // bottom left edge.
+                ctx2.lineTo(node.y, node.x - 10 + 20);
+                // bottom right edge.
+                ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
+                // closing the path automatically creates the top right edge.
+                ctx2.closePath();
+                ctx2.lineWidth = 2;
+                ctx2.fill();
+                ctx2.stroke();
+            }
+        },
+        // Draw round rectangle node
+        drawRoundRectNode(ctx, node) {
+            const ctx1 = ctx;
+            if (node.data.type != 'domain') {
+                // Node size
+                let radius;
+                if (node.data.type == 'sub') {
+                    radius = 7.5;
+                } else {
+                    radius = 10;
+                }
+
+                ctx1.beginPath();
+                // ctx1.arc(node.y, node.x, radius * 1.5, 0, 2 * Math.PI);
+                let xPosition = node.y;
+                if (node.data.children.length > 0) {
+                    xPosition = xPosition - 180;
+                }
+                ctx1.roundRect(xPosition, node.x - 20, 180, 40, 20);
+                // get the color associate with skill level
+                const skillColor = node.data.level
+                    ? this.hexColor(node.data.level)
+                    : '#000';
+
+                // If mastered, make a solid shape.
+                if (node.data.is_mastered == 1) {
+                    ctx1.fillStyle = skillColor;
+                    ctx1.fill();
+                    const outlineColor = this.hexBorderColor(node.data.level);
+                    ctx1.lineWidth = 2;
+                    ctx1.strokeStyle = outlineColor;
+                    ctx1.stroke();
+                }
+
+                // If not, just an outline.
+                else {
+                    ctx1.lineWidth = 4;
+                    ctx1.fillStyle = '#FFF';
+                    ctx1.fill();
+                    ctx1.strokeStyle = skillColor;
+                    ctx1.stroke();
+                }
+            }
+        },
+
+        // Draw a round rectangle and using clip to make image rounded
+        roundedImage(ctx, x, y, width, height, radius) {
+            ctx.beginPath();
+
+            ctx.roundRect(x, y, width, height, radius);
+
+            ctx.closePath();
+        },
+        // draw skill name based on it lenght
+        drawSkillName(node, ctx, isSearched) {
+            if (node.data.skill_name.length < 19) {
+                this.drawShortSkillName(node, ctx, isSearched);
+            } else if (
+                node.data.skill_name.length >= 19 &&
+                node.data.skill_name.length < 33
+            ) {
+                this.drawMediumSkillName(node, ctx, isSearched);
+            } else {
+                this.drawLargeSkillName(node, ctx, isSearched);
+            }
+        },
+        drawShortSkillName(node, ctx, isSearched) {
+            const ctx1 = ctx;
+            // to avoid sharp artifacts with the stroke of the text.
+            ctx1.lineJoin = 'bevel';
+            // we move the skill name to the left and change the color if it a domain node
+            // using the non domain as if condition will save us some compute time as none domain node is more common
+            if (node.data.type != 'domain') {
+                ctx1.beginPath();
+                // Background stroke
+                ctx1.strokeStyle = '#FFF';
+                ctx1.lineWidth = 4;
+                // Font size
+                ctx1.font = '11px Verdana';
+                if (node.data.type == 'sub') {
+                    ctx1.font = '11px Verdana';
+                }
+
+                // High light the text if user search for it
+                ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
+                ctx1.font = isSearched ? 'bold' : 'normal';
+                ctx1.direction = 'ltr';
+
+                //  also added a triangle to the end of skill name
+
+                let xPosition = node.y + 45;
+                if (node.data.children.length > 0) {
+                    xPosition = xPosition - 180;
+                }
+                ctx1.strokeText(node.data.skill_name, xPosition, node.x + 4);
+                ctx1.fillText(node.data.skill_name, xPosition, node.x + 4);
+            } else {
+                ctx1.beginPath();
+                ctx1.strokeStyle = '#FFF';
+                ctx1.lineWidth = 4;
+                ctx1.fillStyle = isSearched ? '#ff0000' : '#849cab';
+                ctx1.direction = 'rtl';
+
+                let xPosition = node.y + 5;
+
+                ctx1.strokeText(node.data.skill_name, xPosition, node.x + 2);
+                ctx1.fillText(node.data.skill_name, xPosition, node.x + 2);
+            }
+        },
+        drawMediumSkillName(node, ctx, isSearched) {
+            // Number use to fit text into node
+            const textDrawData = {
+                // Maximum lenght for text to be consider a short name
+                shortTextMaxLenght: 19,
+
+                firstLineYposition: node.x - 5,
+                secondLineYposition: node.x + 12
+            };
+            const ctx1 = ctx;
+            const splitIndex = node.data.skill_name.lastIndexOf(
+                ' ',
+                textDrawData.shortTextMaxLenght
+            );
+            const string1 = node.data.skill_name.substring(0, splitIndex);
+            const string2 = node.data.skill_name.substring(splitIndex + 1);
+
+            ctx1.beginPath();
+            // Background stroke
+            ctx1.strokeStyle = '#FFF';
+            ctx1.lineWidth = 4;
+            // Font size
+            ctx1.font = '11px Verdana';
+            if (node.data.type == 'sub') {
+                ctx1.font = '11px Verdana';
+            }
+
+            // High light the text if user search for it
+            ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
+            ctx1.font = isSearched ? 'bold' : 'normal';
+            ctx1.direction = 'ltr';
+
+            //  also added a triangle to the end of skill name
+
+            let xPosition = node.y + 45;
+            if (node.data.children.length > 0) {
+                xPosition = xPosition - 180;
+            }
+
+            ctx1.strokeText(
+                string1,
+                xPosition,
+                textDrawData.firstLineYposition
+            );
+            ctx1.fillText(string1, xPosition, textDrawData.firstLineYposition);
+
+            //
+
+            ctx1.strokeText(
+                string2,
+                xPosition,
+                textDrawData.secondLineYposition
+            );
+            ctx1.fillText(string2, xPosition, textDrawData.secondLineYposition);
+        },
+        drawLargeSkillName(node, ctx, isSearched) {
+            // Number use to fit text into node
+            const textDrawData = {
+                // Maximum lenght for text to be consider a short name
+                mediumTextMaxLenght: 19,
+
+                firstLineYposition: node.x - 5,
+                secondLineYposition: node.x + 12,
+                lengthRatio: node.data.skill_name.length / 19
+            };
+
+            const ctx1 = ctx;
+            const splitIndex = node.data.skill_name.lastIndexOf(
+                ' ',
+                Math.floor(node.data.skill_name.length / 1.5)
+            );
+            const string1 = node.data.skill_name.substring(0, splitIndex);
+            const string2 = node.data.skill_name.substring(splitIndex + 1);
+
+            ctx1.beginPath();
+            // Background stroke
+            ctx1.strokeStyle = '#FFF';
+            ctx1.lineWidth = 4;
+            // Font size
+            const largeSkillFontSize =
+                Math.floor(11 / textDrawData.lengthRatio) + 4;
+
+            ctx1.font = `${largeSkillFontSize}px Verdana`;
+            if (node.data.type == 'sub') {
+                ctx1.font = `${largeSkillFontSize}px Verdana`;
+            }
+
+            // High light the text if user search for it
+            ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
+            ctx1.font = isSearched ? 'bold' : 'normal';
+            ctx1.direction = 'ltr';
+
+            //  also added a triangle to the end of skill name
+
+            let xPosition = node.y + 45;
+            if (node.data.children.length > 0) {
+                xPosition = xPosition - 180;
+            }
+
+            // draw the first line of text
+            ctx1.strokeText(
+                string1,
+                xPosition,
+                textDrawData.firstLineYposition
+            );
+            ctx1.fillText(string1, xPosition, textDrawData.firstLineYposition);
+
+            // draw second line of text
+
+            ctx1.strokeText(
+                string2,
+                xPosition,
+                textDrawData.secondLineYposition
+            );
+            ctx1.fillText(string2, xPosition, textDrawData.secondLineYposition);
+        },
+        drawPointingHand(node, ctx) {
+            const img = new Image();
+            img.src = this.handIcon;
+            if (this.scale > 0.6) {
+                if (node.children) {
+                    ctx.drawImage(img, node.y + 6, node.x - 10, 20, 20);
+                } else {
+                    ctx.drawImage(img, node.y + 185, node.x - 10, 20, 20);
+                }
+            } else {
+                ctx.drawImage(img, node.y + 13, node.x - 10, 20, 20);
+            }
+        },
+        drawImage(node, ctx1) {
+            // find path in skill icon dictionary
+            let path = this.iconDictionary[node.data.url];
+
+            if (!path) {
+                path = this.defaultIconImage;
+                const img = new Image();
+
+                img.src = path;
+
+                let xPosition = node.y + 2;
+                if (node.data.children.length > 0) {
+                    xPosition = xPosition - 178;
+                }
+                ctx1.save();
+                this.roundedImage(ctx1, xPosition, node.x - 18, 36, 36, 20);
+                ctx1.clip();
+                ctx1.drawImage(img, xPosition + 7, node.x - 10, 20, 20);
+                ctx1.restore();
+            }
+            // Draw a default error image if skill do not have icon
+            else {
+                const img = new Image();
+
+                img.src = path;
+
+                let xPosition = node.y + 2;
+                if (node.data.children.length > 0) {
+                    xPosition = xPosition - 178;
+                }
+                ctx1.save();
+                this.roundedImage(ctx1, xPosition, node.x - 18, 36, 36, 20);
+                ctx1.clip();
+                ctx1.drawImage(img, xPosition - 3, node.x - 18, 38, 38);
+                ctx1.restore();
+            }
+        },
+        drawNodeText(node, ctx1, isSearched) {
+            // to avoid sharp artifacts with the stroke of the text.
+            ctx1.lineJoin = 'bevel';
+            // we move the skill name to the left and change the color if it a domain node
+            // using the non domain as if condition will save us some compute time as none domain node is more common
+            if (node.data.type != 'domain') {
+                this.drawSkillName(node, ctx1, isSearched);
+            } else {
+                ctx1.beginPath();
+                ctx1.strokeStyle = '#FFF';
+                ctx1.lineWidth = 4;
+                ctx1.fillStyle = isSearched ? '#ff0000' : '#849cab';
+                ctx1.direction = 'rtl';
+
+                let xPosition = node.y + 5;
+
+                ctx1.strokeText(node.data.skill_name, xPosition, node.x + 2);
+                ctx1.fillText(node.data.skill_name, xPosition, node.x + 2);
+            }
         }
     }
 };
@@ -1064,7 +1545,7 @@ export default {
         <div id="SVGskilltree"></div>
         <ZoomControl ref="ZoomControl" />
         <div id="sidepanel-backdrop"></div>
-        <JoystickControl class="d-none" />
+        <JoystickControl class="d-lg-none" />
     </div>
 </template>
 
