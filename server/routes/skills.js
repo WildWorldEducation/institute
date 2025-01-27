@@ -1704,62 +1704,6 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-// router.get('/skills-vectorization', isAuthenticated, async (req, res, next) => {
-//     try {
-//         const rowData = {
-//             rows: []
-//         }
-//         // get skill name list
-//         let sqlQuery = 'SELECT * FROM skills';
-//         conn.query(sqlQuery, async (err, results) => {
-//             if (err) {
-//                 throw err;
-//             }
-//             const promises = [];
-//             console.log(results.length)
-//             // We use text-embedding-3-small model to make vector data from skill name
-//             for (let index = 0; index < results.length; index++) {
-//                 const element = results[index];
-
-//                 promises.push(getVectorData(element, rowData))
-//             }
-//             res.json(results)
-
-//             Promise.all(promises)
-//                 .then(async () => {
-//                     console.log(rowData)
-//                     const content = JSON.stringify(rowData)
-//                     await fs.writeFile('./vector.json', content);
-//                     res.json('all done check vector.json : ');
-//                 })
-//                 .catch((e) => {
-//                     throw e
-//                 });
-//         })
-//     } catch (err) {
-//         res.status = 500;
-//         console.log(err);
-//         res.json({ mess: 'fails' })
-//     }
-// })
-
-// To insert vectors in the vector table in the DB.
-const vectorList = require('../../vector.json');
-router.get('/insert-vectors-to-db', async (req, res) => {
-    try {
-        console.log(vectorList.rows.length);
-        const promises = [];
-        vectorList.rows.forEach((skillVector) => {
-            promises.push(insertSkillsVectorIntoDataBase(skillVector));
-        });
-        Promise.all(promises).then(res.json({ mess: 'seem good' }));
-    } catch (error) {
-        res.status = 500;
-        res.end;
-        console.error(error);
-    }
-});
-
 // Semantic search route, using the vector table
 // For the search bars in the skill tree and collapsible tree.
 router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
