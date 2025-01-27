@@ -7,6 +7,22 @@ export default {
         };
     },
     async created() {},
+    mounted() {
+        // Allow search to accept Enter key
+        // Get the input field
+        var input = document.getElementById('searchBar');
+
+        // Execute a function when the user presses a key on the keyboard
+        input.addEventListener('keypress', function (event) {
+            // If the user presses the "Enter" key on the keyboard
+            if (event.key === 'Enter') {
+                // Cancel the default action, if needed
+                event.preventDefault();
+                // Trigger the button element with a click
+                document.getElementById('searchButton').click();
+            }
+        });
+    },
     methods: {
         async createPathway() {
             let url = '/skills/find-skills-for-pathway';
@@ -30,12 +46,17 @@ export default {
     <div class="search-bar">
         <div class="d-flex align-items-center p-1">
             <input
+                id="searchBar"
                 type="text"
                 class="pathways-input"
                 placeholder="What skill or profession do you want to learn?"
                 v-model="query"
             />
-            <button @click="createPathway" class="btn primary-btn rounded p-2">
+            <button
+                id="searchButton"
+                @click="createPathway"
+                class="btn primary-btn rounded p-2"
+            >
                 <!-- Magnifying glass icon -->
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
