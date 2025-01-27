@@ -20,6 +20,7 @@ const skillInfoboxImageThumbnailsBucketName =
     process.env.S3_SKILL_INFOBOX_IMAGE_THUMBNAILS_BUCKET_NAME;
 const userAvatarImageThumbnailsBucketName =
     process.env.S3_USER_AVATAR_IMAGE_THUMBNAILS_BUCKET_NAME;
+const skillIconBucketName = process.env.S3_SKILL_ICON_BUCKET_NAME;
 const bucketRegion = process.env.S3_BUCKET_REGION;
 const accessKeyId = process.env.S3_ACCESS_KEY_ID;
 const accessSecretKey = process.env.S3_SECRET_ACCESS_KEY;
@@ -43,11 +44,16 @@ const checkRoleHierarchy = require('../middlewares/roleMiddleware');
 const { recordUserAction } = require('../utilities/record-user-action');
 
 // Helper Function
-const { saveIconToAWS } = require('../utilities/save-image-to-aws');
+const {
+    saveIconToAWS,
+    saveBase64ImageToBucket
+} = require('../utilities/save-image-to-aws');
 const {
     getVectorData,
     insertSkillsVectorIntoDataBase
 } = require('../utilities/vectorization-skill');
+
+const { getImageBase64Data } = require('../utilities/getAWSskillsIcon');
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -803,7 +809,7 @@ router.put(
 
             let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
-                    (id, version_number, user_id, name, description, icon_image,
+                    (id, version_number, user_id, name, description, icon_image, icon,
                     mastery_requirements, level, skill_history.order, comment)
                     VALUES
                     (${conn.escape(req.params.id)},
@@ -812,12 +818,14 @@ router.put(
                     ${conn.escape(req.body.name)},                    
                     ${conn.escape(req.body.description)},
                     ${conn.escape(iconUrl)},
+                    ${conn.escape(req.body.icon)},
                     ${conn.escape(
                         req.body.mastery_requirements
                     )},                    
                     ${conn.escape(req.body.level)},                    
                     ${conn.escape(req.body.order)},
                     ${conn.escape(req.body.comment)});`;
+
             conn.query(addVersionHistoryInsertSQLQuery, async (err) => {
                 try {
                     if (err) {
@@ -840,7 +848,8 @@ router.put(
                         skills.order = ${conn.escape(req.body.order)}, 
                         version_number = ${conn.escape(versionNumber)}, 
                         edited_date = current_timestamp, 
-                        is_human_edited = 1
+                        is_human_edited = 1,
+                        icon = ${conn.escape(req.body.icon)}
                         WHERE id = ${conn.escape(req.params.id)};`;
 
                     conn.query(updateRecordSQLQuery, async (err, results) => {
@@ -1778,6 +1787,36 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
         console.error(error);
         res.status = 500;
         res.end;
+    }
+});
+
+router.get('/icon-list', (req, res) => {
+    let sqlQuery = 'SELECT skills.url, skills.icon FROM skills';
+    try {
+        conn.query(sqlQuery, (err, result) => {
+            if (err) {
+                err;
+            }
+            res.json(result);
+        });
+    } catch (error) {
+        console.error();
+    }
+});
+
+// ======================================================================================
+router.get('/url-list', async (req, res) => {
+    try {
+        let sqlUrl =
+            'SELECT skills.`url`, skills.`name`, skills.icon FROM skills ORDER BY skills.`url` asc';
+        conn.query(sqlUrl, (err, result) => {
+            if (err) throw err;
+            res.json(result);
+        });
+    } catch (error) {
+        console.error(error);
+        res.status = 500;
+        res.json(error);
     }
 });
 

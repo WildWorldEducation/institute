@@ -331,7 +331,7 @@ export default {
 
 <style scoped>
 .forum-header {
-    background-color: white;
+    background-color: #f2edffcc;
     border-radius: 10px;
     padding: 10px;
 }

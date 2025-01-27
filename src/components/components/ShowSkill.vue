@@ -24,7 +24,7 @@ export default {
         const sessionDetailsStore = useSessionDetailsStore();
         const showSkillStore = useShowSkillStore();
 
-        // If method hasnt been run before.
+        // If method hasn`t been run before.
         if (tagsStore.tagsList.length == 0) {
             // Run the GET request.
             tagsStore.getTagsList();
@@ -916,18 +916,21 @@ export default {
                     <!-- Introduction -->
                     <div class="">
                         <h2 class="h4 secondary-heading">Introduction</h2>
-                        <div v-html="skill.introduction"></div>
+                        <div
+                            class="bg-white rounded p-2"
+                            v-html="skill.introduction"
+                        ></div>
                     </div>
 
                     <!-- Mastery Requirements -->
-                    <div
-                        v-if="skill.type != 'domain'"
-                        class="mastery-requirements mt-4"
-                    >
+                    <div v-if="skill.type != 'domain'" class="mt-4">
                         <h2 class="h4 secondary-heading">
                             Requirements for mastery
                         </h2>
-                        <div v-html="skill.mastery_requirements"></div>
+                        <div
+                            class="bg-white rounded p-2"
+                            v-html="skill.mastery_requirements"
+                        ></div>
                     </div>
                 </div>
                 <!-- Infobox -->
@@ -1289,18 +1292,12 @@ export default {
     color: #888;
 }
 
-.mastery-requirements {
-    background-color: rgba(255, 255, 255, 0.692);
-    border-radius: 5px;
-    width: 98%;
-}
-
 .hr {
     border-color: var(--dark-color) !important;
 }
 
 #skill-info-container {
-    background-color: #f2edff;
+    background-color: #f2edffcc;
     border-radius: 12px;
     padding: 10px 30px;
 }
@@ -1326,16 +1323,7 @@ export default {
     }
 
     #skill-info-container {
-        background-color: #f2edffcc;
-        border-radius: 12px;
         padding: 10px 20px;
-    }
-
-    .mastery-requirements {
-        width: 100%;
-        margin-left: 0px;
-        padding-left: 0px;
-        padding-right: 0px;
     }
 
     .skill-name {

@@ -235,7 +235,7 @@ export default {
 }
 
 .source {
-    background-color: #f2edff;
+    background-color: #f2edffcc;
 }
 
 .post-user-row {

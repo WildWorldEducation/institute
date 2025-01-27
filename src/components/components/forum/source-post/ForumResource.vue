@@ -155,10 +155,6 @@ export default {
     object-fit: cover;
 }
 
-.source {
-    background-color: #f2edff;
-}
-
 .post-user-row {
     display: flex;
     flex-direction: row;
