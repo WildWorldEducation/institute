@@ -316,7 +316,7 @@ export default {
                         assessments.length === 0
                 }"
             >
-                <div class="h-100">
+                <div class="h-100 position-relative">
                     <StudentProgress
                         v-if="userDetailsStore.role == 'student'"
                         :userId="userDetailsStore.userId"
@@ -331,7 +331,7 @@ export default {
                             showTutorialTip2 &&
                             userDetailsStore.role == 'student'
                         "
-                        class="info-panel bg-light rounded p-2 mb-2"
+                        class="info-panel bg-light rounded p-2 mb-2 position-absolute top-0"
                     >
                         <p>
                             This section shows your available skills. These are
@@ -361,7 +361,7 @@ export default {
                         questions.length === 0
                 }"
             >
-                <div class="h-100">
+                <div class="h-100 position-relative">
                     <LastVisitedSkills
                         v-if="userDetailsStore.role == 'student'"
                         :userId="userDetailsStore.userId"
@@ -377,7 +377,7 @@ export default {
                             showTutorialTip3 &&
                             userDetailsStore.role == 'student'
                         "
-                        class="info-panel bg-light rounded p-2 mb-2"
+                        class="info-panel bg-light rounded p-2 mb-2 position-absolute top-0"
                     >
                         <p>
                             This section shows your the last 5 skill pages you
@@ -397,7 +397,7 @@ export default {
                 v-if="userDetailsStore.role == 'student'"
                 class="col-lg-4 col-md-6 mb-2"
             >
-                <div class="h-100">
+                <div class="h-100 position-relative">
                     <Goals />
                     <!-- Tooltip -->
                     <div
@@ -405,7 +405,7 @@ export default {
                             showTutorialTip4 &&
                             userDetailsStore.role == 'student'
                         "
-                        class="info-panel bg-light rounded p-2 mb-2"
+                        class="info-panel bg-light rounded p-2 mb-2 position-absolute top-0"
                     >
                         <p>This section shows any goals you might have made.</p>
                         <p>
