@@ -45,8 +45,10 @@ export default {
 
 <template>
     <div class="container">
+        <!-- Profile Section -->
+        <ProfileDetails />
         <!-- Notifications -->
-        <div class="row">
+        <div class="row mt-2">
             <div class="col-lg-4 col-md-6 mb-2">
                 <div class="hub-component h-100">
                     <Notifications />
@@ -61,43 +63,18 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- Profile Section -->
-        <ProfileDetails />
         <ThemeDetails />
-        <ReputationDetails />
-        <div
-            v-if="
-                userDetailsStore.role == 'student' ||
-                userDetailsStore.role == 'instructor'
-            "
-            class="col-lg-4 col-md-6 mb-2"
-        >
-            <div class="hub-component h-100">
-                <ReputationEvents />
-                <!-- Tooltip -->
-                <div
-                    v-if="
-                        showTutorialTip5 && userDetailsStore.role == 'student'
-                    "
-                    class="info-panel bg-light rounded p-2 mb-2"
-                >
-                    <p>
-                        This section shows any increases to your reputation
-                        score.
-                    </p>
-                    <p>
-                        You can increase your reputation score by helping to
-                        improve the platform in a variety of ways.
-                    </p>
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(5)"
-                    >
-                        close
-                    </button>
-                </div>
-            </div>
+        <div class="container pb-4 theme-background mt-2">
+            <h2 class="secondary-heading h4">Reputation</h2>
+            <ReputationDetails />
+            <ReputationEvents
+                v-if="
+                    userDetailsStore.role == 'student' ||
+                    userDetailsStore.role == 'instructor'
+                "
+            />
         </div>
+
         <!-- 
     Admin role only 
     -->
@@ -145,6 +122,16 @@ export default {
 
 <style scoped>
 .hub-component {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.themes {
+    width: 300px;
+}
+
+.theme-background {
     background-color: white;
     border-radius: 10px;
     padding: 10px;

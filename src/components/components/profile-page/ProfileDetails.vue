@@ -50,7 +50,7 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3 profile-background">
+    <div class="container profile-background">
         <div class="row mt-3">
             <div class="col-12 col-md-6">
                 <!-- Avatar -->
