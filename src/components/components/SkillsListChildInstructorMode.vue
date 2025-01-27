@@ -11,9 +11,6 @@ export default {
             userSkillsStore
         };
     },
-    // Division Into the Kingdoms of Isreal & Judah
-    // World Countries
-    // United Submitters International
     data() {
         return {
             showChildren: false,
