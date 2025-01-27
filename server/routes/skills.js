@@ -1749,7 +1749,7 @@ const openai = new OpenAI({
 //     }
 // })
 
-const { convertImageTo64X64 } = require('../utilities/generateIconImage');
+
 
 
 
