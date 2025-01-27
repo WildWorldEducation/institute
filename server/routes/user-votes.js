@@ -51,10 +51,47 @@ router.put('/:userId/:resourceId/edit/up', (req, res, next) => {
 
         conn.query(sqlQuery, (err, results) => {
             try {
+                let getUserIdQuery = `
+                    SELECT user_id
+                    FROM resources
+                    WHERE id = ${conn.escape(req.params.resourceId)};
+                `;
+                conn.query(getUserIdQuery, (err1, results1) => {
+                    if (err1) {
+                        throw err1;
+                    }
+                
+                    // Check if a user_id was found
+                    if (results1.length === 0) {
+                        return res.status(404).send("Resource not found.");
+                    }
+                
+                    // Extract the user_id
+                    const targetUserId = results1[0].user_id;
+                
+                    // Query 2: Update the reputation_score for the found user_id
+                    let updateReputationQuery = `
+                        UPDATE users
+                        SET reputation_score = (
+                            SELECT COALESCE(SUM(v.vote), 0) DIV 5
+                            FROM resources r
+                            JOIN user_votes v ON r.id = v.resource_id
+                            WHERE r.user_id = ${conn.escape(targetUserId)}
+                        )
+                        WHERE id = ${conn.escape(targetUserId)};
+                    `;
+                
+                    conn.query(updateReputationQuery, (err2, results2) => {
+                        if (err2) {
+                            throw err2;
+                        }
+                        // Successfully updated the reputation
+                        res.end();
+                    });
+                });
                 if (err) {
                     throw err;
                 }
-                res.end();
             } catch (err) {
                 next(err);
             }
@@ -75,10 +112,47 @@ router.put('/:userId/:resourceId/edit/down', (req, res, next) => {
 
         conn.query(sqlQuery, (err, results) => {
             try {
+                let getUserIdQuery = `
+                    SELECT user_id
+                    FROM resources
+                    WHERE id = ${conn.escape(req.params.resourceId)};
+                `;
+                conn.query(getUserIdQuery, (err1, results1) => {
+                    if (err1) {
+                        throw err1;
+                    }
+                
+                    // Check if a user_id was found
+                    if (results1.length === 0) {
+                        return res.status(404).send("Resource not found.");
+                    }
+                
+                    // Extract the user_id
+                    const targetUserId = results1[0].user_id;
+                
+                    // Query 2: Update the reputation_score for the found user_id
+                    let updateReputationQuery = `
+                        UPDATE users
+                        SET reputation_score = (
+                            SELECT COALESCE(SUM(v.vote), 0) DIV 5
+                            FROM resources r
+                            JOIN user_votes v ON r.id = v.resource_id
+                            WHERE r.user_id = ${conn.escape(targetUserId)}
+                        )
+                        WHERE id = ${conn.escape(targetUserId)};
+                    `;
+                
+                    conn.query(updateReputationQuery, (err2, results2) => {
+                        if (err2) {
+                            throw err2;
+                        }
+                        // Successfully updated the reputation
+                        res.end();
+                    });
+                });
                 if (err) {
                     throw err;
                 }
-                res.end();
             } catch (err) {
                 next(err);
             }
@@ -99,10 +173,47 @@ router.put('/:userId/:resourceId/edit/cancel', (req, res, next) => {
 
         conn.query(sqlQuery, (err, results) => {
             try {
+                let getUserIdQuery = `
+                    SELECT user_id
+                    FROM resources
+                    WHERE id = ${conn.escape(req.params.resourceId)};
+                `;
+                conn.query(getUserIdQuery, (err1, results1) => {
+                    if (err1) {
+                        throw err1;
+                    }
+                
+                    // Check if a user_id was found
+                    if (results1.length === 0) {
+                        return res.status(404).send("Resource not found.");
+                    }
+                
+                    // Extract the user_id
+                    const targetUserId = results1[0].user_id;
+                
+                    // Query 2: Update the reputation_score for the found user_id
+                    let updateReputationQuery = `
+                        UPDATE users
+                        SET reputation_score = (
+                            SELECT COALESCE(SUM(v.vote), 0) DIV 5
+                            FROM resources r
+                            JOIN user_votes v ON r.id = v.resource_id
+                            WHERE r.user_id = ${conn.escape(targetUserId)}
+                        )
+                        WHERE id = ${conn.escape(targetUserId)};
+                    `;
+                
+                    conn.query(updateReputationQuery, (err2, results2) => {
+                        if (err2) {
+                            throw err2;
+                        }
+                        // Successfully updated the reputation
+                        res.end();
+                    });
+                });
                 if (err) {
                     throw err;
                 }
-                res.end();
             } catch (err) {
                 next(err);
             }
