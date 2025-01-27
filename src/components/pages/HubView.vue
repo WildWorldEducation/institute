@@ -42,8 +42,7 @@ export default {
             showTutorialTip1: false,
             showTutorialTip2: false,
             showTutorialTip3: false,
-            showTutorialTip4: false,
-            showTutorialTip5: false
+            showTutorialTip4: false
         };
     },
     components: {
@@ -206,9 +205,6 @@ export default {
                 this.showTutorialTip4 = true;
             } else if (step == 4) {
                 this.showTutorialTip4 = false;
-                this.showTutorialTip5 = true;
-            } else if (step == 5) {
-                this.showTutorialTip5 = false;
                 this.markTutorialComplete();
             }
         },
@@ -416,7 +412,7 @@ export default {
                             class="btn primary-btn"
                             @click="progressTutorial(4)"
                         >
-                            next
+                            close
                         </button>
                     </div>
                 </div>
