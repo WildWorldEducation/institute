@@ -250,68 +250,18 @@ export default {
                             }, intervalTime);
                             break;
                         // We also add page up and page down to zoom in and out
-                        case 'PageUp':
+                        case 'Equal':
                             this.interval = setInterval(() => {
-                                this.$parent.scale = this.$parent.scale + 0.03;
-                                // calculate the proportion of new scale and ole scale
-                                const scaleProportion =
-                                    this.oldScale / this.$parent.scale;
-                                // just like the panning we have to multiple the pan value when scale is smaller than 0
-                                // because in the d3 handler we divide the value with scale
-                                let panX =
-                                    this.$parent.scale >= 1
-                                        ? this.$parent.panX
-                                        : this.$parent.panX *
-                                          this.$parent.scale;
-                                let panY =
-                                    this.$parent.scale >= 1
-                                        ? this.$parent.panY
-                                        : this.$parent.panY *
-                                          this.$parent.scale;
-                                // calculate pan value so we can zoom into center of the screen
-                                panX = panX * scaleProportion;
-                                panY = panY * scaleProportion;
-
-                                // store new scale value
-                                this.oldScale = this.$parent.scale;
-                                this.$parent.zoomInD3(
-                                    this.$parent.scale,
-                                    panX,
-                                    panY
-                                );
-
-                                e.preventDefault();
+                                if(this.$parent.scale < 2){
+                                    this.scaleTree(0.03)
+                                }
                             }, 50);
                             break;
-                        case 'PageDown':
+                        case 'Minus':
                             this.interval = setInterval(() => {
-                                this.$parent.scale = this.$parent.scale - 0.03;
-                                // calculate the proportion of new scale and ole scale
-                                const scaleProportion =
-                                    this.oldScale / this.$parent.scale;
-                                // just like the panning we have to multiple the pan value when scale is smaller than 0
-                                // because in the d3 handler we divide the value with scale
-                                let panX =
-                                    this.$parent.scale >= 1
-                                        ? this.$parent.panX
-                                        : this.$parent.panX *
-                                          this.$parent.scale;
-                                let panY =
-                                    this.$parent.scale >= 1
-                                        ? this.$parent.panY
-                                        : this.$parent.panY *
-                                          this.$parent.scale;
-                                // calculate pan value so we can zoom into center of the screen
-                                panX = panX * scaleProportion;
-                                panY = panY * scaleProportion;
-
-                                // store new scale value
-                                this.oldScale = this.$parent.scale;
-                                this.$parent.zoomInD3(
-                                    this.$parent.scale,
-                                    panX,
-                                    panY
-                                );
+                                if(this.$parent.scale > 0.3){
+                                    this.scaleTree(-0.03)
+                                }
                             }, 50);
                             break;
                         default:
@@ -404,7 +354,25 @@ export default {
         });
     },
     watch: {},
-    methods: {}
+    methods: {
+        scaleTree(step){
+            const canvaCenterX = this.$parent.context.canvas.width / 2
+            const canvaCenterY = this.$parent.context.canvas.height / 2
+            const newScale = this.$parent.scale + step
+
+            // calculate the proportion of new scale and ole scale
+            const scaleProportion = newScale / this.$parent.scale;
+            
+            // Calculate the appropriate panning after scaling to maintain the canvas center
+            let panX = canvaCenterX + ((this.$parent.panX - canvaCenterX)*scaleProportion)
+            let panY = canvaCenterY + ((this.$parent.panY - canvaCenterY)*scaleProportion)
+            
+            this.$parent.scale = newScale;
+            // store new scale value
+            this.oldScale = newScale;
+            this.$parent.zoomInD3(newScale, panX, panY);
+        }
+    }
 };
 </script>
 

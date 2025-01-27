@@ -5,7 +5,7 @@ import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';
 import NewSkillPanel from '../NewSkillPanel.vue';
-import SliderControl from './SliderControl.vue';
+import ZoomControl from './ZoomControl.vue';
 import JoystickControl from './JoystickControl.vue';
 
 // Algorithm.
@@ -63,15 +63,20 @@ export default {
             }
         };
     },
-    props: ['studentId', 'studentName'],
+    props: ['studentId', 'studentName', 'restartTutorial'],
     components: {
         SkillPanel,
         NewSkillPanel,
-        SliderControl,
+        ZoomControl,
         JoystickControl
     },
     async mounted() {
-        await this.skillTreeStore.getStudentSkills(this.studentId);
+        await this.skillTreeStore.getStudentSkillTree(
+            this.studentId,
+            this.$parent.gradeFilter,
+            this.$parent.subjectFilters,
+            this.$parent.isUnlockedSkillsOnlyFilter
+        );
 
         // Specify the chart’s dimensions.
         this.height = window.innerHeight;
@@ -80,54 +85,10 @@ export default {
         this.skill = {
             name: 'SKILLS',
             sprite: null,
-            children: this.skillTreeStore.studentSkills
+            children: this.skillTreeStore.studentSkillTree
         };
 
         this.getAlgorithm();
-
-        // Set up the Hidden Canvas for Interactivity.
-        let hiddenCanvas = document.getElementById('hidden-canvas');
-        this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
-        hiddenCanvas.style.display = 'none';
-
-        // // Listen for clicks on the main canvas
-        // canvas.addEventListener('click', (e) => {
-        //     // We actually only need to draw the hidden canvas when
-        //     // there is an interaction. This sketch can draw it on
-        //     // each loop, but that is only for demonstration.
-
-        //     var data = this.nodes;
-        //     //Figure out where the mouse click occurred.
-        //     var mouseX = e.layerX;
-        //     var mouseY = e.layerY;
-
-        //     // Get the corresponding pixel color on the hidden canvas
-        //     // and look up the node in our map.
-        //     var ctx = this.hiddenCanvasContext;
-
-        //     // This will return that pixel's color
-        //     var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
-        //     //var col = ctx.getImageData(mouseX, mouseY, 1, 1);
-
-        //     //Our map uses these rgb strings as keys to nodes.
-        //     var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
-        //     var node = this.colToNode[colString];
-
-        //     // console.log(this.colToNode);
-
-        //     if (node) {
-        //         // We clicked on something, lets set the color of the node
-        //         // we also have access to the data associated with it, which in
-        //         // this case is just its original index in the data array.
-        //         node.renderCol = node.__pickColor;
-        //         //Update the display with some data
-        //         this.skill.name = node.data.skill_name;
-        //         this.skill.id = node.data.id;
-        //         this.skill.type = node.data.type;
-        //         this.skill.masteryRequirements = node.data.mastery_requirements;
-        //         this.showSkillPanel = true;
-        //     }
-        // });
 
         // Zoom and pan with mouse
         // We have to construct the d3 zoom function and assign the zoom event
@@ -137,7 +98,6 @@ export default {
             .on('zoom', ({ transform }) => {
                 this.drawTree(transform);
                 // update slider percent ( Handle by us not d3 but will invoke when the d3 zoom event is call )
-                this.$refs.sliderControl.changeGradientBG();
             });
 
         // Bind the above object to canvas so it can zoom the tree
@@ -225,19 +185,20 @@ export default {
             const links = this.root.links();
             this.context.beginPath();
             for (const link of links) {
+                // Commented out as is buggy, lines that should be showing are disappearing on pan or zoom
                 // Check if the links are in view.
                 // Dont render them if they are not, for performance benefit.
-                const targetNodeInView = this.checkingIfNodeInView(
-                    link.target,
-                    transform
-                );
-                const sourceNodeInView = this.checkingIfNodeInView(
-                    link.source,
-                    transform
-                );
-                if (!targetNodeInView && !sourceNodeInView) {
-                    continue;
-                }
+                // const targetNodeInView = this.checkingIfNodeInView(
+                //     link.target,
+                //     transform
+                // );
+                // const sourceNodeInView = this.checkingIfNodeInView(
+                //     link.source,
+                //     transform
+                // );
+                // if (!targetNodeInView && !sourceNodeInView) {
+                //     continue;
+                // }
 
                 this.drawLink(link);
             }
@@ -282,12 +243,15 @@ export default {
             this.hiddenCanvasContext.restore();
         },
         drawNode(node) {
+            // Make sure the nodes have solid outlines
+            this.context.setLineDash([]);
+
             let ctx1 = this.context;
-            let ctx2 = this.hiddenCanvasContext;
+            //   let ctx2 = this.hiddenCanvasContext;
 
             // Visible context.
             // If not a domain, make node a circle.
-            // console.log(node.data.is_mastered);
+
             if (node.data.type != 'domain') {
                 ctx1.beginPath();
                 // Node size
@@ -367,26 +331,26 @@ export default {
             }
 
             // Hidden context.
-            if (node.data.type != 'domain') {
-                ctx2.beginPath();
-                ctx2.moveTo(node.y, node.x);
-                ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
-                ctx2.fill();
-            } else {
-                ctx2.beginPath();
-                ctx2.moveTo(node.y, node.x - 10);
-                // top left edge.
-                ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
-                // bottom left edge.
-                ctx2.lineTo(node.y, node.x - 10 + 20);
-                // bottom right edge.
-                ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
-                // closing the path automatically creates the top right edge.
-                ctx2.closePath();
-                ctx2.lineWidth = 2;
-                ctx2.fill();
-                ctx2.stroke();
-            }
+            // if (node.data.type != 'domain') {
+            //     ctx2.beginPath();
+            //     ctx2.moveTo(node.y, node.x);
+            //     ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+            //     ctx2.fill();
+            // } else {
+            //     ctx2.beginPath();
+            //     ctx2.moveTo(node.y, node.x - 10);
+            //     // top left edge.
+            //     ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
+            //     // bottom left edge.
+            //     ctx2.lineTo(node.y, node.x - 10 + 20);
+            //     // bottom right edge.
+            //     ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
+            //     // closing the path automatically creates the top right edge.
+            //     ctx2.closePath();
+            //     ctx2.lineWidth = 2;
+            //     ctx2.fill();
+            //     ctx2.stroke();
+            // }
         },
         drawLink(link) {
             const linkGenerator = d3
@@ -618,7 +582,6 @@ export default {
                         )
                         .scale(0.3)
                 );
-            this.$refs.sliderControl.showScaleLabel();
         },
         // programmatic d3 zoom
         zoomInD3(scale, panX, panY) {
@@ -626,7 +589,6 @@ export default {
                 this.d3Zoom.transform,
                 d3.zoomIdentity.translate(panX, panY).scale(scale)
             );
-            this.$refs.sliderControl.showScaleLabel();
         },
         // Pan with arrow keys.
         panInD3() {
@@ -693,21 +655,66 @@ export default {
                 return true;
             }
             return false;
+        },
+        async reloadTree(
+            studentId,
+            gradeFilter,
+            subjectFilters,
+            isUnlockedSkillsOnlyFilter
+        ) {
+            await this.skillTreeStore.getStudentSkillTree(
+                studentId,
+                gradeFilter,
+                subjectFilters,
+                isUnlockedSkillsOnlyFilter
+            );
+
+            this.skill = {
+                name: 'SKILLS',
+                sprite: null,
+                children: this.skillTreeStore.studentSkillTree
+            };
+
+            this.getAlgorithm();
+
+            // Zoom and pan with mouse
+            // We have to construct the d3 zoom function and assign the zoom event
+            this.d3Zoom = d3
+                .zoom()
+                .scaleExtent([0.1, 5])
+                .on('zoom', ({ transform }) => {
+                    this.drawTree(transform);
+                    // update slider percent ( Handle by us not d3 but will invoke when the d3 zoom event is call )
+                });
+
+            // Bind the above object to canvas so it can zoom the tree
+            d3.select(this.context.canvas).call(this.d3Zoom);
+
+            // Set initial zoom value.
+            this.resetPos();
+
+            // For the loading animation.
+            this.isLoading = false;
+        },
+        // Grade level, root subject, unlocked skills filters
+        async filter(
+            studentId,
+            gradeFilter,
+            subjectFilters,
+            isUnlockedSkillsOnlyFilter
+        ) {
+            this.skill.children = await this.reloadTree(
+                studentId,
+                gradeFilter,
+                subjectFilters,
+                isUnlockedSkillsOnlyFilter
+            );
         }
     }
 };
 </script>
 
 <template>
-    <!-- Student name, print and reset position buttons -->
-    <div
-        id="overlay"
-        class="d-flex position-absolute bottom-0 start-50 translate-middle-x bg-light p-1 rounded mb-2"
-    >
-        <p class="">Student: {{ studentName }}</p>
-        <button class="btn primary-btn ms-2" @click="printPDF()">Print</button>
-        <button class="btn primary-btn ms-2" @click="resetPos()">Reset</button>
-    </div>
     <!-- Loading animation -->
     <div
         v-if="isLoading == true"
@@ -728,13 +735,17 @@ export default {
         ></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
-        <SliderControl ref="sliderControl" />
+        <ZoomControl ref="ZoomControl" />
         <div id="sidepanel-backdrop"></div>
         <JoystickControl class="d-none" />
     </div>
 </template>
 
 <style scoped>
+.skilltree-btns {
+    top: 72px;
+}
+
 #overlay {
     z-index: 2;
 }
@@ -912,9 +923,6 @@ input[type='button'] {
 @media (max-width: 820px) {
     .flex-container {
         flex-direction: column;
-    }
-    #wrapper {
-        height: calc(100% - 86px);
     }
 }
 

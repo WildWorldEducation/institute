@@ -74,7 +74,6 @@ export default {
                             </span>
                         </button>
                         <router-link
-                            v-if="skill.type != 'domain'"
                             class="btn primary-btn"
                             target="_blank"
                             id="skillLink"
@@ -119,25 +118,12 @@ export default {
                 />
                 <!-- Mastery requirements -->
                 <div
-                    v-if="skill?.type != 'domain'"
-                    class="skill-mastery-requirement text-start mt-1 mb-4"
-                    v-html="skill.masteryRequirements"
+                    class="skill-introduction text-start mt-1 mb-4"
+                    v-html="skill.introduction"
                 ></div>
-                <div
-                    v-else-if="skill?.type == 'domain'"
-                    class="skill-mastery-requirement"
-                >
-                    <p>
-                        This is a larger subject holding a series of more
-                        specific skills; click through to the skills within it
-                        to master each one!
-                    </p>
-                </div>
+
                 <!-- Subskills -->
-                <div
-                    v-if="skill?.type == 'super'"
-                    class="skill-mastery-requirement"
-                >
+                <div v-if="skill?.type == 'super'" class="skill-introduction">
                     <h2 class="h4">Subskills</h2>
                     <ul class="list-container">
                         <li v-for="subskill in skill.subskills">
@@ -157,7 +143,6 @@ export default {
 <style scoped>
 .skill-panel-container {
     background-color: #e4ecf4;
-    color: #888;
     z-index: 1072;
     position: absolute;
     top: 0px;
@@ -216,7 +201,7 @@ img {
     margin-bottom: 5px;
 }
 
-.skill-mastery-requirement {
+.skill-introduction {
     margin-left: 20px;
     margin-right: 5px;
 }
@@ -228,6 +213,7 @@ img {
 
 .list-container a {
     text-decoration: none;
+    text-align: start;
 }
 
 /* Slide left animation */

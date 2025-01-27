@@ -446,11 +446,6 @@ router.beforeEach(async (to, from, next) => {
         const currentSkill = skillsStore.skillsList.find(
             (item) => item.URL == to.params.skillUrl
         );
-
-        if (currentSkill.type == 'domain') {
-            next({ path: '/skills' });
-            return;
-        }
     }
 
     // To prevent the background image (from certain themes) from flashing when switching between skill tree pages.

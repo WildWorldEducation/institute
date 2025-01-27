@@ -17,8 +17,7 @@ export default {
             for (let i = 0; i < this.userSkills.length; i++) {
                 if (
                     (this.userSkills[i].is_accessible == 1) &
-                    (this.userSkills[i].is_mastered != 1) &
-                    (this.userSkills[i].type != 'domain')
+                    (this.userSkills[i].is_mastered != 1)
                 ) {
                     availableSkills.push({
                         name: this.userSkills[i].name,

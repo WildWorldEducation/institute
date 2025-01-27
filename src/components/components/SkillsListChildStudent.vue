@@ -6,6 +6,7 @@ export default {
     setup() {
         const skillsStore = useSkillsStore();
         const userDetailsStore = useUserDetailsStore();
+
         return {
             skillsStore,
             userDetailsStore
@@ -114,13 +115,11 @@ export default {
         }
     },
     methods: {
-        mainButtonPress() {
-            if (this.type != 'domain') {
-                window.open('/skills/' + this.url, '_blank');
-            } else this.toggleChildren();
+        mainButtonPress() {           
+            window.open('/skills/' + this.url, '_blank');            
         },
         // Save the state of the skills list to DB
-        toggleChildren() {
+        async toggleChildren() {
             if (this.localShowChildren == 1) {
                 this.localShowChildren = 0;
                 var url =
@@ -155,24 +154,26 @@ export default {
         HideMobileButtonsModal() {
             this.showModal = false;
         },
-        recursivelySetState(items, state) {
-            items.forEach((element) => {
-                if (
-                    element.type == 'domain' ||
-                    element.type == 'super' ||
-                    element.type == 'regular'
-                ) {
-                    localStorage.setItem(element.id + 'children', state);
+        // Expand / Collapse all.
+        recursivelySetState(nodeChildren, state) {
+            for (let node of nodeChildren) {
+                if (node.type == 'domain') {
+                    continue;
+                } else if (node.type == 'super' || node.type == 'regular') {
+                    node.show_children = state;
                 }
 
-                this.recursivelySetState(element.children, state);
-            });
+                this.recursivelySetState(node.children, state);
+            }
         },
-        // Expand/Collapse All Domain Descendants.
-        toggleExpandAll() {
-            this.recursivelySetState(this.children, !this.showChildren);
-            //localStorage.setItem(this.id + 'children', !this.showChildren);
-            this.showChildren = !this.showChildren;
+        // Expand/Collapse All Domain Descendants, only to the next domain.
+        async toggleExpandAll() {
+            if (this.localShowChildren == 1) {
+                this.localShowChildren = 0;
+            } else {
+                this.localShowChildren = 1;
+            }
+            this.recursivelySetState(this.children, this.localShowChildren);
         }
     },
     watch: {

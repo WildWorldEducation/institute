@@ -1,6 +1,5 @@
 <script>
 // Import
-import router from '../../router';
 import CheckPasswordComplexity from './CheckPasswordComplexity.vue';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUsersStore } from '../../stores/UsersStore';
@@ -26,7 +25,6 @@ export default {
             userSkillsStore
         };
     },
-
     data() {
         return {
             user: {
@@ -37,7 +35,6 @@ export default {
             firstLevelSkills: [],
             // The newly created ID number fo the user, from the DB.
             newUserId: null,
-            isValidated: false,
             instructors: [],
             // Select input bind model
             instructorId: 0,
@@ -51,9 +48,7 @@ export default {
             validate: {
                 first_name: false,
                 last_name: false,
-                email: false,
                 username: false,
-                emailFormat: false,
                 password: false,
                 // this validate is fire when image profile upload is not square
                 notSquareImg: false,
@@ -70,7 +65,9 @@ export default {
             },
             // Zoom relate state data
             lastZoomValue: 0,
-            zoomValue: 0
+            zoomValue: 0,
+            // For the loading animation.
+            isLoading: false
         };
     },
     components: {
@@ -97,61 +94,46 @@ export default {
             }
         }
     },
-    async mounted() {},
     methods: {
-        ValidateForm() {
-            if (this.user.username == '' || this.user.username == null) {
+        async ValidateForm() {
+            if (
+                this.user.username == '' ||
+                this.user.username == null ||
+                this.user.username == this.userDetailsStore.userName
+            ) {
                 this.validate.username = true;
-            } else if (this.user.email == '' || this.user.email == null) {
-                this.validate.email = true;
+                return;
             } else if (this.validate.passwordComplex) {
                 this.Submit();
             }
         },
-        ValidateEmail() {
-            // Check if email field is empty
-            this.validate.email = !this.user.email;
-            // If email field is not empty, check if it matches a valid email format
-            if (this.user.email) {
-                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                this.validate.emailFormat = !emailPattern.test(this.user.email);
-            } else {
-                // Reset email format validation if email is empty
-                this.validate.emailFormat = false;
-            }
-        },
         async Submit() {
             try {
-                const response = await fetch('/users/add', {
+                this.isLoading = true;
+                const response = await fetch('/users/instructor-add-student', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         username: this.user.username,
-                        email: this.user.email,
                         avatar: this.user.avatar,
                         password: this.user.password,
                         role: this.user.role
                     })
                 });
+
                 const data = await response.json();
-                if (
-                    data.username === 'username already taken' ||
-                    data.email === 'email already taken'
-                ) {
+                this.isLoading = false;
+                if (data.account === 'username already taken') {
                     alert(data.account);
                     return;
                 }
-                alert('account created');
-                this.usersStore.getUsers();
-                this.$router.push({ name: 'users' });
-                this.isValidated = true;
+                this.isLoading = true;
                 this.newUserId = data.id;
                 // Make all relevant skills and domains available or mastered if validated
-                if (this.isValidated) {
-                    this.firstLevelSkills.forEach((skill) =>
-                        this.userSkillsStore.MakeMastered(this.newUserId, skill)
-                    );
-                }
+                this.firstLevelSkills.forEach((skill) =>
+                    this.userSkillsStore.MakeMastered(this.newUserId, skill)
+                );
+
                 // Assign the instructor
                 await fetch('/users/add/instructor', {
                     method: 'POST',
@@ -163,6 +145,10 @@ export default {
                 });
                 // Update instructor's student list
                 await this.instructorStudentsStore.getInstructorStudentsList();
+                await this.usersStore.getUsers();
+                this.isLoading = false;
+                alert('account created');
+                this.$router.push({ name: 'users' });
             } catch (err) {
                 console.error('Error creating user ', err);
             }
@@ -267,9 +253,16 @@ export default {
 </script>
 
 <template>
-    <div class="container rounded bg-light p-3">
+    <!-- Loading animation -->
+    <div
+        v-if="isLoading == true"
+        class="loading-animation d-flex justify-content-center align-items-center py-4"
+    >
+        <span class="loader"></span>
+    </div>
+    <!-- Form -->
+    <div v-else class="container rounded bg-light p-3">
         <h1 class="heading">Add Student</h1>
-
         <div class="main-content-container container-fluid p-4">
             <div class="row">
                 <div class="col-lg-4">
@@ -381,26 +374,11 @@ export default {
                         >
                             Please enter a username!
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <h2 class="secondary-heading h4">Email address</h2>
-                        <input
-                            v-model="user.email"
-                            type="email"
-                            class="form-control"
-                            @blur="ValidateEmail"
-                        />
                         <div
-                            v-if="
-                                validate.email &&
-                                (user.email == '' || user.email == null)
-                            "
+                            v-if="user.username == userDetailsStore.userName"
                             class="form-validate"
                         >
-                            please enter an email address!
-                        </div>
-                        <div v-if="validate.emailFormat" class="form-validate">
-                            please enter a valid email address!
+                            Please use a different username!
                         </div>
                     </div>
                     <!-- Password Section -->
@@ -593,6 +571,39 @@ export default {
 </template>
 
 <style scoped>
+/* Loading animation */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    100% {
+        transform: rotate(0deg);
+    }
+    0% {
+        transform: rotate(360deg);
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .loading-animation {
+        min-height: 100%;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+    }
+}
+/* End of loading animation */
+
 .form-control:focus {
     border-color: white;
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
@@ -627,7 +638,6 @@ export default {
     letter-spacing: 0em;
     text-align: left;
 }
-
 
 .green-btn {
     background-color: #36c1af;
@@ -709,27 +719,6 @@ export default {
     font-size: 0.75rem;
     color: red;
     font-weight: 300;
-}
-
-/* The animation key frame */
-@keyframes rotation {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(180deg);
-    }
-}
-
-@keyframes rotationBack {
-    from {
-        transform: rotate(180deg);
-    }
-
-    to {
-        transform: rotate(0deg);
-    }
 }
 
 .custom-select-button-focus:hover {

@@ -118,13 +118,13 @@ export default {
                     v-if="this.userDetailsStore.role == 'instructor'"
                     class="d-flex flex-column"
                 >
-                    <!-- Vertical Tree -->
+                    <!-- Skill Tree -->
                     <router-link
                         :to="`/student/${this.$parent.user.id}/skill-tree`"
                         class="btn primary-btn mt-2"
                         target="_blank"
                     >
-                        Vertical tree
+                        Skill tree
                     </router-link>
                     <!-- Collapsible skill tree -->
                     <router-link
@@ -158,16 +158,23 @@ export default {
                     </router-link>
                 </div>
             </div>
+            <!-- Right column -->
             <div class="col-12 col-md-7">
+                <!-- Name -->
                 <div class="mb-3">
                     <h2 class="secondary-heading h4">Name</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"
-                        :value="`${this.$parent.user.firstName || ''} ${this.$parent.user.lastName || ''}`.trim()"
+                        :value="
+                            `${this.$parent.user.firstName || ''} ${
+                                this.$parent.user.lastName || ''
+                            }`.trim()
+                        "
                         disabled
                     />
                 </div>
+                <!-- Username -->
                 <div class="mb-3">
                     <h2 class="secondary-heading h4">Username</h2>
                     <input
@@ -177,7 +184,8 @@ export default {
                         disabled
                     />
                 </div>
-                <div class="mb-3">
+                <!-- Email (not for instructors, as their students will share their emails) -->
+                <div v-if="userDetailsStore.role != 'instructor'" class="mb-3">
                     <h2 class="secondary-heading h4">Email</h2>
                     <input
                         class="form-control user-input-information"
@@ -186,6 +194,7 @@ export default {
                         disabled
                     />
                 </div>
+                <!-- Role (admins only) -->
                 <div v-if="userDetailsStore.role == 'admin'" class="mb-3">
                     <label class="form-label">Role</label>
                     <input

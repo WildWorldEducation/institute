@@ -4,7 +4,7 @@ import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';
-import SliderControl from './SliderControl.vue';
+import ZoomControl from './ZoomControl.vue';
 import JoystickControl from './JoystickControl.vue';
 
 import * as d3 from 'd3';
@@ -36,7 +36,8 @@ export default {
                 tagIDs: [],
                 sprite: null,
                 type: null,
-                hasChildren: false
+                hasChildren: false,
+                subskills: []
             },
             tree: {},
             root: {},
@@ -82,7 +83,7 @@ export default {
     },
     components: {
         SkillPanel,
-        SliderControl,
+        ZoomControl,
         JoystickControl
     },
     async mounted() {
@@ -136,10 +137,6 @@ export default {
 
         // Listen for clicks on the main canvas
         canvas.addEventListener('click', async (e) => {
-            // We actually only need to draw the hidden canvas when
-            // there is an interaction. This sketch can draw it on
-            // each loop, but that is only for demonstration.
-
             //Figure out where the mouse click occurred.
             var mouseX = e.layerX;
             var mouseY = e.layerY;
@@ -191,10 +188,18 @@ export default {
                 // Because this is so much data, we do not send it with the rest of the skill tree,
                 // or it will slow the load down too much.
                 const result = await fetch(
-                    '/skills/mastery-requirements-and-url/' + this.skill.id
+                    '/skills/introduction-and-url/' + this.skill.id
                 );
                 const result2 = await result.json();
-                this.skill.masteryRequirements = result2.mastery_requirements;
+                if (this.skill.type == 'super') {
+                    // Get urls of subskills, if a super skill
+                    const subSkillsResult = await fetch(
+                        '/skills/sub-skills/' + this.skill.id
+                    );
+                    const subSkillsResultJson = await subSkillsResult.json();
+                    this.skill.subskills = subSkillsResultJson;
+                }
+                this.skill.introduction = result2.introduction;
                 this.skill.url = result2.url;
                 this.showSkillPanel = true;
             }
@@ -209,7 +214,6 @@ export default {
                 this.transformData = transform;
                 this.drawTree(transform);
                 // update slider percent ( Handle by us not d3 but will invoke when the d3 zoom event is call )
-                this.$refs.sliderControl.changeGradientBG();
             });
 
         // Bind the above object to canvas so it can zoom the tree
@@ -299,16 +303,17 @@ export default {
             const links = this.root.links();
             this.context.beginPath();
             for (const link of links) {
+                // Commented out as is buggy, lines that should be showing are disappearing on pan or zoom
                 // Do not render parts of tree not in the canvas
                 // to improve performance.
-                const targetNodeInView = this.checkingIfNodeInView(
-                    link.target,
-                    transform
-                );
-                const sourceNodeInView = this.checkingIfNodeInView(
-                    link.source,
-                    transform
-                );
+                // const targetNodeInView = this.checkingIfNodeInView(
+                //     link.target,
+                //     transform
+                // );
+                // const sourceNodeInView = this.checkingIfNodeInView(
+                //     link.source,
+                //     transform
+                // );
                 // if (!targetNodeInView && !sourceNodeInView) {
                 //     continue;
                 // }
@@ -629,7 +634,6 @@ export default {
                         )
                         .scale(0.3)
                 );
-            this.$refs.sliderControl.showScaleLabel();
         },
         // programmatic d3 zoom
         zoomInD3(scale, panX, panY) {
@@ -637,7 +641,6 @@ export default {
                 this.d3Zoom.transform,
                 d3.zoomIdentity.translate(panX, panY).scale(scale)
             );
-            this.$refs.sliderControl.showScaleLabel();
         },
         // zoom and pan to a node
         goToLocation(node) {
@@ -766,7 +769,7 @@ export default {
                 }
             }
         },
-        // if search skill get filtered out by level or subject we remove it
+        // If searched for skill gets filtered out by level or subject we remove it:
         async removeFilterForHiddenSkill(searchName) {
             const node = await this.skillTreeStore.findInStudentSkill(
                 searchName,
@@ -1082,14 +1085,32 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     level: this.userDetailsStore.gradeFilter,
-                    is_language_filter: this.$parent.isLanguage,
-                    is_math_filter: this.$parent.isMathematics,
-                    is_history_filter: this.$parent.isHistory,
-                    is_life_filter: this.$parent.isLife,
-                    is_computer_science_filter: this.$parent.isComputerScience,
+                    is_language_filter:
+                        this.userDetailsStore.subjectFilters.includes(
+                            'Language'
+                        ),
+                    is_math_filter:
+                        this.userDetailsStore.subjectFilters.includes(
+                            'Mathematics'
+                        ),
+                    is_history_filter:
+                        this.userDetailsStore.subjectFilters.includes(
+                            'History'
+                        ),
+                    is_life_filter:
+                        this.userDetailsStore.subjectFilters.includes('Life'),
+                    is_computer_science_filter:
+                        this.userDetailsStore.subjectFilters.includes(
+                            'Computer Science'
+                        ),
                     is_science_and_invention_filter:
-                        this.$parent.isScienceAndInvention,
-                    is_dangerous_ideas_filter: this.$parent.isDangerousIdeas,
+                        this.userDetailsStore.subjectFilters.includes(
+                            'Science and Invention'
+                        ),
+                    is_dangerous_ideas_filter:
+                        this.userDetailsStore.subjectFilters.includes(
+                            'Dangerous Ideas'
+                        ),
                     is_unlocked_skills_only_filter:
                         this.userDetailsStore.isUnlockedSkillsOnlyFilter
                 })
@@ -1522,7 +1543,7 @@ export default {
         ></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
-        <SliderControl ref="sliderControl" />
+        <ZoomControl ref="ZoomControl" />
         <div id="sidepanel-backdrop"></div>
         <JoystickControl class="d-lg-none" />
     </div>

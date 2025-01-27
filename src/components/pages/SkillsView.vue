@@ -57,6 +57,8 @@ export default {
             showMobileTutorialTip4: false,
             showTutorialTip5: false,
             showMobileTutorialTip5: false,
+            showTutorialTip6: false,
+            showMobileTutorialTip6: false,
             isInstructorModeTutorialComplete: false,
             showInstructorModeTutorialTip1: false,
             showInstructorModeTutorialTip2: false,
@@ -167,9 +169,6 @@ export default {
                     this.showMobileTutorialTip3 = false;
                     this.showMobileTutorialTip4 = true;
                 }
-                if (this.userDetailsStore.role == 'editor') {
-                    this.markTutorialComplete();
-                }
             } else if (step == 4) {
                 if (this.isMobileCheck > 576) {
                     this.showTutorialTip4 = false;
@@ -179,16 +178,62 @@ export default {
                     this.showMobileTutorialTip5 = true;
                 }
                 if (this.userDetailsStore.role == 'instructor') {
+                    this.showTutorialTip5 = true;
+                }
+                if (this.userDetailsStore.role == 'editor') {
                     this.markTutorialComplete();
                 }
             } else if (step == 5) {
                 if (this.isMobileCheck > 576) {
                     this.showTutorialTip5 = false;
+                    this.showTutorialTip6 = true;
                 } else {
                     this.showMobileTutorialTip5 = false;
+                    this.showMobileTutorialTip6 = true;
+                }
+                if (this.userDetailsStore.role == 'instructor') {
+                    this.showTutorialTip5 = false;
+                    this.markTutorialComplete();
+                }
+            } else if (step == 6) {
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip6 = false;
+                } else {
+                    this.showMobileTutorialTip6 = false;
                 }
                 this.markTutorialComplete();
             }
+        },
+        restartTutorial() {
+            if (this.instructorMode) {
+                this.restartInstructorTutorial();
+            } else {
+                this.restartStudentTutorial();
+                this.restartMobileTutorial();
+            }
+        },
+        restartStudentTutorial() {
+            this.showTutorialTip1 = true;
+            this.showTutorialTip2 = false;
+            this.showTutorialTip3 = false;
+            this.showTutorialTip4 = false;
+            this.showTutorialTip5 = false;
+            this.showTutorialTip6 = false;
+            this.isTutorialComplete = false;
+        },
+        restartMobileTutorial() {
+            this.showTutorialTip1 = true;
+            this.showMobileTutorialTip2 = false;
+            this.showMobileTutorialTip3 = false;
+            this.showMobileTutorialTip4 = false;
+            this.showMobileTutorialTip5 = false;
+            this.showMobileTutorialTip6 = false;
+            this.isTutorialComplete = false;
+        },
+        restartInstructorTutorial() {
+            this.showInstructorModeTutorialTip1 = true;
+            this.showInstructorModeTutorialTip2 = false;
+            this.isInstructorModeTutorialComplete = false;
         },
         markTutorialComplete() {
             let url =
@@ -246,6 +291,20 @@ export default {
                         :clearResults="clearResults"
                     />
                 </div>
+                <button class="btn primary-btn" @click="restartTutorial">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 192 512"
+                        width="20"
+                        height="20"
+                        fill="white"
+                    >
+                        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                        <path
+                            d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                        />
+                    </svg>
+                </button>
             </div>
             <!-- Tablet and up -->
             <div id="tablet-and-up-legend">
@@ -333,6 +392,25 @@ export default {
                                 :clearResults="clearResults"
                             />
                         </div>
+                        <div>
+                            <button
+                                class="btn primary-btn"
+                                @click="restartTutorial"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 192 512"
+                                    width="20"
+                                    height="20"
+                                    fill="white"
+                                >
+                                    <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                    <path
+                                        d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <!-- Student Tooltips -->
@@ -342,7 +420,8 @@ export default {
                         (showTutorialTip2 ||
                             showTutorialTip3 ||
                             showTutorialTip4 ||
-                            showTutorialTip5)
+                            showTutorialTip5 ||
+                            showTutorialTip6)
                     "
                     class="info-panel me-4 mt-1 bg-light"
                 >
@@ -351,9 +430,8 @@ export default {
                         class="info-text mt-1 rounded p-2"
                     >
                         <p>
-                            Greyed out nodes are locked. You need to unlock them
-                            by passing the quizzes of the skills that come
-                            before them.
+                            Greyed out nodes are locked until you pass the tests
+                            of the skills that precede them.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -367,10 +445,10 @@ export default {
                         class="info-text mt-1 rounded p-2"
                     >
                         <p>
-                            Sad face icons mean that the skill has not yet been
-                            mastered. When you master a skill, that face will
-                            become happy.
+                            A sad face icon indicates that the skill has not yet
+                            been mastered.
                         </p>
+                        <p>Every mastered skill has a happy face icon.</p>
                         <button
                             class="btn primary-btn"
                             @click="progressTutorial(3)"
@@ -382,11 +460,11 @@ export default {
                         v-else-if="showTutorialTip4"
                         class="info-text mt-1 rounded p-2"
                     >
-                        <p>Some nodes have a plus or minus sign.</p>
+                        <p>Some nodes feature a plus or minus sign.</p>
                         <p>
                             This indicates that the skill contains mini-skills
-                            that need to be mastered, before mastery of the main
-                            skill can be attempted.
+                            that need to be mastered before you can take an
+                            assessment to prove mastery of that larger skill.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -400,6 +478,27 @@ export default {
                         class="info-text mt-1 rounded p-2"
                     >
                         <p>
+                            If you think a skill is missing (either from the
+                            site in general or from a certain branch of the
+                            tree) you can propose its addition with the "New
+                            Skill" button
+                        </p>
+                        <p>
+                            —just make sure you run a thorough search before
+                            making your suggestion.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(5)"
+                        >
+                            next
+                        </button>
+                    </div>
+                    <div
+                        v-else-if="showTutorialTip6"
+                        class="info-text mt-1 rounded p-2"
+                    >
+                        <p>
                             Click on a skill node to go to the page for that
                             skill.
                         </p>
@@ -409,7 +508,7 @@ export default {
                         </p>
                         <button
                             class="btn primary-btn"
-                            @click="progressTutorial(5)"
+                            @click="progressTutorial(6)"
                         >
                             close
                         </button>
@@ -422,7 +521,8 @@ export default {
                         (showTutorialTip2 ||
                             showTutorialTip3 ||
                             showTutorialTip4 ||
-                            showTutorialTip5)
+                            showTutorialTip5 ||
+                            showTutorialTip6)
                     "
                     class="info-panel me-4 mt-1 bg-light"
                 >
@@ -445,11 +545,11 @@ export default {
                         v-else-if="showTutorialTip3"
                         class="info-text mt-1 rounded p-2"
                     >
-                        <p>Some nodes have a plus or minus sign.</p>
+                        <p>Some nodes feature a plus or minus sign.</p>
                         <p>
                             This indicates that the skill contains mini-skills
-                            that your students will need to master, before
-                            mastery of the main skill can be attempted.
+                            that need to be mastered before you can take an
+                            assessment to prove mastery of that larger skill.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -463,12 +563,33 @@ export default {
                         class="info-text mt-1 rounded p-2"
                     >
                         <p>
+                            If you think a skill is missing (either from the
+                            site in general or from a certain branch of the
+                            tree) you can propose its addition with the "New
+                            Skill" button
+                        </p>
+                        <p>
+                            —just make sure you run a thorough search before
+                            making your suggestion.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(4)"
+                        >
+                            next
+                        </button>
+                    </div>
+                    <div
+                        v-else-if="showTutorialTip5"
+                        class="info-text mt-1 rounded p-2"
+                    >
+                        <p>
                             When a student unlocks a skill (by passing a quiz)
                             the next skill will be unlocked.
                         </p>
                         <button
                             class="btn primary-btn"
-                            @click="progressTutorial(4)"
+                            @click="progressTutorial(5)"
                         >
                             close
                         </button>
@@ -478,7 +599,9 @@ export default {
                 <div
                     v-if="
                         userDetailsStore.role == 'editor' &&
-                        (showTutorialTip2 || showTutorialTip3)
+                        (showTutorialTip2 ||
+                            showTutorialTip3 ||
+                            showTutorialTip4)
                     "
                     class="info-panel me-4 mt-1 bg-light"
                 >
@@ -501,13 +624,34 @@ export default {
                         v-else-if="showTutorialTip3"
                         class="info-text mt-1 rounded p-2"
                     >
-                        <p>Some nodes have a plus or minus sign.</p>
+                        <p>
+                            If you think a skill is missing (either from the
+                            site in general or from a certain branch of the
+                            tree) you can propose its addition with the "New
+                            Skill" button
+                        </p>
+                        <p>
+                            —just make sure you run a thorough search before
+                            making your suggestion.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(3)"
+                        >
+                            next
+                        </button>
+                    </div>
+                    <div
+                        v-else-if="showTutorialTip4"
+                        class="info-text mt-1 rounded p-2"
+                    >
+                        <p>Some nodes feature a plus or minus sign.</p>
                         <p>
                             This indicates that the skill contains mini-skills.
                         </p>
                         <button
                             class="btn primary-btn"
-                            @click="progressTutorial(3)"
+                            @click="progressTutorial(4)"
                         >
                             close
                         </button>
@@ -528,7 +672,8 @@ export default {
                 showMobileTutorialTip2 ||
                 showMobileTutorialTip3 ||
                 showMobileTutorialTip4 ||
-                showMobileTutorialTip5)
+                showMobileTutorialTip5 ||
+                showMobileTutorialTip6)
         "
         class="modal"
     >
@@ -538,8 +683,8 @@ export default {
                     This page shows the skills in a drop-down hierarchical list.
                 </p>
                 <p>
-                    Click on the down arrows to expand them so as to access the
-                    descendant skills of the 7 subjects.
+                    Click on the down arrows to expand a subject and access its
+                    descendant skills.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
@@ -548,8 +693,8 @@ export default {
             </div>
             <div v-else-if="showMobileTutorialTip2">
                 <p>
-                    Greyed out nodes are locked. You need to unlock them by
-                    passing the quizzes of the skills that come before them.
+                    Greyed out nodes are locked until you pass the tests of the
+                    skills that precede them.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(2)">
@@ -558,21 +703,21 @@ export default {
             </div>
             <div v-else-if="showMobileTutorialTip3">
                 <p>
-                    Sad face icons mean that the skill has not yet been
-                    mastered. When you master a skill, that face will become
-                    happy.
+                    A sad face icon indicates that the skill has not yet been
+                    mastered.
                 </p>
+                <p>Every mastered skill has a happy face icon.</p>
 
                 <button class="btn primary-btn" @click="progressTutorial(3)">
                     next
                 </button>
             </div>
             <div v-else-if="showMobileTutorialTip4">
-                <p>Some nodes have a plus or minus sign.</p>
+                <p>Some nodes feature a plus or minus sign.</p>
                 <p>
                     This indicates that the skill contains mini-skills that need
-                    to be mastered, before mastery of the main skill can be
-                    attempted.
+                    to be mastered before you can take an assessment to prove
+                    mastery of that larger skill.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(4)">
@@ -580,10 +725,24 @@ export default {
                 </button>
             </div>
             <div v-else-if="showMobileTutorialTip5">
+                <p>
+                    If you think a skill is missing (either from the site in
+                    general or from a certain branch of the tree) you can
+                    propose its addition with the "New Skill" button
+                </p>
+                <p>
+                    —just make sure you run a thorough search before making your
+                    suggestion.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(5)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showMobileTutorialTip6">
                 <p>Click on a skill node to go to the page for that skill.</p>
                 <p>Remember, you can only attempt to master unlocked skills.</p>
 
-                <button class="btn primary-btn" @click="progressTutorial(5)">
+                <button class="btn primary-btn" @click="progressTutorial(6)">
                     close
                 </button>
             </div>
@@ -597,7 +756,8 @@ export default {
             (showTutorialTip1 ||
                 showMobileTutorialTip2 ||
                 showMobileTutorialTip3 ||
-                showMobileTutorialTip4)
+                showMobileTutorialTip4 ||
+                showMobileTutorialTip5)
         "
         class="modal"
     >
@@ -607,8 +767,8 @@ export default {
                     This page shows the skills in a drop-down hierarchical list.
                 </p>
                 <p>
-                    Click on the down arrows to expand them so as to access the
-                    descendant skills of the 7 subjects.
+                    Click on the down arrows to expand a subject and access its
+                    descendant skills.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
@@ -625,11 +785,11 @@ export default {
                 </button>
             </div>
             <div v-if="showMobileTutorialTip3">
-                <p>Some nodes have a plus or minus sign.</p>
+                <p>Some nodes feature a plus or minus sign.</p>
                 <p>
-                    This indicates that the skill contains mini-skills that your
-                    students will need to master, before mastery of the main
-                    skill can be attempted.
+                    This indicates that the skill contains mini-skills that need
+                    to be mastered before you can take an assessment to prove
+                    mastery of that larger skill.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(3)">
                     next
@@ -637,10 +797,24 @@ export default {
             </div>
             <div v-if="showMobileTutorialTip4">
                 <p>
+                    If you think a skill is missing (either from the site in
+                    general or from a certain branch of the tree) you can
+                    propose its addition with the "New Skill" button
+                </p>
+                <p>
+                    —just make sure you run a thorough search before making your
+                    suggestion.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(4)">
+                    next
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip5">
+                <p>
                     When a student unlocks a skill (by passing a quiz) the next
                     skill will be unlocked.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(4)">
+                <button class="btn primary-btn" @click="progressTutorial(5)">
                     close
                 </button>
             </div>
@@ -683,7 +857,8 @@ export default {
             userDetailsStore.role == 'editor' &&
             (showTutorialTip1 ||
                 showMobileTutorialTip2 ||
-                showMobileTutorialTip3)
+                showMobileTutorialTip3 ||
+                showMobileTutorialTip4)
         "
         class="modal"
     >
@@ -693,8 +868,8 @@ export default {
                     This page shows the skills in a drop-down hierarchical list.
                 </p>
                 <p>
-                    Click on the down arrows to expand them so as to access the
-                    descendant skills of the 7 subjects.
+                    Click on the down arrows to expand a subject and access its
+                    descendant skills.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
@@ -710,10 +885,24 @@ export default {
                     next
                 </button>
             </div>
-            <div v-if="showMobileTutorialTip3">
-                <p>Some nodes have a plus or minus sign.</p>
-                <p>This indicates that the skill contains mini-skills.</p>
+            <div v-else-if="showMobileTutorialTip3">
+                <p>
+                    If you think a skill is missing (either from the site in
+                    general or from a certain branch of the tree) you can
+                    propose its addition with the "New Skill" button
+                </p>
+                <p>
+                    —just make sure you run a thorough search before making your
+                    suggestion.
+                </p>
                 <button class="btn primary-btn" @click="progressTutorial(3)">
+                    next
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip4">
+                <p>Some nodes feature a plus or minus sign.</p>
+                <p>This indicates that the skill contains mini-skills.</p>
+                <button class="btn primary-btn" @click="progressTutorial(4)">
                     close
                 </button>
             </div>
@@ -864,6 +1053,10 @@ export default {
     max-width: unset !important;
 }
 
+.search-bar-container {
+    padding-right: 10px;
+}
+
 /* Small devices (portrait phones) */
 @media (max-width: 480px) {
     h1 {
@@ -886,6 +1079,7 @@ export default {
         width: 96%;
         margin-left: 0px;
         margin-right: auto;
+        padding-right: 10px;
     }
 }
 

@@ -127,8 +127,11 @@ export default {
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-end gap-4">
-                        <button class="btn red-btn" @click="$router.go(-1)">
+                    <div class="d-flex justify-content-end">
+                        <button
+                            class="btn red-btn me-2"
+                            @click="$router.go(-1)"
+                        >
                             Cancel
                         </button>
                         <button class="btn primary-btn" @click="Submit()">
