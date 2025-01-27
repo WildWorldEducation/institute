@@ -412,7 +412,11 @@ export default {
                 v-if="type != 'domain'"
                 class="btn"
                 title="create a goal"
-                @click="confirmCreateGoal()"
+                @click="
+                    isMastered == 1 || isUnlocked == 1
+                        ? $event.preventDefault()
+                        : confirmCreateGoal()
+                "
             >
                 <!-- Create goal button-->
                 <svg
@@ -422,8 +426,14 @@ export default {
                     width="20"
                     heigth="20"
                 >
-                    <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                    <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
+                        :style="{
+                            fill:
+                                isMastered == 1 || isUnlocked == 1
+                                    ? '#d3d3d3'
+                                    : 'primary-icon'
+                        }"
                         d="M448 256A192 192 0 1 0 64 256a192 192 0 1 0 384 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm0-224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zM224 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
                     />
                 </svg>
@@ -520,7 +530,7 @@ export default {
                 </svg>
                 <svg
                     v-else
-                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns="http://www.w3.org/20da00/svg"
                     viewBox="0 0 512 512"
                     width="18"
                     height="18"
