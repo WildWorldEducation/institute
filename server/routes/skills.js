@@ -44,7 +44,10 @@ const checkRoleHierarchy = require('../middlewares/roleMiddleware');
 const { recordUserAction } = require('../utilities/record-user-action');
 
 // Helper Function
-const { saveIconToAWS, saveBase64ImageToBucket } = require('../utilities/save-image-to-aws');
+const {
+    saveIconToAWS,
+    saveBase64ImageToBucket
+} = require('../utilities/save-image-to-aws');
 const {
     getVectorData,
     insertSkillsVectorIntoDataBase
@@ -205,11 +208,11 @@ router.post(
                             1,
                             ${conn.escape(req.session.userId)},
                             ${conn.escape(
-                                    req.body.name
-                                )},                           
+                                req.body.name
+                            )},                           
                             ${conn.escape(
-                                    req.body.description
-                                )},                                                      
+                                req.body.description
+                            )},                                                      
                             ${conn.escape(req.body.mastery_requirements)},
                             ${conn.escape(req.body.level)});`;
 
@@ -273,8 +276,8 @@ router.post(
         const sqlQuery = `SELECT *
                           FROM skills
                           WHERE skills.id = ${conn.escape(
-            req.body.skillToBeCopied.id
-        )} AND skills.is_deleted = 0;`;
+                              req.body.skillToBeCopied.id
+                          )} AND skills.is_deleted = 0;`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -646,8 +649,8 @@ router.get('/url/:skillUrl', (req, res, next) => {
                     LEFT JOIN 
                         skills AS parent_skill ON s.parent = parent_skill.id
                     WHERE s.url = ${conn.escape(
-        req.params.skillUrl
-    )} AND s.is_deleted = 0`;
+                        req.params.skillUrl
+                    )} AND s.is_deleted = 0`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -826,8 +829,8 @@ router.put(
                     ${conn.escape(iconUrl)},
                     ${conn.escape(req.body.icon)},
                     ${conn.escape(
-                req.body.mastery_requirements
-            )},                    
+                        req.body.mastery_requirements
+                    )},                    
                     ${conn.escape(req.body.level)},                    
                     ${conn.escape(req.body.order)},
                     ${conn.escape(req.body.comment)});`;
@@ -844,11 +847,11 @@ router.put(
                         url = ${conn.escape(req.body.url)},
                         parent = ${conn.escape(req.body.parent)},
                         description = ${conn.escape(
-                        req.body.description
-                    )},                         
+                            req.body.description
+                        )},                         
                         mastery_requirements = ${conn.escape(
-                        req.body.mastery_requirements
-                    )}, 
+                            req.body.mastery_requirements
+                        )}, 
                         type = ${conn.escape(req.body.type)}, 
                         level = ${conn.escape(req.body.level)}, 
                         skills.order = ${conn.escape(req.body.order)}, 
@@ -918,8 +921,8 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
          
          ON DUPLICATE KEY
          UPDATE mastery_requirements = ${conn.escape(
-            req.body.mastery_requirements
-        )}, 
+             req.body.mastery_requirements
+         )}, 
          date = CURRENT_TIMESTAMP(), 
          icon_image = ${conn.escape(req.body.icon_image)},          
          comment = ${conn.escape(req.body.comment)};`;
@@ -1085,10 +1088,11 @@ router.put(
                                         recordUserAction(
                                             {
                                                 userId: req.session.userId,
-                                                userAction: `${req.body.edit
-                                                    ? 'edit_and_approve'
-                                                    : 'approve'
-                                                    }`,
+                                                userAction: `${
+                                                    req.body.edit
+                                                        ? 'edit_and_approve'
+                                                        : 'approve'
+                                                }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
                                             },
@@ -1751,11 +1755,6 @@ const openai = new OpenAI({
 //     }
 // })
 
-
-
-
-
-
 router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
     try {
         const response = await openai.embeddings.create({
@@ -1785,33 +1784,33 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
 });
 
 router.get('/icon-list', (req, res) => {
-    let sqlQuery = "SELECT skills.url, skills.icon FROM skills"
+    let sqlQuery = 'SELECT skills.url, skills.icon FROM skills';
     try {
         conn.query(sqlQuery, (err, result) => {
             if (err) {
-                err
+                err;
             }
-            res.json(result)
-        })
+            res.json(result);
+        });
     } catch (error) {
-        console.error()
+        console.error();
     }
-})
+});
 
 // ======================================================================================
 router.get('/url-list', async (req, res) => {
     try {
-        let sqlUrl = 'SELECT skills.`url`, skills.`name`, skills.icon FROM skills ORDER BY skills.`url` asc'
+        let sqlUrl =
+            'SELECT skills.`url`, skills.`name`, skills.icon FROM skills ORDER BY skills.`url` asc';
         conn.query(sqlUrl, (err, result) => {
-            if (err)
-                throw err
+            if (err) throw err;
             res.json(result);
-        })
+        });
     } catch (error) {
-        console.error(error)
+        console.error(error);
         res.status = 500;
-        res.json(error)
+        res.json(error);
     }
-})
+});
 
 module.exports = router;
