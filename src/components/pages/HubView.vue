@@ -297,7 +297,7 @@ export default {
 
     <div class="container min-vh-100">
         <!-- Generate pathway bar -->
-        <div class="row mb-5">
+        <div class="row mb-3">
             <div class="col">
                 <PathwayGenerator />
             </div>

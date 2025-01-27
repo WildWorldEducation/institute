@@ -1,9 +1,19 @@
 <script>
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 export default {
-    setup() {},
+    setup() {
+        const userDetailsStore = useUserDetailsStore();
+        // Run the GET request.
+        userDetailsStore.getUserDetails();
+        return {
+            userDetailsStore
+        };
+    },
     data() {
         return {
-            query: ''
+            query: '',
+            recommendedSkills: [],
+            showRecommendedSkills: false
         };
     },
     async created() {},
@@ -30,12 +40,15 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                    userId: this.userDetailsStore.userId,
                     query: this.query
                 })
             };
             const result = await fetch(url, requestOption);
             const readableResult = await result.json();
-            console.log(readableResult);
+            // console.log(readableResult);
+            this.recommendedSkills = readableResult;
+            this.showRecommendedSkills = true;
         }
     }
 };
@@ -71,6 +84,30 @@ export default {
                 </svg>
             </button>
         </div>
+    </div>
+    <!-- Recommended Skills -->
+    <h2
+        v-if="showRecommendedSkills"
+        class="secondary-heading h5 bg-white rounded p-2 mt-2"
+    >
+        Recommended Skills
+    </h2>
+    <div v-if="showRecommendedSkills">
+        <router-link
+            v-for="recommendedSkill in recommendedSkills"
+            :class="{
+                'grade-school': recommendedSkill.level == 'grade_school',
+                'middle-school': recommendedSkill.level == 'middle_school',
+                'high-school': recommendedSkill.level == 'high_school',
+                college: recommendedSkill.level == 'college',
+                phd: recommendedSkill.level == 'phd'
+            }"
+            class="skill-link btn m-1"
+            :to="`/skills/${recommendedSkill.url}`"
+            target="_blank"
+        >
+            {{ recommendedSkill.name }}
+        </router-link>
     </div>
 </template>
 
@@ -108,5 +145,28 @@ export default {
 ::-ms-input-placeholder {
     /* Edge 12 -18 */
     color: black;
+}
+
+.skill-link:hover {
+    border: 1px solid black;
+}
+
+/* Level colors */
+.grade-school {
+    background-color: #40e0d0;
+}
+.middle-school {
+    background-color: #33a133;
+    color: white;
+}
+.high-school {
+    background-color: #ffd700;
+}
+.college {
+    background-color: #ffa500;
+}
+.phd {
+    background-color: #ff0000;
+    color: white;
 }
 </style>

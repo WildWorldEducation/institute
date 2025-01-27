@@ -1770,6 +1770,7 @@ router.post(
     isAuthenticated,
     async (req, res, next) => {
         try {
+            let userId = req.body.userId;
             let query = req.body.query;
 
             let prompt = `        
@@ -1800,7 +1801,7 @@ router.post(
             }
             // Convert string to object.       ;
             let subjectObject = JSON.parse(responseJSON);
-            console.log(subjectObject.subjectResponse);
+            // console.log(subjectObject.subjectResponse);
 
             const response = await openai.embeddings.create({
                 model: 'text-embedding-3-small',
@@ -1810,10 +1811,17 @@ router.post(
 
             const inputVector = response.data[0].embedding;
 
-            let sqlQuery = `SELECT *
+            let sqlQuery = `SELECT skills.name, skills.url, skills.level
                     FROM skills_vector
+                    JOIN skills
+                    ON skills.id = skills_vector.skill_id                    
                     WHERE VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
-                          VEC_FromText('[${inputVector}]')) < 1.17
+                          VEC_FromText('[${inputVector}]')) < 1.1
+                    AND skills.id NOT IN 
+                    (SELECT skill_id
+                    FROM user_skills
+                    WHERE user_id = '${userId}'
+                    AND is_mastered = 1)                    
                     ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
                           VEC_FromText('[${inputVector}]'))
                           LIMIT 50
