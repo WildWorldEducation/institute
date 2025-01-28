@@ -59,8 +59,7 @@ export default {
 </script>
 
 <template>
-    <h2 class="secondary-heading h4">Reputation Awards</h2>
-    <div id="background">
+    <div class="container pb-4 theme-background mt-2">
         <div v-for="reputationEvent in reputationEvents">
             <div class="text-white bg-success rounded">
                 <span class="badge text-bg-light">+1</span>
@@ -71,11 +70,30 @@ export default {
                 {{ reputationEvent.formattedDate }}
             </div>
         </div>
-        <!-- <div v-if="noSkills" id="no-skill-cell"></div> -->
+    </div>
+    <!-- Tooltip -->
+    <div
+        v-if="showTutorialTip5 && userDetailsStore.role == 'student'"
+        class="info-panel bg-light rounded p-2 mb-2"
+    >
+        <p>This section shows any increases to your reputation score.</p>
+        <p>
+            You can increase your reputation score by helping to improve the
+            platform in a variety of ways.
+        </p>
+        <button class="btn primary-btn" @click="progressTutorial(5)">
+            close
+        </button>
     </div>
 </template>
 
 <style scoped>
+.theme-background {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
     width: 12px;
@@ -102,7 +120,7 @@ export default {
     overflow-x: hidden;
     max-height: 300px;
     border-radius: 10px;
-    background-color: rgb(33, 37, 41);
+    /* background-color: rgb(33, 37, 41); */
 }
 
 #background div {

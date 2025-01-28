@@ -98,7 +98,8 @@ export default {
                         alert('Account created.');
                         if (this.newUser.accountType == 'student')
                             router.push({ name: 'skill-tree' });
-                        else router.push({ name: 'hub' });
+                        else if (this.newUser.accountType == 'instructor')
+                            router.push({ name: 'users' });                      
                     } else if (data.account == 'username already taken') {
                         alert(data.account);
                     } else if (data.account == 'email already taken') {

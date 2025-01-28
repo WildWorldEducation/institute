@@ -21,21 +21,5 @@ export default {
 };
 </script>
 
-<template>
-    <div class="container pb-4 theme-background mt-2">
-        <h2 class="secondary-heading h4">Reputation Score</h2>
-        {{ reputationScore }}
-    </div>
-</template>
-
-<style scoped>
-.themes {
-    width: 300px;
-}
-
-.theme-background {
-    background-color: white;
-    border-radius: 10px;
-    padding: 10px;
-}
-</style>
+<template>Score: {{ reputationScore }}</template>
+<style scoped></style>

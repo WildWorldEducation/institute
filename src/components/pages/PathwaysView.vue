@@ -3,7 +3,7 @@ import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 
 import SkillTreeSearchBar from '../components/skills-tree-search-bar/SkillTreeSearchBar.vue';
-import MyTidyTree from '../components/skilltrees/MyTidyTree.vue';
+import Pathways from '../components/skilltrees/Pathways.vue';
 
 export default {
     setup() {
@@ -58,7 +58,7 @@ export default {
     mounted() {
         this.GetGoogleLoginResult();
     },
-    components: { MyTidyTree, SkillTreeSearchBar },
+    components: { Pathways, SkillTreeSearchBar },
     methods: {
         resetPos() {
             this.$refs.childComponent.resetPos();
@@ -129,7 +129,8 @@ export default {
 
 <template>
     <div class="container-fluid position-absolute legend-div">
-        <div v-if="sessionDetailsStore.isLoggedIn" class="mobile-legend">
+        <!-- Mobile view: Search bar and centre  -->
+        <div class="mobile-legend">
             <div class="search-mobile-row">
                 <!-- Search feature -->
                 <SkillTreeSearchBar
@@ -143,15 +144,23 @@ export default {
                 </button>
             </div>
         </div>
-        <div v-if="sessionDetailsStore.isLoggedIn" class="tablet-and-up-legend">
+        <!-- Tablet and up view: Search bar, centre, expand all, print buttons -->
+        <div class="tablet-and-up-legend">
             <div class="d-flex justify-content-between">
-                <!-- Search bar, reset, expand all, print buttons -->
-                <!-- Search Feature -->
-                <SkillTreeSearchBar
-                    class="ms-2"
-                    :findNode="handleChooseResult"
-                    :clearResults="clearResult"
-                />
+                <div>
+                    <!-- Search bar -->
+                    <SkillTreeSearchBar
+                        class="mb-2"
+                        :findNode="handleChooseResult"
+                        :clearResults="clearResult"
+                    />
+                    <!-- Pathways selector -->
+                    <select class="form-select">
+                        <option selected value="custom">Choose pathway</option>
+                        <option value="custom">Custom pathway</option>
+                    </select>
+                </div>
+                <!-- Buttons -->
                 <div class="d-flex justify-content-end">
                     <!-- Reset Button -->
                     <button class="btn primary-btn me-2" @click="resetPos()">
@@ -164,6 +173,7 @@ export default {
                     >
                         Print
                     </button>
+                    <!-- Restart Tutorial button -->
                     <button class="btn primary-btn" @click="restartTutorial">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -181,15 +191,12 @@ export default {
                 </div>
             </div>
         </div>
-        <div v-else class="alert alert-warning" role="alert">
-            You cannot interact with the tree until signed in
-        </div>
     </div>
 
     <!-- Display loading screen while asynchronous call is made. -->
     <Suspense>
         <template #default>
-            <MyTidyTree ref="childComponent" />
+            <Pathways ref="childComponent" />
         </template>
         <template #fallback>
             <span>Loading...</span>

@@ -16,10 +16,10 @@ const router = createRouter({
             meta: { preventZoom: true, title: 'Skill tree' }
         },
         {
-            path: '/my-skill-tree',
-            name: 'my-skill-tree',
-            component: () => import('../components/pages/MyTidyTreeView.vue'),
-            meta: { preventZoom: true, title: 'My skill tree' }
+            path: '/pathways',
+            name: 'pathways',
+            component: () => import('../components/pages/PathwaysView.vue'),
+            meta: { preventZoom: true, title: 'Skill Pathways' }
         },
         {
             path: '/student/:studentId/skill-tree',
@@ -35,7 +35,11 @@ const router = createRouter({
         {
             path: '/',
             name: 'hub',
-            component: () => import('../components/pages/HubView.vue')
+            component: () => import('../components/pages/HubView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['student', 'admin']
+            }
         },
         {
             path: '/radial-tree',
@@ -286,7 +290,7 @@ const router = createRouter({
         },
         {
             path: '/todo',
-            name: 'todo-list',
+            name: 'todo',
             component: () => import('../components/pages/TodoListView.vue'),
             meta: { requiresAuth: true, roles: ['admin', 'editor'] }
         },
@@ -482,7 +486,14 @@ router.beforeEach(async (to, from, next) => {
             if (to.meta.roles.includes(userRole)) {
                 next();
             } else {
-                next({ name: 'hub' }); // Redirect to Home if user doesn't have the required role
+                if (userDetailsStore.role == 'student') {
+                    next({ name: 'hub' });
+                } // Redirect to Home if user doesn't have the required role
+                else if (userDetailsStore.role == 'instructor') {
+                    next({ name: 'users' });
+                } else if (userDetailsStore.role == 'editor') {
+                    next({ name: 'todo' });
+                }
             }
         } else {
             next(); // Proceed if only authentication is required and user is authenticated
@@ -494,7 +505,7 @@ router.beforeEach(async (to, from, next) => {
     // To remove the vertical scroll bar.
     if (
         to.name == 'skill-tree' ||
-        to.name == 'my-skill-tree' ||
+        to.name == 'pathways' ||
         to.name == 'radial-tree' ||
         to.name == 'skills' ||
         to.name == 'student-skills' ||

@@ -396,7 +396,7 @@ export default {
                 <!-- Search bar, reset, expand all, print buttons -->
                 <!-- Search Feature -->
                 <SkillTreeSearchBar
-                    class="ms-2"
+                    class=""
                     :findNode="handleChooseResult"
                     :clearResults="clearResult"
                 />

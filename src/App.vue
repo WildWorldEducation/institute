@@ -92,7 +92,7 @@ export default {
             :class="{
                 'fixed-top':
                     $route.name == 'skill-tree' ||
-                    $route.name == 'my-skill-tree' ||
+                    $route.name == 'pathways' ||
                     $route.name == 'radial-tree' ||
                     $route.name == 'student-vertical-tree'
             }"
@@ -130,7 +130,7 @@ export default {
                     id="navbarSupportedContent"
                 >
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
-                    <ul class="navbar-nav d-flex bg-white rounded p-2">
+                    <ul class="navbar-nav d-flex bg-white rounded pt-2 pb-2">
                         <div
                             v-if="
                                 !sessionDetailsStore.isLoggedIn &&
@@ -142,7 +142,10 @@ export default {
                             You cannot master skills until signed in
                         </div>
                         <li
-                            v-if="sessionDetailsStore.isLoggedIn"
+                            v-if="
+                                sessionDetailsStore.isLoggedIn &&
+                                userDetailsStore.role == 'student'
+                            "
                             class="nav-item"
                         >
                             <RouterLink to="/" class="nav-link close-on-click"
@@ -179,24 +182,11 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink
-                                to="/my-skill-tree"
+                                to="/pathways"
                                 class="nav-link close-on-click"
-                                >Customizable Tree</RouterLink
+                                >Pathways</RouterLink
                             >
                         </li>
-
-                        <li
-                            v-if="sessionDetailsStore.isLoggedIn"
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                to="/skills"
-                                class="nav-link close-on-click"
-                            >
-                                <span>Skills</span>
-                            </RouterLink>
-                        </li>
-
                         <li
                             v-if="!sessionDetailsStore.isLoggedIn"
                             class="nav-item"
@@ -245,6 +235,17 @@ export default {
                                 class="nav-link close-on-click"
                             >
                                 <span>Cohorts</span>
+                            </RouterLink>
+                        </li>
+                        <li
+                            v-if="sessionDetailsStore.isLoggedIn"
+                            class="nav-item"
+                        >
+                            <RouterLink
+                                to="/skills"
+                                class="nav-link close-on-click"
+                            >
+                                <span>Skills</span>
                             </RouterLink>
                         </li>
                         <li
@@ -486,7 +487,7 @@ p {
 }
 
 .profile-btn {
-    padding: 0px;
+    padding: 0px !important;
     background-color: transparent;
 }
 
