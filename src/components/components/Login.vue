@@ -40,6 +40,8 @@ export default {
                     if (data.account == 'authorized') {
                         if (data.role == 'student') {
                             router.push({ name: 'skill-tree' });
+                        } else if (data.role == 'instructor') {
+                            router.push({ name: 'users' });
                         } else router.push({ name: 'hub' });
                     } else if (data.account == 'wrong-password') {
                         alert('wrong password');

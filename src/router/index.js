@@ -35,7 +35,11 @@ const router = createRouter({
         {
             path: '/',
             name: 'hub',
-            component: () => import('../components/pages/HubView.vue')
+            component: () => import('../components/pages/HubView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['student', 'admin']
+            }
         },
         {
             path: '/radial-tree',
