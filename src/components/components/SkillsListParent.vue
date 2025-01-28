@@ -189,7 +189,7 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid bg-white">
+    <div class="bg-white">
         <!-- Loading animation -->
         <div
             v-if="isLoading == true"
@@ -204,7 +204,9 @@ export default {
                 position: absolute;
                 height: -webkit-fill-available;
                 width: 100%;
+                left: -5px;
             "
+            class="content"
         >
             <!-- Students -->
             <div
@@ -288,6 +290,22 @@ export default {
 </template>
 
 <style scoped>
+.content{
+    scrollbar-width: auto;
+    scrollbar-color: #9f9f9f;
+}
+.content::-webkit-scrollbar-thumb {
+  background: #9f9f9f;
+  border-radius: 5px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: #d8d8d8;
+  border-radius: 5px;
+}
+.content::-webkit-scrollbar {
+  width: 10px;
+}
 .loader {
     width: 48px;
     height: 48px;

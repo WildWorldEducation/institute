@@ -18,7 +18,6 @@ export const useAssessmentsStore = defineStore("assessments", {
                 {
                     method: 'DELETE',
                 })
-
             if (result.error) {
                 console.log(result.error)
             }

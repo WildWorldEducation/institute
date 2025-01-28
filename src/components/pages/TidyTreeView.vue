@@ -1599,8 +1599,8 @@ export default {
                     in and out by pinching and zooming.
                 </p>
                 <p>
-                    For computers and tablets, there is also a zoom slider bar
-                    at the bottom right.
+                    For computers and tablets, there are also zoom buttons at
+                    the bottom right.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(3)">
                     next
