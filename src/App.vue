@@ -227,17 +227,6 @@ export default {
                             </RouterLink>
                         </li>
                         <li
-                            v-if="sessionDetailsStore.isLoggedIn"
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                to="/skills"
-                                class="nav-link close-on-click"
-                            >
-                                <span>Skills</span>
-                            </RouterLink>
-                        </li>
-                        <li
                             v-if="userDetailsStore.role == 'instructor'"
                             class="nav-item"
                         >
@@ -246,6 +235,17 @@ export default {
                                 class="nav-link close-on-click"
                             >
                                 <span>Cohorts</span>
+                            </RouterLink>
+                        </li>
+                        <li
+                            v-if="sessionDetailsStore.isLoggedIn"
+                            class="nav-item"
+                        >
+                            <RouterLink
+                                to="/skills"
+                                class="nav-link close-on-click"
+                            >
+                                <span>Skills</span>
                             </RouterLink>
                         </li>
                         <li
