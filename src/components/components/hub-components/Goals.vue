@@ -1,27 +1,57 @@
 <script>
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
+import { useUserSkillsStore } from '../../../stores/UserSkillsStore.js';
 import { useSkillsStore } from '../../../stores/SkillsStore.js';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const userSkillsStore = useUserSkillsStore();
         const skillsStore = useSkillsStore();
         return {
             userDetailsStore,
+            userSkillsStore,
             skillsStore
         };
     },
     data() {
         return {
-            goals: []
+            goals: [], // List of all goals
+            allGoalSteps: [] // Array to store steps for all goals
         };
     },
     async created() {
-        await this.getGoals();
+        await this.getGoals(); // Fetch the goals
+        await this.getAllGoalSteps(); // Fetch all goal steps
+        await this.userSkillsStore.getFilteredUnnestedList(
+            this.userDetailsStore.userId
+        ); // Fetch user skills
         if (this.skillsStore.skillsList.length == 0) {
             await this.skillsStore.getSkillsList();
         }
+        // Populate goal steps with isMastered
+        for (let goal of this.allGoalSteps) {
+            for (let step of goal.steps) {
+                let userSkillObj =
+                    this.userSkillsStore.filteredUnnestedList.find(
+                        (skill) => skill.id == step.skill_id
+                    );
 
+                if (userSkillObj) {
+                    step.isMastered = userSkillObj.is_mastered;
+                }
+            }
+        }
+        // Check if all steps in each goal are mastered and delete if true
+        for (let goal of this.allGoalSteps) {
+            const allMastered = goal.steps.every(
+                (step) => step.isMastered === '1'
+            ); // Check if all steps are mastered
+            if (allMastered) {
+                await this.deleteGoal(goal.goalId); // Delete the goal if all steps are mastered
+            }
+        }
+        // Enrich goals with skill name and level
         for (let i = 0; i < this.goals.length; i++) {
             let skillObj = this.skillsStore.skillsList.find(
                 (skill) => skill.id === this.goals[i].skill_id
@@ -32,10 +62,37 @@ export default {
     },
     methods: {
         async getGoals() {
+            // Fetch the goals for the current user
             const result = await fetch(
                 '/goals/' + this.userDetailsStore.userId + '/list'
             );
             this.goals = await result.json();
+        },
+        async getAllGoalSteps() {
+            // Loop through each goal and fetch its steps
+            const stepsPromises = this.goals.map(async (goal) => {
+                const result = await fetch(`/goals/${goal.id}/goal-steps/list`);
+                const steps = await result.json();
+                return { goalId: goal.id, steps }; // Pair goal ID with its steps
+            });
+
+            // Resolve all promises and store the result
+            this.allGoalSteps = await Promise.all(stepsPromises);
+        },
+        async deleteGoal(goalId) {
+            // Make the API call to delete the goal
+            const result = await fetch(`/goals/${goalId}`, {
+                method: 'DELETE'
+            });
+            if (result.error) {
+                console.log(result.error);
+            } else {
+                // Update the goals and allGoalSteps arrays to reflect the deletion
+                this.goals = this.goals.filter((goal) => goal.id !== goalId);
+                this.allGoalSteps = this.allGoalSteps.filter(
+                    (goal) => goal.goalId !== goalId
+                );
+            }
         }
     }
 };
