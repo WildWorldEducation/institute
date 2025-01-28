@@ -187,19 +187,6 @@ export default {
                                 >Pathways</RouterLink
                             >
                         </li>
-
-                        <li
-                            v-if="sessionDetailsStore.isLoggedIn"
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                to="/skills"
-                                class="nav-link close-on-click"
-                            >
-                                <span>Skills</span>
-                            </RouterLink>
-                        </li>
-
                         <li
                             v-if="!sessionDetailsStore.isLoggedIn"
                             class="nav-item"
@@ -237,6 +224,17 @@ export default {
                                     "
                                     >Editors</span
                                 >
+                            </RouterLink>
+                        </li>
+                        <li
+                            v-if="sessionDetailsStore.isLoggedIn"
+                            class="nav-item"
+                        >
+                            <RouterLink
+                                to="/skills"
+                                class="nav-link close-on-click"
+                            >
+                                <span>Skills</span>
                             </RouterLink>
                         </li>
                         <li
