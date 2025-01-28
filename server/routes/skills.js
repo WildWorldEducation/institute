@@ -1815,14 +1815,14 @@ router.post(
                     FROM skills_vector
                     JOIN skills
                     ON skills.id = skills_vector.skill_id                    
-                    WHERE VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
+                    WHERE VEC_DISTANCE(skills_vector.embedding,
                           VEC_FromText('[${inputVector}]')) < 1.1
                     AND skills.id NOT IN 
                     (SELECT skill_id
                     FROM user_skills
                     WHERE user_id = '${userId}'
                     AND is_mastered = 1)                    
-                    ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
+                    ORDER BY VEC_DISTANCE(skills_vector.embedding,
                           VEC_FromText('[${inputVector}]'))
                           LIMIT 50
                     `;
