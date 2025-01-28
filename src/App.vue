@@ -142,7 +142,10 @@ export default {
                             You cannot master skills until signed in
                         </div>
                         <li
-                            v-if="sessionDetailsStore.isLoggedIn"
+                            v-if="
+                                sessionDetailsStore.isLoggedIn &&
+                                userDetailsStore.role == 'student'
+                            "
                             class="nav-item"
                         >
                             <RouterLink to="/" class="nav-link close-on-click"
