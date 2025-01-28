@@ -3,11 +3,10 @@
 import StudentProgress from '../components/hub-components/StudentProgress.vue';
 import LastVisitedSkills from '../components/hub-components/LastVisitedSkills.vue';
 import Goals from '../components/hub-components/Goals.vue';
-import Notifications from '../components/hub-components/Notifications.vue';
-import News from '../components/hub-components/News.vue';
 import MarkAssessment from '../components/hub-components/MarkAssessment.vue';
 import HubStudentQuestionList from '../components/hub-components/HubStudentQuestionList.vue';
-import ReputationEvents from '../components/hub-components/ReputationEvents.vue';
+
+import PathwayGenerator from '../components/hub-components/PathwayGenerator.vue';
 
 // Import store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
@@ -48,14 +47,12 @@ export default {
         };
     },
     components: {
-        News,
-        Notifications,
         StudentProgress,
         MarkAssessment,
         LastVisitedSkills,
         Goals,
         HubStudentQuestionList,
-        ReputationEvents
+        PathwayGenerator
     },
     computed: {
         name() {
@@ -205,7 +202,6 @@ export default {
                 this.showTutorialTip3 = true;
             } else if (step == 3) {
                 this.showTutorialTip3 = false;
-
                 this.showTutorialTip4 = true;
             } else if (step == 4) {
                 this.showTutorialTip4 = false;
@@ -280,24 +276,50 @@ export default {
 </script>
 
 <template>
+    <!-- Tutorial button -->
+    <div class="container-fluid d-flex justify-content-end my-1">
+        <button class="btn" @click="restartTutorial">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 192 512"
+                width="20"
+                height="20"
+                class="primary-icon"
+            >
+                <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                <path
+                    d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                />
+            </svg>
+        </button>
+    </div>
+
     <div class="container min-vh-100">
-        <div class="d-flex justify-content-end my-1">
-            <button class="btn primary-btn" @click="restartTutorial">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 192 512"
-                    width="20"
-                    height="20"
-                    fill="white"
+        <!-- Generate pathway bar -->
+        <div class="row mb-3">
+            <div class="col">
+                <PathwayGenerator />
+                <!-- Tooltip -->
+                <div
+                    v-if="
+                        showTutorialTip2 && userDetailsStore.role == 'student'
+                    "
+                    class="info-panel bg-light rounded p-2 mt-2"
                 >
-                    <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                    <path
-                        d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
-                    />
-                </svg>
-            </button>
+                    <p>Type a career or skill here to get recommendations.</p>
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(2)"
+                    >
+                        next
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="row content-row">
+        <!-- Available Skills / Mark Assessments, 
+          Last Visited Skills / Student Suggested Questions,
+          Goals -->
+        <div class="row">
             <!-- Available Skills / Mark Assessments -->
             <div
                 class="col-lg-4 col-md-6 mb-2"
@@ -308,19 +330,11 @@ export default {
                         assessments.length === 0
                 }"
             >
-                <div class="hub-component h-100">
-                    <StudentProgress
-                        v-if="userDetailsStore.role == 'student'"
-                        :userId="userDetailsStore.userId"
-                    />
-                    <MarkAssessment
-                        v-else-if="userDetailsStore.role == 'instructor'"
-                        :assessments="assessments"
-                    />
+                <div class="h-100">
                     <!-- Tooltip -->
                     <div
                         v-if="
-                            showTutorialTip2 &&
+                            showTutorialTip3 &&
                             userDetailsStore.role == 'student'
                         "
                         class="info-panel bg-light rounded p-2 mb-2"
@@ -336,11 +350,19 @@ export default {
                         </p>
                         <button
                             class="btn primary-btn"
-                            @click="progressTutorial(2)"
+                            @click="progressTutorial(3)"
                         >
                             next
                         </button>
                     </div>
+                    <StudentProgress
+                        v-if="userDetailsStore.role == 'student'"
+                        :userId="userDetailsStore.userId"
+                    />
+                    <MarkAssessment
+                        v-else-if="userDetailsStore.role == 'instructor'"
+                        :assessments="assessments"
+                    />
                 </div>
             </div>
             <!-- Last Visited Skills / Student Suggested Questions -->
@@ -353,20 +375,11 @@ export default {
                         questions.length === 0
                 }"
             >
-                <div class="hub-component h-100">
-                    <LastVisitedSkills
-                        v-if="userDetailsStore.role == 'student'"
-                        :userId="userDetailsStore.userId"
-                    />
-                    <!-- Student Added Questions List -->
-                    <HubStudentQuestionList
-                        v-else-if="userDetailsStore.role == 'instructor'"
-                        :questions="questions"
-                    />
+                <div class="h-100">
                     <!-- Tooltip -->
                     <div
                         v-if="
-                            showTutorialTip3 &&
+                            showTutorialTip4 &&
                             userDetailsStore.role == 'student'
                         "
                         class="info-panel bg-light rounded p-2 mb-2"
@@ -377,11 +390,20 @@ export default {
                         </p>
                         <button
                             class="btn primary-btn"
-                            @click="progressTutorial(3)"
+                            @click="progressTutorial(4)"
                         >
                             next
                         </button>
                     </div>
+                    <LastVisitedSkills
+                        v-if="userDetailsStore.role == 'student'"
+                        :userId="userDetailsStore.userId"
+                    />
+                    <!-- Student Added Questions List -->
+                    <HubStudentQuestionList
+                        v-else-if="userDetailsStore.role == 'instructor'"
+                        :questions="questions"
+                    />
                 </div>
             </div>
             <!-- Goals -->
@@ -389,12 +411,11 @@ export default {
                 v-if="userDetailsStore.role == 'student'"
                 class="col-lg-4 col-md-6 mb-2"
             >
-                <div class="hub-component h-100">
-                    <Goals />
+                <div class="h-100">
                     <!-- Tooltip -->
                     <div
                         v-if="
-                            showTutorialTip4 &&
+                            showTutorialTip5 &&
                             userDetailsStore.role == 'student'
                         "
                         class="info-panel bg-light rounded p-2 mb-2"
@@ -406,59 +427,12 @@ export default {
                         </p>
                         <button
                             class="btn primary-btn"
-                            @click="progressTutorial(4)"
-                        >
-                            next
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-4 col-md-6 mb-2">
-                <div class="hub-component h-100">
-                    <Notifications />
-                </div>
-            </div>
-            <div
-                v-if="
-                    userDetailsStore.role == 'student' ||
-                    userDetailsStore.role == 'instructor'
-                "
-                class="col-lg-4 col-md-6 mb-2"
-            >
-                <div class="hub-component h-100">
-                    <ReputationEvents />
-                    <!-- Tooltip -->
-                    <div
-                        v-if="
-                            showTutorialTip5 &&
-                            userDetailsStore.role == 'student'
-                        "
-                        class="info-panel bg-light rounded p-2 mb-2"
-                    >
-                        <p>
-                            This section shows any increases to your reputation
-                            score.
-                        </p>
-                        <p>
-                            You can increase your reputation score by helping to
-                            improve the platform in a variety of ways.
-                        </p>
-                        <button
-                            class="btn primary-btn"
                             @click="progressTutorial(5)"
                         >
                             close
                         </button>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <div class="hub-component h-100">
-                    <News />
+                    <Goals />
                 </div>
             </div>
         </div>
@@ -501,72 +475,6 @@ export default {
             </div>
         </div>
     </div>
-    <!-- Instructor-->
-    <div
-        v-if="
-            userDetailsStore.role == 'instructor' &&
-            (showTutorialTip1 || showTutorialTip2)
-        "
-        class="modal"
-    >
-        <div class="modal-content">
-            <div
-                v-if="showTutorialTip1 && userDetailsStore.role == 'instructor'"
-            >
-                <p>This is your hub page.</p>
-                <button class="btn primary-btn" @click="progressTutorial(1)">
-                    next
-                </button>
-            </div>
-            <div
-                v-if="showTutorialTip2 && userDetailsStore.role == 'instructor'"
-            >
-                <p>
-                    On this page you can read news and notifications, check if
-                    you have any quizzes to mark, or questions that your
-                    students have added to the question bank you need approve.
-                </p>
-                <button class="btn primary-btn" @click="progressTutorial(2)">
-                    close
-                </button>
-            </div>
-        </div>
-    </div>
-    <!-- Editor -->
-    <div
-        v-if="
-            userDetailsStore.role == 'editor' &&
-            (showTutorialTip1 || showTutorialTip2)
-        "
-        class="modal"
-    >
-        <div class="modal-content">
-            <!-- Editor -->
-            <div v-if="showTutorialTip1 && userDetailsStore.role == 'editor'">
-                <p>Welcome to the Collins Institute!</p>
-                <p>
-                    Click
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(1)"
-                    >
-                        next
-                    </button>
-                    to start the tutorial.
-                </p>
-            </div>
-            <div v-if="showTutorialTip2 && userDetailsStore.role == 'editor'">
-                <p>This is the hub page.</p>
-                <p>
-                    On this page you can read any news and notifications from
-                    the institute.
-                </p>
-                <button class="btn primary-btn" @click="progressTutorial(2)">
-                    close
-                </button>
-            </div>
-        </div>
-    </div>
 </template>
 
 <style scoped>
@@ -575,13 +483,7 @@ export default {
     border-color: var(--primary-color);
     border-width: 2px;
     border-style: solid;
-    z-index: 2001;
-}
-
-.hub-component {
-    background-color: white;
-    border-radius: 10px;
-    padding: 10px;
+    width: fit-content;
 }
 
 /* Modals */
@@ -616,14 +518,6 @@ export default {
     max-width: 520px;
     font-size: 18px;
     /* Could be more or less, depending on screen size */
-}
-
-/* View Specific On Tablet */
-@media (min-width: 577px) and (max-width: 1023px) {
-    .content-row {
-        padding-bottom: 0px;
-        /* margin-bottom: 39px; */
-    }
 }
 
 /* Small devices (portrait phones) */

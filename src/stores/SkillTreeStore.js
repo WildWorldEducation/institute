@@ -97,9 +97,8 @@ export const useSkillTreeStore = defineStore('skillTree', {
             );
             this.userSkillsSubSkillsSeparate = await result.json();
         },
-        // API call for instructor student Collapsible Tree
+        // API call for student and instructor/student Collapsible Tree
         async getStudentSkills(studentId) {
-            // API call for skill tree.
             const result = await fetch(
                 '/user-skills/filter-by-cohort/' + studentId
             );

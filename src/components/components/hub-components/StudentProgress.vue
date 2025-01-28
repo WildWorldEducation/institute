@@ -38,25 +38,23 @@ export default {
 </script>
 
 <template>
-    <h2 class="secondary-heading h4">Available Skills</h2>
+    <h2 class="secondary-heading h5 bg-white rounded p-2">Available Skills</h2>
     <div id="skill-list">
-        <div v-for="availableSkill in availableSkills">
-            <router-link
-                :class="{
-                    'grade-school': availableSkill.level == 'grade_school',
-                    'middle-school': availableSkill.level == 'middle_school',
-                    'high-school': availableSkill.level == 'high_school',
-                    college: availableSkill.level == 'college',
-                    phd: availableSkill.level == 'phd'
-                }"
-                class="skill-link btn"
-                :to="`/skills/${availableSkill.url}`"
-                target="_blank"
-            >
-                {{ availableSkill.name }}
-            </router-link>
-        </div>
-        <div v-if="noSkills" id="no-skill-cell"></div>
+        <router-link
+            v-for="availableSkill in availableSkills"
+            :class="{
+                'grade-school': availableSkill.level == 'grade_school',
+                'middle-school': availableSkill.level == 'middle_school',
+                'high-school': availableSkill.level == 'high_school',
+                college: availableSkill.level == 'college',
+                phd: availableSkill.level == 'phd'
+            }"
+            class="skill-link btn m-2 d-flex"
+            :to="`/skills/${availableSkill.url}`"
+            target="_blank"
+        >
+            {{ availableSkill.name }}
+        </router-link>
     </div>
 </template>
 
@@ -85,9 +83,9 @@ export default {
 #skill-list {
     overflow-y: auto;
     overflow-x: hidden;
-    max-height: 300px;
     border-radius: 10px;
-    background-color: rgb(33, 37, 41);
+    /*    max-height: 300px;
+     background-color: rgb(33, 37, 41); */
 }
 
 #skill-list div {
@@ -95,8 +93,11 @@ export default {
 }
 
 .skill-link {
-    text-decoration: none !important;
-    color: black;
+    width: fit-content;
+}
+
+.skill-link:hover {
+    border: 1px solid black;
 }
 
 /* Level colors */

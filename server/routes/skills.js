@@ -61,7 +61,6 @@ Routes
 --------------------------------------------*/
 /**
  * Create New Item
- *
  */
 router.post(
     '/add',
@@ -332,8 +331,6 @@ router.post(
 
 /**
  * Get All Items
- *
- * @return response()
  */
 // Used for choosing parent skill when adding a new skill.
 router.get('/list', (req, res, next) => {
@@ -502,9 +499,7 @@ router.get('/guest-mode/full-vertical-tree', (req, res, next) => {
 // Filtered Nested List - for "Instructor" and "Editor" roles - Collapsable Tree.
 router.get('/filtered-nested-list', (req, res, next) => {
     if (req.session.userName) {
-        /*
-         * Apply grade level filters
-         */
+        //Apply grade level filters
         // Level will be sent in query param (eg: ?level='middle_school')
         const level = req.query.level;
 
@@ -583,8 +578,6 @@ router.get('/filtered-nested-list', (req, res, next) => {
 
 /**
  * Get Single Item
- *
- * @return response()
  */
 router.get('/show/:id', (req, res, next) => {
     let skill;
@@ -795,8 +788,6 @@ router.get('/last-visited', (req, res, next) => {
 
 /**
  * Edit Skill
- *
- * @return response()
  */
 router.put(
     '/:id/edit',
@@ -906,8 +897,6 @@ router.put(
 
 /**
  * Submit skill edit for review.
- *
- * @return response()
  */
 router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {
@@ -961,8 +950,6 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
 
 /**
  * Accept skill submitted for review.
- *
- * @return response()
  */
 router.put(
     '/:id/edit-for-review/save',
@@ -1125,8 +1112,6 @@ router.put(
 
 /**
  * Get all skills submitted for review.
- *
- * @return response()
  */
 // Used for choosing parent skill when adding a new skill.
 router.get('/submitted-for-review/list', (req, res, next) => {
@@ -1462,6 +1447,9 @@ router.post(
     }
 );
 
+/*
+ * Search
+ */
 // For the search feature on the Collapsable Skill Tree.
 router.get('/name-list', (req, res, next) => {
     if (req.session) {
@@ -1716,45 +1704,8 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-// router.get('/skills-vectorization', isAuthenticated, async (req, res, next) => {
-//     try {
-//         const rowData = {
-//             rows: []
-//         }
-//         // get skill name list
-//         let sqlQuery = 'SELECT * FROM skills';
-//         conn.query(sqlQuery, async (err, results) => {
-//             if (err) {
-//                 throw err;
-//             }
-//             const promises = [];
-//             console.log(results.length)
-//             // We use text-embedding-3-small model to make vector data from skill name
-//             for (let index = 0; index < results.length; index++) {
-//                 const element = results[index];
-
-//                 promises.push(getVectorData(element, rowData))
-//             }
-//             res.json(results)
-
-//             Promise.all(promises)
-//                 .then(async () => {
-//                     console.log(rowData)
-//                     const content = JSON.stringify(rowData)
-//                     await fs.writeFile('./vector.json', content);
-//                     res.json('all done check vector.json : ');
-//                 })
-//                 .catch((e) => {
-//                     throw e
-//                 });
-//         })
-//     } catch (err) {
-//         res.status = 500;
-//         console.log(err);
-//         res.json({ mess: 'fails' })
-//     }
-// })
-
+// Semantic search route, using the vector table
+// For the search bars in the skill tree and collapsible tree.
 router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
     try {
         const response = await openai.embeddings.create({
@@ -1766,7 +1717,7 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
         const inputVector = response.data[0].embedding;
         let sqlQuery = `SELECT *
                     FROM skills_vector
-                    ORDER BY VEC_DISTANCE(skills_vector.embedding,
+                    ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
                           VEC_FromText('[${inputVector}]'))
                     LIMIT 25`;
         // sql for instructor and editor account
@@ -1812,5 +1763,82 @@ router.get('/url-list', async (req, res) => {
         res.json(error);
     }
 });
+
+// For the Pathways feature, to take a search query and return the most suitable skills
+router.post(
+    '/find-skills-for-pathway',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            let userId = req.body.userId;
+            let query = req.body.query;
+
+            let prompt = `        
+            From the following string, please extract what skill or career the writer wants to learn. Please return only this
+            skill or career, and refer to this as the "subject".
+            If the query relates to a career, please phrase this as "skills related to being a 'subject'",
+            while if the query relates to a skill, please phrase this as "skills related to 'subject'".
+
+            Please return this in a JSON object, and name the response "subjectResponse".
+
+            String: ${query}
+        `;
+
+            const subject = await openai.chat.completions.create({
+                messages: [
+                    {
+                        role: 'user',
+                        content: prompt + ` Please respond with a JSON object.`
+                    }
+                ],
+                model: 'gpt-4o',
+                response_format: { type: 'json_object' }
+            });
+            let responseJSON = subject.choices[0].message.content;
+            // Escape newline characters in response.
+            if (responseJSON) {
+                responseJSON = responseJSON.replace(/\\n/g, '\\n');
+            }
+            // Convert string to object.       ;
+            let subjectObject = JSON.parse(responseJSON);
+            // console.log(subjectObject.subjectResponse);
+
+            const response = await openai.embeddings.create({
+                model: 'text-embedding-3-small',
+                input: subjectObject.subjectResponse,
+                dimensions: 720
+            });
+
+            const inputVector = response.data[0].embedding;
+
+            let sqlQuery = `SELECT skills.name, skills.url, skills.level
+                    FROM skills_vector
+                    JOIN skills
+                    ON skills.id = skills_vector.skill_id                    
+                    WHERE VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
+                          VEC_FromText('[${inputVector}]')) < 1.1
+                    AND skills.id NOT IN 
+                    (SELECT skill_id
+                    FROM user_skills
+                    WHERE user_id = '${userId}'
+                    AND is_mastered = 1)                    
+                    ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
+                          VEC_FromText('[${inputVector}]'))
+                          LIMIT 50
+                    `;
+            // sql for instructor and editor account
+            conn.query(sqlQuery, (err, results) => {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            });
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.end;
+        }
+    }
+);
 
 module.exports = router;
