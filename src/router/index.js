@@ -290,7 +290,7 @@ const router = createRouter({
         },
         {
             path: '/todo',
-            name: 'todo-list',
+            name: 'todo',
             component: () => import('../components/pages/TodoListView.vue'),
             meta: { requiresAuth: true, roles: ['admin', 'editor'] }
         },
@@ -486,7 +486,14 @@ router.beforeEach(async (to, from, next) => {
             if (to.meta.roles.includes(userRole)) {
                 next();
             } else {
-                next({ name: 'hub' }); // Redirect to Home if user doesn't have the required role
+                if (userDetailsStore.role == 'student') {
+                    next({ name: 'hub' });
+                } // Redirect to Home if user doesn't have the required role
+                else if (userDetailsStore.role == 'instructor') {
+                    next({ name: 'users' });
+                } else if (userDetailsStore.role == 'editor') {
+                    next({ name: 'todo' });
+                }
             }
         } else {
             next(); // Proceed if only authentication is required and user is authenticated

@@ -42,7 +42,9 @@ export default {
                             router.push({ name: 'skill-tree' });
                         } else if (data.role == 'instructor') {
                             router.push({ name: 'users' });
-                        } else router.push({ name: 'hub' });
+                        } else if (data.role == 'editor') {
+                            router.push({ name: 'todo' });
+                        } else router.push({ name: 'skills' });
                     } else if (data.account == 'wrong-password') {
                         alert('wrong password');
                     } else {
