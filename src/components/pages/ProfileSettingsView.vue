@@ -75,9 +75,7 @@ export default {
             />
         </div>
 
-        <!-- 
-    Admin role only 
-    -->
+        <!-- Admin role only -->
         <!-- App Settings --->
         <Settings v-if="userDetailsStore.role == 'admin'" />
         <!-- Bulk upload multiple choice questions --->
@@ -90,9 +88,7 @@ export default {
                 userDetailsStore.userName == 'jonathandyason@gmail.com'
             "
         />
-        <!-- 
-    Hidden from all users 
-    --->
+        <!-- Hidden from all users  --->
         <!-- AI Check MC Questions for errors--->
         <section
             class="container mt-1 px-3 px-lg-0 mb-5"
