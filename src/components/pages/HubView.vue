@@ -288,11 +288,11 @@ export default {
 
     <div class="container min-vh-100">
         <!-- Generate pathway bar -->
-        <!-- <div class="row mb-3">
+        <div class="row mb-3">
             <div class="col">
-                <PathwayGenerator /> -->
-        <!-- Tooltip -->
-        <!-- <div
+                <PathwayGenerator />
+                <!-- Tooltip -->
+                <div
                     v-if="
                         showTutorialTip2 && userDetailsStore.role == 'student'
                     "
@@ -307,7 +307,7 @@ export default {
                     </button>
                 </div>
             </div>
-        </div> -->
+        </div>
         <!-- Available Skills / Mark Assessments, 
           Last Visited Skills / Student Suggested Questions,
           Goals -->
