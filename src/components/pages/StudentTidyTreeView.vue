@@ -22,6 +22,9 @@ export default {
             showTutorialTip3: false,
             showTutorialTip4: false,
             showTutorialTip5: false,
+            showTutorialTip6: false,
+            showTutorialTip7: false,
+            showTutorialTip8: false,
             isGradeFilter: true,
             isSubjectFilter: true,
             gradeFilter: 'phd',
@@ -119,6 +122,15 @@ export default {
                 this.showTutorialTip2 = true;
             } else if (step == 2) {
                 this.showTutorialTip2 = false;
+                this.showTutorialTip3 = true;
+            } else if (step == 3) {
+                this.showTutorialTip3 = false;
+                this.showTutorialTip4 = true;
+            } else if (step == 4) {
+                this.showTutorialTip4 = false;
+                this.showTutorialTip5 = true;
+            } else if (step == 5) {
+                this.showTutorialTip5 = false;
                 this.markTutorialComplete();
             }
         },
@@ -240,11 +252,11 @@ export default {
     <div class="tablet-and-up-legend position-absolute bottom-legend-div">
         <!-- Tooltip -->
         <div
-            v-if="showTutorialTip3"
+            v-if="showTutorialTip6"
             class="info-panel bg-light rounded p-2 mb-2"
         >
             <p>Use the buttons below to filter the skills by level.</p>
-            <button class="btn primary-btn" @click="progressTutorial(3)">
+            <button class="btn primary-btn" @click="progressTutorial(6)">
                 next
             </button>
         </div>
@@ -552,9 +564,9 @@ export default {
             </button>
         </div>
         <!-- Tooltip -->
-        <div v-if="showTutorialTip4" class="info-panel bg-light rounded p-2">
+        <div v-if="showTutorialTip7" class="info-panel bg-light rounded p-2">
             Use the buttons on the left to filter the skills by subject.<br />
-            <button class="btn primary-btn" @click="progressTutorial(4)">
+            <button class="btn primary-btn" @click="progressTutorial(7)">
                 next
             </button>
         </div>
@@ -579,11 +591,11 @@ export default {
         </button>
 
         <div
-            v-if="showTutorialTip5"
+            v-if="showTutorialTip8"
             class="info-panel bg-light rounded p-2 mb-2"
         >
             <p>Use this button to toggle between unlocked and locked skills.</p>
-            <button class="btn primary-btn" @click="progressTutorial(5)">
+            <button class="btn primary-btn" @click="progressTutorial(8)">
                 next
             </button>
         </div>
@@ -840,7 +852,16 @@ export default {
     </div>
 
     <!-- Tooltip modal -->
-    <div v-if="showTutorialTip1 || showTutorialTip2" class="modal">
+    <div
+        v-if="
+            showTutorialTip1 ||
+            showTutorialTip2 ||
+            showTutorialTip3 ||
+            showTutorialTip4 ||
+            showTutorialTip5
+        "
+        class="modal"
+    >
         <div class="modal-content">
             <div v-if="showTutorialTip1">
                 <p>This is your student's skill tree.</p>
@@ -853,6 +874,43 @@ export default {
                     You can get a bird's eye view of their progress from here.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(2)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showTutorialTip3">
+                <strong>Navigation</strong>
+                <p>
+                    If you know how to use Google Maps, you should know how to
+                    navigate here.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(3)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showTutorialTip4">
+                <p>On a computer, use the mouse to navigate around.</p>
+                <p>
+                    Zoom in and out using the mousewheel, or by pressing the
+                    <em>PageUp</em> and <em>PageDown</em> keys.
+                </p>
+                <p>
+                    On a tablet or phone, navigate by dragging the screen. Zoom
+                    in and out by pinching and zooming.
+                </p>
+                <p>
+                    For computers and tablets, there are also zoom buttons at
+                    the bottom right.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(4)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showTutorialTip5">
+                <p>
+                    When you're ready, try another page by clicking one in the
+                    navigation bar at the top right.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(5)">
                     close
                 </button>
             </div>
