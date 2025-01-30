@@ -15,7 +15,6 @@ const {
     convertNodesToArray
 } = require('../utilities/skill-relate-functions');
 
-
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -195,14 +194,14 @@ router.get('/unnested-list/:userId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-    SELECT skills.id, name, is_accessible, is_mastered, type, url, level
+    SELECT skills.id, name, is_accessible, is_mastered, type, url, level, icon
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
     WHERE user_skills.user_id = ${conn.escape(req.params.userId)}
 
     UNION
-    SELECT skills.id, name, "", "", type, url, level
+    SELECT skills.id, name, "", "", type, url, level, icon
     FROM skills
     WHERE skills.id NOT IN 
 
@@ -266,8 +265,6 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
         });
     }
 });
-
-
 
 /* Nested list of user-skills, filtered by 1 cohort that student is a member of*/
 // For Collapsible Tree.
@@ -1773,8 +1770,6 @@ router.get(
         }
     }
 );
-
-
 
 router.get('*', (req, res) => {
     res.redirect('/');
