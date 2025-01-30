@@ -12,7 +12,8 @@ export default {
     data() {
         return {
             skillId: this.$route.params.id,
-            nextSkillsInBranch: []
+            nextSkillsInBranch: [],
+            showNextSkillsInBranch: false
         };
     },
     created() {
@@ -27,6 +28,7 @@ export default {
                     this.skillId
             );
             this.nextSkillsInBranch = await result.json();
+            this.showNextSkillsInBranch = true;
         }
     }
 };
@@ -34,7 +36,7 @@ export default {
 
 <template>
     <h2 class="secondary-heading h4">Next skills in this branch</h2>
-    <div class="wrapper">
+    <div v-if="showNextSkillsInBranch" class="wrapper">
         <div v-for="nextSkill in nextSkillsInBranch">
             <router-link
                 :class="{
