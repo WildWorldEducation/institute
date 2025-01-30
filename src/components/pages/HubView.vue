@@ -188,7 +188,7 @@ export default {
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
-                this.showTutorialTip3 = true;
+                this.showTutorialTip2 = true;
             } else if (step == 2) {
                 this.showTutorialTip2 = false;
                 this.showTutorialTip3 = true;
