@@ -131,6 +131,15 @@ export default {
                 this.showTutorialTip5 = true;
             } else if (step == 5) {
                 this.showTutorialTip5 = false;
+                this.showTutorialTip6 = true;
+            } else if (step == 6) {
+                this.showTutorialTip6 = false;
+                this.showTutorialTip7 = true;
+            } else if (step == 7) {
+                this.showTutorialTip7 = false;
+                this.showTutorialTip8 = true;
+            } else if (step == 8) {
+                this.showTutorialTip8 = false;
                 this.markTutorialComplete();
             }
         },
@@ -196,37 +205,57 @@ export default {
             <div class="d-flex justify-content-between w-100">
                 <h1 class="heading h2">{{ studentName }}</h1>
                 <div>
-                    <!-- Reset Button -->
-                    <button
-                        class="btn primary-btn me-2"
-                        @click="$refs.childComponent.resetPos()"
-                    >
-                        Center
-                    </button>
-                    <!-- Print Button -->
-                    <button
-                        class="btn primary-btn me-2"
-                        @click="$refs.childComponent.printPDF()"
-                    >
-                        Print
-                    </button>
-                    <!-- Restart Tutorial Button -->
+                    <div>
+                        <!-- Reset Button -->
+                        <button
+                            class="btn primary-btn me-2"
+                            @click="$refs.childComponent.resetPos()"
+                        >
+                            Center
+                        </button>
+                        <!-- Print Button -->
+                        <button
+                            class="btn primary-btn me-2"
+                            @click="$refs.childComponent.printPDF()"
+                        >
+                            Print
+                        </button>
+                        <!-- Restart Tutorial Button -->
+                        <button
+                            class="btn primary-btn"
+                            @click="$refs.childComponent.restartTutorial()"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 192 512"
+                                width="20"
+                                height="20"
+                                fill="white"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                <path
+                                    d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                                />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Tooltips -->
+            <div class="d-flex justify-content-end w-100">
+                <div
+                    v-if="showTutorialTip8"
+                    class="info-panel bg-light rounded p-2 mb-2 mt-2 float-right"
+                >
+                    <p>
+                        Use the center button to center the skill tree,<br />
+                        and the print button to print a PDF.
+                    </p>
                     <button
                         class="btn primary-btn"
-                        @click="$refs.childComponent.restartTutorial()"
+                        @click="progressTutorial(8)"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 192 512"
-                            width="20"
-                            height="20"
-                            fill="white"
-                        >
-                            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
-                            />
-                        </svg>
+                        close
                     </button>
                 </div>
             </div>
@@ -252,11 +281,11 @@ export default {
     <div class="tablet-and-up-legend position-absolute bottom-legend-div">
         <!-- Tooltip -->
         <div
-            v-if="showTutorialTip6"
+            v-if="showTutorialTip5"
             class="info-panel bg-light rounded p-2 mb-2"
         >
             <p>Use the buttons below to filter the skills by level.</p>
-            <button class="btn primary-btn" @click="progressTutorial(6)">
+            <button class="btn primary-btn" @click="progressTutorial(5)">
                 next
             </button>
         </div>
@@ -564,9 +593,9 @@ export default {
             </button>
         </div>
         <!-- Tooltip -->
-        <div v-if="showTutorialTip7" class="info-panel bg-light rounded p-2">
+        <div v-if="showTutorialTip6" class="info-panel bg-light rounded p-2">
             Use the buttons on the left to filter the skills by subject.<br />
-            <button class="btn primary-btn" @click="progressTutorial(7)">
+            <button class="btn primary-btn" @click="progressTutorial(6)">
                 next
             </button>
         </div>
@@ -591,11 +620,11 @@ export default {
         </button>
 
         <div
-            v-if="showTutorialTip8"
+            v-if="showTutorialTip7"
             class="info-panel bg-light rounded p-2 mb-2"
         >
             <p>Use this button to toggle between unlocked and locked skills.</p>
-            <button class="btn primary-btn" @click="progressTutorial(8)">
+            <button class="btn primary-btn" @click="progressTutorial(7)">
                 next
             </button>
         </div>
@@ -857,8 +886,7 @@ export default {
             showTutorialTip1 ||
             showTutorialTip2 ||
             showTutorialTip3 ||
-            showTutorialTip4 ||
-            showTutorialTip5
+            showTutorialTip4
         "
         class="modal"
     >
@@ -903,15 +931,6 @@ export default {
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(4)">
                     next
-                </button>
-            </div>
-            <div v-else-if="showTutorialTip5">
-                <p>
-                    When you're ready, try another page by clicking one in the
-                    navigation bar at the top right.
-                </p>
-                <button class="btn primary-btn" @click="progressTutorial(5)">
-                    close
                 </button>
             </div>
         </div>
@@ -1195,5 +1214,14 @@ export default {
 }
 .unlocked-filter button {
     border: 1px solid black;
+}
+
+/* Tutorials */
+/* Tooltips */
+.info-panel {
+    border-color: var(--primary-color);
+    border-width: 2px;
+    border-style: solid;
+    width: fit-content;
 }
 </style>
