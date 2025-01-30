@@ -25,6 +25,9 @@ export default {
             showTutorialTip6: false,
             showTutorialTip7: false,
             showTutorialTip8: false,
+            showMobileTutorialTip5: false,
+            showMobileTutorialTip6: false,
+            showMobileTutorialTip7: false,
             isGradeFilter: true,
             isSubjectFilter: true,
             gradeFilter: 'phd',
@@ -38,7 +41,8 @@ export default {
                 'Dangerous Ideas'
             ],
             isUnlockedSkillsOnlyFilter: false,
-            showMobileFiltersModal: false
+            showMobileFiltersModal: false,
+            isMobileCheck: window.innerWidth
         };
     },
     async created() {
@@ -128,19 +132,40 @@ export default {
                 this.showTutorialTip4 = true;
             } else if (step == 4) {
                 this.showTutorialTip4 = false;
-                this.showTutorialTip5 = true;
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip5 = true;
+                } else {
+                    this.showMobileTutorialTip5 = true;
+                }
             } else if (step == 5) {
-                this.showTutorialTip5 = false;
-                this.showTutorialTip6 = true;
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip5 = false;
+                    this.showTutorialTip6 = true;
+                } else {
+                    this.showMobileTutorialTip5 = false;
+                    this.showMobileTutorialTip6 = true;
+                }
             } else if (step == 6) {
-                this.showTutorialTip6 = false;
-                this.showTutorialTip7 = true;
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip6 = false;
+                    this.showTutorialTip7 = true;
+                } else {
+                    this.showMobileTutorialTip6 = false;
+                    this.showMobileTutorialTip7 = true;
+                }
             } else if (step == 7) {
-                this.showTutorialTip7 = false;
-                this.showTutorialTip8 = true;
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip7 = false;
+                    this.showTutorialTip8 = true;
+                } else {
+                    this.showMobileTutorialTip7 = false;
+                    this.markTutorialComplete();
+                }
             } else if (step == 8) {
-                this.showTutorialTip8 = false;
-                this.markTutorialComplete();
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip8 = false;
+                    this.markTutorialComplete();
+                }
             }
         },
         restartTutorial() {
@@ -886,7 +911,10 @@ export default {
             showTutorialTip1 ||
             showTutorialTip2 ||
             showTutorialTip3 ||
-            showTutorialTip4
+            showTutorialTip4 ||
+            showMobileTutorialTip5 ||
+            showMobileTutorialTip6 ||
+            showMobileTutorialTip7
         "
         class="modal"
     >
@@ -931,6 +959,30 @@ export default {
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(4)">
                     next
+                </button>
+            </div>
+            <div v-else-if="showMobileTutorialTip5">
+                <p>
+                    The filter button will show ways to filter the skill tree by
+                    both subjects and levels.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(5)">
+                    next
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip6">
+                <p>The center button will recenter the tree</p>
+                <button class="btn primary-btn" @click="progressTutorial(6)">
+                    next
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip7">
+                <p>
+                    Use the lock button below on the lower left side of the
+                    screen to toggle between unlocked and locked skills.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(7)">
+                    close
                 </button>
             </div>
         </div>
