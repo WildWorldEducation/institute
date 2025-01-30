@@ -22,7 +22,9 @@ export default {
             // Used for goals feature.
             skill: {},
             accessibleSkills: [],
-            goalSteps: []
+            goalSteps: [],
+            goals: [],
+            skillHasGoal: false
         };
     },
     props: [
@@ -115,6 +117,7 @@ export default {
                 }
             }
         }
+        await this.getGoals();
     },
     mounted() {
         // This is to load the state of the nested skills list (which child skills are currently showing).
@@ -163,6 +166,15 @@ export default {
         }
     },
     methods: {
+        async getGoals() {
+            const result = await fetch(`/goals/${this.studentId}/list`);
+            this.goals = await result.json();
+
+            // Check if the goal for this skill already exists
+            this.skillHasGoal = this.goals.some(
+                (goal) => goal.skill_id === this.skill.id
+            );
+        },
         mainButtonPress() {
             this.toggleChildren();
         },
@@ -410,6 +422,7 @@ export default {
         <div id="buttons" class="d-flex">
             <button
                 v-if="type != 'domain'"
+                :style="{ visibility: skillHasGoal ? 'hidden' : 'visible' }"
                 class="btn"
                 title="create a goal"
                 @click="
@@ -418,13 +431,13 @@ export default {
                         : confirmCreateGoal()
                 "
             >
-                <!-- Create goal button-->
+                <!-- Create goal button -->
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     class="primary-icon"
                     width="20"
-                    heigth="20"
+                    height="20"
                 >
                     <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
@@ -438,6 +451,7 @@ export default {
                     />
                 </svg>
             </button>
+
             <!-- Expand/collapse subskills button-->
             <button
                 v-if="type == 'super'"
