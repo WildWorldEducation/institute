@@ -1833,45 +1833,13 @@ router.post(
                     throw err;
                 }
 
-                // let resultsSortedByLevel = [];
-                // for (let i = 0; i < resultsSortedByRelevence.length; i++) {
-                //     resultsSortedByLevel.push(resultsSortedByRelevence[i]);
-                //     if (resultsSortedByRelevence[i].level == 'grade_school') {
-                //         resultsSortedByLevel[i].levelNumber = 1;
-                //     } else if (
-                //         resultsSortedByRelevence[i].level == 'middle_school'
-                //     ) {
-                //         resultsSortedByLevel[i].levelNumber = 2;
-                //     } else if (
-                //         resultsSortedByRelevence[i].level == 'high_school'
-                //     ) {
-                //         resultsSortedByLevel[i].levelNumber = 3;
-                //     } else if (resultsSortedByRelevence[i].level == 'college') {
-                //         resultsSortedByLevel[i].levelNumber = 4;
-                //     } else if (resultsSortedByRelevence[i].level == 'phd') {
-                //         resultsSortedByLevel[i].levelNumber = 5;
-                //     }
-                // }
-
-                // function compare(a, b) {
-                //     if (a.levelNumber < b.levelNumber) {
-                //         return -1;
-                //     }
-                //     if (a.levelNumber > b.levelNumber) {
-                //         return 1;
-                //     }
-                //     return 0;
-                // }
-
-                // resultsSortedByLevel.sort(compare);
-
                 let pathWay = await createPathway(
                     userId,
                     cohortId,
                     resultsSortedByRelevence
                 );
 
-                console.log(pathWay);
+                console.log('5');
 
                 res.json({
                     resultsSortedByRelevence: resultsSortedByRelevence,
@@ -1888,8 +1856,10 @@ router.post(
 );
 
 async function createPathway(userId, cohortId, recommendedSkills) {
-    try {
-        let sqlQuery = `
+    return new Promise((resolve, reject) => {
+        console.log('1');
+        try {
+            let sqlQuery = `
             SELECT skills.id, name, parent, is_accessible, url
             FROM skills
             LEFT OUTER JOIN user_skills
@@ -1920,47 +1890,53 @@ async function createPathway(userId, cohortId, recommendedSkills) {
             WHERE cohort_id = ${cohortId})                
             `;
 
-        conn.query(sqlQuery, async (err, result) => {
-            if (err) throw err;
+            console.log('2');
+            conn.query(sqlQuery, async (err, result) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    // All the userSkills
+                    let userSkills = result;
+                    // Array for just this pathway
+                    let pathWay = [];
+                    // Add the last skill in the pathway
+                    pathWay.unshift(recommendedSkills[0]);
 
-            // All the userSkills
-            let userSkills = result;
-            // Array for just this pathway
-            let pathWay = [];
-            // Add the last skill in the pathway
-            pathWay.push(recommendedSkills[0]);
+                    console.log('3');
 
-            // Recursive function
-            async function getAncestors(userSkills, pathwaySkill) {
-                let parentSkill;
-                // Get its parent skill, add it to pathway
-                for (let i = 0; i < userSkills.length; i++) {
-                    if (pathwaySkill.parent == userSkills[i].id) {
-                        parentSkill = userSkills[i];
-                        pathWay.push(parentSkill);
-                        break;
+                    // Recursive function
+                    async function getAncestors(userSkills, pathwaySkill) {
+                        let parentSkill;
+                        // Get its parent skill, add it to pathway
+                        for (let i = 0; i < userSkills.length; i++) {
+                            if (pathwaySkill.parent == userSkills[i].id) {
+                                parentSkill = userSkills[i];
+                                pathWay.push(parentSkill);
+                                break;
+                            }
+                        }
+
+                        if (typeof parentSkill !== 'undefined') {
+                            /*
+                             * Run the above function again recursively.
+                             */
+                            if (parentSkill != null) {
+                                await getAncestors(userSkills, parentSkill);
+                            }
+                        }
                     }
+
+                    await getAncestors(userSkills, recommendedSkills[0]);
+                    console.log('4');
+                    resolve(pathWay);
                 }
-
-                if (typeof parentSkill !== 'undefined') {
-                    /*
-                     * Run the above function again recursively.
-                     */
-                    if (parentSkill != null) {
-                        getAncestors(userSkills, parentSkill);
-                    }
-                }
-            }
-
-            await getAncestors(userSkills, recommendedSkills[0]);
-
-            return pathWay;
-        });
-    } catch (error) {
-        console.error(error);
-        res.status = 500;
-        res.json(error);
-    }
+            });
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json(error);
+        }
+    });
 }
 
 module.exports = router;
