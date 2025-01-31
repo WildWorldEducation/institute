@@ -1834,15 +1834,17 @@ router.post(
                     throw err;
                 }
 
-                let pathWay = await createPathway(
+                let pathWayBranches = await createPathway(
                     userId,
                     cohortId,
                     resultsSortedByRelevence
                 );
 
+                
+
                 res.json({
                     resultsSortedByRelevence: resultsSortedByRelevence,
-                    pathWay: pathWay
+                    pathWay: pathWayBranches
                 });
             });
         } catch (error) {
@@ -1901,11 +1903,19 @@ async function createPathway(userId, cohortId, recommendedSkills) {
                         pathWay.push(branch);
                         // Add the last skill in the pathway
                         branch.push(recommendedSkills[i]);
-                        await getAncestors(branch, userSkills, recommendedSkills[i]);
+                        await getAncestors(
+                            branch,
+                            userSkills,
+                            recommendedSkills[i]
+                        );
                     }
 
                     // Recursive function
-                    async function getAncestors(branch, userSkills, pathwaySkill) {
+                    async function getAncestors(
+                        branch,
+                        userSkills,
+                        pathwaySkill
+                    ) {
                         let parentSkill;
                         // Get its parent skill, add it to pathway
                         for (let i = 0; i < userSkills.length; i++) {
@@ -1935,7 +1945,11 @@ async function createPathway(userId, cohortId, recommendedSkills) {
                              * Run the above function again recursively.
                              */
                             if (parentSkill != null) {
-                                await getAncestors(branch, userSkills, parentSkill);
+                                await getAncestors(
+                                    branch,
+                                    userSkills,
+                                    parentSkill
+                                );
                             }
                         }
                     }
