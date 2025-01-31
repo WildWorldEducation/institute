@@ -12,7 +12,8 @@ export default {
     data() {
         return {
             query: '',
-            recommendedSkills: [],
+            recommendedSkillsOrderedByRelevance: [],
+            recommendedSkillsOrderedByLevel: [],
             showRecommendedSkills: false
         };
     },
@@ -41,13 +42,18 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     userId: this.userDetailsStore.userId,
+                    cohortId: this.userDetailsStore.cohortId,
                     query: this.query
                 })
             };
             const result = await fetch(url, requestOption);
             const readableResult = await result.json();
-            // console.log(readableResult);
-            this.recommendedSkills = readableResult;
+            console.log(readableResult);
+            this.recommendedSkillsOrderedByRelevance =
+                readableResult.resultsSortedByRelevence;
+            // this.recommendedSkillsOrderedByLevel =
+            //     readableResult.resultsSortedByLevel;
+            this.pathWay = readableResult.pathWay;
             this.showRecommendedSkills = true;
         }
     }
@@ -85,7 +91,7 @@ export default {
             </button>
         </div>
     </div>
-    <!-- Recommended Skills -->
+    <!-- Recommended Skills by Relevance -->
     <h2
         v-if="showRecommendedSkills"
         class="secondary-heading h5 bg-white rounded p-2 mt-2"
@@ -94,7 +100,31 @@ export default {
     </h2>
     <div v-if="showRecommendedSkills">
         <router-link
-            v-for="recommendedSkill in recommendedSkills"
+            v-for="recommendedSkill in recommendedSkillsOrderedByRelevance"
+            :class="{
+                'grade-school': recommendedSkill.level == 'grade_school',
+                'middle-school': recommendedSkill.level == 'middle_school',
+                'high-school': recommendedSkill.level == 'high_school',
+                college: recommendedSkill.level == 'college',
+                phd: recommendedSkill.level == 'phd'
+            }"
+            class="skill-link btn m-1"
+            :to="`/skills/${recommendedSkill.url}`"
+            target="_blank"
+        >
+            {{ recommendedSkill.name }}
+        </router-link>
+    </div>
+    <!-- Recommended Skills by Level -->
+    <h2
+        v-if="showRecommendedSkills"
+        class="secondary-heading h5 bg-white rounded p-2 mt-2"
+    >
+        Pathway
+    </h2>
+    <div v-if="showRecommendedSkills">
+        <router-link
+            v-for="recommendedSkill in recommendedSkillsOrderedByLevel"
             :class="{
                 'grade-school': recommendedSkill.level == 'grade_school',
                 'middle-school': recommendedSkill.level == 'middle_school',

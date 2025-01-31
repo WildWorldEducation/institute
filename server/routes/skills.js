@@ -1771,6 +1771,7 @@ router.post(
     async (req, res, next) => {
         try {
             let userId = req.body.userId;
+            let cohortId = req.body.cohortId;
             let query = req.body.query;
 
             let prompt = `        
@@ -1811,7 +1812,7 @@ router.post(
 
             const inputVector = response.data[0].embedding;
 
-            let sqlQuery = `SELECT skills.name, skills.url, skills.level
+            let sqlQuery = `SELECT skills.name, skills.url, skills.level, skills.parent
                     FROM skills_vector
                     JOIN skills
                     ON skills.id = skills_vector.skill_id                    
@@ -1827,11 +1828,56 @@ router.post(
                           LIMIT 50
                     `;
             // sql for instructor and editor account
-            conn.query(sqlQuery, (err, results) => {
+            conn.query(sqlQuery, async (err, resultsSortedByRelevence) => {
                 if (err) {
                     throw err;
                 }
-                res.json(results);
+
+                // let resultsSortedByLevel = [];
+                // for (let i = 0; i < resultsSortedByRelevence.length; i++) {
+                //     resultsSortedByLevel.push(resultsSortedByRelevence[i]);
+                //     if (resultsSortedByRelevence[i].level == 'grade_school') {
+                //         resultsSortedByLevel[i].levelNumber = 1;
+                //     } else if (
+                //         resultsSortedByRelevence[i].level == 'middle_school'
+                //     ) {
+                //         resultsSortedByLevel[i].levelNumber = 2;
+                //     } else if (
+                //         resultsSortedByRelevence[i].level == 'high_school'
+                //     ) {
+                //         resultsSortedByLevel[i].levelNumber = 3;
+                //     } else if (resultsSortedByRelevence[i].level == 'college') {
+                //         resultsSortedByLevel[i].levelNumber = 4;
+                //     } else if (resultsSortedByRelevence[i].level == 'phd') {
+                //         resultsSortedByLevel[i].levelNumber = 5;
+                //     }
+                // }
+
+                // function compare(a, b) {
+                //     if (a.levelNumber < b.levelNumber) {
+                //         return -1;
+                //     }
+                //     if (a.levelNumber > b.levelNumber) {
+                //         return 1;
+                //     }
+                //     return 0;
+                // }
+
+                // resultsSortedByLevel.sort(compare);
+
+                let pathWay = await createPathway(
+                    userId,
+                    cohortId,
+                    resultsSortedByRelevence
+                );
+
+                console.log(pathWay);
+
+                res.json({
+                    resultsSortedByRelevence: resultsSortedByRelevence,
+                    pathWay: pathWay
+                    //resultsSortedByLevel: resultsSortedByLevel
+                });
             });
         } catch (error) {
             console.error(error);
@@ -1840,5 +1886,81 @@ router.post(
         }
     }
 );
+
+async function createPathway(userId, cohortId, recommendedSkills) {
+    try {
+        let sqlQuery = `
+            SELECT skills.id, name, parent, is_accessible, url
+            FROM skills
+            LEFT OUTER JOIN user_skills
+            ON skills.id = user_skills.skill_id
+            WHERE user_skills.user_id = '${userId}'
+            AND is_filtered = 'available' 
+            AND is_deleted = 0            
+            AND skills.id NOT IN 
+            (SELECT skill_id 
+            FROM cohort_skill_filters
+            WHERE cohort_id = ${cohortId})
+            
+            UNION
+            SELECT skills.id, name, parent, "", url
+            FROM skills
+            WHERE skills.id NOT IN 
+            
+            (SELECT skills.id
+            FROM skills
+            LEFT OUTER JOIN user_skills
+            ON skills.id = user_skills.skill_id
+            WHERE user_skills.user_id = '${userId}')
+            AND is_filtered = 'available' 
+            AND is_deleted = 0            
+            AND skills.id NOT IN 
+            (SELECT skill_id 
+            FROM cohort_skill_filters
+            WHERE cohort_id = ${cohortId})                
+            `;
+
+        conn.query(sqlQuery, async (err, result) => {
+            if (err) throw err;
+
+            // All the userSkills
+            let userSkills = result;
+            // Array for just this pathway
+            let pathWay = [];
+            // Add the last skill in the pathway
+            pathWay.push(recommendedSkills[0]);
+
+            // Recursive function
+            async function getAncestors(userSkills, pathwaySkill) {
+                let parentSkill;
+                // Get its parent skill, add it to pathway
+                for (let i = 0; i < userSkills.length; i++) {
+                    if (pathwaySkill.parent == userSkills[i].id) {
+                        parentSkill = userSkills[i];
+                        pathWay.push(parentSkill);
+                        break;
+                    }
+                }
+
+                if (typeof parentSkill !== 'undefined') {
+                    /*
+                     * Run the above function again recursively.
+                     */
+                    if (parentSkill != null) {
+                        getAncestors(userSkills, parentSkill);
+                    }
+                }
+            }
+
+            await getAncestors(userSkills, recommendedSkills[0]);
+
+            return pathWay;
+        });
+    } catch (error) {
+        console.error(error);
+        res.status = 500;
+        res.json(error);
+    }
+}
 
 module.exports = router;
