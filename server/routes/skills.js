@@ -1896,11 +1896,16 @@ async function createPathway(userId, cohortId, recommendedSkills) {
                     let userSkills = result;
                     // Array for just this pathway
                     let pathWay = [];
-                    // Add the last skill in the pathway
-                    pathWay.push(recommendedSkills[0]);
+                    for (let i = 0; i < recommendedSkills.length; i++) {
+                        let branch = [];
+                        pathWay.push(branch);
+                        // Add the last skill in the pathway
+                        branch.push(recommendedSkills[i]);
+                        await getAncestors(branch, userSkills, recommendedSkills[i]);
+                    }
 
                     // Recursive function
-                    async function getAncestors(userSkills, pathwaySkill) {
+                    async function getAncestors(branch, userSkills, pathwaySkill) {
                         let parentSkill;
                         // Get its parent skill, add it to pathway
                         for (let i = 0; i < userSkills.length; i++) {
@@ -1908,7 +1913,16 @@ async function createPathway(userId, cohortId, recommendedSkills) {
                                 parentSkill = userSkills[i];
                                 if (parentSkill.is_mastered != 1) {
                                     // add to beginning of array.
-                                    pathWay.unshift(parentSkill);
+                                    branch.unshift(parentSkill);
+                                    // Check if the parent we add is also in the list of recommended skills,
+                                    // and if so, delete it
+                                    const index = recommendedSkills.findIndex(
+                                        (skill) => skill.id === parentSkill.id
+                                    );
+                                    if (index > -1) {
+                                        // We know that at least 1 object that matches has been found at the index i
+                                        recommendedSkills.splice(index, 1);
+                                    }
                                     break;
                                 } else {
                                     resolve(pathWay);
@@ -1921,12 +1935,11 @@ async function createPathway(userId, cohortId, recommendedSkills) {
                              * Run the above function again recursively.
                              */
                             if (parentSkill != null) {
-                                await getAncestors(userSkills, parentSkill);
+                                await getAncestors(branch, userSkills, parentSkill);
                             }
                         }
                     }
 
-                    await getAncestors(userSkills, recommendedSkills[0]);
                     resolve(pathWay);
                 }
             });
