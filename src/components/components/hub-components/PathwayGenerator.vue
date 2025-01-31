@@ -118,24 +118,26 @@ export default {
         v-if="showRecommendedSkills"
         class="secondary-heading h5 bg-white rounded p-2 mt-2"
     >
-        Pathway
+        Recommended Paths
     </h2>
-    <div v-if="showRecommendedSkills">
-        <div v-for="(pathWaySkill, index) in pathWay">
-            <router-link
-                :class="{
-                    'grade-school': pathWaySkill.level == 'grade_school',
-                    'middle-school': pathWaySkill.level == 'middle_school',
-                    'high-school': pathWaySkill.level == 'high_school',
-                    college: pathWaySkill.level == 'college',
-                    phd: pathWaySkill.level == 'phd'
-                }"
-                class="skill-link btn m-1"
-                :to="`/skills/${pathWaySkill.url}`"
-                target="_blank"
-            >
-                {{ pathWaySkill.name }}
-            </router-link>
+    <div v-if="showRecommendedSkills" class="d-flex">
+        <div v-for="branch in pathWay">
+            <div v-for="branchSkill in branch">
+                <router-link
+                    :class="{
+                        'grade-school': branchSkill.level == 'grade_school',
+                        'middle-school': branchSkill.level == 'middle_school',
+                        'high-school': branchSkill.level == 'high_school',
+                        college: branchSkill.level == 'college',
+                        phd: branchSkill.level == 'phd'
+                    }"
+                    class="skill-link btn m-1"
+                    :to="`/skills/${branchSkill.url}`"
+                    target="_blank"
+                >
+                    {{ branchSkill.name }}
+                </router-link>
+            </div>
         </div>
     </div>
 </template>
