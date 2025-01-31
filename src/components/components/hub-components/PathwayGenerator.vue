@@ -13,7 +13,7 @@ export default {
         return {
             query: '',
             recommendedSkillsOrderedByRelevance: [],
-            recommendedSkillsOrderedByLevel: [],
+            pathWay: [],
             showRecommendedSkills: false
         };
     },
@@ -51,8 +51,6 @@ export default {
             console.log(readableResult);
             this.recommendedSkillsOrderedByRelevance =
                 readableResult.resultsSortedByRelevence;
-            // this.recommendedSkillsOrderedByLevel =
-            //     readableResult.resultsSortedByLevel;
             this.pathWay = readableResult.pathWay;
             this.showRecommendedSkills = true;
         }
@@ -123,21 +121,22 @@ export default {
         Pathway
     </h2>
     <div v-if="showRecommendedSkills">
-        <router-link
-            v-for="recommendedSkill in recommendedSkillsOrderedByLevel"
-            :class="{
-                'grade-school': recommendedSkill.level == 'grade_school',
-                'middle-school': recommendedSkill.level == 'middle_school',
-                'high-school': recommendedSkill.level == 'high_school',
-                college: recommendedSkill.level == 'college',
-                phd: recommendedSkill.level == 'phd'
-            }"
-            class="skill-link btn m-1"
-            :to="`/skills/${recommendedSkill.url}`"
-            target="_blank"
-        >
-            {{ recommendedSkill.name }}
-        </router-link>
+        <div v-for="(pathWaySkill, index) in pathWay">
+            <router-link
+                :class="{
+                    'grade-school': pathWaySkill.level == 'grade_school',
+                    'middle-school': pathWaySkill.level == 'middle_school',
+                    'high-school': pathWaySkill.level == 'high_school',
+                    college: pathWaySkill.level == 'college',
+                    phd: pathWaySkill.level == 'phd'
+                }"
+                class="skill-link btn m-1"
+                :to="`/skills/${pathWaySkill.url}`"
+                target="_blank"
+            >
+                {{ pathWaySkill.name }}
+            </router-link>
+        </div>
     </div>
 </template>
 

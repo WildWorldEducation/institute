@@ -1697,6 +1697,7 @@ router.get('/name-list-old', (req, res, next) => {
 // Advanced / Semantic Search Feature.
 // Import OpenAI package.
 const { OpenAI } = require('openai');
+const { path } = require('pdfkit');
 // To access the .env file.
 require('dotenv').config();
 // Include API key.
@@ -1812,7 +1813,7 @@ router.post(
 
             const inputVector = response.data[0].embedding;
 
-            let sqlQuery = `SELECT skills.name, skills.url, skills.level, skills.parent
+            let sqlQuery = `SELECT skills.id, skills.name, skills.url, skills.level, skills.parent
                     FROM skills_vector
                     JOIN skills
                     ON skills.id = skills_vector.skill_id                    
@@ -1839,12 +1840,9 @@ router.post(
                     resultsSortedByRelevence
                 );
 
-                console.log('5');
-
                 res.json({
                     resultsSortedByRelevence: resultsSortedByRelevence,
                     pathWay: pathWay
-                    //resultsSortedByLevel: resultsSortedByLevel
                 });
             });
         } catch (error) {
@@ -1856,11 +1854,11 @@ router.post(
 );
 
 async function createPathway(userId, cohortId, recommendedSkills) {
+    // Necessary to await the database query
     return new Promise((resolve, reject) => {
-        console.log('1');
         try {
             let sqlQuery = `
-            SELECT skills.id, name, parent, is_accessible, url
+            SELECT skills.id, name, parent, is_accessible, url, level
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id
@@ -1873,7 +1871,7 @@ async function createPathway(userId, cohortId, recommendedSkills) {
             WHERE cohort_id = ${cohortId})
             
             UNION
-            SELECT skills.id, name, parent, "", url
+            SELECT skills.id, name, parent, "", url, level
             FROM skills
             WHERE skills.id NOT IN 
             
@@ -1890,7 +1888,6 @@ async function createPathway(userId, cohortId, recommendedSkills) {
             WHERE cohort_id = ${cohortId})                
             `;
 
-            console.log('2');
             conn.query(sqlQuery, async (err, result) => {
                 if (err) {
                     reject(err);
@@ -1900,9 +1897,7 @@ async function createPathway(userId, cohortId, recommendedSkills) {
                     // Array for just this pathway
                     let pathWay = [];
                     // Add the last skill in the pathway
-                    pathWay.unshift(recommendedSkills[0]);
-
-                    console.log('3');
+                    pathWay.push(recommendedSkills[0]);
 
                     // Recursive function
                     async function getAncestors(userSkills, pathwaySkill) {
@@ -1911,8 +1906,13 @@ async function createPathway(userId, cohortId, recommendedSkills) {
                         for (let i = 0; i < userSkills.length; i++) {
                             if (pathwaySkill.parent == userSkills[i].id) {
                                 parentSkill = userSkills[i];
-                                pathWay.push(parentSkill);
-                                break;
+                                if (parentSkill.is_mastered != 1) {
+                                    // add to beginning of array.
+                                    pathWay.unshift(parentSkill);
+                                    break;
+                                } else {
+                                    resolve(pathWay);
+                                }
                             }
                         }
 
@@ -1927,7 +1927,6 @@ async function createPathway(userId, cohortId, recommendedSkills) {
                     }
 
                     await getAncestors(userSkills, recommendedSkills[0]);
-                    console.log('4');
                     resolve(pathWay);
                 }
             });
