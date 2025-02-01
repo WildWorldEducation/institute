@@ -13,11 +13,9 @@ export default {
         return {
             query: '',
             recommendedSkillsOrderedByRelevance: [],
-            pathWay: [],
             showRecommendedSkills: false
         };
     },
-    async created() {},
     mounted() {
         // Allow search to accept Enter key
         // Get the input field
@@ -35,7 +33,7 @@ export default {
         });
     },
     methods: {
-        async createPathway() {
+        async getRecommendedSkills() {
             let url = '/skills/find-skills-for-pathway';
             const requestOption = {
                 method: 'POST',
@@ -48,12 +46,14 @@ export default {
             };
             const result = await fetch(url, requestOption);
             const readableResult = await result.json();
-            console.log(readableResult);
             this.recommendedSkillsOrderedByRelevance =
                 readableResult.resultsSortedByRelevence;
-            this.pathWay = readableResult.pathWay;
             this.showRecommendedSkills = true;
-        }
+        },
+        removeRecommendedSkill(index) {
+            this.recommendedSkillsOrderedByRelevance.splice(index, 1);
+        },
+        createLearningTrack() {}
     }
 };
 </script>
@@ -71,7 +71,7 @@ export default {
             />
             <button
                 id="searchButton"
-                @click="createPathway"
+                @click="getRecommendedSkills"
                 class="btn primary-btn rounded p-2"
             >
                 <!-- Magnifying glass icon -->
@@ -90,55 +90,34 @@ export default {
         </div>
     </div>
     <!-- Recommended Skills by Relevance -->
-    <h2
-        v-if="showRecommendedSkills"
-        class="secondary-heading h5 bg-white rounded p-2 mt-2"
-    >
-        Recommended Skills
-    </h2>
     <div v-if="showRecommendedSkills">
-        <router-link
-            v-for="recommendedSkill in recommendedSkillsOrderedByRelevance"
-            :class="{
-                'grade-school': recommendedSkill.level == 'grade_school',
-                'middle-school': recommendedSkill.level == 'middle_school',
-                'high-school': recommendedSkill.level == 'high_school',
-                college: recommendedSkill.level == 'college',
-                phd: recommendedSkill.level == 'phd'
-            }"
-            class="skill-link btn m-1"
-            :to="`/skills/${recommendedSkill.url}`"
-            target="_blank"
+        <h2 class="secondary-heading h5 bg-white rounded p-2 mt-2">
+            Recommended Skills
+        </h2>
+        <div
+            v-for="(
+                recommendedSkill, index
+            ) in recommendedSkillsOrderedByRelevance"
         >
-            {{ recommendedSkill.name }}
-        </router-link>
-    </div>
-    <!-- Recommended Skills by Level -->
-    <h2
-        v-if="showRecommendedSkills"
-        class="secondary-heading h5 bg-white rounded p-2 mt-2"
-    >
-        Recommended Paths
-    </h2>
-    <div v-if="showRecommendedSkills" class="d-flex">
-        <div v-for="branch in pathWay">
-            <div v-for="branchSkill in branch">
-                <router-link
-                    :class="{
-                        'grade-school': branchSkill.level == 'grade_school',
-                        'middle-school': branchSkill.level == 'middle_school',
-                        'high-school': branchSkill.level == 'high_school',
-                        college: branchSkill.level == 'college',
-                        phd: branchSkill.level == 'phd'
-                    }"
-                    class="skill-link btn m-1"
-                    :to="`/skills/${branchSkill.url}`"
-                    target="_blank"
-                >
-                    {{ branchSkill.name }}
-                </router-link>
-            </div>
+            <router-link
+                :class="{
+                    'grade-school': recommendedSkill.level == 'grade_school',
+                    'middle-school': recommendedSkill.level == 'middle_school',
+                    'high-school': recommendedSkill.level == 'high_school',
+                    college: recommendedSkill.level == 'college',
+                    phd: recommendedSkill.level == 'phd'
+                }"
+                class="skill-link btn m-1"
+                :to="`/skills/${recommendedSkill.url}`"
+                target="_blank"
+            >
+                {{ recommendedSkill.name }}
+            </router-link>
+            <button class="btn red-btn" @click="removeRecommendedSkill(index)">
+                X
+            </button>
         </div>
+        <button class="btn primary-btn mt-3">Create pathway</button>
     </div>
 </template>
 
