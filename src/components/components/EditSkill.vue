@@ -106,7 +106,8 @@ export default {
             showLoadingModal: false,
             originalSkill: {},
             parentLevel: '',
-            showImageSizeWarn: false
+            showImageSizeWarn: false,
+            iconImageSize: ''
         };
     },
     async mounted() {
@@ -194,7 +195,9 @@ export default {
                         'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
                         this.skill.url;
                     // tree node image
-                    this.skillNodeIcon = this.skill.icon;
+                    this.skillNodeIcon =
+                        'https://institute-skill-icons.s3.us-east-1.amazonaws.com/' +
+                        this.skill.url;
                     this.getSkillFilters();
                 });
         },
@@ -234,6 +237,21 @@ export default {
             }
 
             if (fileType === 'skillNodeIcon') {
+                const fileSize = this.calculateFileSize(files[0].size);
+
+                this.iconImageSize = fileSize.size + fileSize.unit;
+
+                // if file size is larger than Kilobyte unit we show a warning
+                if (fileSize.unit !== 'B' && fileSize.unit !== 'KB') {
+                    this.showImageSizeWarn = true;
+                    return;
+                }
+                console.log(fileSize);
+                // if file size is larger than 100 KB we also show the warning
+                if (fileSize.size > 100 && fileSize.unit === 'KB') {
+                    this.showImageSizeWarn = true;
+                    return;
+                }
                 this.createNodeIcon(files[0]);
                 return;
             }
@@ -246,7 +264,6 @@ export default {
             reader.onload = (e) => {
                 vm.image = e.target.result;
                 this.iconImage = e.target.result;
-
                 this.skill.icon_image = this.iconImage;
             };
             reader.readAsDataURL(file);
@@ -255,12 +272,7 @@ export default {
             var image = new Image();
             var reader = new FileReader();
             var vm = this;
-
             reader.onload = (e) => {
-                if (e.target.result.length > 255) {
-                    this.showImageSizeWarn = true;
-                    return;
-                }
                 vm.image = e.target.result;
                 this.skillNodeIcon = e.target.result;
                 this.skill.icon = this.skillNodeIcon;
@@ -556,6 +568,51 @@ export default {
         },
         closeImageSizeWarnModal() {
             this.showImageSizeWarn = false;
+        },
+        calculateFileSize(fileSize) {
+            const TerabyteSize = Math.pow(1024, 4);
+            const GigaByteSize = Math.pow(1024, 3);
+            const MegaByteSize = Math.pow(1024, 2);
+            const KiloByteSize = 1024;
+            if (fileSize > TerabyteSize) {
+                const resultFileSize = Math.round(fileSize / TerabyteSize);
+                return {
+                    size: resultFileSize,
+                    unit: 'TB'
+                };
+            }
+
+            if (fileSize > GigaByteSize) {
+                const resultFileSize = Math.round(fileSize / GigaByteSize);
+
+                return {
+                    size: resultFileSize,
+                    unit: 'GB'
+                };
+            }
+
+            if (fileSize > MegaByteSize) {
+                const resultFileSize = Math.round(fileSize / MegaByteSize);
+
+                return {
+                    size: resultFileSize,
+                    unit: 'MB'
+                };
+            }
+
+            if (fileSize > KiloByteSize) {
+                const resultFileSize = Math.round(fileSize / KiloByteSize);
+
+                return {
+                    size: resultFileSize,
+                    unit: 'KB'
+                };
+            }
+
+            return {
+                size: fileSize,
+                unit: 'B'
+            };
         }
     },
     components: {
@@ -973,7 +1030,7 @@ export default {
                                 </button>
                             </p>
                         </div>
-                        <!-- Using random number otherwise url doesnt change (cache)-->
+                        <!-- Using random number otherwise url doesn't change (cache)-->
                         <img
                             id="originalImage"
                             class="d-none"
@@ -1018,7 +1075,7 @@ export default {
                                     class="plus-svg"
                                     @click="openImage('skillNodeFileChoose')"
                                 >
-                                    <!-- The plus Icon On Top Of the avatar -->
+                                    <!-- The plus Icon On Top Of the image -->
                                     <svg
                                         width="33"
                                         height="33"
@@ -1064,6 +1121,9 @@ export default {
                                     style="background-color: lightgrey"
                                 />
                             </p>
+                            <div class="mb-2">
+                                Image Size: {{ iconImageSize }}
+                            </div>
                             <p>
                                 <button
                                     class="btn red-btn"
@@ -1391,7 +1451,7 @@ export default {
     <FailsModal
         v-if="showImageSizeWarn"
         :handleOkClick="closeImageSizeWarnModal"
-        message="Your image is too big !"
+        :message="`Your image is too big ! (${iconImageSize} / 100kb)`"
     />
 </template>
 

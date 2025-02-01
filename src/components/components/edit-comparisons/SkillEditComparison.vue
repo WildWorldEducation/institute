@@ -28,7 +28,8 @@ export default {
     components: { MasteryEditDetails },
     async created() {
         await this.getSkillEdit();
-        await this.getSkill();
+        console.log('he he');
+        await this.gteSkill();
 
         if (this.skill.banner_image !== this.skillEdit.banner_image) {
             this.changeBanner = true;
@@ -78,13 +79,15 @@ export default {
                     this.comment = data.comment;
                 });
         },
-        async getSkill() {
+        async gteSkill() {
             await fetch('/skills/show/' + this.skillId)
                 .then(function (response) {
                     return response.json();
                 })
                 .then((data) => {
                     this.skill = data;
+                    console.log('skill data: ');
+                    console.log(this.skill);
                 });
         },
         dismissEdit() {
