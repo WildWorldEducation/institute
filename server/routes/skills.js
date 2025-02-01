@@ -1840,11 +1840,46 @@ router.post(
                     resultsSortedByRelevence
                 );
 
-                
+                // combine branches into single array.
+                let singlePathway = [];
+                for (let i = 0; i < pathWayBranches.length; i++) {
+                    for (let j = 0; j < pathWayBranches[i].length; j++) {
+                        if (
+                            singlePathway.some(
+                                (skill) => skill.id === pathWayBranches[i][j].id
+                            ) == false
+                        ) {
+                            singlePathway.push(pathWayBranches[i][j]);
+                        }
+                    }
+                }
+
+                // Assign children to parent skills.
+                // We need the objects to be nested for D3.             
+                for (var i = 0; i < singlePathway.length; i++) {
+                    singlePathway[i].children = [];
+                }
+
+                const nestedPathwayBranches = singlePathway.reduce(
+                    (acc, curr) => {
+                        let parent = curr.parent
+                            ? singlePathway.filter(
+                                  (skill) => skill.id === curr.parent
+                              )
+                            : [];
+                        if (parent.length) {
+                            parent[0].children.push(curr);
+                        } else {
+                            acc.push(curr);
+                        }
+                        return acc;
+                    },
+                    []
+                );
 
                 res.json({
                     resultsSortedByRelevence: resultsSortedByRelevence,
-                    pathWay: pathWayBranches
+                    pathWay: nestedPathwayBranches
                 });
             });
         } catch (error) {
