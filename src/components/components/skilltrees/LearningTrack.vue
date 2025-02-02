@@ -1,6 +1,6 @@
 <script>
 // Import the stores.
-import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
+import { useSkillTreeStore } from '../../../stores/SkillTreeStore.js';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';

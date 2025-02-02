@@ -182,9 +182,9 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink
-                                to="/pathways"
+                                to="/learning-tracks"
                                 class="nav-link close-on-click"
-                                >Pathways</RouterLink
+                                >Learning Tracks</RouterLink
                             >
                         </li>
                         <li

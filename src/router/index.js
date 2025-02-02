@@ -16,10 +16,11 @@ const router = createRouter({
             meta: { preventZoom: true, title: 'Skill tree' }
         },
         {
-            path: '/pathways',
-            name: 'pathways',
-            component: () => import('../components/pages/PathwaysView.vue'),
-            meta: { preventZoom: true, title: 'Skill Pathways' }
+            path: '/learning-tracks',
+            name: 'learning-tracks',
+            component: () =>
+                import('../components/pages/LearningTracksView.vue'),
+            meta: { preventZoom: true, title: 'Learning Tracks' }
         },
         {
             path: '/student/:studentId/skill-tree',
@@ -505,7 +506,7 @@ router.beforeEach(async (to, from, next) => {
     // To remove the vertical scroll bar.
     if (
         to.name == 'skill-tree' ||
-        to.name == 'pathways' ||
+        to.name == 'learning-tracks' ||
         to.name == 'radial-tree' ||
         to.name == 'skills' ||
         to.name == 'student-skills' ||
