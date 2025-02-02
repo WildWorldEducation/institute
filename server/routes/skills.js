@@ -1764,9 +1764,9 @@ router.get('/url-list', async (req, res) => {
     }
 });
 
-// For the Pathways feature, to take a search query and return the most suitable skills
+// Return recommended skills, based on user query
 router.post(
-    '/find-skills-for-pathway',
+    '/get-recommended-skills',
     isAuthenticated,
     async (req, res, next) => {
         try {
@@ -1802,7 +1802,6 @@ router.post(
             }
             // Convert string to object.       ;
             let subjectObject = JSON.parse(responseJSON);
-            // console.log(subjectObject.subjectResponse);
 
             const response = await openai.embeddings.create({
                 model: 'text-embedding-3-small',
@@ -1833,52 +1832,7 @@ router.post(
                     throw err;
                 }
 
-                let pathWayBranches = await createPathway(
-                    userId,
-                    cohortId,
-                    resultsSortedByRelevence
-                );
-
-                // combine branches into single array.
-                let singlePathway = [];
-                for (let i = 0; i < pathWayBranches.length; i++) {
-                    for (let j = 0; j < pathWayBranches[i].length; j++) {
-                        if (
-                            singlePathway.some(
-                                (skill) => skill.id === pathWayBranches[i][j].id
-                            ) == false
-                        ) {
-                            singlePathway.push(pathWayBranches[i][j]);
-                        }
-                    }
-                }
-
-                // Assign children to parent skills.
-                // We need the objects to be nested for D3.
-                for (var i = 0; i < singlePathway.length; i++) {
-                    singlePathway[i].children = [];
-                }
-
-                const nestedPathwayBranches = singlePathway.reduce(
-                    (acc, curr) => {
-                        let parent = curr.parent
-                            ? singlePathway.filter(
-                                  (skill) => skill.id === curr.parent
-                              )
-                            : [];
-                        if (parent.length) {
-                            parent[0].children.push(curr);
-                        } else {
-                            acc.push(curr);
-                        }
-                        return acc;
-                    },
-                    []
-                );
-
-                res.json({
-                    resultsSortedByRelevence: resultsSortedByRelevence
-                });
+                res.json(resultsSortedByRelevence);
             });
         } catch (error) {
             console.error(error);
@@ -1887,115 +1841,5 @@ router.post(
         }
     }
 );
-
-async function createPathway(userId, cohortId, recommendedSkills) {
-    // Necessary to await the database query
-    return new Promise((resolve, reject) => {
-        try {
-            let sqlQuery = `
-            SELECT skills.id, name, parent, is_accessible, url, level
-            FROM skills
-            LEFT OUTER JOIN user_skills
-            ON skills.id = user_skills.skill_id
-            WHERE user_skills.user_id = '${userId}'
-            AND is_filtered = 'available' 
-            AND is_deleted = 0            
-            AND skills.id NOT IN 
-            (SELECT skill_id 
-            FROM cohort_skill_filters
-            WHERE cohort_id = ${cohortId})
-            
-            UNION
-            SELECT skills.id, name, parent, "", url, level
-            FROM skills
-            WHERE skills.id NOT IN 
-            
-            (SELECT skills.id
-            FROM skills
-            LEFT OUTER JOIN user_skills
-            ON skills.id = user_skills.skill_id
-            WHERE user_skills.user_id = '${userId}')
-            AND is_filtered = 'available' 
-            AND is_deleted = 0            
-            AND skills.id NOT IN 
-            (SELECT skill_id 
-            FROM cohort_skill_filters
-            WHERE cohort_id = ${cohortId})                
-            `;
-
-            conn.query(sqlQuery, async (err, result) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    // All the userSkills
-                    let userSkills = result;
-                    // Array for just this pathway
-                    let pathWay = [];
-                    for (let i = 0; i < recommendedSkills.length; i++) {
-                        let branch = [];
-                        pathWay.push(branch);
-                        // Add the last skill in the pathway
-                        branch.push(recommendedSkills[i]);
-                        await getAncestors(
-                            branch,
-                            userSkills,
-                            recommendedSkills[i]
-                        );
-                    }
-
-                    // Recursive function
-                    async function getAncestors(
-                        branch,
-                        userSkills,
-                        pathwaySkill
-                    ) {
-                        let parentSkill;
-                        // Get its parent skill, add it to pathway
-                        for (let i = 0; i < userSkills.length; i++) {
-                            if (pathwaySkill.parent == userSkills[i].id) {
-                                parentSkill = userSkills[i];
-                                if (parentSkill.is_mastered != 1) {
-                                    // add to beginning of array.
-                                    branch.unshift(parentSkill);
-                                    // Check if the parent we add is also in the list of recommended skills,
-                                    // and if so, delete it
-                                    const index = recommendedSkills.findIndex(
-                                        (skill) => skill.id === parentSkill.id
-                                    );
-                                    if (index > -1) {
-                                        // We know that at least 1 object that matches has been found at the index i
-                                        recommendedSkills.splice(index, 1);
-                                    }
-                                    break;
-                                } else {
-                                    resolve(pathWay);
-                                }
-                            }
-                        }
-
-                        if (typeof parentSkill !== 'undefined') {
-                            /*
-                             * Run the above function again recursively.
-                             */
-                            if (parentSkill != null) {
-                                await getAncestors(
-                                    branch,
-                                    userSkills,
-                                    parentSkill
-                                );
-                            }
-                        }
-                    }
-
-                    resolve(pathWay);
-                }
-            });
-        } catch (error) {
-            console.error(error);
-            res.status = 500;
-            res.json(error);
-        }
-    });
-}
 
 module.exports = router;

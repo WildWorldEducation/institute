@@ -34,7 +34,7 @@ export default {
     },
     methods: {
         async getRecommendedSkills() {
-            let url = '/skills/find-skills-for-pathway';
+            let url = '/skills/get-recommended-skills';
             const requestOption = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -46,8 +46,7 @@ export default {
             };
             const result = await fetch(url, requestOption);
             const readableResult = await result.json();
-            this.recommendedSkillsOrderedByRelevance =
-                readableResult.resultsSortedByRelevence;
+            this.recommendedSkillsOrderedByRelevance = readableResult;
             this.showRecommendedSkills = true;
         },
         removeRecommendedSkill(index) {
