@@ -53,7 +53,7 @@ export default {
         removeRecommendedSkill(index) {
             this.recommendedSkillsOrderedByRelevance.splice(index, 1);
         },
-        createLearningTrack() {
+        async createLearningTrack() {
             let url =
                 '/learning-tracks/' + this.userDetailsStore.userId + '/create';
 
@@ -72,7 +72,7 @@ export default {
                 })
             };
 
-            
+            await fetch(url, requestOption);
         }
     }
 };
@@ -147,7 +147,9 @@ export default {
                 </svg>
             </button>
         </div>
-        <button class="btn primary-btn mt-3">Create learning track</button>
+        <button class="btn primary-btn mt-3" @click="createLearningTrack">
+            Create learning track
+        </button>
     </div>
 </template>
 

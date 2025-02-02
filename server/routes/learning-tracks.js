@@ -11,6 +11,9 @@ router.use(bodyParser.json());
 // DB
 const conn = require('../config/db');
 
+//Middlewares
+const isAuthenticated = require('../middlewares/authMiddleware');
+
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -23,7 +26,7 @@ router.post('/:userId/create', isAuthenticated, async (req, res, next) => {
         let skills = req.body.skills;
 
         let createLearningTrackQuery = `INSERT INTO learning_tracks (user_id, name)
-        VALUES (${userId}, ${name});
+        VALUES ('${userId}', '${name}');
         `;
 
         conn.query(createLearningTrackQuery, (err, result) => {
@@ -31,36 +34,38 @@ router.post('/:userId/create', isAuthenticated, async (req, res, next) => {
                 throw err;
             }
 
-            for (let i = 0; i < skills.length; i++) {
-                // Now need to add all the skills in the track.
-                let addLearningTrackSkillQuery = `INSERT INTO learning_track_skills (learning_track_id, skill_id)
-                VALUES (${result.insertId}, ${skills[i]});
-                `;
-            }
+            res.end();
+
+            // for (let i = 0; i < skills.length; i++) {
+            //     // Now need to add all the skills in the track.
+            //     let addLearningTrackSkillQuery = `INSERT INTO learning_track_skills (learning_track_id, skill_id)
+            //     VALUES (${result.insertId}, ${skills[i]});
+            //     `;
+            // }
 
             // https://stackoverflow.com/questions/58331631/how-to-insert-into-a-sql-table-using-a-for-loop-in-nodejs
-            function queryPromise(query) {
-                return new Promise((resolve, reject) => {
-                    conn.query(query, (err, result) => {
-                        if (err) {
-                            return reject(err);
-                        }
+            // function queryPromise(query) {
+            //     return new Promise((resolve, reject) => {
+            //         conn.query(query, (err, result) => {
+            //             if (err) {
+            //                 return reject(err);
+            //             }
 
-                        return resolve(result);
-                    });
-                });
-            }
+            //             return resolve(result);
+            //         });
+            //     });
+            // }
 
-            conn.connect(async (err) => {
-                await Promise.all(
-                    skills.map((_, i) => {
-                        return queryPromise(
-                            `INSERT INTO learning_track_skills (learning_track_id, skill_id)
-                            VALUES (${result.insertId}, ${skills[i]})`
-                        );
-                    })
-                );
-            });
+            // conn.connect(async (err) => {
+            //     await Promise.all(
+            //         skills.map((_, i) => {
+            //             return queryPromise(
+            //                 `INSERT INTO learning_track_skills (learning_track_id, skill_id)
+            //                 VALUES (${result.insertId}, ${skills[i]})`
+            //             );
+            //         })
+            //     );
+            // });
         });
     } catch (error) {
         console.error(error);
