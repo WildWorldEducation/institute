@@ -34,38 +34,31 @@ router.post('/:userId/create', isAuthenticated, async (req, res, next) => {
                 throw err;
             }
 
-            res.end();
+            // Function to allow for awaiting each SQL insertion.
+            function queryPromise(query) {
+                return new Promise((resolve, reject) => {
+                    conn.query(query, (err, result) => {
+                        if (err) {
+                            return reject(err);
+                        }
 
-            // for (let i = 0; i < skills.length; i++) {
-            //     // Now need to add all the skills in the track.
-            //     let addLearningTrackSkillQuery = `INSERT INTO learning_track_skills (learning_track_id, skill_id)
-            //     VALUES (${result.insertId}, ${skills[i]});
-            //     `;
-            // }
+                        return resolve(result);
+                    });
+                });
+            }
 
-            // https://stackoverflow.com/questions/58331631/how-to-insert-into-a-sql-table-using-a-for-loop-in-nodejs
-            // function queryPromise(query) {
-            //     return new Promise((resolve, reject) => {
-            //         conn.query(query, (err, result) => {
-            //             if (err) {
-            //                 return reject(err);
-            //             }
-
-            //             return resolve(result);
-            //         });
-            //     });
-            // }
-
-            // conn.connect(async (err) => {
-            //     await Promise.all(
-            //         skills.map((_, i) => {
-            //             return queryPromise(
-            //                 `INSERT INTO learning_track_skills (learning_track_id, skill_id)
-            //                 VALUES (${result.insertId}, ${skills[i]})`
-            //             );
-            //         })
-            //     );
-            // });
+            // Insert rows for the learning track skills
+            conn.connect(async (err) => {
+                await Promise.all(
+                    skills.map((_, i) => {
+                        return queryPromise(
+                            `INSERT INTO learning_track_skills (learning_track_id, skill_id)
+                            VALUES (${result.insertId}, ${skills[i]})`
+                        );
+                    })
+                );
+                res.end();
+            });
         });
     } catch (error) {
         console.error(error);
