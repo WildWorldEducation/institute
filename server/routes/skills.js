@@ -1721,7 +1721,6 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
                     ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
                           VEC_FromText('[${inputVector}]'))
                     LIMIT 25`;
-        // sql for instructor and editor account
         conn.query(sqlQuery, (err, results) => {
             if (err) {
                 throw err;
@@ -1855,7 +1854,7 @@ router.post(
                 }
 
                 // Assign children to parent skills.
-                // We need the objects to be nested for D3.             
+                // We need the objects to be nested for D3.
                 for (var i = 0; i < singlePathway.length; i++) {
                     singlePathway[i].children = [];
                 }
@@ -1878,8 +1877,7 @@ router.post(
                 );
 
                 res.json({
-                    resultsSortedByRelevence: resultsSortedByRelevence,
-                    pathWay: nestedPathwayBranches
+                    resultsSortedByRelevence: resultsSortedByRelevence
                 });
             });
         } catch (error) {
