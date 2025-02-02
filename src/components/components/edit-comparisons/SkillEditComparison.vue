@@ -14,36 +14,37 @@ export default {
             comment: '',
             isEditMode: false,
             edited: false,
-            changeIcon: false,
-            changeBanner: false,
-            changeMasteryText: false,
             diffHtml: '',
             showEditMastery: false,
             showBannerChange: true,
             showIconChange: true,
             showSkillMasteryChange: true,
-            showHighLight: true
+            showHighLight: true,
+            isSkillChanged: {
+                icon: false,
+                mastery_requirements: false
+            }
         };
     },
     components: { MasteryEditDetails },
     async created() {
         await this.getSkillEdit();
-        console.log('he he');
-        await this.gteSkill();
 
-        if (this.skill.banner_image !== this.skillEdit.banner_image) {
-            this.changeBanner = true;
-        }
+        await this.gteSkill();
+        console.log('skill data');
+        console.log(this.skill);
+        console.log('edit data: ');
+        console.log(this.skillEdit);
 
         if (this.skill.icon_image !== this.skillEdit.icon_image) {
-            this.changeIcon = true;
+            this.isSkillChanged.icon = true;
         }
 
         if (
             this.skill.mastery_requirements !==
             this.skillEdit.mastery_requirements
         ) {
-            this.changeMasteryText = true;
+            this.isSkillChanged.mastery_requirements = true;
             // Compare two mastery requirement html string
             this.diffHtml = HtmlDiff.execute(
                 this.skill.mastery_requirements,
@@ -216,7 +217,7 @@ export default {
         <div class="minor-text">{{ skill.level }}</div>
 
         <!-- ---Icon image compare -->
-        <div v-if="changeIcon" class="mt-5">
+        <div v-if="isSkillChanged.icon" class="mt-5">
             <div class="compare-container">
                 <div class="d-flex align-items-center">
                     <h2 class="secondary-heading h4 mb-3">Skill Icon</h2>
@@ -247,10 +248,7 @@ export default {
                             <!-- Old Banner -->
                             <div class="old-container icon-container">
                                 <div class="container-tile">Original</div>
-                                <img
-                                    :src="skill.icon_image"
-                                    class="icon-image"
-                                />
+                                <img :src="skill.icon" class="icon-image" />
                             </div>
                             <!-- Long arrow pointing right -->
                             <svg
@@ -310,7 +308,7 @@ export default {
         </div>
         <!-- ---Mastery requirement compare -->
         <div
-            v-if="changeMasteryText && !showEditMastery"
+            v-if="isSkillChanged.mastery_requirements"
             class="compare-container mt-5"
         >
             <div class="d-flex align-items-center">

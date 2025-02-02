@@ -246,7 +246,7 @@ export default {
                     this.showImageSizeWarn = true;
                     return;
                 }
-                console.log(fileSize);
+
                 // if file size is larger than 100 KB we also show the warning
                 if (fileSize.size > 100 && fileSize.unit === 'KB') {
                     this.showImageSizeWarn = true;
@@ -473,6 +473,7 @@ export default {
                 body: JSON.stringify({
                     userId: this.userDetailsStore.userId,
                     icon_image: this.iconImage,
+                    node_icon: this.skillNodeIcon,
                     mastery_requirements: this.skill.mastery_requirements,
                     comment: this.comment
                 })

@@ -46,7 +46,9 @@ const { recordUserAction } = require('../utilities/record-user-action');
 // Helper Function
 const {
     saveIconToAWS,
-    saveBase64ImageToBucket
+    saveBase64ImageToBucket,
+    saveNodeIconToAWS,
+    scaleIcon
 } = require('../utilities/save-image-to-aws');
 const {
     getVectorData,
@@ -208,11 +210,11 @@ router.post(
                             1,
                             ${conn.escape(req.session.userId)},
                             ${conn.escape(
-                                req.body.name
-                            )},                           
+                                    req.body.name
+                                )},                           
                             ${conn.escape(
-                                req.body.description
-                            )},                                                      
+                                    req.body.description
+                                )},                                                      
                             ${conn.escape(req.body.mastery_requirements)},
                             ${conn.escape(req.body.level)});`;
 
@@ -276,8 +278,8 @@ router.post(
         const sqlQuery = `SELECT *
                           FROM skills
                           WHERE skills.id = ${conn.escape(
-                              req.body.skillToBeCopied.id
-                          )} AND skills.is_deleted = 0;`;
+            req.body.skillToBeCopied.id
+        )} AND skills.is_deleted = 0;`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -649,8 +651,8 @@ router.get('/url/:skillUrl', (req, res, next) => {
                     LEFT JOIN 
                         skills AS parent_skill ON s.parent = parent_skill.id
                     WHERE s.url = ${conn.escape(
-                        req.params.skillUrl
-                    )} AND s.is_deleted = 0`;
+        req.params.skillUrl
+    )} AND s.is_deleted = 0`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -816,6 +818,11 @@ router.put(
                 uuidDate
             );
 
+            // Save Edit node icon to AWS
+            await saveNodeIconToAWS(req.body.nodeIcon, url, uuidDate);
+            const scaledDownIcon = await scaleIcon(req.body.nodeIcon, 50);
+            // scale the image down to 50x50
+
             let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
                     (id, version_number, user_id, name, description, icon_image, icon,
@@ -827,10 +834,10 @@ router.put(
                     ${conn.escape(req.body.name)},                    
                     ${conn.escape(req.body.description)},
                     ${conn.escape(iconUrl)},
-                    ${conn.escape(req.body.icon)},
+                    ${conn.escape(scaledDownIcon)},
                     ${conn.escape(
-                        req.body.mastery_requirements
-                    )},                    
+                req.body.mastery_requirements
+            )},                    
                     ${conn.escape(req.body.level)},                    
                     ${conn.escape(req.body.order)},
                     ${conn.escape(req.body.comment)});`;
@@ -847,11 +854,11 @@ router.put(
                         url = ${conn.escape(req.body.url)},
                         parent = ${conn.escape(req.body.parent)},
                         description = ${conn.escape(
-                            req.body.description
-                        )},                         
+                        req.body.description
+                    )},                         
                         mastery_requirements = ${conn.escape(
-                            req.body.mastery_requirements
-                        )}, 
+                        req.body.mastery_requirements
+                    )}, 
                         type = ${conn.escape(req.body.type)}, 
                         level = ${conn.escape(req.body.level)}, 
                         skills.order = ${conn.escape(req.body.order)}, 
@@ -912,17 +919,18 @@ router.put(
 router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {
         // Add data.
-        let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, mastery_requirements, icon_image, comment)
+        let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, mastery_requirements, icon_image, icon, comment)
          VALUES (${conn.escape(req.params.id)}, 
          ${conn.escape(req.body.userId)}, 
          ${conn.escape(req.body.mastery_requirements)}, 
-         ${conn.escape(req.body.icon_image)},          
+         ${conn.escape(req.body.icon_image)},
+         ${conn.escape(req.body.node_icon)},          
          ${conn.escape(req.body.comment)})
          
          ON DUPLICATE KEY
          UPDATE mastery_requirements = ${conn.escape(
-             req.body.mastery_requirements
-         )}, 
+            req.body.mastery_requirements
+        )}, 
          date = CURRENT_TIMESTAMP(), 
          icon_image = ${conn.escape(req.body.icon_image)},          
          comment = ${conn.escape(req.body.comment)};`;
@@ -1088,11 +1096,10 @@ router.put(
                                         recordUserAction(
                                             {
                                                 userId: req.session.userId,
-                                                userAction: `${
-                                                    req.body.edit
-                                                        ? 'edit_and_approve'
-                                                        : 'approve'
-                                                }`,
+                                                userAction: `${req.body.edit
+                                                    ? 'edit_and_approve'
+                                                    : 'approve'
+                                                    }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
                                             },

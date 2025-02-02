@@ -7,6 +7,7 @@ const userAvatarImageThumbnailsBucketName = process.env.S3_USER_AVATAR_IMAGE_THU
 const userAvatarImagesBucketName = process.env.S3_USER_AVATAR_IMAGE_BUCKET_NAME;
 const skillInfoboxImageThumbnailsBucketName =
     process.env.S3_SKILL_INFOBOX_IMAGE_THUMBNAILS_BUCKET_NAME;
+const skillIconImageBucketName = process.env.S3_SKILL_ICON_BUCKET_NAME;
 const bucketRegion = process.env.S3_BUCKET_REGION;
 const accessKeyId = process.env.S3_ACCESS_KEY_ID;
 const accessSecretKey = process.env.S3_SECRET_ACCESS_KEY;
@@ -51,6 +52,71 @@ const saveIconToAWS = async (iconImage, skillUrl, editUUID) => {
         ContentType: 'image/jpeg',
         // The S3 bucket
         Bucket: skillInfoboxImagesBucketName
+    };
+
+    // Send to the bucket.
+    const fullSizeCommand = new PutObjectCommand(
+        fullSizeData
+    );
+    await s3.send(fullSizeCommand);
+
+    const thumbnailFileData = await sharp(fileData)
+        .resize({ width: 330 })
+        .toBuffer();
+
+    let thumbnailData = {
+        // The name it will be saved as on S3
+        Key: imageName,
+        // The image
+        Body: thumbnailFileData,
+        ContentEncoding: 'base64',
+        ContentType: 'image/jpeg',
+        // The S3 bucket
+        Bucket: skillInfoboxImageThumbnailsBucketName
+    };
+
+    // Send to the bucket.
+    const thumbnailCommand = new PutObjectCommand(
+        thumbnailData
+    );
+    await s3.send(thumbnailCommand)
+
+    return imageName
+}
+
+/**
+ *  Save the icon to AWS S3
+ *
+ * @param {*} iconImage data file string of the image
+ * @param {*} skillUrl key and name of the image must be unique
+ * @param {*} editUUID additional name if the image is an edit version
+ * 
+ * @return the name of the image that got saved to database Or null if pass no image
+ */
+const saveNodeIconToAWS = async (iconImage, skillUrl, editUUID) => {
+    if (!iconImage) {
+        return null
+    }
+    // Get file from Base64 encoding (client sends as base64)
+    let fileData = Buffer.from(
+        iconImage.replace(
+            /^data:image\/\w+;base64,/,
+            ''
+        ),
+        'base64'
+    );
+
+
+    const imageName = `${skillUrl}${editUUID ? `_${editUUID}` : ''}`;
+    let fullSizeData = {
+        // The name it will be saved as on S3
+        Key: imageName,
+        // The image
+        Body: fileData,
+        ContentEncoding: 'base64',
+        ContentType: 'image/jpeg',
+        // The S3 bucket
+        Bucket: skillIconImageBucketName
     };
 
     // Send to the bucket.
@@ -198,5 +264,18 @@ const saveUserAvatarToAWS = async (userId, base64Image) => {
     }
 };
 
+/**
+ * Resize the icon using sharp
+ *
+ * @param {*} - base64 string of the image
+ * @param {*} iconWidth - the width to scale 
+ */
+const scaleIcon = async (iconData, iconWidth) => {
+    const resultData = await sharp(iconData)
+        .resize({ width: iconWidth })
+        .toBuffer();
+    return resultData
+}
 
-module.exports = { saveIconToAWS, updateSkillIcon, saveBase64ImageToBucket, saveUserAvatarToAWS }
+
+module.exports = { saveIconToAWS, updateSkillIcon, saveBase64ImageToBucket, saveUserAvatarToAWS, saveNodeIconToAWS, scaleIcon }
