@@ -102,7 +102,7 @@ router.post('/:learningTrackId', (req, res, next) => {
         let cohortId = req.body.cohortId;
 
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT skill_id, name, parent, url, level 
+        let sqlQuery = `SELECT skill_id as id, name, parent, url, level 
         FROM learning_track_skills
         JOIN skills
         ON learning_track_skills.skill_id = skills.id
@@ -194,7 +194,6 @@ router.post('/:learningTrackId', (req, res, next) => {
                                         userSkills,
                                         learningTrackSkill
                                     ) {
-                                        
                                         let parentSkill;
                                         // Get its parent skill, add it to learning track
                                         for (
@@ -278,7 +277,6 @@ router.post('/:learningTrackId', (req, res, next) => {
                     }
                 }
 
-          
                 // We need the objects to be nested for D3.
                 // Assign children to parent skills.
                 for (var i = 0; i < flatLearningTrackArray.length; i++) {
@@ -301,9 +299,7 @@ router.post('/:learningTrackId', (req, res, next) => {
                         }
                         return acc;
                     }, []);
-
-                console.log(nestedLearningTrackBranches);
-
+             
                 res.json(nestedLearningTrackBranches);
             } catch (err) {
                 next(err);
