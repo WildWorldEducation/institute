@@ -23,7 +23,8 @@ export default {
             isSkillChanged: {
                 icon: false,
                 mastery_requirements: false
-            }
+            },
+            iconImage: ''
         };
     },
     components: { MasteryEditDetails },
@@ -36,9 +37,13 @@ export default {
         console.log('edit data: ');
         console.log(this.skillEdit);
 
-        if (this.skill.icon_image !== this.skillEdit.icon_image) {
-            this.isSkillChanged.icon = true;
-        }
+        this.iconImage =
+            'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
+            this.skill.url;
+
+        this.isSkillChanged.icon = true;
+        // if (this.skill.icon_image !== this.skillEdit.icon_image) {
+        // }
 
         if (
             this.skill.mastery_requirements !==
@@ -220,7 +225,97 @@ export default {
         <div v-if="isSkillChanged.icon" class="mt-5">
             <div class="compare-container">
                 <div class="d-flex align-items-center">
-                    <h2 class="secondary-heading h4 mb-3">Skill Icon</h2>
+                    <h2 class="secondary-heading h4 mb-3">Skill Image</h2>
+                    <div
+                        @click="showIconChange = !showIconChange"
+                        :class="[
+                            showIconChange ? 'expand-arrow' : 'minimize-arrow'
+                        ]"
+                        b-on-hover
+                        :title="showIconChange ? 'minimize' : 'expand'"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            width="16"
+                            height="16"
+                            class="primary-icon"
+                        >
+                            <path
+                                d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+                            />
+                        </svg>
+                    </div>
+                </div>
+                <Transition name="dropdown">
+                    <div v-if="showIconChange">
+                        <div class="d-flex flex-lg-row flex-column">
+                            <!-- Old Banner -->
+                            <div class="old-container icon-container">
+                                <div class="container-tile">Original</div>
+                                <img :src="iconImage" class="icon-image" />
+                            </div>
+                            <!-- Long arrow pointing right -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="50"
+                                height="50"
+                                class="d-none d-lg-block my-auto mx-1 primary-icon"
+                            >
+                                <path
+                                    d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z"
+                                />
+                            </svg>
+                            <!-- Long arrow pointing down on tablet and mobile-->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 320 512"
+                                height="50"
+                                width="50"
+                                class="mx-auto my-2 d-lg-none primary-icon"
+                            >
+                                <path
+                                    d="M2 334.5c-3.8 8.8-2 19 4.6 26l136 144c4.5 4.8 10.8 7.5 17.4 7.5s12.9-2.7 17.4-7.5l136-144c6.6-7 8.4-17.2 4.6-26s-12.5-14.5-22-14.5l-72 0 0-288c0-17.7-14.3-32-32-32L128 0C110.3 0 96 14.3 96 32l0 288-72 0c-9.6 0-18.2 5.7-22 14.5z"
+                                />
+                            </svg>
+                            <!-- New Banner -->
+                            <div class="new-container icon-container">
+                                <div class="container-tile">Changed</div>
+                                <img
+                                    :src="skillEdit.icon_image"
+                                    class="icon-image"
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <button
+                                class="btn red-btn ms-auto me-0 mt-3"
+                                @click="dismissIcon()"
+                            >
+                                Revert &nbsp;&nbsp;
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="20"
+                                    height="20"
+                                    fill="white"
+                                >
+                                    <path
+                                        d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9L0 168c0 13.3 10.7 24 24 24l110.1 0c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65 0-94.1c0-13.3-10.7-24-24-24z"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </Transition>
+            </div>
+        </div>
+        <!-- ---Node Icon compare--- -->
+        <div v-if="isSkillChanged.icon" class="mt-5">
+            <div class="compare-container">
+                <div class="d-flex align-items-center">
+                    <h2 class="secondary-heading h4 mb-3">Skill Node Icon</h2>
                     <div
                         @click="showIconChange = !showIconChange"
                         :class="[
@@ -277,10 +372,7 @@ export default {
                             <!-- New Banner -->
                             <div class="new-container icon-container">
                                 <div class="container-tile">Changed</div>
-                                <img
-                                    :src="skillEdit.icon_image"
-                                    class="icon-image"
-                                />
+                                <img :src="skillEdit.icon" class="icon-image" />
                             </div>
                         </div>
                         <div>
