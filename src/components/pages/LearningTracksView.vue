@@ -23,20 +23,48 @@ export default {
             showConfirmModal: false,
             // Tutorial tooltips
             isTutorialComplete: false,
-            showTutorialTip1: false
+            showTutorialTip1: false,
+            // All the learning tracks of the user
+            learningTracks: [],
+            // The skills of the track the user chooses
+            learningTrack: [],
+            // The id of the track the user chooses
+            selectedTrackId: null
         };
     },
     created() {
         this.checkIfTutorialComplete();
+        this.getLearningTracks();
     },
-    mounted() {
-        //  this.GetGoogleLoginResult();
-    },
+    mounted() {},
     components: { LearningTrack, SkillTreeSearchBar },
     methods: {
+        // Load learning tracks for this user.
+        async getLearningTracks() {
+            let url =
+                '/learning-tracks/' + this.userDetailsStore.userId + '/list';
+            let result = await fetch(url);
+            this.learningTracks = await result.json();
+        },
+        async loadLearningTrack() {
+            let url = '/learning-tracks/' + this.selectedTrackId;
+            const requestOption = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: this.userDetailsStore.userId,
+                    cohortId: this.userDetailsStore.cohortId
+                })
+            };
+            let result = await fetch(url, requestOption);
+            this.learningTrack = await result.json();
+            console.log(this.learningTrack);
+        },
+        // Center button
         resetPos() {
             this.$refs.childComponent.resetPos();
         },
+        // Search bar.
         async handleChooseResult(resultName) {
             this.lastChooseResult = resultName;
             // Find the node with name
@@ -49,7 +77,6 @@ export default {
             // go to the skill position
             this.$refs.childComponent.goToLocation(node);
         },
-        // GetGoogleLoginResult() {
         //     fetch('/google-login-result')
         //         .then(function (response) {
         //             return response.json();
@@ -62,8 +89,7 @@ export default {
         clearResult() {
             this.$refs.childComponent.resetPos();
         },
-
-        // Tutorial
+        // Tutorials
         async checkIfTutorialComplete() {
             const result = await fetch(
                 '/users/check-tutorial-progress/my-tree/' +
@@ -129,9 +155,19 @@ export default {
                         :clearResults="clearResult"
                     /> -->
                     <!-- Pathways selector -->
-                    <select class="form-select">
-                        <option selected value="custom">Choose pathway</option>
-                        <option value="custom">Custom pathway</option>
+                    <select
+                        class="form-select"
+                        v-model="selectedTrackId"
+                        @change="loadLearningTrack"
+                    >
+                        <option selected value="null">Choose Track</option>
+                        <option value="-1">Custom Track</option>
+                        <option
+                            v-for="learningTrack in learningTracks"
+                            :value="learningTrack.id"
+                        >
+                            {{ learningTrack.name }}
+                        </option>
                     </select>
                 </div>
                 <!-- Buttons -->

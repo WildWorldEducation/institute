@@ -19,6 +19,9 @@ const isAuthenticated = require('../middlewares/authMiddleware');
 Routes
 --------------------------------------------
 --------------------------------------------*/
+/*
+ * Create
+ */
 router.post('/:userId/create', isAuthenticated, async (req, res, next) => {
     try {
         let userId = req.params.userId;
@@ -68,163 +71,246 @@ router.post('/:userId/create', isAuthenticated, async (req, res, next) => {
 });
 
 /*
- * Code to convert a group of recommended skills into a learning track in D3
- *ie a nested array
+ * List per user
  */
-// Function to start this
-// will return the branches that will lead to every recommended skill
+router.get('/:userId/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT * 
+        FROM learning_tracks
+        WHERE user_id = ${conn.escape(req.params.userId)}`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
 
-// let learningTrackBranches = await createLearningTrack(
-//     userId,
-//     cohortId,
-//     recommendedSkills
-// );
-// async function createLearningTrack(userId, cohortId, recommendedSkills) {
-//     // Necessary to await the database query
-//     return new Promise((resolve, reject) => {
-//         try {
-//             let sqlQuery = `
-//             SELECT skills.id, name, parent, is_accessible, url, level
-//             FROM skills
-//             LEFT OUTER JOIN user_skills
-//             ON skills.id = user_skills.skill_id
-//             WHERE user_skills.user_id = '${userId}'
-//             AND is_filtered = 'available'
-//             AND is_deleted = 0
-//             AND skills.id NOT IN
-//             (SELECT skill_id
-//             FROM cohort_skill_filters
-//             WHERE cohort_id = ${cohortId})
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
 
-//             UNION
-//             SELECT skills.id, name, parent, "", url, level
-//             FROM skills
-//             WHERE skills.id NOT IN
+/*
+ * Get one learning track
+ */
+router.post('/:learningTrackId', (req, res, next) => {
+    if (req.session.userName) {
+        let userId = req.body.userId;
+        let cohortId = req.body.cohortId;
 
-//             (SELECT skills.id
-//             FROM skills
-//             LEFT OUTER JOIN user_skills
-//             ON skills.id = user_skills.skill_id
-//             WHERE user_skills.user_id = '${userId}')
-//             AND is_filtered = 'available'
-//             AND is_deleted = 0
-//             AND skills.id NOT IN
-//             (SELECT skill_id
-//             FROM cohort_skill_filters
-//             WHERE cohort_id = ${cohortId})
-//             `;
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT skill_id, name, parent, url, level 
+        FROM learning_track_skills
+        JOIN skills
+        ON learning_track_skills.skill_id = skills.id
+        WHERE learning_track_id = ${conn.escape(req.params.learningTrackId)}`;
+        conn.query(sqlQuery, async (err, recommendedSkills) => {
+            try {
+                if (err) {
+                    throw err;
+                }
 
-//             conn.query(sqlQuery, async (err, result) => {
-//                 if (err) {
-//                     reject(err);
-//                 } else {
-//                     // All the userSkills
-//                     let userSkills = result;
-//                     // Array for just this learningTrack
-//                     let learningTrack = [];
-//                     for (let i = 0; i < recommendedSkills.length; i++) {
-//                         let branch = [];
-//                         learningTrack.push(branch);
-//                         // Add the last skill in the learningTrack
-//                         branch.push(recommendedSkills[i]);
-//                         await getAncestors(
-//                             branch,
-//                             userSkills,
-//                             recommendedSkills[i]
-//                         );
-//                     }
+                /*
+                 * Code to convert the group of recommended skills into a learning track in D3
+                 *ie a nested array
+                 */
 
-//                     // Recursive function
-//                     async function getAncestors(
-//                         branch,
-//                         userSkills,
-//                         learningTrackSkill
-//                     ) {
-//                         let parentSkill;
-//                         // Get its parent skill, add it to learning track
-//                         for (let i = 0; i < userSkills.length; i++) {
-//                             if (learningTrackSkill.parent == userSkills[i].id) {
-//                                 parentSkill = userSkills[i];
-//                                 if (parentSkill.is_mastered != 1) {
-//                                     // add to beginning of array.
-//                                     branch.unshift(parentSkill);
-//                                     // Check if the parent we add is also in the list of recommended skills,
-//                                     // and if so, delete it
-//                                     const index = recommendedSkills.findIndex(
-//                                         (skill) => skill.id === parentSkill.id
-//                                     );
-//                                     if (index > -1) {
-//                                         // We know that at least 1 object that matches has been found at the index i
-//                                         recommendedSkills.splice(index, 1);
-//                                     }
-//                                     break;
-//                                 } else {
-//                                     resolve(learningTrack);
-//                                 }
-//                             }
-//                         }
+                // Will return the branches that will lead to every recommended skill
+                let learningTrackBranches = await createLearningTrack(
+                    userId,
+                    cohortId,
+                    recommendedSkills
+                );
+                async function createLearningTrack(
+                    userId,
+                    cohortId,
+                    recommendedSkills
+                ) {
+                    // Necessary to await the database query
+                    return new Promise((resolve, reject) => {
+                        try {
+                            let sqlQuery = `
+                            SELECT skills.id, name, parent, is_accessible, url, level
+                            FROM skills
+                            LEFT OUTER JOIN user_skills
+                            ON skills.id = user_skills.skill_id
+                            WHERE user_skills.user_id = '${userId}'
+                            AND is_filtered = 'available'
+                            AND is_deleted = 0
+                            AND skills.id NOT IN
+                            (SELECT skill_id
+                            FROM cohort_skill_filters
+                            WHERE cohort_id = ${cohortId})
 
-//                         if (typeof parentSkill !== 'undefined') {
-//                             /*
-//                              * Run the above function again recursively.
-//                              */
-//                             if (parentSkill != null) {
-//                                 await getAncestors(
-//                                     branch,
-//                                     userSkills,
-//                                     parentSkill
-//                                 );
-//                             }
-//                         }
-//                     }
+                            UNION
+                            SELECT skills.id, name, parent, "", url, level
+                            FROM skills
+                            WHERE skills.id NOT IN
 
-//                     resolve(learningTrack);
-//                 }
-//             });
-//         } catch (error) {
-//             console.error(error);
-//             res.status = 500;
-//             res.json(error);
-//         }
-//     });
-// }
+                            (SELECT skills.id
+                            FROM skills
+                            LEFT OUTER JOIN user_skills
+                            ON skills.id = user_skills.skill_id
+                            WHERE user_skills.user_id = '${userId}')
+                            AND is_filtered = 'available'
+                            AND is_deleted = 0
+                            AND skills.id NOT IN
+                            (SELECT skill_id
+                            FROM cohort_skill_filters
+                            WHERE cohort_id = ${cohortId})
+                            `;
 
-// Combine branches into single array.
+                            conn.query(sqlQuery, async (err, result) => {
+                                if (err) {
+                                    reject(err);
+                                } else {
+                                    // All the userSkills
+                                    let userSkills = result;
 
-// let flatLearningTrackArray = [];
-// for (let i = 0; i < learningTrackBranches.length; i++) {
-//     for (let j = 0; j < learningTrackBranches[i].length; j++) {
-//         if (
-//             flatLearningTrackArray.some(
-//                 (skill) => skill.id === learningTrackBranches[i][j].id
-//             ) == false
-//         ) {
-//             flatLearningTrackArray.push(learningTrackBranches[i][j]);
-//         }
-//     }
-// }
+                                    // Array for just this learning track
+                                    let learningTrack = [];
+                                    for (
+                                        let i = 0;
+                                        i < recommendedSkills.length;
+                                        i++
+                                    ) {
+                                        let branch = [];
+                                        learningTrack.push(branch);
+                                        // Add the last skill in the learningTrack
+                                        branch.push(recommendedSkills[i]);
+                                        await getAncestors(
+                                            branch,
+                                            userSkills,
+                                            recommendedSkills[i]
+                                        );
+                                    }
 
-// We need the objects to be nested for D3.
-// Assign children to parent skills.
+                                    // Recursive function
+                                    async function getAncestors(
+                                        branch,
+                                        userSkills,
+                                        learningTrackSkill
+                                    ) {
+                                        
+                                        let parentSkill;
+                                        // Get its parent skill, add it to learning track
+                                        for (
+                                            let i = 0;
+                                            i < userSkills.length;
+                                            i++
+                                        ) {
+                                            if (
+                                                learningTrackSkill.parent ==
+                                                userSkills[i].id
+                                            ) {
+                                                parentSkill = userSkills[i];
+                                                if (
+                                                    parentSkill.is_mastered != 1
+                                                ) {
+                                                    // add to beginning of array.
+                                                    branch.unshift(parentSkill);
+                                                    // Check if the parent we add is also in the list of recommended skills,
+                                                    // and if so, delete it
+                                                    const index =
+                                                        recommendedSkills.findIndex(
+                                                            (skill) =>
+                                                                skill.id ===
+                                                                parentSkill.id
+                                                        );
+                                                    if (index > -1) {
+                                                        // We know that at least 1 object that matches has been found at the index i
+                                                        recommendedSkills.splice(
+                                                            index,
+                                                            1
+                                                        );
+                                                    }
+                                                    break;
+                                                } else {
+                                                    resolve(learningTrack);
+                                                }
+                                            }
+                                        }
 
-// for (var i = 0; i < flatLearningTrackArray.length; i++) {
-//     flatLearningTrackArray[i].children = [];
-// }
+                                        if (
+                                            typeof parentSkill !== 'undefined'
+                                        ) {
+                                            /*
+                                             * Run the above function again recursively.
+                                             */
+                                            if (parentSkill != null) {
+                                                await getAncestors(
+                                                    branch,
+                                                    userSkills,
+                                                    parentSkill
+                                                );
+                                            }
+                                        }
+                                    }
 
-// Assign the correct child skills to the correct parent skills.
-// Return the root skills (first skills in the branches)
+                                    resolve(learningTrack);
+                                }
+                            });
+                        } catch (error) {
+                            console.error(error);
+                            res.status = 500;
+                            res.json(error);
+                        }
+                    });
+                }
 
-// const nestedLearningTrackBranches = flatLearningTrackArray.reduce((acc, curr) => {
-//     let parent = curr.parent
-//         ? flatLearningTrackArray.filter((skill) => skill.id === curr.parent)
-//         : [];
-//     if (parent.length) {
-//         parent[0].children.push(curr);
-//     } else {
-//         acc.push(curr);
-//     }
-//     return acc;
-// }, []);
+                // Combine branches into single array.
+                let flatLearningTrackArray = [];
+                for (let i = 0; i < learningTrackBranches.length; i++) {
+                    for (let j = 0; j < learningTrackBranches[i].length; j++) {
+                        if (
+                            flatLearningTrackArray.some(
+                                (skill) =>
+                                    skill.id === learningTrackBranches[i][j].id
+                            ) == false
+                        ) {
+                            flatLearningTrackArray.push(
+                                learningTrackBranches[i][j]
+                            );
+                        }
+                    }
+                }
+
+          
+                // We need the objects to be nested for D3.
+                // Assign children to parent skills.
+                for (var i = 0; i < flatLearningTrackArray.length; i++) {
+                    flatLearningTrackArray[i].children = [];
+                }
+
+                // Assign the correct child skills to the correct parent skills.
+                // Return the root skills (first skills in the branches)
+                const nestedLearningTrackBranches =
+                    flatLearningTrackArray.reduce((acc, curr) => {
+                        let parent = curr.parent
+                            ? flatLearningTrackArray.filter(
+                                  (skill) => skill.id === curr.parent
+                              )
+                            : [];
+                        if (parent.length) {
+                            parent[0].children.push(curr);
+                        } else {
+                            acc.push(curr);
+                        }
+                        return acc;
+                    }, []);
+
+                console.log(nestedLearningTrackBranches);
+
+                res.json(nestedLearningTrackBranches);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
 
 // Export the router for app to use.
 module.exports = router;

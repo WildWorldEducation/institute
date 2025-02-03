@@ -6,7 +6,7 @@ import Goals from '../components/hub-components/Goals.vue';
 import MarkAssessment from '../components/hub-components/MarkAssessment.vue';
 import HubStudentQuestionList from '../components/hub-components/HubStudentQuestionList.vue';
 
-import PathwayGenerator from '../components/hub-components/PathwayGenerator.vue';
+import RecommendedSkillsGenerator from '../components/hub-components/RecommendedSkillsGenerator.vue';
 
 // Import store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
@@ -52,7 +52,7 @@ export default {
         LastVisitedSkills,
         Goals,
         HubStudentQuestionList,
-        PathwayGenerator
+        RecommendedSkillsGenerator
     },
     computed: {
         name() {
@@ -295,10 +295,10 @@ export default {
     </div>
 
     <div class="container min-vh-100">
-        <!-- Generate pathway bar -->
+        <!-- Generate recommended skills bar -->
         <div class="row mb-3">
             <div class="col">
-                <PathwayGenerator />
+                <RecommendedSkillsGenerator />
                 <!-- Tooltip -->
                 <div
                     v-if="
