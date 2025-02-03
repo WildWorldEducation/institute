@@ -137,13 +137,13 @@ router.post('/:learningTrackId', (req, res, next) => {
                             FROM skills
                             LEFT OUTER JOIN user_skills
                             ON skills.id = user_skills.skill_id
-                            WHERE user_skills.user_id = '${userId}'
+                            WHERE user_skills.user_id = ${conn.escape(userId)}
                             AND is_filtered = 'available'
                             AND is_deleted = 0
                             AND skills.id NOT IN
                             (SELECT skill_id
                             FROM cohort_skill_filters
-                            WHERE cohort_id = ${cohortId})
+                            WHERE cohort_id = ${conn.escape(cohortId)})
 
                             UNION
                             SELECT skills.id, name, parent, "", url, level
@@ -154,13 +154,13 @@ router.post('/:learningTrackId', (req, res, next) => {
                             FROM skills
                             LEFT OUTER JOIN user_skills
                             ON skills.id = user_skills.skill_id
-                            WHERE user_skills.user_id = '${userId}')
+                            WHERE user_skills.user_id = ${conn.escape(userId)})
                             AND is_filtered = 'available'
                             AND is_deleted = 0
                             AND skills.id NOT IN
                             (SELECT skill_id
                             FROM cohort_skill_filters
-                            WHERE cohort_id = ${cohortId})
+                            WHERE cohort_id = ${conn.escape(cohortId)})
                             `;
 
                             conn.query(sqlQuery, async (err, result) => {
@@ -299,7 +299,7 @@ router.post('/:learningTrackId', (req, res, next) => {
                         }
                         return acc;
                     }, []);
-             
+
                 res.json(nestedLearningTrackBranches);
             } catch (err) {
                 next(err);

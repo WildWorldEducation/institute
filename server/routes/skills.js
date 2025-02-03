@@ -1820,8 +1820,12 @@ router.post(
                     AND skills.id NOT IN 
                     (SELECT skill_id
                     FROM user_skills
-                    WHERE user_id = '${userId}'
-                    AND is_mastered = 1)                    
+                    WHERE user_id = ${conn.escape(userId)}
+                    AND is_mastered = 1)     
+                    AND skills.id NOT IN 
+                    (SELECT skill_id 
+                    FROM cohort_skill_filters
+                    WHERE cohort_id = ${conn.escape(cohortId)})               
                     ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
                           VEC_FromText('[${inputVector}]'))
                           LIMIT 50
