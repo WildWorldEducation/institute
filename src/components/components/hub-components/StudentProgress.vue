@@ -23,7 +23,8 @@ export default {
                         name: this.userSkills[i].name,
                         id: this.userSkills[i].id,
                         url: this.userSkills[i].url,
-                        level: this.userSkills[i].level
+                        level: this.userSkills[i].level,
+                        icon: this.userSkills[i].icon
                     });
                 }
             }
@@ -53,12 +54,18 @@ export default {
             :to="`/skills/${availableSkill.url}`"
             target="_blank"
         >
+            <img class="icons" :src="availableSkill.icon" />&nbsp;
             {{ availableSkill.name }}
         </router-link>
     </div>
 </template>
 
 <style scoped>
+.icons {
+    mix-blend-mode: multiply;
+    height: 30px;
+    border-radius: 50%;
+}
 /* Scrollbar */
 ::-webkit-scrollbar {
     width: 12px;

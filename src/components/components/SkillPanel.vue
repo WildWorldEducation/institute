@@ -49,7 +49,7 @@ export default {
                         <button
                             v-if="
                                 skill.has_children &&
-                                this.$route.name === 'my-skill-tree'
+                                this.$route.name === 'learning-tracks'
                             "
                             class="primary-btn me-2 btn"
                             @click="toggleChildNodes"

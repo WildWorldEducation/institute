@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 
-// Import another store.
 import { useUserDetailsStore } from './UserDetailsStore.js';
 
 export const useSkillTreeStore = defineStore('skillTree', {
@@ -38,7 +37,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
 
             this.userSkills = await result.json();
         },
-        // API call for Full Vertical skill tree.
+        // API call for Full skill tree.
         async getVerticalTreeUserSkills(level, subjects, isUnlockedOnly) {
             const userDetailsStore = useUserDetailsStore();
 
@@ -67,16 +66,14 @@ export const useSkillTreeStore = defineStore('skillTree', {
             // Default is all levels.
             else this.verticalTreeUserSkills = await result.json();
         },
-        // API call for Full Vertical skill tree.
-        async getMyVerticalTreeUserSkills() {
+        // API call for Custom skill tree.
+        async getCustomLearningTrackSkills() {
             const userDetailsStore = useUserDetailsStore();
             const result = await fetch(
-                '/user-skills/filter-by-cohort/my-vertical-tree/' +
+                '/user-skills/filter-by-cohort/custom-learning-track-skills/' +
                     userDetailsStore.userId
             );
-
-            // Default is all levels.
-            this.myVerticalTreeUserSkills = await result.json();
+            return await result.json();
         },
         // API call for Radial skill tree.
         async getUserSkillsSubSkillsSeparate(level, subjects) {
