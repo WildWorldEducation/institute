@@ -117,15 +117,11 @@ export default {
             }
         },
         dismissIcon() {
-            if (confirm('Revert the icon?')) {
+            if (confirm('Revert the image? This action is permanently!')) {
                 this.skillEdit.icon_image = this.skill.icon_image;
             }
         },
-        dismissBanner() {
-            if (confirm('Revert the banner?')) {
-                this.skillEdit.banner_image = this.skill.banner_image;
-            }
-        },
+
         applyMasteryChange() {
             this.$parent.disableBtn = false;
             this.skillEdit.mastery_requirements =
@@ -200,6 +196,11 @@ export default {
 
             if (result.error) {
                 console.log(result.error);
+            }
+        },
+        revertNodeIcon() {
+            if (confirm('Revert the node icon? This action is permanently!')) {
+                this.skillEdit.icon = this.skill.icon;
             }
         }
     }
