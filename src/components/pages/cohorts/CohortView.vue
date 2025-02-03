@@ -18,7 +18,9 @@ export default {
             unavailableStudents: [],
             members: [],
             showFilters: false,
-            showMembers: false
+            showMembers: false,
+            isLoading: false,
+            showModal: false
         };
     },
     async created() {
@@ -101,6 +103,7 @@ export default {
             this.updateCohortMembers(index);
         },
         async updateCohortMembers(index) {
+            this.isLoading = true;
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -110,16 +113,29 @@ export default {
                 })
             };
             var url = '/cohorts/edit/' + this.cohortId;
-            fetch(url, requestOptions).then(() => {
+            try {
+                await fetch(url, requestOptions);
                 if (index + 1 < this.students.length) {
                     index++;
-                    this.updateCohortMembers(index);
+                    await this.updateCohortMembers(index);
                 } else {
-                    alert('Cohort updated');
-                    this.getMembers();
-                    return;
+                    this.isLoading = false;
+                    setTimeout(async () => {
+                        this.showModal = true;
+                        this.getMembers(); // Update members list
+
+                        // Ensure DOM updates before showing modal
+                        await this.$nextTick();
+                        if (this.$refs.loadingModal) {
+                            new bootstrap.Modal(this.$refs.loadingModal).show();
+                        }
+                    }, 500); // Optional delay
                 }
-            });
+            } catch (error) {
+                console.error('Error updating cohort:', error);
+                this.isLoading = false;
+                this.showModal = false;
+            }
         },
         async deleteCohort() {
             let text = 'Are you sure you want to delete this cohort?';
@@ -146,6 +162,33 @@ export default {
 </script>
 
 <template>
+    <!-- Loading Spinner  -->
+    <div
+        v-if="isLoading"
+        class="loading-animation d-flex justify-content-center align-items-center py-4 fixed-top w-100 h-100"
+    >
+        <span class="loader"></span>
+    </div>
+
+    <!-- Modal for showing the success message -->
+    <div
+        class="modal fade"
+        id="loadingModal"
+        tabindex="-1"
+        aria-labelledby="loadingModalLabel"
+        aria-hidden="true"
+        ref="loadingModal"
+    >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <!-- Success message -->
+                    <p v-if="!isLoading">Cohort updated</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container cohort-page bg-light rounded p-3">
         <span class="d-flex justify-content-between"
             ><h1 class="heading">{{ cohort.name }}</h1>
@@ -258,6 +301,39 @@ export default {
 </template>
 
 <style scoped>
+/* Loading animation */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    100% {
+        transform: rotate(0deg);
+    }
+    0% {
+        transform: rotate(360deg);
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .loading-animation {
+        min-height: 100%;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+    }
+}
+/* End of loading animation */
+
 .cohort-page {
     height: 100%;
     position: relative;
