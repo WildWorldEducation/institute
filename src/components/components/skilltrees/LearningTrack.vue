@@ -134,7 +134,6 @@ export default {
                     // this case is just its original index in the data array.
                     node.renderCol = node.__pickColor;
 
-                    console.log(node.data);
                     //Update the display with some data
                     this.skill.name = node.data.name;
                     this.skill.id = node.data.id;
@@ -831,18 +830,17 @@ export default {
                 '/' +
                 node.id;
             fetch(url).then(() => {
-                this.reloadTree(node);
+                this.loadTree(node);
             });
         },
         toggleShowChildren(node) {
-            console.log('test');
             var url =
                 '/user-skills/show-children/' +
                 this.userDetailsStore.userId +
                 '/' +
                 node.id;
             fetch(url).then(() => {
-                this.reloadTree(node);
+                this.loadTree(node);
             });
         },
         checkingIfNodeInView(node, transformData) {

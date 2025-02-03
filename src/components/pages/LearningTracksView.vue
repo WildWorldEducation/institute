@@ -26,13 +26,23 @@ export default {
             showConfirmModal: false,
             // Tutorial tooltips
             isTutorialComplete: false,
-            showTutorialTip1: false
+            showTutorialTip1: false,
+            showLearningTracksDropDown: false
         };
     },
     async created() {
         this.checkIfTutorialComplete();
         //  if (this.learningTracksStore.learningTracks.length == 0)
         await this.learningTracksStore.getLearningTracks();
+        // If there are no other learning tracks, load the custom one as the default one.
+        if (this.learningTracksStore.learningTracks.length == 0) {
+        } else {
+            // Load the most recent track as the default one.
+            this.learningTracksStore.selectedLearningTrack.id =
+                this.learningTracksStore.learningTracks[0].id;
+        }
+        this.showLearningTracksDropDown = true;
+        this.$refs.childComponent.loadTree();
     },
     components: { LearningTrack, SkillTreeSearchBar },
     methods: {
@@ -123,7 +133,7 @@ export default {
         <!-- Tablet and up view: Search bar, centre, expand all, print buttons -->
         <div class="tablet-and-up-legend">
             <div class="d-flex justify-content-between">
-                <div>
+                <div v-if="showLearningTracksDropDown">
                     <!-- Search bar -->
                     <!-- <SkillTreeSearchBar
                         class="mb-2"
@@ -136,14 +146,13 @@ export default {
                         v-model="learningTracksStore.selectedLearningTrack.id"
                         @change="$refs.childComponent.loadTree()"
                     >
-                        <option selected value="null">Choose Track</option>
-                        <option value="-1">Custom Track</option>
                         <option
                             v-for="learningTrack in learningTracksStore.learningTracks"
                             :value="learningTrack.id"
                         >
                             {{ learningTrack.name }}
                         </option>
+                        <option value="-1">Custom Track</option>
                     </select>
                 </div>
                 <!-- Buttons -->
