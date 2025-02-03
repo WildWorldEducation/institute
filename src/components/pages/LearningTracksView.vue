@@ -1,6 +1,7 @@
 <script>
 import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import { useLearningTracksStore } from '../../stores/LearningTracksStore.js';
 
 import SkillTreeSearchBar from '../components/skills-tree-search-bar/SkillTreeSearchBar.vue';
 import LearningTrack from '../components/skilltrees/LearningTrack.vue';
@@ -9,10 +10,12 @@ export default {
     setup() {
         const sessionDetailsStore = useSessionDetailsStore();
         const userDetailsStore = useUserDetailsStore();
+        const learningTracksStore = useLearningTracksStore();
 
         return {
             sessionDetailsStore,
-            userDetailsStore
+            userDetailsStore,
+            learningTracksStore
         };
     },
     data() {
@@ -23,43 +26,16 @@ export default {
             showConfirmModal: false,
             // Tutorial tooltips
             isTutorialComplete: false,
-            showTutorialTip1: false,
-            // All the learning tracks of the user
-            learningTracks: [],
-            // The skills of the track the user chooses
-            learningTrack: [],
-            // The id of the track the user chooses
-            selectedTrackId: null
+            showTutorialTip1: false
         };
     },
-    created() {
+    async created() {
         this.checkIfTutorialComplete();
-        this.getLearningTracks();
+        //  if (this.learningTracksStore.learningTracks.length == 0)
+        await this.learningTracksStore.getLearningTracks();
     },
-    mounted() {},
     components: { LearningTrack, SkillTreeSearchBar },
     methods: {
-        // Load learning tracks for this user.
-        async getLearningTracks() {
-            let url =
-                '/learning-tracks/' + this.userDetailsStore.userId + '/list';
-            let result = await fetch(url);
-            this.learningTracks = await result.json();
-        },
-        async loadLearningTrack() {
-            let url = '/learning-tracks/' + this.selectedTrackId;
-            const requestOption = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    userId: this.userDetailsStore.userId,
-                    cohortId: this.userDetailsStore.cohortId
-                })
-            };
-            let result = await fetch(url, requestOption);
-            this.learningTrack = await result.json();
-            console.log(this.learningTrack);
-        },
         // Center button
         resetPos() {
             this.$refs.childComponent.resetPos();
@@ -157,13 +133,13 @@ export default {
                     <!-- Pathways selector -->
                     <select
                         class="form-select"
-                        v-model="selectedTrackId"
-                        @change="loadLearningTrack"
+                        v-model="learningTracksStore.selectedLearningTrack.id"
+                        @change="$refs.childComponent.loadTree()"
                     >
                         <option selected value="null">Choose Track</option>
                         <option value="-1">Custom Track</option>
                         <option
-                            v-for="learningTrack in learningTracks"
+                            v-for="learningTrack in learningTracksStore.learningTracks"
                             :value="learningTrack.id"
                         >
                             {{ learningTrack.name }}
