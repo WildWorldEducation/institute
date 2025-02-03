@@ -134,6 +134,7 @@ export default {
                     // this case is just its original index in the data array.
                     node.renderCol = node.__pickColor;
 
+                    console.log(node.data);
                     //Update the display with some data
                     this.skill.name = node.data.name;
                     this.skill.id = node.data.id;

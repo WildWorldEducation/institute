@@ -627,7 +627,8 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
 });
 
 /* Nested list of user-skills, filtered by 1 cohort that student is a member of*/
-// For My Vertical Tree.
+// For Custom Learning Track.
+// Only showing skills where 'show children' is true.
 router.get(
     '/filter-by-cohort/custom-learning-track-skills/:userId',
     (req, res, next) => {
@@ -652,7 +653,7 @@ router.get(
 
                     // Check what skills are available for this cohort.
                     let sqlQuery = `
-            SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, show_children
+            SELECT skills.id, name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, show_children
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id
