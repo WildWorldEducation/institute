@@ -309,50 +309,14 @@ export default {
             <!-- Tablet and up -->
             <div id="tablet-and-up-legend">
                 <div class="legend row d-flex align-items-center w-100">
-                    <!-- Grade level filter -->
-                    <div
-                        v-if="
-                            !instructorMode && userDetailsStore.role != 'admin'
-                        "
-                        class="col d-flex align-items-center justify-content-center"
-                    >
-                        <div
-                            class="d-flex w-100 justify-content-md-between gap-3 custom-grade-buttons"
-                        >
-                            <button
-                                v-for="grade in gradeLevels"
-                                :key="grade.level"
-                                class="btn w-100"
-                                :class="{
-                                    'primary-btn': true,
-                                    'active-grade-filter':
-                                        userDetailsStore.gradeFilter ==
-                                        grade.level,
-                                    [grade.class]: true
-                                }"
-                                @click="setGradeFilter(grade.level)"
-                            >
-                                {{ grade.text }}
-                            </button>
-                            <!-- Skill filters button -->
-                            <div
-                                v-if="userDetailsStore.role == 'admin'"
-                                class="d-flex gap-2"
-                            >
-                                <router-link class="btn primary-btn" to="/tags"
-                                    >Skill Filters</router-link
-                                >
-                            </div>
-                        </div>
-                    </div>
                     <!-- Student name -->
-                    <div v-else-if="instructorMode" class="col">
+                    <div v-if="instructorMode" class="col">
                         <h1 class="heading h4">Student: {{ studentName }}</h1>
                     </div>
 
                     <div
                         id="skill-btn-search-bar-container"
-                        class="col-lg d-flex w-md-full justify-content-md-start justify-content-lg-end align-items-center"
+                        class="col-lg d-flex w-md-full justify-content-md-start justify-content-lg-between align-items-center"
                     >
                         <!-- Add skill button -->
                         <router-link
@@ -1032,6 +996,10 @@ export default {
     height: auto;
     width: 100%;
 }
+.search-bar-container {
+    flex-grow: 1;
+    max-width: 80%;
+}
 
 .topnav {
     padding: 5px 10px;
@@ -1070,6 +1038,9 @@ export default {
     #tablet-and-up-legend {
         display: none;
     }
+    .search-bar-container {
+        flex-grow: 0;
+    }
 
     #print-btn {
         margin-bottom: 5px;
@@ -1107,9 +1078,6 @@ export default {
 
     .legend span {
         flex-shrink: 0;
-    }
-    .search-bar-container {
-        flex-grow: 1;
     }
     #skill-btn-search-bar-container {
         margin-top: 5px;
