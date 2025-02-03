@@ -72,6 +72,9 @@ export default {
             };
 
             await fetch(url, requestOption);
+            alert(
+                "Learning track created. You can view it on the 'Learning Tracks' tab."
+            );
         }
     }
 };
@@ -84,7 +87,7 @@ export default {
             <input
                 id="searchBar"
                 type="text"
-                class="pathways-input"
+                class="recommended-skills-input"
                 placeholder="What skill or profession do you want to learn?"
                 v-model="query"
             />
@@ -170,7 +173,7 @@ export default {
     }
 }
 
-.pathways-input {
+.recommended-skills-input {
     outline: none;
     border: 0px;
     width: 100%;

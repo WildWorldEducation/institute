@@ -27,6 +27,7 @@ export default {
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false,
+            showTutorialTip2: false,
             showLearningTracksDropDown: false
         };
     },
@@ -35,10 +36,13 @@ export default {
         await this.learningTracksStore.getLearningTracks();
         // If there are no other learning tracks, load the custom one as the default one.
         if (this.learningTracksStore.learningTracks.length == 0) {
+            this.learningTracksStore.selectedLearningTrack.id = -1;
         } else {
             // Load the most recent track as the default one.
             this.learningTracksStore.selectedLearningTrack.id =
-                this.learningTracksStore.learningTracks[0].id;
+                this.learningTracksStore.learningTracks[
+                    this.learningTracksStore.learningTracks.length - 1
+                ].id;
         }
         this.showLearningTracksDropDown = true;
         this.$refs.childComponent.loadTree();
@@ -91,6 +95,9 @@ export default {
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
+                this.showTutorialTip2 = true;
+            } else if (step == 2) {
+                this.showTutorialTip2 = false;
                 this.markTutorialComplete();
             }
         },
@@ -199,16 +206,24 @@ export default {
 
     <!-- Tooltips -->
     <!-- Introduction modal -->
-    <div v-if="showTutorialTip1" class="modal">
+    <div v-if="showTutorialTip1 || showTutorialTip2" class="modal">
         <div class="modal-content">
             <div v-if="showTutorialTip1">
-                <p>This page shows your skill tree in its closed state.</p>
-                <p>
-                    Click on the plus signs to open the side panel, then click
-                    on the "expand" button to expand the node.
-                </p>
+                <p>This page shows your learning tracks.</p>
+                <p>Learning tracks are like branches of the skill tree.</p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+            <div v-if="showTutorialTip2">
+                <p>These can be made in two different ways:</p>
+                <ul>
+                    <li>automatically from recommended skills</li>
+                    <li>manually with the "Custom Track"</li>
+                </ul>
+
+                <button class="btn primary-btn" @click="progressTutorial(2)">
                     close
                 </button>
             </div>
