@@ -32,7 +32,6 @@ export default {
     },
     async created() {
         this.checkIfTutorialComplete();
-        //  if (this.learningTracksStore.learningTracks.length == 0)
         await this.learningTracksStore.getLearningTracks();
         // If there are no other learning tracks, load the custom one as the default one.
         if (this.learningTracksStore.learningTracks.length == 0) {
@@ -162,12 +161,12 @@ export default {
                         Center
                     </button>
                     <!-- Print Button -->
-                    <button
+                    <!--       <button
                         class="btn primary-btn me-2"
                         @click="$refs.childComponent.printPDF()"
                     >
                         Print
-                    </button>
+                    </button> -->
                     <!-- Restart Tutorial button -->
                     <button class="btn primary-btn" @click="restartTutorial">
                         <svg
