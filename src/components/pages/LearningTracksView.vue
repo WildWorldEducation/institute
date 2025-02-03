@@ -1,18 +1,21 @@
 <script>
 import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import { useLearningTracksStore } from '../../stores/LearningTracksStore.js';
 
 import SkillTreeSearchBar from '../components/skills-tree-search-bar/SkillTreeSearchBar.vue';
-import Pathways from '../components/skilltrees/Pathways.vue';
+import LearningTrack from '../components/skilltrees/LearningTrack.vue';
 
 export default {
     setup() {
         const sessionDetailsStore = useSessionDetailsStore();
         const userDetailsStore = useUserDetailsStore();
+        const learningTracksStore = useLearningTracksStore();
 
         return {
             sessionDetailsStore,
-            userDetailsStore
+            userDetailsStore,
+            learningTracksStore
         };
     },
     data() {
@@ -23,46 +26,34 @@ export default {
             showConfirmModal: false,
             // Tutorial tooltips
             isTutorialComplete: false,
-            showTutorialTip1: false
+            showTutorialTip1: false,
+            showTutorialTip2: false,
+            showLearningTracksDropDown: false
         };
     },
-    created() {
-        for (let i = 0; i < this.userDetailsStore.subjectFilters.length; i++) {
-            if (this.userDetailsStore.subjectFilters[i] == 'Language') {
-                this.isLanguage = true;
-            }
-            if (this.userDetailsStore.subjectFilters[i] == 'Mathematics') {
-                this.isMathematics = true;
-            }
-            if (
-                this.userDetailsStore.subjectFilters[i] == 'Science & Invention'
-            ) {
-                this.isScienceAndInvention = true;
-            }
-            if (this.userDetailsStore.subjectFilters[i] == 'Computer Science') {
-                this.isComputerScience = true;
-            }
-            if (this.userDetailsStore.subjectFilters[i] == 'History') {
-                this.isHistory = true;
-            }
-            if (this.userDetailsStore.subjectFilters[i] == 'Life') {
-                this.isLife = true;
-            }
-            if (this.userDetailsStore.subjectFilters[i] == 'Dangerous Ideas') {
-                this.isDangerousIdeas = true;
-            }
-        }
-
+    async created() {
         this.checkIfTutorialComplete();
+        await this.learningTracksStore.getLearningTracks();
+        // If there are no other learning tracks, load the custom one as the default one.
+        if (this.learningTracksStore.learningTracks.length == 0) {
+            this.learningTracksStore.selectedLearningTrack.id = -1;
+        } else {
+            // Load the most recent track as the default one.
+            this.learningTracksStore.selectedLearningTrack.id =
+                this.learningTracksStore.learningTracks[
+                    this.learningTracksStore.learningTracks.length - 1
+                ].id;
+        }
+        this.showLearningTracksDropDown = true;
+        this.$refs.childComponent.loadTree();
     },
-    mounted() {
-        this.GetGoogleLoginResult();
-    },
-    components: { Pathways, SkillTreeSearchBar },
+    components: { LearningTrack, SkillTreeSearchBar },
     methods: {
+        // Center button
         resetPos() {
             this.$refs.childComponent.resetPos();
         },
+        // Search bar.
         async handleChooseResult(resultName) {
             this.lastChooseResult = resultName;
             // Find the node with name
@@ -75,21 +66,19 @@ export default {
             // go to the skill position
             this.$refs.childComponent.goToLocation(node);
         },
-        GetGoogleLoginResult() {
-            fetch('/google-login-result')
-                .then(function (response) {
-                    return response.json();
-                })
-                .then((data) => {
-                    if (data.account == 'new account')
-                        alert('Your account has been created!');
-                });
-        },
+        //     fetch('/google-login-result')
+        //         .then(function (response) {
+        //             return response.json();
+        //         })
+        //         .then((data) => {
+        //             if (data.account == 'new account')
+        //                 alert('Your account has been created!');
+        //         });
+        // },
         clearResult() {
             this.$refs.childComponent.resetPos();
         },
-
-        // Tutorial
+        // Tutorials
         async checkIfTutorialComplete() {
             const result = await fetch(
                 '/users/check-tutorial-progress/my-tree/' +
@@ -106,6 +95,9 @@ export default {
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
+                this.showTutorialTip2 = true;
+            } else if (step == 2) {
+                this.showTutorialTip2 = false;
                 this.markTutorialComplete();
             }
         },
@@ -131,13 +123,13 @@ export default {
     <div class="container-fluid position-absolute legend-div">
         <!-- Mobile view: Search bar and centre  -->
         <div class="mobile-legend">
-            <div class="search-mobile-row">
-                <!-- Search feature -->
+            <!-- Search feature -->
+            <!-- <div class="search-mobile-row">               
                 <SkillTreeSearchBar
                     :findNode="handleChooseResult"
                     :clearResults="clearResult"
                 />
-            </div>
+            </div> -->
             <div class="d-flex">
                 <button class="btn primary-btn" @click="resetPos()">
                     Center
@@ -147,17 +139,26 @@ export default {
         <!-- Tablet and up view: Search bar, centre, expand all, print buttons -->
         <div class="tablet-and-up-legend">
             <div class="d-flex justify-content-between">
-                <div>
+                <div v-if="showLearningTracksDropDown">
                     <!-- Search bar -->
-                    <SkillTreeSearchBar
+                    <!-- <SkillTreeSearchBar
                         class="mb-2"
                         :findNode="handleChooseResult"
                         :clearResults="clearResult"
-                    />
+                    /> -->
                     <!-- Pathways selector -->
-                    <select class="form-select">
-                        <option selected value="custom">Choose pathway</option>
-                        <option value="custom">Custom pathway</option>
+                    <select
+                        class="form-select"
+                        v-model="learningTracksStore.selectedLearningTrack.id"
+                        @change="$refs.childComponent.loadTree()"
+                    >
+                        <option
+                            v-for="learningTrack in learningTracksStore.learningTracks"
+                            :value="learningTrack.id"
+                        >
+                            {{ learningTrack.name }}
+                        </option>
+                        <option value="-1">Custom Track</option>
                     </select>
                 </div>
                 <!-- Buttons -->
@@ -167,12 +168,12 @@ export default {
                         Center
                     </button>
                     <!-- Print Button -->
-                    <button
+                    <!--       <button
                         class="btn primary-btn me-2"
                         @click="$refs.childComponent.printPDF()"
                     >
                         Print
-                    </button>
+                    </button> -->
                     <!-- Restart Tutorial button -->
                     <button class="btn primary-btn" @click="restartTutorial">
                         <svg
@@ -196,7 +197,7 @@ export default {
     <!-- Display loading screen while asynchronous call is made. -->
     <Suspense>
         <template #default>
-            <Pathways ref="childComponent" />
+            <LearningTrack ref="childComponent" />
         </template>
         <template #fallback>
             <span>Loading...</span>
@@ -205,16 +206,24 @@ export default {
 
     <!-- Tooltips -->
     <!-- Introduction modal -->
-    <div v-if="showTutorialTip1" class="modal">
+    <div v-if="showTutorialTip1 || showTutorialTip2" class="modal">
         <div class="modal-content">
             <div v-if="showTutorialTip1">
-                <p>This page shows your skill tree in its closed state.</p>
-                <p>
-                    Click on the plus signs to open the side panel, then click
-                    on the "expand" button to expand the node.
-                </p>
+                <p>This page shows your learning tracks.</p>
+                <p>Learning tracks are like branches of the skill tree.</p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+            <div v-if="showTutorialTip2">
+                <p>These can be made in two different ways:</p>
+                <ul>
+                    <li>automatically from recommended skills</li>
+                    <li>manually with the "Custom Track"</li>
+                </ul>
+
+                <button class="btn primary-btn" @click="progressTutorial(2)">
                     close
                 </button>
             </div>
