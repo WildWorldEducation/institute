@@ -171,6 +171,7 @@ export default {
                 body: JSON.stringify({
                     mastery_requirements: this.skillEdit.mastery_requirements,
                     icon_image: this.skillEdit.icon_image,
+                    icon: this.skillEdit.icon,
                     banner_image: this.skillEdit.banner_image,
                     comment: this.comment,
                     edit: this.edited

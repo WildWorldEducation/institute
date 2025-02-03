@@ -819,9 +819,12 @@ router.put(
             );
 
             // Save Edit node icon to AWS
-            await saveNodeIconToAWS(req.body.nodeIcon, url, uuidDate);
-            const scaledDownIcon = await scaleIcon(req.body.nodeIcon, 50);
+            await saveNodeIconToAWS(req.body.icon, url, uuidDate);
+            const imageData = req.body.icon.split(';base64,').pop()
+            const imgBuffer = Buffer.from(imageData, 'base64');
             // scale the image down to 50x50
+            const scaledDownIcon = await scaleIcon(imgBuffer, 50);
+
 
             let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
@@ -985,7 +988,7 @@ router.put(
                 req.params.id
             )};`;
 
-            conn.query(getPreviousRecordSQLQuery, (err, results) => {
+            conn.query(getPreviousRecordSQLQuery, async (err, results) => {
                 try {
                     if (err) {
                         throw err;
@@ -1001,9 +1004,17 @@ router.put(
 
                     versionNumber = versionNumber + 1;
 
+                    // Save Edit node icon to AWS
+                    const uuidDate = Date.now();
+                    await saveNodeIconToAWS(req.body.icon, url, uuidDate);
+                    const scaleDownData = req.body.node_icon.split(';base64,').pop();
+                    const imgBuffer = Buffer.from(scaleDownData, 'base64');
+                    const scaledDownIcon = await scaleIcon(imgBuffer, 50);
+
+
                     let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
-                    (id, version_number, user_id, name, description, icon_image,
+                    (id, version_number, user_id, name, description, icon_image, icon,
                     mastery_requirements, level, skill_history.order, comment)
                     VALUES
                     (${conn.escape(previousId)},
@@ -1011,7 +1022,8 @@ router.put(
                     ${conn.escape(req.session.userId)},
                     ${conn.escape(previousName)},                    
                     ${conn.escape(previousDescription)},
-                    ${conn.escape(req.body.icon_image)},                    
+                    ${conn.escape(req.body.icon_image)},
+                    ${scaledDownIcon},
                     ${conn.escape(
                         req.body.mastery_requirements
                     )},                    
