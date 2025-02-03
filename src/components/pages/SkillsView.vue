@@ -27,25 +27,6 @@ export default {
             // flag to make watcher do not react when user choose a result
             updateChooseResult: false,
             nameList: [],
-            gradeLevels: [
-                {
-                    level: 'grade_school',
-                    text: 'Grade school',
-                    class: 'grade-school'
-                },
-                {
-                    level: 'middle_school',
-                    text: 'Middle school',
-                    class: 'middle-school'
-                },
-                {
-                    level: 'high_school',
-                    text: 'High school',
-                    class: 'high-school'
-                },
-                { level: 'college', text: 'College', class: 'college' },
-                { level: 'phd', text: 'PHD', class: 'phd' }
-            ],
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false,
@@ -83,7 +64,6 @@ export default {
                 }
             }
         }
-
         if (this.instructorMode) {
             this.checkIfInstructorModeTutorialComplete();
         } else {
@@ -96,10 +76,6 @@ export default {
         },
         findNode(skillName) {
             this.$refs.skillList.findNode(skillName);
-        },
-        setGradeFilter(level) {
-            this.userDetailsStore.gradeFilter = level;
-            this.$refs.skillList.filter();
         },
 
         // Tutorial
