@@ -67,15 +67,13 @@ export const useSkillTreeStore = defineStore('skillTree', {
             else this.verticalTreeUserSkills = await result.json();
         },
         // API call for Custom skill tree.
-        async getMyVerticalTreeUserSkills() {
+        async getCustomLearningTrackSkills() {
             const userDetailsStore = useUserDetailsStore();
             const result = await fetch(
-                '/user-skills/filter-by-cohort/my-vertical-tree/' +
+                '/user-skills/filter-by-cohort/custom-learning-track-skills/' +
                     userDetailsStore.userId
             );
-
-            // Default is all levels.
-            this.myVerticalTreeUserSkills = await result.json();
+            return await result.json();
         },
         // API call for Radial skill tree.
         async getUserSkillsSubSkillsSeparate(level, subjects) {

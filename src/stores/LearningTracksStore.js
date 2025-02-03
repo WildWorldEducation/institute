@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { useUserDetailsStore } from './UserDetailsStore.js';
+import { useSkillTreeStore } from './SkillTreeStore.js';
 
 export const useLearningTracksStore = defineStore('learning-tracks', {
     state: () => ({
@@ -29,19 +30,25 @@ export const useLearningTracksStore = defineStore('learning-tracks', {
         async loadLearningTrack() {
             this.areSkillsLoaded = false;
             const userDetailsStore = useUserDetailsStore();
-            let url = '/learning-tracks/' + this.selectedLearningTrack.id;
-            const requestOption = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    userId: userDetailsStore.userId,
-                    cohortId: userDetailsStore.cohortId
-                })
-            };
-            let result = await fetch(url, requestOption);
-            this.selectedLearningTrack.skills = await result.json();
+
+            if (this.selectedLearningTrack.id == -1) {
+                const skillTreeStore = useSkillTreeStore();
+                this.selectedLearningTrack.skills =
+                    await skillTreeStore.getCustomLearningTrackSkills();
+            } else {
+                let url = '/learning-tracks/' + this.selectedLearningTrack.id;
+                const requestOption = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: userDetailsStore.userId,
+                        cohortId: userDetailsStore.cohortId
+                    })
+                };
+                let result = await fetch(url, requestOption);
+                this.selectedLearningTrack.skills = await result.json();
+            }
             this.areSkillsLoaded = true;
-            console.log(this.selectedLearningTrack);
         }
     }
 });

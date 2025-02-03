@@ -84,11 +84,6 @@ export default {
     methods: {
         async loadTree() {
             await this.learningTracksStore.loadLearningTrack();
-            // Check if store is empty,
-            // or if grade level filter has been changed on the other tree (they need to be the same).
-            // if (this.skillTreeStore.myVerticalTreeUserSkills.length == 0) {
-            //     await this.skillTreeStore.getMyVerticalTreeUserSkills();
-            // }
 
             // Specify the chart’s dimensions.
             this.height = window.innerHeight;
@@ -140,7 +135,7 @@ export default {
                     node.renderCol = node.__pickColor;
 
                     //Update the display with some data
-                    this.skill.name = node.data.skill_name;
+                    this.skill.name = node.data.name;
                     this.skill.id = node.data.id;
                     this.skill.type = node.data.type;
                     // For the collapsing nodes
@@ -187,11 +182,9 @@ export default {
         getAlgorithm() {
             // Create a tree layout.
             this.data = {
-                skill_name: this.learningTracksStore.selectedLearningTrack.name,
+                name: this.learningTracksStore.selectedLearningTrack.name,
                 children: this.learningTracksStore.selectedLearningTrack.skills
             };
-
-            console.log(this.learningTracksStore.selectedLearningTrack.skills);
 
             this.root = d3.hierarchy(this.data);
 
@@ -320,8 +313,7 @@ export default {
             let ctx1 = this.context;
             let ctx2 = this.hiddenCanvasContext;
             // A flag to determine if this node was searched by user
-            const isSearched =
-                node.data.skill_name === this.resultNode?.data.skill_name;
+            const isSearched = node.data.name === this.resultNode?.data.name;
             // Visible context.
             // If not a domain, make node a circle.
             if (node.data.type != 'domain') {
@@ -415,8 +407,8 @@ export default {
 
                     //  also added a triangle to the end of skill name
                     const showName = isSearched
-                        ? `${node.data.skill_name} ◀`
-                        : node.data.skill_name;
+                        ? `${node.data.name} ◀`
+                        : node.data.name;
                     ctx1.strokeText(showName, node.y + 15, node.x + 2);
                     ctx1.fillText(showName, node.y + 15, node.x + 2);
                 } else {
@@ -426,8 +418,8 @@ export default {
                     ctx1.fillStyle = isSearched ? '#ff0000' : '#849cab';
                     ctx1.direction = 'rtl';
                     const showName = isSearched
-                        ? `${node.data.skill_name} ▶`
-                        : node.data.skill_name;
+                        ? `${node.data.name} ▶`
+                        : node.data.name;
                     ctx1.strokeText(showName, node.y - 5, node.x + 2);
                     ctx1.fillText(showName, node.y - 5, node.x + 2);
                 }
@@ -662,7 +654,7 @@ export default {
                     // If the node is a super node end node.
                     if (d.data.position == 'end') {
                         return '';
-                    } else return d.data.skill_name;
+                    } else return d.data.name;
                 })
                 .clone(true)
                 .lower()
@@ -761,78 +753,76 @@ export default {
             }
         },
         // Find node with name include
-        findNodeWithName(searchString) {
-            // D3
-            let breakLoop = false;
-            let resultNode = null;
-            this.root.each(function (node) {
-                if (breakLoop) {
-                    return;
-                }
-                if (node.data.skill_name === searchString) {
-                    resultNode = node;
-                    breakLoop = true;
-                }
-            });
-            return resultNode;
-        },
-        async findHiddenSkill(searchString) {
-            // if we cant find the node it mean the node is hide in children
-            var url =
-                '/user-skills/find-hidden-skill/' +
-                this.userDetailsStore.userId;
+        // findNodeWithName(searchString) {
+        //     // D3
+        //     let breakLoop = false;
+        //     let resultNode = null;
+        //     this.root.each(function (node) {
+        //         if (breakLoop) {
+        //             return;
+        //         }
+        //         if (node.data.name === searchString) {
+        //             resultNode = node;
+        //             breakLoop = true;
+        //         }
+        //     });
+        //     return resultNode;
+        // },
+        // async findHiddenSkill(searchString) {
+        //     // if we cant find the node it mean the node is hide in children
+        //     var url =
+        //         '/user-skills/find-hidden-skill/' +
+        //         this.userDetailsStore.userId;
 
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    skillName: searchString
-                })
-            });
-            const data = await res.json();
-            if (data?.mess === 'ok') {
-                await this.reloadTree();
+        //     const res = await fetch(url, {
+        //         method: 'POST',
+        //         headers: { 'Content-Type': 'application/json' },
+        //         body: JSON.stringify({
+        //             skillName: searchString
+        //         })
+        //     });
+        //     const data = await res.json();
+        //     if (data?.mess === 'ok') {
+        //         await this.reloadTree();
 
-                try {
-                    const resultNode = this.findNodeWithName(searchString);
-                    this.goToLocation(resultNode);
-                } catch (error) {
-                    // Skill get filter by user instead of being hidden
+        //         try {
+        //             const resultNode = this.findNodeWithName(searchString);
+        //             this.goToLocation(resultNode);
+        //         } catch (error) {
+        //             // Skill get filter by user instead of being hidden
 
-                    // Handle filtered case
-                    this.removeFilterForHiddenSkill(searchString);
-                }
-            }
-        },
-        // if search skill get filtered out by level or subject we remove it
-        async removeFilterForHiddenSkill(searchName) {
-            const node = await this.skillTreeStore.findInStudentSkill(
-                searchName,
-                this.userDetailsStore.userId
-            );
-            this.userDetailsStore.gradeFilter = node.level;
-            try {
-                await this.reloadTree();
-                const resultNode = this.findNodeWithName(searchName);
-                this.$parent.gradeFilter = node.level;
+        //             // Handle filtered case
+        //             this.removeFilterForHiddenSkill(searchString);
+        //         }
+        //     }
+        // },
+        // // if search skill get filtered out by level or subject we remove it
+        // async removeFilterForHiddenSkill(searchName) {
+        //     const node = await this.skillTreeStore.findInStudentSkill(
+        //         searchName,
+        //         this.userDetailsStore.userId
+        //     );
+        //     this.userDetailsStore.gradeFilter = node.level;
+        //     try {
+        //         await this.reloadTree();
+        //         const resultNode = this.findNodeWithName(searchName);
+        //         this.$parent.gradeFilter = node.level;
 
-                this.goToLocation(resultNode);
-            } catch (error) {
-                // Error mean the skill oldest ancestors is get filtering out
-                const parentNode = await this.skillTreeStore.findFatherSubject(
-                    node
-                );
+        //         this.goToLocation(resultNode);
+        //     } catch (error) {
+        //         // Error mean the skill oldest ancestors is get filtering out
+        //         const parentNode = await this.skillTreeStore.findFatherSubject(
+        //             node
+        //         );
 
-                this.userDetailsStore.subjectFilters.push(
-                    parentNode.skill_name
-                );
-                await this.reloadTree();
+        //         this.userDetailsStore.subjectFilters.push(parentNode.name);
+        //         await this.reloadTree();
 
-                const resultNode = this.findNodeWithName(searchName);
-                this.$parent.subjectFilters = this.subjectFilters;
-                this.goToLocation(resultNode);
-            }
-        },
+        //         const resultNode = this.findNodeWithName(searchName);
+        //         this.$parent.subjectFilters = this.subjectFilters;
+        //         this.goToLocation(resultNode);
+        //     }
+        // },
         toggleHideChildren(node) {
             var url =
                 '/user-skills/hide-children/' +
@@ -844,6 +834,7 @@ export default {
             });
         },
         toggleShowChildren(node) {
+            console.log('test');
             var url =
                 '/user-skills/show-children/' +
                 this.userDetailsStore.userId +
@@ -852,89 +843,6 @@ export default {
             fetch(url).then(() => {
                 this.reloadTree(node);
             });
-        },
-        async reloadTree(node) {
-            this.showSkillPanel = false;
-            await this.skillTreeStore.getMyVerticalTreeUserSkills();
-            let userSkills = this.skillTreeStore.myVerticalTreeUserSkills;
-
-            this.skill = {
-                name: 'SKILLS',
-                sprite: null,
-                children: userSkills
-            };
-
-            this.data = {
-                skill_name: 'My skills',
-                children: this.skill.children
-            };
-
-            // Compute the tree height; this approach will allow the height of the
-            // SVG to scale according to the breadth (width) of the tree layout.
-            this.root = d3.hierarchy(this.data);
-
-            // Node width and height
-            const dx = 24;
-            const dy = 270;
-
-            // Create a tree layout.
-            this.tree = d3.tree().nodeSize([dx, dy]);
-
-            // Sort the tree and apply the layout.
-            this.root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
-            this.tree(this.root);
-
-            this.zoomInD3(this.scale, this.panX, this.panY);
-
-            let translateX = 0;
-            let translateY = 0;
-            if (typeof node !== 'undefined' && node != null) {
-                translateX =
-                    -node.y * this.scale +
-                    (window.innerWidth / (2 * this.scale)) * this.scale;
-                translateY =
-                    -node.x * this.scale +
-                    (window.innerHeight / (2 * this.scale)) * this.scale;
-            }
-
-            d3.select(this.context.canvas)
-                .transition()
-                .duration(1000)
-                .call(
-                    this.d3Zoom.transform,
-                    d3.zoomIdentity
-                        .translate(translateX, translateY)
-                        .scale(this.scale)
-                );
-            this.resetPos();
-        },
-        // Grade level and root subject filter
-        async filter() {
-            this.skill.children = await this.reloadTree(null);
-            this.saveSkillTreeFilters();
-        },
-        saveSkillTreeFilters() {
-            // Update the DB
-            const requestOptions = {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    level: this.userDetailsStore.gradeFilter,
-                    is_language_filter: this.$parent.isLanguage,
-                    is_math_filter: this.$parent.isMathematics,
-                    is_history_filter: this.$parent.isHistory,
-                    is_life_filter: this.$parent.isLife,
-                    is_computer_science_filter: this.$parent.isComputerScience,
-                    is_science_and_invention_filter:
-                        this.$parent.isScienceAndInvention,
-                    is_dangerous_ideas_filter: this.$parent.isDangerousIdeas
-                })
-            };
-            var url =
-                '/users/' +
-                this.userDetailsStore.userId +
-                '/skill-tree-filters';
-            fetch(url, requestOptions);
         },
         checkingIfNodeInView(node, transformData) {
             // Calculate max visible range
