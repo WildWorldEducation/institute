@@ -192,7 +192,7 @@ export default {
             </div>
             <div class="col-12 col-md-6 form">
                 <div class="mb-3">
-                    <h2 class="secondary-heading h4">Name</h2>
+                    <h2 class="secondary-heading h4">Full Name</h2>
                     <input
                         v-model="name"
                         type="text"
