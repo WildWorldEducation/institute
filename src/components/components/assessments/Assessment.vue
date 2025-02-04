@@ -440,7 +440,7 @@ export default {
                     await this.MakeMastered(this.skill);
                     this.isQuizPassed = true;
                     // show result page and hide assessment part
-                    this.assessmentStatus = 'pass';
+                    this.assessmentStatus = 'You passed';
                     this.showResult = true;
                 } else {
                     // show result page and hide assessment part
@@ -583,7 +583,7 @@ export default {
                         await this.MakeMastered(this.skill);
                         this.isQuizPassed = true;
                         // show result page and hide assessment part
-                        this.assessmentStatus = 'pass';
+                        this.assessmentStatus = 'You passed';
                         this.showResult = true;
                     } else {
                         // show result page and hide assessment part

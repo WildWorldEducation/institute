@@ -44,10 +44,10 @@ export default {
         this.assessmentResult = this.$parent.assessmentStatus;
         // Show modal based on  assessment status
         switch (this.assessmentResult) {
-            case 'pass':
+            case 'You passed':
                 this.passModal = true;
                 break;
-            case 'fails':
+            case 'You failed':
                 this.failsModal = true;
                 break;
             case 'wait for essay answers to be mark':
@@ -113,7 +113,7 @@ export default {
                         <span class="info-label">Result:</span>
                         <span
                             :class="
-                                assessmentResult == 'pass'
+                                assessmentResult == 'You passed'
                                     ? 'student-pass'
                                     : 'student-fail'
                             "
@@ -126,7 +126,7 @@ export default {
                                 height="14"
                                 width="14"
                                 class="status-icon"
-                                v-if="assessmentResult === 'failed'"
+                                v-if="assessmentResult === 'You failed'"
                             >
                                 <path
                                     d="M64 64c0-17.7-14.3-32-32-32S0 46.3 0 64V320c0 17.7 14.3 32 32 32s32-14.3 32-32V64zM32 480a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"
@@ -140,7 +140,7 @@ export default {
                                 height="14"
                                 width="14"
                                 class="mb-1"
-                                v-if="assessmentResult === 'pass'"
+                                v-if="assessmentResult === 'You passed'"
                             >
                                 <path
                                     d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"
@@ -179,10 +179,10 @@ export default {
                     </div>
                 </div>
                 <!-- Next Skill Recommendation -->
-                <NextSkillSuggestion v-if="assessmentResult === 'pass'" />
+                <NextSkillSuggestion v-if="assessmentResult === 'You passed'" />
             </div>
             <!-- Student can add a question if they pass -->
-            <StudentAddMCQuestion v-if="assessmentResult === 'pass'" />
+            <StudentAddMCQuestion v-if="assessmentResult === 'You passed'" />
         </div>
         <!-- Question list include right answer and explain -->
         <div class="mc-question-result" v-for="question of questions">
