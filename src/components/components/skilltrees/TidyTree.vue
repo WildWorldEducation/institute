@@ -622,6 +622,8 @@ export default {
             document.querySelector('#SVGskilltree').append(svg.node());
         },
         resetPos() {
+            const isMobile = window.innerWidth <= 767; // Adjust breakpoint if needed
+            const scale = isMobile ? 0.15 : 0.3; // Reduce scale for mobile view
             d3.select(this.context.canvas)
                 .transition()
                 .duration(700)
@@ -632,7 +634,7 @@ export default {
                             this.context.canvas.width / 2,
                             this.context.canvas.height / 2
                         )
-                        .scale(0.3)
+                        .scale(scale)
                 );
         },
         // programmatic d3 zoom
