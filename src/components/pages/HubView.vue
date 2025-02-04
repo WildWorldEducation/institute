@@ -1,11 +1,9 @@
 <script>
 // import components.
-import StudentProgress from '../components/hub-components/StudentProgress.vue';
 import LastVisitedSkills from '../components/hub-components/LastVisitedSkills.vue';
 import Goals from '../components/hub-components/Goals.vue';
 import MarkAssessment from '../components/hub-components/MarkAssessment.vue';
 import HubStudentQuestionList from '../components/hub-components/HubStudentQuestionList.vue';
-
 import RecommendedSkillsGenerator from '../components/hub-components/RecommendedSkillsGenerator.vue';
 
 // Import store.
@@ -42,12 +40,10 @@ export default {
             showTutorialTip1: false,
             showTutorialTip2: false,
             showTutorialTip3: false,
-            showTutorialTip4: false,
-            showTutorialTip5: false
+            showTutorialTip4: false
         };
     },
     components: {
-        StudentProgress,
         MarkAssessment,
         LastVisitedSkills,
         Goals,
@@ -197,9 +193,6 @@ export default {
                 this.showTutorialTip4 = true;
             } else if (step == 4) {
                 this.showTutorialTip4 = false;
-                this.showTutorialTip5 = true;
-            } else if (step == 5) {
-                this.showTutorialTip5 = false;
                 this.markTutorialComplete();
             }
         },
@@ -308,51 +301,21 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- Available Skills / Mark Assessments, 
+        <!--  Mark Assessments, 
           Last Visited Skills / Student Suggested Questions,
           Goals -->
         <div class="row">
-            <!-- Available Skills / Mark Assessments -->
+            <!--  Mark Assessments -->
             <div
                 class="col-lg-4 col-md-6 mb-2"
                 v-if="userDetailsStore.role != 'editor'"
                 :class="{
-                    'd-none':
-                        userDetailsStore.role == 'instructor' &&
-                        assessments.length === 0
+                    'd-none': assessments.length === 0
                 }"
             >
                 <div class="h-100">
-                    <!-- Tooltip -->
-                    <div
-                        v-if="
-                            showTutorialTip3 &&
-                            userDetailsStore.role == 'student'
-                        "
-                        class="info-panel bg-light rounded p-2 mb-2"
-                    >
-                        <p>
-                            This section shows your available skills. These are
-                            the skills that you can try to master by taking a
-                            quiz.
-                        </p>
-                        <p>
-                            Once you master a skill, more skills will get
-                            unlocked.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(3)"
-                        >
-                            next
-                        </button>
-                    </div>
-                    <StudentProgress
-                        v-if="userDetailsStore.role == 'student'"
-                        :userId="userDetailsStore.userId"
-                    />
                     <MarkAssessment
-                        v-else-if="userDetailsStore.role == 'instructor'"
+                        v-if="userDetailsStore.role == 'instructor'"
                         :assessments="assessments"
                     />
                 </div>
@@ -371,7 +334,7 @@ export default {
                     <!-- Tooltip -->
                     <div
                         v-if="
-                            showTutorialTip4 &&
+                            showTutorialTip3 &&
                             userDetailsStore.role == 'student'
                         "
                         class="info-panel bg-light rounded p-2 mb-2"
@@ -382,7 +345,7 @@ export default {
                         </p>
                         <button
                             class="btn primary-btn"
-                            @click="progressTutorial(4)"
+                            @click="progressTutorial(3)"
                         >
                             next
                         </button>
@@ -407,7 +370,7 @@ export default {
                     <!-- Tooltip -->
                     <div
                         v-if="
-                            showTutorialTip5 &&
+                            showTutorialTip4 &&
                             userDetailsStore.role == 'student'
                         "
                         class="info-panel bg-light rounded p-2 mb-2"
@@ -419,7 +382,7 @@ export default {
                         </p>
                         <button
                             class="btn primary-btn"
-                            @click="progressTutorial(5)"
+                            @click="progressTutorial(4)"
                         >
                             close
                         </button>
