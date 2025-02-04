@@ -819,11 +819,12 @@ router.put(
             );
 
             // Save Edit node icon to AWS
-            await saveNodeIconToAWS(req.body.icon, url, uuidDate);
+            const nodeIconUrl = await saveNodeIconToAWS(req.body.icon, url, uuidDate);
             const imageData = req.body.icon.split(';base64,').pop()
             const imgBuffer = Buffer.from(imageData, 'base64');
             // scale the image down to 50x50
             const scaledDownIcon = await scaleIcon(imgBuffer, 50);
+
 
 
             let addVersionHistoryInsertSQLQuery = `
@@ -837,10 +838,8 @@ router.put(
                     ${conn.escape(req.body.name)},                    
                     ${conn.escape(req.body.description)},
                     ${conn.escape(iconUrl)},
-                    ${conn.escape(scaledDownIcon)},
-                    ${conn.escape(
-                req.body.mastery_requirements
-            )},                    
+                    ${conn.escape(nodeIconUrl)},
+                    ${conn.escape(req.body.mastery_requirements)},                    
                     ${conn.escape(req.body.level)},                    
                     ${conn.escape(req.body.order)},
                     ${conn.escape(req.body.comment)});`;
@@ -866,9 +865,9 @@ router.put(
                         level = ${conn.escape(req.body.level)}, 
                         skills.order = ${conn.escape(req.body.order)}, 
                         version_number = ${conn.escape(versionNumber)}, 
+                        icon = ${conn.escape(scaledDownIcon)},
                         edited_date = current_timestamp, 
-                        is_human_edited = 1,
-                        icon = ${conn.escape(req.body.icon)}
+                        is_human_edited = 1
                         WHERE id = ${conn.escape(req.params.id)};`;
 
                     conn.query(updateRecordSQLQuery, async (err, results) => {
@@ -1006,15 +1005,15 @@ router.put(
 
                     // Save Edit node icon to AWS
                     const uuidDate = Date.now();
-                    await saveNodeIconToAWS(req.body.icon, url, uuidDate);
-                    const scaleDownData = req.body.node_icon.split(';base64,').pop();
+                    const nodeIconUrl = await saveNodeIconToAWS(req.body.icon, url, uuidDate);
+                    const scaleDownData = req.body.icon.split(';base64,').pop();
                     const imgBuffer = Buffer.from(scaleDownData, 'base64');
                     const scaledDownIcon = await scaleIcon(imgBuffer, 50);
 
 
                     let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
-                    (id, version_number, user_id, name, description, icon_image, icon,
+                    (id, version_number, user_id, name, description, icon,
                     mastery_requirements, level, skill_history.order, comment)
                     VALUES
                     (${conn.escape(previousId)},
@@ -1022,8 +1021,7 @@ router.put(
                     ${conn.escape(req.session.userId)},
                     ${conn.escape(previousName)},                    
                     ${conn.escape(previousDescription)},
-                    ${conn.escape(req.body.icon_image)},
-                    ${scaledDownIcon},
+                    ${nodeIconUrl},
                     ${conn.escape(
                         req.body.mastery_requirements
                     )},                    
@@ -1094,7 +1092,8 @@ router.put(
                             mastery_requirements = ${conn.escape(
                                 req.body.mastery_requirements
                             )},      
-                            is_human_edited = 1,                                                  
+                            is_human_edited = 1,
+                            icon = ${conn.escape(scaledDownIcon)}                                                  
                             version_number = ${conn.escape(
                                 versionNumber
                             )}                               

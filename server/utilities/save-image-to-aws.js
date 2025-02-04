@@ -272,10 +272,13 @@ const saveUserAvatarToAWS = async (userId, base64Image) => {
  */
 const scaleIcon = async (iconData, iconWidth) => {
     try {
-        const resultData = await sharp(iconData)
+        const data = await sharp(iconData)
             .resize({ width: iconWidth })
             .toBuffer();
-        return resultData
+        const resultBase64 = `data:image/png;base64,${data.toString('base64')}`
+
+        return resultBase64;
+
     } catch (error) {
         console.error(error)
     }
