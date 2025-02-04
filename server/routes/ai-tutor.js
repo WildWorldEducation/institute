@@ -5,26 +5,18 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-router.post('/', isAuthenticated, async (req, res, next) => {
-    try {
-        // Create an Assistant
-        async function main() {
-            const assistant = await openai.beta.assistants.create({
-                name: 'General Tutor',
-                instructions:
-                    'You are a personal tutor. Answer any questions you are asked..',
-                tools: [],
-                model: 'gpt-4o'
-            });
-        }
+// Create an Assistant
+async function main() {
+    const assistant = await openai.beta.assistants.create({
+        name: 'General Tutor',
+        instructions:
+            'You are a personal tutor. Answer any questions you are asked..',
+        tools: [],
+        model: 'gpt-4o'
+    });
+}
 
-        main();
-    } catch (error) {
-        console.error(error);
-        res.status = 500;
-        res.end;
-    }
-});
+main();
 
 // Create a Thread
 const thread = await openai.beta.threads.create();
