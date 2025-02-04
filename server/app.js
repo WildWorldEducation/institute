@@ -107,6 +107,8 @@ const newSkillsAwaitingApproval = require('./routes/new-skills-awaiting-approval
 app.use('/new-skills-awaiting-approval', newSkillsAwaitingApproval);
 const goals = require('./routes/goals');
 app.use('/goals', goals);
+const learningTracks = require('./routes/learning-tracks');
+app.use('/learning-tracks', learningTracks);
 
 app.locals.title = 'Skill Tree';
 

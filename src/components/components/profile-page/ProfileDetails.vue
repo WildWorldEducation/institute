@@ -228,7 +228,7 @@ export default {
                     />
                 </div>
                 <!-- Instructor -->
-                <div v-else class="mb-3">
+                <div v-if="userDetailsStore.instructorUsername" class="mb-3">
                     <h2 class="secondary-heading h4">Instructor</h2>
                     <input
                         type="text"

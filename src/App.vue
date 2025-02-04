@@ -94,7 +94,8 @@ export default {
                     $route.name == 'skill-tree' ||
                     $route.name == 'pathways' ||
                     $route.name == 'radial-tree' ||
-                    $route.name == 'student-vertical-tree'
+                    $route.name == 'student-vertical-tree' ||
+                    $route.name == 'learning-tracks'
             }"
         >
             <div class="container-fluid">
@@ -182,9 +183,9 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink
-                                to="/pathways"
+                                to="/learning-tracks"
                                 class="nav-link close-on-click"
-                                >Pathways</RouterLink
+                                >Learning Tracks</RouterLink
                             >
                         </li>
                         <li

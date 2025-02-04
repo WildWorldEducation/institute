@@ -763,7 +763,7 @@ router.get('/last-visited', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         //Get last visited.
         let sqlQuery = `
-            SELECT skills.id, name, skills.url, level
+            SELECT skills.id, name, skills.url, level, icon
             FROM user_visited_skills
             INNER JOIN skills 
             ON skills.id = user_visited_skills.skill_id
@@ -1697,6 +1697,7 @@ router.get('/name-list-old', (req, res, next) => {
 // Advanced / Semantic Search Feature.
 // Import OpenAI package.
 const { OpenAI } = require('openai');
+const { path } = require('pdfkit');
 // To access the .env file.
 require('dotenv').config();
 // Include API key.
@@ -1720,7 +1721,6 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
                     ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
                           VEC_FromText('[${inputVector}]'))
                     LIMIT 25`;
-        // sql for instructor and editor account
         conn.query(sqlQuery, (err, results) => {
             if (err) {
                 throw err;
@@ -1764,13 +1764,14 @@ router.get('/url-list', async (req, res) => {
     }
 });
 
-// For the Pathways feature, to take a search query and return the most suitable skills
+// Return recommended skills, based on user query
 router.post(
-    '/find-skills-for-pathway',
+    '/get-recommended-skills',
     isAuthenticated,
     async (req, res, next) => {
         try {
             let userId = req.body.userId;
+            let cohortId = req.body.cohortId;
             let query = req.body.query;
 
             let prompt = `        
@@ -1801,7 +1802,6 @@ router.post(
             }
             // Convert string to object.       ;
             let subjectObject = JSON.parse(responseJSON);
-            // console.log(subjectObject.subjectResponse);
 
             const response = await openai.embeddings.create({
                 model: 'text-embedding-3-small',
@@ -1811,7 +1811,7 @@ router.post(
 
             const inputVector = response.data[0].embedding;
 
-            let sqlQuery = `SELECT skills.name, skills.url, skills.level
+            let sqlQuery = `SELECT skills.id, skills.name, skills.url, skills.level, skills.parent
                     FROM skills_vector
                     JOIN skills
                     ON skills.id = skills_vector.skill_id                    
@@ -1820,18 +1820,23 @@ router.post(
                     AND skills.id NOT IN 
                     (SELECT skill_id
                     FROM user_skills
-                    WHERE user_id = '${userId}'
-                    AND is_mastered = 1)                    
+                    WHERE user_id = ${conn.escape(userId)}
+                    AND is_mastered = 1)     
+                    AND skills.id NOT IN 
+                    (SELECT skill_id 
+                    FROM cohort_skill_filters
+                    WHERE cohort_id = ${conn.escape(cohortId)})               
                     ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
                           VEC_FromText('[${inputVector}]'))
                           LIMIT 50
                     `;
             // sql for instructor and editor account
-            conn.query(sqlQuery, (err, results) => {
+            conn.query(sqlQuery, async (err, resultsSortedByRelevence) => {
                 if (err) {
                     throw err;
                 }
-                res.json(results);
+
+                res.json(resultsSortedByRelevence);
             });
         } catch (error) {
             console.error(error);

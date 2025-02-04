@@ -10,6 +10,7 @@ export default {
     async created() {
         const result = await fetch('/skills/last-visited/');
         this.visitedSkills = await result.json();
+        console.log(this.visitedSkills);
         if (this.visitedSkills.length > 0) {
             this.noSkills = false;
         }
@@ -36,12 +37,18 @@ export default {
             :to="`/skills/${skill.url}`"
             target="_blank"
         >
-            {{ skill.name }}
+            <img class="icons" :src="skill.icon" />&nbsp; {{ skill.name }}
         </router-link>
     </div>
 </template>
 
 <style scoped>
+.icons {
+    mix-blend-mode: multiply;
+    height: 30px;
+    border-radius: 50%;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
     width: 12px;

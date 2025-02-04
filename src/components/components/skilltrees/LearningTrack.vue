@@ -1,7 +1,9 @@
 <script>
 // Import the stores.
-import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
+import { useSkillTreeStore } from '../../../stores/SkillTreeStore.js';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
+import { useLearningTracksStore } from '../../../stores/LearningTracksStore.js';
+
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';
 import ZoomControl from './ZoomControl.vue';
@@ -14,9 +16,12 @@ export default {
     setup() {
         const skillTreeStore = useSkillTreeStore();
         const userDetailsStore = useUserDetailsStore();
+        const learningTracksStore = useLearningTracksStore();
+
         return {
             skillTreeStore,
-            userDetailsStore
+            userDetailsStore,
+            learningTracksStore
         };
     },
     data() {
@@ -54,7 +59,7 @@ export default {
             // We store the d3 zoom call so the slider can call it
             d3Zoom: null,
             // For the loading animation.
-            isLoading: true,
+            //   isLoading: true,
             xPos: 0,
             yPos: 0,
             showAnimation: false,
@@ -75,121 +80,110 @@ export default {
         ZoomControl,
         JoystickControl
     },
-    async mounted() {
-        // Check if store is empty,
-        // or if grade level filter has been changed on the other tree (they need to be the same).
-        if (this.skillTreeStore.myVerticalTreeUserSkills.length == 0) {
-            await this.skillTreeStore.getMyVerticalTreeUserSkills();
-        }
+    async mounted() {},
+    methods: {
+        async loadTree() {
+            await this.learningTracksStore.loadLearningTrack();
 
-        let userSkills = this.skillTreeStore.myVerticalTreeUserSkills;
+            // Specify the chart’s dimensions.
+            this.height = window.innerHeight;
+            this.width = window.innerWidth;
 
-        // Specify the chart’s dimensions.
-        this.height = window.innerHeight;
-        this.width = window.innerWidth;
+            this.getAlgorithm();
 
-        this.skill = {
-            name: 'SKILLS',
-            sprite: null,
-            children: userSkills
-        };
+            // Set up the Hidden Canvas for Interactivity.
+            let hiddenCanvas = document.getElementById('hidden-canvas');
+            this.hiddenCanvasContext = hiddenCanvas.getContext('2d', {
+                willReadFrequently: true
+            });
+            hiddenCanvas.style.display = 'none';
 
-        this.getAlgorithm();
+            // Listen for clicks on the main canvas
+            canvas.addEventListener('click', async (e) => {
+                // We actually only need to draw the hidden canvas when
+                // there is an interaction. This sketch can draw it on
+                // each loop, but that is only for demonstration.
 
-        // Set up the Hidden Canvas for Interactivity.
-        let hiddenCanvas = document.getElementById('hidden-canvas');
-        this.hiddenCanvasContext = hiddenCanvas.getContext('2d', {
-            willReadFrequently: true
-        });
-        hiddenCanvas.style.display = 'none';
+                //Figure out where the mouse click occurred.
+                var mouseX = e.layerX;
+                var mouseY = e.layerY;
 
-        // Listen for clicks on the main canvas
-        canvas.addEventListener('click', async (e) => {
-            // We actually only need to draw the hidden canvas when
-            // there is an interaction. This sketch can draw it on
-            // each loop, but that is only for demonstration.
+                this.xPos = mouseX;
+                this.yPos = mouseY;
+                this.showAnimation = true;
+                // Hide animation after 0.5 seconds (adjust as needed)
+                setTimeout(() => {
+                    this.showAnimation = false;
+                }, 500);
 
-            //Figure out where the mouse click occurred.
-            var mouseX = e.layerX;
-            var mouseY = e.layerY;
+                // Get the corresponding pixel color on the hidden canvas
+                // and look up the node in our map.
+                var ctx = this.hiddenCanvasContext;
 
-            this.xPos = mouseX;
-            this.yPos = mouseY;
-            this.showAnimation = true;
-            // Hide animation after 0.5 seconds (adjust as needed)
-            setTimeout(() => {
-                this.showAnimation = false;
-            }, 500);
+                // This will return that pixel's color
+                var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
 
-            // Get the corresponding pixel color on the hidden canvas
-            // and look up the node in our map.
-            var ctx = this.hiddenCanvasContext;
+                //Our map uses these rgb strings as keys to nodes.
+                var colString =
+                    'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
+                var node = this.colToNode[colString];
 
-            // This will return that pixel's color
-            var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
+                if (node && node.data.id) {
+                    // We clicked on something, lets set the color of the node
+                    // we also have access to the data associated with it, which in
+                    // this case is just its original index in the data array.
+                    node.renderCol = node.__pickColor;
 
-            //Our map uses these rgb strings as keys to nodes.
-            var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
-            var node = this.colToNode[colString];
+                    //Update the display with some data
+                    this.skill.name = node.data.name;
+                    this.skill.id = node.data.id;
+                    this.skill.type = node.data.type;
+                    // For the collapsing nodes
+                    this.skill.show_children = node.data.show_children;
+                    this.skill.has_children = node.data.has_children;
+                    this.skill.x = node.x;
+                    this.skill.y = node.y;
 
-            if (node && node.data.id) {
-                // We clicked on something, lets set the color of the node
-                // we also have access to the data associated with it, which in
-                // this case is just its original index in the data array.
-                node.renderCol = node.__pickColor;
-
-                //Update the display with some data
-                this.skill.name = node.data.skill_name;
-                this.skill.id = node.data.id;
-                this.skill.type = node.data.type;
-                // For the collapsing nodes
-                this.skill.show_children = node.data.show_children;
-                this.skill.has_children = node.data.has_children;
-                this.skill.x = node.x;
-                this.skill.y = node.y;
-                console.log(this.skill.id);
-
-                // Get the mastery requirements data separately.
-                // Because this is so much data, we do not send it with the rest of the skill tree,
-                // or it will slow the load down too much.
-                const result = await fetch(
-                    '/skills/introduction-and-url/' + this.skill.id
-                );
-                const result2 = await result.json();
-                this.skill.introduction = result2.introduction;
-                this.skill.url = result2.url;
-                this.showSkillPanel = true;
-            }
-        });
-
-        // Zoom and pan with mouse
-        // We have to construct the d3 zoom function and assign the zoom event
-        this.d3Zoom = d3
-            .zoom()
-            .scaleExtent([0.1, 5])
-            .on('zoom', ({ transform }) => {
-                this.debugScale = transform.k;
-                this.transformX = transform.x;
-                this.transformY = transform.y;
-                this.drawTree(transform);
-                // update slider percent ( Handle by us not d3 but will invoke when the d3 zoom event is call )
+                    // Get the mastery requirements data separately.
+                    // Because this is so much data, we do not send it with the rest of the skill tree,
+                    // or it will slow the load down too much.
+                    const result = await fetch(
+                        '/skills/introduction-and-url/' + this.skill.id
+                    );
+                    const result2 = await result.json();
+                    this.skill.introduction = result2.introduction;
+                    this.skill.url = result2.url;
+                    this.showSkillPanel = true;
+                }
             });
 
-        // Bind the above object to canvas so it can zoom the tree
-        d3.select(this.context.canvas).call(this.d3Zoom);
+            // Zoom and pan with mouse
+            // We have to construct the d3 zoom function and assign the zoom event
+            this.d3Zoom = d3
+                .zoom()
+                .scaleExtent([0.1, 5])
+                .on('zoom', ({ transform }) => {
+                    this.debugScale = transform.k;
+                    this.transformX = transform.x;
+                    this.transformY = transform.y;
+                    this.drawTree(transform);
+                    // update slider percent ( Handle by us not d3 but will invoke when the d3 zoom event is call )
+                });
 
-        // Set initial zoom value.
-        this.resetPos();
+            // Bind the above object to canvas so it can zoom the tree
+            d3.select(this.context.canvas).call(this.d3Zoom);
 
-        // For the loading animation.
-        this.isLoading = false;
-    },
-    methods: {
+            // Set initial zoom value.
+            this.resetPos();
+
+            // For the loading animation.
+            this.isLoading = false;
+        },
         getAlgorithm() {
             // Create a tree layout.
             this.data = {
-                skill_name: 'My skills',
-                children: this.skill.children
+                name: this.learningTracksStore.selectedLearningTrack.name,
+                children: this.learningTracksStore.selectedLearningTrack.skills
             };
 
             this.root = d3.hierarchy(this.data);
@@ -319,8 +313,7 @@ export default {
             let ctx1 = this.context;
             let ctx2 = this.hiddenCanvasContext;
             // A flag to determine if this node was searched by user
-            const isSearched =
-                node.data.skill_name === this.resultNode?.data.skill_name;
+            const isSearched = node.data.name === this.resultNode?.data.name;
             // Visible context.
             // If not a domain, make node a circle.
             if (node.data.type != 'domain') {
@@ -414,8 +407,8 @@ export default {
 
                     //  also added a triangle to the end of skill name
                     const showName = isSearched
-                        ? `${node.data.skill_name} ◀`
-                        : node.data.skill_name;
+                        ? `${node.data.name} ◀`
+                        : node.data.name;
                     ctx1.strokeText(showName, node.y + 15, node.x + 2);
                     ctx1.fillText(showName, node.y + 15, node.x + 2);
                 } else {
@@ -425,8 +418,8 @@ export default {
                     ctx1.fillStyle = isSearched ? '#ff0000' : '#849cab';
                     ctx1.direction = 'rtl';
                     const showName = isSearched
-                        ? `${node.data.skill_name} ▶`
-                        : node.data.skill_name;
+                        ? `${node.data.name} ▶`
+                        : node.data.name;
                     ctx1.strokeText(showName, node.y - 5, node.x + 2);
                     ctx1.fillText(showName, node.y - 5, node.x + 2);
                 }
@@ -661,7 +654,7 @@ export default {
                     // If the node is a super node end node.
                     if (d.data.position == 'end') {
                         return '';
-                    } else return d.data.skill_name;
+                    } else return d.data.name;
                 })
                 .clone(true)
                 .lower()
@@ -760,78 +753,76 @@ export default {
             }
         },
         // Find node with name include
-        findNodeWithName(searchString) {
-            // D3
-            let breakLoop = false;
-            let resultNode = null;
-            this.root.each(function (node) {
-                if (breakLoop) {
-                    return;
-                }
-                if (node.data.skill_name === searchString) {
-                    resultNode = node;
-                    breakLoop = true;
-                }
-            });
-            return resultNode;
-        },
-        async findHiddenSkill(searchString) {
-            // if we cant find the node it mean the node is hide in children
-            var url =
-                '/user-skills/find-hidden-skill/' +
-                this.userDetailsStore.userId;
+        // findNodeWithName(searchString) {
+        //     // D3
+        //     let breakLoop = false;
+        //     let resultNode = null;
+        //     this.root.each(function (node) {
+        //         if (breakLoop) {
+        //             return;
+        //         }
+        //         if (node.data.name === searchString) {
+        //             resultNode = node;
+        //             breakLoop = true;
+        //         }
+        //     });
+        //     return resultNode;
+        // },
+        // async findHiddenSkill(searchString) {
+        //     // if we cant find the node it mean the node is hide in children
+        //     var url =
+        //         '/user-skills/find-hidden-skill/' +
+        //         this.userDetailsStore.userId;
 
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    skillName: searchString
-                })
-            });
-            const data = await res.json();
-            if (data?.mess === 'ok') {
-                await this.reloadTree();
+        //     const res = await fetch(url, {
+        //         method: 'POST',
+        //         headers: { 'Content-Type': 'application/json' },
+        //         body: JSON.stringify({
+        //             skillName: searchString
+        //         })
+        //     });
+        //     const data = await res.json();
+        //     if (data?.mess === 'ok') {
+        //         await this.reloadTree();
 
-                try {
-                    const resultNode = this.findNodeWithName(searchString);
-                    this.goToLocation(resultNode);
-                } catch (error) {
-                    // Skill get filter by user instead of being hidden
+        //         try {
+        //             const resultNode = this.findNodeWithName(searchString);
+        //             this.goToLocation(resultNode);
+        //         } catch (error) {
+        //             // Skill get filter by user instead of being hidden
 
-                    // Handle filtered case
-                    this.removeFilterForHiddenSkill(searchString);
-                }
-            }
-        },
-        // if search skill get filtered out by level or subject we remove it
-        async removeFilterForHiddenSkill(searchName) {
-            const node = await this.skillTreeStore.findInStudentSkill(
-                searchName,
-                this.userDetailsStore.userId
-            );
-            this.userDetailsStore.gradeFilter = node.level;
-            try {
-                await this.reloadTree();
-                const resultNode = this.findNodeWithName(searchName);
-                this.$parent.gradeFilter = node.level;
+        //             // Handle filtered case
+        //             this.removeFilterForHiddenSkill(searchString);
+        //         }
+        //     }
+        // },
+        // // if search skill get filtered out by level or subject we remove it
+        // async removeFilterForHiddenSkill(searchName) {
+        //     const node = await this.skillTreeStore.findInStudentSkill(
+        //         searchName,
+        //         this.userDetailsStore.userId
+        //     );
+        //     this.userDetailsStore.gradeFilter = node.level;
+        //     try {
+        //         await this.reloadTree();
+        //         const resultNode = this.findNodeWithName(searchName);
+        //         this.$parent.gradeFilter = node.level;
 
-                this.goToLocation(resultNode);
-            } catch (error) {
-                // Error mean the skill oldest ancestors is get filtering out
-                const parentNode = await this.skillTreeStore.findFatherSubject(
-                    node
-                );
+        //         this.goToLocation(resultNode);
+        //     } catch (error) {
+        //         // Error mean the skill oldest ancestors is get filtering out
+        //         const parentNode = await this.skillTreeStore.findFatherSubject(
+        //             node
+        //         );
 
-                this.userDetailsStore.subjectFilters.push(
-                    parentNode.skill_name
-                );
-                await this.reloadTree();
+        //         this.userDetailsStore.subjectFilters.push(parentNode.name);
+        //         await this.reloadTree();
 
-                const resultNode = this.findNodeWithName(searchName);
-                this.$parent.subjectFilters = this.subjectFilters;
-                this.goToLocation(resultNode);
-            }
-        },
+        //         const resultNode = this.findNodeWithName(searchName);
+        //         this.$parent.subjectFilters = this.subjectFilters;
+        //         this.goToLocation(resultNode);
+        //     }
+        // },
         toggleHideChildren(node) {
             var url =
                 '/user-skills/hide-children/' +
@@ -839,7 +830,7 @@ export default {
                 '/' +
                 node.id;
             fetch(url).then(() => {
-                this.reloadTree(node);
+                this.loadTree(node);
             });
         },
         toggleShowChildren(node) {
@@ -849,91 +840,8 @@ export default {
                 '/' +
                 node.id;
             fetch(url).then(() => {
-                this.reloadTree(node);
+                this.loadTree(node);
             });
-        },
-        async reloadTree(node) {
-            this.showSkillPanel = false;
-            await this.skillTreeStore.getMyVerticalTreeUserSkills();
-            let userSkills = this.skillTreeStore.myVerticalTreeUserSkills;
-
-            this.skill = {
-                name: 'SKILLS',
-                sprite: null,
-                children: userSkills
-            };
-
-            this.data = {
-                skill_name: 'My skills',
-                children: this.skill.children
-            };
-
-            // Compute the tree height; this approach will allow the height of the
-            // SVG to scale according to the breadth (width) of the tree layout.
-            this.root = d3.hierarchy(this.data);
-
-            // Node width and height
-            const dx = 24;
-            const dy = 270;
-
-            // Create a tree layout.
-            this.tree = d3.tree().nodeSize([dx, dy]);
-
-            // Sort the tree and apply the layout.
-            this.root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
-            this.tree(this.root);
-
-            this.zoomInD3(this.scale, this.panX, this.panY);
-
-            let translateX = 0;
-            let translateY = 0;
-            if (typeof node !== 'undefined' && node != null) {
-                translateX =
-                    -node.y * this.scale +
-                    (window.innerWidth / (2 * this.scale)) * this.scale;
-                translateY =
-                    -node.x * this.scale +
-                    (window.innerHeight / (2 * this.scale)) * this.scale;
-            }
-
-            d3.select(this.context.canvas)
-                .transition()
-                .duration(1000)
-                .call(
-                    this.d3Zoom.transform,
-                    d3.zoomIdentity
-                        .translate(translateX, translateY)
-                        .scale(this.scale)
-                );
-            this.resetPos();
-        },
-        // Grade level and root subject filter
-        async filter() {
-            this.skill.children = await this.reloadTree(null);
-            this.saveSkillTreeFilters();
-        },
-        saveSkillTreeFilters() {
-            // Update the DB
-            const requestOptions = {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    level: this.userDetailsStore.gradeFilter,
-                    is_language_filter: this.$parent.isLanguage,
-                    is_math_filter: this.$parent.isMathematics,
-                    is_history_filter: this.$parent.isHistory,
-                    is_life_filter: this.$parent.isLife,
-                    is_computer_science_filter: this.$parent.isComputerScience,
-                    is_science_and_invention_filter:
-                        this.$parent.isScienceAndInvention,
-                    is_dangerous_ideas_filter: this.$parent.isDangerousIdeas
-                })
-            };
-            var url =
-                '/users/' +
-                this.userDetailsStore.userId +
-                '/skill-tree-filters';
-            fetch(url, requestOptions);
         },
         checkingIfNodeInView(node, transformData) {
             // Calculate max visible range
@@ -965,13 +873,17 @@ export default {
 <template>
     <!-- Loading animation -->
     <div
-        v-if="isLoading == true"
+        v-if="learningTracksStore.areSkillsLoaded == false"
         class="loading-animation d-flex justify-content-center align-items-center py-4"
     >
         <span class="loader"></span>
     </div>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
-    <div ref="wrapper" v-show="isLoading == false" id="wrapper">
+    <div
+        ref="wrapper"
+        v-show="learningTracksStore.areSkillsLoaded == true"
+        id="wrapper"
+    >
         <SkillPanel :skill="skill" :showSkillPanel="showSkillPanel" />
         <div
             v-if="showAnimation"
