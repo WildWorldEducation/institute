@@ -164,20 +164,20 @@ export default {
             }
             this.findNodeLoading = false;
             return path;
-        },
-        async filter() {
-            if (this.userDetailsStore.role == 'student') {
-                this.skillTreeStore.userSkills = [];
-                await this.skillTreeStore.getUserSkills();
-                
-            } else if (
-                this.userDetailsStore.role == 'instructor' ||
-                this.userDetailsStore.role == 'editor'
-            ) {
-                this.skillsStore.filteredNestedSkillsList = [];
-                await this.skillsStore.getFilteredNestedSkillsList();
-            }
         }
+        // async filter() {
+        //     if (this.userDetailsStore.role == 'student') {
+        //         this.skillTreeStore.userSkills = [];
+        //         await this.skillTreeStore.getUserSkills();
+
+        //     } else if (
+        //         this.userDetailsStore.role == 'instructor' ||
+        //         this.userDetailsStore.role == 'editor'
+        //     ) {
+        //         this.skillsStore.filteredNestedSkillsList = [];
+        //         await this.skillsStore.getFilteredNestedSkillsList();
+        //     }
+        // }
     },
     components: {
         SkillsListChildStudent,
@@ -290,21 +290,21 @@ export default {
 </template>
 
 <style scoped>
-.content{
+.content {
     scrollbar-width: auto;
     scrollbar-color: #9f9f9f;
 }
 .content::-webkit-scrollbar-thumb {
-  background: #9f9f9f;
-  border-radius: 5px;
+    background: #9f9f9f;
+    border-radius: 5px;
 }
 
 .content::-webkit-scrollbar-track {
-  background: #d8d8d8;
-  border-radius: 5px;
+    background: #d8d8d8;
+    border-radius: 5px;
 }
 .content::-webkit-scrollbar {
-  width: 10px;
+    width: 10px;
 }
 .loader {
     width: 48px;

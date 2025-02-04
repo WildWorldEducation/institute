@@ -51,7 +51,6 @@ export default {
         SkillTreeSearchBar
     },
     async created() {
-        console.log(this.userDetailsStore.gradeFilter);
         // Check if regular or instructor mode.
         if (typeof this.studentId == 'string') {
             this.instructorMode = true;
@@ -601,7 +600,7 @@ export default {
         </div>
     </div>
 
-    <SkillsListParent ref="skillList" />
+    <SkillsListParent />
 
     <!-- Tutorials -->
     <!-- Student Introduction modal -->
