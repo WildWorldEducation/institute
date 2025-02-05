@@ -1552,6 +1552,16 @@ export default {
 </template>
 
 <style scoped>
+/* Loading animation */
+.loading-animation {
+    min-height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
 .loader {
     width: 48px;
     height: 48px;
@@ -1694,18 +1704,6 @@ canvas {
     #wrapper {
         /* height: calc(100% - 130px); */
         height: calc(100%);
-    }
-}
-
-@media screen and (min-width: 992px) {
-    /* Loading animation */
-    .loading-animation {
-        min-height: 100%;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        -webkit-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
     }
 }
 </style>
