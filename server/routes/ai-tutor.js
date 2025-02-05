@@ -44,8 +44,7 @@ router.post('/', async (req, res, next) => {
 
         let run = await openai.beta.threads.runs.createAndPoll(thread.id, {
             assistant_id: assistant.id,
-            instructions:
-                'Please address the user as Jane Doe. The user has a premium account.'
+            instructions: 'Please return the message as formatted html code.'
         });
 
         if (run.status === 'completed') {

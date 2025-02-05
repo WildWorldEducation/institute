@@ -4,7 +4,8 @@
 export default {
     data() {
         return {
-            message: ''
+            message: '',
+            previousMessages: []
         };
     },
     mounted() {},
@@ -20,13 +21,16 @@ export default {
             };
             var url = '/ai-tutor';
             fetch(url, requestOptions)
-                .then(function (response) {
+                .then((response) => {
                     return response.json();
                 })
-                .then(function (data) {
+                .then((data) => {
                     console.log(data);
                     for (let i = 0; i < data.message.length; i++) {
                         console.log(data.message[i].content[0].text.value);
+                        this.previousMessages.push(
+                            data.message[i].content[0].text.value
+                        );
                     }
                 });
         }
@@ -38,6 +42,12 @@ export default {
     <div class="container mt-3">
         <h2 class="heading">Tutor</h2>
         <div class="row">
+            <div class="mb-3">
+                <div
+                    v-for="previousMessage in previousMessages"
+                    v-html="previousMessage"
+                ></div>
+            </div>
             <div class="mb-3">
                 <textarea v-model="message" type="text" class="form-control" />
             </div>
