@@ -440,12 +440,12 @@ export default {
                     await this.MakeMastered(this.skill);
                     this.isQuizPassed = true;
                     // show result page and hide assessment part
-                    this.assessmentStatus = 'pass';
+                    this.assessmentStatus = 'You passed';
                     this.showResult = true;
                 } else {
                     // show result page and hide assessment part
                     this.isQuizPassed = true;
-                    this.assessmentStatus = 'fails';
+                    this.assessmentStatus = 'You failed';
                     this.showResult = true;
                 }
             }
@@ -583,12 +583,12 @@ export default {
                         await this.MakeMastered(this.skill);
                         this.isQuizPassed = true;
                         // show result page and hide assessment part
-                        this.assessmentStatus = 'pass';
+                        this.assessmentStatus = 'You passed';
                         this.showResult = true;
                     } else {
                         // show result page and hide assessment part
                         this.isQuizPassed = true;
-                        this.assessmentStatus = 'fails';
+                        this.assessmentStatus = 'You failed';
                         this.showResult = true;
                     }
                 }

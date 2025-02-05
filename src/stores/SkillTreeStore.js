@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 
-// Import another store.
 import { useUserDetailsStore } from './UserDetailsStore.js';
 
 export const useSkillTreeStore = defineStore('skillTree', {
@@ -27,18 +26,14 @@ export const useSkillTreeStore = defineStore('skillTree', {
         // API call for Collapsible Skill Tree.
         async getUserSkills() {
             const userDetailsStore = useUserDetailsStore();
-            let level = userDetailsStore.gradeFilter;
 
             const result = await fetch(
-                '/user-skills/filter-by-cohort/' +
-                    userDetailsStore.userId +
-                    '?level=' +
-                    level
+                '/user-skills/filter-by-cohort/' + userDetailsStore.userId
             );
 
             this.userSkills = await result.json();
         },
-        // API call for Full Vertical skill tree.
+        // API call for Full skill tree.
         async getVerticalTreeUserSkills(level, subjects, isUnlockedOnly) {
             const userDetailsStore = useUserDetailsStore();
 
@@ -67,16 +62,14 @@ export const useSkillTreeStore = defineStore('skillTree', {
             // Default is all levels.
             else this.verticalTreeUserSkills = await result.json();
         },
-        // API call for Full Vertical skill tree.
-        async getMyVerticalTreeUserSkills() {
+        // API call for Custom skill tree.
+        async getCustomLearningTrackSkills() {
             const userDetailsStore = useUserDetailsStore();
             const result = await fetch(
-                '/user-skills/filter-by-cohort/my-vertical-tree/' +
+                '/user-skills/filter-by-cohort/custom-learning-track-skills/' +
                     userDetailsStore.userId
             );
-
-            // Default is all levels.
-            this.myVerticalTreeUserSkills = await result.json();
+            return await result.json();
         },
         // API call for Radial skill tree.
         async getUserSkillsSubSkillsSeparate(level, subjects) {
@@ -97,9 +90,8 @@ export const useSkillTreeStore = defineStore('skillTree', {
             );
             this.userSkillsSubSkillsSeparate = await result.json();
         },
-        // API call for instructor student Collapsible Tree
+        // API call for student and instructor/student Collapsible Tree
         async getStudentSkills(studentId) {
-            // API call for skill tree.
             const result = await fetch(
                 '/user-skills/filter-by-cohort/' + studentId
             );
