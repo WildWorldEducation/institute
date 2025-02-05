@@ -284,9 +284,13 @@ const scaleIcon = async (iconData, iconWidth) => {
     }
 }
 
-const updateImage = async (fullSizeData) => {
-
+const updateImage = async (sendImageData) => {
+    // Send to the bucket.
+    const command = new PutObjectCommand(
+        sendImageData
+    );
+    await s3.send(command);
 }
 
 
-module.exports = { saveIconToAWS, updateSkillIcon, saveBase64ImageToBucket, saveUserAvatarToAWS, saveNodeIconToAWS, scaleIcon }
+module.exports = { saveIconToAWS, updateSkillIcon, saveBase64ImageToBucket, saveUserAvatarToAWS, saveNodeIconToAWS, scaleIcon, updateImage }

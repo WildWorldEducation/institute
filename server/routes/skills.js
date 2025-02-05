@@ -48,7 +48,8 @@ const {
     saveIconToAWS,
     saveBase64ImageToBucket,
     saveNodeIconToAWS,
-    scaleIcon
+    scaleIcon,
+    updateImage
 } = require('../utilities/save-image-to-aws');
 const {
     getVectorData,
@@ -818,6 +819,7 @@ router.put(
             let nodeIconUrl = req.body.icon;
             let skillImageUrl = req.body.icon_image;
             let scaledDownIcon = '';
+            let nodeIconData = null;
             if (req.body.icon.length > 0 && !req.body.icon.includes(skillIconBucketName)) {
                 nodeIconUrl = await saveNodeIconToAWS(req.body.icon, url, uuidDate);
                 skillImageUrl = nodeIconUrl;
@@ -826,10 +828,24 @@ router.put(
                 nodeIconUrl = `https://${skillIconBucketName}.s3.amazonaws.com/${nodeIconUrl}`
                 const scaleDownData = req.body.icon.split(';base64,').pop();
                 const imgBuffer = Buffer.from(scaleDownData, 'base64');
+                nodeIconData = imgBuffer;
                 scaledDownIcon = await scaleIcon(imgBuffer, 50);
             }
 
-
+            // update the node icon
+            if (nodeIconData) {
+                let iconData = {
+                    // The name it will be saved as on S3
+                    Key: url,
+                    // The image
+                    Body: nodeIconData,
+                    ContentEncoding: 'base64',
+                    ContentType: 'image/jpeg',
+                    // The S3 bucket
+                    Bucket: skillIconBucketName
+                }
+                await updateImage(iconData)
+            }
 
             let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
@@ -1012,6 +1028,7 @@ router.put(
                     let nodeIconUrl = req.body.icon;
                     let skillImageUrl = req.body.icon_image;
                     let scaledDownIcon = '';
+                    let nodeIconData = null;
                     if (req.body.icon.length > 0 && !req.body.icon.includes(skillIconBucketName)) {
                         nodeIconUrl = await saveNodeIconToAWS(req.body.icon, url, uuidDate);
                         skillImageUrl = nodeIconUrl;
@@ -1020,6 +1037,7 @@ router.put(
                         nodeIconUrl = `https://${skillIconBucketName}.s3.amazonaws.com/${nodeIconUrl}`
                         const scaleDownData = req.body.icon.split(';base64,').pop();
                         const imgBuffer = Buffer.from(scaleDownData, 'base64');
+                        nodeIconData = imgBuffer;
                         scaledDownIcon = await scaleIcon(imgBuffer, 50);
                     }
 
@@ -1070,11 +1088,8 @@ router.put(
                                     Bucket: skillInfoboxImagesBucketName
                                 };
 
-                                // Send to the bucket.
-                                const fullSizeCommand = new PutObjectCommand(
-                                    fullSizeData
-                                );
-                                await s3.send(fullSizeCommand);
+                                await updateImage(fullSizeData)
+
 
                                 const thumbnailFileData = await sharp(fileData)
                                     .resize({ width: 330 })
@@ -1092,14 +1107,23 @@ router.put(
                                 };
 
                                 // Send to the bucket.
-                                const thumbnailCommand = new PutObjectCommand(
-                                    thumbnailData
-                                );
-                                await s3.send(thumbnailCommand);
+                                await updateImage(thumbnailData)
                             }
 
-                            console.log('icon length: ')
-                            console.log(scaledDownIcon.length)
+                            // update the node icon
+                            if (nodeIconData) {
+                                let iconData = {
+                                    // The name it will be saved as on S3
+                                    Key: url,
+                                    // The image
+                                    Body: nodeIconData,
+                                    ContentEncoding: 'base64',
+                                    ContentType: 'image/jpeg',
+                                    // The S3 bucket
+                                    Bucket: skillIconBucketName
+                                }
+                                await updateImage(iconData)
+                            }
 
                             // Update record in skill table.
                             let updateRecordSQLQuery = `UPDATE skills SET 
