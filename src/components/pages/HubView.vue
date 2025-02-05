@@ -281,7 +281,7 @@ export default {
 
     <div class="container min-vh-100">
         <!-- Generate recommended skills bar -->
-        <div class="row mb-3">
+        <div class="row mb-5">
             <div class="col">
                 <RecommendedSkillsGenerator />
                 <!-- Tooltip -->
@@ -305,31 +305,8 @@ export default {
           Last Visited Skills / Student Suggested Questions,
           Goals -->
         <div class="row">
-            <!--  Mark Assessments -->
-            <div
-                class="col-lg-4 col-md-6 mb-2"
-                v-if="userDetailsStore.role != 'editor'"
-                :class="{
-                    'd-none': assessments.length === 0
-                }"
-            >
-                <div class="h-100">
-                    <MarkAssessment
-                        v-if="userDetailsStore.role == 'instructor'"
-                        :assessments="assessments"
-                    />
-                </div>
-            </div>
-            <!-- Last Visited Skills / Student Suggested Questions -->
-            <div
-                class="col-lg-4 col-md-6 mb-2"
-                v-if="userDetailsStore.role != 'editor'"
-                :class="{
-                    'd-none':
-                        userDetailsStore.role == 'instructor' &&
-                        questions.length === 0
-                }"
-            >
+            <!--  Last Visited Skills / Mark Assessments -->
+            <div class="col-md-6 mb-2">
                 <div class="h-100">
                     <!-- Tooltip -->
                     <div
@@ -354,17 +331,16 @@ export default {
                         v-if="userDetailsStore.role == 'student'"
                         :userId="userDetailsStore.userId"
                     />
-                    <!-- Student Added Questions List -->
-                    <HubStudentQuestionList
-                        v-else-if="userDetailsStore.role == 'instructor'"
-                        :questions="questions"
+                    <MarkAssessment
+                        v-if="userDetailsStore.role == 'instructor'"
+                        :assessments="assessments"
                     />
                 </div>
             </div>
-            <!-- Goals -->
+            <!-- Goals / Student Suggested Questions -->
             <div
                 v-if="userDetailsStore.role == 'student'"
-                class="col-lg-4 col-md-6 mb-2"
+                class="col-md-6 mb-2"
             >
                 <div class="h-100">
                     <!-- Tooltip -->
@@ -388,6 +364,11 @@ export default {
                         </button>
                     </div>
                     <Goals />
+                    <!-- Student Added Questions List -->
+                    <HubStudentQuestionList
+                        v-if="userDetailsStore.role == 'instructor'"
+                        :questions="questions"
+                    />
                 </div>
             </div>
         </div>
