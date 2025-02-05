@@ -1545,7 +1545,7 @@ export default {
         <div id="SVGskilltree"></div>
         <ZoomControl ref="ZoomControl" />
         <div id="sidepanel-backdrop"></div>
-        <JoystickControl class="d-lg-none" />
+        <JoystickControl class="d-none" />
     </div>
 </template>
 
