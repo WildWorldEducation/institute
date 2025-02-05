@@ -34,6 +34,7 @@ export default {
                 name: '',
                 parent: '',
                 description: '',
+                introduction: '',
                 icon_image: '',
                 mastery_requirements: '',
                 tags: [],
@@ -86,6 +87,7 @@ export default {
                 violated: false,
                 name: false,
                 description: false,
+                introduction: false,
                 orphan: false,
                 superValidate: false,
                 noChild: false
@@ -411,6 +413,7 @@ export default {
                     name: this.skill.name,
                     parent: this.skill.parent,
                     description: this.skill.description,
+                    introduction: this.skill.introduction,
                     icon_image: updateSkillImage,
                     icon: this.skillNodeIcon,
                     mastery_requirements: this.skill.mastery_requirements,
@@ -462,6 +465,7 @@ export default {
                     userId: this.userDetailsStore.userId,
                     icon_image: this.iconImage,
                     mastery_requirements: this.skill.mastery_requirements,
+                    introduction: this.skill.introduction,
                     comment: this.comment
                 })
             };
@@ -1102,6 +1106,23 @@ export default {
                     <div>
                         <div v-if="validate.description" class="form-validate">
                             please enter description for skill
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="mb-3">
+                        <h2 class="secondary-heading h4">Introduction</h2>
+                        <textarea
+                            v-model="skill.introduction"
+                            class="form-control"
+                            rows="2"
+                        ></textarea>
+                    </div>
+                    <div>
+                        <div v-if="validate.introduction" class="form-validate">
+                            please enter introduction for skill
                         </div>
                     </div>
                 </div>
