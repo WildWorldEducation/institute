@@ -391,6 +391,12 @@ body {
     font-weight: 500;
 }
 
+.tertiary-heading {
+    color: var(--primary-contrast-color) !important;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
 /* Regular text */
 p {
     color: black !important;
