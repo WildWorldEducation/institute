@@ -811,9 +811,6 @@ router.put(
             let versionNumber = req.body.version_number + 1;
             let url = req.body.url;
 
-
-
-
             // Save Edit node icon to AWS
             const uuidDate = Date.now();
             let nodeIconUrl = req.body.icon;
