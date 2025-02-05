@@ -396,7 +396,7 @@ export default {
             this.skill.url = this.skill.name.replace(/\//g, 'or');
             this.skill.url = this.skill.url.replace(/ /g, '_');
 
-            const updateSkillImage = null;
+            let updateSkillImage = null;
             if (
                 this.iconImage !==
                 `https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/${this.skill.url}`
