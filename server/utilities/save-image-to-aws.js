@@ -284,5 +284,9 @@ const scaleIcon = async (iconData, iconWidth) => {
     }
 }
 
+const updateImage = async (fullSizeData) => {
+
+}
+
 
 module.exports = { saveIconToAWS, updateSkillIcon, saveBase64ImageToBucket, saveUserAvatarToAWS, saveNodeIconToAWS, scaleIcon }
