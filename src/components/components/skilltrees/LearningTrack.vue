@@ -161,7 +161,7 @@ export default {
             // We have to construct the d3 zoom function and assign the zoom event
             this.d3Zoom = d3
                 .zoom()
-                .scaleExtent([0.1, 5])
+                .scaleExtent([0.05, 4])
                 .on('zoom', ({ transform }) => {
                     this.debugScale = transform.k;
                     this.transformX = transform.x;
@@ -666,6 +666,8 @@ export default {
             document.querySelector('#SVGskilltree').append(svg.node());
         },
         resetPos() {
+            const isMobile = window.innerWidth <= 767; // Adjust breakpoint if needed
+            const scale = isMobile ? 0.7 : 1; // Reduce scale for mobile view
             d3.select(this.context.canvas)
                 .transition()
                 .duration(700)
@@ -676,7 +678,7 @@ export default {
                             this.context.canvas.width / 2,
                             this.context.canvas.height / 2
                         )
-                        .scale(0.3)
+                        .scale(scale)
                 );
         },
         // programmatic d3 zoom
