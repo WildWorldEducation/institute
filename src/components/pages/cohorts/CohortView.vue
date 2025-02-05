@@ -23,8 +23,7 @@ export default {
             showSuccessModal: false,
             showDeleteModal: false,
             deleteMessage: '',
-            hideOkButton: false,
-            deletePending: false
+            hideOkButton: false
         };
     },
     async created() {
