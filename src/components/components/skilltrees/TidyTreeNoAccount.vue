@@ -173,7 +173,7 @@ export default {
 
         this.d3Zoom = d3
             .zoom()
-            .scaleExtent([0.1, 5])
+            .scaleExtent([0.05, 4])
             .on('zoom', ({ transform }) => {
                 this.drawTree(transform);
                 // update slider percent ( Handle by us not d3 but will invoke when the d3 zoom event is call )
@@ -620,7 +620,7 @@ export default {
         },
         resetPos() {
             const isMobile = window.innerWidth <= 767; // Adjust breakpoint if needed
-            const scale = isMobile ? 0.15 : 0.3; // Reduce scale for mobile view
+            const scale = isMobile ? 0.05 : 0.1; // Reduce scale for mobile view
             d3.select(this.context.canvas)
                 .transition()
                 .duration(700)
