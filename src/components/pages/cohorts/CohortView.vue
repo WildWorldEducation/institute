@@ -19,7 +19,12 @@ export default {
             members: [],
             showFilters: false,
             showMembers: false,
-            isLoading: false
+            isLoading: false,
+            showSuccessModal: false,
+            showDeleteModal: false,
+            deleteMessage: '',
+            hideOkButton: false,
+            deletePending: false
         };
     },
     async created() {
@@ -119,29 +124,34 @@ export default {
                 } else {
                     this.getMembers();
                     this.isLoading = false;
-                    alert('Cohort updated');
+                    this.showSuccessModal = true;
                     return;
                 }
             });
         },
+        openDeleteModal() {
+            this.showDeleteModal = true;
+            this.deleteMessage = 'Are you sure you want to delete this cohort?';
+            this.hideOkButton = false;
+        },
         async deleteCohort() {
-            let text = 'Are you sure you want to delete this cohort?';
-            if (confirm(text) == true) {
-                if (this.members.length > 0) {
-                    alert(
-                        'Please remove all members from this cohort before deleting it.'
-                    );
-                } else {
-                    const result = await fetch('/cohorts/' + this.cohortId, {
-                        method: 'DELETE'
-                    });
-
-                    if (result.error) {
-                        console.log(result.error);
-                    }
-
-                    this.$router.push('/cohorts');
+            if (this.members.length > 0) {
+                this.deleteMessage =
+                    'Please remove all members from this cohort before deleting it.';
+                this.hideOkButton = true;
+                return;
+            }
+            try {
+                const result = await fetch(`/cohorts/${this.cohortId}`, {
+                    method: 'DELETE'
+                });
+                if (!result.ok) {
+                    console.log(result.error);
                 }
+                this.showDeleteModal = false;
+                this.$router.push('/cohorts');
+            } catch (err) {
+                console.error(err);
             }
         }
     }
@@ -152,7 +162,7 @@ export default {
     <div class="container cohort-page bg-light rounded p-3">
         <span class="d-flex justify-content-between"
             ><h1 class="heading">{{ cohort.name }}</h1>
-            <button class="btn red-btn" @click="deleteCohort">
+            <button class="btn red-btn" @click="openDeleteModal">
                 Delete
             </button></span
         >
@@ -263,6 +273,7 @@ export default {
                 </div>
             </Transition>
         </div>
+
         <!-- Loading animation -->
         <div
             v-if="isLoading == true"
@@ -270,10 +281,85 @@ export default {
         >
             <span class="loader"></span>
         </div>
+        <!-- Success Modal -->
+        <div v-if="showSuccessModal" class="modal">
+            <div class="modal-content bg-light">
+                <p>Cohort updated</p>
+                <button
+                    class="btn primary-btn"
+                    @click="showSuccessModal = false"
+                >
+                    close
+                </button>
+            </div>
+        </div>
+        <!-- Pending delete Modal -->
+        <div v-if="showDeleteModal" class="modal">
+            <div class="modal-content bg-light">
+                <p>{{ deleteMessage }}</p>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn red-btn"
+                        @click="showDeleteModal = false"
+                    >
+                        Close
+                    </button>
+                    <button
+                        class="btn primary-btn"
+                        :style="{ display: hideOkButton ? 'none' : 'block' }"
+                        @click="deleteCohort"
+                    >
+                        Ok
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <style scoped>
+/* Modals */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 2000;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 520px;
+    font-size: 18px;
+    /* Could be more or less, depending on screen size */
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 480px) {
+    /* Modal Content/Box */
+    .modal-content {
+        width: 90%;
+        margin-top: 30%;
+    }
+}
 /* Loading animation */
 .loader {
     width: 48px;
