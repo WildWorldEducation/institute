@@ -308,6 +308,8 @@ Themes
     --secondary-color: #c6e76c;
     --secondary-contrast-color: black;
 
+    --tertiary-color: #5f31dd;
+
     --skill-tree-background-color: white;
     --skill-tree-color: black;
 
@@ -321,6 +323,8 @@ Themes
 
     --secondary-color: gold;
     --secondary-contrast-color: #040095;
+
+    --tertiary-color: #040095;
 
     --skill-tree-background-color: skyblue;
     --skill-tree-color: black;
@@ -336,6 +340,8 @@ Themes
 
     --secondary-color: gold;
     --secondary-contrast-color: black;
+
+    --tertiary-color: white
 
     --skill-tree-background-color: black;
     --skill-tree-color: white;
@@ -392,7 +398,7 @@ body {
 }
 
 .tertiary-heading {
-    color: var(--primary-contrast-color) !important;
+    color: var(--tertiary-color) !important;
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
 }
