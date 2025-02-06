@@ -41,11 +41,6 @@ export default {
     async created() {
         if (this.userDetailsStore.role === 'admin') {
             this.nameList = await this.skillsStore.getNameList();
-        } else if (
-            this.userDetailsStore.role === 'instructor' ||
-            this.userDetailsStore.role === 'editor'
-        ) {
-            this.nameList = await this.skillsStore.getFilteredNameList();
         } else if (this.userDetailsStore.role === 'student') {
             await this.skillTreeStore.getStudentSkills(
                 this.userDetailsStore.userId
@@ -56,6 +51,10 @@ export default {
             };
 
             this.nameList = this.skillTreeStore.convertNodesToArray(nodes);
+        }
+        //
+        else {
+            this.nameList = await this.skillsStore.getFilteredNameList();
         }
 
         this.skillTreeStore.searchResultNodes = this.nameList;
@@ -173,7 +172,7 @@ export default {
         handleSearchTextChange(searchText) {
             if (!this.aiMode) {
                 this.getKeyWordResults(searchText.toLowerCase());
-            } else if (this.isLogin) {
+            } else {
                 this.checkTextForAi(searchText.toLowerCase());
             }
         },
@@ -193,13 +192,19 @@ export default {
             }
         },
         handleRobotIconClick() {
+            if (!this.isLogin) {
+                this.showAiToolTip = true;
+                setTimeout(() => {
+                    this.showAiToolTip = false;
+                }, 2000);
+                return false;
+            }
             this.aiMode = !this.aiMode;
 
             if (this.aiMode) {
                 this.checkTextForAi(this.searchText);
             }
         },
-
         handleInputEnterPress() {
             // If user is in result row
             if (this.focusIndex >= 0) {
@@ -252,13 +257,6 @@ export default {
         // We use watcher instead of compute because we made API call
         searchText: {
             handler(newVal) {
-                if (!this.isLogin) {
-                    this.showAiToolTip = true;
-                    setTimeout(() => {
-                        this.showAiToolTip = false;
-                    }, 2000);
-                    return false;
-                }
                 if (this.chooseResult) {
                     this.chooseResult = null;
                 } else {
