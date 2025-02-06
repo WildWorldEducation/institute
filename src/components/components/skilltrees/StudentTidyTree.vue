@@ -709,6 +709,33 @@ export default {
                 subjectFilters,
                 isUnlockedSkillsOnlyFilter
             );
+        },
+        async findHiddenSkill(searchString) {
+            // if we cant find the node it mean the node is hide in children
+            var url =
+                '/user-skills/find-hidden-skill/' +
+                this.userDetailsStore.userId;
+
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    skillName: searchString
+                })
+            });
+            const data = await res.json();
+            if (data?.mess === 'ok') {
+                await this.reloadTree();
+
+                try {
+                    const resultNode = this.findNodeWithName(searchString);
+                    this.goToLocation(resultNode);
+                } catch (error) {
+                    // Skill get filter by user instead of being hidden
+                    // Handle filtered case
+                    this.removeFilterForHiddenSkill(searchString);
+                }
+            }
         }
     }
 };
