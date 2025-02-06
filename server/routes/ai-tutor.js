@@ -44,7 +44,7 @@ router.post('/', async (req, res, next) => {
 
         let run = await openai.beta.threads.runs.createAndPoll(thread.id, {
             assistant_id: assistant.id,
-            instructions: 'Please return the message as formatted html code.'
+            instructions: `Please return the message as formatted html code. Please refer to the user as ${req.body.userName}. Please only talk about the topic: ${req.body.skillName};`
         });
 
         if (run.status === 'completed') {
@@ -59,7 +59,7 @@ router.post('/', async (req, res, next) => {
                 //console.log(message.content[0].text.value);
                 //    res.json({ answer: message.content[0].text.value });
             }
-            res.json({ message: messages.data.reverse() });
+            res.json({ message: messages.data });
         } else {
             console.log(run.status);
         }
