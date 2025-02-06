@@ -424,7 +424,7 @@ export default {
                 `https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/${this.skill.url}`
             ) {
                 updateSkillImage = this.iconImage;
-            }         
+            }
 
             const requestOptions = {
                 method: 'PUT',
@@ -475,8 +475,13 @@ export default {
         },
         // If edit is from a student or instructor.
         SubmitForReview() {
-            this.skill.mastery_requirements =
-                $('#summernote').summernote('code');
+            // Update the skill.
+            this.skill.mastery_requirements = $(
+                '#summernote-mastery-requirements'
+            ).summernote('code');
+            this.skill.introduction = $('#summernote-introduction').summernote(
+                'code'
+            );
 
             const requestOptions = {
                 method: 'POST',

@@ -917,10 +917,11 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
          )}, 
          date = CURRENT_TIMESTAMP(), 
          icon_image = ${conn.escape(req.body.icon_image)},          
-         comment = ${conn.escape(req.body.comment)};`;
+         comment = ${conn.escape(req.body.comment)},
+         introduction = ${conn.escape(req.body.introduction)}
+         ;`;
 
         // Update record in skill table.
-
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
