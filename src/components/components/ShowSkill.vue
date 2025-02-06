@@ -72,6 +72,7 @@ export default {
             showTutorialTip4: false,
             showTutorialTip5: false,
             showTutorialTip6: false,
+            showTutorialTip7: false,
             showCategoryCompletedModal: false,
             nextSkillsInBranch: []
         };
@@ -96,6 +97,7 @@ export default {
         if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
         await this.checkIfGoalExists();
     },
+
     methods: {
         async getGoals() {
             const result = await fetch(
@@ -388,12 +390,23 @@ export default {
                 this.showTutorialTip5 = false;
                 this.showTutorialTip6 = true;
                 if (
-                    this.userDetailsStore.role == 'editor' ||
-                    this.userDetailsStore.role == 'instructor'
-                )
-                    this.markTutorialComplete();
+                    this.userDetailsStore.role === 'editor' ||
+                    this.userDetailsStore.role === 'instructor'
+                ) {
+                    this.showTutorialTip7 = true;
+                }
             } else if (step == 6) {
                 this.showTutorialTip6 = false;
+                this.showTutorialTip7 = true;
+                if (
+                    this.userDetailsStore.role === 'editor' ||
+                    this.userDetailsStore.role === 'instructor'
+                ) {
+                    this.showTutorialTip7 = false;
+                    this.markTutorialComplete();
+                }
+            } else if (step == 7) {
+                this.showTutorialTip7 = false;
                 this.markTutorialComplete();
             }
         },
@@ -404,6 +417,8 @@ export default {
             this.showTutorialTip4 = false;
             this.showTutorialTip5 = false;
             this.showTutorialTip6 = false;
+            this.showTutorialTip7 = false;
+            this.showInstructorEditorTutorialTip = false;
             this.isTutorialComplete = false;
         },
         markTutorialComplete() {
@@ -1047,7 +1062,13 @@ export default {
         <!-- Posts -->
         <div v-if="skill.type != 'domain'">
             <div class="row mt-3 mb-3">
-                <Forum v-if="isSkillLoaded" :skillId="skill.id" />
+                <Forum
+                    v-if="isSkillLoaded"
+                    :skillId="skill.id"
+                    :showTutorialTip7="showTutorialTip7"
+                    :userRole="userDetailsStore.role"
+                    @progressTutorial="progressTutorial"
+                />
             </div>
         </div>
         <p>&nbsp;</p>
@@ -1161,7 +1182,7 @@ export default {
                     learn about this topic.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(6)">
-                    close
+                    next
                 </button>
             </div>
         </div>
@@ -1203,7 +1224,7 @@ export default {
                 </p>
                 <p>You can add more, vote on these, or edit them.</p>
                 <button class="btn primary-btn" @click="progressTutorial(5)">
-                    close
+                    next
                 </button>
             </div>
         </div>
@@ -1244,7 +1265,7 @@ export default {
                 </p>
                 <p>You can add more and vote on these.</p>
                 <button class="btn primary-btn" @click="progressTutorial(5)">
-                    close
+                    next
                 </button>
             </div>
         </div>

@@ -120,7 +120,10 @@ export default {
 </script>
 
 <template>
-    <div class="tutor d-flex w-100 p-3 flex-column flex-lg-row mt-4">
+    <div
+        v-bind="$attrs"
+        class="tutor d-flex w-100 p-3 flex-column flex-lg-row mt-4"
+    >
         <!-- User avatar -->
         <div
             class="d-flex justify-content-center ms-3 ms-md-0 tutor-avatar-div"
@@ -542,7 +545,6 @@ export default {
     top: 5px;
     right: 5px;
 }
-
 
 /* The Warning Modal */
 .modal {

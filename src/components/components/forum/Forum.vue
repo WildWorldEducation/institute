@@ -16,7 +16,8 @@ export default {
             userDetailsStore
         };
     },
-    props: ['skillId'],
+    emits: ['progressTutorial'],
+    props: ['skillId', 'showTutorialTip7', 'userRole'],
     data() {
         return {
             sourcePosts: [],
@@ -318,6 +319,9 @@ export default {
             :posts="posts"
             :user="user"
             :skillId="skillId"
+            :showTutorialTip7="showTutorialTip7"
+            :userRole="userDetailsStore.role"
+            @progressTutorial="$emit('progressTutorial', $event)"
         />
     </div>
     <!-- Flagging Component -->
