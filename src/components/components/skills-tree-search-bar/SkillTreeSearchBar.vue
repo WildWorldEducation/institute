@@ -39,51 +39,51 @@ export default {
         };
     },
     async created() {
-        if (this.userDetailsStore.role === 'admin') {
-            this.nameList = await this.skillsStore.getNameList();
-        } else if (this.userDetailsStore.role === 'student') {
-            await this.skillTreeStore.getStudentSkills(
-                this.userDetailsStore.userId
-            );
-            const nodes = {
-                children: this.skillTreeStore.studentSkills,
-                skillName: 'my skills'
-            };
-
-            this.nameList = this.skillTreeStore.convertNodesToArray(nodes);
-        }
-        //
-        else {
-            this.nameList = await this.skillsStore.getFilteredNameList();
-        }
-
-        this.skillTreeStore.searchResultNodes = this.nameList;
-        console.log('name list length: ');
-        console.log(this.nameList.length);
-        if (this.userStore.userId) {
-            this.isLogin = true;
-        }
+        await this.getNameList();
     },
 
     methods: {
-        getKeyWordResults(searchText) {
+        async getKeyWordResults(searchText) {
             let results = [];
             // search only first work match if search text is less than three
             if (searchText.length < 3) {
-                this.searchFirstWord(results, searchText);
+                await this.searchFirstWord(results, searchText);
             }
             // search for all word in skill name string if search text is greater than three
             else {
                 this.searchWholeString(results, searchText);
             }
             this.resultsSkills = this.highlightingResult(results);
-
             if (
                 this.resultsSkills.length === 0 &&
                 !this.toolTipStillShowing &&
                 searchText.length > 0
             ) {
                 this.handleShowAISuggestion();
+            }
+        },
+        async getNameList() {
+            if (this.userDetailsStore.role === 'admin') {
+                this.nameList = await this.skillsStore.getNameList();
+            } else if (this.userDetailsStore.role === 'student') {
+                await this.skillTreeStore.getStudentSkills(
+                    this.userDetailsStore.userId
+                );
+                const nodes = {
+                    children: this.skillTreeStore.studentSkills,
+                    skillName: 'my skills'
+                };
+
+                this.nameList = this.skillTreeStore.convertNodesToArray(nodes);
+            }
+            //
+            else {
+                this.nameList = await this.skillsStore.getFilteredNameList();
+            }
+
+            this.skillTreeStore.searchResultNodes = this.nameList;
+            if (this.userStore.userId) {
+                this.isLogin = true;
             }
         },
         handleShowAISuggestion() {
@@ -98,7 +98,10 @@ export default {
                 this.toolTipStillShowing = false;
             }, 10000);
         },
-        searchFirstWord(results, searchText) {
+        async searchFirstWord(results, searchText) {
+            if (this.nameList.length === 0) {
+                await this.getNameList();
+            }
             this.nameList.forEach((element) => {
                 if (
                     element.name
@@ -258,16 +261,17 @@ export default {
         // We use watcher instead of compute because we made API call
         searchText: {
             handler(newVal) {
-                if (this.chooseResult) {
-                    this.chooseResult = null;
-                } else {
-                    this.handleSearchTextChange(newVal);
-                }
                 if (newVal.length === 0) {
                     this.resultsSkills = [];
                     this.showSuggestAiSearchToolTip = false;
                     this.showAiToolTip = false;
                     this.clearResults();
+                    return;
+                }
+                if (this.chooseResult) {
+                    this.chooseResult = null;
+                } else {
+                    this.handleSearchTextChange(newVal);
                 }
             }
         }
@@ -384,14 +388,14 @@ export default {
     left: -1px;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
-    border-bottom: 1px solid black;
-    border-right: 1px solid black;
-    border-left: 1px solid black;
+    border-bottom: 1px solid var(--primary-color);
+    border-right: 1px solid var(--primary-color);
+    border-left: 1px solid var(--primary-color);
     background-color: white;
     max-height: 400px;
     overflow-y: auto;
     z-index: 1000;
-    width: 100.5%;
+    width: 100.8%;
 }
 
 .result-row {
