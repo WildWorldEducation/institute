@@ -692,31 +692,17 @@ export default {
         findNodeWithName(searchString) {
             let results = [];
             // D3
-            //let breakLoop = false;
+            let breakLoop = false;
+            let resultNode = null;
             this.root.each(function (node) {
-                if (searchString.length < 2) {
-                    if (
-                        node.data?.name
-                            ?.toLowerCase()
-                            .substring(0, searchString.length) === searchString
-                    ) {
-                        const reformatData = {
-                            ...node.data,
-                            skill_name: node.data.name
-                        };
-                        results.push({ ...node, data: reformatData });
-                    }
-                } else {
-                    if (node.data?.name?.toLowerCase().includes(searchString)) {
-                        const reformatData = {
-                            ...node.data,
-                            skill_name: node.data.name
-                        };
-                        results.push({ ...node, data: reformatData });
-                    }
+                if (node.data?.name === searchString) {
+                    breakLoop = true;
+                    resultNode = node;
                 }
+                if (breakLoop) return true;
             });
-            return results;
+
+            return resultNode;
         },
         async reloadTree(gradeFilter, subjectFilters) {
             // Close skill panel, if open.
