@@ -493,7 +493,7 @@ export default {
             ).summernote('code');
             this.skill.introduction = $('#summernote-introduction').summernote(
                 'code'
-            );
+            );        
 
             const requestOptions = {
                 method: 'POST',

@@ -210,11 +210,11 @@ router.post(
                             1,
                             ${conn.escape(req.session.userId)},
                             ${conn.escape(
-                                    req.body.name
-                                )},                           
+                                req.body.name
+                            )},                           
                             ${conn.escape(
-                                    req.body.description
-                                )},                                                      
+                                req.body.description
+                            )},                                                      
                             ${conn.escape(req.body.mastery_requirements)},
                             ${conn.escape(req.body.level)});`;
 
@@ -278,8 +278,8 @@ router.post(
         const sqlQuery = `SELECT *
                           FROM skills
                           WHERE skills.id = ${conn.escape(
-            req.body.skillToBeCopied.id
-        )} AND skills.is_deleted = 0;`;
+                              req.body.skillToBeCopied.id
+                          )} AND skills.is_deleted = 0;`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -645,8 +645,8 @@ router.get('/url/:skillUrl', (req, res, next) => {
                     LEFT JOIN 
                         skills AS parent_skill ON s.parent = parent_skill.id
                     WHERE s.url = ${conn.escape(
-        req.params.skillUrl
-    )} AND s.is_deleted = 0`;
+                        req.params.skillUrl
+                    )} AND s.is_deleted = 0`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -808,12 +808,19 @@ router.put(
             let skillImageUrl = req.body.icon_image;
             let scaledDownIcon = '';
             let nodeIconData = null;
-            if (req.body.icon.length > 0 && !req.body.icon.includes(skillIconBucketName)) {
-                nodeIconUrl = await saveNodeIconToAWS(req.body.icon, url, uuidDate);
+            if (
+                req.body.icon.length > 0 &&
+                !req.body.icon.includes(skillIconBucketName)
+            ) {
+                nodeIconUrl = await saveNodeIconToAWS(
+                    req.body.icon,
+                    url,
+                    uuidDate
+                );
                 skillImageUrl = nodeIconUrl;
                 // Add bucket name prefix to the url
-                skillImageUrl = `https://${skillInfoboxImageThumbnailsBucketName}.s3.amazonaws.com/${nodeIconUrl}`
-                nodeIconUrl = `https://${skillIconBucketName}.s3.amazonaws.com/${nodeIconUrl}`
+                skillImageUrl = `https://${skillInfoboxImageThumbnailsBucketName}.s3.amazonaws.com/${nodeIconUrl}`;
+                nodeIconUrl = `https://${skillIconBucketName}.s3.amazonaws.com/${nodeIconUrl}`;
                 const scaleDownData = req.body.icon.split(';base64,').pop();
                 const imgBuffer = Buffer.from(scaleDownData, 'base64');
                 nodeIconData = imgBuffer;
@@ -831,8 +838,8 @@ router.put(
                     ContentType: 'image/jpeg',
                     // The S3 bucket
                     Bucket: skillIconBucketName
-                }
-                await updateImage(iconData)
+                };
+                await updateImage(iconData);
             }
 
             let addVersionHistoryInsertSQLQuery = `
@@ -847,7 +854,9 @@ router.put(
                     ${conn.escape(req.body.description)},
                     ${conn.escape(skillImageUrl)},
                     ${conn.escape(nodeIconUrl)},
-                    ${conn.escape(req.body.mastery_requirements)},                    
+                    ${conn.escape(
+                        req.body.mastery_requirements
+                    )},                    
                     ${conn.escape(req.body.level)},                    
                     ${conn.escape(req.body.order)},
                     ${conn.escape(req.body.comment)},
@@ -865,17 +874,20 @@ router.put(
                         url = ${conn.escape(req.body.url)},
                         parent = ${conn.escape(req.body.parent)},
                         description = ${conn.escape(
-                        req.body.description
-                    )},                         
+                            req.body.description
+                        )},                         
                         mastery_requirements = ${conn.escape(
-                        req.body.mastery_requirements
-                    )}, 
+                            req.body.mastery_requirements
+                        )}, 
                         type = ${conn.escape(req.body.type)}, 
                         level = ${conn.escape(req.body.level)},
                         introduction = ${conn.escape(req.body.introduction)},
                         skills.order = ${conn.escape(req.body.order)}, 
                         version_number = ${conn.escape(versionNumber)}, 
-                        ${scaledDownIcon !== '' && `icon = ${conn.escape(scaledDownIcon)},`}
+                        ${
+                            scaledDownIcon !== '' &&
+                            `icon = ${conn.escape(scaledDownIcon)},`
+                        }
                         edited_date = current_timestamp, 
                         is_human_edited = 1
                         WHERE id = ${conn.escape(req.params.id)};`;
@@ -888,7 +900,10 @@ router.put(
                                 // Update new Icon to if user changed it
 
                                 // Save edit icon to AWS
-                                await saveIconToAWS(req.body.icon_image, req.body.url);
+                                await saveIconToAWS(
+                                    req.body.icon_image,
+                                    req.body.url
+                                );
 
                                 // add edit (update) action into user_actions table
                                 const actionData = {
@@ -935,18 +950,18 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
          ${conn.escape(req.body.mastery_requirements)}, 
          ${conn.escape(req.body.icon_image)},
          ${conn.escape(req.body.node_icon)},          
-         ${conn.escape(req.body.comment)}),
-          ${conn.escape(req.body.node_icon)})
+         ${conn.escape(req.body.comment)},
+         ${conn.escape(req.body.introduction)})
          
          ON DUPLICATE KEY
          UPDATE mastery_requirements = ${conn.escape(
-            req.body.mastery_requirements
-        )}, 
+             req.body.mastery_requirements
+         )}, 
          date = CURRENT_TIMESTAMP(), 
          icon_image = ${conn.escape(req.body.icon_image)},          
          comment = ${conn.escape(req.body.comment)},
          introduction = ${conn.escape(req.body.introduction)},
-         icon = ${conn.escape(req.body.icon_image)},     
+         icon = ${conn.escape(req.body.node_icon)}     
          ;`;
 
         // Update record in skill table.
@@ -1018,18 +1033,26 @@ router.put(
                     let skillImageUrl = req.body.icon_image;
                     let scaledDownIcon = '';
                     let nodeIconData = null;
-                    if (req.body.icon.length > 0 && !req.body.icon.includes(skillIconBucketName)) {
-                        nodeIconUrl = await saveNodeIconToAWS(req.body.icon, url, uuidDate);
+                    if (
+                        req.body.icon.length > 0 &&
+                        !req.body.icon.includes(skillIconBucketName)
+                    ) {
+                        nodeIconUrl = await saveNodeIconToAWS(
+                            req.body.icon,
+                            url,
+                            uuidDate
+                        );
                         skillImageUrl = nodeIconUrl;
                         // Add bucket name prefix to the url
-                        skillImageUrl = `https://${skillInfoboxImageThumbnailsBucketName}.s3.amazonaws.com/${nodeIconUrl}`
-                        nodeIconUrl = `https://${skillIconBucketName}.s3.amazonaws.com/${nodeIconUrl}`
-                        const scaleDownData = req.body.icon.split(';base64,').pop();
+                        skillImageUrl = `https://${skillInfoboxImageThumbnailsBucketName}.s3.amazonaws.com/${nodeIconUrl}`;
+                        nodeIconUrl = `https://${skillIconBucketName}.s3.amazonaws.com/${nodeIconUrl}`;
+                        const scaleDownData = req.body.icon
+                            .split(';base64,')
+                            .pop();
                         const imgBuffer = Buffer.from(scaleDownData, 'base64');
                         nodeIconData = imgBuffer;
                         scaledDownIcon = await scaleIcon(imgBuffer, 50);
                     }
-
 
                     let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
@@ -1060,12 +1083,21 @@ router.put(
                             /*
                              * Send icon image to S3 only when there are changes
                              */
-                            if (req.body.icon_image.length > 1 &&
-                                !req.body.icon_image.includes(skillInfoboxImageThumbnailsBucketName)) {
+                            if (
+                                req.body.icon_image.length > 1 &&
+                                !req.body.icon_image.includes(
+                                    skillInfoboxImageThumbnailsBucketName
+                                )
+                            ) {
                                 // Get file from Base64 encoding (client sends as base64)
-                                const stringData = req.body.icon_image.split(';base64,').pop();
+                                const stringData = req.body.icon_image
+                                    .split(';base64,')
+                                    .pop();
 
-                                const fileData = Buffer.from(stringData, 'base64');
+                                const fileData = Buffer.from(
+                                    stringData,
+                                    'base64'
+                                );
 
                                 let fullSizeData = {
                                     // The name it will be saved as on S3
@@ -1078,8 +1110,7 @@ router.put(
                                     Bucket: skillInfoboxImagesBucketName
                                 };
 
-                                await updateImage(fullSizeData)
-
+                                await updateImage(fullSizeData);
 
                                 const thumbnailFileData = await sharp(fileData)
                                     .resize({ width: 330 })
@@ -1097,7 +1128,7 @@ router.put(
                                 };
 
                                 // Send to the bucket.
-                                await updateImage(thumbnailData)
+                                await updateImage(thumbnailData);
                             }
 
                             // update the node icon
@@ -1111,8 +1142,8 @@ router.put(
                                     ContentType: 'image/jpeg',
                                     // The S3 bucket
                                     Bucket: skillIconBucketName
-                                }
-                                await updateImage(iconData)
+                                };
+                                await updateImage(iconData);
                             }
 
                             // Update record in skill table.
@@ -1124,7 +1155,10 @@ router.put(
                                 req.body.introduction
                             )},
                             is_human_edited = 1,
-                            ${scaledDownIcon !== '' && `icon = ${conn.escape(scaledDownIcon)},`}                                                  
+                            ${
+                                scaledDownIcon !== '' &&
+                                `icon = ${conn.escape(scaledDownIcon)},`
+                            }                                                  
                             version_number = ${conn.escape(
                                 versionNumber
                             )}                               
@@ -1138,10 +1172,11 @@ router.put(
                                         recordUserAction(
                                             {
                                                 userId: req.session.userId,
-                                                userAction: `${req.body.edit
-                                                    ? 'edit_and_approve'
-                                                    : 'approve'
-                                                    }`,
+                                                userAction: `${
+                                                    req.body.edit
+                                                        ? 'edit_and_approve'
+                                                        : 'approve'
+                                                }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
                                             },
