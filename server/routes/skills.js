@@ -793,7 +793,7 @@ router.put(
     '/:id/edit',
     isAuthenticated,
     checkRoleHierarchy('editor'),
-    async (req, res, next) => {console.log("Skill editing...!");
+    async (req, res, next) => {
         if (req.session.userName) {
             // Add new record to the skills_versions table.
             let versionNumber = req.body.version_number + 1;
@@ -1065,7 +1065,9 @@ router.put(
                             mastery_requirements = ${conn.escape(
                                 req.body.mastery_requirements
                             )},      
-                            introduction = ${conn.escape(req.body.introduction)},
+                            introduction = ${conn.escape(
+                                req.body.introduction
+                            )},
                             is_human_edited = 1,                                                  
                             version_number = ${conn.escape(
                                 versionNumber

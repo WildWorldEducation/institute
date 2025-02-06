@@ -150,14 +150,29 @@ export default {
                     }
                 })
                 .then(() => {
-                    $('#summernote')
+                    $('#summernote-introduction')
+                        .summernote({
+                            disableDragAndDrop: true,
+                            toolbar: [
+                                ['font', ['bold', 'underline', 'clear']],
+                                ['para', ['ul', 'ol', 'paragraph']],
+                                ['view', ['fullscreen', 'codeview', 'help']]
+                            ],
+                            callbacks: {
+                                // To determine if content has changed, to unlock the "Submit" button.
+                                onChange: (contents) => {
+                                    this.skill.introduction = contents;
+                                }
+                            }
+                        })
+                        .summernote('code', this.skill.introduction);
+
+                    $('#summernote-mastery-requirements')
                         .summernote({
                             disableDragAndDrop: true,
                             toolbar: [
                                 ['style', ['style']],
                                 ['font', ['bold', 'underline', 'clear']],
-                                ['fontname', ['fontname']],
-                                ['color', ['color']],
                                 ['para', ['ul', 'ol', 'paragraph']],
                                 ['table', ['table']],
                                 ['insert', ['link']],
@@ -171,6 +186,7 @@ export default {
                             }
                         })
                         .summernote('code', this.skill.mastery_requirements);
+
                     // Background for fullscreen view.
                     $('.note-editor .note-editable').css(
                         'background-color',
@@ -379,8 +395,12 @@ export default {
                 !this.isAnotherInstanceOfExistingSkill
             ) {
                 // Update the skill.
-                this.skill.mastery_requirements =
-                    $('#summernote').summernote('code');
+                this.skill.mastery_requirements = $(
+                    '#summernote-mastery-requirements'
+                ).summernote('code');
+                this.skill.introduction = $(
+                    '#summernote-introduction'
+                ).summernote('code');
             }
 
             if (this.skill.name === '' || this.skill.name === null) {
@@ -404,7 +424,7 @@ export default {
                 `https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/${this.skill.url}`
             ) {
                 updateSkillImage = this.iconImage;
-            }
+            }         
 
             const requestOptions = {
                 method: 'PUT',
@@ -878,7 +898,7 @@ export default {
             </div>
         </div>
         <div v-if="!isAnotherInstanceOfExistingSkill">
-            <!-- Image For Skill Tree -->
+            <!-- Image For Skill -->
             <div class="row">
                 <!-- Image chooser -->
                 <div class="col-8 col-md-3 col-lg-2 mt-2">
@@ -1118,6 +1138,7 @@ export default {
                             v-model="skill.introduction"
                             class="form-control"
                             rows="2"
+                            id="summernote-introduction"
                         ></textarea>
                     </div>
                     <div>
@@ -1135,7 +1156,7 @@ export default {
                 <textarea
                     class="form-control"
                     v-model="skill.mastery_requirements"
-                    id="summernote"
+                    id="summernote-mastery-requirements"
                     rows="3"
                 ></textarea>
             </div>
