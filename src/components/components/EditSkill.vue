@@ -34,6 +34,7 @@ export default {
                 name: '',
                 parent: '',
                 description: '',
+                introduction: '',
                 icon_image: '',
                 mastery_requirements: '',
                 tags: [],
@@ -86,6 +87,7 @@ export default {
                 violated: false,
                 name: false,
                 description: false,
+                introduction: false,
                 orphan: false,
                 superValidate: false,
                 noChild: false
@@ -148,14 +150,29 @@ export default {
                     }
                 })
                 .then(() => {
-                    $('#summernote')
+                    $('#summernote-introduction')
+                        .summernote({
+                            disableDragAndDrop: true,
+                            toolbar: [
+                                ['font', ['bold', 'underline', 'clear']],
+                                ['para', ['ul', 'ol', 'paragraph']],
+                                ['view', ['fullscreen', 'codeview', 'help']]
+                            ],
+                            callbacks: {
+                                // To determine if content has changed, to unlock the "Submit" button.
+                                onChange: (contents) => {
+                                    this.skill.introduction = contents;
+                                }
+                            }
+                        })
+                        .summernote('code', this.skill.introduction);
+
+                    $('#summernote-mastery-requirements')
                         .summernote({
                             disableDragAndDrop: true,
                             toolbar: [
                                 ['style', ['style']],
                                 ['font', ['bold', 'underline', 'clear']],
-                                ['fontname', ['fontname']],
-                                ['color', ['color']],
                                 ['para', ['ul', 'ol', 'paragraph']],
                                 ['table', ['table']],
                                 ['insert', ['link']],
@@ -169,6 +186,7 @@ export default {
                             }
                         })
                         .summernote('code', this.skill.mastery_requirements);
+
                     // Background for fullscreen view.
                     $('.note-editor .note-editable').css(
                         'background-color',
@@ -377,8 +395,12 @@ export default {
                 !this.isAnotherInstanceOfExistingSkill
             ) {
                 // Update the skill.
-                this.skill.mastery_requirements =
-                    $('#summernote').summernote('code');
+                this.skill.mastery_requirements = $(
+                    '#summernote-mastery-requirements'
+                ).summernote('code');
+                this.skill.introduction = $(
+                    '#summernote-introduction'
+                ).summernote('code');
             }
 
             if (this.skill.name === '' || this.skill.name === null) {
@@ -411,6 +433,7 @@ export default {
                     name: this.skill.name,
                     parent: this.skill.parent,
                     description: this.skill.description,
+                    introduction: this.skill.introduction,
                     icon_image: updateSkillImage,
                     icon: this.skillNodeIcon,
                     mastery_requirements: this.skill.mastery_requirements,
@@ -452,8 +475,13 @@ export default {
         },
         // If edit is from a student or instructor.
         SubmitForReview() {
-            this.skill.mastery_requirements =
-                $('#summernote').summernote('code');
+            // Update the skill.
+            this.skill.mastery_requirements = $(
+                '#summernote-mastery-requirements'
+            ).summernote('code');
+            this.skill.introduction = $('#summernote-introduction').summernote(
+                'code'
+            );
 
             const requestOptions = {
                 method: 'POST',
@@ -462,6 +490,7 @@ export default {
                     userId: this.userDetailsStore.userId,
                     icon_image: this.iconImage,
                     mastery_requirements: this.skill.mastery_requirements,
+                    introduction: this.skill.introduction,
                     comment: this.comment
                 })
             };
@@ -874,7 +903,7 @@ export default {
             </div>
         </div>
         <div v-if="!isAnotherInstanceOfExistingSkill">
-            <!-- Image For Skill Tree -->
+            <!-- Image For Skill -->
             <div class="row">
                 <!-- Image chooser -->
                 <div class="col-8 col-md-3 col-lg-2 mt-2">
@@ -1106,6 +1135,24 @@ export default {
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col">
+                    <div class="mb-3">
+                        <h2 class="secondary-heading h4">Introduction</h2>
+                        <textarea
+                            v-model="skill.introduction"
+                            class="form-control"
+                            rows="2"
+                            id="summernote-introduction"
+                        ></textarea>
+                    </div>
+                    <div>
+                        <div v-if="validate.introduction" class="form-validate">
+                            please enter introduction for skill
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Mastery Requirement summernote -->
             <div v-if="skill.type != 'domain'" class="mb-3">
@@ -1114,7 +1161,7 @@ export default {
                 <textarea
                     class="form-control"
                     v-model="skill.mastery_requirements"
-                    id="summernote"
+                    id="summernote-mastery-requirements"
                     rows="3"
                 ></textarea>
             </div>

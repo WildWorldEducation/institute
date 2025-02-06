@@ -810,7 +810,7 @@ router.put(
             let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
                     (id, version_number, user_id, name, description, icon_image, icon,
-                    mastery_requirements, level, skill_history.order, comment)
+                    mastery_requirements, level, skill_history.order, comment, introduction)
                     VALUES
                     (${conn.escape(req.params.id)},
                     ${conn.escape(versionNumber)},
@@ -824,7 +824,8 @@ router.put(
                     )},                    
                     ${conn.escape(req.body.level)},                    
                     ${conn.escape(req.body.order)},
-                    ${conn.escape(req.body.comment)});`;
+                    ${conn.escape(req.body.comment)},
+                    ${conn.escape(req.body.introduction)});`;
 
             conn.query(addVersionHistoryInsertSQLQuery, async (err) => {
                 try {
@@ -844,7 +845,8 @@ router.put(
                             req.body.mastery_requirements
                         )}, 
                         type = ${conn.escape(req.body.type)}, 
-                        level = ${conn.escape(req.body.level)}, 
+                        level = ${conn.escape(req.body.level)},
+                        introduction = ${conn.escape(req.body.introduction)},
                         skills.order = ${conn.escape(req.body.order)}, 
                         version_number = ${conn.escape(versionNumber)}, 
                         edited_date = current_timestamp, 
@@ -901,12 +903,13 @@ router.put(
 router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {
         // Add data.
-        let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, mastery_requirements, icon_image, comment)
+        let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, mastery_requirements, icon_image, comment, introduction)
          VALUES (${conn.escape(req.params.id)}, 
          ${conn.escape(req.body.userId)}, 
          ${conn.escape(req.body.mastery_requirements)}, 
          ${conn.escape(req.body.icon_image)},          
-         ${conn.escape(req.body.comment)})
+         ${conn.escape(req.body.comment)},
+         ${conn.escape(req.body.introduction)})
          
          ON DUPLICATE KEY
          UPDATE mastery_requirements = ${conn.escape(
@@ -914,10 +917,11 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
          )}, 
          date = CURRENT_TIMESTAMP(), 
          icon_image = ${conn.escape(req.body.icon_image)},          
-         comment = ${conn.escape(req.body.comment)};`;
+         comment = ${conn.escape(req.body.comment)},
+         introduction = ${conn.escape(req.body.introduction)}
+         ;`;
 
         // Update record in skill table.
-
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -983,7 +987,7 @@ router.put(
                     let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
                     (id, version_number, user_id, name, description, icon_image,
-                    mastery_requirements, level, skill_history.order, comment)
+                    mastery_requirements, level, skill_history.order, comment, introduction)
                     VALUES
                     (${conn.escape(previousId)},
                     ${conn.escape(versionNumber)},
@@ -996,7 +1000,8 @@ router.put(
                     )},                    
                     ${conn.escape(previousLevel)},                    
                     ${conn.escape(previousOrder)},
-                    ${conn.escape(req.body.comment)});`;
+                    ${conn.escape(req.body.comment)},
+                    ${conn.escape(req.body.introduction)});`;
 
                     conn.query(addVersionHistoryInsertSQLQuery, async (err) => {
                         try {
@@ -1061,6 +1066,9 @@ router.put(
                             mastery_requirements = ${conn.escape(
                                 req.body.mastery_requirements
                             )},      
+                            introduction = ${conn.escape(
+                                req.body.introduction
+                            )},
                             is_human_edited = 1,                                                  
                             version_number = ${conn.escape(
                                 versionNumber
