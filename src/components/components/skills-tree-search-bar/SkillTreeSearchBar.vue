@@ -58,7 +58,8 @@ export default {
         }
 
         this.skillTreeStore.searchResultNodes = this.nameList;
-
+        console.log('name list length: ');
+        console.log(this.nameList.length);
         if (this.userStore.userId) {
             this.isLogin = true;
         }
