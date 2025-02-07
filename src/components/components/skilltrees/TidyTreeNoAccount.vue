@@ -63,7 +63,16 @@ export default {
                 x: 0,
                 y: 0,
                 k: 0
-            }
+            },
+            majorSubject: [
+                'Language',
+                'Mathematics',
+                'Science & Invention',
+                'Computer Science',
+                'History',
+                'Life',
+                'Dangerous Ideas'
+            ]
         };
     },
     components: {
@@ -73,15 +82,7 @@ export default {
         JoystickControl
     },
     async mounted() {
-        let subjects = [
-            'Language',
-            'Mathematics',
-            'Science & Invention',
-            'Computer Science',
-            'History',
-            'Life',
-            'Dangerous Ideas'
-        ];
+        let subjects = this.majorSubject;
         if (this.skillsStore.guestModeVerticalTreeSkills.length == 0) {
             await this.skillsStore.getGuestModeVerticalTreeSkills(
                 'phd',
@@ -98,7 +99,7 @@ export default {
             sprite: null,
             children: this.skillsStore.guestModeVerticalTreeSkills
         };
-
+        //  Find out what skill is not filtered
         this.getAlgorithm();
 
         // Set up the Hidden Canvas for Interactivity.
@@ -185,8 +186,11 @@ export default {
         // Set initial zoom value.
         this.resetPos();
 
+        this.updateParentSubjectFilter();
         // For the loading animation.
         this.isLoading = false;
+        console.log('filter obj: ');
+        console.log(this.skill.children);
     },
     methods: {
         getAlgorithm() {
@@ -694,31 +698,17 @@ export default {
         findNodeWithName(searchString) {
             let results = [];
             // D3
-            //let breakLoop = false;
+            let breakLoop = false;
+            let resultNode = null;
             this.root.each(function (node) {
-                if (searchString.length < 2) {
-                    if (
-                        node.data?.name
-                            ?.toLowerCase()
-                            .substring(0, searchString.length) === searchString
-                    ) {
-                        const reformatData = {
-                            ...node.data,
-                            skill_name: node.data.name
-                        };
-                        results.push({ ...node, data: reformatData });
-                    }
-                } else {
-                    if (node.data?.name?.toLowerCase().includes(searchString)) {
-                        const reformatData = {
-                            ...node.data,
-                            skill_name: node.data.name
-                        };
-                        results.push({ ...node, data: reformatData });
-                    }
+                if (node.data?.name === searchString) {
+                    breakLoop = true;
+                    resultNode = node;
                 }
+                if (breakLoop) return true;
             });
-            return results;
+
+            return resultNode;
         },
         async reloadTree(gradeFilter, subjectFilters) {
             // Close skill panel, if open.
@@ -813,6 +803,23 @@ export default {
                 return true;
             }
             return false;
+        },
+        async findHiddenSkill(searchString) {
+            // Find the filtered parent of this skill
+        },
+        updateParentSubjectFilter() {
+            const showSubjects = this.skill.children.map((e) => e.name);
+
+            let filteredSubjects = this.majorSubject;
+            showSubjects.forEach((subject) => {
+                console.log(typeof filteredSubjects);
+                filteredSubjects = filteredSubjects.filter(
+                    (e) => e !== subject
+                );
+            });
+
+            console.log(filteredSubjects);
+            this.$parent.subjectFilters = showSubjects;
         }
     }
 };
