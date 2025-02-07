@@ -209,7 +209,7 @@ export default {
         // We have to construct the d3 zoom function and assign the zoom event
         this.d3Zoom = d3
             .zoom()
-            .scaleExtent([0.1, 5])
+            .scaleExtent([0.05, 4])
             .on('zoom', ({ transform }) => {
                 this.transformData = transform;
                 this.drawTree(transform);
@@ -622,6 +622,8 @@ export default {
             document.querySelector('#SVGskilltree').append(svg.node());
         },
         resetPos() {
+            const isMobile = window.innerWidth <= 767; // Adjust breakpoint if needed
+            const scale = isMobile ? 0.05 : 0.1; // Reduce scale for mobile view
             d3.select(this.context.canvas)
                 .transition()
                 .duration(700)
@@ -632,7 +634,7 @@ export default {
                             this.context.canvas.width / 2,
                             this.context.canvas.height / 2
                         )
-                        .scale(0.3)
+                        .scale(scale)
                 );
         },
         // programmatic d3 zoom
@@ -1545,11 +1547,21 @@ export default {
         <div id="SVGskilltree"></div>
         <ZoomControl ref="ZoomControl" />
         <div id="sidepanel-backdrop"></div>
-        <JoystickControl class="d-lg-none" />
+        <JoystickControl class="d-none" />
     </div>
 </template>
 
 <style scoped>
+/* Loading animation */
+.loading-animation {
+    min-height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
 .loader {
     width: 48px;
     height: 48px;
@@ -1692,18 +1704,6 @@ canvas {
     #wrapper {
         /* height: calc(100% - 130px); */
         height: calc(100%);
-    }
-}
-
-@media screen and (min-width: 992px) {
-    /* Loading animation */
-    .loading-animation {
-        min-height: 100%;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        -webkit-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
     }
 }
 </style>

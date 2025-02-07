@@ -1244,6 +1244,16 @@ export default {
         transform: rotate(360deg);
     }
 }
+
+/* Loading animation */
+.loading-animation {
+    min-height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
 /******************************/
 /* Mobile Styling */
 @media (max-width: 480px) {

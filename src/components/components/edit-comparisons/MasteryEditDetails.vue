@@ -11,12 +11,12 @@ export default {
             removedWordsCount: 0
         };
     },
-    props: ['skill', 'skillEdited'],
+    props: ['value', 'valueEdited'],
     computed: {},
     mounted() {
         this.getDiffDetails(
-            this.skillEdited.mastery_requirements,
-            this.skill.mastery_requirements
+            this.valueEdited,
+            this.value
         );
     },
     methods: {

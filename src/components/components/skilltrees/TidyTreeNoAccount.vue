@@ -174,7 +174,7 @@ export default {
 
         this.d3Zoom = d3
             .zoom()
-            .scaleExtent([0.1, 5])
+            .scaleExtent([0.05, 4])
             .on('zoom', ({ transform }) => {
                 this.drawTree(transform);
                 // update slider percent ( Handle by us not d3 but will invoke when the d3 zoom event is call )
@@ -623,6 +623,8 @@ export default {
             document.querySelector('#SVGskilltree').append(svg.node());
         },
         resetPos() {
+            const isMobile = window.innerWidth <= 767; // Adjust breakpoint if needed
+            const scale = isMobile ? 0.05 : 0.1; // Reduce scale for mobile view
             d3.select(this.context.canvas)
                 .transition()
                 .duration(700)
@@ -633,7 +635,7 @@ export default {
                             this.context.canvas.width / 2,
                             this.context.canvas.height / 2
                         )
-                        .scale(0.3)
+                        .scale(scale)
                 );
         },
         // programmatic d3 zoom
@@ -1001,15 +1003,13 @@ canvas {
     }
 }
 
-@media screen and (min-width: 992px) {
-    /* Loading animation */
-    .loading-animation {
-        min-height: 100%;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        -webkit-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
-    }
+/* Loading animation */
+.loading-animation {
+    min-height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 }
 </style>
