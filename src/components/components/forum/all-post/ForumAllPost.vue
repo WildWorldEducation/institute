@@ -13,7 +13,7 @@ export default {
         };
     },
     emits: ['progressTutorial'],
-    props: [`posts`, 'user', 'skillId', 'showTutorialTip7', 'userRole'],
+    props: [`posts`, 'user', 'skillId', 'showTutorialTip6', 'userRole'],
     data() {
         return {
             showActionBtns: false,
@@ -32,12 +32,12 @@ export default {
         ResourcePostCard
     },
     mounted() {
-        if (this.showTutorialTip7) {
+        if (this.showTutorialTip6) {
             this.scrollToTooltip();
         }
     },
     watch: {
-        showTutorialTip7(newVal) {
+        showTutorialTip6(newVal) {
             if (newVal) {
                 this.$nextTick(() => {
                     this.scrollToTooltip();
@@ -175,7 +175,7 @@ export default {
 
             <!-- Student Tooltip -->
             <div
-                v-if="showTutorialTip7"
+                v-if="showTutorialTip6"
                 ref="tutorialTip7"
                 class="d-flex w-100 justify-content-end"
             >
@@ -185,12 +185,7 @@ export default {
                     </p>
                     <button
                         class="btn primary-btn"
-                        @click="
-                            $emit(
-                                'progressTutorial',
-                                userRole === 'student' ? 7 : 6
-                            )
-                        "
+                        @click="$emit('progressTutorial', 6)"
                     >
                         Close
                     </button>

@@ -72,7 +72,6 @@ export default {
             showTutorialTip4: false,
             showTutorialTip5: false,
             showTutorialTip6: false,
-            showTutorialTip7: false,
             showCategoryCompletedModal: false,
             nextSkillsInBranch: []
         };
@@ -397,16 +396,12 @@ export default {
                 }
             } else if (step == 6) {
                 this.showTutorialTip6 = false;
-                this.showTutorialTip7 = true;
                 if (
                     this.userDetailsStore.role === 'editor' ||
                     this.userDetailsStore.role === 'instructor'
                 ) {
                     this.showTutorialTip7 = false;
-                    this.markTutorialComplete();
                 }
-            } else if (step == 7) {
-                this.showTutorialTip7 = false;
                 this.markTutorialComplete();
             }
         },
@@ -1065,7 +1060,7 @@ export default {
                 <Forum
                     v-if="isSkillLoaded"
                     :skillId="skill.id"
-                    :showTutorialTip7="showTutorialTip7"
+                    :showTutorialTip6="showTutorialTip6"
                     :userRole="userDetailsStore.role"
                     @progressTutorial="progressTutorial"
                 />
@@ -1151,7 +1146,7 @@ export default {
     <div
         v-if="
             userDetailsStore.role == 'student' &&
-            (showTutorialTip1 || showTutorialTip5 || showTutorialTip6)
+            (showTutorialTip1 || showTutorialTip5)
         "
         class="modal"
     >
@@ -1172,16 +1167,6 @@ export default {
                     one needs to learn to master the skill.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(5)">
-                    next
-                </button>
-            </div>
-            <div v-else-if="showTutorialTip6">
-                <p>
-                    At the bottom of the page, in the "Best Places To Learn
-                    This" section, you can find various sites and resources to
-                    learn about this topic.
-                </p>
-                <button class="btn primary-btn" @click="progressTutorial(6)">
                     next
                 </button>
             </div>
