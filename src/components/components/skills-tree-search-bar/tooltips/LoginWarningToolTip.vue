@@ -13,7 +13,7 @@ export default {
     <div class="tool-tip-base">
         <div class="explain-tool-tip triangle-top-right">
             <div class="tool-tip-text">
-                Please Login to use AI search feature
+                Please login to use AI search feature
             </div>
         </div>
     </div>
