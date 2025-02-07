@@ -20,6 +20,87 @@ Routes
 /**
  * Student Add Goal
  */
+router.get('/set-goal/:userId/:skillId', (req, res, next) => {
+    const goalSteps = req.body.goalSteps;
+
+    if (req.session.userName) {
+        let sqlQuery = `
+        INSERT INTO user_skills (user_id, skill_id, is_goal) 
+        VALUES(${conn.escape(req.params.userId)},
+        ${conn.escape(req.params.skillId)}, 1) 
+        ON DUPLICATE KEY UPDATE is_goal=1;
+        `;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    // Record each goal step for the goal, in 'goal_skills' table.
+
+                    for (let i = 0; i < goalSteps.length; i++) {
+                        let sqlQuery = `INSERT INTO goal_skills (user_id, goal_skill_id, goal_id)
+                        VALUES (${conn.escape(
+                            req.params.userId
+                        )}, ${conn.escape(req.params.skillId)}, ${conn.escape(
+                            goalSteps[i].id
+                        )});`;
+
+                        conn.query(sqlQuery, data, (err) => {
+                            try {
+                                if (err) {
+                                    throw err;
+                                } else {
+                                    if (i == goalSteps.length - 1) {
+                                        res.end();
+                                    }
+                                }
+                            } catch (err) {
+                                next(err);
+                            }
+                        });
+                    }
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Student Remove Goal
+ *
+ */
+router.get('/remove-goal/:userId/:skillId', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `
+        INSERT INTO user_skills (user_id, skill_id, is_goal) 
+        VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
+            req.params.skillId
+        )}, 0) 
+        ON DUPLICATE KEY UPDATE is_goal=0;
+        `;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.redirect('back');
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Student Add Goal OLD
+ */
 router.post('/:userId/add', (req, res, next) => {
     if (req.session.userName) {
         // Record goal in 'goals' table.

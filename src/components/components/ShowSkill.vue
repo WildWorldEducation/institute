@@ -340,11 +340,14 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    skillId: this.skillId,
                     goalSteps: this.goalSteps
                 })
             };
-            const url = '/goals/' + this.userDetailsStore.userId + '/add';
+            const url =
+                '/user-skills/set-goal/' +
+                this.userDetailsStore.userId +
+                '/' +
+                this.skillId;
             fetch(url, requestOptions).then(() => {
                 alert('A goal for this skill has been added on the Hub page.');
                 this.getGoals().then(() => {

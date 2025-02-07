@@ -105,8 +105,6 @@ const passwordReset = require('./routes/password-reset');
 app.use('/password-reset', passwordReset);
 const newSkillsAwaitingApproval = require('./routes/new-skills-awaiting-approval');
 app.use('/new-skills-awaiting-approval', newSkillsAwaitingApproval);
-const goals = require('./routes/goals');
-app.use('/goals', goals);
 const learningTracks = require('./routes/learning-tracks');
 app.use('/learning-tracks', learningTracks);
 
