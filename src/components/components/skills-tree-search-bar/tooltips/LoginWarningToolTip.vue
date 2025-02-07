@@ -12,7 +12,9 @@ export default {
 <template>
     <div class="tool-tip-base">
         <div class="explain-tool-tip triangle-top-right">
-            <div class="tool-tip-text">Please Login to use search feature</div>
+            <div class="tool-tip-text">
+                Please Login to use AI search feature
+            </div>
         </div>
     </div>
 </template>
