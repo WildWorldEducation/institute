@@ -2,6 +2,7 @@
 // Import the stores.
 import { useUsersStore } from '../../stores/UsersStore';
 import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
+import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { Cropper, Preview } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
 import 'vue-advanced-cropper/dist/theme.compact.css';
@@ -10,10 +11,12 @@ export default {
     setup() {
         const usersStore = useUsersStore();
         const instructorStudentsStore = useInstructorStudentsStore();
+        const userDetailsStore = useUserDetailsStore();
 
         return {
             usersStore,
-            instructorStudentsStore
+            instructorStudentsStore,
+            userDetailsStore
         };
     },
     data() {
