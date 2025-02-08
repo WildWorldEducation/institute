@@ -33,7 +33,7 @@ export default {
     methods: {
         async getGoals() {
             const result = await fetch(
-                '/goals/' + this.userDetailsStore.userId + '/list'
+                '/user-skills/goals/' + this.userDetailsStore.userId + '/list'
             );
             this.goals = await result.json();
         }

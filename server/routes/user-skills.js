@@ -1839,6 +1839,30 @@ router.get('/remove-goal/:userId/:skillId', (req, res, next) => {
     }
 });
 
+/**
+ * List Goals per Student
+ */
+router.get('/goals/:userId/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT skill_id 
+        FROM user_skills
+        WHERE user_id = ${conn.escape(req.params.userId)}
+        AND is_goal = 1;`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 router.get('*', (req, res) => {
     res.redirect('/');
 });
