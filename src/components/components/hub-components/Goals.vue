@@ -54,7 +54,7 @@ export default {
                 phd: goal.level == 'phd'
             }"
             class="goal-link btn m-2 d-flex"
-            :to="`/goals/${goal.id}`"
+            :to="`/goals/${userDetailsStore.userId}/` + goal.skill_id"
             target="_blank"
         >
             <svg

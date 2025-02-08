@@ -12,7 +12,7 @@ export default {
     },
     data() {
         return {
-            goalId: this.$route.params.goalId,
+            skillId: this.$route.params.skillId,
             goalSteps: []
         };
     },
@@ -36,7 +36,11 @@ export default {
     methods: {
         async getGoalSteps() {
             const result = await fetch(
-                '/goals/' + this.goalId + '/goal-steps/list'
+                '/user-skills/' +
+                    this.userDetailsStore.userId +
+                    '/' +
+                    this.skillId +
+                    '/goal-steps/list'
             );
             this.goalSteps = await result.json();
         },

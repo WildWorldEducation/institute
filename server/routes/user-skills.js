@@ -1863,6 +1863,31 @@ router.get('/goals/:userId/list', (req, res, next) => {
     }
 });
 
+/**
+ * List Goal Steps per Student
+ */
+router.get('/:userId/:skillId/goal-steps/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT skill_id
+        FROM goal_skills
+        WHERE user_id = ${conn.escape(req.params.userId)}
+        AND goal_skill_id = ${conn.escape(req.params.skillId)}
+        ORDER BY id DESC;`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 router.get('*', (req, res) => {
     res.redirect('/');
 });

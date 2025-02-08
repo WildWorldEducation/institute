@@ -151,7 +151,7 @@ router.post('/:userId/add', (req, res, next) => {
 });
 
 /**
- * List Goals per Student
+ * List Goals per Student OLD
  */
 router.get('/:userId/list', (req, res, next) => {
     if (req.session.userName) {
