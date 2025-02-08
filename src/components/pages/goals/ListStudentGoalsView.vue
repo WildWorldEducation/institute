@@ -87,12 +87,15 @@ export default {
                 }
             }
         },
-        async deleteGoal(goalId) {
+        async deleteGoal(skillId) {
             let text = 'Are you sure you want to delete this goal?';
             if (confirm(text) == true) {
-                const result = await fetch('/goals/' + goalId, {
-                    method: 'DELETE'
-                });
+                const result = await fetch(
+                    '/user-skills/' + this.studentId + '/' + skillId,
+                    {
+                        method: 'DELETE'
+                    }
+                );
 
                 if (result.error) {
                     console.log(result.error);
@@ -201,7 +204,10 @@ export default {
                             </svg>
                         </button>
                         <!-- Delete button -->
-                        <button class="btn" @click="deleteGoal(userSkill.id)">
+                        <button
+                            class="btn"
+                            @click="deleteGoal(userSkill.skill_id)"
+                        >
                             <!-- Trash sign -->
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
