@@ -1888,6 +1888,49 @@ router.get('/:userId/:skillId/goal-steps/list', (req, res, next) => {
     }
 });
 
+/**
+ * Delete Item
+ */
+router.delete('/:userId/:skillId', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `
+        INSERT INTO user_skills (user_id, skill_id, is_goal) 
+        VALUES(${conn.escape(req.params.userId)},
+        ${conn.escape(req.params.skillId)}, 0) 
+        ON DUPLICATE KEY UPDATE is_goal=0;
+        `;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                let sqlQuery2 = `DELETE 
+                FROM goal_skills
+                WHERE user_id = ${conn.escape(req.params.userId)}
+                AND goal_skill_id = ${conn.escape(req.params.skillId)};`;
+
+                conn.query(sqlQuery2, (err) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        res.end();
+                    } catch (err) {
+                        next(err);
+                    }
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 router.get('*', (req, res) => {
     res.redirect('/');
 });
