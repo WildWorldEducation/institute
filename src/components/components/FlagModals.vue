@@ -209,35 +209,49 @@ export default {
             ],
             skillTemplate: [
                 {
-                    title: 'Inaccurate or Misleading Information',
+                    title: 'Inaccurate or Misleading Advice',
                     explanation:
-                        'The resource contains factual errors or promotes incorrect knowledge.'
+                        'The post provides incorrect or misleading guidance on developing academic skills, which could negatively impact learners.'
                 },
                 {
-                    title: 'Culturally Insensitive or Offensive Content',
+                    title: 'Plagiarism or Copyright Violation',
                     explanation:
-                        'The resource contains language, images, or viewpoints that may be inappropriate or disrespectful.'
-                },
-
-                {
-                    title: 'Unverified or Unreliable Source',
-                    explanation:
-                        'The resource comes from a questionable or biased source that lacks credibility.'
+                        'The content includes copied material from other sources without proper attribution, violating academic integrity standards.'
                 },
                 {
-                    title: 'Requires Paid Access',
+                    title: 'Off-Topic Discussion',
                     explanation:
-                        'The resource is behind a paywall, making it inaccessible to some learners.'
+                        'The post does not relate to academic skills, study strategies, or relevant learning techniques.'
                 },
                 {
-                    title: 'Poorly Explained or Low-Quality Resource',
+                    title: 'Culturally Insensitive or Inappropriate Content',
                     explanation:
-                        'The post does not provide enough context or explanation for how the resource is useful.'
+                        'The post contains language, examples, or advice that may be offensive or disrespectful to certain groups.'
                 },
                 {
-                    title: 'Too Advanced or Too Basic',
+                    title: 'Unverified or Unreliable Study Techniques',
                     explanation:
-                        'The resource is either too complex or too simple for the intended audience.'
+                        'The suggested study methods or academic strategies lack scientific backing or professional endorsement.'
+                },
+                {
+                    title: 'Overly Promotional or Self-Advertising',
+                    explanation:
+                        'The post is primarily aimed at promoting a personal service, course, or product rather than providing genuine academic guidance.'
+                },
+                {
+                    title: 'Encourages Academic Dishonesty',
+                    explanation:
+                        'The content promotes cheating, plagiarism, or unethical shortcuts in learning and assessments.'
+                },
+                {
+                    title: 'Duplicate or Repetitive Content',
+                    explanation:
+                        'The same topic or advice has already been posted multiple times in the forum.'
+                },
+                {
+                    title: 'Poorly Explained or Confusing Guidance',
+                    explanation:
+                        'The advice lacks clarity, structure, or sufficient details to be useful to learners.'
                 }
             ],
             tutorPostTemplate: [
@@ -346,6 +360,8 @@ export default {
         },
         handleTemplateChoose(template) {
             this.reason = template.title + ' - ' + template.explanation;
+            console.log('reason is: ');
+            console.log(this.reason);
             this.showDropDown = false;
         }
     }
@@ -497,7 +513,7 @@ export default {
                                 :tile="template.explanation"
                                 v-for="template in template"
                                 class="custom-dropdown-option"
-                                @click="handleTemplateChoose"
+                                @click="handleTemplateChoose(template)"
                             >
                                 {{ template.title }}
                             </div>
