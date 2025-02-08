@@ -759,6 +759,8 @@ export default {
 }
 
 .custom-dropdown-base {
+    max-height: 250px;
+    overflow-y: auto;
     border-radius: 8px;
     border: 1px;
     background: linear-gradient(0deg, #ffffff, #ffffff);
