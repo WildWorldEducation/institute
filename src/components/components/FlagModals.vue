@@ -291,8 +291,7 @@ export default {
     },
     created() {
         this.toTileCase(this.contentType);
-        console.log('content type: ');
-        console.log(this.contentType);
+
         // Add specific reason for each content type
         switch (this.contentType) {
             case 'mc_question':
@@ -360,8 +359,7 @@ export default {
         },
         handleTemplateChoose(template) {
             this.reason = template.title + ' - ' + template.explanation;
-            console.log('reason is: ');
-            console.log(this.reason);
+
             this.showDropDown = false;
         }
     }
