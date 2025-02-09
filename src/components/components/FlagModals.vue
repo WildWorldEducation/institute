@@ -43,7 +43,7 @@ export default {
                 {
                     title: 'Too Difficult or Too Easy',
                     explanation:
-                        'The question is disproportionately difficult or too simplistic for the exam level.'
+                        'The question is disproportionately difficult or too easy for the skill level.'
                 },
                 {
                     title: 'Incorrect Answer Key',
@@ -79,6 +79,10 @@ export default {
                     title: 'Off-Topic Question',
                     explanation:
                         "The question does not align with the exam's syllabus or intended learning objectives."
+                },
+                {
+                    title: 'Too obvious',
+                    explanation: 'The correct answer is too obvious.'
                 }
             ],
             essayQuestionTemplate: [
