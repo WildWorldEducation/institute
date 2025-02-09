@@ -204,7 +204,6 @@ export default {
         <div v-if="!compareWithRevision" class="mt-3">
             <div id="skill-info-container">
                 <!-- Skill Info -->
-
                 <h1 class="heading">
                     {{ skill.name }}
                     <span class="revision-version"
@@ -254,16 +253,20 @@ export default {
                 <!-- A line divide -->
                 <hr class="border border-1 opacity-100 hr mt-md-4 mt-5" />
                 <div class="d-flex flex-column-reverse flex-md-row gap-4">
-                    <!-- Mastery Requirements -->
-                    <!-- <div class="col-md-8 order-2 order-md-1"> -->
-                    <div class="d-flex flex-column">
+                    <!-- Introduction -->
+                    <div>
+                        <h2 class="secondary-heading">Introduction</h2>
+                        <div class="mastery-requirements mb-3">
+                            <div v-html="skillRevision.introduction"></div>
+                        </div>
+                        <!-- Mastery Requirements -->
+                        <h2 class="secondary-heading">Mastery Requirements</h2>
                         <div class="mastery-requirements">
                             <div
                                 v-html="skillRevision.mastery_requirements"
                             ></div>
                         </div>
                     </div>
-                    <!-- </div> -->
                     <!-- Infobox -->
                     <div class="col-md-4 order-1 order-md-2">
                         <div class="info-box p-2 mb-2">
@@ -336,19 +339,21 @@ export default {
                     class="btn primary-btn mt-4"
                     @click="confirmRevert()"
                 >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        fill="white"
-                        height="25"
-                        width="25"
-                        class="me-2"
-                    >
-                        <path
-                            d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9L0 168c0 13.3 10.7 24 24 24l110.1 0c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65 0-94.1c0-13.3-10.7-24-24-24z"
-                        />
-                    </svg>
-                    <div>Revert to this version</div>
+                    <div>
+                        Revert to this version&nbsp;
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            fill="white"
+                            height="25"
+                            width="25"
+                            class="me-2"
+                        >
+                            <path
+                                d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9L0 168c0 13.3 10.7 24 24 24l110.1 0c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65 0-94.1c0-13.3-10.7-24-24-24z"
+                            />
+                        </svg>
+                    </div>
                 </button>
                 <p>&nbsp;</p>
             </div>
