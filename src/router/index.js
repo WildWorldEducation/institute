@@ -426,16 +426,16 @@ router.beforeEach(async (to, from, next) => {
         from.name == 'editor-signup'
     ) {
         // Kids theme
-        if (userDetailsStore.theme == 'apprentice') {
-            document.body.classList.remove('scholar-theme');
-            document.body.classList.add('apprentice-theme');
-        } else if (userDetailsStore.theme == 'scholar') {
-            document.body.classList.add('scholar-theme');
-            document.body.classList.remove('apprentice-theme');
+        if (userDetailsStore.theme == 'instructor') {
+            document.body.classList.remove('editor-theme');
+            document.body.classList.add('instructor-theme');
+        } else if (userDetailsStore.theme == 'editor') {
+            document.body.classList.add('editor-theme');
+            document.body.classList.remove('instructor-theme');
             // Original theme.
         } else {
-            document.body.classList.remove('scholar-theme');
-            document.body.classList.remove('apprentice-theme');
+            document.body.classList.remove('editor-theme');
+            document.body.classList.remove('instructor-theme');
         }
     }
 
