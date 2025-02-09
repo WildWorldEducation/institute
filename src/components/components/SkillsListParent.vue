@@ -276,6 +276,7 @@ export default {
                     :name="skill.skill_name"
                     :isUnlocked="skill.is_accessible"
                     :isMastered="skill.is_mastered"
+                    :isGoal="skill.is_goal"
                     :type="skill.type"
                     :level="skill.level"
                     :role="userDetailsStore.role"

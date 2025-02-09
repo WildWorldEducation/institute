@@ -347,7 +347,7 @@ const router = createRouter({
                 )
         },
         {
-            path: '/goals/:goalId',
+            path: '/goals/:userId/:skillId',
             name: 'goal',
             component: () => import('../components/pages/goals/GoalView.vue')
         },

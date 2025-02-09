@@ -12,7 +12,7 @@ export default {
     },
     data() {
         return {
-            goalId: this.$route.params.goalId,
+            skillId: this.$route.params.skillId,
             goalSteps: []
         };
     },
@@ -36,16 +36,26 @@ export default {
     methods: {
         async getGoalSteps() {
             const result = await fetch(
-                '/goals/' + this.goalId + '/goal-steps/list'
+                '/user-skills/' +
+                    this.userDetailsStore.userId +
+                    '/' +
+                    this.skillId +
+                    '/goal-steps/list'
             );
             this.goalSteps = await result.json();
         },
         async deleteGoal() {
             let text = 'Are you sure you want to delete this goal?';
             if (confirm(text) == true) {
-                const result = await fetch('/goals/' + this.goalId, {
-                    method: 'DELETE'
-                });
+                const result = await fetch(
+                    '/user-skills/' +
+                        this.userDetailsStore.userId +
+                        '/' +
+                        this.skillId,
+                    {
+                        method: 'DELETE'
+                    }
+                );
 
                 if (result.error) {
                     console.log(result.error);
