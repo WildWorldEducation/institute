@@ -22,17 +22,18 @@ export default {
     async mounted() {
         await this.userDetailsStore.getUserDetails();
 
-        // Kids theme
-        if (this.userDetailsStore.theme == 'apprentice') {
+        // Instructor theme
+        if (this.userDetailsStore.theme == 'instructor') {
             document.body.classList.remove('scholar-theme');
-            document.body.classList.add('apprentice-theme');
+            document.body.classList.add('instructor-theme');
+            // Editor theme.
         } else if (this.userDetailsStore.theme == 'scholar') {
             document.body.classList.add('scholar-theme');
-            document.body.classList.remove('apprentice-theme');
+            document.body.classList.remove('instructor-theme');
             // Original theme.
         } else {
             document.body.classList.remove('scholar-theme');
-            document.body.classList.remove('apprentice-theme');
+            document.body.classList.remove('instructor-theme');
         }
         this.closeNavbarOnClick();
     },
@@ -320,8 +321,8 @@ Themes
     --stroke-width: 0px;
 }
 
-/* The Apprentice theme */
-.apprentice-theme {
+/* The Instructor theme */
+.instructor-theme {
     --primary-color: #040095;
     --primary-contrast-color: white;
 
@@ -334,7 +335,7 @@ Themes
     --skill-tree-color: black;
 
     --stroke-width: 1px;
-    --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg');
+   /* --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg'); */
 }
 
 /* The Scholar theme */
