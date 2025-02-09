@@ -279,11 +279,11 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    skillId: this.skill.id,
                     goalSteps: this.goalSteps
                 })
             };
-            const url = '/goals/' + this.studentId + '/add';
+            const url =
+                '/user-skills/set-goal/' + this.studentId + '/' + this.skill.id;
             fetch(url, requestOptions).then(() => {
                 alert('Goal created.');
             });
