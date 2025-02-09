@@ -267,7 +267,7 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
 });
 
 /* Nested list of user-skills, filtered by 1 cohort that student is a member of*/
-// For Collapsible Tree.
+// For Collapsible Tree and Instructor view of student skills Collapsible Tree.
 router.get('/filter-by-cohort/:userId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
@@ -291,7 +291,7 @@ router.get('/filter-by-cohort/:userId', (req, res, next) => {
 
                 // Check what skills are available for this cohort.
                 let sqlQuery = `
-            SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, show_children
+            SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, show_children, is_goal
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id
@@ -304,7 +304,7 @@ router.get('/filter-by-cohort/:userId', (req, res, next) => {
             WHERE cohort_id = ${conn.escape(cohortId)})
             
             UNION
-            SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, ""
+            SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, "", ""
             FROM skills
             WHERE skills.id NOT IN 
             
