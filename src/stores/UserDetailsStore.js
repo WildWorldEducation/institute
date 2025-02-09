@@ -102,17 +102,17 @@ export const useUserDetailsStore = defineStore('userDetails', {
             });
         },
         updateTheme(theme) {
-            if (theme == 'apprentice') {
-                this.theme = 'apprentice';
+            if (theme == 'instructor') {
+                this.theme = 'instructor';
                 document.body.classList.remove('scholar-theme');
-                document.body.classList.add('apprentice-theme');
+                document.body.classList.add('instructor-theme');
             } else if (theme == 'scholar') {
                 this.theme = 'scholar';
-                document.body.classList.remove('apprentice-theme');
+                document.body.classList.remove('instructor-theme');
                 document.body.classList.add('scholar-theme');
             } else {
                 this.theme = 'original';
-                document.body.classList.remove('apprentice-theme');
+                document.body.classList.remove('instructor-theme');
                 document.body.classList.remove('scholar-theme');
             }
             // API call
