@@ -331,7 +331,7 @@ Themes
 
     --tertiary-color: #040095;
 
-    --skill-tree-background-color: skyblue;
+    --skill-tree-background-color: white;
     --skill-tree-color: black;
 
     --stroke-width: 1px;
