@@ -156,6 +156,19 @@ export default {
                         </li>
                         <li
                             v-if="
+                                userDetailsStore.role == 'student' ||
+                                userDetailsStore.role == 'editor'
+                            "
+                            class="nav-item"
+                        >
+                            <RouterLink
+                                to="/skill-tree"
+                                class="nav-link close-on-click"
+                                >Skill Tree</RouterLink
+                            >
+                        </li>
+                        <li
+                            v-if="
                                 sessionDetailsStore.isLoggedIn &&
                                 (userDetailsStore.role == 'admin' ||
                                     userDetailsStore.role == 'editor')
@@ -169,16 +182,7 @@ export default {
                                 <span>Todo</span>
                             </RouterLink>
                         </li>
-                        <li
-                            v-if="userDetailsStore.role == 'student'"
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                to="/skill-tree"
-                                class="nav-link close-on-click"
-                                >Skill Tree</RouterLink
-                            >
-                        </li>
+
                         <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"

@@ -967,6 +967,7 @@ input[type='button'] {
 }
 canvas {
     cursor: pointer;
+    background-color: white;
 }
 .click-animation {
     position: absolute;

@@ -79,7 +79,11 @@ export default {
     mounted() {
         this.GetGoogleLoginResult();
     },
-    components: { TidyTree, TidyTreeNoAccount, SkillTreeSearchBar },
+    components: {
+        TidyTree,
+        TidyTreeNoAccount,
+        SkillTreeSearchBar
+    },
     methods: {
         resetPos() {
             this.$refs.childComponent.resetPos();
@@ -112,7 +116,10 @@ export default {
         // Filters
         updateSubjectFilters(subject) {
             // Only if user is logged in.
-            if (this.sessionDetailsStore.isLoggedIn == true) {
+            if (
+                this.sessionDetailsStore.isLoggedIn == true &&
+                this.userDetailsStore.role == 'student'
+            ) {
                 // if all subjects are selected, show only the clicked subject
                 if (this.userDetailsStore.subjectFilters.length == 7) {
                     this.userDetailsStore.subjectFilters = [];
@@ -329,7 +336,6 @@ export default {
             // Mark all tutorials as complete
             await this.markAllTutorialsComplete();
         },
-
         async markAllTutorialsComplete() {
             try {
                 const response = await fetch(
@@ -462,7 +468,10 @@ export default {
     <Suspense>
         <template #default>
             <TidyTree
-                v-if="sessionDetailsStore.isLoggedIn"
+                v-if="
+                    sessionDetailsStore.isLoggedIn &&
+                    userDetailsStore.role == 'student'
+                "
                 ref="childComponent"
             />
             <TidyTreeNoAccount v-else ref="childComponent" />
@@ -486,7 +495,13 @@ export default {
         </div>
         <!-- Grade buttons -->
         <!-- If user is logged in -->
-        <div v-if="sessionDetailsStore.isLoggedIn" class="d-flex">
+        <div
+            v-if="
+                sessionDetailsStore.isLoggedIn &&
+                userDetailsStore.role == 'student'
+            "
+            class="d-flex"
+        >
             <div v-if="isGradeFilter" class="legend">
                 <button
                     class="btn grade-school me-2"
@@ -709,7 +724,11 @@ export default {
     <div class="tablet-and-up-legend position-absolute left-legend-div">
         <div>
             <div
-                v-if="isSubjectFilter && sessionDetailsStore.isLoggedIn"
+                v-if="
+                    isSubjectFilter &&
+                    sessionDetailsStore.isLoggedIn &&
+                    userDetailsStore.role == 'student'
+                "
                 class="d-flex flex-column"
             >
                 <button
@@ -1057,7 +1076,9 @@ export default {
 
     <!-- Filter for showing only unlocked skills in bottom left corner -->
     <div
-        v-if="sessionDetailsStore.isLoggedIn"
+        v-if="
+            sessionDetailsStore.isLoggedIn && userDetailsStore.role == 'student'
+        "
         class="unlocked-filter d-flex flex-column-reverse"
     >
         <button
