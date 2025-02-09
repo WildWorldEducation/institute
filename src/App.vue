@@ -24,15 +24,15 @@ export default {
 
         // Instructor theme
         if (this.userDetailsStore.theme == 'instructor') {
-            document.body.classList.remove('scholar-theme');
+            document.body.classList.remove('editor-theme');
             document.body.classList.add('instructor-theme');
             // Editor theme.
-        } else if (this.userDetailsStore.theme == 'scholar') {
-            document.body.classList.add('scholar-theme');
+        } else if (this.userDetailsStore.theme == 'editor') {
+            document.body.classList.add('editor-theme');
             document.body.classList.remove('instructor-theme');
             // Original theme.
         } else {
-            document.body.classList.remove('scholar-theme');
+            document.body.classList.remove('editor-theme');
             document.body.classList.remove('instructor-theme');
         }
         this.closeNavbarOnClick();
@@ -102,7 +102,7 @@ export default {
             <div class="container-fluid">
                 <RouterLink to="/" class="nav-link logo">
                     <img
-                        v-if="userDetailsStore.theme == 'scholar'"
+                        v-if="userDetailsStore.theme == 'editor'"
                         src="/images/logo-white.png"
                         alt=""
                         width="50"
@@ -338,8 +338,8 @@ Themes
    /* --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg'); */
 }
 
-/* The Scholar theme */
-.scholar-theme {
+/* The Editor theme */
+.editor-theme {
     --primary-color: black;
     --primary-contrast-color: white;
 

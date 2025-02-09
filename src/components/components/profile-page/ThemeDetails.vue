@@ -33,7 +33,7 @@ export default {
             <select class="form-select" @change="chooseTheme()" v-model="theme">
                 <option value="original">Original</option>
                 <option value="instructor">Instructor</option>
-                <option value="scholar">Scholar</option>
+                <option value="editor">Editor</option>
             </select>
         </div>
     </div>
