@@ -31,6 +31,7 @@ export default {
         'name',
         'isUnlocked',
         'isMastered',
+        'isGoal',
         'type',
         'level',
         'depth',
@@ -93,6 +94,7 @@ export default {
         this.skill.parent = this.parent;
         this.skill.is_mastered = this.isMastered;
         this.skill.is_accessible = this.isUnlocked;
+        this.skill.is_goal = this.isGoal;
 
         // Will need this list to create the goal steps.
         await this.userSkillsStore.getFilteredUnnestedList(this.studentId);
@@ -413,7 +415,7 @@ export default {
                 class="btn"
                 title="create a goal"
                 @click="
-                    isMastered == 1 || isUnlocked == 1
+                    isMastered == 1 || isUnlocked == 1 || isGoal
                         ? $event.preventDefault()
                         : confirmCreateGoal()
                 "
@@ -430,7 +432,7 @@ export default {
                     <path
                         :style="{
                             fill:
-                                isMastered == 1 || isUnlocked == 1
+                                isMastered == 1 || isUnlocked == 1 || isGoal
                                     ? '#d3d3d3'
                                     : 'primary-icon'
                         }"
@@ -553,6 +555,7 @@ export default {
         :children="subSkill.children"
         :isUnlocked="subSkill.is_accessible"
         :isMastered="subSkill.is_mastered"
+        :isGoal="subSkill.is_goal"
         :type="subSkill.type"
         :level="subSkill.level"
         :name="subSkill.skill_name"
@@ -573,6 +576,7 @@ export default {
         :children="child.children"
         :isUnlocked="child.is_accessible"
         :isMastered="child.is_mastered"
+        :isGoal="child.is_goal"
         :type="child.type"
         :level="child.level"
         :name="child.skill_name"
