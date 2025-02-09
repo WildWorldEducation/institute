@@ -189,8 +189,6 @@ export default {
         this.updateParentSubjectFilter();
         // For the loading animation.
         this.isLoading = false;
-        console.log('filter obj: ');
-        console.log(this.skill.children);
     },
     methods: {
         getAlgorithm() {
@@ -812,13 +810,11 @@ export default {
 
             let filteredSubjects = this.majorSubject;
             showSubjects.forEach((subject) => {
-                console.log(typeof filteredSubjects);
                 filteredSubjects = filteredSubjects.filter(
                     (e) => e !== subject
                 );
             });
 
-            console.log(filteredSubjects);
             this.$parent.subjectFilters = showSubjects;
         }
     }
