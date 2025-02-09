@@ -78,7 +78,7 @@ export default {
                 />
             </div>
             <!-- Heading -->
-            <h1 class="h3 mt-2 font-weight-normal">Student sign in</h1>
+            <h1 class="h3 mt-2 font-weight-normal">Sign in</h1>
             <!-- Form -->
             <div class="form">
                 <label class="mb-4 welcome-message"
