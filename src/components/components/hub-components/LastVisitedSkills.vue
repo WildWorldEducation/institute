@@ -10,7 +10,6 @@ export default {
     async created() {
         const result = await fetch('/skills/last-visited/');
         this.visitedSkills = await result.json();
-        console.log(this.visitedSkills);
         if (this.visitedSkills.length > 0) {
             this.noSkills = false;
         }
@@ -20,9 +19,7 @@ export default {
 </script>
 
 <template>
-    <h2 class="secondary-heading h5 bg-white rounded p-2">
-        Last Visited Skills
-    </h2>
+    <h2 class="tertiary-heading h5">Last Visited Skills</h2>
     <div id="skill-list">
         <router-link
             v-for="skill in visitedSkills"
@@ -44,7 +41,7 @@ export default {
 
 <style scoped>
 .icons {
-    mix-blend-mode: multiply;
+    /*  mix-blend-mode: multiply; */
     height: 30px;
     border-radius: 50%;
 }
@@ -106,6 +103,7 @@ export default {
 
 .skill-link {
     width: fit-content;
+    padding-left: 0.35rem;
 }
 
 #skill-list div:hover {

@@ -63,7 +63,16 @@ export default {
                 x: 0,
                 y: 0,
                 k: 0
-            }
+            },
+            majorSubject: [
+                'Language',
+                'Mathematics',
+                'Science & Invention',
+                'Computer Science',
+                'History',
+                'Life',
+                'Dangerous Ideas'
+            ]
         };
     },
     components: {
@@ -73,15 +82,7 @@ export default {
         JoystickControl
     },
     async mounted() {
-        let subjects = [
-            'Language',
-            'Mathematics',
-            'Science & Invention',
-            'Computer Science',
-            'History',
-            'Life',
-            'Dangerous Ideas'
-        ];
+        let subjects = this.majorSubject;
         if (this.skillsStore.guestModeVerticalTreeSkills.length == 0) {
             await this.skillsStore.getGuestModeVerticalTreeSkills(
                 'phd',
@@ -98,7 +99,7 @@ export default {
             sprite: null,
             children: this.skillsStore.guestModeVerticalTreeSkills
         };
-
+        //  Find out what skill is not filtered
         this.getAlgorithm();
 
         // Set up the Hidden Canvas for Interactivity.
@@ -173,7 +174,7 @@ export default {
 
         this.d3Zoom = d3
             .zoom()
-            .scaleExtent([0.1, 5])
+            .scaleExtent([0.05, 4])
             .on('zoom', ({ transform }) => {
                 this.drawTree(transform);
                 // update slider percent ( Handle by us not d3 but will invoke when the d3 zoom event is call )
@@ -185,8 +186,11 @@ export default {
         // Set initial zoom value.
         this.resetPos();
 
+        this.updateParentSubjectFilter();
         // For the loading animation.
         this.isLoading = false;
+        console.log('filter obj: ');
+        console.log(this.skill.children);
     },
     methods: {
         getAlgorithm() {
@@ -619,6 +623,8 @@ export default {
             document.querySelector('#SVGskilltree').append(svg.node());
         },
         resetPos() {
+            const isMobile = window.innerWidth <= 767; // Adjust breakpoint if needed
+            const scale = isMobile ? 0.05 : 0.1; // Reduce scale for mobile view
             d3.select(this.context.canvas)
                 .transition()
                 .duration(700)
@@ -629,7 +635,7 @@ export default {
                             this.context.canvas.width / 2,
                             this.context.canvas.height / 2
                         )
-                        .scale(0.3)
+                        .scale(scale)
                 );
         },
         // programmatic d3 zoom
@@ -692,31 +698,17 @@ export default {
         findNodeWithName(searchString) {
             let results = [];
             // D3
-            //let breakLoop = false;
+            let breakLoop = false;
+            let resultNode = null;
             this.root.each(function (node) {
-                if (searchString.length < 2) {
-                    if (
-                        node.data?.name
-                            ?.toLowerCase()
-                            .substring(0, searchString.length) === searchString
-                    ) {
-                        const reformatData = {
-                            ...node.data,
-                            skill_name: node.data.name
-                        };
-                        results.push({ ...node, data: reformatData });
-                    }
-                } else {
-                    if (node.data?.name?.toLowerCase().includes(searchString)) {
-                        const reformatData = {
-                            ...node.data,
-                            skill_name: node.data.name
-                        };
-                        results.push({ ...node, data: reformatData });
-                    }
+                if (node.data?.name === searchString) {
+                    breakLoop = true;
+                    resultNode = node;
                 }
+                if (breakLoop) return true;
             });
-            return results;
+
+            return resultNode;
         },
         async reloadTree(gradeFilter, subjectFilters) {
             // Close skill panel, if open.
@@ -811,6 +803,23 @@ export default {
                 return true;
             }
             return false;
+        },
+        async findHiddenSkill(searchString) {
+            // Find the filtered parent of this skill
+        },
+        updateParentSubjectFilter() {
+            const showSubjects = this.skill.children.map((e) => e.name);
+
+            let filteredSubjects = this.majorSubject;
+            showSubjects.forEach((subject) => {
+                console.log(typeof filteredSubjects);
+                filteredSubjects = filteredSubjects.filter(
+                    (e) => e !== subject
+                );
+            });
+
+            console.log(filteredSubjects);
+            this.$parent.subjectFilters = showSubjects;
         }
     }
 };
@@ -994,15 +1003,13 @@ canvas {
     }
 }
 
-@media screen and (min-width: 992px) {
-    /* Loading animation */
-    .loading-animation {
-        min-height: 100%;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        -webkit-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
-    }
+/* Loading animation */
+.loading-animation {
+    min-height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 }
 </style>

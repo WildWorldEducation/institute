@@ -709,6 +709,33 @@ export default {
                 subjectFilters,
                 isUnlockedSkillsOnlyFilter
             );
+        },
+        async findHiddenSkill(searchString) {
+            // if we cant find the node it mean the node is hide in children
+            var url =
+                '/user-skills/find-hidden-skill/' +
+                this.userDetailsStore.userId;
+
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    skillName: searchString
+                })
+            });
+            const data = await res.json();
+            if (data?.mess === 'ok') {
+                await this.reloadTree();
+
+                try {
+                    const resultNode = this.findNodeWithName(searchString);
+                    this.goToLocation(resultNode);
+                } catch (error) {
+                    // Skill get filter by user instead of being hidden
+                    // Handle filtered case
+                    this.removeFilterForHiddenSkill(searchString);
+                }
+            }
         }
     }
 };
@@ -925,16 +952,13 @@ input[type='button'] {
         flex-direction: column;
     }
 }
-
-@media screen and (min-width: 992px) {
-    /* Loading animation */
-    .loading-animation {
-        min-height: 100%;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        -webkit-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
-    }
+/* Loading animation */
+.loading-animation {
+    min-height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 }
 </style>

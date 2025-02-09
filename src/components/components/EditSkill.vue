@@ -34,6 +34,7 @@ export default {
                 name: '',
                 parent: '',
                 description: '',
+                introduction: '',
                 icon_image: '',
                 mastery_requirements: '',
                 tags: [],
@@ -86,6 +87,7 @@ export default {
                 violated: false,
                 name: false,
                 description: false,
+                introduction: false,
                 orphan: false,
                 superValidate: false,
                 noChild: false
@@ -106,7 +108,8 @@ export default {
             showLoadingModal: false,
             originalSkill: {},
             parentLevel: '',
-            showImageSizeWarn: false
+            showImageSizeWarn: false,
+            iconImageSize: ''
         };
     },
     async mounted() {
@@ -148,14 +151,29 @@ export default {
                     }
                 })
                 .then(() => {
-                    $('#summernote')
+                    $('#summernote-introduction')
+                        .summernote({
+                            disableDragAndDrop: true,
+                            toolbar: [
+                                ['font', ['bold', 'underline', 'clear']],
+                                ['para', ['ul', 'ol', 'paragraph']],
+                                ['view', ['fullscreen', 'codeview', 'help']]
+                            ],
+                            callbacks: {
+                                // To determine if content has changed, to unlock the "Submit" button.
+                                onChange: (contents) => {
+                                    this.skill.introduction = contents;
+                                }
+                            }
+                        })
+                        .summernote('code', this.skill.introduction);
+
+                    $('#summernote-mastery-requirements')
                         .summernote({
                             disableDragAndDrop: true,
                             toolbar: [
                                 ['style', ['style']],
                                 ['font', ['bold', 'underline', 'clear']],
-                                ['fontname', ['fontname']],
-                                ['color', ['color']],
                                 ['para', ['ul', 'ol', 'paragraph']],
                                 ['table', ['table']],
                                 ['insert', ['link']],
@@ -169,6 +187,7 @@ export default {
                             }
                         })
                         .summernote('code', this.skill.mastery_requirements);
+
                     // Background for fullscreen view.
                     $('.note-editor .note-editable').css(
                         'background-color',
@@ -194,7 +213,9 @@ export default {
                         'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
                         this.skill.url;
                     // tree node image
-                    this.skillNodeIcon = this.skill.icon;
+                    this.skillNodeIcon =
+                        'https://institute-skill-icons.s3.us-east-1.amazonaws.com/' +
+                        this.skill.url;
                     this.getSkillFilters();
                 });
         },
@@ -234,6 +255,21 @@ export default {
             }
 
             if (fileType === 'skillNodeIcon') {
+                const fileSize = this.calculateFileSize(files[0].size);
+
+                this.iconImageSize = fileSize.size + fileSize.unit;
+
+                // if file size is larger than Kilobyte unit we show a warning
+                if (fileSize.unit !== 'B' && fileSize.unit !== 'KB') {
+                    this.showImageSizeWarn = true;
+                    return;
+                }
+
+                // if file size is larger than 100 KB we also show the warning
+                if (fileSize.size > 100 && fileSize.unit === 'KB') {
+                    this.showImageSizeWarn = true;
+                    return;
+                }
                 this.createNodeIcon(files[0]);
                 return;
             }
@@ -246,7 +282,6 @@ export default {
             reader.onload = (e) => {
                 vm.image = e.target.result;
                 this.iconImage = e.target.result;
-
                 this.skill.icon_image = this.iconImage;
             };
             reader.readAsDataURL(file);
@@ -255,12 +290,7 @@ export default {
             var image = new Image();
             var reader = new FileReader();
             var vm = this;
-
             reader.onload = (e) => {
-                if (e.target.result.length > 255) {
-                    this.showImageSizeWarn = true;
-                    return;
-                }
                 vm.image = e.target.result;
                 this.skillNodeIcon = e.target.result;
                 this.skill.icon = this.skillNodeIcon;
@@ -377,8 +407,12 @@ export default {
                 !this.isAnotherInstanceOfExistingSkill
             ) {
                 // Update the skill.
-                this.skill.mastery_requirements =
-                    $('#summernote').summernote('code');
+                this.skill.mastery_requirements = $(
+                    '#summernote-mastery-requirements'
+                ).summernote('code');
+                this.skill.introduction = $(
+                    '#summernote-introduction'
+                ).summernote('code');
             }
 
             if (this.skill.name === '' || this.skill.name === null) {
@@ -411,6 +445,7 @@ export default {
                     name: this.skill.name,
                     parent: this.skill.parent,
                     description: this.skill.description,
+                    introduction: this.skill.introduction,
                     icon_image: updateSkillImage,
                     icon: this.skillNodeIcon,
                     mastery_requirements: this.skill.mastery_requirements,
@@ -452,8 +487,13 @@ export default {
         },
         // If edit is from a student or instructor.
         SubmitForReview() {
-            this.skill.mastery_requirements =
-                $('#summernote').summernote('code');
+            // Update the skill.
+            this.skill.mastery_requirements = $(
+                '#summernote-mastery-requirements'
+            ).summernote('code');
+            this.skill.introduction = $('#summernote-introduction').summernote(
+                'code'
+            );        
 
             const requestOptions = {
                 method: 'POST',
@@ -461,7 +501,9 @@ export default {
                 body: JSON.stringify({
                     userId: this.userDetailsStore.userId,
                     icon_image: this.iconImage,
+                    node_icon: this.skillNodeIcon,
                     mastery_requirements: this.skill.mastery_requirements,
+                    introduction: this.skill.introduction,
                     comment: this.comment
                 })
             };
@@ -556,6 +598,51 @@ export default {
         },
         closeImageSizeWarnModal() {
             this.showImageSizeWarn = false;
+        },
+        calculateFileSize(fileSize) {
+            const TerabyteSize = Math.pow(1024, 4);
+            const GigaByteSize = Math.pow(1024, 3);
+            const MegaByteSize = Math.pow(1024, 2);
+            const KiloByteSize = 1024;
+            if (fileSize > TerabyteSize) {
+                const resultFileSize = Math.round(fileSize / TerabyteSize);
+                return {
+                    size: resultFileSize,
+                    unit: 'TB'
+                };
+            }
+
+            if (fileSize > GigaByteSize) {
+                const resultFileSize = Math.round(fileSize / GigaByteSize);
+
+                return {
+                    size: resultFileSize,
+                    unit: 'GB'
+                };
+            }
+
+            if (fileSize > MegaByteSize) {
+                const resultFileSize = Math.round(fileSize / MegaByteSize);
+
+                return {
+                    size: resultFileSize,
+                    unit: 'MB'
+                };
+            }
+
+            if (fileSize > KiloByteSize) {
+                const resultFileSize = Math.round(fileSize / KiloByteSize);
+
+                return {
+                    size: resultFileSize,
+                    unit: 'KB'
+                };
+            }
+
+            return {
+                size: fileSize,
+                unit: 'B'
+            };
         }
     },
     components: {
@@ -874,7 +961,7 @@ export default {
             </div>
         </div>
         <div v-if="!isAnotherInstanceOfExistingSkill">
-            <!-- Image For Skill Tree -->
+            <!-- Image For Skill -->
             <div class="row">
                 <!-- Image chooser -->
                 <div class="col-8 col-md-3 col-lg-2 mt-2">
@@ -973,7 +1060,7 @@ export default {
                                 </button>
                             </p>
                         </div>
-                        <!-- Using random number otherwise url doesnt change (cache)-->
+                        <!-- Using random number otherwise url doesn't change (cache)-->
                         <img
                             id="originalImage"
                             class="d-none"
@@ -1018,7 +1105,7 @@ export default {
                                     class="plus-svg"
                                     @click="openImage('skillNodeFileChoose')"
                                 >
-                                    <!-- The plus Icon On Top Of the avatar -->
+                                    <!-- The plus Icon On Top Of the image -->
                                     <svg
                                         width="33"
                                         height="33"
@@ -1064,6 +1151,9 @@ export default {
                                     style="background-color: lightgrey"
                                 />
                             </p>
+                            <div class="mb-2">
+                                Image Size: {{ iconImageSize }}
+                            </div>
                             <p>
                                 <button
                                     class="btn red-btn"
@@ -1106,6 +1196,24 @@ export default {
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col">
+                    <div class="mb-3">
+                        <h2 class="secondary-heading h4">Introduction</h2>
+                        <textarea
+                            v-model="skill.introduction"
+                            class="form-control"
+                            rows="2"
+                            id="summernote-introduction"
+                        ></textarea>
+                    </div>
+                    <div>
+                        <div v-if="validate.introduction" class="form-validate">
+                            please enter introduction for skill
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Mastery Requirement summernote -->
             <div v-if="skill.type != 'domain'" class="mb-3">
@@ -1114,7 +1222,7 @@ export default {
                 <textarea
                     class="form-control"
                     v-model="skill.mastery_requirements"
-                    id="summernote"
+                    id="summernote-mastery-requirements"
                     rows="3"
                 ></textarea>
             </div>
@@ -1391,7 +1499,7 @@ export default {
     <FailsModal
         v-if="showImageSizeWarn"
         :handleOkClick="closeImageSizeWarnModal"
-        message="Your image is too big !"
+        :message="`Your image is too big ! (${iconImageSize} / 100kb)`"
     />
 </template>
 

@@ -42,7 +42,7 @@ export default {
 </script>
 
 <template>
-    <h2 class="secondary-heading h5 bg-white rounded p-2">Goals</h2>
+    <h2 class="tertiary-heading h5">Goals</h2>
     <div id="goal-list">
         <router-link
             v-for="goal in goals"
@@ -102,7 +102,7 @@ export default {
     padding: 10px 6px;
 }
 
-.skill-link:hover {
+.goal-link:hover {
     border: 1px solid black;
 }
 
@@ -125,7 +125,7 @@ export default {
     color: white;
 }
 
-.skill-link {
+.goal-link {
     width: fit-content;
 }
 

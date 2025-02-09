@@ -381,6 +381,8 @@ export default {
 </script>
 
 <template>
+    <!-- Note: the thumbstick is no longer used.
+    We still use component for navigation though -->
     <div id="controlsWrapper">
         <div id="panJoystick"></div>
     </div>
