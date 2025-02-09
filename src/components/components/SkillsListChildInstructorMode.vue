@@ -1,14 +1,17 @@
 <script>
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
+import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
         const userSkillsStore = useUserSkillsStore();
+        const skillTreeStore = useSkillTreeStore();
         return {
             skillsStore,
-            userSkillsStore
+            userSkillsStore,
+            skillTreeStore
         };
     },
     data() {
@@ -22,7 +25,9 @@ export default {
             // Used for goals feature.
             skill: {},
             accessibleSkills: [],
-            goalSteps: []
+            goalSteps: [],
+            // To allow for making the button grey without needing refresh, after goal created
+            isPseudoGoal: false
         };
     },
     props: [
@@ -219,7 +224,7 @@ export default {
                 this.createGoal(this.skill);
             }
         },
-        createGoal(skill) {
+        async createGoal(skill) {
             if (skill.type != 'domain') {
                 // Add ancestor skill to array.
                 this.goalSteps.push(skill);
@@ -264,6 +269,7 @@ export default {
             // or if its sub skill is unlocked
             if (inAccessibleList || isSubSkillUnlocked) {
                 this.populateGoalSteps();
+                this.isPseudoGoal = true;
                 return;
             }
 
@@ -414,8 +420,8 @@ export default {
                 v-if="type != 'domain'"
                 class="btn"
                 title="create a goal"
-                @click="
-                    isMastered == 1 || isUnlocked == 1 || isGoal
+                @click.stop="
+                    isMastered == 1 || isUnlocked == 1 || isGoal || isPseudoGoal
                         ? $event.preventDefault()
                         : confirmCreateGoal()
                 "
@@ -432,7 +438,10 @@ export default {
                     <path
                         :style="{
                             fill:
-                                isMastered == 1 || isUnlocked == 1 || isGoal
+                                isMastered == 1 ||
+                                isUnlocked == 1 ||
+                                isGoal ||
+                                isPseudoGoal
                                     ? '#d3d3d3'
                                     : 'primary-icon'
                         }"

@@ -41,7 +41,7 @@ export default {
                         if (data.role == 'student') {
                             router.push({ name: 'skill-tree' });
                         } else if (data.role == 'instructor') {
-                            router.push({ name: 'users' });
+                            router.push({ name: 'students' });
                         } else if (data.role == 'editor') {
                             router.push({ name: 'todo' });
                         } else router.push({ name: 'skills' });
@@ -78,7 +78,7 @@ export default {
                 />
             </div>
             <!-- Heading -->
-            <h1 class="h3 mt-2 font-weight-normal">Student sign in</h1>
+            <h1 class="h3 mt-2 font-weight-normal">Sign in</h1>
             <!-- Form -->
             <div class="form">
                 <label class="mb-4 welcome-message"
