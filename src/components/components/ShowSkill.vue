@@ -49,6 +49,7 @@ export default {
             userSkills: [],
             isMastered: false,
             isUnlocked: false,
+            isGoal: false,
             filters: [],
             showFlaggingModal: false,
             ancestor: this.$route.params.id,
@@ -60,7 +61,6 @@ export default {
             isSkillLoaded: false,
             randomNum: 0,
             goalSteps: [],
-            goalExists: false,
             goals: [],
             toggleModal: false, // Controls the modal visibility
             selectedSkill: null, // Stores the selected skill for modal context
@@ -87,6 +87,7 @@ export default {
         if (this.sessionDetailsStore.isLoggedIn) {
             await this.getUserSkills();
         }
+        console.log(this.isGoal);
 
         // Turn this on only if user is logged in.
         if (this.sessionDetailsStore.isLoggedIn == true) {
@@ -94,16 +95,9 @@ export default {
         }
 
         if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
-        await this.checkIfGoalExists();
     },
 
     methods: {
-        async getGoals() {
-            const result = await fetch(
-                '/goals/' + this.userDetailsStore.userId + '/list'
-            );
-            this.goals = await result.json();
-        },
         async getSkill() {
             // solution for image to be changed when we change it from AWS
             this.randomNum = Math.random();
@@ -160,6 +154,7 @@ export default {
                     }
                     if (this.userSkills[i].is_accessible == 1)
                         this.isUnlocked = true;
+                    if (this.userSkills[i].is_goal == 1) this.isGoal = true;
                 }
                 // also get the accessible skill list of this user for the find nearest accessible ancestor method
                 if (this.userSkills[i].is_accessible == 1) {
@@ -241,17 +236,6 @@ export default {
         },
         imageUrlAlternative(event) {
             event.target.src = '/images/skill-avatar/recurso.png';
-        },
-        /*
-         * Goals: this feature allows students to choose a skill to be a goal,
-         * to create a pathway for them to get to that goal.
-         */
-        async checkIfGoalExists() {
-            const result = await fetch(
-                '/goals/' + this.userDetailsStore.userId + '/' + this.skillId
-            );
-            const data = await result.json();
-            this.goalExists = data.goalExists;
         },
         openModal(skill) {
             this.selectedSkill = skill;
@@ -350,14 +334,9 @@ export default {
                 this.skillId;
             fetch(url, requestOptions).then(() => {
                 alert('A goal for this skill has been added on the Hub page.');
-                this.getGoals().then(() => {
-                    const createdGoal = this.goals.find(
-                        (goal) => goal.skill_id === this.skillId
-                    );
-                    if (createdGoal) {
-                        this.$router.push(`/goals/${createdGoal.id}`);
-                    }
-                });
+                this.$router.push(
+                    `/goals/${this.userDetailsStore.userId}/${this.skillId}`
+                );
             });
         },
         // Tutorial
@@ -683,7 +662,7 @@ export default {
                                 sessionDetailsStore.isLoggedIn &&
                                 isMastered == false &&
                                 isUnlocked == false &&
-                                goalExists == false &&
+                                isGoal == false &&
                                 userDetailsStore.role == 'student'
                             "
                             class="btn primary-btn"
