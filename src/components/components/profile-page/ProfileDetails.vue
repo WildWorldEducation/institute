@@ -29,21 +29,28 @@ export default {
     },
     methods: {
         LogOut() {
-            // Remove background image from theme on logout.
-            document.getElementsByTagName('body')[0].style =
-                'background-image: none;';
+            try {
+                // Remove background image from theme on logout.
+                document.getElementsByTagName('body')[0].style =
+                    'background-image: none;';
 
-            this.sessionDetailsStore.isLoggedIn = false;
+                this.sessionDetailsStore.isLoggedIn = false;
 
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            };
-            var url = '/logout';
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                };
+                var url = '/logout';
 
-            fetch(url, requestOptions).then(function (response) {
-                router.push({ name: 'login' });
-            });
+                fetch(url, requestOptions).then(function (response, err) {
+                    if (err) {
+                        throw err;
+                    }
+                    router.push({ name: 'login' });
+                });
+            } catch (error) {
+                console.error(error);
+            }
         }
     }
 };

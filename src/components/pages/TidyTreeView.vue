@@ -1555,6 +1555,7 @@ export default {
             </div>
         </div>
     </div>
+    <!-- Tutorial for user -->
     <div
         v-if="
             showTutorialTip1 ||
