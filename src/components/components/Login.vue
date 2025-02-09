@@ -41,7 +41,7 @@ export default {
                         if (data.role == 'student') {
                             router.push({ name: 'skill-tree' });
                         } else if (data.role == 'instructor') {
-                            router.push({ name: 'users' });
+                            router.push({ name: 'students' });
                         } else if (data.role == 'editor') {
                             router.push({ name: 'todo' });
                         } else router.push({ name: 'skills' });

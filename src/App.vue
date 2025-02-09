@@ -200,7 +200,6 @@ export default {
                         </li>
                         <li
                             v-if="
-                                userDetailsStore.role == 'instructor' ||
                                 userDetailsStore.role == 'admin' ||
                                 userDetailsStore.role == 'editor'
                             "
@@ -215,16 +214,21 @@ export default {
                                 </span>
                                 <span
                                     v-else-if="
-                                        userDetailsStore.role == 'instructor'
-                                    "
-                                    >Students</span
-                                >
-                                <span
-                                    v-else-if="
                                         userDetailsStore.role == 'editor'
                                     "
                                     >Editors</span
                                 >
+                            </RouterLink>
+                        </li>
+                        <li
+                            v-if="userDetailsStore.role == 'instructor'"
+                            class="nav-item"
+                        >
+                            <RouterLink
+                                to="/students"
+                                class="nav-link close-on-click"
+                            >
+                                <span>Students</span>
                             </RouterLink>
                         </li>
                         <li

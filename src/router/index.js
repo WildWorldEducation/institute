@@ -205,7 +205,16 @@ const router = createRouter({
             component: () => import('../components/pages/UsersView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['instructor', 'admin', 'editor']
+                roles: ['admin', 'editor']
+            }
+        },
+        {
+            path: '/students',
+            name: 'students',
+            component: () => import('../components/pages/UsersView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['instructor', 'admin']
             }
         },
         {
