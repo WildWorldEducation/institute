@@ -45,6 +45,8 @@ const saveImageToAWS = async (image, skillUrl, editUUID) => {
     );
 
     const imageName = `${skillUrl}${editUUID ? `_${editUUID}` : ''}`;
+
+    // Save full size image.
     let fullSizeData = {
         // The name it will be saved as on S3
         Key: imageName,
@@ -60,6 +62,7 @@ const saveImageToAWS = async (image, skillUrl, editUUID) => {
     const fullSizeCommand = new PutObjectCommand(fullSizeData);
     await s3.send(fullSizeCommand);
 
+    // Save thumbnail size image (for faster loading on skill pages).
     const thumbnailFileData = await sharp(fileData)
         .resize({ width: 330 })
         .toBuffer();
@@ -101,10 +104,10 @@ const saveIconToAWS = async (icon, skillUrl, editUUID) => {
         'base64'
     );
 
-    const imageName = `${skillUrl}${editUUID ? `_${editUUID}` : ''}`;
+    const iconName = `${skillUrl}${editUUID ? `_${editUUID}` : ''}`;
     let fullSizeData = {
         // The name it will be saved as on S3
-        Key: imageName,
+        Key: iconName,
         // The image
         Body: fileData,
         ContentEncoding: 'base64',
@@ -117,7 +120,7 @@ const saveIconToAWS = async (icon, skillUrl, editUUID) => {
     const fullSizeCommand = new PutObjectCommand(fullSizeData);
     await s3.send(fullSizeCommand);
 
-    return imageName;
+    return iconName;
 };
 /**
  * Copy an image with another image that already stored in AWS
