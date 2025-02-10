@@ -131,6 +131,8 @@ export default {
                 'en-US',
                 options
             );
+
+            console.log(this.skillRevision);
         },
         async getSkillRevisionHistory() {
             const url = '/skill-history/' + this.skill.id + '/list';
@@ -203,7 +205,7 @@ export default {
     <div class="d-flex">
         <div v-if="!compareWithRevision" class="mt-3">
             <div id="skill-info-container">
-                <!-- Skill Info -->
+                <!-- Skill name -->
                 <h1 class="heading">
                     {{ skill.name }}
                     <span class="revision-version"
@@ -215,6 +217,7 @@ export default {
                 <hr class="border border-2 opacity-100 hr" />
 
                 <div class="d-flex flex-column">
+                    <!-- Notification - who edited the skill and when -->
                     <div class="alert alert-warning d-flex" role="alert">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -242,8 +245,9 @@ export default {
                             >.
                         </span>
                     </div>
-
+                    <!-- Other versions to compare with -->
                     <CompareWithDropdown
+                        class="mb-5"
                         :skillRevisionHistory="skillRevisionHistory"
                         :currentShowingVersion="skillRevision.version_number"
                         :updateCompareWithRevision="updateCompareWithRevision"
@@ -253,8 +257,8 @@ export default {
                 <!-- A line divide -->
                 <hr class="border border-1 opacity-100 hr mt-md-4 mt-5" />
                 <div class="d-flex flex-column-reverse flex-md-row gap-4">
-                    <!-- Introduction -->
                     <div>
+                        <!-- Introduction -->
                         <h2 class="secondary-heading">Introduction</h2>
                         <div class="mastery-requirements mb-3">
                             <div v-html="skillRevision.introduction"></div>
@@ -270,20 +274,15 @@ export default {
                     <!-- Infobox -->
                     <div class="col-md-4 order-1 order-md-2">
                         <div class="info-box p-2 mb-2">
+                            <h2 class="h4 heading">Image</h2>
                             <!-- AWS S3 hosted feature image -->
                             <!-- Show a default skill avatar if skill not have image yet -->
                             <a
                                 v-if="skillRevision.icon_image"
-                                :href="
-                                    'https://institute-skill-infobox-images.s3.amazonaws.com/' +
-                                    skillRevision.icon_image
-                                "
+                                :href="skillRevision.icon_image"
                             >
                                 <img
-                                    :src="
-                                        'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
-                                        skillRevision.icon_image
-                                    "
+                                    :src="skillRevision.icon_image"
                                     class="rounded img-fluid"
                                 />
                             </a>
@@ -291,11 +290,7 @@ export default {
                                 class="d-flex flex-column align-items-center"
                                 v-else
                             >
-                                <div class="no-image-warn">
-                                    Version
-                                    {{ skillRevision.version_number }} Does Not
-                                    Change Icon Image.
-                                </div>
+                                <div class="no-image-warn">No image</div>
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 512 512"
@@ -308,7 +303,7 @@ export default {
                                 </svg>
                             </div>
                             <!-- Grade level -->
-                            <div class="mt-2">
+                            <div class="mt-3">
                                 <h2 class="h4 heading">Level</h2>
                                 <span v-if="skill.level == 'grade_school'"
                                     >Grade School</span
