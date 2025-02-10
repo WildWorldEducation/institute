@@ -883,14 +883,17 @@ router.put(
                         level = ${conn.escape(req.body.level)},
                         introduction = ${conn.escape(req.body.introduction)},
                         skills.order = ${conn.escape(req.body.order)}, 
-                        version_number = ${conn.escape(versionNumber)}, 
-                        ${
-                            scaledDownIcon !== '' &&
-                            `icon = ${conn.escape(scaledDownIcon)},`
-                        }
+                        version_number = ${conn.escape(
+                            versionNumber
+                        )},                        
+                        icon = ${conn.escape(
+                            scaledDownIcon
+                        )},                        
                         edited_date = current_timestamp, 
                         is_human_edited = 1
                         WHERE id = ${conn.escape(req.params.id)};`;
+
+                    console.log(updateRecordSQLQuery);
 
                     conn.query(updateRecordSQLQuery, async (err, results) => {
                         try {
