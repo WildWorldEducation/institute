@@ -804,30 +804,26 @@ router.put(
 
             // Save Edit node icon to AWS
             const uuidDate = Date.now();
-            let nodeIconUrl = req.body.icon;
-            let skillImageUrl = req.body.icon_image;
+            let iconUrl = req.body.icon;
+            let imageUrl = req.body.image;
             let scaledDownIcon = '';
             let nodeIconData = null;
             if (
                 req.body.icon.length > 0 &&
                 !req.body.icon.includes(skillIconBucketName)
             ) {
-                nodeIconUrl = await saveNodeIconToAWS(
-                    req.body.icon,
-                    url,
-                    uuidDate
-                );
-                skillImageUrl = nodeIconUrl;
+                iconUrl = await saveNodeIconToAWS(req.body.icon, url, uuidDate);
+                //skillImageUrl = nodeIconUrl;
                 // Add bucket name prefix to the url
-                skillImageUrl = `https://${skillInfoboxImageThumbnailsBucketName}.s3.amazonaws.com/${nodeIconUrl}`;
-                nodeIconUrl = `https://${skillIconBucketName}.s3.amazonaws.com/${nodeIconUrl}`;
+                imageUrl = `https://${skillInfoboxImageThumbnailsBucketName}.s3.amazonaws.com/${nodeIconUrl}`;
+                iconUrl = `https://${skillIconBucketName}.s3.amazonaws.com/${iconUrl}`;
                 const scaleDownData = req.body.icon.split(';base64,').pop();
                 const imgBuffer = Buffer.from(scaleDownData, 'base64');
                 nodeIconData = imgBuffer;
                 scaledDownIcon = await scaleIcon(imgBuffer, 50);
             }
 
-            // update the node icon
+            // update the node icon in AWS
             if (nodeIconData) {
                 let iconData = {
                     // The name it will be saved as on S3
@@ -892,8 +888,6 @@ router.put(
                         edited_date = current_timestamp, 
                         is_human_edited = 1
                         WHERE id = ${conn.escape(req.params.id)};`;
-
-                    console.log(updateRecordSQLQuery);
 
                     conn.query(updateRecordSQLQuery, async (err, results) => {
                         try {
