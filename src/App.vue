@@ -2,6 +2,7 @@
 // Import the stores.
 import { useSessionDetailsStore } from './stores/SessionDetailsStore.js';
 import { useUserDetailsStore } from './stores/UserDetailsStore.js';
+import router from './router';
 
 export default {
     setup() {
@@ -79,6 +80,22 @@ export default {
                     }
                 }, 300);
             }
+        },
+        LogOut() {
+            document.getElementsByTagName('body')[0].style =
+                'background-image: none;';
+
+            this.sessionDetailsStore.isLoggedIn = false;
+
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            var url = '/logout';
+
+            fetch(url, requestOptions).then(function (response) {
+                router.push({ name: 'login' });
+            });
         }
     }
 };
@@ -253,16 +270,57 @@ export default {
                             v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item"
                         >
-                            <RouterLink
-                                to="/profile-settings"
-                                class="nav-link profile-btn close-on-click"
-                            >
-                                <img
-                                    id="user-avatar"
-                                    :src="userDetailsStore.avatar"
-                                    alt="user avatar"
-                                />
-                            </RouterLink>
+                            <div class="dropdown d-none d-sm-block">
+                                <a
+                                    href="#"
+                                    class="nav-link dropdown-toggle"
+                                    id="navbarDropdown"
+                                    role="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                >
+                                    <img
+                                        id="user-avatar"
+                                        :src="userDetailsStore.avatar"
+                                        alt="user avatar"
+                                    />
+                                </a>
+
+                                <div
+                                    class="dropdown-menu dropdown-menu-end"
+                                    aria-labelledby="navbarDropdown"
+                                >
+                                    <RouterLink
+                                        to="/profile-settings"
+                                        class="dropdown-item"
+                                    >
+                                        Profile
+                                    </RouterLink>
+                                    <div class="dropdown-divider"></div>
+                                    <a
+                                        v-if="sessionDetailsStore.isLoggedIn"
+                                        @click="LogOut()"
+                                        class="dropdown-item"
+                                    >
+                                        Log out
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="d-sm-none">
+                                <RouterLink
+                                    to="/profile-settings"
+                                    class="nav-link"
+                                >
+                                    Profile
+                                </RouterLink>
+                                <a
+                                    v-if="sessionDetailsStore.isLoggedIn"
+                                    @click="LogOut()"
+                                    class="nav-link"
+                                >
+                                    Log out
+                                </a>
+                            </div>
                         </li>
                         <li
                             class="nav-item"
