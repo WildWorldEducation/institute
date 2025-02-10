@@ -49,6 +49,7 @@ export default {
             userSkills: [],
             isMastered: false,
             isUnlocked: false,
+            isGoal: false,
             filters: [],
             showFlaggingModal: false,
             ancestor: this.$route.params.id,
@@ -60,7 +61,6 @@ export default {
             isSkillLoaded: false,
             randomNum: 0,
             goalSteps: [],
-            goalExists: false,
             goals: [],
             toggleModal: false, // Controls the modal visibility
             selectedSkill: null, // Stores the selected skill for modal context
@@ -87,6 +87,7 @@ export default {
         if (this.sessionDetailsStore.isLoggedIn) {
             await this.getUserSkills();
         }
+        console.log(this.isGoal);
 
         // Turn this on only if user is logged in.
         if (this.sessionDetailsStore.isLoggedIn == true) {
@@ -94,15 +95,9 @@ export default {
         }
 
         if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
-        await this.checkIfGoalExists();
     },
+
     methods: {
-        async getGoals() {
-            const result = await fetch(
-                '/goals/' + this.userDetailsStore.userId + '/list'
-            );
-            this.goals = await result.json();
-        },
         async getSkill() {
             // solution for image to be changed when we change it from AWS
             this.randomNum = Math.random();
@@ -159,6 +154,7 @@ export default {
                     }
                     if (this.userSkills[i].is_accessible == 1)
                         this.isUnlocked = true;
+                    if (this.userSkills[i].is_goal == 1) this.isGoal = true;
                 }
                 // also get the accessible skill list of this user for the find nearest accessible ancestor method
                 if (this.userSkills[i].is_accessible == 1) {
@@ -240,17 +236,6 @@ export default {
         },
         imageUrlAlternative(event) {
             event.target.src = '/images/skill-avatar/recurso.png';
-        },
-        /*
-         * Goals: this feature allows students to choose a skill to be a goal,
-         * to create a pathway for them to get to that goal.
-         */
-        async checkIfGoalExists() {
-            const result = await fetch(
-                '/goals/' + this.userDetailsStore.userId + '/' + this.skillId
-            );
-            const data = await result.json();
-            this.goalExists = data.goalExists;
         },
         openModal(skill) {
             this.selectedSkill = skill;
@@ -339,21 +324,19 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    skillId: this.skillId,
                     goalSteps: this.goalSteps
                 })
             };
-            const url = '/goals/' + this.userDetailsStore.userId + '/add';
+            const url =
+                '/user-skills/set-goal/' +
+                this.userDetailsStore.userId +
+                '/' +
+                this.skillId;
             fetch(url, requestOptions).then(() => {
                 alert('A goal for this skill has been added on the Hub page.');
-                this.getGoals().then(() => {
-                    const createdGoal = this.goals.find(
-                        (goal) => goal.skill_id === this.skillId
-                    );
-                    if (createdGoal) {
-                        this.$router.push(`/goals/${createdGoal.id}`);
-                    }
-                });
+                this.$router.push(
+                    `/goals/${this.userDetailsStore.userId}/${this.skillId}`
+                );
             });
         },
         // Tutorial
@@ -388,12 +371,19 @@ export default {
                 this.showTutorialTip5 = false;
                 this.showTutorialTip6 = true;
                 if (
-                    this.userDetailsStore.role == 'editor' ||
-                    this.userDetailsStore.role == 'instructor'
-                )
-                    this.markTutorialComplete();
+                    this.userDetailsStore.role === 'editor' ||
+                    this.userDetailsStore.role === 'instructor'
+                ) {
+                    this.showTutorialTip7 = true;
+                }
             } else if (step == 6) {
                 this.showTutorialTip6 = false;
+                if (
+                    this.userDetailsStore.role === 'editor' ||
+                    this.userDetailsStore.role === 'instructor'
+                ) {
+                    this.showTutorialTip7 = false;
+                }
                 this.markTutorialComplete();
             }
         },
@@ -404,6 +394,8 @@ export default {
             this.showTutorialTip4 = false;
             this.showTutorialTip5 = false;
             this.showTutorialTip6 = false;
+            this.showTutorialTip7 = false;
+            this.showInstructorEditorTutorialTip = false;
             this.isTutorialComplete = false;
         },
         markTutorialComplete() {
@@ -670,7 +662,7 @@ export default {
                                 sessionDetailsStore.isLoggedIn &&
                                 isMastered == false &&
                                 isUnlocked == false &&
-                                goalExists == false &&
+                                isGoal == false &&
                                 userDetailsStore.role == 'student'
                             "
                             class="btn primary-btn"
@@ -1047,7 +1039,13 @@ export default {
         <!-- Posts -->
         <div v-if="skill.type != 'domain'">
             <div class="row mt-3 mb-3">
-                <Forum v-if="isSkillLoaded" :skillId="skill.id" />
+                <Forum
+                    v-if="isSkillLoaded"
+                    :skillId="skill.id"
+                    :showTutorialTip6="showTutorialTip6"
+                    :userRole="userDetailsStore.role"
+                    @progressTutorial="progressTutorial"
+                />
             </div>
         </div>
         <p>&nbsp;</p>
@@ -1130,7 +1128,7 @@ export default {
     <div
         v-if="
             userDetailsStore.role == 'student' &&
-            (showTutorialTip1 || showTutorialTip5 || showTutorialTip6)
+            (showTutorialTip1 || showTutorialTip5)
         "
         class="modal"
     >
@@ -1152,16 +1150,6 @@ export default {
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(5)">
                     next
-                </button>
-            </div>
-            <div v-else-if="showTutorialTip6">
-                <p>
-                    At the bottom of the page, in the "Best Places To Learn
-                    This" section, you can find various sites and resources to
-                    learn about this topic.
-                </p>
-                <button class="btn primary-btn" @click="progressTutorial(6)">
-                    close
                 </button>
             </div>
         </div>
@@ -1203,7 +1191,7 @@ export default {
                 </p>
                 <p>You can add more, vote on these, or edit them.</p>
                 <button class="btn primary-btn" @click="progressTutorial(5)">
-                    close
+                    next
                 </button>
             </div>
         </div>
@@ -1244,7 +1232,7 @@ export default {
                 </p>
                 <p>You can add more and vote on these.</p>
                 <button class="btn primary-btn" @click="progressTutorial(5)">
-                    close
+                    next
                 </button>
             </div>
         </div>

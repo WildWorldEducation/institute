@@ -41,7 +41,7 @@ export default {
 
 <style scoped>
 .icons {
-    mix-blend-mode: multiply;
+    /*  mix-blend-mode: multiply; */
     height: 30px;
     border-radius: 50%;
 }
@@ -103,6 +103,7 @@ export default {
 
 .skill-link {
     width: fit-content;
+    padding-left: 0.35rem;
 }
 
 #skill-list div:hover {

@@ -77,8 +77,7 @@ export default {
             currentNodeY: 0,
             visibleRangeX: 0,
             visibleRangeY: 0,
-            iconDictionary: [],
-            nodeDrew: 0
+            iconDictionary: []
         };
     },
     components: {
@@ -324,7 +323,7 @@ export default {
             this.context.beginPath();
 
             // Calculate max visible range
-            this.nodeDrew = 0;
+
             for (const node of this.nodes) {
                 // Do not render parts of tree not in the canvas
                 // to improve performance.
@@ -454,7 +453,7 @@ export default {
         },
         async printPDF() {
             // Build the SVG tree.
-            await this.createSVGTree();
+            this.createSVGTree();
 
             // Select the element from the DOM.
             var svg = document.getElementById('linearTree');
