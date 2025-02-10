@@ -333,8 +333,7 @@ export default {
             let ctx1 = this.context;
             let ctx2 = this.hiddenCanvasContext;
             // A flag to determine if this node was searched by user
-            const isSearched =
-                node.data.name === this.resultNode?.data.skill_name;
+            const isSearched = node.data.name === this.resultNode?.data.name;
 
             if (this.scale > 0.6) {
                 this.drawRoundRectNode(ctx1, node);
