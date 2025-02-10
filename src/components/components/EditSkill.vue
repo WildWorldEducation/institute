@@ -437,7 +437,7 @@ export default {
                 `https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/${this.skill.url}`
             ) {
                 updateSkillImage = this.image;
-            }
+            }      
 
             const requestOptions = {
                 method: 'PUT',

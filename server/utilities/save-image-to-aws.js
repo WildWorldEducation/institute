@@ -58,6 +58,8 @@ const saveImageToAWS = async (image, skillUrl, editUUID) => {
         Bucket: skillInfoboxImagesBucketName
     };
 
+    
+
     // Send to the bucket.
     const fullSizeCommand = new PutObjectCommand(fullSizeData);
     await s3.send(fullSizeCommand);

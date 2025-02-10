@@ -804,13 +804,13 @@ router.put(
             let iconUrl = req.body.icon;
             let imageUrl = req.body.image;
 
-            // Update image if user changed it
             // Save image to AWS
             if (
-                req.body.icon.length > 0 &&
-                !req.body.icon.includes(skillIconBucketName)
+                req.body.image.length > 0 &&
+                !req.body.image.includes(skillInfoboxImageThumbnailsBucketName)
             ) {
                 imageUrl = await saveImageToAWS(imageUrl, url, uuidDate);
+                imageUrl = `https://${skillInfoboxImageThumbnailsBucketName}.s3.amazonaws.com/${imageUrl}`;
             }
 
             // Save updated icon to AWS
