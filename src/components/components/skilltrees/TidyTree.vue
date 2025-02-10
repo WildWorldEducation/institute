@@ -453,7 +453,7 @@ export default {
         },
         async printPDF() {
             // Build the SVG tree.
-            await this.createSVGTree();
+            this.createSVGTree();
 
             // Select the element from the DOM.
             var svg = document.getElementById('linearTree');
