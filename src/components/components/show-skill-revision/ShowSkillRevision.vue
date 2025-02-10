@@ -275,7 +275,7 @@ export default {
                     <div class="col-md-4 order-1 order-md-2">
                         <div class="info-box p-2 mb-2">
                             <!-- AWS S3 hosted feature image -->
-                            <h2 class="h4 heading">Image</h2>
+                            <h2 class="h4 secondary-heading">Image</h2>
                             <!-- Show a default skill avatar if skill not have image yet -->
                             <a
                                 v-if="skillRevision.icon_image"
@@ -303,7 +303,7 @@ export default {
                                 </svg>
                             </div>
                             <!-- AWS S3 hosted icon image -->
-                            <h2 class="h4 heading">Icon</h2>
+                            <h2 class="h4 secondary-heading">Icon</h2>
                             <!-- Show a default skill avatar if skill not have image yet -->
                             <a
                                 v-if="skillRevision.icon"
@@ -332,7 +332,7 @@ export default {
                             </div>
                             <!-- Grade level -->
                             <div class="mt-3">
-                                <h2 class="h4 heading">Level</h2>
+                                <h2 class="h4 secondary-heading">Level</h2>
                                 <span v-if="skill.level == 'grade_school'"
                                     >Grade School</span
                                 >
