@@ -45,9 +45,8 @@ const { recordUserAction } = require('../utilities/record-user-action');
 
 // Helper Function
 const {
+    saveImageToAWS,
     saveIconToAWS,
-    saveBase64ImageToBucket,
-    saveNodeIconToAWS,
     scaleIcon,
     updateImage
 } = require('../utilities/save-image-to-aws');
@@ -805,37 +804,26 @@ router.put(
             let iconUrl = req.body.icon;
             let imageUrl = req.body.image;
 
-            // Save edited icon to AWS
+            // Update image if user changed it
+            // Save image to AWS
+            await saveImageToAWS(imageUrl, url);
+
+            // Save updated icon to AWS
             let scaledDownIcon = '';
-            let nodeIconData = null;
+            let iconData = null;
             if (
                 req.body.icon.length > 0 &&
                 !req.body.icon.includes(skillIconBucketName)
             ) {
-                iconUrl = await saveNodeIconToAWS(req.body.icon, url, uuidDate);
-                //skillImageUrl = nodeIconUrl;
-                // Add bucket name prefix to the url
-                imageUrl = `https://${skillInfoboxImageThumbnailsBucketName}.s3.amazonaws.com/${imageUrl}`;
+                iconUrl = await saveIconToAWS(iconUrl, url, uuidDate);
                 iconUrl = `https://${skillIconBucketName}.s3.amazonaws.com/${iconUrl}`;
+
+                // Scale down icon to much smaller, as it must be saved in DB
+                // this is the version used for the skill tree in the canvas.
                 const scaleDownData = req.body.icon.split(';base64,').pop();
                 const imgBuffer = Buffer.from(scaleDownData, 'base64');
-                nodeIconData = imgBuffer;
+                iconData = imgBuffer;
                 scaledDownIcon = await scaleIcon(imgBuffer, 50);
-            }
-
-            // update the icon in AWS
-            if (nodeIconData) {
-                let iconData = {
-                    // The name it will be saved as on S3
-                    Key: url,
-                    // The image
-                    Body: nodeIconData,
-                    ContentEncoding: 'base64',
-                    ContentType: 'image/jpeg',
-                    // The S3 bucket
-                    Bucket: skillIconBucketName
-                };
-                await updateImage(iconData);
             }
 
             let addVersionHistoryInsertSQLQuery = `
@@ -849,7 +837,7 @@ router.put(
                     ${conn.escape(req.body.name)},                    
                     ${conn.escape(req.body.description)},
                     ${conn.escape(imageUrl)},
-                    ${conn.escape(nodeIconUrl)},
+                    ${conn.escape(iconUrl)},
                     ${conn.escape(
                         req.body.mastery_requirements
                     )},                    
@@ -894,13 +882,6 @@ router.put(
                             if (err) {
                                 throw err;
                             } else {
-                                // Update image if user changed it
-                                // Save image to AWS
-                                await saveIconToAWS(
-                                    req.body.image,
-                                    req.body.url
-                                );
-
                                 // add edit (update) action into user_actions table
                                 const actionData = {
                                     action: 'update',
@@ -1033,7 +1014,7 @@ router.put(
                         req.body.icon.length > 0 &&
                         !req.body.icon.includes(skillIconBucketName)
                     ) {
-                        nodeIconUrl = await saveNodeIconToAWS(
+                        nodeIconUrl = await saveIconToAWS(
                             req.body.icon,
                             url,
                             uuidDate
