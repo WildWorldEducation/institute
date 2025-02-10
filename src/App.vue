@@ -305,6 +305,12 @@ export default {
                                     >
                                         Profile
                                     </RouterLink>
+                                    <RouterLink
+                                        to="/profile"
+                                        class="dropdown-item"
+                                    >
+                                        Settings
+                                    </RouterLink>
                                     <div class="dropdown-divider"></div>
                                     <a
                                         v-if="sessionDetailsStore.isLoggedIn"
