@@ -1,12 +1,10 @@
 <script>
 import ProfileDetails from '../components/profile-page/ProfileDetails.vue';
 import ThemeDetails from '../components/profile-page/ThemeDetails.vue';
-import ReputationDetails from '../components/profile-page/ReputationDetails.vue';
 import Settings from '../components/settings/Settings.vue';
 import BulkQuestionsUpload from '../components/settings/BulkQuestionsUpload.vue';
 import AutoGenerateSources from '../components/settings/AutoGenerateSources.vue';
 import DeleteDownVotedSources from '../components/settings/DeleteDownVotedSources.vue';
-import ReputationEvents from '../components/hub-components/ReputationEvents.vue';
 import Notifications from '../components/hub-components/Notifications.vue';
 import News from '../components/hub-components/News.vue';
 
@@ -26,12 +24,10 @@ export default {
     components: {
         ProfileDetails,
         ThemeDetails,
-        ReputationDetails,
         Settings,
         BulkQuestionsUpload,
         AutoGenerateSources,
         DeleteDownVotedSources,
-        ReputationEvents,
         News,
         Notifications
     },
@@ -64,16 +60,6 @@ export default {
             </div>
         </div>
         <ThemeDetails />
-        <div class="container pb-4 theme-background mt-2">
-            <h2 class="secondary-heading h4">Reputation</h2>
-            <ReputationDetails />
-            <ReputationEvents
-                v-if="
-                    userDetailsStore.role == 'student' ||
-                    userDetailsStore.role == 'instructor'
-                "
-            />
-        </div>
 
         <!-- Admin role only -->
         <!-- App Settings --->

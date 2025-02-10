@@ -256,6 +256,11 @@ const router = createRouter({
                 import('../components/pages/ProfileSettingsView.vue')
         },
         {
+            path: '/profile-reputation',
+            name: 'profile-reputation',
+            component: () => import('../components/pages/ReputationView.vue')
+        },
+        {
             path: '/profile/edit',
             name: 'edit-profile',
             component: () => import('../components/pages/EditProfileView.vue')

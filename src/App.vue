@@ -305,6 +305,12 @@ export default {
                                     >
                                         Profile
                                     </RouterLink>
+                                    <RouterLink
+                                        to="/profile-reputation"
+                                        class="dropdown-item"
+                                    >
+                                        Reputation
+                                    </RouterLink>
                                     <div class="dropdown-divider"></div>
                                     <a
                                         v-if="sessionDetailsStore.isLoggedIn"
