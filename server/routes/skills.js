@@ -801,11 +801,11 @@ router.put(
             // Add new record to the skills_versions table.
             let versionNumber = req.body.version_number + 1;
             let url = req.body.url;
-
-            // Save Edit node icon to AWS
             const uuidDate = Date.now();
             let iconUrl = req.body.icon;
             let imageUrl = req.body.image;
+
+            // Save edited icon to AWS
             let scaledDownIcon = '';
             let nodeIconData = null;
             if (
@@ -815,7 +815,7 @@ router.put(
                 iconUrl = await saveNodeIconToAWS(req.body.icon, url, uuidDate);
                 //skillImageUrl = nodeIconUrl;
                 // Add bucket name prefix to the url
-                imageUrl = `https://${skillInfoboxImageThumbnailsBucketName}.s3.amazonaws.com/${nodeIconUrl}`;
+                imageUrl = `https://${skillInfoboxImageThumbnailsBucketName}.s3.amazonaws.com/${imageUrl}`;
                 iconUrl = `https://${skillIconBucketName}.s3.amazonaws.com/${iconUrl}`;
                 const scaleDownData = req.body.icon.split(';base64,').pop();
                 const imgBuffer = Buffer.from(scaleDownData, 'base64');
@@ -823,7 +823,7 @@ router.put(
                 scaledDownIcon = await scaleIcon(imgBuffer, 50);
             }
 
-            // update the node icon in AWS
+            // update the icon in AWS
             if (nodeIconData) {
                 let iconData = {
                     // The name it will be saved as on S3
@@ -848,7 +848,7 @@ router.put(
                     ${conn.escape(req.session.userId)},
                     ${conn.escape(req.body.name)},                    
                     ${conn.escape(req.body.description)},
-                    ${conn.escape(skillImageUrl)},
+                    ${conn.escape(imageUrl)},
                     ${conn.escape(nodeIconUrl)},
                     ${conn.escape(
                         req.body.mastery_requirements
@@ -894,11 +894,10 @@ router.put(
                             if (err) {
                                 throw err;
                             } else {
-                                // Update new Icon to if user changed it
-
-                                // Save edit icon to AWS
+                                // Update image if user changed it
+                                // Save image to AWS
                                 await saveIconToAWS(
-                                    req.body.icon_image,
+                                    req.body.image,
                                     req.body.url
                                 );
 
