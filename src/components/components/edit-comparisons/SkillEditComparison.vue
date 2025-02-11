@@ -54,6 +54,7 @@ export default {
                 this.skillEdit.mastery_requirements
             );
         }
+
         if (this.skill.introduction !== this.skillEdit.introduction) {
             this.isSkillChanged.introduction = true;
             // Compare two introduction string
