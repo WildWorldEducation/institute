@@ -333,7 +333,7 @@ export default {
                                     <a
                                         v-if="sessionDetailsStore.isLoggedIn"
                                         @click="LogOut()"
-                                        class="dropdown-item"
+                                        class="dropdown-item logout-btn"
                                     >
                                         Log out
                                     </a>
@@ -364,7 +364,7 @@ export default {
                                 <a
                                     v-if="sessionDetailsStore.isLoggedIn"
                                     @click="LogOut()"
-                                    class="nav-link"
+                                    class="nav-link logout-btn"
                                 >
                                     Log out
                                 </a>
@@ -471,6 +471,9 @@ Themes
     display: flex;
     flex-direction: row;
     align-items: baseline;
+}
+.logout-btn{
+    cursor: pointer;
 }
 
 .nav-link .active {
