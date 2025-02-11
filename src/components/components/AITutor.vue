@@ -9,7 +9,7 @@ export default {
             userDetailsStore
         };
     },
-    props: ['skillName'],
+    props: ['skillName', 'skillUrl'],
     data() {
         return {
             message: '',
@@ -29,18 +29,34 @@ export default {
                     skillName: this.skillName
                 })
             };
-            var url = '/ai-tutor';
+            var url = '/ai-tutor/new-message';
             fetch(url, requestOptions)
                 .then((response) => {
                     return response.json();
                 })
                 .then((data) => {
-                    console.log(data);
                     for (let i = 0; i < data.message.length; i++) {
                         console.log(data.message[i].content[0].text);
                         this.previousMessages.push(data.message[i]);
                     }
                 });
+        },
+        TestFunc() {
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: this.message,
+                    userName: this.userDetailsStore.userName,
+                    userId: this.userDetailsStore.id,
+                    skillName: this.skillName,
+                    skillUrl: this.skillUrl
+                })
+            };
+            var url = '/ai-tutor/new-message';
+            fetch(url, requestOptions).then((response) => {
+                return response.json();
+            });
         }
     }
 };
@@ -68,6 +84,7 @@ export default {
             <button class="btn primary-btn" @click="SendMessage()">
                 Submit
             </button>
+            <button class="btn" @click="TestFunc()">Test !!</button>
         </div>
     </div>
 </template>

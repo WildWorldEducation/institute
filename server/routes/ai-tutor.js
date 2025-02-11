@@ -9,6 +9,8 @@ const router = express.Router();
 
 // Import OpenAI package.
 const { OpenAI } = require('openai');
+const { processingNewMessage, initialAssistant, getAssistantData } = require('../utilities/openAIAssistant');
+const isAuthenticated = require('../middlewares/authMiddleware');
 // Include API key.
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
@@ -72,6 +74,32 @@ router.post('/', async (req, res, next) => {
     } else {
     }
 });
+
+/**
+ * Create New Item
+ *
+ * @return response()
+ */
+router.post('/new-message', isAuthenticated, async (req, res, next) => {
+    try {
+        const assistantData = await getAssistantData(req.body.userId, req.body.skillUrl);
+        console.log(assistantData);
+        // if (!req.body.threadId || !req.body.assistantId) {
+        //     const newAssistant = await initialAssistant();
+        //     const result = await processingNewMessage(newAssistant.thread.id, newAssistant.assistant.id, req.body.messageData);
+        //     res.json({ message: result.data, assistant: newAssistant.assistant, thread: newAssistant.thread })
+        //     return
+        // }
+        // const result = await processingNewMessage(req.body.threadId, req.body.assistantId, req.body.messageData);
+        // res.json({ message: result.data })
+    } catch (error) {
+        console.error(error)
+        res.status = 500;
+        res.json({ mess: 'something went wrong' })
+    }
+})
+
+
 
 // Export the router for app to use.
 module.exports = router;
