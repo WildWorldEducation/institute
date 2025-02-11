@@ -58,7 +58,11 @@ export default {
 </script>
 
 <template>
+    <h2 class="secondary-heading h5 mt-3">Reputation Events</h2>
     <div class="container pb-4 theme-background mt-2">
+        <div v-if="reputationEvents.length === 0">
+            <p>You have not earned any reputation yet.</p>
+        </div>
         <div v-for="reputationEvent in reputationEvents">
             <div class="text-white bg-success rounded">
                 <span class="badge text-bg-light">+1</span>
@@ -90,7 +94,7 @@ export default {
 .theme-background {
     background-color: white;
     border-radius: 10px;
-    padding: 10px;
+    padding-left: 0px;
 }
 
 /* Scrollbar */

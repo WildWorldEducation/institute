@@ -318,6 +318,12 @@ export default {
                                         News & Notifications
                                     </RouterLink>
                                     <RouterLink
+                                        v-if="
+                                            userDetailsStore.role ==
+                                                'student' ||
+                                            userDetailsStore.role ==
+                                                'instructor'
+                                        "
                                         to="/reputation"
                                         class="dropdown-item"
                                     >
