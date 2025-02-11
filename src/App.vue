@@ -300,19 +300,31 @@ export default {
                                     aria-labelledby="navbarDropdown"
                                 >
                                     <RouterLink
-                                        to="/profile-settings"
+                                        to="/profile"
                                         class="dropdown-item"
                                     >
                                         Profile
                                     </RouterLink>
                                     <RouterLink
-                                        to="/profile"
+                                        to="/settings"
                                         class="dropdown-item"
                                     >
                                         Settings
                                     </RouterLink>
                                     <RouterLink
-                                        to="/profile-reputation"
+                                        to="/news-and-notifications"
+                                        class="dropdown-item"
+                                    >
+                                        News & Notifications
+                                    </RouterLink>
+                                    <RouterLink
+                                        v-if="
+                                            userDetailsStore.role ==
+                                                'student' ||
+                                            userDetailsStore.role ==
+                                                'instructor'
+                                        "
+                                        to="/reputation"
                                         class="dropdown-item"
                                     >
                                         Reputation
@@ -321,7 +333,7 @@ export default {
                                     <a
                                         v-if="sessionDetailsStore.isLoggedIn"
                                         @click="LogOut()"
-                                        class="dropdown-item"
+                                        class="dropdown-item logout-btn"
                                     >
                                         Log out
                                     </a>
@@ -334,10 +346,25 @@ export default {
                                 >
                                     Profile
                                 </RouterLink>
+                                <RouterLink to="/profile" class="nav-link">
+                                    Settings
+                                </RouterLink>
+                                <RouterLink
+                                    to="/profile-news-notifications"
+                                    class="nav-link"
+                                >
+                                    News & Notification
+                                </RouterLink>
+                                <RouterLink
+                                    to="/profile-reputation"
+                                    class="nav-link"
+                                >
+                                    Reputation
+                                </RouterLink>
                                 <a
                                     v-if="sessionDetailsStore.isLoggedIn"
                                     @click="LogOut()"
-                                    class="nav-link"
+                                    class="nav-link logout-btn"
                                 >
                                     Log out
                                 </a>
@@ -444,6 +471,9 @@ Themes
     display: flex;
     flex-direction: row;
     align-items: baseline;
+}
+.logout-btn{
+    cursor: pointer;
 }
 
 .nav-link .active {

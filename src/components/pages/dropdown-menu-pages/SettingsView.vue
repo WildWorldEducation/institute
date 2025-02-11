@@ -1,7 +1,7 @@
 <script lang="ts">
-import ThemeDetails from '../components/profile-page/ThemeDetails.vue';
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
+import ThemeDetails from '../../components/profile-page/ThemeDetails.vue';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
+import { useSessionDetailsStore } from '../../../stores/SessionDetailsStore.js';
 
 export default {
     setup() {
@@ -13,9 +13,6 @@ export default {
             sessionDetailsStore
         };
     },
-    data() {
-        return {};
-    },
     components: {
         ThemeDetails
     },
@@ -25,7 +22,7 @@ export default {
 
 <template>
     <div class="container legend-div">
-        <div class="mt-2 d-flex gap-2 justify-content-between">
+        <div class="mt-2 d-sm-flex gap-2 justify-content-between">
             <ThemeDetails />
             <div class="form">
                 <div>

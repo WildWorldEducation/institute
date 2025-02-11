@@ -1,7 +1,7 @@
 <script lang="ts">
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import ReputationDetails from './reputation/ReputationDetails.vue';
-import ReputationEvents from './reputation/ReputationEvents.vue';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import ReputationScore from '../../components/reputation/ReputationScore.vue';
+import ReputationEvents from '../../components/reputation/ReputationEvents.vue';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
@@ -13,7 +13,7 @@ export default {
         return {};
     },
     components: {
-        ReputationDetails,
+        ReputationScore,
         ReputationEvents
     },
     methods: {}
@@ -23,7 +23,7 @@ export default {
 <template>
     <div class="container pb-4 theme-background mt-2">
         <h2 class="secondary-heading h4">Reputation</h2>
-        <ReputationDetails />
+        <ReputationScore />
         <ReputationEvents
             v-if="
                 userDetailsStore.role == 'student' ||
