@@ -927,7 +927,6 @@ export default {
                     </div>
                 </div>
                 <!-- Infobox -->
-                {{ skill.image_thumbnail_url }}
                 <div class="col-md-4 order-1 order-md-2">
                     <div class="info-box p-2 mb-2">
                         <!-- AWS S3 hosted feature image -->

@@ -802,27 +802,27 @@ router.put(
             let url = req.body.url;
             const uuidDate = Date.now();
             let iconUrl = req.body.icon;
-            let imageName = req.body.image;
             let imageUrl = '';
             let imageThumbnailUrl = '';
 
-            // Save image to AWS
-            if (
-                req.body.image.length > 0 &&
-                !req.body.image.includes(skillInfoboxImageThumbnailsBucketName)
-            ) {
-                imageName = await saveImageToAWS(imageUrl, url, uuidDate);
+            // Save image to AWS if it has been updated.
+            if (req.body.isImageUpdated) {
+                let imageName = await saveImageToAWS(
+                    req.body.image,
+                    url,
+                    uuidDate
+                );
                 imageUrl = `https://${skillInfoboxImagesBucketName}.s3.amazonaws.com/${imageName}`;
                 imageThumbnailUrl = `https://${skillInfoboxImageThumbnailsBucketName}.s3.amazonaws.com/${imageName}`;
+            } else {
+                imageUrl = req.body.image;
+                imageThumbnailUrl = req.body.imageThumbnail;
             }
 
-            // Save updated icon to AWS
+            // Save icon to AWS
             let scaledDownIcon = '';
             let iconData = null;
-            if (
-                req.body.icon.length > 0 &&
-                !req.body.icon.includes(skillIconBucketName)
-            ) {
+            if (req.body.isIconUpdated) {
                 iconUrl = await saveIconToAWS(iconUrl, url, uuidDate);
                 iconUrl = `https://${skillIconBucketName}.s3.amazonaws.com/${iconUrl}`;
 

@@ -35,8 +35,8 @@ export default {
                 parent: '',
                 description: '',
                 introduction: '',
-                image: '',
-                icon: '',
+                image_url: '',
+                icon_url: '',
                 mastery_requirements: '',
                 tags: [],
                 type: null,
@@ -47,6 +47,7 @@ export default {
             filterChecked: false,
             image: '',
             icon: '',
+            originalImageUrl: '',
             superSkills: [],
             levels: [
                 {
@@ -110,7 +111,9 @@ export default {
             originalSkill: {},
             parentLevel: '',
             showIconSizeWarn: false,
-            iconSize: ''
+            iconSize: '',
+            originalImageUrl: '',
+            originalIconUrl: ''
         };
     },
     async mounted() {
@@ -209,14 +212,10 @@ export default {
                         this.clusterParentInput.inputText = parentResult.name;
                     }
 
-                    // Skill image
-                    this.image =
-                        'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
-                        this.skill.url;
-                    // Skill icon
-                    this.icon =
-                        'https://institute-skill-icons.s3.us-east-1.amazonaws.com/' +
-                        this.skill.url;
+                    this.originalImageUrl = this.skill.image_url;
+                    this.originalIconUrl = this.skill.icon_url;
+                    this.image = this.skill.image_thumbnail_url;
+                    this.icon = this.skill.icon_url;
                     this.getSkillFilters();
                 });
         },
@@ -282,7 +281,7 @@ export default {
             reader.onload = (e) => {
                 vm.image = e.target.result;
                 this.image = e.target.result;
-                this.skill.image = this.image;
+                this.skill.image_url = this.image;
             };
             reader.readAsDataURL(file);
         },
@@ -294,7 +293,7 @@ export default {
             reader.onload = (e) => {
                 vm.icon = e.target.result;
                 this.icon = e.target.result;
-                this.skill.icon = this.icon;
+                this.skill.icon_url = this.icon;
             };
             reader.readAsDataURL(file);
         },
@@ -431,13 +430,17 @@ export default {
             this.skill.url = this.skill.name.replace(/\//g, 'or');
             this.skill.url = this.skill.url.replace(/ /g, '_');
 
-            let updateSkillImage = null;
-            if (
-                this.image !==
-                `https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/${this.skill.url}`
-            ) {
-                updateSkillImage = this.image;
-            }      
+            // Check to see if image and icon have been changed
+            // so we know whetehr to update AWS.
+            let isImageUpdated = false;
+            if (this.skill.image_url !== this.originalImageUrl) {
+                isImageUpdated = true;
+            }
+
+            let isIconUpdated = false;
+            if (this.skill.icon_url !== this.originalIconUrl) {
+                isIconUpdated = true;
+            }
 
             const requestOptions = {
                 method: 'PUT',
@@ -447,8 +450,11 @@ export default {
                     parent: this.skill.parent,
                     description: this.skill.description,
                     introduction: this.skill.introduction,
-                    image: updateSkillImage,
-                    icon: this.icon,
+                    image: this.skill.image_url,
+                    isImageUpdated: isImageUpdated,
+                    imageThumbnail: this.skill.image_thumbnail_url,
+                    icon: this.skill.icon_url,
+                    isIconUpdated: isIconUpdated,
                     mastery_requirements: this.skill.mastery_requirements,
                     type: this.skill.type,
                     level: this.skill.level,
@@ -458,6 +464,8 @@ export default {
                     url: this.skill.url
                 })
             };
+
+            console.log(requestOptions.body);
 
             var url = '/skills/' + this.skill.id + '/edit';
             fetch(url, requestOptions)
@@ -501,8 +509,8 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     userId: this.userDetailsStore.userId,
-                    image: this.image,
-                    icon: this.icon,
+                    image: this.image_url,
+                    icon: this.icon_url,
                     mastery_requirements: this.skill.mastery_requirements,
                     introduction: this.skill.introduction,
                     comment: this.comment
