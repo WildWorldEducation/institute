@@ -1016,7 +1016,7 @@ router.put(
                     // Save Edit node icon to AWS
                     const uuidDate = Date.now();
                     let iconUrl = req.body.icon;
-                    let imageUrl = req.body.icon_image;
+                    let imageUrl = req.body.image;
                     let scaledDownIcon = '';
                     let nodeIconData = null;
                     if (
@@ -1070,13 +1070,13 @@ router.put(
                              * Send icon image to S3 only when there are changes
                              */
                             if (
-                                req.body.icon_image.length > 1 &&
-                                !req.body.icon_image.includes(
+                                req.body.image.length > 1 &&
+                                !req.body.image.includes(
                                     skillInfoboxImageThumbnailsBucketName
                                 )
                             ) {
                                 // Get file from Base64 encoding (client sends as base64)
-                                const stringData = req.body.icon_image
+                                const stringData = req.body.image
                                     .split(';base64,')
                                     .pop();
 
