@@ -1,6 +1,5 @@
 <script>
 import ProfileDetails from '../components/profile-page/ProfileDetails.vue';
-import ThemeDetails from '../components/profile-page/ThemeDetails.vue';
 import ReputationDetails from '../components/profile-page/ReputationDetails.vue';
 import Settings from '../components/settings/Settings.vue';
 import BulkQuestionsUpload from '../components/settings/BulkQuestionsUpload.vue';
@@ -25,7 +24,6 @@ export default {
     },
     components: {
         ProfileDetails,
-        ThemeDetails,
         ReputationDetails,
         Settings,
         BulkQuestionsUpload,
@@ -63,7 +61,6 @@ export default {
                 </div>
             </div>
         </div>
-        <ThemeDetails />
         <div class="container pb-4 theme-background mt-2">
             <h2 class="secondary-heading h4">Reputation</h2>
             <ReputationDetails />
