@@ -312,6 +312,9 @@ export default {
                                         Settings
                                     </RouterLink>
                                     <RouterLink
+                                        v-if="
+                                            userDetailsStore.role !== 'editor'
+                                        "
                                         to="/profile-reputation"
                                         class="dropdown-item"
                                     >
