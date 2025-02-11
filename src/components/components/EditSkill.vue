@@ -509,8 +509,8 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     userId: this.userDetailsStore.userId,
-                    image: this.image_url,
-                    icon: this.icon_url,
+                    image: this.skill.image_url,
+                    icon: this.skill.icon_url,
                     mastery_requirements: this.skill.mastery_requirements,
                     introduction: this.skill.introduction,
                     comment: this.comment
