@@ -61,10 +61,7 @@ export default {
                 this.skillEdit.mastery_requirements
             );
         }
-        if (
-            this.skill.introduction !==
-            this.skillEdit.introduction
-        ) {
+        if (this.skill.introduction !== this.skillEdit.introduction) {
             this.changeIntroText = true;
             // Compare two introduction string
             this.introductionDiff = HtmlDiff.execute(
@@ -153,7 +150,7 @@ export default {
         },
         cancelEditMastery() {
             this.showEditMastery = false;
-            if(!this.showEditIntro){
+            if (!this.showEditIntro) {
                 this.$parent.disableBtn = false;
             }
         },
@@ -169,7 +166,7 @@ export default {
         },
         cancelEditIntro() {
             this.showEditIntro = false;
-            if(!this.showEditMastery){
+            if (!this.showEditMastery) {
                 this.$parent.disableBtn = false;
             }
         },
@@ -263,7 +260,7 @@ export default {
         <div v-if="isSkillChanged.icon" class="mt-5">
             <div class="compare-container">
                 <div class="d-flex align-items-center">
-                    <h2 class="secondary-heading h4 mb-3">Skill Image</h2>
+                    <h2 class="secondary-heading h4 mb-3">Image</h2>
                     <div
                         @click="showIconChange = !showIconChange"
                         :class="[
@@ -288,9 +285,9 @@ export default {
                 <Transition name="dropdown">
                     <div v-if="showIconChange">
                         <div class="d-flex flex-lg-row flex-column">
-                            <!-- Old Banner -->
+                            <!-- Old image -->
                             <div class="old-container icon-container">
-                                <div class="container-tile">Original</div>
+                                <div class="container-heading">Original</div>
                                 <img :src="iconImage" class="icon-image" />
                             </div>
                             <!-- Long arrow pointing right -->
@@ -317,9 +314,9 @@ export default {
                                     d="M2 334.5c-3.8 8.8-2 19 4.6 26l136 144c4.5 4.8 10.8 7.5 17.4 7.5s12.9-2.7 17.4-7.5l136-144c6.6-7 8.4-17.2 4.6-26s-12.5-14.5-22-14.5l-72 0 0-288c0-17.7-14.3-32-32-32L128 0C110.3 0 96 14.3 96 32l0 288-72 0c-9.6 0-18.2 5.7-22 14.5z"
                                 />
                             </svg>
-                            <!-- New Banner -->
+                            <!-- New image -->
                             <div class="new-container icon-container">
-                                <div class="container-tile">Changed</div>
+                                <div class="container-heading">Changed</div>
                                 <img
                                     :src="skillEdit.icon_image"
                                     class="icon-image"
@@ -349,7 +346,7 @@ export default {
                 </Transition>
             </div>
         </div>
-        
+
         <!-- ---Mastery Introduction compare -->
         <div
             v-if="changeIntroText && !showEditIntro"
@@ -361,9 +358,7 @@ export default {
                     @click="showSkillIntroChange = !showSkillIntroChange"
                     :class="[
                         'mt-2',
-                        showSkillIntroChange
-                            ? 'expand-arrow'
-                            : 'minimize-arrow'
+                        showSkillIntroChange ? 'expand-arrow' : 'minimize-arrow'
                     ]"
                     b-on-hover
                     :title="showSkillIntroChange ? 'minimize' : 'expand'"
@@ -388,7 +383,8 @@ export default {
                             class="btn green-btn d-flex align-items-center"
                             @click="showIntroHighLight = !showIntroHighLight"
                         >
-                            {{ showIntroHighLight ? 'Hide' : 'Show' }} Hight Light
+                            {{ showIntroHighLight ? 'Hide' : 'Show' }} Hight
+                            Light
                             <svg
                                 v-if="showIntroHighLight"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -451,7 +447,7 @@ export default {
                         <div
                             class="old-container skill-mastery-container d-none d-lg-block"
                         >
-                            <div class="container-tile">Original</div>
+                            <div class="container-heading">Original</div>
                             <div
                                 class="innerHTMLmastery"
                                 v-html="skill.introduction"
@@ -471,7 +467,7 @@ export default {
                         </svg>
 
                         <div class="new-container skill-mastery-container">
-                            <div class="container-tile">Changed</div>
+                            <div class="container-heading">Changed</div>
                             <!-- HTML change content -->
                             <div
                                 v-if="showIntroHighLight"
@@ -566,7 +562,7 @@ export default {
                         <div class="d-flex flex-lg-row flex-column">
                             <!-- Old Banner -->
                             <div class="old-container icon-container">
-                                <div class="container-tile">Original</div>
+                                <div class="container-heading">Original</div>
                                 <img :src="skill.icon" class="icon-image" />
                             </div>
                             <!-- Long arrow pointing right -->
@@ -595,7 +591,7 @@ export default {
                             </svg>
                             <!-- New Banner -->
                             <div class="new-container icon-container">
-                                <div class="container-tile">Changed</div>
+                                <div class="container-heading">Changed</div>
                                 <img :src="skillEdit.icon" class="icon-image" />
                             </div>
                         </div>
@@ -723,7 +719,7 @@ export default {
                         <div
                             class="old-container skill-mastery-container d-none d-lg-block"
                         >
-                            <div class="container-tile">Original</div>
+                            <div class="container-heading">Original</div>
                             <div
                                 class="innerHTMLmastery"
                                 v-html="skill.mastery_requirements"
@@ -743,7 +739,7 @@ export default {
                         </svg>
 
                         <div class="new-container skill-mastery-container">
-                            <div class="container-tile">Changed</div>
+                            <div class="container-heading">Changed</div>
                             <!-- HTML change content -->
                             <div
                                 v-if="showHighLight"
@@ -821,6 +817,16 @@ export default {
 </template>
 
 <style scoped>
+.container-heading {
+    position: absolute;
+    top: -15px;
+    font-size: 18px;
+    left: 20px;
+    padding-left: 5px;
+    padding-right: 5px;
+    background-color: white;
+}
+
 .green-btn {
     background-color: rgb(46, 126, 38);
 }
