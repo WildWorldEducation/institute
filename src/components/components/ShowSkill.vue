@@ -920,7 +920,7 @@ export default {
                             Requirements for mastery
                         </h2>
                         <div
-                            class="bg-white rounded p-2"
+                            class="bg-white rounded p-2 mastery-requirements-section"
                             v-html="skill.mastery_requirements"
                         ></div>
                     </div>
@@ -1302,6 +1302,11 @@ export default {
 
 .modal-btn {
     width: 25%;
+}
+
+/* Mastery Reqruirements Section */
+::v-deep(.mastery-requirements-section p) {
+    font-family: 'Poppins', sans-serif !important;
 }
 
 /* Specific phone view css */
