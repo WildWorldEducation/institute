@@ -213,7 +213,9 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     mastery_requirements: this.skillEdit.mastery_requirements,
+                    isImageUpdated: this.isSkillChanged.image,
                     image: this.skillEdit.image,
+                    isIconUpdated: this.isSkillChanged.icon,
                     icon: this.skillEdit.icon,
                     comment: this.comment,
                     introduction: this.skillEdit.introduction,
