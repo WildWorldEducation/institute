@@ -802,15 +802,18 @@ router.put(
             let url = req.body.url;
             const uuidDate = Date.now();
             let iconUrl = req.body.icon;
-            let imageUrl = req.body.image;
+            let imageName = req.body.image;
+            let imageUrl = '';
+            let imageThumbnailUrl = '';
 
             // Save image to AWS
             if (
                 req.body.image.length > 0 &&
                 !req.body.image.includes(skillInfoboxImageThumbnailsBucketName)
             ) {
-                imageUrl = await saveImageToAWS(imageUrl, url, uuidDate);
-                imageUrl = `https://${skillInfoboxImageThumbnailsBucketName}.s3.amazonaws.com/${imageUrl}`;
+                imageName = await saveImageToAWS(imageUrl, url, uuidDate);
+                imageUrl = `https://${skillInfoboxImagesBucketName}.s3.amazonaws.com/${imageName}`;
+                imageThumbnailUrl = `https://${skillInfoboxImageThumbnailsBucketName}.s3.amazonaws.com/${imageName}`;
             }
 
             // Save updated icon to AWS
@@ -875,9 +878,10 @@ router.put(
                         version_number = ${conn.escape(
                             versionNumber
                         )},                        
-                        icon = ${conn.escape(
-                            scaledDownIcon
-                        )},                        
+                        icon = ${conn.escape(scaledDownIcon)},             
+                        image_url = ${conn.escape(imageUrl)},
+                        image_thumbnail_url = ${conn.escape(imageThumbnailUrl)},
+                        icon_url = ${conn.escape(iconUrl)},             
                         edited_date = current_timestamp, 
                         is_human_edited = 1
                         WHERE id = ${conn.escape(req.params.id)};`;

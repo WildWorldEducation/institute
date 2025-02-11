@@ -87,7 +87,6 @@ export default {
         if (this.sessionDetailsStore.isLoggedIn) {
             await this.getUserSkills();
         }
-        console.log(this.isGoal);
 
         // Turn this on only if user is logged in.
         if (this.sessionDetailsStore.isLoggedIn == true) {
@@ -105,6 +104,7 @@ export default {
             await this.showSkillStore.findSkill(this.skillUrl);
             this.skill = this.showSkillStore.skill;
             this.skillId = this.skill.id;
+            console.log(this.skill);
 
             // Meta title for SEO
             document.title = this.skill.name + ' - The Collins Institute';
@@ -235,6 +235,7 @@ export default {
             this.showConfirmModal = true;
         },
         imageUrlAlternative(event) {
+            console.log('test');
             event.target.src = '/images/skill-avatar/recurso.png';
         },
         openModal(skill) {
@@ -926,25 +927,14 @@ export default {
                     </div>
                 </div>
                 <!-- Infobox -->
+                {{ skill.image_thumbnail_url }}
                 <div class="col-md-4 order-1 order-md-2">
                     <div class="info-box p-2 mb-2">
                         <!-- AWS S3 hosted feature image -->
                         <!-- Using random number otherwise url doesnt change (cache)-->
-                        <a
-                            :href="
-                                'https://institute-skill-infobox-images.s3.amazonaws.com/' +
-                                skillUrl +
-                                '?' +
-                                randomNum
-                            "
-                        >
+                        <a :href="skill.image_url">
                             <img
-                                :src="
-                                    'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
-                                    skillUrl +
-                                    '?' +
-                                    randomNum
-                                "
+                                :src="skill.image_thumbnail_url"
                                 @error="imageUrlAlternative"
                                 class="rounded img-fluid"
                             />
