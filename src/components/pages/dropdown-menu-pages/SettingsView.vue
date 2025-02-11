@@ -1,7 +1,7 @@
 <script lang="ts">
-import ThemeDetails from '../components/profile-page/ThemeDetails.vue';
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
+import ThemeDetails from '../../components/profile-page/ThemeDetails.vue';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
+import { useSessionDetailsStore } from '../../../stores/SessionDetailsStore.js';
 
 export default {
     setup() {
@@ -12,9 +12,6 @@ export default {
             userDetailsStore,
             sessionDetailsStore
         };
-    },
-    data() {
-        return {};
     },
     components: {
         ThemeDetails

@@ -42,12 +42,12 @@ const router = createRouter({
                 roles: ['student', 'admin']
             }
         },
-        {
-            path: '/radial-tree',
-            name: 'radial-tree',
-            component: () => import('../components/pages/RadialTreeView.vue'),
-            meta: { preventZoom: true, title: 'Radial skill tree' }
-        },
+        // {
+        //     path: '/radial-tree',
+        //     name: 'radial-tree',
+        //     component: () => import('../components/pages/RadialTreeView.vue'),
+        //     meta: { preventZoom: true, title: 'Radial skill tree' }
+        // },
         {
             path: '/login',
             name: 'login',
@@ -250,27 +250,36 @@ const router = createRouter({
             meta: { requiresAuth: true, roles: ['editor', 'admin'] }
         },
         {
-            path: '/profile-settings',
-            name: 'profile-settings',
-            component: () =>
-                import('../components/pages/ProfileSettingsView.vue')
-        },
-        {
             path: '/profile',
             name: 'profile',
             component: () =>
-                import('../components/pages/NewProfileSettings.vue')
+                import(
+                    '../components/pages/dropdown-menu-pages/ProfileView.vue'
+                )
         },
         {
-            path: '/profile-news-notifications',
-            name: 'profile-news-notifications',
+            path: '/settings',
+            name: 'settings',
             component: () =>
-                import('../components/pages/NewsAndNotifcationsView.vue')
+                import(
+                    '../components/pages/dropdown-menu-pages/SettingsView.vue'
+                )
         },
         {
-            path: '/profile-reputation',
-            name: 'profile-reputation',
-            component: () => import('../components/pages/ReputationView.vue')
+            path: '/news-and-notifications',
+            name: 'news-and-notifications',
+            component: () =>
+                import(
+                    '../components/pages/dropdown-menu-pages/NewsAndNotificationsView.vue'
+                )
+        },
+        {
+            path: '/reputation',
+            name: 'reputation',
+            component: () =>
+                import(
+                    '../components/pages/dropdown-menu-pages/ReputationView.vue'
+                )
         },
         {
             path: '/profile/edit',

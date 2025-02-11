@@ -300,25 +300,25 @@ export default {
                                     aria-labelledby="navbarDropdown"
                                 >
                                     <RouterLink
-                                        to="/profile-settings"
+                                        to="/profile"
                                         class="dropdown-item"
                                     >
                                         Profile
                                     </RouterLink>
                                     <RouterLink
-                                        to="/profile"
+                                        to="/settings"
                                         class="dropdown-item"
                                     >
                                         Settings
                                     </RouterLink>
                                     <RouterLink
-                                        to="/profile-news-notifications"
+                                        to="/news-and-notifications"
                                         class="dropdown-item"
                                     >
-                                        News & Notification
+                                        News & Notifications
                                     </RouterLink>
                                     <RouterLink
-                                        to="/profile-reputation"
+                                        to="/reputation"
                                         class="dropdown-item"
                                     >
                                         Reputation

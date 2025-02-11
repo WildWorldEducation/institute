@@ -1,6 +1,6 @@
 <script>
-import News from '../components/news-and-notifications/News.vue';
-import Notifications from '../components/news-and-notifications/Notifications.vue';
+import News from '../../components/news-and-notifications/News.vue';
+import Notifications from '../../components/news-and-notifications/Notifications.vue';
 
 export default {
     setup() {

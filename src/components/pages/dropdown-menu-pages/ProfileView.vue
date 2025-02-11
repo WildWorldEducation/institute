@@ -1,12 +1,12 @@
 <script>
-import ProfileDetails from '../components/profile-page/ProfileDetails.vue';
-import Settings from '../components/settings/Settings.vue';
-import BulkQuestionsUpload from '../components/settings/BulkQuestionsUpload.vue';
-import AutoGenerateSources from '../components/settings/AutoGenerateSources.vue';
-import DeleteDownVotedSources from '../components/settings/DeleteDownVotedSources.vue';
+import ProfileDetails from '../../components/profile-page/ProfileDetails.vue';
+import Settings from '../../components/settings/Settings.vue';
+import BulkQuestionsUpload from '../../components/settings/BulkQuestionsUpload.vue';
+import AutoGenerateSources from '../../components/settings/AutoGenerateSources.vue';
+import DeleteDownVotedSources from '../../components/settings/DeleteDownVotedSources.vue';
 
 // Import the store.
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 
 export default {
     setup() {
