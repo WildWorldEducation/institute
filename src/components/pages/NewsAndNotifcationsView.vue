@@ -1,19 +1,15 @@
-<script lang="ts">
-import News from '../pages/news-and-notifcation/News.vue';
-import Notifications from '../pages/news-and-notifcation/Notifications.vue';
+<script>
+import News from '../components/news-and-notifications/News.vue';
+import Notifications from '../components/news-and-notifications/Notifications.vue';
 
 export default {
     setup() {
         return {};
     },
-    data() {
-        return;
-    },
     components: {
         News,
         Notifications
-    },
-    methods: {}
+    }
 };
 </script>
 
@@ -21,7 +17,7 @@ export default {
     <div class="container">
         <!-- Notifications -->
         <div class="row mt-2">
-            <div class="col-lg-4 col-md-6 mb-2">
+            <div class="col-lg-4 col-md-6 mb-3">
                 <div class="hub-component h-100">
                     <Notifications />
                 </div>
