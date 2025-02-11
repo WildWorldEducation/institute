@@ -137,12 +137,12 @@ export default {
         },
         dismissImage() {
             if (confirm('Dismiss the image? This action is permanent!')) {
-                this.skillEdit.image = this.skill.image_url;
+                this.skillEdit.image = this.skill.image_thumbnail_url;
             }
         },
         dismissIcon() {
             if (confirm('Dismiss the icon? This action is permanent!')) {
-                this.skillEdit.icon = this.skill.icon;
+                this.skillEdit.icon = this.skill.icon_url;
             }
         },
         applyMasteryChange() {
