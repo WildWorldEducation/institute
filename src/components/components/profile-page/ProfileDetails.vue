@@ -168,16 +168,6 @@ export default {
                         readonly
                     />
                 </div>
-                <!-- Instructor -->
-                <div v-if="userDetailsStore.instructorUsername" class="mb-3">
-                    <h2 class="secondary-heading h4">Instructor</h2>
-                    <input
-                        type="text"
-                        class="form-control"
-                        readonly
-                        :value="userDetailsStore.instructorUsername"
-                    />
-                </div>
             </div>
         </div>
     </div>

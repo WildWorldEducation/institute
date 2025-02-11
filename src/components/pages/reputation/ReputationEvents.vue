@@ -9,7 +9,8 @@ export default {
     },
     data() {
         return {
-            reputationEvents: []
+            reputationEvents: [],
+            showTutorialTip5: false
         };
     },
     async created() {

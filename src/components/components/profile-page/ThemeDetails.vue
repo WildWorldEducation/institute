@@ -26,7 +26,7 @@ export default {
 </script>
 
 <template>
-    <div class="container pb-4 theme-background mt-2">
+    <div>
         <h2 class="secondary-heading h4">Theme</h2>
         <!-- Choose theme -->
         <div class="mb-3 text-start themes">
