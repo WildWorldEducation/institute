@@ -930,7 +930,7 @@ router.put(
 router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {
         // Add data.
-        let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, mastery_requirements, icon_image, icon, comment, introduction)
+        let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, mastery_requirements, image, icon, comment, introduction)
          VALUES (${conn.escape(req.params.id)}, 
          ${conn.escape(req.body.userId)}, 
          ${conn.escape(req.body.mastery_requirements)}, 
@@ -944,14 +944,14 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
              req.body.mastery_requirements
          )}, 
          date = CURRENT_TIMESTAMP(), 
-         icon_image = ${conn.escape(req.body.image)},          
+         image = ${conn.escape(req.body.image)},          
+         icon = ${conn.escape(req.body.icon)},     
          comment = ${conn.escape(req.body.comment)},
-         introduction = ${conn.escape(req.body.introduction)},
-         icon = ${conn.escape(req.body.icon)}     
+         introduction = ${conn.escape(req.body.introduction)}         
          ;`;
 
         // Update record in skill table.
-        conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err) => {
             try {
                 if (err) {
                     throw err;
