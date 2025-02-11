@@ -501,51 +501,6 @@ export default {
                     <div v-if="haveInstructor" class="custom-select-button">
                         {{ instructorName }}
                     </div>
-                    <!-- Custom Dropdown -->
-                    <div v-else class="d-flex flex-column">
-                        <div
-                            :class="[
-                                showDropDown
-                                    ? 'custom-select-button-focus'
-                                    : 'custom-select-button'
-                            ]"
-                            @click="showDropDown = !showDropDown"
-                        >
-                            {{
-                                instructorName
-                                    ? instructorName
-                                    : 'Please choose an instructor'
-                            }}
-                            <span>
-                                <svg
-                                    width="20"
-                                    height="20"
-                                    viewBox="0 0 20 20"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
-                                        fill="#344054"
-                                    />
-                                </svg>
-                            </span>
-                        </div>
-                        <div v-if="showDropDown" class="custom-dropdown-base">
-                            <div
-                                v-for="instructor in userStore.instructors"
-                                class="custom-dropdown-option"
-                                @click="
-                                    instructorID = instructor.id;
-                                    instructorName = instructor.username;
-                                    showDropDown = false;
-                                "
-                            >
-                                {{ instructor.username }}
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End of custom dropdown -->
                 </div>
                 <div class="d-flex justify-content-between mb-3 mt-5">
                     <router-link class="btn red-btn" to="/profile-settings">
