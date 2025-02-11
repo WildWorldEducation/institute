@@ -312,6 +312,12 @@ export default {
                                         Settings
                                     </RouterLink>
                                     <RouterLink
+                                        to="/profile-news-notifications"
+                                        class="dropdown-item"
+                                    >
+                                        News & Notification
+                                    </RouterLink>
+                                    <RouterLink
                                         to="/profile-reputation"
                                         class="dropdown-item"
                                     >
@@ -333,6 +339,21 @@ export default {
                                     class="nav-link"
                                 >
                                     Profile
+                                </RouterLink>
+                                <RouterLink to="/profile" class="nav-link">
+                                    Settings
+                                </RouterLink>
+                                <RouterLink
+                                    to="/profile-news-notifications"
+                                    class="nav-link"
+                                >
+                                    News & Notification
+                                </RouterLink>
+                                <RouterLink
+                                    to="/profile-reputation"
+                                    class="nav-link"
+                                >
+                                    Reputation
                                 </RouterLink>
                                 <a
                                     v-if="sessionDetailsStore.isLoggedIn"

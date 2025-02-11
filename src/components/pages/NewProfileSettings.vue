@@ -25,7 +25,7 @@ export default {
 
 <template>
     <div class="container legend-div">
-        <div class="mt-2 d-flex gap-2 justify-content-between">
+        <div class="mt-2 d-sm-flex gap-2 justify-content-between">
             <ThemeDetails />
             <div class="form">
                 <div>

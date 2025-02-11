@@ -262,6 +262,12 @@ const router = createRouter({
                 import('../components/pages/NewProfileSettings.vue')
         },
         {
+            path: '/profile-news-notifications',
+            name: 'profile-news-notifications',
+            component: () =>
+                import('../components/pages/NewsAndNotifcationsView.vue')
+        },
+        {
             path: '/profile-reputation',
             name: 'profile-reputation',
             component: () => import('../components/pages/ReputationView.vue')
