@@ -35,7 +35,7 @@ export default {
     async created() {
         await this.getSkillEdit();
 
-        await this.gteSkill();
+        await this.getSkill();
         console.log('skill data');
         console.log(this.skill);
         console.log('edit data: ');
@@ -97,7 +97,7 @@ export default {
                     this.comment = data.comment;
                 });
         },
-        async gteSkill() {
+        async getSkill() {
             await fetch('/skills/show/' + this.skillId)
                 .then(function (response) {
                     return response.json();
