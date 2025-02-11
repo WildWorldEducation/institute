@@ -26,8 +26,6 @@ export default {
             this.reputationEvents[i].formattedContentType =
                 this.reputationEvents[i].content_type.replace(/_/g, ' ');
         }
-
-        console.log(this.reputationEvents);
     },
     methods: {
         formatDate(unformattedDate) {

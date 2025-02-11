@@ -1,7 +1,7 @@
 <script lang="ts">
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import ReputationDetails from './reputation/ReputationDetails.vue';
-import ReputationEvents from './reputation/ReputationEvents.vue';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import ReputationDetails from '../../components/reputation/ReputationDetails.vue';
+import ReputationEvents from '../../components/reputation/ReputationEvents.vue';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();

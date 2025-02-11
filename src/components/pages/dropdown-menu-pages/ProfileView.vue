@@ -1,14 +1,12 @@
 <script>
-import ProfileDetails from '../components/profile-page/ProfileDetails.vue';
-import Settings from '../components/settings/Settings.vue';
-import BulkQuestionsUpload from '../components/settings/BulkQuestionsUpload.vue';
-import AutoGenerateSources from '../components/settings/AutoGenerateSources.vue';
-import DeleteDownVotedSources from '../components/settings/DeleteDownVotedSources.vue';
-import Notifications from '../components/hub-components/Notifications.vue';
-import News from '../components/hub-components/News.vue';
+import ProfileDetails from '../../components/profile-page/ProfileDetails.vue';
+import Settings from '../../components/settings/Settings.vue';
+import BulkQuestionsUpload from '../../components/settings/BulkQuestionsUpload.vue';
+import AutoGenerateSources from '../../components/settings/AutoGenerateSources.vue';
+import DeleteDownVotedSources from '../../components/settings/DeleteDownVotedSources.vue';
 
 // Import the store.
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 
 export default {
     setup() {
@@ -25,9 +23,7 @@ export default {
         Settings,
         BulkQuestionsUpload,
         AutoGenerateSources,
-        DeleteDownVotedSources,
-        News,
-        Notifications
+        DeleteDownVotedSources
     },
     methods: {
         CheckMCQuestions() {
@@ -41,23 +37,6 @@ export default {
     <div class="container">
         <!-- Profile Section -->
         <ProfileDetails />
-        <!-- Notifications -->
-        <div class="row mt-2">
-            <div class="col-lg-4 col-md-6 mb-2">
-                <div class="hub-component h-100">
-                    <Notifications />
-                </div>
-            </div>
-        </div>
-        <!-- News -->
-        <div class="row">
-            <div class="col">
-                <div class="hub-component h-100">
-                    <News />
-                </div>
-            </div>
-        </div>
-
         <!-- Admin role only -->
         <!-- App Settings --->
         <Settings v-if="userDetailsStore.role == 'admin'" />

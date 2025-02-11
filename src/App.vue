@@ -300,19 +300,25 @@ export default {
                                     aria-labelledby="navbarDropdown"
                                 >
                                     <RouterLink
-                                        to="/profile-settings"
+                                        to="/profile"
                                         class="dropdown-item"
                                     >
                                         Profile
                                     </RouterLink>
                                     <RouterLink
-                                        to="/profile"
+                                        to="/settings"
                                         class="dropdown-item"
                                     >
                                         Settings
                                     </RouterLink>
                                     <RouterLink
-                                        to="/profile-reputation"
+                                        to="/news-and-notifications"
+                                        class="dropdown-item"
+                                    >
+                                        News & Notifications
+                                    </RouterLink>
+                                    <RouterLink
+                                        to="/reputation"
                                         class="dropdown-item"
                                     >
                                         Reputation
@@ -333,6 +339,21 @@ export default {
                                     class="nav-link"
                                 >
                                     Profile
+                                </RouterLink>
+                                <RouterLink to="/profile" class="nav-link">
+                                    Settings
+                                </RouterLink>
+                                <RouterLink
+                                    to="/profile-news-notifications"
+                                    class="nav-link"
+                                >
+                                    News & Notification
+                                </RouterLink>
+                                <RouterLink
+                                    to="/profile-reputation"
+                                    class="nav-link"
+                                >
+                                    Reputation
                                 </RouterLink>
                                 <a
                                     v-if="sessionDetailsStore.isLoggedIn"
