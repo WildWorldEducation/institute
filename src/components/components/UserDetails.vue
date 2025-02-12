@@ -206,7 +206,7 @@ export default {
                 </div>
 
                 <!-- Edit student details (instructors only) -->
-                <div v-if="userDetailsStore.role == 'instructor'" class="mb-3">
+                <div v-if="1 == 2" class="mb-3">
                     <router-link
                         :to="'/users/edit/' + this.$parent.user.id"
                         class="btn primary-btn mt-2"
