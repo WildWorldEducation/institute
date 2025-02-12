@@ -216,6 +216,8 @@ export default {
                     this.originalIconUrl = this.skill.icon_url;
                     this.image = this.skill.image_thumbnail_url;
                     this.icon = this.skill.icon_url;
+
+                    console.log(this.skill);
                     this.getSkillFilters();
                 });
         },
@@ -431,7 +433,7 @@ export default {
             this.skill.url = this.skill.url.replace(/ /g, '_');
 
             // Check to see if image and icon have been changed
-            // so we know whetehr to update AWS.
+            // so we know whether to update AWS.
             let isImageUpdated = false;
             if (this.skill.image_url !== this.originalImageUrl) {
                 isImageUpdated = true;
@@ -439,6 +441,7 @@ export default {
 
             let isIconUpdated = false;
             if (this.skill.icon_url !== this.originalIconUrl) {
+                this.skill.icon = this.skill.icon_url;
                 isIconUpdated = true;
             }
 
@@ -453,7 +456,8 @@ export default {
                     image: this.skill.image_url,
                     isImageUpdated: isImageUpdated,
                     imageThumbnail: this.skill.image_thumbnail_url,
-                    icon: this.skill.icon_url,
+                    icon_url: this.skill.icon_url,
+                    icon: this.skill.icon,
                     isIconUpdated: isIconUpdated,
                     mastery_requirements: this.skill.mastery_requirements,
                     type: this.skill.type,
@@ -464,8 +468,6 @@ export default {
                     url: this.skill.url
                 })
             };
-
-            console.log(requestOptions.body);
 
             var url = '/skills/' + this.skill.id + '/edit';
             fetch(url, requestOptions)

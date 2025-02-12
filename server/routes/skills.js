@@ -801,7 +801,8 @@ router.put(
             let versionNumber = req.body.version_number + 1;
             let url = req.body.url;
             const uuidDate = Date.now();
-            let iconUrl = req.body.icon;
+            let iconUrl = req.body.icon_url;
+            let scaledDownIcon = req.body.icon;
             let imageUrl = '';
             let imageThumbnailUrl = '';
 
@@ -820,8 +821,6 @@ router.put(
             }
 
             // Save icon to AWS if it has been updated
-            let scaledDownIcon = '';
-            let iconData = null;
             if (req.body.isIconUpdated) {
                 iconUrl = await saveIconToAWS(iconUrl, url, uuidDate);
                 iconUrl = `https://${skillIconBucketName}.s3.amazonaws.com/${iconUrl}`;
@@ -830,7 +829,6 @@ router.put(
                 // this is the version used for the skill tree in the canvas.
                 const scaleDownData = req.body.icon.split(';base64,').pop();
                 const imgBuffer = Buffer.from(scaleDownData, 'base64');
-                iconData = imgBuffer;
                 scaledDownIcon = await scaleIcon(imgBuffer, 50);
             }
 
@@ -1009,15 +1007,16 @@ router.put(
                     let previousLevel = results[0].level;
                     let previousOrder = results[0].order;
                     let versionNumber = results[0].version_number;
+                    let imageUrl = results[0].image_url;
+                    let imageThumbnailUrl = results[0].image_thumbnail_url;
+                    let iconUrl = results[0].icon_url;
+                    let scaledDownIcon = results[0].icon;
                     let url = results[0].url;
 
                     versionNumber = versionNumber + 1;
 
-                    // Save Edit node icon to AWS
+                    // Save node icon to AWS
                     const uuidDate = Date.now();
-                    let iconUrl = '';
-                    let imageUrl = '';
-                    let imageThumbnailUrl = '';                  
 
                     // Save image to AWS if it has been updated.
                     if (req.body.isImageUpdated) {
@@ -1028,28 +1027,23 @@ router.put(
                         );
                         imageUrl = `https://${skillInfoboxImagesBucketName}.s3.amazonaws.com/${imageName}`;
                         imageThumbnailUrl = `https://${skillInfoboxImageThumbnailsBucketName}.s3.amazonaws.com/${imageName}`;
-                    } else {
-                        imageUrl = req.body.image;
-                        imageThumbnailUrl = req.body.imageThumbnail;
                     }
 
                     // Save icon to AWS if it has been updated
-                    let scaledDownIcon = '';
-                    let iconData = null;
                     if (req.body.isIconUpdated) {
-                        iconUrl = await saveIconToAWS(iconUrl, url, uuidDate);
+                        iconUrl = await saveIconToAWS(
+                            req.body.icon,
+                            url,
+                            uuidDate
+                        );
                         iconUrl = `https://${skillIconBucketName}.s3.amazonaws.com/${iconUrl}`;
-
                         // Scale down icon to much smaller, as it must be saved in DB
                         // this is the version used for the skill tree in the canvas.
                         const scaleDownData = req.body.icon
                             .split(';base64,')
                             .pop();
                         const imgBuffer = Buffer.from(scaleDownData, 'base64');
-                        iconData = imgBuffer;
                         scaledDownIcon = await scaleIcon(imgBuffer, 50);
-                    } else {
-                        iconUrl = req.body.icon;
                     }
 
                     let addVersionHistoryInsertSQLQuery = `
