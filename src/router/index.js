@@ -218,6 +218,26 @@ const router = createRouter({
             }
         },
         {
+            path: '/student-questions',
+            name: 'student-questions',
+            component: () =>
+                import('../components/pages/StudentQuestionListView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['instructor', 'admin']
+            }
+        },
+        {
+            path: '/student-assessments',
+            name: 'student-assessments',
+            component: () =>
+                import('../components/pages/NewMarkAssessmentView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['instructor', 'admin']
+            }
+        },
+        {
             path: '/users/add',
             name: 'add-user',
             component: () => import('../components/pages/AddUserView.vue'),
