@@ -15,7 +15,36 @@ const isAuthenticated = require('../middlewares/authMiddleware');
 const createUserPermission = require('../middlewares/users/createUserMiddleware');
 const addInstructorPermission = require('../middlewares/users/addInstructorMiddleware');
 const editUserPermission = require('../middlewares/users/editUserMiddleware');
+const editStudentPermission = require('../middlewares/users/editStudentMiddleware');
 const isAdmin = require('../middlewares/adminMiddleware');
+const updatePassword = (req, res, next) => {
+    // Hash the password.
+    bcrypt.hash(
+        req.body.password,
+        saltRounds,
+        function (err, hashedPassword) {
+            if (err) {
+                console.log(err);
+            }
+
+            // Add data.
+            let sqlQuery = `UPDATE users 
+                SET password = ${conn.escape(hashedPassword)} 
+                WHERE id = ${conn.escape(req.params.id)};`;
+
+            conn.query(sqlQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    res.end();
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    );
+}
 
 /*------------------------------------------
 --------------------------------------------
@@ -924,39 +953,56 @@ router.put(
     }
 );
 
+// Instructor update student details
+router.put(
+    '/profile/:id/edit-student',
+    isAuthenticated,
+    editStudentPermission,
+    (req, res, next) => {
+        let sqlQuery = `UPDATE users
+            SET username = 
+            ${conn.escape(req.body.username)},           
+            first_name = ${conn.escape(req.body.firstname)},
+            last_name = ${conn.escape(req.body.lastname)}
+            WHERE id = ${conn.escape(req.params.id)};`;
+    
+        conn.query(sqlQuery, async (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                // Upload avatar to AWS
+                await saveUserAvatarToAWS(req.params.id, req.body.avatar);
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+);
+
 // User update their password
 router.put(
     '/profile/:id/edit-password',
     isAuthenticated,
     editSelfPermission,
-    (req, res, next) => {
-        // Hash the password.
-        bcrypt.hash(
-            req.body.password,
-            saltRounds,
-            function (err, hashedPassword) {
-                if (err) {
-                    console.log(err);
-                }
+    updatePassword
+);
 
-                // Add data.
-                let sqlQuery = `UPDATE users 
-                    SET password = ${conn.escape(hashedPassword)} 
-                    WHERE id = ${conn.escape(req.params.id)};`;
+// Admin update user password
+router.put(
+    '/:id/edit-user-password',
+    isAuthenticated,
+    editUserPermission,
+    updatePassword
+);
 
-                conn.query(sqlQuery, (err, results) => {
-                    try {
-                        if (err) {
-                            throw err;
-                        }
-                        res.end();
-                    } catch (err) {
-                        next(err);
-                    }
-                });
-            }
-        );
-    }
+// Instructor update student password
+router.put(
+    '/:id/edit-student-password',
+    isAuthenticated,
+    editStudentPermission,
+    updatePassword
 );
 
 // To see the user profile, and edit the app settings (if user is an admin).
