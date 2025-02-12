@@ -40,32 +40,34 @@ async function initialAssistant() {
     return result;
 }
 
-async function processingNewMessage(threadId, assistantId, reqBody) {
+async function processingNewMessage(threadId, assistantId, messageData) {
     // Add a Message to the Thread
     const message = await openai.beta.threads.messages.create(threadId, {
         role: 'user',
-        content: userQuestion
+        content: messageData.message
     });
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
-        instructions: `Please return the message as formatted html code. Please refer to the user as ${reqBody.userName}. Please only talk about the topic: ${reqBody.skillName};`
+        instructions: `Please return the message as formatted html code. Please refer to the user as ${messageData.userName}. Please only talk about the topic: ${messageData.skillName};`
     });
 
     if (run.status === 'completed') {
         const messages = await openai.beta.threads.messages.list(
             threadId
         );
-        console.log(messages.length);
-        for (const message of messages.data.reverse()) {
-            // console.log(
-            //     `${message.role} > ${message.content[0].text.value}`
-            // );
-            //console.log(message.content[0].text.value);
-            //    res.json({ answer: message.content[0].text.value });
-        }
+        console.log(messages.data.length);
+        // get the latest message 
+        // for (const message of messages.data.reverse()) {
+        //     console.log(
+        //         `${message.role} > ${message.content[0].text.value}`
+        //     );
+        //     console.log(message.content[0].text.value);
 
-        return (message.data)
+        // }
+        const latestMessage = messages.data[0]
+
+        return (latestMessage.content[0].text.value);
     } else {
         console.log(run.status);
     }
@@ -105,5 +107,27 @@ async function getAssistantData(userId, skillUrl) {
     }
 }
 
-module.exports = { initialAssistant, processingNewMessage, saveAssistantData, getAssistantData }
+/**
+ *
+ * get user assistant data of the skill
+ * @param {string} userId 
+ * @param {string} skillId
+ * @return {*} 
+ */
+async function getMessagesList(userId, skillUrl) {
+    try {
+        let queryString = `SELECT * 
+                           FROM user_assistant_messages 
+                           WHERE user_assistant_messages.user_id = ${conn.escape(userId)} AND user_assistant_messages.skill_url = ${conn.escape(skillUrl)}`
+        const result = await query(queryString);
+        const threadId = result[0].thread_id;
+        const messages = await openai.beta.threads.messages.list(threadId);
+        console.log(messages)
+        return messages
+    } catch (error) {
+        throw error
+    }
+}
+
+module.exports = { initialAssistant, processingNewMessage, saveAssistantData, getAssistantData, getMessagesList }
 

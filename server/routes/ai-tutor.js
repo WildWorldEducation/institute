@@ -9,7 +9,7 @@ const router = express.Router();
 
 // Import OpenAI package.
 const { OpenAI } = require('openai');
-const { processingNewMessage, initialAssistant, getAssistantData } = require('../utilities/openAIAssistant');
+const { processingNewMessage, initialAssistant, getAssistantData, saveAssistantData, getMessagesList } = require('../utilities/openAIAssistant');
 const isAuthenticated = require('../middlewares/authMiddleware');
 // Include API key.
 const openai = new OpenAI({
@@ -25,7 +25,6 @@ router.post('/', async (req, res, next) => {
     let userQuestion = req.body.message;
     if (req.session.userName) {
         // Create an Assistant
-
         const assistant = await openai.beta.assistants.create({
             name: 'General Tutor',
             instructions:
@@ -83,15 +82,37 @@ router.post('/', async (req, res, next) => {
 router.post('/new-message', isAuthenticated, async (req, res, next) => {
     try {
         const assistantData = await getAssistantData(req.body.userId, req.body.skillUrl);
-        console.log(assistantData);
-        // if (!req.body.threadId || !req.body.assistantId) {
-        //     const newAssistant = await initialAssistant();
-        //     const result = await processingNewMessage(newAssistant.thread.id, newAssistant.assistant.id, req.body.messageData);
-        //     res.json({ message: result.data, assistant: newAssistant.assistant, thread: newAssistant.thread })
-        //     return
-        // }
-        // const result = await processingNewMessage(req.body.threadId, req.body.assistantId, req.body.messageData);
-        // res.json({ message: result.data })
+
+        if (assistantData.length < 1) {
+            const newAssistant = await initialAssistant();
+            const assistantData = {
+                userId: req.body.userId,
+                skillUrl: req.body.skillUrl,
+                assistantId: newAssistant.assistant.id,
+                threadId: newAssistant.thread.id
+            };
+            const databaseAssistant = await saveAssistantData(assistantData);
+            console.log(databaseAssistant);
+            const result = await processingNewMessage(newAssistant.thread.id, newAssistant.assistant.id, req.body);
+            res.json({ message: result, assistant: newAssistant.assistant, thread: newAssistant.thread })
+            return
+        }
+        const result = await processingNewMessage(assistantData[0].thread_id, assistantData[0].assistant_id, req.body);
+        res.json({ message: result })
+
+    } catch (error) {
+        console.error(error)
+        res.status = 500;
+        res.json({ mess: 'something went wrong' })
+    }
+})
+
+router.get('/messages-list', isAuthenticated, async (req, res, next) => {
+    try {
+        const userId = req.query.userId;
+        const skillUrl = req.query.skillUrl;
+        const messages = await getMessagesList(userId, skillUrl);
+        res.json({ messages: messages })
     } catch (error) {
         console.error(error)
         res.status = 500;

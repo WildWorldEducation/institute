@@ -13,10 +13,14 @@ export default {
     data() {
         return {
             message: '',
-            previousMessages: []
+            previousMessages: [],
+            latestMessage: ''
         };
     },
-    mounted() {},
+    mounted() {
+        console.log(this.userDetailsStore.userId);
+        this.getMessagesList();
+    },
     computed: {},
     methods: {
         SendMessage() {
@@ -41,22 +45,38 @@ export default {
                     }
                 });
         },
-        TestFunc() {
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: this.message,
-                    userName: this.userDetailsStore.userName,
-                    userId: this.userDetailsStore.id,
-                    skillName: this.skillName,
-                    skillUrl: this.skillUrl
-                })
-            };
-            var url = '/ai-tutor/new-message';
-            fetch(url, requestOptions).then((response) => {
-                return response.json();
-            });
+        async TestFunc() {
+            try {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: this.message,
+                        userName: this.userDetailsStore.userName,
+                        userId: this.userDetailsStore.userId,
+                        skillName: this.skillName,
+                        skillUrl: this.skillUrl
+                    })
+                };
+                var url = '/ai-tutor/new-message';
+                const res = await fetch(url, requestOptions);
+                const resData = await res.json();
+                console.log('I Can get data');
+                this.latestMessage = resData.message;
+                console.log(this.latestMessage);
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        async getMessagesList() {
+            try {
+                const url = `/ai-tutor/messages-list?userId=${this.userDetailsStore.userId}&skillUrl=${this.skillUrl}`;
+                const response = await fetch(url);
+                const resData = await response.json();
+                console.log(resData);
+            } catch (error) {
+                console.error(error);
+            }
         }
     }
 };
@@ -77,6 +97,9 @@ export default {
                     ></div>
                     <hr />
                 </div>
+                <div class="tutor-conversation" v-html="latestMessage"></div>
+                <hr />
+                <div>{{ latestMessage }}</div>
             </div>
             <div class="mb-3">
                 <textarea v-model="message" type="text" class="form-control" />
@@ -84,7 +107,7 @@ export default {
             <button class="btn primary-btn" @click="SendMessage()">
                 Submit
             </button>
-            <button class="btn" @click="TestFunc()">Test !!</button>
+            <button class="btn primary-btn" @click="TestFunc()">Test !!</button>
         </div>
     </div>
 </template>
