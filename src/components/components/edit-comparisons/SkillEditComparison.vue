@@ -14,41 +14,30 @@ export default {
             comment: '',
             isEditMode: false,
             edited: false,
-            changeIntroText: false,
             diffHtml: '',
             introductionDiff: '',
             showEditMastery: false,
             showEditIntro: false,
-            showIconChange: true,
+            showImageComparison: true,
+            showIconComparison: true,
             showSkillMasteryChange: true,
             showSkillIntroChange: true,
             showHighLight: true,
             showIntroHighLight: true,
             isSkillChanged: {
+                image: false,
                 icon: false,
-                mastery_requirements: false
-            },
-            iconImage: ''
+                mastery_requirements: false,
+                introduction: false
+            }
         };
     },
     components: { MasteryEditDetails },
     async created() {
         await this.getSkillEdit();
-
         await this.getSkill();
-        console.log('skill data');
-        console.log(this.skill);
-        console.log('edit data: ');
-        console.log(this.skillEdit);
 
-        this.iconImage =
-            'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
-            this.skill.url;
-
-        this.isSkillChanged.icon = true;
-        // if (this.skill.icon_image !== this.skillEdit.icon_image) {
-        // }
-
+        // Dont show the sections if they were not edited.
         if (
             this.skill.mastery_requirements !==
             this.skillEdit.mastery_requirements
@@ -60,22 +49,39 @@ export default {
                 this.skillEdit.mastery_requirements
             );
         }
+
         if (this.skill.introduction !== this.skillEdit.introduction) {
-            this.changeIntroText = true;
+            this.isSkillChanged.introduction = true;
             // Compare two introduction string
             this.introductionDiff = HtmlDiff.execute(
                 this.skill.introduction || '',
                 this.skillEdit.introduction
             );
         }
+        if (this.skill.image_url !== this.skillEdit.image) {
+            this.isSkillChanged.image = true;
+        }
+        if (this.skill.icon_url !== this.skillEdit.icon) {
+            this.isSkillChanged.icon = true;
+        }
 
-        // // Render the Summernote content.
-        $('#summernote').summernote(
+        // Render the Summernote content.
+        $('#introduction-summernote').summernote(
+            'code',
+            this.skillEdit.introduction
+        );
+        // Disable editing.
+        $('#introduction-summernote')
+            .next()
+            .find('.note-editable')
+            .attr('contenteditable', false);
+
+        $('#mastery-requirement-summernote').summernote(
             'code',
             this.skillEdit.mastery_requirements
         );
         // Disable editing.
-        $('#summernote')
+        $('#mastery-requirement-summernote')
             .next()
             .find('.note-editable')
             .attr('contenteditable', false);
@@ -93,7 +99,6 @@ export default {
                 })
                 .then((data) => {
                     this.skillEdit = data;
-
                     this.comment = data.comment;
                 });
         },
@@ -104,8 +109,6 @@ export default {
                 })
                 .then((data) => {
                     this.skill = data;
-                    console.log('skill data: ');
-                    console.log(this.skill);
                 });
         },
         dismissEdit() {
@@ -128,12 +131,16 @@ export default {
                 this.$router.back();
             }
         },
-        dismissIcon() {
-            if (confirm('Revert the image? This action is permanently!')) {
-                this.skillEdit.icon_image = this.skill.icon_image;
+        dismissImage() {
+            if (confirm('Dismiss the image? This action is permanent!')) {
+                this.skillEdit.image = this.skill.image_thumbnail_url;
             }
         },
-
+        dismissIcon() {
+            if (confirm('Dismiss the icon? This action is permanent!')) {
+                this.skillEdit.icon = this.skill.icon_url;
+            }
+        },
         applyMasteryChange() {
             this.$parent.disableBtn = false;
             this.skillEdit.mastery_requirements =
@@ -201,9 +208,10 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     mastery_requirements: this.skillEdit.mastery_requirements,
-                    icon_image: this.skillEdit.icon_image,
+                    isImageUpdated: this.isSkillChanged.image,
+                    image: this.skillEdit.image,
+                    isIconUpdated: this.isSkillChanged.icon,
                     icon: this.skillEdit.icon,
-                    banner_image: this.skillEdit.banner_image,
                     comment: this.comment,
                     introduction: this.skillEdit.introduction,
                     edit: this.edited
@@ -230,11 +238,6 @@ export default {
             if (result.error) {
                 console.log(result.error);
             }
-        },
-        revertNodeIcon() {
-            if (confirm('Revert the node icon? This action is permanently!')) {
-                this.skillEdit.icon = this.skill.icon;
-            }
         }
     }
 };
@@ -255,18 +258,20 @@ export default {
         <h2 class="secondary-heading h4 mt-2">Level</h2>
         <div class="minor-text">{{ skill.level }}</div>
 
-        <!-- ---Icon image compare -->
-        <div v-if="isSkillChanged.icon" class="mt-5">
+        <!-- Image comparison -->
+        <div v-if="isSkillChanged.image" class="mt-5">
             <div class="compare-container">
                 <div class="d-flex align-items-center">
                     <h2 class="secondary-heading h4 mb-3">Image</h2>
                     <div
-                        @click="showIconChange = !showIconChange"
+                        @click="showImageComparison = !showImageComparison"
                         :class="[
-                            showIconChange ? 'expand-arrow' : 'minimize-arrow'
+                            showImageComparison
+                                ? 'expand-arrow'
+                                : 'minimize-arrow'
                         ]"
                         b-on-hover
-                        :title="showIconChange ? 'minimize' : 'expand'"
+                        :title="showImageComparison ? 'minimize' : 'expand'"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -282,12 +287,15 @@ export default {
                     </div>
                 </div>
                 <Transition name="dropdown">
-                    <div v-if="showIconChange">
+                    <div v-if="showImageComparison">
                         <div class="d-flex flex-lg-row flex-column">
                             <!-- Old image -->
                             <div class="old-container icon-container">
                                 <div class="container-heading">Original</div>
-                                <img :src="iconImage" class="icon-image" />
+                                <img
+                                    :src="skill.image_thumbnail_url"
+                                    class="icon-image"
+                                />
                             </div>
                             <!-- Long arrow pointing right -->
                             <svg
@@ -317,7 +325,7 @@ export default {
                             <div class="new-container icon-container">
                                 <div class="container-heading">Changed</div>
                                 <img
-                                    :src="skillEdit.icon_image"
+                                    :src="skillEdit.image"
                                     class="icon-image"
                                 />
                             </div>
@@ -325,7 +333,7 @@ export default {
                         <div>
                             <button
                                 class="btn red-btn ms-auto me-0 mt-3"
-                                @click="dismissIcon()"
+                                @click="dismissImage()"
                             >
                                 Revert &nbsp;&nbsp;
                                 <svg
@@ -349,15 +357,18 @@ export default {
         <!-- Icon comparison -->
         <div v-if="isSkillChanged.icon" class="mt-5">
             <div class="compare-container">
+                <!-- Show/Hide toggle -->
                 <div class="d-flex align-items-center">
                     <h2 class="secondary-heading h4 mb-3">Icon</h2>
                     <div
-                        @click="showIconChange = !showIconChange"
+                        @click="showIconComparison = !showIconComparison"
                         :class="[
-                            showIconChange ? 'expand-arrow' : 'minimize-arrow'
+                            showIconComparison
+                                ? 'expand-arrow'
+                                : 'minimize-arrow'
                         ]"
                         b-on-hover
-                        :title="showIconChange ? 'minimize' : 'expand'"
+                        :title="showIconComparison ? 'minimize' : 'expand'"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -372,13 +383,14 @@ export default {
                         </svg>
                     </div>
                 </div>
+                <!-- New and old icons -->
                 <Transition name="dropdown">
-                    <div v-if="showIconChange">
+                    <div v-if="showIconComparison">
                         <div class="d-flex flex-lg-row flex-column">
                             <!-- Old icon -->
                             <div class="old-container icon-container">
                                 <div class="container-heading">Original</div>
-                                <img :src="skill.icon" class="icon-image" />
+                                <img :src="skill.icon_url" class="icon-image" />
                             </div>
                             <!-- Long arrow pointing right -->
                             <svg
@@ -436,7 +448,7 @@ export default {
 
         <!-- Introduction comparison -->
         <div
-            v-if="changeIntroText && !showEditIntro"
+            v-if="isSkillChanged.introduction && !showEditIntro"
             class="compare-container mt-5"
         >
             <div class="d-flex align-items-center">
@@ -470,7 +482,7 @@ export default {
                             class="btn green-btn d-flex align-items-center"
                             @click="showIntroHighLight = !showIntroHighLight"
                         >
-                            {{ showIntroHighLight ? 'Hide' : 'Show' }} Hight
+                            {{ showIntroHighLight ? 'Hide' : 'Show' }} High
                             Light
                             <svg
                                 v-if="showIntroHighLight"
@@ -572,11 +584,12 @@ export default {
             </Transition>
         </div>
 
-        <!-- Skill mastery edit with summernote -->
+        <!-- Skill introduction edit with summernote -->
         <div v-else class="mt-5 compare-container">
             <h2 class="secondary-heading h4 my-3">Edit Introduction</h2>
             <textarea
                 class="form-control"
+                id="introduction-summernote"
                 rows="3"
                 v-model="skillEdit.introduction"
             ></textarea>
@@ -758,12 +771,13 @@ export default {
                 </div>
             </Transition>
         </div>
+
         <!-- Skill mastery edit with summernote -->
         <div v-else class="mt-5 compare-container">
             <h2 class="secondary-heading h4 my-3">Edit Mastery Requirement</h2>
             <textarea
                 class="form-control"
-                id="summernote"
+                id="mastery-requirement-summernote"
                 rows="33"
                 v-model="skillEdit.mastery_requirements"
             ></textarea>
@@ -842,9 +856,6 @@ export default {
 .icon-image {
     width: auto;
     height: 80%;
-}
-
-.icon-image {
     max-width: 50%;
 }
 
