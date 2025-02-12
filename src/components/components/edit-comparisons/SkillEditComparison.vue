@@ -37,11 +37,6 @@ export default {
         await this.getSkillEdit();
         await this.getSkill();
 
-        console.log('skill data');
-        console.log(this.skill);
-        console.log('edit data');
-        console.log(this.skillEdit);
-
         // Dont show the sections if they were not edited.
         if (
             this.skill.mastery_requirements !==
