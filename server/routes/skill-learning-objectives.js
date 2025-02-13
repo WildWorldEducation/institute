@@ -32,7 +32,7 @@ function getSkills() {
     let sqlQuery = `SELECT id, level, name, mastery_requirements FROM skills
     WHERE is_deleted = 0
     AND type <> 'domain'
-    AND id BETWEEN 50 AND 100`;
+    AND id BETWEEN 40 AND 50`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -44,26 +44,25 @@ function getSkills() {
             skillsLength = results.length;
 
             // For going through all skills.
-            let index = 0;
+            let outerIndex = 0;
 
             // We go through all skills sequencially, one at a time.
-            generateLearningObjectives(index, skillsLength);
+            generateLearningObjectives(outerIndex, skillsLength);
         } catch (err) {
             console.log(err);
         }
     });
 }
 
-async function generateLearningObjectives(index, skillsLength) {
-    let skillId = skills[index].id;
-    let skillName = skills[index].name;
+async function generateLearningObjectives(outerIndex, skillsLength) {
+    let skillId = skills[outerIndex].id;
+    let skillName = skills[outerIndex].name;
     // Remove HTML formatting from mastery requirements.
     let skillMasteryRequirements;
-    if (skills[index].mastery_requirements) {
-        skillMasteryRequirements = skills[index].mastery_requirements.replace(
-            /<[^>]*>?/gm,
-            ''
-        );
+    if (skills[outerIndex].mastery_requirements) {
+        skillMasteryRequirements = skills[
+            outerIndex
+        ].mastery_requirements.replace(/<[^>]*>?/gm, '');
     }
 
     // Create prompt for ChatGPT.
@@ -75,125 +74,97 @@ async function generateLearningObjectives(index, skillsLength) {
     // Attempting to prevent the app from crashing if anything goes wrong with the API call.
     // ie, error handling.
     try {
-        // console.log('Get learning objectives for: ' + skillName);
+        console.log('Get learning objectives for: ' + skillName);
 
-        // let content = `You are a curriculum designer creating learning objectives for school or college assessments.`;
-        // const completion = await openai.chat.completions.create({
-        //     messages: [
-        //         { role: 'system', content: content },
-        //         {
-        //             role: 'user',
-        //             content: prompt + ` Please respond with JSON.`
-        //         }
-        //     ],
-        //     model: 'gpt-4o',
-        //     response_format: { type: 'json_object' }
-        // });
-        // let responseJSON = completion.choices[0].message.content;
-        // // Escape newline characters in response.
-        // if (responseJSON) {
-        //     responseJSON = responseJSON.replace(/\\n/g, '\\n');
-        // }
-        // // Convert string to object.       ;
-        // let learningObjectivesObject = JSON.parse(responseJSON);
-        // let learningObjectives = learningObjectivesObject.learningObjectives;
-        // console.log(learningObjectives);
-        let newLearningObjectives = [];
-
-        // for (let i = 0; i < learningObjectives.length; i++) {
-
-        // }
-
-        let testArray = [
-            'Understand the concept of component agreement in sentences, recognizing how elements must harmonize in number, gender, and case.',
-            [
-                'Identify nouns, pronouns, verbs, and adjectives and determine their correct forms in agreement with each other.',
-                'Recognize singular and plural subjects and ensure verb agreement in number and person across present, past, and future tenses.',
-                [
-                    "Decide on the need for singular or plural verbs with compound subjects, analyzing their connections via 'and' or 'or'."
-                ]
+        let content = `You are a curriculum designer creating learning objectives for school or college assessments.`;
+        const completion = await openai.chat.completions.create({
+            messages: [
+                { role: 'system', content: content },
+                {
+                    role: 'user',
+                    content: prompt + ` Please respond with JSON.`
+                }
             ],
-            'Focus on subject-verb agreement despite intervening phrases or clauses.'
-        ];
+            model: 'gpt-4o',
+            response_format: { type: 'json_object' }
+        });
+        let responseJSON = completion.choices[0].message.content;
+        // Escape newline characters in response.
+        if (responseJSON) {
+            responseJSON = responseJSON.replace(/\\n/g, '\\n');
+        }
+        // Convert string to object.       ;
+        let learningObjectivesObject = JSON.parse(responseJSON);
+        let unformattedLearningObjectives =
+            learningObjectivesObject.learningObjectives;
+        let learningObjectives = [];
 
         // Recursive function
-        async function createObjectives(index, array, parentArray, parent) {
+        async function createObjectives(index, array, parent) {
             for (let i = 0; i < array.length; i++) {
                 index++;
                 if (Array.isArray(array[i])) {
                     await createObjectives(
                         index,
                         array[i],
-                        parentArray,
-                        skillId + '-' + (index - 1)
+                        skillId + '-' + (index - 1) + '-' + (i - 1)
                     );
                     continue;
                 }
-                newLearningObjectives.push({
-                    id: skillId + '-' + index,
+                learningObjectives.push({
+                    id: skillId + '-' + index + '-' + i,
                     skillId: skillId,
                     parent: parent,
                     objective: array[i]
-                });               
+                });
             }
         }
 
         let index = 0;
-        let parent = 0;
-        await createObjectives(index, testArray, testArray, parent);
+        let parent = skillId;
+        await createObjectives(index, unformattedLearningObjectives, parent);
 
-        console.log(newLearningObjectives);
+        console.log(learningObjectives);
 
-        return;
+        // Format for SQL
+        for (let i = 0; i < learningObjectives.length; i++) {
+            learningObjectives[i].objective = learningObjectives[
+                i
+            ].objective.replace(/"/g, "'");
+        }
 
-        // for (let i = 0; i < learningObjectives.length; i++) {
-        //     console.log(learningObjectives[i]);
-        //     if (Array.isArray(learningObjectives[i])) {
-        //         console.log('array found');
-        //     }
-        //     learningObjectives[i] = learningObjectives[i].replace(/"/g, "'");
-        // }
+        function queryPromise(query) {
+            return new Promise((resolve, reject) => {
+                conn.query(query, (err, result) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(result);
+                });
+            });
+        }
 
-        // console.log(learningObjectives);
-
-        index++;
-
-        // function queryPromise(query) {
-        //     return new Promise((resolve, reject) => {
-        //         conn.query(query, (err, result) => {
-        //             if (err) {
-        //                 return reject(err);
-        //             }
-
-        //             return resolve(result);
-        //         });
-        //     });
-        // }
-
-        // conn.connect(async (err) => {
-        //     await Promise.all(
-        //         learningObjectives.map((_, i) => {
-        //             if (Array.isArray(learningObjectives[i])) {
-        //                 console.log('is nested');
-        //             }
-
-        //             return queryPromise(
-        //                 `INSERT INTO skill_learning_objectives (skill_id, parent, objective)
-        //                  VALUES (${skillId}, 0, "${learningObjectives[i]}" )`
-        //             );
-        //         })
-        //     );
-        //     if (index < skillsLength)
-        //         await generateLearningObjectives(index, skillsLength);
-        //     else console.log('batch completed');
-        // });
+        conn.connect(async (err) => {
+            await Promise.all(
+                learningObjectives.map((_, i) => {
+                    return queryPromise(
+                        `INSERT INTO skill_learning_objectives (id, skill_id, parent, objective)
+                         VALUES ("${learningObjectives[i].id}", ${learningObjectives[i].skillId}, "${learningObjectives[i].parent}", "${learningObjectives[i].objective}" )`
+                    );
+                })
+            );
+            outerIndex++;
+            if (outerIndex < skillsLength)
+                await generateLearningObjectives(outerIndex, skillsLength);
+            else console.log('batch completed');
+        });
     } catch (err) {
         console.log('Error with ChatGPT API call: ' + err);
         return;
     }
 }
 
-getSkills();
+// getSkills();
 
 // Export the router for app to use.
 module.exports = router;
