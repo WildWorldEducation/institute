@@ -111,40 +111,37 @@ async function generateLearningObjectives(index, skillsLength) {
                 'Recognize singular and plural subjects and ensure verb agreement in number and person across present, past, and future tenses.',
                 [
                     "Decide on the need for singular or plural verbs with compound subjects, analyzing their connections via 'and' or 'or'."
-                ],
-                "Select pronouns that agree with their antecedents in number and gender, such as 'he', 'she', 'it', and 'they'.",
-                'Ensure adjective agreement with the nouns they describe, understanding number and gender concordance, especially in languages with gendered adjectives.',
-                'Apply possessive adjectives correctly, ensuring agreement with nouns in terms of number and sometimes gender.'
+                ]
             ],
-            'Focus on subject-verb agreement despite intervening phrases or clauses.',
-            'Recognize exceptions to standard agreement rules, such as the use of collective nouns and indefinite pronouns that may alter verb agreement based on context.',
-            'Develop skills to construct grammatically correct and coherent sentences, demonstrating mastery in the application of component agreement rules.'
+            'Focus on subject-verb agreement despite intervening phrases or clauses.'
         ];
 
         // Recursive function
-        async function createObjectives(index, array, parent) {
+        async function createObjectives(index, array, parentArray, parent) {
             for (let i = 0; i < array.length; i++) {
                 index++;
                 if (Array.isArray(array[i])) {
                     await createObjectives(
                         index,
                         array[i],
+                        parentArray,
                         skillId + '-' + (index - 1)
                     );
-                } else {
-                    newLearningObjectives.push({
-                        id: skillId + '-' + index,
-                        skillId: skillId,
-                        parent: parent,
-                        objective: array[i]
-                    });
+                    continue;
                 }
+                newLearningObjectives.push({
+                    id: skillId + '-' + index,
+                    skillId: skillId,
+                    parent: parent,
+                    objective: array[i]
+                });               
             }
         }
 
         let index = 0;
         let parent = 0;
-        createObjectives(index, testArray, parent);
+        await createObjectives(index, testArray, testArray, parent);
+
         console.log(newLearningObjectives);
 
         return;
