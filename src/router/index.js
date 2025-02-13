@@ -231,7 +231,7 @@ const router = createRouter({
             path: '/student-assessments',
             name: 'student-assessments',
             component: () =>
-                import('../components/pages/NewMarkAssessmentView.vue'),
+                import('../components/pages/MarkAssessmentView.vue'),
             meta: {
                 requiresAuth: true,
                 roles: ['instructor', 'admin']
