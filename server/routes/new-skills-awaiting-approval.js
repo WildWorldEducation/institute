@@ -1,3 +1,6 @@
+// This file deals with brand new skills, that have been
+// suggested by users.
+// It does not deal with edits to skills, that have been sugested by users.
 /*------------------------------------------
 --------------------------------------------
 Middleware

@@ -43,7 +43,7 @@ export default {
     <div class="container-fluid">
         <h2 class="secondary-heading h4">Check New Questions</h2>
 
-        <div class="list-body">
+        <div class="list-body pt-2">
             <div class="question" v-for="question in questions">
                 <RouterLink
                     class="question-link"
