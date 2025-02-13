@@ -94,6 +94,32 @@ export default {
             result = result.replace(/```/g, '');
             return result;
         }
+    },
+    watch: {
+        // Update text area height base on message input
+        message: function (newItem, oldItem) {
+            let { messageInput } = this.$refs;
+            const lineHeightInPixels = 22;
+
+            // Reset messageInput Height
+            messageInput.setAttribute(
+                `style`,
+                `height:${lineHeightInPixels}px;overflow-y:hidden;`
+            );
+
+            // Calculate number of lines (soft and hard)
+            const height = messageInput.style.height;
+            const scrollHeight = messageInput.scrollHeight;
+            messageInput.style.height = height;
+            const count = Math.floor(scrollHeight / lineHeightInPixels);
+
+            this.$nextTick(() => {
+                messageInput.setAttribute(
+                    `style`,
+                    `height:${count * lineHeightInPixels}px;overflow-y:hidden;`
+                );
+            });
+        }
     }
 };
 </script>
@@ -102,7 +128,7 @@ export default {
     <div class="container mt-3">
         <h2 class="heading">Tutor</h2>
         <hr />
-        <div class="row w-50 mx-auto chat-component">
+        <div class="d-flex flex-column w-50 mx-auto chat-component">
             <div
                 class="d-flex my-3"
                 :class="{ 'flex-row-reverse': message.role === 'user' }"
@@ -118,11 +144,13 @@ export default {
                 ></div>
             </div>
             <div class="user-chat-div">
-                <div class="mb-3">
-                    <textarea class="" v-model="message" type="text">
-                    </textarea>
-                </div>
-
+                <textarea
+                    ref="messageInput"
+                    class="chat-text-area"
+                    v-model="message"
+                    type="text"
+                >
+                </textarea>
                 <button class="btn primary-btn" @click="SendMessage()">
                     Submit
                 </button>
@@ -140,6 +168,14 @@ export default {
     font-size: 20px !important;
 }
 
+.chat-text-area {
+    outline: none;
+    border: 0px;
+    width: 100%;
+    max-height: 600px;
+    resize: none;
+}
+
 .user-conversation {
     padding: 10px 15px;
     background-color: #f3f3f3;
@@ -152,10 +188,11 @@ export default {
 }
 
 .user-chat-div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
     border-radius: 35px;
     border: 1px solid #e8e8e8;
-    margin-left: auto;
-    margin-right: auto;
-    width: 98%;
+    padding: 20px;
 }
 </style>
