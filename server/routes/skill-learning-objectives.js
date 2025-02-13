@@ -126,7 +126,11 @@ async function generateLearningObjectives(index, skillsLength) {
             for (let i = 0; i < array.length; i++) {
                 index++;
                 if (Array.isArray(array[i])) {
-                    await createObjectives(index, array[i], skillId + '-' + i);
+                    await createObjectives(
+                        index,
+                        array[i],
+                        skillId + '-' + (index - 1)
+                    );
                 } else {
                     newLearningObjectives.push({
                         id: skillId + '-' + index,
