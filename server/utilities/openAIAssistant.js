@@ -67,7 +67,7 @@ async function processingNewMessage(threadId, assistantId, messageData) {
         // }
         const latestMessage = messages.data[0]
 
-        return (latestMessage.content[0].text.value);
+        return (latestMessage);
     } else {
         console.log(run.status);
     }
@@ -122,7 +122,6 @@ async function getMessagesList(userId, skillUrl) {
         const result = await query(queryString);
         const threadId = result[0].thread_id;
         const messages = await openai.beta.threads.messages.list(threadId);
-        console.log(messages)
         return messages
     } catch (error) {
         throw error

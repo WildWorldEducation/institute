@@ -14,7 +14,8 @@ export default {
         return {
             message: '',
             previousMessages: [],
-            latestMessage: ''
+            latestMessage: '',
+            messageList: []
         };
     },
     mounted() {
@@ -23,29 +24,29 @@ export default {
     },
     computed: {},
     methods: {
-        SendMessage() {
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: this.message,
-                    userName: this.userDetailsStore.userName,
-                    skillName: this.skillName
-                })
-            };
-            var url = '/ai-tutor/new-message';
-            fetch(url, requestOptions)
-                .then((response) => {
-                    return response.json();
-                })
-                .then((data) => {
-                    for (let i = 0; i < data.message.length; i++) {
-                        console.log(data.message[i].content[0].text);
-                        this.previousMessages.push(data.message[i]);
-                    }
-                });
-        },
-        async TestFunc() {
+        // SendMessage() {
+        //     const requestOptions = {
+        //         method: 'POST',
+        //         headers: { 'Content-Type': 'application/json' },
+        //         body: JSON.stringify({
+        //             message: this.message,
+        //             userName: this.userDetailsStore.userName,
+        //             skillName: this.skillName
+        //         })
+        //     };
+        //     var url = '/ai-tutor/new-message';
+        //     fetch(url, requestOptions)
+        //         .then((response) => {
+        //             return response.json();
+        //         })
+        //         .then((data) => {
+        //             for (let i = 0; i < data.message.length; i++) {
+        //                 console.log(data.message[i].content[0].text);
+        //                 this.previousMessages.push(data.message[i]);
+        //             }
+        //         });
+        // },
+        async SendMessage() {
             try {
                 const requestOptions = {
                     method: 'POST',
@@ -61,8 +62,10 @@ export default {
                 var url = '/ai-tutor/new-message';
                 const res = await fetch(url, requestOptions);
                 const resData = await res.json();
-                console.log('I Can get data');
+
                 this.latestMessage = resData.message;
+                this.messageList.push(this.latestMessage);
+                console.log('latest message is: ');
                 console.log(this.latestMessage);
             } catch (error) {
                 console.error(error);
@@ -73,10 +76,18 @@ export default {
                 const url = `/ai-tutor/messages-list?userId=${this.userDetailsStore.userId}&skillUrl=${this.skillUrl}`;
                 const response = await fetch(url);
                 const resData = await response.json();
-                console.log(resData);
+                this.messageList = resData.messages.data;
+                // we reverse oder of messages list because OpenAI return messages from newest to oldest
+                this.messageList.reverse();
             } catch (error) {
                 console.error(error);
             }
+        },
+        // Because OpenAI return the content with it
+        removeHTMLnotation(string) {
+            let result = string.replace(/```html/g, '');
+            result = result.replace(/```/g, '');
+            return result;
         }
     }
 };
@@ -85,29 +96,29 @@ export default {
 <template>
     <div class="container mt-3">
         <h2 class="heading">Tutor</h2>
-        <p>Type your question below.</p>
-        <div class="row">
-            <div class="mb-3">
-                <div v-for="previousMessage in previousMessages">
-                    <span v-if="(previousMessage.role = 'user')">You:</span>
-                    <span v-else>Tutor:</span>
-                    <div
-                        class="tutor-conversation"
-                        v-html="previousMessage.content[0].text.value"
-                    ></div>
-                    <hr />
+        <hr />
+        <div class="row w-50 mx-auto">
+            <div
+                class="d-flex my-3"
+                :class="{ 'flex-row-reverse': message.role === 'user' }"
+                v-for="message in messageList"
+            >
+                <div v-if="message.role === 'user'" class="user-conversation">
+                    {{ message.content[0].text.value }}
                 </div>
-                <div class="tutor-conversation" v-html="latestMessage"></div>
-                <hr />
-                <div>{{ latestMessage }}</div>
+                <div
+                    v-else
+                    class="tutor-conversation"
+                    v-html="removeHTMLnotation(message.content[0].text.value)"
+                ></div>
             </div>
             <div class="mb-3">
                 <textarea v-model="message" type="text" class="form-control" />
             </div>
+
             <button class="btn primary-btn" @click="SendMessage()">
                 Submit
             </button>
-            <button class="btn primary-btn" @click="TestFunc()">Test !!</button>
         </div>
     </div>
 </template>
@@ -115,5 +126,15 @@ export default {
 <style scoped>
 .tutor-conversation {
     font-family: 'Poppins', sans-serif;
+}
+
+:deep(h1) {
+    font-size: 20px !important;
+}
+
+.user-conversation {
+    padding: 10px 15px;
+    background-color: #f3f3f3;
+    border-radius: 50px;
 }
 </style>
