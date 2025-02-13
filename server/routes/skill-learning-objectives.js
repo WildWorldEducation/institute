@@ -32,7 +32,7 @@ function getSkills() {
     let sqlQuery = `SELECT id, level, name, mastery_requirements FROM skills
     WHERE is_deleted = 0
     AND type <> 'domain'
-    AND id BETWEEN 0 AND 50`;
+    AND id BETWEEN 50 AND 100`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -55,6 +55,7 @@ function getSkills() {
 }
 
 async function generateLearningObjectives(index, skillsLength) {
+    let skillId = skills[index].id;
     let skillName = skills[index].name;
     // Remove HTML formatting from mastery requirements.
     let skillMasteryRequirements;
@@ -68,13 +69,13 @@ async function generateLearningObjectives(index, skillsLength) {
     // Create prompt for ChatGPT.
     let prompt = `        
     Generate learning objectives for the skill ${skillName}, as further defined by ${skillMasteryRequirements}.
-    Present them in an array (nested or not) called "learningObjectives". Do not make it an array of objects.
+    Present them in an array (nested where necessary) called "learningObjectives". Do not make it an array of objects.
     `;
 
     // Attempting to prevent the app from crashing if anything goes wrong with the API call.
     // ie, error handling.
     try {
-        console.log('Get learning objecties for: ' + skillName);
+        console.log('Get learning objectives for: ' + skillName);
 
         let content = `You are a curriculum designer creating learning objectives for school or college assessments.`;
         const completion = await openai.chat.completions.create({
@@ -95,23 +96,48 @@ async function generateLearningObjectives(index, skillsLength) {
         }
         // Convert string to object.       ;
         let learningObjectivesObject = JSON.parse(responseJSON);
-        console.log(learningObjectivesObject);
-        let learningObjectives = learningObjectivesObject.learning_objectives;
-        if (learningObjectives) {
-            learningObjectives = learningObjectives.replace(/"/g, "'");
+        let learningObjectives = learningObjectivesObject.learningObjectives;
+        console.log(learningObjectives);
+        for (let i = 0; i < learningObjectives.length; i++) {
+            learningObjectives[i] = learningObjectives[i].replace(/"/g, "'");
         }
+
+        console.log(learningObjectives);
 
         index++;
 
-        if (index < skillsLength)
-            generateLearningObjectives(index, skillsLength);
+        function queryPromise(query) {
+            return new Promise((resolve, reject) => {
+                conn.query(query, (err, result) => {
+                    if (err) {
+                        return reject(err);
+                    }
+
+                    return resolve(result);
+                });
+            });
+        }
+
+        conn.connect(async (err) => {
+            await Promise.all(
+                learningObjectives.map((_, i) => {
+                    return queryPromise(
+                        `INSERT INTO skill_learning_objectives (skill_id, parent, objective)
+                         VALUES (${skillId}, 0, "${learningObjectives[i]}" )`
+                    );
+                })
+            );
+            if (index < skillsLength)
+                await generateLearningObjectives(index, skillsLength);
+            else console.log('batch completed');
+        });
     } catch (err) {
         console.log('Error with ChatGPT API call: ' + err);
         return;
     }
 }
 
-getSkills();
+// getSkills();
 
 // Export the router for app to use.
 module.exports = router;
