@@ -67,8 +67,8 @@ async function generateLearningObjectives(index, skillsLength) {
 
     // Create prompt for ChatGPT.
     let prompt = `        
-        Generate an array (nested or not) of learning objectives for the skill ${skillName}, as further defined by ${skillMasteryRequirements}.
-        Call the array "learningObjectives".
+    Generate learning objectives for the skill ${skillName}, as further defined by ${skillMasteryRequirements}.
+    Present them in an array (nested or not) called "learningObjectives". Do not make it an array of objects.
     `;
 
     // Attempting to prevent the app from crashing if anything goes wrong with the API call.
