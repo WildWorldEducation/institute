@@ -48,6 +48,12 @@ export default {
         // },
         async SendMessage() {
             try {
+                // Add user message to messages list
+                const userMessage = {
+                    role: 'user',
+                    content: [{ text: { value: this.message } }]
+                };
+                this.messageList.push(userMessage);
                 const requestOptions = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -65,8 +71,6 @@ export default {
 
                 this.latestMessage = resData.message;
                 this.messageList.push(this.latestMessage);
-                console.log('latest message is: ');
-                console.log(this.latestMessage);
             } catch (error) {
                 console.error(error);
             }
@@ -79,6 +83,7 @@ export default {
                 this.messageList = resData.messages.data;
                 // we reverse oder of messages list because OpenAI return messages from newest to oldest
                 this.messageList.reverse();
+                console.log(this.messageList);
             } catch (error) {
                 console.error(error);
             }
@@ -97,7 +102,7 @@ export default {
     <div class="container mt-3">
         <h2 class="heading">Tutor</h2>
         <hr />
-        <div class="row w-50 mx-auto">
+        <div class="row w-50 mx-auto chat-component">
             <div
                 class="d-flex my-3"
                 :class="{ 'flex-row-reverse': message.role === 'user' }"
@@ -112,13 +117,16 @@ export default {
                     v-html="removeHTMLnotation(message.content[0].text.value)"
                 ></div>
             </div>
-            <div class="mb-3">
-                <textarea v-model="message" type="text" class="form-control" />
-            </div>
+            <div class="user-chat-div">
+                <div class="mb-3">
+                    <textarea class="" v-model="message" type="text">
+                    </textarea>
+                </div>
 
-            <button class="btn primary-btn" @click="SendMessage()">
-                Submit
-            </button>
+                <button class="btn primary-btn" @click="SendMessage()">
+                    Submit
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -136,5 +144,18 @@ export default {
     padding: 10px 15px;
     background-color: #f3f3f3;
     border-radius: 50px;
+}
+
+.chat-component {
+    max-height: 100vh;
+    overflow-y: auto;
+}
+
+.user-chat-div {
+    border-radius: 35px;
+    border: 1px solid #e8e8e8;
+    margin-left: auto;
+    margin-right: auto;
+    width: 98%;
 }
 </style>
