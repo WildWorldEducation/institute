@@ -107,7 +107,7 @@ export default {
 
             // Get learning objectives for the skill
             await this.getLearningObjectives();
-            console.log(this.skill.learningObjectives);
+
             // Meta title for SEO
             document.title = this.skill.name + ' - The Collins Institute';
 
@@ -128,89 +128,6 @@ export default {
                 '/skill-learning-objectives/' + this.skillId + '/list'
             );
             this.skill.learningObjectives = await result.json();
-            console.log(this.skill.learningObjectives);
-
-            console.log('test');
-
-            // var LearningObjective = function (id, objective, parent) {
-            //     this.id = id;
-            //     this.objective = objective;
-            //     this.parent = null;
-            //     this.children = [];
-
-            //     if (parent) {
-            //         parent.add(this);
-            //     }
-            // };
-
-            // LearningObjective.prototype.root = function () {
-            //     if (this.parent) return this.parent.root();
-            //     return this;
-            // };
-
-            // // find by id
-            // LearningObjective.prototype.find = function (id) {
-            //     if (this.id == id) return this;
-            //     var found;
-
-            //     for (var i = 0, il = this.children.length; i < il; i++) {
-            //         if ((found = this.children[i].find(id))) return found;
-            //     }
-            //     return null;
-            // };
-
-            // // create relationship
-            // LearningObjective.prototype.add = function (cat) {
-            //     cat.parent = this;
-            //     this.children.push(cat);
-            // };
-
-            // // render list for item
-            // LearningObjective.prototype.renderList = function ($parentElem) {
-            //     var $nameElem = $(
-            //         '<p><li>' + this.objective + '</li></p>'
-            //     ).appendTo($parentElem);
-            //     if (this.children.length) {
-            //         this.renderChildren($('<ul />').appendTo($nameElem));
-            //     }
-            // };
-
-            // // create child elements and add them to the parent
-            // LearningObjective.prototype.renderChildren = function (
-            //     $parentElem
-            // ) {
-            //     for (var i = 0, il = this.children.length; i < il; i++) {
-            //         this.children[i].renderList($parentElem);
-            //     }
-            // };
-
-            // function createLearningObjective(id, objective, parentId) {
-            //     root.find(parentId).add(new LearningObjective(id, objective));
-            // }
-
-            // // add items
-            // var root = new LearningObjective(this.skillId.toString(), 'root');
-
-            // // As the parent needs to be created before the children,
-            // // for it to render, we have to sort.
-            // this.skill.learningObjectives = this.skill.learningObjectives.sort(
-            //     function (a, b) {
-            //         return a.parent.localeCompare(b.parent, undefined, {
-            //             numeric: true,
-            //             sensitivity: 'base'
-            //         });
-            //     }
-            // );
-
-            // for (let i = 0; i < this.skill.learningObjectives.length; i++) {
-            //     createLearningObjective(
-            //         this.skill.learningObjectives[i].id,
-            //         this.skill.learningObjectives[i].objective,
-            //         this.skill.learningObjectives[i].parent
-            //     );
-            // }
-
-            // root.renderChildren($('#learning-objectives'));
         },
         recordSkillVisit(skillId) {
             fetch('/skills/record-visit/' + skillId);
@@ -1023,17 +940,6 @@ export default {
                             </ul>
                         </div>
                     </div>
-
-                    <!-- Mastery Requirements -->
-                    <div v-if="skill.type != 'domain'" class="mt-4">
-                        <h2 class="h4 secondary-heading">
-                            Requirements for mastery
-                        </h2>
-                        <div
-                            class="bg-white rounded p-2 mastery-requirements-section"
-                            v-html="skill.mastery_requirements"
-                        ></div>
-                    </div>
                 </div>
                 <!-- Infobox -->
                 <div class="col-md-4 order-1 order-md-2">
@@ -1402,11 +1308,6 @@ export default {
     width: 25%;
 }
 
-/* Mastery Reqruirements Section */
-::v-deep(.mastery-requirements-section p) {
-    font-family: 'Poppins', sans-serif !important;
-}
-
 /* Specific phone view css */
 @media (max-width: 576px) {
     h2 {
@@ -1474,7 +1375,6 @@ export default {
     /* Modal Content/Box */
     .modal-content {
         width: 90% !important;
-
         margin: auto;
         margin-top: 30%;
     }
