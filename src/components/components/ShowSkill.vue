@@ -45,7 +45,9 @@ export default {
         return {
             skillUrl: this.$route.params.skillUrl,
             skillId: null,
-            skill: {},
+            skill: {
+                learningObjectives: []
+            },
             userSkills: [],
             isMastered: false,
             isUnlocked: false,
@@ -80,7 +82,6 @@ export default {
         Forum,
         FlagModals
     },
-
     async created() {
         await this.getSkill();
         this.isSkillLoaded = true;
@@ -95,7 +96,6 @@ export default {
 
         if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
     },
-
     methods: {
         async getSkill() {
             // solution for image to be changed when we change it from AWS
@@ -104,8 +104,10 @@ export default {
             await this.showSkillStore.findSkill(this.skillUrl);
             this.skill = this.showSkillStore.skill;
             this.skillId = this.skill.id;
-            console.log(this.skill);
 
+            // Get learning objectives for the skill
+            await this.getLearningObjectives();
+            console.log(this.skill.learningObjectives);
             // Meta title for SEO
             document.title = this.skill.name + ' - The Collins Institute';
 
@@ -120,6 +122,90 @@ export default {
             // Record that the user visited this skill.
             if (this.userDetailsStore.role == 'student')
                 this.recordSkillVisit(this.skillId);
+        },
+        async getLearningObjectives() {
+            const result = await fetch(
+                '/skill-learning-objectives/' + this.skillId + '/list'
+            );
+            this.skill.learningObjectives = await result.json();
+
+            var LearningObjective = function (id, objective, parent) {
+                this.id = id;
+                this.objective = objective;
+                this.parent = null;
+                this.children = [];
+
+                if (parent) {
+                    parent.add(this);
+                }
+            };
+
+            LearningObjective.prototype.root = function () {
+                if (this.parent) return this.parent.root();
+                return this;
+            };
+
+            // find by id
+            LearningObjective.prototype.find = function (id) {
+                if (this.id == id) return this;
+                var found;
+
+                for (var i = 0, il = this.children.length; i < il; i++) {
+                    if ((found = this.children[i].find(id))) return found;
+                }
+                return null;
+            };
+
+            // create relationship
+            LearningObjective.prototype.add = function (cat) {
+                cat.parent = this;
+                this.children.push(cat);
+            };
+
+            // render list for item
+            LearningObjective.prototype.renderList = function ($parentElem) {
+                var $nameElem = $('<li>' + this.objective + '</li>').appendTo(
+                    $parentElem
+                );
+                if (this.children.length) {
+                    this.renderChildren($('<ul />').appendTo($nameElem));
+                }
+            };
+
+            // create child elements and add them to the parent
+            LearningObjective.prototype.renderChildren = function (
+                $parentElem
+            ) {
+                for (var i = 0, il = this.children.length; i < il; i++) {
+                    this.children[i].renderList($parentElem);
+                }
+            };
+
+            function createLearningObjective(id, objective, parentId) {
+                root.find(parentId).add(new LearningObjective(id, objective));
+            }
+
+            // add items
+            var root = new LearningObjective(this.skillId.toString(), 'root');
+
+            this.skill.learningObjectives = this.skill.learningObjectives.sort(
+                function (a, b) {
+                    return a.parent.localeCompare(b.parent, undefined, {
+                        numeric: true,
+                        sensitivity: 'base'
+                    });
+                }
+            );
+
+            for (let i = 0; i < this.skill.learningObjectives.length; i++) {
+                createLearningObjective(
+                    this.skill.learningObjectives[i].id,
+                    this.skill.learningObjectives[i].objective,
+                    this.skill.learningObjectives[i].parent
+                );
+            }
+
+            root.renderChildren($('#learning-objectives'));
         },
         recordSkillVisit(skillId) {
             fetch('/skills/record-visit/' + skillId);
@@ -913,6 +999,16 @@ export default {
                             class="bg-white rounded p-2"
                             v-html="skill.introduction"
                         ></div>
+                    </div>
+
+                    <!-- Learning Objectives -->
+                    <div v-if="skill.type != 'domain'" class="mt-4">
+                        <h2 class="h4 secondary-heading">
+                            Learning Objectives
+                        </h2>
+                        <div class="bg-white rounded p-2">
+                            <ul id="learning-objectives"></ul>
+                        </div>
                     </div>
 
                     <!-- Mastery Requirements -->

@@ -26,6 +26,30 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
+/**
+ * List Items
+ */
+router.get('/:skillId/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT * 
+        FROM skill_learning_objectives
+        WHERE skill_id = ${conn.escape(req.params.skillId)}`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+// Generate Learning Objectives
 let skills;
 let skillsLength;
 function getSkills() {
