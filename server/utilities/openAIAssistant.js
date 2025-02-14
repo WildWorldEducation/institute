@@ -110,17 +110,11 @@ async function getAssistantData(userId, skillUrl) {
 /**
  *
  * get user assistant data of the skill
- * @param {string} userId 
- * @param {string} skillId
- * @return {*} 
+ * @param {string} threadId
+ * @return {object} message List 
  */
-async function getMessagesList(userId, skillUrl) {
+async function getMessagesList(threadId) {
     try {
-        let queryString = `SELECT * 
-                           FROM user_assistant_messages 
-                           WHERE user_assistant_messages.user_id = ${conn.escape(userId)} AND user_assistant_messages.skill_url = ${conn.escape(skillUrl)}`
-        const result = await query(queryString);
-        const threadId = result[0].thread_id;
         const messages = await openai.beta.threads.messages.list(threadId);
         return messages
     } catch (error) {
@@ -128,5 +122,24 @@ async function getMessagesList(userId, skillUrl) {
     }
 }
 
-module.exports = { initialAssistant, processingNewMessage, saveAssistantData, getAssistantData, getMessagesList }
+/**
+ *
+ * get user assistant data of the skill
+ * @param {string} userId
+ * @param {string} userId
+ * @return {object} database data 
+ */
+async function getAssistantData(userId, skillUrl) {
+    try {
+        let queryString = `SELECT * 
+                           FROM user_assistant_messages 
+                           WHERE user_assistant_messages.user_id = ${conn.escape(userId)} AND user_assistant_messages.skill_url = ${conn.escape(skillUrl)}`
+        const result = await query(queryString);
+        return result
+    } catch (error) {
+        throw error
+    }
+}
+
+module.exports = { initialAssistant, processingNewMessage, saveAssistantData, getAssistantData, getMessagesList, getAssistantData }
 

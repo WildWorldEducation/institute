@@ -111,7 +111,19 @@ router.get('/messages-list', isAuthenticated, async (req, res, next) => {
     try {
         const userId = req.query.userId;
         const skillUrl = req.query.skillUrl;
-        const messages = await getMessagesList(userId, skillUrl);
+        let assistantData = await getAssistantData(userId, skillUrl);
+        // Handle no assistant data case
+        if (assistantData.length === 0) {
+            const newAssistant = await initialAssistant();
+            assistantData = [{
+                userId: req.body.userId,
+                skillUrl: req.body.skillUrl,
+                assistantId: newAssistant.assistant.id,
+                threadId: newAssistant.thread.id
+            }];
+            await saveAssistantData(assistantData[0]);
+        }
+        const messages = await getMessagesList(assistantData[0].thread_id);
         res.json({ messages: messages })
     } catch (error) {
         console.error(error)
@@ -122,5 +134,9 @@ router.get('/messages-list', isAuthenticated, async (req, res, next) => {
 
 
 
+
+
 // Export the router for app to use.
 module.exports = router;
+
+
