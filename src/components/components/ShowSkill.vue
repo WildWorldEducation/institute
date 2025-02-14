@@ -128,86 +128,89 @@ export default {
                 '/skill-learning-objectives/' + this.skillId + '/list'
             );
             this.skill.learningObjectives = await result.json();
+            console.log(this.skill.learningObjectives);
 
-            var LearningObjective = function (id, objective, parent) {
-                this.id = id;
-                this.objective = objective;
-                this.parent = null;
-                this.children = [];
+            console.log('test');
 
-                if (parent) {
-                    parent.add(this);
-                }
-            };
+            // var LearningObjective = function (id, objective, parent) {
+            //     this.id = id;
+            //     this.objective = objective;
+            //     this.parent = null;
+            //     this.children = [];
 
-            LearningObjective.prototype.root = function () {
-                if (this.parent) return this.parent.root();
-                return this;
-            };
+            //     if (parent) {
+            //         parent.add(this);
+            //     }
+            // };
 
-            // find by id
-            LearningObjective.prototype.find = function (id) {
-                if (this.id == id) return this;
-                var found;
+            // LearningObjective.prototype.root = function () {
+            //     if (this.parent) return this.parent.root();
+            //     return this;
+            // };
 
-                for (var i = 0, il = this.children.length; i < il; i++) {
-                    if ((found = this.children[i].find(id))) return found;
-                }
-                return null;
-            };
+            // // find by id
+            // LearningObjective.prototype.find = function (id) {
+            //     if (this.id == id) return this;
+            //     var found;
 
-            // create relationship
-            LearningObjective.prototype.add = function (cat) {
-                cat.parent = this;
-                this.children.push(cat);
-            };
+            //     for (var i = 0, il = this.children.length; i < il; i++) {
+            //         if ((found = this.children[i].find(id))) return found;
+            //     }
+            //     return null;
+            // };
 
-            // render list for item
-            LearningObjective.prototype.renderList = function ($parentElem) {
-                var $nameElem = $(
-                    '<p><li>' + this.objective + '</li></p>'
-                ).appendTo($parentElem);
-                if (this.children.length) {
-                    this.renderChildren($('<ul />').appendTo($nameElem));
-                }
-            };
+            // // create relationship
+            // LearningObjective.prototype.add = function (cat) {
+            //     cat.parent = this;
+            //     this.children.push(cat);
+            // };
 
-            // create child elements and add them to the parent
-            LearningObjective.prototype.renderChildren = function (
-                $parentElem
-            ) {
-                for (var i = 0, il = this.children.length; i < il; i++) {
-                    this.children[i].renderList($parentElem);
-                }
-            };
+            // // render list for item
+            // LearningObjective.prototype.renderList = function ($parentElem) {
+            //     var $nameElem = $(
+            //         '<p><li>' + this.objective + '</li></p>'
+            //     ).appendTo($parentElem);
+            //     if (this.children.length) {
+            //         this.renderChildren($('<ul />').appendTo($nameElem));
+            //     }
+            // };
 
-            function createLearningObjective(id, objective, parentId) {
-                root.find(parentId).add(new LearningObjective(id, objective));
-            }
+            // // create child elements and add them to the parent
+            // LearningObjective.prototype.renderChildren = function (
+            //     $parentElem
+            // ) {
+            //     for (var i = 0, il = this.children.length; i < il; i++) {
+            //         this.children[i].renderList($parentElem);
+            //     }
+            // };
 
-            // add items
-            var root = new LearningObjective(this.skillId.toString(), 'root');
+            // function createLearningObjective(id, objective, parentId) {
+            //     root.find(parentId).add(new LearningObjective(id, objective));
+            // }
 
-            // As the parent needs to be created before the children,
-            // for it to render, we have to sort.
-            this.skill.learningObjectives = this.skill.learningObjectives.sort(
-                function (a, b) {
-                    return a.parent.localeCompare(b.parent, undefined, {
-                        numeric: true,
-                        sensitivity: 'base'
-                    });
-                }
-            );
+            // // add items
+            // var root = new LearningObjective(this.skillId.toString(), 'root');
 
-            for (let i = 0; i < this.skill.learningObjectives.length; i++) {
-                createLearningObjective(
-                    this.skill.learningObjectives[i].id,
-                    this.skill.learningObjectives[i].objective,
-                    this.skill.learningObjectives[i].parent
-                );
-            }
+            // // As the parent needs to be created before the children,
+            // // for it to render, we have to sort.
+            // this.skill.learningObjectives = this.skill.learningObjectives.sort(
+            //     function (a, b) {
+            //         return a.parent.localeCompare(b.parent, undefined, {
+            //             numeric: true,
+            //             sensitivity: 'base'
+            //         });
+            //     }
+            // );
 
-            root.renderChildren($('#learning-objectives'));
+            // for (let i = 0; i < this.skill.learningObjectives.length; i++) {
+            //     createLearningObjective(
+            //         this.skill.learningObjectives[i].id,
+            //         this.skill.learningObjectives[i].objective,
+            //         this.skill.learningObjectives[i].parent
+            //     );
+            // }
+
+            // root.renderChildren($('#learning-objectives'));
         },
         recordSkillVisit(skillId) {
             fetch('/skills/record-visit/' + skillId);
@@ -1009,7 +1012,15 @@ export default {
                             Learning Objectives
                         </h2>
                         <div class="bg-white rounded p-2">
-                            <ul id="learning-objectives"></ul>
+                            <ul>
+                                <li
+                                    v-for="learningObjective in skill.learningObjectives"
+                                >
+                                    <p>
+                                        {{ learningObjective.objective }}
+                                    </p>
+                                </li>
+                            </ul>
                         </div>
                     </div>
 

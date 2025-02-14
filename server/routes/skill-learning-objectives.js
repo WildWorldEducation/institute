@@ -56,7 +56,7 @@ function getSkills() {
     let sqlQuery = `SELECT id, level, name, mastery_requirements FROM skills
     WHERE is_deleted = 0
     AND type <> 'domain'
-    AND id BETWEEN 40 AND 50`;
+    AND id BETWEEN 0 AND 50`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -81,6 +81,15 @@ function getSkills() {
 async function generateLearningObjectives(outerIndex, skillsLength) {
     let skillId = skills[outerIndex].id;
     let skillName = skills[outerIndex].name;
+
+    let levelCode = skills[outerIndex].level;
+    let level = '';
+
+    if (levelCode == 'grade_school') level = 'grade school';
+    else if (levelCode == 'middle_school') level = 'middle school';
+    else if (levelCode == 'high_school') level = 'high school';
+    else level = levelCode;
+
     // Remove HTML formatting from mastery requirements.
     let skillMasteryRequirements;
     if (skills[outerIndex].mastery_requirements) {
@@ -91,16 +100,19 @@ async function generateLearningObjectives(outerIndex, skillsLength) {
 
     // Create prompt for ChatGPT.
     let prompt = `        
-    Generate learning objectives for the skill ${skillName}, as further defined by ${skillMasteryRequirements}.
-    Present them in an array (nested where necessary) called "learningObjectives". Do not make it an array of objects.
+    Generate learning objectives for the subject ${skillName} for a ${level} level student.
+    Present them in an array called "learningObjectives". Do not include any objects.
+    Begin each learning objective with the relevant verb.
     `;
+
+    //console.log(prompt);
 
     // Attempting to prevent the app from crashing if anything goes wrong with the API call.
     // ie, error handling.
     try {
         console.log('Get learning objectives for: ' + skillName);
 
-        let content = `You are a curriculum designer creating learning objectives for school or college assessments.`;
+        let content = `You are a teacher creating learning objectives for ${level} students.`;
         const completion = await openai.chat.completions.create({
             messages: [
                 { role: 'system', content: content },
@@ -119,42 +131,38 @@ async function generateLearningObjectives(outerIndex, skillsLength) {
         }
         // Convert string to object.       ;
         let learningObjectivesObject = JSON.parse(responseJSON);
-        let unformattedLearningObjectives =
-            learningObjectivesObject.learningObjectives;
-        let learningObjectives = [];
+        let learningObjectives = learningObjectivesObject.learningObjectives;
 
         // Recursive function
-        async function createObjectives(index, array, parent) {
-            for (let i = 0; i < array.length; i++) {
-                index++;
-                if (Array.isArray(array[i])) {
-                    await createObjectives(
-                        index,
-                        array[i],
-                        skillId + '-' + (index - 1) + '-' + (i - 1)
-                    );
-                    continue;
-                }
-                learningObjectives.push({
-                    id: skillId + '-' + index + '-' + i,
-                    skillId: skillId,
-                    parent: parent,
-                    objective: array[i]
-                });
-            }
-        }
+        // async function createObjectives(index, array, parent) {
+        //     for (let i = 0; i < array.length; i++) {
+        //         index++;
+        //         if (Array.isArray(array[i])) {
+        //             await createObjectives(
+        //                 index,
+        //                 array[i],
+        //                 skillId + '-' + (index - 1) + '-' + (i - 1)
+        //             );
+        //             continue;
+        //         }
+        //         learningObjectives.push({
+        //             id: skillId + '-' + index + '-' + i,
+        //             skillId: skillId,
+        //             parent: parent,
+        //             objective: array[i]
+        //         });
+        //     }
+        // }
 
-        let index = 0;
-        let parent = skillId;
-        await createObjectives(index, unformattedLearningObjectives, parent);
+        // let index = 0;
+        // let parent = skillId;
+        // await createObjectives(index, unformattedLearningObjectives, parent);
 
-        console.log(learningObjectives);
+        //    console.log(learningObjectives);
 
         // Format for SQL
         for (let i = 0; i < learningObjectives.length; i++) {
-            learningObjectives[i].objective = learningObjectives[
-                i
-            ].objective.replace(/"/g, "'");
+            learningObjectives[i] = learningObjectives[i].replace(/"/g, "'");
         }
 
         function queryPromise(query) {
@@ -172,8 +180,8 @@ async function generateLearningObjectives(outerIndex, skillsLength) {
             await Promise.all(
                 learningObjectives.map((_, i) => {
                     return queryPromise(
-                        `INSERT INTO skill_learning_objectives (id, skill_id, parent, objective)
-                         VALUES ("${learningObjectives[i].id}", ${learningObjectives[i].skillId}, "${learningObjectives[i].parent}", "${learningObjectives[i].objective}" )`
+                        `INSERT INTO skill_learning_objectives (skill_id, objective)
+                         VALUES ("${skillId}", "${learningObjectives[i]}" )`
                     );
                 })
             );
@@ -188,7 +196,7 @@ async function generateLearningObjectives(outerIndex, skillsLength) {
     }
 }
 
-// getSkills();
+//getSkills();
 
 // Export the router for app to use.
 module.exports = router;
