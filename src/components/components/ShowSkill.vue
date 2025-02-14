@@ -164,9 +164,9 @@ export default {
 
             // render list for item
             LearningObjective.prototype.renderList = function ($parentElem) {
-                var $nameElem = $('<li>' + this.objective + '</li>').appendTo(
-                    $parentElem
-                );
+                var $nameElem = $(
+                    '<p><li>' + this.objective + '</li></p>'
+                ).appendTo($parentElem);
                 if (this.children.length) {
                     this.renderChildren($('<ul />').appendTo($nameElem));
                 }
@@ -188,6 +188,8 @@ export default {
             // add items
             var root = new LearningObjective(this.skillId.toString(), 'root');
 
+            // As the parent needs to be created before the children,
+            // for it to render, we have to sort.
             this.skill.learningObjectives = this.skill.learningObjectives.sort(
                 function (a, b) {
                     return a.parent.localeCompare(b.parent, undefined, {
