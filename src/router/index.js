@@ -112,6 +112,15 @@ const router = createRouter({
             component: () =>
                 import('../components/pages/ShowSkillRevisionView.vue')
         },
+        // Learning Objectives
+        {
+            path: '/skills/:skillUrl/learning-objectives',
+            name: 'list-learning-objectives',
+            component: () =>
+                import(
+                    '../components/pages/learning-objectives/ListLearningObjectivesView.vue'
+                )
+        },
         {
             path: '/skills/:id/question-bank/add',
             name: 'add-question',

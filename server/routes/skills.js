@@ -636,8 +636,7 @@ router.get('/url/:skillUrl', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     // Get skill.
-    const sqlQuery = `SELECT 
-                        s.*,
+    const sqlQuery = `SELECT s.id, s.name, s.url, s.parent, s.introduction, s.type, s.level, s.image_thumbnail_url, s.mastery_requirements,
                         parent_skill.type AS parent_type
                     FROM 
                         skills AS s
