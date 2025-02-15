@@ -40,16 +40,17 @@ export default {
 <style scoped>
 /* HTML: <div class="loader"></div> */
 .loader {
-    width: 120px;
-    height: 15px;
-    -webkit-mask: radial-gradient(circle closest-side, #000 94%, #0000) left/20%
-        100%;
-    background: linear-gradient(#000 0 0) left/0% 100% no-repeat #ddd;
-    animation: l17 2s infinite steps(6);
+    width: 60px;
+    height: 10px;
+    aspect-ratio: 4;
+    background: radial-gradient(circle closest-side, #acacac 90%, #0000) 0 /
+        calc(100% / 3) 100% space;
+    clip-path: inset(0 100% 0 0);
+    animation: l1 1.5s steps(4) infinite;
 }
-@keyframes l17 {
-    100% {
-        background-size: 120% 100%;
+@keyframes l1 {
+    to {
+        clip-path: inset(0 -34% 0 0);
     }
 }
 </style>
