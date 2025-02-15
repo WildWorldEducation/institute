@@ -940,6 +940,17 @@ export default {
                             </ul>
                         </div>
                     </div>
+
+                    <!-- Mastery Requirements -->
+                    <div v-if="skill.type != 'domain'" class="mt-4">
+                        <h2 class="h4 secondary-heading">
+                            Requirements for Mastery
+                        </h2>
+                        <div
+                            class="bg-white rounded p-2 mastery-requirements-section"
+                            v-html="skill.mastery_requirements"
+                        ></div>
+                    </div>
                 </div>
                 <!-- Infobox -->
                 <div class="col-md-4 order-1 order-md-2">
@@ -1244,6 +1255,11 @@ export default {
 </template>
 
 <style scoped>
+/* Mastery Reqruirements Section */
+::v-deep(.mastery-requirements-section p) {
+    font-family: 'Poppins', sans-serif !important;
+}
+
 /* Tooltips */
 .info-panel {
     border-color: var(--primary-color);
