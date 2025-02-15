@@ -1,6 +1,7 @@
 <script>
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import SendIconLoadingSymbol from './ai-tutor/sendIconLoadingSymbol.vue';
+import TutorLoadingSymbol from './ai-tutor/tutorLoadingSymbol.vue';
 
 export default {
     setup() {
@@ -11,44 +12,25 @@ export default {
         };
     },
     props: ['skillName', 'skillUrl'],
-    components: { SendIconLoadingSymbol },
+    components: { SendIconLoadingSymbol, TutorLoadingSymbol },
     data() {
         return {
             message: '',
             previousMessages: [],
             latestMessage: '',
             messageList: [],
-            waitForAIresponse: false
+            waitForAIresponse: true
         };
     },
     mounted() {
         console.log(this.userDetailsStore.userId);
         this.getMessagesList();
     },
+    updated() {
+        this.scrollToMessageInput();
+    },
     computed: {},
     methods: {
-        // SendMessage() {
-        //     const requestOptions = {
-        //         method: 'POST',
-        //         headers: { 'Content-Type': 'application/json' },
-        //         body: JSON.stringify({
-        //             message: this.message,
-        //             userName: this.userDetailsStore.userName,
-        //             skillName: this.skillName
-        //         })
-        //     };
-        //     var url = '/ai-tutor/new-message';
-        //     fetch(url, requestOptions)
-        //         .then((response) => {
-        //             return response.json();
-        //         })
-        //         .then((data) => {
-        //             for (let i = 0; i < data.message.length; i++) {
-        //                 console.log(data.message[i].content[0].text);
-        //                 this.previousMessages.push(data.message[i]);
-        //             }
-        //         });
-        // },
         async SendMessage() {
             this.waitForAIresponse = true;
             try {
@@ -86,14 +68,13 @@ export default {
                 const url = `/ai-tutor/messages-list?userId=${encodeURIComponent(
                     this.userDetailsStore.userId
                 )}&skillUrl=${encodeURIComponent(this.skillUrl)}`;
-                console.log('url to send: ');
-                console.log(url);
+
                 const response = await fetch(url);
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
                 // we reverse oder of messages list because OpenAI return messages from newest to oldest
                 this.messageList.reverse();
-                console.log(this.messageList);
+                this.$nextTick(this.scrollToMessageInput());
             } catch (error) {
                 console.error(error);
             }
@@ -103,6 +84,13 @@ export default {
             let result = string.replace(/```html/g, '');
             result = result.replace(/```/g, '');
             return result;
+        },
+        scrollToMessageInput() {
+            let inputMessage = this.$refs.messageInput;
+            inputMessage.scrollTop = inputMessage.scrollHeight;
+        },
+        smoothScrollToMessageInput() {
+            let inputMessage = this.$refs.messageInput;
         }
     },
     watch: {
@@ -136,9 +124,15 @@ export default {
 
 <template>
     <div class="container mt-3">
+        <div>{{ skillUrl }}</div>
+        <div>{{ userDetailsStore.userId }}</div>
         <h2 class="heading">Tutor</h2>
         <hr />
-        <div class="d-flex flex-column w-50 mx-auto chat-component">
+        <div
+            class="d-flex flex-column w-50 mx-auto chat-component"
+            id="message-input"
+            ref="messageInput"
+        >
             <div
                 class="d-flex my-3"
                 :class="{ 'flex-row-reverse': message.role === 'user' }"
@@ -152,6 +146,9 @@ export default {
                     class="tutor-conversation"
                     v-html="removeHTMLnotation(message.content[0].text.value)"
                 ></div>
+            </div>
+            <div class="ai-tutor-processing" v-if="waitForAIresponse">
+                <TutorLoadingSymbol />
             </div>
             <div class="user-chat-div">
                 <textarea
@@ -189,6 +186,13 @@ export default {
 <style scoped>
 .tutor-conversation {
     font-family: 'Poppins', sans-serif;
+}
+
+.ai-tutor-processing {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    min-width: 35%;
 }
 
 :deep(h1) {
