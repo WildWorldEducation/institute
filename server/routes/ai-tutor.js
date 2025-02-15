@@ -116,12 +116,15 @@ router.get('/messages-list', isAuthenticated, async (req, res, next) => {
         if (assistantData.length === 0) {
             const newAssistant = await initialAssistant();
             assistantData = [{
-                userId: req.body.userId,
-                skillUrl: req.body.skillUrl,
+                userId: userId,
+                skillUrl: skillUrl,
                 assistantId: newAssistant.assistant.id,
                 threadId: newAssistant.thread.id
             }];
             await saveAssistantData(assistantData[0]);
+            const messages = await getMessagesList(assistantData.threadId);
+            res.json({ messages: messages });
+            return
         }
         const messages = await getMessagesList(assistantData[0].thread_id);
         res.json({ messages: messages })

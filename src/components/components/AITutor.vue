@@ -1,6 +1,7 @@
 <script>
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import SendIconLoadingSymbol from './ai-tutor/sendIconLoadingSymbol.vue';
+import TutorLoadingSymbol from './ai-tutor/tutorLoadingSymbol.vue';
 
 export default {
     setup() {
@@ -11,7 +12,7 @@ export default {
         };
     },
     props: ['skillName', 'skillUrl'],
-    components: { SendIconLoadingSymbol },
+    components: { SendIconLoadingSymbol, TutorLoadingSymbol },
     data() {
         return {
             message: '',
@@ -26,7 +27,7 @@ export default {
         this.getMessagesList();
     },
     updated() {
-        this.scrollToChatInput();
+        this.scrollToMessageInput();
     },
     computed: {},
     methods: {
@@ -67,15 +68,13 @@ export default {
                 const url = `/ai-tutor/messages-list?userId=${encodeURIComponent(
                     this.userDetailsStore.userId
                 )}&skillUrl=${encodeURIComponent(this.skillUrl)}`;
-                console.log('url to send: ');
-                console.log(url);
+
                 const response = await fetch(url);
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
                 // we reverse oder of messages list because OpenAI return messages from newest to oldest
                 this.messageList.reverse();
-                // scroll the chat div to the bottom
-                this.$nextTick(this.scrollToChatInput());
+                this.$nextTick(this.scrollToMessageInput());
             } catch (error) {
                 console.error(error);
             }
@@ -86,11 +85,12 @@ export default {
             result = result.replace(/```/g, '');
             return result;
         },
-        scrollToChatInput() {
-            const chatElement = this.$refs.messageInput;
-            if (chatElement) {
-                chatElement.scrollTop = chatElement.scrollHeight;
-            }
+        scrollToMessageInput() {
+            let inputMessage = this.$refs.messageInput;
+            inputMessage.scrollTop = inputMessage.scrollHeight;
+        },
+        smoothScrollToMessageInput() {
+            let inputMessage = this.$refs.messageInput;
         }
     },
     watch: {
@@ -124,9 +124,15 @@ export default {
 
 <template>
     <div class="container mt-3">
+        <div>{{ skillUrl }}</div>
+        <div>{{ userDetailsStore.userId }}</div>
         <h2 class="heading">Tutor</h2>
         <hr />
-        <div class="d-flex flex-column w-75 mx-auto chat-component">
+        <div
+            class="d-flex flex-column w-50 mx-auto chat-component"
+            id="message-input"
+            ref="messageInput"
+        >
             <div
                 class="d-flex my-3"
                 :class="{ 'flex-row-reverse': message.role === 'user' }"
@@ -140,6 +146,21 @@ export default {
                     class="tutor-conversation"
                     v-html="removeHTMLnotation(message.content[0].text.value)"
                 ></div>
+            </div>
+            <div class="ai-tutor-processing" v-if="waitForAIresponse">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 640 512"
+                    width="18"
+                    height="18"
+                    fill="black"
+                >
+                    <path
+                        d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
+                    />
+                </svg>
+                Thinking
+                <TutorLoadingSymbol />
             </div>
             <div class="user-chat-div">
                 <textarea
@@ -178,6 +199,18 @@ export default {
 <style scoped>
 .tutor-conversation {
     font-family: 'Poppins', sans-serif;
+}
+
+.ai-tutor-processing {
+    display: flex;
+    width: fit-content;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    border-radius: 25px;
+    border: 1px solid #acacac;
+    padding: 5px 10px;
+    margin-bottom: 15px;
 }
 
 :deep(h1) {
