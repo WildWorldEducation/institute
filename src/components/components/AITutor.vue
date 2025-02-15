@@ -74,6 +74,7 @@ export default {
                 this.messageList = resData.messages.data;
                 // we reverse oder of messages list because OpenAI return messages from newest to oldest
                 this.messageList.reverse();
+                console.log(this.messageList);
                 this.$nextTick(this.scrollToMessageInput());
             } catch (error) {
                 console.error(error);
@@ -86,7 +87,7 @@ export default {
             return result;
         },
         scrollToMessageInput() {
-            let inputMessage = this.$refs.messageInput;
+            let inputMessage = this.$refs.messageInputDiv;
             inputMessage.scrollTop = inputMessage.scrollHeight;
         },
         smoothScrollToMessageInput() {
@@ -129,9 +130,8 @@ export default {
         <h2 class="heading">Tutor</h2>
         <hr />
         <div
-            class="d-flex flex-column w-50 mx-auto chat-component"
-            id="message-input"
-            ref="messageInput"
+            class="d-flex flex-column w-75 mx-auto chat-component"
+            ref="messageInputDiv"
         >
             <div
                 class="d-flex my-3"
@@ -142,7 +142,10 @@ export default {
                     {{ message.content[0].text.value }}
                 </div>
                 <div
-                    v-else
+                    v-else-if="
+                        message.role === 'assistant' &&
+                        message.content[0].type == 'text'
+                    "
                     class="tutor-conversation"
                     v-html="removeHTMLnotation(message.content[0].text.value)"
                 ></div>
