@@ -23,7 +23,6 @@ export default {
         };
     },
     mounted() {
-        console.log(this.userDetailsStore.userId);
         this.getMessagesList();
     },
     updated() {
@@ -74,7 +73,7 @@ export default {
                 this.messageList = resData.messages.data;
                 // we reverse oder of messages list because OpenAI return messages from newest to oldest
                 this.messageList.reverse();
-                console.log(this.messageList);
+
                 this.$nextTick(this.scrollToMessageInput());
             } catch (error) {
                 console.error(error);
@@ -125,8 +124,6 @@ export default {
 
 <template>
     <div class="container mt-3">
-        <div>{{ skillUrl }}</div>
-        <div>{{ userDetailsStore.userId }}</div>
         <h2 class="heading">Tutor</h2>
         <hr />
         <div
