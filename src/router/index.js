@@ -480,7 +480,7 @@ router.beforeEach(async (to, from, next) => {
         from.name == 'student-signup' ||
         from.name == 'editor-signup'
     ) {
-        // Kids theme
+        // Instructor theme
         if (userDetailsStore.theme == 'instructor') {
             document.body.classList.remove('editor-theme');
             document.body.classList.add('instructor-theme');
@@ -495,19 +495,19 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // Checking if skill is unlocked before allowing student to take assessment.
-    if (to.name == 'assessment') {
-        const userSkillsStore = useUserSkillsStore();
+    // if (to.name == 'assessment') {
+    //     const userSkillsStore = useUserSkillsStore();
 
-        await userSkillsStore.getUnnestedList(userDetailsStore.userId);
-        const currentSkill = userSkillsStore.unnestedList.find(
-            (item) => item.id == to.params.id
-        );
+    //     await userSkillsStore.getUnnestedList(userDetailsStore.userId);
+    //     const currentSkill = userSkillsStore.unnestedList.find(
+    //         (item) => item.id == to.params.id
+    //     );
 
-        if (currentSkill.is_accessible != 1 || currentSkill.is_mastered == 1) {
-            next({ path: '/skills/' + to.params.id });
-            return;
-        }
-    }
+    //     if (currentSkill.is_accessible != 1 || currentSkill.is_mastered == 1) {
+    //         next({ path: '/skills/' + to.params.id });
+    //         return;
+    //     }
+    // }
 
     if (to.name == 'show-skill') {
         const skillsStore = useSkillsStore();
