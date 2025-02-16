@@ -92,7 +92,7 @@ export default {
             await this.skillTreeStore.getVerticalTreeUserSkills(
                 this.userDetailsStore.gradeFilter,
                 this.userDetailsStore.subjectFilters,
-                this.userDetailsStore.isUnlockedSkillsOnlyFilter
+                0
             );
         }
 
@@ -999,7 +999,7 @@ export default {
             await this.skillTreeStore.getVerticalTreeUserSkills(
                 this.userDetailsStore.gradeFilter,
                 this.userDetailsStore.subjectFilters,
-                this.userDetailsStore.isUnlockedSkillsOnlyFilter
+                0
             );
 
             // If the student clicks a button on the grade level key,
@@ -1154,103 +1154,100 @@ export default {
         },
         drawNodeCircle(ctx, node) {
             const ctx1 = ctx;
-            
-                // Node size
-                let radius;
-                if (node.data.type == 'sub') {
-                    radius = 7.5;
-                } else {
-                    radius = 10;
-                }
 
-                ctx1.beginPath();
-                ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
-                // get the color associate with skill level
-                const skillColor = node.data.level
-                    ? this.hexColor(node.data.level)
-                    : '#000';
+            // Node size
+            let radius;
+            if (node.data.type == 'sub') {
+                radius = 7.5;
+            } else {
+                radius = 10;
+            }
 
-                // If mastered, make a solid shape.
-                if (node.data.is_mastered == 1) {
-                    ctx1.fillStyle = skillColor;
-                    ctx1.fill();
-                    const outlineColor = this.hexBorderColor(node.data.level);
-                    ctx1.lineWidth = 2;
-                    ctx1.strokeStyle = outlineColor;
-                    ctx1.stroke();
-                }
-                // If not, just an outline.
-                else {
-                    ctx1.lineWidth = 2;
-                    ctx1.fillStyle = '#FFF';
-                    ctx1.fill();
-                    ctx1.strokeStyle = skillColor;
-                    ctx1.stroke();
-                }
-                
+            ctx1.beginPath();
+            ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
+            // get the color associate with skill level
+            const skillColor = node.data.level
+                ? this.hexColor(node.data.level)
+                : '#000';
+
+            // If mastered, make a solid shape.
+            if (node.data.is_mastered == 1) {
+                ctx1.fillStyle = skillColor;
+                ctx1.fill();
+                const outlineColor = this.hexBorderColor(node.data.level);
+                ctx1.lineWidth = 2;
+                ctx1.strokeStyle = outlineColor;
+                ctx1.stroke();
+            }
+            // If not, just an outline.
+            else {
+                ctx1.lineWidth = 2;
+                ctx1.fillStyle = '#FFF';
+                ctx1.fill();
+                ctx1.strokeStyle = skillColor;
+                ctx1.stroke();
+            }
         },
         drawNodeOnHiddenCanvas(ctx, node) {
             const ctx2 = ctx;
 
-                ctx2.beginPath();
-                ctx2.moveTo(node.y, node.x);
-                //ctx2.arc(node.y, node.x, 20, 0, 2 * Math.PI);
-                let xPosition = node.y;
-                if (node.data.children.length > 0) {
-                    xPosition = xPosition - 180;
-                }
-                ctx2.roundRect(xPosition, node.x - 20, 180, 40, 20);
+            ctx2.beginPath();
+            ctx2.moveTo(node.y, node.x);
+            //ctx2.arc(node.y, node.x, 20, 0, 2 * Math.PI);
+            let xPosition = node.y;
+            if (node.data.children.length > 0) {
+                xPosition = xPosition - 180;
+            }
+            ctx2.roundRect(xPosition, node.x - 20, 180, 40, 20);
 
-                ctx2.fill();
-            
+            ctx2.fill();
         },
         // Draw round rectangle node
         drawRoundRectNode(ctx, node) {
             const ctx1 = ctx;
-           
-                // Node size
-                let radius;
-                if (node.data.type == 'sub') {
-                    radius = 7.5;
+
+            // Node size
+            let radius;
+            if (node.data.type == 'sub') {
+                radius = 7.5;
+            } else {
+                radius = 10;
+            }
+
+            ctx1.beginPath();
+            // ctx1.arc(node.y, node.x, radius * 1.5, 0, 2 * Math.PI);
+            let xPosition = node.y;
+            if (node.data.children.length > 0) {
+                xPosition = xPosition - 180;
+            }
+            ctx1.roundRect(xPosition, node.x - 20, 180, 40, 20);
+            // get the color associate with skill level
+            const skillColor = node.data.level
+                ? this.hexColor(node.data.level)
+                : '#000';
+
+            // If mastered, make a solid shape.
+            if (node.data.is_mastered == 1) {
+                ctx1.fillStyle = skillColor;
+                ctx1.fill();
+                const outlineColor = this.hexBorderColor(node.data.level);
+                ctx1.lineWidth = 2;
+                ctx1.strokeStyle = outlineColor;
+                ctx1.stroke();
+            }
+
+            // If not, just an outline.
+            else {
+                ctx1.lineWidth = 4;
+                if (node.data.type == 'domain') {
+                    ctx1.fillStyle = '#eee';
                 } else {
-                    radius = 10;
+                    ctx1.fillStyle = '#fff';
                 }
-
-                ctx1.beginPath();
-                // ctx1.arc(node.y, node.x, radius * 1.5, 0, 2 * Math.PI);
-                let xPosition = node.y;
-                if (node.data.children.length > 0) {
-                    xPosition = xPosition - 180;
-                }
-                ctx1.roundRect(xPosition, node.x - 20, 180, 40, 20);
-                // get the color associate with skill level
-                const skillColor = node.data.level
-                    ? this.hexColor(node.data.level)
-                    : '#000';
-
-                // If mastered, make a solid shape.
-                if (node.data.is_mastered == 1) {
-                    ctx1.fillStyle = skillColor;
-                    ctx1.fill();
-                    const outlineColor = this.hexBorderColor(node.data.level);
-                    ctx1.lineWidth = 2;
-                    ctx1.strokeStyle = outlineColor;
-                    ctx1.stroke();
-                }
-
-                // If not, just an outline.
-                else {
-                    ctx1.lineWidth = 4;
-                    if(node.data.type == 'domain'){
-                        ctx1.fillStyle = '#eee';
-                    }else{
-                        ctx1.fillStyle = '#fff';
-                    }
-                    ctx1.fill();
-                    ctx1.strokeStyle = skillColor;
-                    ctx1.stroke();
-                }
-            
+                ctx1.fill();
+                ctx1.strokeStyle = skillColor;
+                ctx1.stroke();
+            }
         },
 
         // Draw a round rectangle and using clip to make image rounded
