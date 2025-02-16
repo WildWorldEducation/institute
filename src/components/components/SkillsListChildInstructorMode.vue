@@ -327,7 +327,7 @@ export default {
         :class="{
             domains: type == 'domain',
             // Colors and background images for top level skills.
-            locked: isUnlocked != 1,
+            unlocked: isUnlocked != 1,
             unlocked: isUnlocked == 1,
             mastered: isMastered == 1,
             'sub-skill-button': type == 'sub',
@@ -354,7 +354,7 @@ export default {
                 src="/images/skill-emoticons/grade-school-mastered.png"
             />
             <img
-                v-else-if="level == 'grade_school' && isUnlocked == 1"
+                v-else-if="level == 'grade_school'"
                 src="/images/skill-emoticons/grade-school-unlocked.png"
             />
             <!-- Middle School level -->
@@ -363,7 +363,7 @@ export default {
                 src="/images/skill-emoticons/middle-school-mastered.png"
             />
             <img
-                v-else-if="level == 'middle_school' && isUnlocked == 1"
+                v-else-if="level == 'middle_school'"
                 src="/images/skill-emoticons/middle-school-unlocked.png"
             />
             <!-- High School level -->
@@ -372,7 +372,7 @@ export default {
                 src="/images/skill-emoticons/high-school-mastered.png"
             />
             <img
-                v-else-if="level == 'high_school' && isUnlocked == 1"
+                v-else-if="level == 'high_school'"
                 src="/images/skill-emoticons/high-school-unlocked.png"
             />
             <!-- College level -->
@@ -381,7 +381,7 @@ export default {
                 src="/images/skill-emoticons/college-mastered.png"
             />
             <img
-                v-else-if="level == 'college' && isUnlocked == 1"
+                v-else-if="level == 'college'"
                 src="/images/skill-emoticons/college-unlocked.png"
             />
             <!-- PHD level -->
@@ -390,7 +390,7 @@ export default {
                 src="/images/skill-emoticons/phd-mastered.png"
             />
             <img
-                v-else-if="level == 'phd' && isUnlocked == 1"
+                v-else-if="level == 'phd'"
                 src="/images/skill-emoticons/phd-unlocked.png"
             />
             <!-- If skill is locked -->
