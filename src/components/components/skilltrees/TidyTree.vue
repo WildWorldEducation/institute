@@ -380,10 +380,8 @@ export default {
             }
 
             // Drawing Image
-            if (node.data.type != 'domain') {
-                if (this.scale >= 0.75 && this.iconDictionary) {
-                    this.drawImage(node, ctx1);
-                }
+            if (this.scale >= 0.75 && this.iconDictionary) {
+                this.drawImage(node, ctx1);
             }
 
             // Drawing Text.
@@ -1156,7 +1154,7 @@ export default {
         },
         drawNodeCircle(ctx, node) {
             const ctx1 = ctx;
-            if (node.data.type != 'domain') {
+            
                 // Node size
                 let radius;
                 if (node.data.type == 'sub') {
@@ -1189,11 +1187,11 @@ export default {
                     ctx1.strokeStyle = skillColor;
                     ctx1.stroke();
                 }
-            }
+                
         },
         drawNodeOnHiddenCanvas(ctx, node) {
             const ctx2 = ctx;
-            if (node.data.type != 'domain') {
+
                 ctx2.beginPath();
                 ctx2.moveTo(node.y, node.x);
                 //ctx2.arc(node.y, node.x, 20, 0, 2 * Math.PI);
@@ -1204,26 +1202,12 @@ export default {
                 ctx2.roundRect(xPosition, node.x - 20, 180, 40, 20);
 
                 ctx2.fill();
-            } else {
-                ctx2.beginPath();
-                ctx2.moveTo(node.y, node.x - 10);
-                // top left edge.
-                ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
-                // bottom left edge.
-                ctx2.lineTo(node.y, node.x - 10 + 20);
-                // bottom right edge.
-                ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
-                // closing the path automatically creates the top right edge.
-                ctx2.closePath();
-                ctx2.lineWidth = 2;
-                ctx2.fill();
-                ctx2.stroke();
-            }
+            
         },
         // Draw round rectangle node
         drawRoundRectNode(ctx, node) {
             const ctx1 = ctx;
-            if (node.data.type != 'domain') {
+           
                 // Node size
                 let radius;
                 if (node.data.type == 'sub') {
@@ -1257,12 +1241,16 @@ export default {
                 // If not, just an outline.
                 else {
                     ctx1.lineWidth = 4;
-                    ctx1.fillStyle = '#FFF';
+                    if(node.data.type == 'domain'){
+                        ctx1.fillStyle = '#eee';
+                    }else{
+                        ctx1.fillStyle = '#fff';
+                    }
                     ctx1.fill();
                     ctx1.strokeStyle = skillColor;
                     ctx1.stroke();
                 }
-            }
+            
         },
 
         // Draw a round rectangle and using clip to make image rounded
@@ -1507,9 +1495,9 @@ export default {
                 ctx1.strokeStyle = '#FFF';
                 ctx1.lineWidth = 4;
                 ctx1.fillStyle = isSearched ? '#ff0000' : '#849cab';
-                ctx1.direction = 'rtl';
+                ctx1.direction = 'ltr';
 
-                let xPosition = node.y + 5;
+                let xPosition = node.y - 140;
 
                 ctx1.strokeText(node.data.skill_name, xPosition, node.x + 2);
                 ctx1.fillText(node.data.skill_name, xPosition, node.x + 2);
