@@ -153,7 +153,15 @@ export default {
                     const result2 = await result.json();
                     this.skill.introduction = result2.introduction;
                     this.skill.url = result2.url;
-                    this.showSkillPanel = true;
+                    if(this.skill.has_children){
+                        if (this.skill.show_children == 0) {
+                            this.toggleShowChildren(this.skill);
+                        } else {
+                            this.toggleHideChildren(this.skill);
+                        }
+                    }else{
+                        this.showSkillPanel = true;
+                    }
                 }
             });
 
