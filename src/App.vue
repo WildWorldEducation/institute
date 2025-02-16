@@ -383,25 +383,19 @@ export default {
                                 </div>
                             </div>
                             <div class="d-sm-none">
-                                <RouterLink
-                                    to="/profile-settings"
-                                    class="nav-link"
-                                >
+                                <RouterLink to="/profile" class="nav-link">
                                     Profile
                                 </RouterLink>
-                                <RouterLink to="/profile" class="nav-link">
+                                <RouterLink to="/settings" class="nav-link">
                                     Settings
                                 </RouterLink>
                                 <RouterLink
-                                    to="/profile-news-notifications"
+                                    to="/news-and-notifications"
                                     class="nav-link"
                                 >
                                     News & Notifications
                                 </RouterLink>
-                                <RouterLink
-                                    to="/profile-reputation"
-                                    class="nav-link"
-                                >
+                                <RouterLink to="/reputation" class="nav-link">
                                     Reputation
                                 </RouterLink>
                                 <a
