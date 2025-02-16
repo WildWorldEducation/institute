@@ -396,7 +396,7 @@ export default {
                                     to="/profile-news-notifications"
                                     class="nav-link"
                                 >
-                                    News & Notification
+                                    News & Notifications
                                 </RouterLink>
                                 <RouterLink
                                     to="/profile-reputation"
@@ -517,6 +517,7 @@ Themes
 }
 .logout-btn{
     cursor: pointer;
+    color: black;
 }
 
 .nav-link .active {
