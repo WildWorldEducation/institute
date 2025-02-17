@@ -23,7 +23,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
             isUnlockedSkillsOnlyFilter: null,
             reputationScore: null,
             cohortId: null,
-            isSkillsLocked: null
+            isSkillsLocked: 0
         };
     },
     actions: {
