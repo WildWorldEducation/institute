@@ -1,8 +1,8 @@
 <script lang="ts">
-import ThemeDetails from '../components/profile-page/ThemeDetails.vue';
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
-import { useUsersStore } from '../../stores/UsersStore';
+import ThemeDetails from '../../components/profile-page/ThemeDetails.vue';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import { useSessionDetailsStore } from '../../../stores/SessionDetailsStore.js';
+import { useUsersStore } from '../../../stores/UsersStore';
 
 export default {
     setup() {
@@ -29,9 +29,18 @@ export default {
         ThemeDetails
     },
     methods: {
+        isInstructorLocked() {
+            return (
+                this.userDetailsStore.role === 'student' &&
+                this.instructorID != null &&
+                this.instructorID !== ''
+            );
+        },
         async updateInstructor() {
-            if (!this.instructorID) return;
-
+            // Prevent update if the student already has an instructor assigned
+            if (this.isInstructorLocked()) {
+                return;
+            }
             try {
                 const reqOptions = {
                     method: 'PUT',
@@ -44,8 +53,8 @@ export default {
                     `/users/${this.userDetailsStore.userId}/edit/instructor`,
                     reqOptions
                 );
-                this.userDetailsStore.getUserDetails();
-                this.isEditing = false;
+                this.userDetailsStore.getUserDetails(); // Refresh user details after update
+                this.isEditing = false; // Close the editing state
             } catch (error) {
                 console.error('Error updating instructor:', error);
             }
@@ -60,13 +69,10 @@ export default {
 
 <template>
     <div class="container legend-div">
-        <div class="mt-2 d-flex row gap-2 justify-content-between">
+        <div class="mt-2 d-flex row gap-4 justify-content-between">
             <div class="form" v-if="userDetailsStore.role === 'student'">
                 <!-- Instructor -->
-                <div
-                    v-if="userDetailsStore.instructorUsername"
-                    class="profile-input"
-                >
+                <div class="profile-input">
                     <div>
                         <h2 class="secondary-heading h4">Instructor</h2>
                         <div v-if="!isEditing">
@@ -74,9 +80,12 @@ export default {
                                 type="text"
                                 class="form-control"
                                 readonly
-                                v-model="userDetailsStore.instructorUsername"
+                                :value="
+                                    userDetailsStore.instructorUsername ||
+                                    'No instructor chosen'
+                                "
                             />
-                            <div class="mt-2">
+                            <div class="mt-2" v-if="!isInstructorLocked()">
                                 <button
                                     class="btn primary-btn"
                                     @click="isEditing = true"
@@ -90,10 +99,8 @@ export default {
                                 <select
                                     v-model="instructorID"
                                     class="form-select"
+                                    aria-placeholder="Please choose an instructor"
                                 >
-                                    <option disabled>
-                                        Please choose an instructor
-                                    </option>
                                     <option
                                         v-for="instructor in userStore.instructors"
                                         :key="instructor.id"

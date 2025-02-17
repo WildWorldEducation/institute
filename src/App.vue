@@ -306,7 +306,7 @@ export default {
                                         Profile
                                     </RouterLink>
                                     <RouterLink
-                                        to="/settings"
+                                        to="/profile-settings"
                                         class="dropdown-item"
                                     >
                                         Settings

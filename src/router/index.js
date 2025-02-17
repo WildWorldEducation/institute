@@ -258,8 +258,8 @@ const router = createRouter({
                 )
         },
         {
-            path: '/settings',
-            name: 'settings',
+            path: '/profile-settings',
+            name: 'profile-settings',
             component: () =>
                 import(
                     '../components/pages/dropdown-menu-pages/SettingsView.vue'
