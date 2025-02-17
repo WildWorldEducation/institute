@@ -690,7 +690,7 @@ export default {
             const dy = 270;
 
             // Create a tree layout.
-            this.tree = d3.tree().nodeSize([dx, dy]);
+            this.tree = d3.tree().nodeSize([this.nodeWidth, this.nodeHeight]);
 
             // Sort the tree and apply the layout.
             this.root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
