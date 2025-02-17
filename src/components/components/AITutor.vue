@@ -182,6 +182,7 @@ export default {
                 Thinking
                 <TutorLoadingSymbol />
             </div>
+
             <div class="user-chat-div">
                 <textarea
                     ref="messageInput"
@@ -190,7 +191,11 @@ export default {
                     type="text"
                 >
                 </textarea>
-                <div class="d-flex flex-row-reverse">
+                <div
+                    b-tooltip.hover
+                    tile="send message"
+                    class="d-flex flex-row-reverse"
+                >
                     <button
                         class="btn primary-btn send-btn"
                         :class="{ 'loading-send-btn': waitForAIresponse }"
@@ -265,6 +270,8 @@ export default {
 }
 
 .user-chat-div {
+    position: sticky;
+    bottom: 0;
     display: flex;
     flex-direction: column;
     gap: 3px;
@@ -273,6 +280,7 @@ export default {
     padding: 20px;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
         rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    background-color: white;
 }
 
 .send-btn {
