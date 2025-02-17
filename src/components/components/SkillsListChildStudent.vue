@@ -208,7 +208,8 @@ export default {
         :class="{
             domains: type == 'domain',
             // Colors and background images for top level skills.
-            unlocked: isUnlocked != 1,
+            unlocked: isUnlocked != 1 && userDetailsStore.isSkillsLocked == 0,
+            locked: isUnlocked != 1 && userDetailsStore.isSkillsLocked == 1,
             unlocked: isUnlocked == 1,
             mastered: isMastered == 1,
             'sub-skill-button': type == 'sub',
