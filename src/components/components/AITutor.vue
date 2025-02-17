@@ -128,7 +128,7 @@ export default {
         <h2 class="heading">Learn With AI Tutor</h2>
         <hr />
         <div
-            class="d-flex flex-column w-75 mx-auto chat-component"
+            class="d-flex flex-column mx-auto chat-component"
             ref="messageInputDiv"
         >
             <div
@@ -242,6 +242,7 @@ export default {
     background-color: white;
     padding: 5px 10px;
     border-radius: 15px;
+    width: 75%;
 }
 
 .user-chat-div {
@@ -266,5 +267,20 @@ export default {
 
 .loading-send-btn {
     border-radius: 5px !important;
+}
+
+/* ************************* */
+/* Tablet Styling */
+@media (min-width: 577px) and (max-width: 1023px) {
+    .chat-component {
+        width: 95%;
+    }
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 480px) {
+    .chat-component {
+        width: 100%;
+    }
 }
 </style>
