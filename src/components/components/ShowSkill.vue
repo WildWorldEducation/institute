@@ -447,6 +447,7 @@ export default {
                     <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
                     <router-link
                         v-if="
+                            1 == 2 &&
                             userDetailsStore.role == 'student' &&
                             !isUnlocked &&
                             !isMastered &&
@@ -472,7 +473,6 @@ export default {
                     <router-link
                         v-else-if="
                             userDetailsStore.role == 'student' &&
-                            isUnlocked &&
                             !isMastered &&
                             skill.type != 'domain'
                         "
@@ -509,7 +509,6 @@ export default {
                     <button
                         v-else-if="
                             userDetailsStore.role == 'student' &&
-                            isUnlocked &&
                             !isMastered &&
                             skill.type == 'domain'
                         "
