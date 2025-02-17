@@ -2,6 +2,7 @@
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import SendIconLoadingSymbol from './ai-tutor/sendIconLoadingSymbol.vue';
 import TutorLoadingSymbol from './ai-tutor/tutorLoadingSymbol.vue';
+import TooltipBtn from './share-components/TooltipBtn.vue';
 
 export default {
     setup() {
@@ -12,7 +13,7 @@ export default {
         };
     },
     props: ['skillName', 'skillUrl'],
-    components: { SendIconLoadingSymbol, TutorLoadingSymbol },
+    components: { SendIconLoadingSymbol, TutorLoadingSymbol, TooltipBtn },
     data() {
         return {
             message: '',
@@ -125,7 +126,25 @@ export default {
 
 <template>
     <div class="container mt-3">
-        <h2 class="heading">Learn With AI Tutor</h2>
+        <div class="d-flex flex-column flex-md-row gap-2 align-items-baseline">
+            <h2 class="heading">Learn With AI Tutor</h2>
+            <TooltipBtn
+                class="d-none d-md-block"
+                toolTipText="Chat with ours AI Tutor about the subjects"
+                bubbleWidth="350px"
+                trianglePosition="left"
+                absoluteTop="37px"
+            />
+            <!-- Mobile tooltip have smaller width -->
+            <TooltipBtn
+                class="d-md-none"
+                toolTipText=" Chat with ours AI Tutor about the subjects"
+                bubbleWidth="100px"
+                trianglePosition="left"
+                absoluteTop="37px"
+            />
+        </div>
+
         <hr />
         <div
             class="d-flex flex-column mx-auto chat-component"
