@@ -72,7 +72,11 @@ export default {
                 x: 0,
                 y: 0,
                 k: 0
-            }
+            },
+            // Default skill icon to show if the skill don`t have any
+            defaultIconImage:
+                'data:image/png;base64,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',
+            iconDictionary: []
         };
     },
     components: {
@@ -80,7 +84,9 @@ export default {
         ZoomControl,
         JoystickControl
     },
-    async mounted() {},
+    async mounted() {
+        await this.getIconData();
+    },
     methods: {
         async loadTree() {
             await this.learningTracksStore.loadLearningTrack();
@@ -190,9 +196,9 @@ export default {
 
             // Node width and height
             // height
-            const dx = 34;
+            const dx = 80;
             // width
-            const dy = 270;
+            const dy = 600;
 
             this.tree = d3.tree().nodeSize([dx, dy]);
 
@@ -313,25 +319,71 @@ export default {
             let ctx1 = this.context;
             let ctx2 = this.hiddenCanvasContext;
             // A flag to determine if this node was searched by user
-            const isSearched = node.data.name === this.resultNode?.data.name;
-            // Visible context.
-            // If not a domain, make node a circle.
-            if (node.data.type != 'domain') {
+            const isSearched =
+                node.data.name === this.resultNode?.data.name;
+
+            if (this.scale > 0.6) {
+                this.drawRoundRectNode(ctx1, node);
+            } else {
+                this.drawNodeCircle(ctx1, node);
+            }
+
+            // Drawing Image
+            if (this.scale >= 0.75 && this.iconDictionary) {
+                this.drawImage(node, ctx1);
+            }
+
+            // Drawing Text.
+            if (this.scale > 0.6) {
+                this.drawNodeText(node, ctx1, isSearched);
+            }
+
+            // If child nodes are collapsed, add the 'plus' sign.
+            let plusShift = 0;
+            if(this.scale > 0.6){
+                plusShift = 179;
+            }
+            if (
+                node.data.type != 'sub' &&
+                node.data.show_children == 0 &&
+                node.data.has_children == true
+            ) {
+                // Set line properties
+                ctx1.lineWidth = 4;
+                ctx1.strokeStyle = '#8d6ce7';
+
+                // Draw vertical line
+                ctx1.beginPath();
+                ctx1.moveTo(node.y - 10  + plusShift, node.x);
+                ctx1.lineTo(node.y + 10  + plusShift, node.x); // Draw to the bottom-middle
+                ctx1.stroke();
+
+                // Draw horizontal line
+                ctx1.beginPath();
+                ctx1.moveTo(node.y  + plusShift, node.x - 10);
+                ctx1.lineTo(node.y  + plusShift, node.x + 10); // Draw to the middle-right
+                ctx1.stroke();
+            }
+
+            // If user currently searching for the node we draw addition details
+            if (isSearched) {
+                this.drawPointingHand(node, ctx1);
+            }
+
+            // Hidden context.
+            if (this.scale > 0.6) {
+                this.drawNodeOnHiddenCanvas(ctx2, node);
+            }
+        },
+        drawNodeCircle(ctx, node) {
+            const ctx1 = ctx;
+            
                 // Node size
                 let radius;
                 if (node.data.type == 'sub') {
                     radius = 7.5;
                 } else {
                     radius = 10;
-                }
-
-                // If child nodes are collapsed.
-                if (
-                    node.data.has_children == true &&
-                    node.data.show_children == 0 &&
-                    node.data.type != 'sub'
-                ) {
-                    radius = 15;
                 }
 
                 ctx1.beginPath();
@@ -358,94 +410,303 @@ export default {
                     ctx1.strokeStyle = skillColor;
                     ctx1.stroke();
                 }
-            }
-
-            // If child nodes are collapsed, add the 'plus' sign.
-            if (
-                node.data.type != 'sub' &&
-                node.data.show_children == 0 &&
-                node.data.has_children == true
-            ) {
-                // Set line properties
-                ctx1.lineWidth = 2;
-                ctx1.strokeStyle = '#8d6ce7';
-
-                // Draw vertical line
-                ctx1.beginPath();
-                ctx1.moveTo(node.y - 10, node.x);
-                ctx1.lineTo(node.y + 10, node.x); // Draw to the bottom-middle
-                ctx1.stroke();
-
-                // Draw horizontal line
-                ctx1.beginPath();
-                ctx1.moveTo(node.y, node.x - 10);
-                ctx1.lineTo(node.y, node.x + 10); // Draw to the middle-right
-                ctx1.stroke();
-            }
-
-            // Text.
-            if (this.scale > 0.6) {
-                // to avoid sharp artifacts with the stroke of the text.
-                ctx1.lineJoin = 'bevel';
-                // we move the skill name to the left and change the color if it a domain node
-                // using the non domain as if condition will save us some compute time as none domain node is more common
-                if (node.data.type != 'domain') {
-                    ctx1.beginPath();
-                    // Background stroke
-                    ctx1.strokeStyle = '#FFF';
-                    ctx1.lineWidth = 4;
-                    // Font size
-                    ctx1.font = '12px Arial';
-                    if (node.data.type == 'sub') {
-                        ctx1.font = '10px Arial';
-                    }
-
-                    // High light the text if user search for it
-                    ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
-                    ctx1.font = isSearched ? 'bold' : 'normal';
-                    ctx1.direction = 'ltr';
-
-                    //  also added a triangle to the end of skill name
-                    const showName = isSearched
-                        ? `${node.data.name} ◀`
-                        : node.data.name;
-                    ctx1.strokeText(showName, node.y + 15, node.x + 2);
-                    ctx1.fillText(showName, node.y + 15, node.x + 2);
+                
+        },
+        // Draw round rectangle node
+        drawRoundRectNode(ctx, node) {
+            const ctx1 = ctx;
+           
+                // Node size
+                let radius;
+                if (node.data.type == 'sub') {
+                    radius = 7.5;
                 } else {
-                    ctx1.beginPath();
-                    ctx1.strokeStyle = '#FFF';
-                    ctx1.lineWidth = 4;
-                    ctx1.fillStyle = isSearched ? '#ff0000' : '#849cab';
-                    ctx1.direction = 'rtl';
-                    const showName = isSearched
-                        ? `${node.data.name} ▶`
-                        : node.data.name;
-                    ctx1.strokeText(showName, node.y - 5, node.x + 2);
-                    ctx1.fillText(showName, node.y - 5, node.x + 2);
+                    radius = 10;
                 }
-            }
 
-            // Hidden context.
-            if (node.data.type != 'domain') {
+                ctx1.beginPath();
+                // ctx1.arc(node.y, node.x, radius * 1.5, 0, 2 * Math.PI);
+                let xPosition = node.y;
+                if (node.data.children.length > 0) {
+                    xPosition = xPosition - 180;
+                }
+                ctx1.roundRect(xPosition, node.x - 20, 180, 40, 20);
+                // get the color associate with skill level
+                const skillColor = node.data.level
+                    ? this.hexColor(node.data.level)
+                    : '#000';
+
+                // If mastered, make a solid shape.
+                if (node.data.is_mastered == 1) {
+                    ctx1.fillStyle = skillColor;
+                    ctx1.fill();
+                    const outlineColor = this.hexBorderColor(node.data.level);
+                    ctx1.lineWidth = 2;
+                    ctx1.strokeStyle = outlineColor;
+                    ctx1.stroke();
+                }
+
+                // If not, just an outline.
+                else {
+                    ctx1.lineWidth = 4;
+                    if(node.data.type == 'domain'){
+                        ctx1.fillStyle = '#eee';
+                    }else{
+                        ctx1.fillStyle = '#fff';
+                    }
+                    ctx1.fill();
+                    ctx1.strokeStyle = skillColor;
+                    ctx1.stroke();
+                }
+            
+        },
+        drawNodeText(node, ctx1, isSearched) {
+            // to avoid sharp artifacts with the stroke of the text.
+            ctx1.lineJoin = 'bevel';
+            // we move the skill name to the left and change the color if it a domain node
+            // using the non domain as if condition will save us some compute time as none domain node is more common
+            this.drawSkillName(node, ctx1, isSearched);
+        },
+        drawPointingHand(node, ctx) {
+            const img = new Image();
+            img.src = this.handIcon;
+            if (this.scale > 0.6) {
+                if (node.children) {
+                    ctx.drawImage(img, node.y + 6, node.x - 10, 20, 20);
+                } else {
+                    ctx.drawImage(img, node.y + 185, node.x - 10, 20, 20);
+                }
+            } else {
+                ctx.drawImage(img, node.y + 13, node.x - 10, 20, 20);
+            }
+        },
+        drawNodeOnHiddenCanvas(ctx, node) {
+            const ctx2 = ctx;
+
                 ctx2.beginPath();
                 ctx2.moveTo(node.y, node.x);
-                ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+                //ctx2.arc(node.y, node.x, 20, 0, 2 * Math.PI);
+                let xPosition = node.y;
+                if (node.data.children.length > 0) {
+                    xPosition = xPosition - 180;
+                }
+                ctx2.roundRect(xPosition, node.x - 20, 180, 40, 20);
+
                 ctx2.fill();
+            
+        },
+        drawSkillName(node, ctx, isSearched) {
+            if (node.data.name.length < 19) {
+                this.drawShortSkillName(node, ctx, isSearched);
+            } else if (
+                node.data.name.length >= 19 &&
+                node.data.name.length < 33
+            ) {
+                this.drawMediumSkillName(node, ctx, isSearched);
             } else {
-                ctx2.beginPath();
-                ctx2.moveTo(node.y, node.x - 10);
-                // top left edge.
-                ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
-                // bottom left edge.
-                ctx2.lineTo(node.y, node.x - 10 + 20);
-                // bottom right edge.
-                ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
-                // closing the path automatically creates the top right edge.
-                ctx2.closePath();
-                ctx2.lineWidth = 2;
-                ctx2.fill();
-                ctx2.stroke();
+                this.drawLargeSkillName(node, ctx, isSearched);
             }
+        },
+        drawShortSkillName(node, ctx, isSearched) {
+            const ctx1 = ctx;
+            // to avoid sharp artifacts with the stroke of the text.
+            ctx1.lineJoin = 'bevel';
+            // we move the skill name to the left and change the color if it a domain node
+            // using the non domain as if condition will save us some compute time as none domain node is more common
+            
+            ctx1.beginPath();
+            // Background stroke
+            ctx1.strokeStyle = '#FFF';
+            ctx1.lineWidth = 4;
+            // Font size
+            ctx1.font = '11px Verdana';
+            if (node.data.type == 'sub') {
+                ctx1.font = '11px Verdana';
+            }
+
+            // High light the text if user search for it
+            ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
+            ctx1.font = isSearched ? 'bold' : 'normal';
+            ctx1.direction = 'ltr';
+
+            //  also added a triangle to the end of skill name
+
+            let xPosition = node.y + 45;
+            if (node.data.children.length > 0) {
+                xPosition = xPosition - 180;
+            }
+            ctx1.strokeText(node.data.name, xPosition, node.x + 4);
+            ctx1.fillText(node.data.name, xPosition, node.x + 4);
+        
+        },
+        drawMediumSkillName(node, ctx, isSearched) {
+            // Number use to fit text into node
+            const textDrawData = {
+                // Maximum lenght for text to be consider a short name
+                shortTextMaxLenght: 19,
+
+                firstLineYposition: node.x - 5,
+                secondLineYposition: node.x + 12
+            };
+            const ctx1 = ctx;
+            const splitIndex = node.data.name.lastIndexOf(
+                ' ',
+                textDrawData.shortTextMaxLenght
+            );
+            const string1 = node.data.name.substring(0, splitIndex);
+            const string2 = node.data.name.substring(splitIndex + 1);
+
+            ctx1.beginPath();
+            // Background stroke
+            ctx1.strokeStyle = '#FFF';
+            ctx1.lineWidth = 4;
+            // Font size
+            ctx1.font = '11px Verdana';
+            if (node.data.type == 'sub') {
+                ctx1.font = '11px Verdana';
+            }
+
+            // High light the text if user search for it
+            ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
+            ctx1.font = isSearched ? 'bold' : 'normal';
+            ctx1.direction = 'ltr';
+
+            //  also added a triangle to the end of skill name
+
+            let xPosition = node.y + 45;
+            if (node.data.children.length > 0) {
+                xPosition = xPosition - 180;
+            }
+
+            ctx1.strokeText(
+                string1,
+                xPosition,
+                textDrawData.firstLineYposition
+            );
+            ctx1.fillText(string1, xPosition, textDrawData.firstLineYposition);
+
+            //
+
+            ctx1.strokeText(
+                string2,
+                xPosition,
+                textDrawData.secondLineYposition
+            );
+            ctx1.fillText(string2, xPosition, textDrawData.secondLineYposition);
+        },
+        drawLargeSkillName(node, ctx, isSearched) {
+            // Number use to fit text into node
+            const textDrawData = {
+                // Maximum lenght for text to be consider a short name
+                mediumTextMaxLenght: 19,
+
+                firstLineYposition: node.x - 5,
+                secondLineYposition: node.x + 12,
+                lengthRatio: node.data.name.length / 19
+            };
+
+            const ctx1 = ctx;
+            const splitIndex = node.data.name.lastIndexOf(
+                ' ',
+                Math.floor(node.data.name.length / 1.5)
+            );
+            const string1 = node.data.name.substring(0, splitIndex);
+            const string2 = node.data.name.substring(splitIndex + 1);
+
+            ctx1.beginPath();
+            // Background stroke
+            ctx1.strokeStyle = '#FFF';
+            ctx1.lineWidth = 4;
+            // Font size
+            const largeSkillFontSize =
+                Math.floor(11 / textDrawData.lengthRatio) + 4;
+
+            ctx1.font = `${largeSkillFontSize}px Verdana`;
+            if (node.data.type == 'sub') {
+                ctx1.font = `${largeSkillFontSize}px Verdana`;
+            }
+
+            // High light the text if user search for it
+            ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
+            ctx1.font = isSearched ? 'bold' : 'normal';
+            ctx1.direction = 'ltr';
+
+            //  also added a triangle to the end of skill name
+
+            let xPosition = node.y + 45;
+            if (node.data.children.length > 0) {
+                xPosition = xPosition - 180;
+            }
+
+            // draw the first line of text
+            ctx1.strokeText(
+                string1,
+                xPosition,
+                textDrawData.firstLineYposition
+            );
+            ctx1.fillText(string1, xPosition, textDrawData.firstLineYposition);
+
+            // draw second line of text
+
+            ctx1.strokeText(
+                string2,
+                xPosition,
+                textDrawData.secondLineYposition
+            );
+            ctx1.fillText(string2, xPosition, textDrawData.secondLineYposition);
+        },
+        async getIconData() {
+            const res = await fetch('/skills/icon-list');
+            const resData = await res.json();
+            // Prepare the icon path array into a hashmap/dictionary for even better performant
+            this.iconDictionary = Object.fromEntries(
+                resData.map((icon) => [icon.url, icon.icon])
+            );
+        },
+        drawImage(node, ctx1) {
+            // find path in skill icon dictionary
+            let path = this.iconDictionary[node.data.url];
+
+            if (!path) {
+                path = this.defaultIconImage;
+                const img = new Image();
+
+                img.src = path;
+
+                let xPosition = node.y + 2;
+                if (node.data.children.length > 0) {
+                    xPosition = xPosition - 178;
+                }
+                ctx1.save();
+                this.roundedImage(ctx1, xPosition, node.x - 18, 36, 36, 20);
+                ctx1.clip();
+                ctx1.drawImage(img, xPosition + 7, node.x - 10, 20, 20);
+                ctx1.restore();
+            }
+            // Draw a default error image if skill do not have icon
+            else {
+                const img = new Image();
+
+                img.src = path;
+
+                let xPosition = node.y + 2;
+                if (node.data.children.length > 0) {
+                    xPosition = xPosition - 178;
+                }
+                ctx1.save();
+                this.roundedImage(ctx1, xPosition, node.x - 18, 36, 36, 20);
+                ctx1.clip();
+                ctx1.drawImage(img, xPosition - 3, node.x - 18, 38, 38);
+                ctx1.restore();
+            }
+        },
+        // Draw a round rectangle and using clip to make image rounded
+        roundedImage(ctx, x, y, width, height, radius) {
+            ctx.beginPath();
+
+            ctx.roundRect(x, y, width, height, radius);
+
+            ctx.closePath();
         },
         drawLink(link) {
             const linkGenerator = d3

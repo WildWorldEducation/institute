@@ -17,7 +17,8 @@ export default {
     data() {
         return {
             isMobileCheck: window.innerWidth,
-            currentTab: null
+            currentTab: null,
+            isDropdownOpen: false
         };
     },
     async mounted() {
@@ -44,6 +45,12 @@ export default {
         }
     },
     methods: {
+        toggleDropdown() {
+            this.isDropdownOpen = !this.isDropdownOpen;
+        },
+        closeDropdown() {
+            this.isDropdownOpen = false;
+        },
         closeNavbarOnClick() {
             const links = document.querySelectorAll('.close-on-click');
             const navbarToggler = document.querySelector('.navbar-toggler');
@@ -244,15 +251,51 @@ export default {
                         </li>
                         <li
                             v-if="userDetailsStore.role == 'instructor'"
-                            class="nav-item"
+                            class="nav-item dropdown"
                         >
-                            <RouterLink
-                                to="/students"
-                                class="nav-link close-on-click"
+                            <div class="d-flex align-items-center">
+                                <!-- Navigation link to /students -->
+                                <RouterLink
+                                    to="/students"
+                                    class="nav-link"
+                                    @click="closeDropdown"
+                                >
+                                    <span>Students</span>
+                                </RouterLink>
+
+                                <!-- Dropdown toggle button -->
+                                <button
+                                    class="nav-link dropdown-toggle border-0 bg-transparent"
+                                    @click.stop="toggleDropdown"
+                                ></button>
+                            </div>
+
+                            <!-- Dropdown menu (conditionally shown) -->
+                            <ul
+                                class="dropdown-menu"
+                                :class="{ show: isDropdownOpen }"
                             >
-                                <span>Students</span>
-                            </RouterLink>
+                                <li>
+                                    <RouterLink
+                                        to="/student-questions"
+                                        class="dropdown-item close-on-click"
+                                        @click="closeDropdown"
+                                    >
+                                        Student Questions
+                                    </RouterLink>
+                                </li>
+                                <li>
+                                    <RouterLink
+                                        to="/student-assessments"
+                                        class="dropdown-item close-on-click"
+                                        @click="closeDropdown"
+                                    >
+                                        Mark Assessments
+                                    </RouterLink>
+                                </li>
+                            </ul>
                         </li>
+
                         <li
                             v-if="userDetailsStore.role == 'instructor'"
                             class="nav-item"
@@ -340,25 +383,19 @@ export default {
                                 </div>
                             </div>
                             <div class="d-sm-none">
-                                <RouterLink
-                                    to="/profile-settings"
-                                    class="nav-link"
-                                >
+                                <RouterLink to="/profile" class="nav-link">
                                     Profile
                                 </RouterLink>
-                                <RouterLink to="/profile" class="nav-link">
+                                <RouterLink to="/settings" class="nav-link">
                                     Settings
                                 </RouterLink>
                                 <RouterLink
-                                    to="/profile-news-notifications"
+                                    to="/news-and-notifications"
                                     class="nav-link"
                                 >
-                                    News & Notification
+                                    News & Notifications
                                 </RouterLink>
-                                <RouterLink
-                                    to="/profile-reputation"
-                                    class="nav-link"
-                                >
+                                <RouterLink to="/reputation" class="nav-link">
                                     Reputation
                                 </RouterLink>
                                 <a
@@ -474,6 +511,7 @@ Themes
 }
 .logout-btn{
     cursor: pointer;
+    color: black;
 }
 
 .nav-link .active {

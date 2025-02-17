@@ -44,11 +44,11 @@ export default {
             showMobileTutorialTip5: false,
             showTutorialTip6: false,
             showMobileTutorialTip6: false,
-            showMobileTutorialTip7: false,
             showTutorialTip7: false,
             showTutorialTip8: false,
-            showTutorialTip9: false,
-            isMobileCheck: window.innerWidth
+            isMobileCheck: window.innerWidth,
+            // To enableinstructor to lock the tree for student.
+            isTreeLocked: false
         };
     },
     async created() {
@@ -252,21 +252,15 @@ export default {
                     this.showTutorialTip7 = true;
                 } else {
                     this.showMobileTutorialTip6 = false;
-                    this.showMobileTutorialTip7 = true;
+                    this.markTutorialComplete();
                 }
             } else if (step == 7) {
                 if (this.isMobileCheck > 576) {
                     this.showTutorialTip7 = false;
                     this.showTutorialTip8 = true;
-                } else {
-                    this.showMobileTutorialTip7 = false;
-                    this.markTutorialComplete();
                 }
             } else if (step == 8) {
                 this.showTutorialTip8 = false;
-                this.showTutorialTip9 = true;
-            } else if (step == 9) {
-                this.showTutorialTip9 = false;
                 this.markTutorialComplete();
             }
         },
@@ -284,7 +278,6 @@ export default {
             this.showTutorialTip6 = false;
             this.showTutorialTip7 = false;
             this.showTutorialTip8 = false;
-            this.showTutorialTip9 = false;
             this.isTutorialComplete = false;
         },
         restartMobileTutorial() {
@@ -294,7 +287,6 @@ export default {
             this.showMobileTutorialTip4 = false;
             this.showMobileTutorialTip5 = false;
             this.showMobileTutorialTip6 = false;
-            this.showMobileTutorialTip7 = false;
             this.isTutorialComplete = false;
         },
         markTutorialComplete() {
@@ -441,23 +433,23 @@ export default {
             </div>
             <!-- Tooltips -->
             <div
-                v-if="showTutorialTip7"
+                v-if="showTutorialTip6"
                 class="info-panel bg-light rounded p-2 mb-2"
             >
                 <p>Use the search field to search for specific skills.</p>
-                <button class="btn primary-btn" @click="progressTutorial(7)">
+                <button class="btn primary-btn" @click="progressTutorial(6)">
                     next
                 </button>
             </div>
             <div
-                v-else-if="showTutorialTip8"
+                v-else-if="showTutorialTip7"
                 class="info-panel bg-light rounded p-2 mb-2 mt-2 float-right"
             >
                 <p>
                     Use the center button to center the skill tree,<br />
                     and the print button to print a PDF.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(8)">
+                <button class="btn primary-btn" @click="progressTutorial(7)">
                     next
                 </button>
             </div>
@@ -1074,37 +1066,6 @@ export default {
         </div>
     </div>
 
-    <!-- Filter for showing only unlocked skills in bottom left corner -->
-    <div
-        v-if="
-            sessionDetailsStore.isLoggedIn && userDetailsStore.role == 'student'
-        "
-        class="unlocked-filter d-flex flex-column-reverse"
-    >
-        <button
-            class="btn primary-btn"
-            @click="
-                toggleisUnlockedSkillsFilter();
-                $refs.childComponent.filter();
-            "
-        >
-            <span v-if="userDetailsStore.isUnlockedSkillsOnlyFilter"
-                >All skills</span
-            >
-            <span v-else>Available skills only</span>
-        </button>
-
-        <div
-            v-if="showTutorialTip6"
-            class="info-panel bg-light rounded p-2 mb-2"
-        >
-            <p>Use this button to toggle between unlocked and locked skills.</p>
-            <button class="btn primary-btn" @click="progressTutorial(6)">
-                next
-            </button>
-        </div>
-    </div>
-
     <!-- Filters Modal for Mobile Phone View.-->
     <div v-if="showMobileFiltersModal" class="modal">
         <div class="modal-content">
@@ -1576,17 +1537,16 @@ export default {
             </div>
         </div>
     </div>
-    <!-- Tutorial for user -->
+    <!-- Tutorial -->
     <div
         v-if="
             showTutorialTip1 ||
             showTutorialTip2 ||
             showTutorialTip3 ||
-            showTutorialTip9 ||
+            showTutorialTip8 ||
             showMobileTutorialTip4 ||
             showMobileTutorialTip5 ||
-            showMobileTutorialTip6 ||
-            showMobileTutorialTip7
+            showMobileTutorialTip6
         "
         class="modal"
     >
@@ -1628,12 +1588,12 @@ export default {
                     next
                 </button>
             </div>
-            <div v-else-if="showTutorialTip9">
+            <div v-else-if="showTutorialTip8">
                 <p>
                     When you're ready, try another page by clicking one in the
                     navigation bar at the top right.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(9)">
+                <button class="btn primary-btn" @click="progressTutorial(8)">
                     close
                 </button>
             </div>
@@ -1655,15 +1615,6 @@ export default {
             <div v-if="showMobileTutorialTip6">
                 <p>The center button will recenter the tree</p>
                 <button class="btn primary-btn" @click="progressTutorial(6)">
-                    next
-                </button>
-            </div>
-            <div v-if="showMobileTutorialTip7">
-                <p>
-                    Use the lock button below on the lower left side of the
-                    screen to toggle between unlocked and locked skills.
-                </p>
-                <button class="btn primary-btn" @click="progressTutorial(7)">
                     close
                 </button>
             </div>

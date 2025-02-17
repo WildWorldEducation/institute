@@ -32,8 +32,6 @@ export default {
             lastName: this.userDetailsStore.lastName,
             instructorID: this.userDetailsStore.instructorId,
             isGoogleAuth: this.userDetailsStore.isGoogleAuth,
-            // get current instructor username for custom dropdown
-            instructorName: this.userDetailsStore.instructorUsername,
             validate: {
                 firstName: false,
                 lastName: false,
@@ -59,7 +57,6 @@ export default {
             // Zoom relate state data
             lastZoomValue: 0,
             zoomValue: 0,
-            showDropDown: false,
             showWarnModal: false
         };
     },
@@ -104,7 +101,7 @@ export default {
             var url = '/users/profile/' + this.id + '/edit-password';
             fetch(url, requestOptions).then(() => {
                 this.userDetailsStore.getUserDetails();
-                this.$router.push('/profile-settings');
+                this.$router.push('/profile');
             });
         },
         Submit() {

@@ -112,6 +112,15 @@ const router = createRouter({
             component: () =>
                 import('../components/pages/ShowSkillRevisionView.vue')
         },
+        // Learning Objectives
+        {
+            path: '/skills/:skillUrl/learning-objectives',
+            name: 'list-learning-objectives',
+            component: () =>
+                import(
+                    '../components/pages/learning-objectives/ListLearningObjectivesView.vue'
+                )
+        },
         {
             path: '/skills/:id/question-bank/add',
             name: 'add-question',
@@ -212,6 +221,26 @@ const router = createRouter({
             path: '/students',
             name: 'students',
             component: () => import('../components/pages/UsersView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['instructor', 'admin']
+            }
+        },
+        {
+            path: '/student-questions',
+            name: 'student-questions',
+            component: () =>
+                import('../components/pages/StudentQuestionListView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['instructor', 'admin']
+            }
+        },
+        {
+            path: '/student-assessments',
+            name: 'student-assessments',
+            component: () =>
+                import('../components/pages/MarkAssessmentView.vue'),
             meta: {
                 requiresAuth: true,
                 roles: ['instructor', 'admin']
@@ -451,7 +480,7 @@ router.beforeEach(async (to, from, next) => {
         from.name == 'student-signup' ||
         from.name == 'editor-signup'
     ) {
-        // Kids theme
+        // Instructor theme
         if (userDetailsStore.theme == 'instructor') {
             document.body.classList.remove('editor-theme');
             document.body.classList.add('instructor-theme');
@@ -466,19 +495,19 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // Checking if skill is unlocked before allowing student to take assessment.
-    if (to.name == 'assessment') {
-        const userSkillsStore = useUserSkillsStore();
+    // if (to.name == 'assessment') {
+    //     const userSkillsStore = useUserSkillsStore();
 
-        await userSkillsStore.getUnnestedList(userDetailsStore.userId);
-        const currentSkill = userSkillsStore.unnestedList.find(
-            (item) => item.id == to.params.id
-        );
+    //     await userSkillsStore.getUnnestedList(userDetailsStore.userId);
+    //     const currentSkill = userSkillsStore.unnestedList.find(
+    //         (item) => item.id == to.params.id
+    //     );
 
-        if (currentSkill.is_accessible != 1 || currentSkill.is_mastered == 1) {
-            next({ path: '/skills/' + to.params.id });
-            return;
-        }
-    }
+    //     if (currentSkill.is_accessible != 1 || currentSkill.is_mastered == 1) {
+    //         next({ path: '/skills/' + to.params.id });
+    //         return;
+    //     }
+    // }
 
     if (to.name == 'show-skill') {
         const skillsStore = useSkillsStore();
