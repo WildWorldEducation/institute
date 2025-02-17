@@ -69,5 +69,29 @@ router.get('/:instructorId/list', (req, res, next) => {
     }
 });
 
+/**
+ * Update whether student's skills are locked or not.
+ */
+router.put('/:userId/update-locked-skills', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `
+        UPDATE instructor_students
+        SET is_skills_locked = ${req.body.isSkillsLocked}
+        WHERE student_id = '${req.params.userId}';
+        `;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;

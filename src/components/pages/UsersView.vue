@@ -151,6 +151,7 @@ export default {
             }
         },
         async getStudents() {
+            this.students = [];
             var instructorStudentData = [];
             for (
                 let i = 0;
@@ -184,7 +185,6 @@ export default {
                     }
                 }
             }
-            console.log(this.students);
         },
         updateShowUserDetails(newUser) {
             this.showDetails = true;
@@ -232,7 +232,20 @@ export default {
             fetch(url, requestOptions);
         },
         updateSkillsLock() {
-            console.log('test');
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    isSkillsLocked: this.user.isSkillsLocked
+                })
+            };
+
+            fetch(
+                '/instructor-students/' +
+                    this.user.id +
+                    '/update-locked-skills',
+                requestOptions
+            ).then(() => this.getStudents());
         }
     }
 };
