@@ -447,7 +447,7 @@ export default {
                     <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
                     <router-link
                         v-if="
-                            1 == 2 &&
+                            userDetailsStore.isSkillsLocked == 1 &&
                             userDetailsStore.role == 'student' &&
                             !isUnlocked &&
                             !isMastered &&
