@@ -60,7 +60,6 @@ export default {
                 );
             }
         }
-
         // Turn this on only if user is logged in.
         if (this.sessionDetailsStore.isLoggedIn) {
             this.checkIfTutorialComplete();
@@ -360,12 +359,17 @@ export default {
             </div>
             <div class="d-flex">
                 <button
+                    v-if="sessionDetailsStore.isLoggedIn"
                     class="btn primary-btn me-1"
                     @click="showMobileFiltersModal = true"
                 >
                     Filters
                 </button>
-                <button class="btn primary-btn" @click="resetPos()">
+                <button
+                    v-if="sessionDetailsStore.isLoggedIn"
+                    class="btn primary-btn"
+                    @click="resetPos()"
+                >
                     Center
                 </button>
                 <!-- Restart tutorial button -->
@@ -400,11 +404,16 @@ export default {
                 />
                 <div class="d-flex justify-content-end">
                     <!-- Reset Button -->
-                    <button class="btn primary-btn me-2" @click="resetPos()">
+                    <button
+                        v-if="sessionDetailsStore.isLoggedIn"
+                        class="btn primary-btn me-2"
+                        @click="resetPos()"
+                    >
                         Center
                     </button>
                     <!-- Print Button -->
                     <button
+                        v-if="sessionDetailsStore.isLoggedIn"
                         class="btn primary-btn me-2"
                         @click="$refs.childComponent.printPDF()"
                     >
