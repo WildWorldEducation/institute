@@ -200,7 +200,7 @@ export default {
                         Filters
                     </button>
                     <button
-                        class="btn primary-btn me-1"
+                        class="btn primary-btn me-1 d-md-block d-none"
                         @click="$refs.childComponent.resetPos()"
                     >
                         Center

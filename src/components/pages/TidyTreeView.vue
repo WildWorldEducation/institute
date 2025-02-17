@@ -365,7 +365,10 @@ export default {
                 >
                     Filters
                 </button>
-                <button class="btn primary-btn" @click="resetPos()">
+                <button
+                    class="btn primary-btn d-md-block d-none"
+                    @click="resetPos()"
+                >
                     Center
                 </button>
                 <!-- Restart tutorial button -->
@@ -1938,6 +1941,8 @@ export default {
 @media (max-width: 480px) {
     .mobile-legend {
         display: flex;
+        justify-content: space-between;
+        gap: 15px;
     }
 
     .tablet-and-up-legend {
