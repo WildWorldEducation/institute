@@ -638,7 +638,7 @@ export default {
 
     <!-- Filter for showing only unlocked skills in bottom left corner -->
     <div
-        v-if="isSkillsLocked == 1"
+        v-if="userDetailsStore.isSkillsLocked == 1"
         class="unlocked-filter d-flex flex-column-reverse"
     >
         <button

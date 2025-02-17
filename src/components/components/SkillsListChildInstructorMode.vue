@@ -45,7 +45,8 @@ export default {
         'DeleteSkill',
         'path',
         'studentId',
-        'parent'
+        'parent',
+        'isStudentSkillsLocked'
     ],
     computed: {
         indent() {
@@ -84,6 +85,7 @@ export default {
         }
     },
     async created() {
+        console.log(this.isStudentSkillsLocked);
         for (let i = 0; i < this.children.length; i++) {
             if (this.children[i].type == 'sub') {
                 this.subSkills.push(this.children[i]);
@@ -328,6 +330,7 @@ export default {
             domains: type == 'domain',
             // Colors and background images for top level skills.
             unlocked: isUnlocked != 1,
+            locked: isUnlocked != 1 && isStudentSkillsLocked == 1,
             unlocked: isUnlocked == 1,
             mastered: isMastered == 1,
             'sub-skill-button': type == 'sub',
@@ -555,7 +558,7 @@ export default {
             </button>
         </div>
     </button>
-
+    
     <!-- Sub skills -->
     <SkillsListChildInstructorMode
         v-if="showSubskills"
@@ -574,6 +577,7 @@ export default {
         :path="path"
         :studentId="studentId"
         :parent="subSkill.parent"
+        :isStudentSkillsLocked="subSkill.isStudentSkillsLocked"
     >
     </SkillsListChildInstructorMode>
 
@@ -595,6 +599,7 @@ export default {
         :path="path"
         :studentId="studentId"
         :parent="child.parent"
+        :isStudentSkillsLocked="child.isStudentSkillsLocked"
     >
     </SkillsListChildInstructorMode>
 </template>

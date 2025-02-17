@@ -73,7 +73,7 @@ export default {
             return masteredCount;
         }
     },
-    async created() {
+    async created() {      
         this.localShowChildren = this.showChildren;
 
         for (let i = 0; i < this.children.length; i++) {
