@@ -359,7 +359,6 @@ export default {
             </div>
             <div class="d-flex">
                 <button
-                    v-if="sessionDetailsStore.isLoggedIn"
                     class="btn primary-btn me-1"
                     @click="showMobileFiltersModal = true"
                 >
