@@ -83,20 +83,20 @@ router.post('/new-message', isAuthenticated, async (req, res, next) => {
     try {
         const assistantData = await getAssistantData(req.body.userId, req.body.skillUrl);
 
-        if (assistantData.length < 1) {
-            const newAssistant = await initialAssistant();
-            const assistantData = {
-                userId: req.body.userId,
-                skillUrl: req.body.skillUrl,
-                assistantId: newAssistant.assistant.id,
-                threadId: newAssistant.thread.id
-            };
-            const databaseAssistant = await saveAssistantData(assistantData);
-            console.log(databaseAssistant);
-            const result = await processingNewMessage(newAssistant.thread.id, newAssistant.assistant.id, req.body);
-            res.json({ message: result, assistant: newAssistant.assistant, thread: newAssistant.thread })
-            return
-        }
+        // if (assistantData.length < 1) {
+        //     const newAssistant = await initialAssistant();
+        //     const assistantData = {
+        //         userId: req.body.userId,
+        //         skillUrl: req.body.skillUrl,
+        //         assistantId: newAssistant.assistant.id,
+        //         threadId: newAssistant.thread.id
+        //     };
+        //     const databaseAssistant = await saveAssistantData(assistantData);
+        //     console.log(databaseAssistant);
+        //     const result = await processingNewMessage(newAssistant.thread.id, newAssistant.assistant.id, req.body);
+        //     res.json({ message: result, assistant: newAssistant.assistant, thread: newAssistant.thread })
+        //     return
+        // }
         const result = await processingNewMessage(assistantData[0].thread_id, assistantData[0].assistant_id, req.body);
         res.json({ message: result })
 
@@ -122,12 +122,13 @@ router.get('/messages-list', isAuthenticated, async (req, res, next) => {
                 threadId: newAssistant.thread.id
             }];
             await saveAssistantData(assistantData[0]);
-            const messages = await getMessagesList(assistantData.threadId);
+            const messages = await getMessagesList(assistantData[0].threadId);
             res.json({ messages: messages });
             return
+        } else {
+            const messages = await getMessagesList(assistantData[0].thread_id);
+            res.json({ messages: messages })
         }
-        const messages = await getMessagesList(assistantData[0].thread_id);
-        res.json({ messages: messages })
     } catch (error) {
         console.error(error)
         res.status = 500;

@@ -17,13 +17,13 @@ export default {
         return {
             message: '',
             previousMessages: [],
-            latestMessage: '',
+            latestMessage: null,
             messageList: [],
             waitForAIresponse: false
         };
     },
-    mounted() {
-        this.getMessagesList();
+    async mounted() {
+        await this.getMessagesList();
     },
     updated() {
         this.scrollToMessageInput();
@@ -53,7 +53,6 @@ export default {
                 var url = '/ai-tutor/new-message';
                 const res = await fetch(url, requestOptions);
                 const resData = await res.json();
-
                 this.latestMessage = resData.message;
                 this.messageList.push(this.latestMessage);
                 this.waitForAIresponse = false;
@@ -73,7 +72,6 @@ export default {
                 this.messageList = resData.messages.data;
                 // we reverse oder of messages list because OpenAI return messages from newest to oldest
                 this.messageList.reverse();
-
                 this.$nextTick(this.scrollToMessageInput());
             } catch (error) {
                 console.error(error);
@@ -90,7 +88,8 @@ export default {
             inputMessage.scrollTop = inputMessage.scrollHeight;
         },
         smoothScrollToMessageInput() {
-            let inputMessage = this.$refs.messageInput;
+            let inputMessage = this.$refs.messageInputDiv;
+            inputMessage.scrollIntoView({ behavior: 'smooth' });
         }
     },
     watch: {
@@ -116,6 +115,8 @@ export default {
                     `style`,
                     `height:${count * lineHeightInPixels}px;overflow-y:hidden;`
                 );
+                // Also scroll to bottom of the chat div
+                this.scrollToMessageInput();
             });
         }
     }
@@ -124,7 +125,7 @@ export default {
 
 <template>
     <div class="container mt-3">
-        <h2 class="heading">Tutor</h2>
+        <h2 class="heading">Learn With AI Tutor</h2>
         <hr />
         <div
             class="d-flex flex-column w-75 mx-auto chat-component"
@@ -238,6 +239,9 @@ export default {
 .chat-component {
     max-height: 100vh;
     overflow-y: auto;
+    background-color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
 }
 
 .user-chat-div {
@@ -247,6 +251,8 @@ export default {
     border-radius: 35px;
     border: 1px solid #e8e8e8;
     padding: 20px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+        rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 }
 
 .send-btn {
