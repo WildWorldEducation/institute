@@ -60,8 +60,6 @@ export default {
             lastZoomValue: 0,
             zoomValue: 0,
             showDropDown: false,
-            // special flag to indicate if student not have an instructor
-            haveInstructor: false,
             showWarnModal: false
         };
     },
@@ -71,11 +69,6 @@ export default {
         CheckPasswordComplexity
     },
     computed: {},
-    created() {
-        if (this.instructorName) {
-            this.haveInstructor = true;
-        }
-    },
     methods: {
         ValidateForm() {
             if (this.userName == '' || this.userName == null) {
@@ -83,7 +76,7 @@ export default {
             } else if (this.email == '' || this.email == null) {
                 this.validate.email = true;
             }
-            this.HandleClickSubmit();
+            this.Submit();
         },
         ValidatePassword() {
             if (this.validate.passwordComplex) {
@@ -129,49 +122,15 @@ export default {
                         lastName: this.lastName,
                         username: this.userName,
                         email: this.email,
-                        avatar: this.avatar,
-                        instructorID: this.instructorID
+                        avatar: this.avatar
                     })
                 };
-
                 var url = '/users/profile/' + this.id + '/edit';
                 fetch(url, requestOptions).then(() => {
-                    if (
-                        this.userDetailsStore.role == 'student' &&
-                        this.instructorID != '' &&
-                        this.instructorID != null
-                    ) {
-                        const requestOptions = {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                instructor_id: this.instructorID
-                            })
-                        };
-                        var url =
-                            '/users/' +
-                            this.userDetailsStore.userId +
-                            '/edit/instructor';
-                        fetch(url, requestOptions).then(() => {
-                            // refresh user list so the users page will show the update data
-                            this.userDetailsStore.getUserDetails();
-                            this.$router.push('/profile-settings');
-                        });
-                    } else {
-                        // refresh user list so the users page will show the update data
-                        this.userDetailsStore.getUserDetails();
-                        this.$router.push('/profile-settings');
-                    }
+                    // refresh user list so the users page will show the update data
+                    this.userDetailsStore.getUserDetails();
+                    this.$router.push('/profile-settings');
                 });
-            }
-        },
-
-        HandleClickSubmit() {
-            // Only show the modal when user choose an instructor
-            if (this.instructorName && !this.haveInstructor) {
-                this.showWarnModal = true;
-            } else {
-                this.Submit();
             }
         },
 
@@ -495,15 +454,8 @@ export default {
                         please enter a valid email !
                     </div>
                 </div>
-                <div v-if="userDetailsStore.role == 'student'" class="mb-3">
-                    <h2 class="secondary-heading h4">Instructor</h2>
-                    <!-- Student can only choose an instructor if they don`t have one -->
-                    <div v-if="haveInstructor" class="custom-select-button">
-                        {{ instructorName }}
-                    </div>
-                </div>
                 <div class="d-flex justify-content-between mb-3 mt-5">
-                    <router-link class="btn red-btn" to="/profile-settings">
+                    <router-link class="btn red-btn" to="/profile">
                         Cancel
                     </router-link>
                     <button class="btn primary-btn" @click="ValidateForm()">
@@ -705,49 +657,6 @@ export default {
                             />
                         </svg>
                     </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal to show student if they are sure with they decision -->
-    <div v-if="showWarnModal">
-        <div id="myModal" class="modal">
-            <!-- Modal content -->
-            <div class="warn-content d-flex flex-column">
-                <div class="d-flex flex-row">
-                    <div class="me-3">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            width="35"
-                            height="35"
-                            fill="#eed888"
-                        >
-                            <path
-                                d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
-                            />
-                        </svg>
-                    </div>
-                    <div>
-                        You can only choose your instructor once. Are you sure
-                        you want &nbsp;
-                        <span id="instructor-name-text">
-                            {{ instructorName }}
-                        </span>
-                        &nbsp; to be your instructor.
-                    </div>
-                </div>
-                <div class="d-flex flex-row-reverse gap-2">
-                    <div
-                        type="button"
-                        class="btn primary-btn"
-                        @click="Submit()"
-                    >
-                        Yes
-                    </div>
-                    <div class="btn red-btn" @click="showWarnModal = false">
-                        No
-                    </div>
                 </div>
             </div>
         </div>
@@ -1055,117 +964,6 @@ export default {
         transform: translate3d(4px, 0, 0);
     }
 }
-
-/* Style For The Custom Select */
-.custom-select-button {
-    width: 100%;
-    height: auto;
-    padding: 6px 14px 6px 14px;
-    border-radius: 8px;
-    gap: 8px;
-    background: linear-gradient(0deg, #ffffff, #ffffff),
-        linear-gradient(0deg, #f2f4f7, #f2f4f7);
-    border: 1px solid #f2f4f7;
-    box-shadow: 0px 1px 2px 0px #1018280d;
-    font-family: 'Poppins' sans-serif;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 22px;
-    letter-spacing: 0.03em;
-    text-align: left;
-    display: flex;
-}
-
-.custom-select-button-focus {
-    width: 100%;
-    height: auto;
-    padding: 6px 14px 6px 14px;
-    border-radius: 8px;
-    gap: 8px;
-    background: linear-gradient(0deg, #ffffff, #ffffff),
-        linear-gradient(0deg, #f2f4f7, #f2f4f7);
-    border: 1px solid #9c7eec;
-    box-shadow: 0px 0px 0px 4px #bca3ff4d;
-    font-family: 'Poppins' sans-serif;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 22px;
-    letter-spacing: 0.03em;
-    text-align: left;
-    display: flex;
-}
-
-.custom-select-button:hover {
-    cursor: pointer;
-    border: 1px solid #9c7eec;
-}
-
-.custom-select-button > span {
-    margin-right: 2px;
-    margin-left: auto;
-    animation: rotationBack 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-    transform: translate3d(0, 0, 0);
-}
-
-.custom-select-button-focus > span {
-    margin-right: 2px;
-    margin-left: auto;
-    animation: rotation 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-    transform: translate3d(0, 0, 0);
-}
-
-.form-validate {
-    font-size: 0.75rem;
-    color: red;
-    font-weight: 300;
-}
-
-/* The animation key frame */
-@keyframes rotation {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(180deg);
-    }
-}
-
-@keyframes rotationBack {
-    from {
-        transform: rotate(180deg);
-    }
-
-    to {
-        transform: rotate(0deg);
-    }
-}
-
-.custom-select-button-focus:hover {
-    cursor: pointer;
-}
-
-.custom-dropdown-base {
-    border-radius: 8px;
-    border: 1px;
-    background: linear-gradient(0deg, #ffffff, #ffffff);
-    border: 1px solid #9c7eec;
-    box-shadow: 0px 4px 6px -2px #10182808;
-    box-shadow: 0px 12px 16px -4px #10182814;
-}
-
-.custom-dropdown-option {
-    padding: 10px 14px 10px 14px;
-    gap: 8px;
-    color: #344054;
-}
-
-.custom-dropdown-option:hover {
-    cursor: pointer;
-    background: #bca3ff1a;
-}
-
-/* End of CSS style for Custom Select */
 
 /* Mobile */
 @media (max-width: 480px) {
