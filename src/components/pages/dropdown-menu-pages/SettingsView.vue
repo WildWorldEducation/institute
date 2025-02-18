@@ -32,11 +32,11 @@ export default {
         isInstructorLocked() {
             return (
                 this.userDetailsStore.role === 'student' &&
-                this.instructorID != null &&
-                this.instructorID !== ''
+                this.userDetailsStore.instructorId &&
+                this.userDetailsStore.instructorId.trim() !== ''
             );
         },
-        async updateInstructor() {
+        async updateInstructor(selectedInstructorId) {
             // Prevent update if the student already has an instructor assigned
             if (this.isInstructorLocked()) {
                 return;
@@ -46,7 +46,7 @@ export default {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        instructor_id: this.instructorID
+                        instructor_id: selectedInstructorId
                     })
                 };
                 await fetch(
@@ -55,12 +55,18 @@ export default {
                 );
                 this.userDetailsStore.getUserDetails(); // Refresh user details after update
                 this.isEditing = false; // Close the editing state
+                this.showWarnModal = false; // Close the modal
             } catch (error) {
                 console.error('Error updating instructor:', error);
             }
         },
         cancelEdit() {
             this.isEditing = false;
+        },
+        handleInstructorChange(e) {
+            this.instructorID = e.target.value;
+            this.selectedInstructorName =
+                e.target.options[e.target.selectedIndex].text;
         }
     }
 };
@@ -98,12 +104,7 @@ export default {
                                 <select
                                     v-model="instructorID"
                                     class="form-select"
-                                    @change="
-                                        selectedInstructorName =
-                                            $event.target.options[
-                                                $event.target.selectedIndex
-                                            ].text
-                                    "
+                                    @change="handleInstructorChange"
                                 >
                                     <option value="" selected disabled>
                                         Please choose an instructor
@@ -164,16 +165,15 @@ export default {
                     </div>
                 </div>
                 <div class="d-flex flex-row-reverse gap-2">
-                    <div
-                        type="button"
+                    <button
                         class="btn primary-btn"
-                        @click="updateInstructor"
+                        @click="updateInstructor(instructorID)"
                     >
                         Yes
-                    </div>
-                    <div class="btn red-btn" @click="showWarnModal = false">
+                    </button>
+                    <button class="btn red-btn" @click="showWarnModal = false">
                         No
-                    </div>
+                    </button>
                 </div>
             </div>
         </div>
