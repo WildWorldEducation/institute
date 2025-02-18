@@ -61,6 +61,11 @@ export default {
                 var url = '/ai-tutor/new-message';
                 this.message = '';
                 const res = await fetch(url, requestOptions);
+                if (res.status === 500) {
+                    alert('Tutor can`t answer !!');
+                    this.waitForAIresponse = false;
+                    return;
+                }
                 const resData = await res.json();
                 this.latestMessage = resData.message;
                 this.messageList.push(this.latestMessage);
