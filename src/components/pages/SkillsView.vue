@@ -31,6 +31,7 @@ export default {
             isTutorialComplete: false,
             showTutorialTip1: false,
             showTutorialTip1_1: false,
+            showMobileTutorialTip1_1: false,
             showTutorialTip2: false,
             showMobileTutorialTip2: false,
             showTutorialTip3: false,
@@ -113,17 +114,25 @@ export default {
                 // For students and instructors
                 else {
                     this.showTutorialTip1 = false;
-                    if (this.userDetailsStore.isSkillsLocked == 1) {
-                        this.showTutorialTip1_1 = true;
-                    } else if (this.isMobileCheck > 576) {
-                        this.showTutorialTip2 = true;
+                    if (this.isMobileCheck > 576) {
+                        if (this.userDetailsStore.isSkillsLocked == 1) {
+                            this.showTutorialTip1_1 = true;
+                        } else this.showTutorialTip2 = true;
                     } else {
+                        if (this.userDetailsStore.isSkillsLocked == 1) {
+                            this.showMobileTutorialTip1_1 = true;
+                        }
                         this.showMobileTutorialTip2 = true;
                     }
                 }
             } else if (step == 1_1) {
-                this.showTutorialTip1_1 = false;
-                this.showTutorialTip2 = true;
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip1_1 = false;
+                    this.showTutorialTip2 = true;
+                } else {
+                    this.showMobileTutorialTip1_1 = false;
+                    this.showMobileTutorialTip2 = true;
+                }
             } else if (step == 2) {
                 // Only for instructors viewing their student's tree
                 if (this.instructorMode) {
@@ -614,16 +623,16 @@ export default {
                     next
                 </button>
             </div>
-            <!-- <div v-else-if="showMobileTutorialTip2">
+            <div v-else-if="showMobileTutorialTip1_1">
                 <p>
                     Greyed out nodes are locked until you pass the tests of the
                     skills that precede them.
                 </p>
 
-                <button class="btn primary-btn" @click="progressTutorial(2)">
+                <button class="btn primary-btn" @click="progressTutorial(1_1)">
                     next
                 </button>
-            </div> -->
+            </div>
             <div v-else-if="showMobileTutorialTip2">
                 <p>
                     A sad face icon indicates that the skill has not yet been
@@ -631,7 +640,7 @@ export default {
                 </p>
                 <p>Every mastered skill has a happy face icon.</p>
 
-                <button class="btn primary-btn" @click="progressTutorial(3)">
+                <button class="btn primary-btn" @click="progressTutorial(2)">
                     next
                 </button>
             </div>
@@ -643,7 +652,7 @@ export default {
                     mastery of that larger skill.
                 </p>
 
-                <button class="btn primary-btn" @click="progressTutorial(4)">
+                <button class="btn primary-btn" @click="progressTutorial(3)">
                     next
                 </button>
             </div>
@@ -657,14 +666,14 @@ export default {
                     —just make sure you run a thorough search before making your
                     suggestion.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(5)">
+                <button class="btn primary-btn" @click="progressTutorial(4)">
                     next
                 </button>
             </div>
             <div v-else-if="showMobileTutorialTip5">
                 <p>Click on a skill node to go to the page for that skill.</p>
 
-                <button class="btn primary-btn" @click="progressTutorial(6)">
+                <button class="btn primary-btn" @click="progressTutorial(5)">
                     close
                 </button>
             </div>
