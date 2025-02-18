@@ -711,7 +711,7 @@ router.get('/instructor/:studentId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // Select user.
         let sqlQuery = `
-    SELECT users.id, username, first_name, last_name
+    SELECT users.id, username, first_name, last_name, instructor_students.is_skills_locked
     FROM users
     LEFT JOIN instructor_students 
     ON users.id = instructor_students.instructor_id

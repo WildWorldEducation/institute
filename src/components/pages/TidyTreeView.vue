@@ -1077,6 +1077,38 @@ export default {
         </div>
     </div>
 
+    <!-- Filter for showing only unlocked skills in bottom left corner -->
+    <div
+        v-if="
+            sessionDetailsStore.isLoggedIn &&
+            userDetailsStore.isSkillsLocked == 1
+        "
+        class="unlocked-filter d-flex flex-column-reverse"
+    >
+        <button
+            class="btn primary-btn"
+            @click="
+                toggleisUnlockedSkillsFilter();
+                $refs.childComponent.filter();
+            "
+        >
+            <span v-if="userDetailsStore.isUnlockedSkillsOnlyFilter"
+                >All skills</span
+            >
+            <span v-else>Available skills only</span>
+        </button>
+
+        <div
+            v-if="showTutorialTip6"
+            class="info-panel bg-light rounded p-2 mb-2"
+        >
+            <p>Use this button to toggle between unlocked and locked skills.</p>
+            <button class="btn primary-btn" @click="progressTutorial(6)">
+                next
+            </button>
+        </div>
+    </div>
+
     <!-- Filters Modal for Mobile Phone View.-->
     <div v-if="showMobileFiltersModal" class="modal">
         <div class="modal-content">

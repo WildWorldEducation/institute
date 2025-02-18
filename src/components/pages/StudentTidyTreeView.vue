@@ -15,6 +15,7 @@ export default {
     data() {
         return {
             studentName: '',
+            studentId: this.$route.params.studentId,
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false,
@@ -42,7 +43,8 @@ export default {
             ],
             isUnlockedSkillsOnlyFilter: false,
             showMobileFiltersModal: false,
-            isMobileCheck: window.innerWidth
+            isMobileCheck: window.innerWidth,
+            isSkillsLocked: null
         };
     },
     async created() {
@@ -57,10 +59,12 @@ export default {
         }
         if (this.usersStore.users.length == 0) await this.usersStore.getUsers();
         for (let i = 0; i < this.usersStore.users.length; i++) {
-            if (this.usersStore.users[i].id == this.$route.params.studentId) {
+            if (this.usersStore.users[i].id == this.studentId) {
                 this.studentName = this.usersStore.users[i].username;
             }
         }
+
+        await this.checkIfSkillsLocked();
 
         // Check if tutorial has been seen.
         this.checkIfTutorialComplete();
@@ -69,6 +73,12 @@ export default {
         StudentTidyTree
     },
     methods: {
+        async checkIfSkillsLocked() {
+            const result = await fetch(
+                '/instructor-students/' + this.studentId + '/is-skills-locked'
+            );
+            this.isSkillsLocked = await result.json();
+        },
         // Filters
         updateSubjectFilters(subject) {
             // if all subjects are selected, show only the clicked subject
@@ -627,7 +637,10 @@ export default {
     </div>
 
     <!-- Filter for showing only unlocked skills in bottom left corner -->
-    <div class="unlocked-filter d-flex flex-column-reverse">
+    <div
+        v-if="userDetailsStore.isSkillsLocked == 1"
+        class="unlocked-filter d-flex flex-column-reverse"
+    >
         <button
             class="btn primary-btn"
             @click="
