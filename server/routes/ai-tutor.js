@@ -52,25 +52,14 @@ router.post('/', async (req, res, next) => {
             const messages = await openai.beta.threads.messages.list(
                 run.thread_id
             );
-            console.log(messages.length);
-            for (const message of messages.data.reverse()) {
-                // console.log(
-                //     `${message.role} > ${message.content[0].text.value}`
-                // );
-                //console.log(message.content[0].text.value);
-                //    res.json({ answer: message.content[0].text.value });
-            }
             res.json({ message: messages.data });
         } else {
             console.log(run.status);
+            res.status = 500;
+            res.json({ mess: 'fails! run status: ' + run.status })
         }
-
-        // res.json({
-        //     message: `${message.role} > ${message.content[0].text.value}`
-        // });
-
-        //  res.json();
     } else {
+        res.redirect('/login');
     }
 });
 
@@ -82,21 +71,6 @@ router.post('/', async (req, res, next) => {
 router.post('/new-message', isAuthenticated, async (req, res, next) => {
     try {
         const assistantData = await getAssistantData(req.body.userId, req.body.skillUrl);
-
-        // if (assistantData.length < 1) {
-        //     const newAssistant = await initialAssistant();
-        //     const assistantData = {
-        //         userId: req.body.userId,
-        //         skillUrl: req.body.skillUrl,
-        //         assistantId: newAssistant.assistant.id,
-        //         threadId: newAssistant.thread.id
-        //     };
-        //     const databaseAssistant = await saveAssistantData(assistantData);
-        //     console.log(databaseAssistant);
-        //     const result = await processingNewMessage(newAssistant.thread.id, newAssistant.assistant.id, req.body);
-        //     res.json({ message: result, assistant: newAssistant.assistant, thread: newAssistant.thread })
-        //     return
-        // }
         const result = await processingNewMessage(assistantData[0].thread_id, assistantData[0].assistant_id, req.body);
         res.json({ message: result })
 

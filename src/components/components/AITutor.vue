@@ -46,7 +46,7 @@ export default {
                     content: [{ text: { value: this.message } }]
                 };
                 this.messageList.push(userMessage);
-                this.message = '';
+
                 const requestOptions = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -59,6 +59,7 @@ export default {
                     })
                 };
                 var url = '/ai-tutor/new-message';
+                this.message = '';
                 const res = await fetch(url, requestOptions);
                 const resData = await res.json();
                 this.latestMessage = resData.message;

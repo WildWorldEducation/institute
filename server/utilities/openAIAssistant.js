@@ -56,15 +56,6 @@ async function processingNewMessage(threadId, assistantId, messageData) {
         const messages = await openai.beta.threads.messages.list(
             threadId
         );
-        console.log(messages.data.length);
-        // get the latest message 
-        // for (const message of messages.data.reverse()) {
-        //     console.log(
-        //         `${message.role} > ${message.content[0].text.value}`
-        //     );
-        //     console.log(message.content[0].text.value);
-
-        // }
         const latestMessage = messages.data[0]
 
         return (latestMessage);
@@ -82,9 +73,9 @@ async function saveAssistantData(data) {
                ${conn.escape(data.assistantId)},
                ${conn.escape(data.threadId)}
                );`
-        const result = await query(queryString);
-        console.log(result);
+        await query(queryString);
     } catch (error) {
+        console.error(error)
         throw error
     }
 }
