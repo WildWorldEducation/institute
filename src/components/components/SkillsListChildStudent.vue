@@ -73,7 +73,7 @@ export default {
             return masteredCount;
         }
     },
-    async created() {      
+    async created() {
         this.localShowChildren = this.showChildren;
 
         for (let i = 0; i < this.children.length; i++) {
@@ -208,7 +208,7 @@ export default {
         :class="{
             domains: type == 'domain',
             // Colors and background images for top level skills.
-            unlocked: isUnlocked != 1 && userDetailsStore.isSkillsLocked == 0,
+            unlocked: isUnlocked == 1 && userDetailsStore.isSkillsLocked == 0,
             locked: isUnlocked != 1 && userDetailsStore.isSkillsLocked == 1,
             unlocked: isUnlocked == 1,
             mastered: isMastered == 1,
