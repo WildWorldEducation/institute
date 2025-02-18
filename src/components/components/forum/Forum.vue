@@ -417,10 +417,6 @@ export default {
     background-color: red;
 }
 
-h2 {
-    font-size: 1.75rem;
-}
-
 .plus-icon {
     height: 20px !important;
 }

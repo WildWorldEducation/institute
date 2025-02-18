@@ -1,6 +1,6 @@
 <script>
 // Joystick library.
-import nipplejs from 'nipplejs';
+// import nipplejs from 'nipplejs';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 export default {
     setup() {
@@ -31,7 +31,7 @@ export default {
     },
     computed: {},
     async mounted() {
-        let joystickColor = '#184e80';
+        let joystickColor = '#184e80';  
         switch (this.userDetailsStore.theme) {
             case 'original':
                 joystickColor = '#184e80';
@@ -49,13 +49,13 @@ export default {
         // store initial scale
         this.oldScale = this.$parent.scale;
         // Panning, using NippleJS.
-        var panJoystick = nipplejs.create({
-            zone: document.getElementById('panJoystick'),
-            mode: 'static',
-            dynamicPage: true,
-            position: { right: '70%', bottom: '33%' },
-            color: joystickColor
-        });
+        // var panJoystick = nipplejs.create({
+        //     zone: document.getElementById('panJoystick'),
+        //     mode: 'static',
+        //     dynamicPage: true,
+        //     position: { right: '70%', bottom: '33%' },
+        //     color: joystickColor
+        // });
 
         // we calculate the interval time with fps
         const intervalTime = Math.floor(1000 / this.fps) + 1;
