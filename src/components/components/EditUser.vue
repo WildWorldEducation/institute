@@ -1,6 +1,7 @@
 <script>
 // Import the stores.
 import { useUsersStore } from '../../stores/UsersStore';
+import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 import { Cropper, Preview } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
@@ -10,10 +11,11 @@ export default {
     setup() {
         const usersStore = useUsersStore();
         const instructorStudentsStore = useInstructorStudentsStore();
-
+        const userDetailsStore = useUserDetailsStore();
         return {
             usersStore,
-            instructorStudentsStore
+            instructorStudentsStore,
+            userDetailsStore
         };
     },
     data() {
@@ -140,18 +142,24 @@ export default {
             }
         },
         Submit() {
+            // Prepare the request payload based on the user.
+            let reqPayload = {
+                firstname: this.user.first_name,
+                lastname: this.user.last_name,
+                username: this.user.username,
+                email: this.user.email,
+                avatar: this.user.avatar
+            };
+            // If the user is an admin, add additional fields (role, pass)
+            if (this.userDetailsStore.role === 'admin') {
+                reqPayload.role = this.user.role;
+                reqPayload.password = this.user.password;
+            }
+
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    firstname: this.user.first_name,
-                    lastname: this.user.last_name,
-                    username: this.user.username,
-                    email: this.user.email,
-                    avatar: this.user.avatar,
-                    role: this.user.role,
-                    password: this.user.password
-                })
+                body: JSON.stringify(reqPayload)
             };
 
             var url = '/users/' + this.userId + '/edit';
@@ -172,7 +180,11 @@ export default {
                 .then(() => {
                     // refresh user list so the users page will show the update data
                     this.usersStore.getUsers();
-                    this.$router.push('/users');
+                    const route =
+                        this.userDetailsStore.role === 'instructor'
+                            ? '/students'
+                            : '/users';
+                    this.$router.push(route);
                 });
         },
         // For image upload.
@@ -362,8 +374,8 @@ export default {
                 <div class="col-lg-4 mt-3">
                     <div class="mb-3">
                         <label for="firstname" class="form-label"
-                            >First name {{ firstName }}</label
-                        >
+                            >First name
+                        </label>
                         <input
                             v-model="user.first_name"
                             type="text"
@@ -437,7 +449,10 @@ export default {
                             please enter a valid email !
                         </div>
                     </div>
-                    <div class="mb-3">
+                    <div
+                        v-if="userDetailsStore.role !== 'instructor'"
+                        class="mb-3"
+                    >
                         <label class="form-label">Role</label>
                         <!-- Custom Dropdown -->
                         <div class="d-flex flex-column">
@@ -509,7 +524,13 @@ export default {
                         </div>
                         <!-- End of custom dropdown -->
                     </div>
-                    <div v-if="user.role == 'student'" class="mb-3">
+                    <div
+                        v-if="
+                            user.role == 'student' &&
+                            userDetailsStore.role !== 'instructor'
+                        "
+                        class="mb-3"
+                    >
                         <label class="form-label">Instructor</label>
                         <div class="d-flex flex-column">
                             <div
@@ -558,7 +579,10 @@ export default {
                         </div>
                         <!-- End of custom dropdown -->
                     </div>
-                    <div class="mb-3">
+                    <div
+                        class="mb-3"
+                        v-if="userDetailsStore.role !== 'instructor'"
+                    >
                         <label class="form-label">Password</label>
                         <input
                             v-model="user.password"
@@ -576,7 +600,18 @@ export default {
                         </div>
                     </div>
                     <div class="d-flex justify-content-end gap-4">
-                        <router-link class="btn red-btn" to="/users">
+                        <router-link
+                            v-if="userDetailsStore.role == 'admin'"
+                            class="btn red-btn"
+                            to="/users"
+                        >
+                            Cancel
+                        </router-link>
+                        <router-link
+                            v-if="userDetailsStore.role == 'instructor'"
+                            class="btn red-btn"
+                            to="/students"
+                        >
                             Cancel
                         </router-link>
                         <button class="btn primary-btn" @click="ValidateForm()">
