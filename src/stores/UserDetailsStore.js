@@ -102,18 +102,18 @@ export const useUserDetailsStore = defineStore('userDetails', {
             });
         },
         updateTheme(theme) {
-            if (theme == 'apprentice') {
-                this.theme = 'apprentice';
-                document.body.classList.remove('scholar-theme');
-                document.body.classList.add('apprentice-theme');
-            } else if (theme == 'scholar') {
-                this.theme = 'scholar';
-                document.body.classList.remove('apprentice-theme');
-                document.body.classList.add('scholar-theme');
+            if (theme == 'instructor') {
+                this.theme = 'instructor';
+                document.body.classList.remove('editor-theme');
+                document.body.classList.add('instructor-theme');
+            } else if (theme == 'editor') {
+                this.theme = 'editor';
+                document.body.classList.remove('instructor-theme');
+                document.body.classList.add('editor-theme');
             } else {
                 this.theme = 'original';
-                document.body.classList.remove('apprentice-theme');
-                document.body.classList.remove('scholar-theme');
+                document.body.classList.remove('instructor-theme');
+                document.body.classList.remove('editor-theme');
             }
             // API call
             const requestOptions = {

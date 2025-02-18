@@ -131,6 +131,8 @@ export default {
                 'en-US',
                 options
             );
+
+            console.log(this.skillRevision);
         },
         async getSkillRevisionHistory() {
             const url = '/skill-history/' + this.skill.id + '/list';
@@ -203,8 +205,7 @@ export default {
     <div class="d-flex">
         <div v-if="!compareWithRevision" class="mt-3">
             <div id="skill-info-container">
-                <!-- Skill Info -->
-
+                <!-- Skill name -->
                 <h1 class="heading">
                     {{ skill.name }}
                     <span class="revision-version"
@@ -216,6 +217,7 @@ export default {
                 <hr class="border border-2 opacity-100 hr" />
 
                 <div class="d-flex flex-column">
+                    <!-- Notification - who edited the skill and when -->
                     <div class="alert alert-warning d-flex" role="alert">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -243,8 +245,9 @@ export default {
                             >.
                         </span>
                     </div>
-
+                    <!-- Other versions to compare with -->
                     <CompareWithDropdown
+                        class="mb-5"
                         :skillRevisionHistory="skillRevisionHistory"
                         :currentShowingVersion="skillRevision.version_number"
                         :updateCompareWithRevision="updateCompareWithRevision"
@@ -254,33 +257,32 @@ export default {
                 <!-- A line divide -->
                 <hr class="border border-1 opacity-100 hr mt-md-4 mt-5" />
                 <div class="d-flex flex-column-reverse flex-md-row gap-4">
-                    <!-- Mastery Requirements -->
-                    <!-- <div class="col-md-8 order-2 order-md-1"> -->
-                    <div class="d-flex flex-column">
+                    <div>
+                        <!-- Introduction -->
+                        <h2 class="secondary-heading">Introduction</h2>
+                        <div class="mastery-requirements mb-3">
+                            <div v-html="skillRevision.introduction"></div>
+                        </div>
+                        <!-- Mastery Requirements -->
+                        <h2 class="secondary-heading">Mastery Requirements</h2>
                         <div class="mastery-requirements">
                             <div
                                 v-html="skillRevision.mastery_requirements"
                             ></div>
                         </div>
                     </div>
-                    <!-- </div> -->
                     <!-- Infobox -->
                     <div class="col-md-4 order-1 order-md-2">
                         <div class="info-box p-2 mb-2">
                             <!-- AWS S3 hosted feature image -->
+                            <h2 class="h4 secondary-heading">Image</h2>
                             <!-- Show a default skill avatar if skill not have image yet -->
                             <a
                                 v-if="skillRevision.icon_image"
-                                :href="
-                                    'https://institute-skill-infobox-images.s3.amazonaws.com/' +
-                                    skillRevision.icon_image
-                                "
+                                :href="skillRevision.icon_image"
                             >
                                 <img
-                                    :src="
-                                        'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
-                                        skillRevision.icon_image
-                                    "
+                                    :src="skillRevision.icon_image"
                                     class="rounded img-fluid"
                                 />
                             </a>
@@ -288,11 +290,35 @@ export default {
                                 class="d-flex flex-column align-items-center"
                                 v-else
                             >
-                                <div class="no-image-warn">
-                                    Version
-                                    {{ skillRevision.version_number }} Does Not
-                                    Change Icon Image.
-                                </div>
+                                <div class="no-image-warn">No image</div>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="80"
+                                    height="80"
+                                >
+                                    <path
+                                        d="M448 80c8.8 0 16 7.2 16 16l0 319.8-5-6.5-136-176c-4.5-5.9-11.6-9.3-19-9.3s-14.4 3.4-19 9.3L202 340.7l-30.5-42.7C167 291.7 159.8 288 152 288s-15 3.7-19.5 10.1l-80 112L48 416.3l0-.3L48 96c0-8.8 7.2-16 16-16l384 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zm80 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"
+                                    />
+                                </svg>
+                            </div>
+                            <!-- AWS S3 hosted icon image -->
+                            <h2 class="h4 secondary-heading">Icon</h2>
+                            <!-- Show a default skill avatar if skill not have image yet -->
+                            <a
+                                v-if="skillRevision.icon"
+                                :href="skillRevision.icon"
+                            >
+                                <img
+                                    :src="skillRevision.icon"
+                                    class="rounded img-fluid"
+                                />
+                            </a>
+                            <div
+                                class="d-flex flex-column align-items-center"
+                                v-else
+                            >
+                                <div class="no-image-warn">No icon</div>
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 512 512"
@@ -305,8 +331,8 @@ export default {
                                 </svg>
                             </div>
                             <!-- Grade level -->
-                            <div class="mt-2">
-                                <h2 class="h4 heading">Level</h2>
+                            <div class="mt-3">
+                                <h2 class="h4 secondary-heading">Level</h2>
                                 <span v-if="skill.level == 'grade_school'"
                                     >Grade School</span
                                 >
@@ -336,19 +362,21 @@ export default {
                     class="btn primary-btn mt-4"
                     @click="confirmRevert()"
                 >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        fill="white"
-                        height="25"
-                        width="25"
-                        class="me-2"
-                    >
-                        <path
-                            d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9L0 168c0 13.3 10.7 24 24 24l110.1 0c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65 0-94.1c0-13.3-10.7-24-24-24z"
-                        />
-                    </svg>
-                    <div>Revert to this version</div>
+                    <div>
+                        Revert to this version&nbsp;
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            fill="white"
+                            height="25"
+                            width="25"
+                            class="me-2"
+                        >
+                            <path
+                                d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9L0 168c0 13.3 10.7 24 24 24l110.1 0c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65 0-94.1c0-13.3-10.7-24-24-24z"
+                            />
+                        </svg>
+                    </div>
                 </button>
                 <p>&nbsp;</p>
             </div>

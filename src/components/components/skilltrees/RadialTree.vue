@@ -466,9 +466,9 @@ export default {
                 // Determine colour of links based on user's theme
                 if (this.userDetailsStore.theme == 'original') {
                     color = '#000';
-                } else if (this.userDetailsStore.theme == 'apprentice') {
+                } else if (this.userDetailsStore.theme == 'instructor') {
                     color = '#000';
-                } else if (this.userDetailsStore.theme == 'scholar') {
+                } else if (this.userDetailsStore.theme == 'editor') {
                     color = '#fff';
                 }
             }

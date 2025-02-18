@@ -233,7 +233,7 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-    SELECT skills.id, name, is_accessible, is_mastered, type, parent, url, level
+    SELECT skills.id, name, is_accessible, is_mastered, is_goal, type, parent, url, level
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
@@ -241,7 +241,7 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
     AND is_filtered = 'available'
 
     UNION
-    SELECT skills.id, name, "", "", type, parent, url, level
+    SELECT skills.id, name, "", "", "", type, parent, url, level
     FROM skills
     WHERE skills.id NOT IN 
 
@@ -267,10 +267,10 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
 });
 
 /* Nested list of user-skills, filtered by 1 cohort that student is a member of*/
-// For Collapsible Tree.
+// For Collapsible Tree and Instructor view of student skills Collapsible Tree.
 router.get('/filter-by-cohort/:userId', (req, res, next) => {
     if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');    
+        res.setHeader('Content-Type', 'application/json');
 
         // Check if student is member of a cohort
         let isInCohortSQLQuery = `
@@ -291,7 +291,7 @@ router.get('/filter-by-cohort/:userId', (req, res, next) => {
 
                 // Check what skills are available for this cohort.
                 let sqlQuery = `
-            SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, show_children
+            SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, show_children, is_goal
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id
@@ -304,7 +304,7 @@ router.get('/filter-by-cohort/:userId', (req, res, next) => {
             WHERE cohort_id = ${conn.escape(cohortId)})
             
             UNION
-            SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, ""
+            SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, "", ""
             FROM skills
             WHERE skills.id NOT IN 
             
@@ -1234,7 +1234,7 @@ router.get('/inaccessible/:userId/:skillId', (req, res, next) => {
  *
  * @return response()
  */
-// Hide child nodes on the Vertical Skill Tree.
+// Hide child nodes on the Custom Track.
 router.get('/hide-children/:userId/:skillId', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery = `
@@ -1260,7 +1260,7 @@ router.get('/hide-children/:userId/:skillId', (req, res, next) => {
     }
 });
 
-// Show child nodes on the Vertical Skill Tree.
+// Show child nodes on the Custom Track.
 router.get('/show-children/:userId/:skillId', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery = `
@@ -1286,7 +1286,7 @@ router.get('/show-children/:userId/:skillId', (req, res, next) => {
     }
 });
 
-// Expand all child nodes on the Vertical Skill Tree.
+// Expand all child nodes on the Custom Track.
 router.get('/expand-all-children/:userId', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery = `
@@ -1310,7 +1310,7 @@ router.get('/expand-all-children/:userId', (req, res, next) => {
 });
 
 /**
- * this route handle a case when user want to find node that hidden by their parent
+ * this route handles the case when user want to find node that hidden by their parent
  * we find a node in user cohort and their parent until we hit a node that toggle child off.
  *
  * @return response()
@@ -1549,12 +1549,13 @@ router.post('/make-mastered/:userId', (req, res, next) => {
 
                         function makeMastered(userId, skill) {
                             let sqlQuery = `
-                            INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible) 
+                            INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible, is_goal) 
                             VALUES(${conn.escape(req.params.userId)},
                             ${conn.escape(skill.id)},
                             1,
-                            1) 
-                            ON DUPLICATE KEY UPDATE is_mastered= 1, is_accessible=1;
+                            1,
+                            0) 
+                            ON DUPLICATE KEY UPDATE is_mastered= 1, is_accessible=1, is_goal=0;
                             `;
 
                             conn.query(sqlQuery, (err) => {
@@ -1753,6 +1754,183 @@ router.get(
         }
     }
 );
+
+/**
+ * Goals ---------------------------------------
+ */
+
+/**
+ * Student Add Goal
+ */
+router.post('/set-goal/:userId/:skillId', (req, res, next) => {
+    const goalSteps = req.body.goalSteps;
+
+    if (req.session.userName) {
+        let sqlQuery = `
+        INSERT INTO user_skills (user_id, skill_id, is_goal) 
+        VALUES(${conn.escape(req.params.userId)},
+        ${conn.escape(req.params.skillId)}, 1) 
+        ON DUPLICATE KEY UPDATE is_goal=1;
+        `;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    // Record each goal step for the goal, in 'goal_skills' table.
+
+                    for (let i = 0; i < goalSteps.length; i++) {
+                        let sqlQuery = `INSERT INTO goal_skills (user_id, goal_skill_id, skill_id)
+                        VALUES (${conn.escape(
+                            req.params.userId
+                        )}, ${conn.escape(req.params.skillId)}, ${conn.escape(
+                            goalSteps[i].id
+                        )});`;
+
+                        conn.query(sqlQuery, (err) => {
+                            try {
+                                if (err) {
+                                    throw err;
+                                } else {
+                                    if (i == goalSteps.length - 1) {
+                                        res.end();
+                                    }
+                                }
+                            } catch (err) {
+                                next(err);
+                            }
+                        });
+                    }
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Student Remove Goal
+ *
+ */
+router.get('/remove-goal/:userId/:skillId', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `
+        INSERT INTO user_skills (user_id, skill_id, is_goal) 
+        VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
+            req.params.skillId
+        )}, 0) 
+        ON DUPLICATE KEY UPDATE is_goal=0;
+        `;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.redirect('back');
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * List Goals per Student
+ */
+router.get('/goals/:userId/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT skill_id 
+        FROM user_skills
+        WHERE user_id = ${conn.escape(req.params.userId)}
+        AND is_goal = 1;`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
+ * List Goal Steps per Student
+ */
+router.get('/:userId/:skillId/goal-steps/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT skill_id
+        FROM goal_skills
+        WHERE user_id = ${conn.escape(req.params.userId)}
+        AND goal_skill_id = ${conn.escape(req.params.skillId)}
+        ORDER BY id DESC;`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
+ * Delete Item
+ */
+router.delete('/:userId/:skillId', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `
+        INSERT INTO user_skills (user_id, skill_id, is_goal) 
+        VALUES(${conn.escape(req.params.userId)},
+        ${conn.escape(req.params.skillId)}, 0) 
+        ON DUPLICATE KEY UPDATE is_goal=0;
+        `;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                let sqlQuery2 = `DELETE 
+                FROM goal_skills
+                WHERE user_id = ${conn.escape(req.params.userId)}
+                AND goal_skill_id = ${conn.escape(req.params.skillId)};`;
+
+                conn.query(sqlQuery2, (err) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        res.end();
+                    } catch (err) {
+                        next(err);
+                    }
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
 
 router.get('*', (req, res) => {
     res.redirect('/');

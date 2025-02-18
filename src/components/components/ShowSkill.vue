@@ -46,10 +46,13 @@ export default {
         return {
             skillUrl: this.$route.params.skillUrl,
             skillId: null,
-            skill: {},
+            skill: {
+                learningObjectives: []
+            },
             userSkills: [],
             isMastered: false,
             isUnlocked: false,
+            isGoal: false,
             filters: [],
             showFlaggingModal: false,
             ancestor: this.$route.params.id,
@@ -61,7 +64,6 @@ export default {
             isSkillLoaded: false,
             randomNum: 0,
             goalSteps: [],
-            goalExists: false,
             goals: [],
             toggleModal: false, // Controls the modal visibility
             selectedSkill: null, // Stores the selected skill for modal context
@@ -82,7 +84,6 @@ export default {
         FlagModals,
         AITutor
     },
-
     async created() {
         await this.getSkill();
         this.isSkillLoaded = true;
@@ -96,16 +97,8 @@ export default {
         }
 
         if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
-        await this.checkIfGoalExists();
     },
-
     methods: {
-        async getGoals() {
-            const result = await fetch(
-                '/goals/' + this.userDetailsStore.userId + '/list'
-            );
-            this.goals = await result.json();
-        },
         async getSkill() {
             // solution for image to be changed when we change it from AWS
             this.randomNum = Math.random();
@@ -113,6 +106,9 @@ export default {
             await this.showSkillStore.findSkill(this.skillUrl);
             this.skill = this.showSkillStore.skill;
             this.skillId = this.skill.id;
+
+            // Get learning objectives for the skill
+            await this.getLearningObjectives();
 
             // Meta title for SEO
             document.title = this.skill.name + ' - The Collins Institute';
@@ -128,6 +124,12 @@ export default {
             // Record that the user visited this skill.
             if (this.userDetailsStore.role == 'student')
                 this.recordSkillVisit(this.skillId);
+        },
+        async getLearningObjectives() {
+            const result = await fetch(
+                '/skill-learning-objectives/' + this.skillId + '/list'
+            );
+            this.skill.learningObjectives = await result.json();
         },
         recordSkillVisit(skillId) {
             fetch('/skills/record-visit/' + skillId);
@@ -162,6 +164,7 @@ export default {
                     }
                     if (this.userSkills[i].is_accessible == 1)
                         this.isUnlocked = true;
+                    if (this.userSkills[i].is_goal == 1) this.isGoal = true;
                 }
                 // also get the accessible skill list of this user for the find nearest accessible ancestor method
                 if (this.userSkills[i].is_accessible == 1) {
@@ -242,18 +245,8 @@ export default {
             this.showConfirmModal = true;
         },
         imageUrlAlternative(event) {
+            console.log('test');
             event.target.src = '/images/skill-avatar/recurso.png';
-        },
-        /*
-         * Goals: this feature allows students to choose a skill to be a goal,
-         * to create a pathway for them to get to that goal.
-         */
-        async checkIfGoalExists() {
-            const result = await fetch(
-                '/goals/' + this.userDetailsStore.userId + '/' + this.skillId
-            );
-            const data = await result.json();
-            this.goalExists = data.goalExists;
         },
         openModal(skill) {
             this.selectedSkill = skill;
@@ -342,21 +335,19 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    skillId: this.skillId,
                     goalSteps: this.goalSteps
                 })
             };
-            const url = '/goals/' + this.userDetailsStore.userId + '/add';
+            const url =
+                '/user-skills/set-goal/' +
+                this.userDetailsStore.userId +
+                '/' +
+                this.skillId;
             fetch(url, requestOptions).then(() => {
                 alert('A goal for this skill has been added on the Hub page.');
-                this.getGoals().then(() => {
-                    const createdGoal = this.goals.find(
-                        (goal) => goal.skill_id === this.skillId
-                    );
-                    if (createdGoal) {
-                        this.$router.push(`/goals/${createdGoal.id}`);
-                    }
-                });
+                this.$router.push(
+                    `/goals/${this.userDetailsStore.userId}/${this.skillId}`
+                );
             });
         },
         // Tutorial
@@ -458,6 +449,7 @@ export default {
                     <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
                     <router-link
                         v-if="
+                            1 == 2 &&
                             userDetailsStore.role == 'student' &&
                             !isUnlocked &&
                             !isMastered &&
@@ -483,7 +475,6 @@ export default {
                     <router-link
                         v-else-if="
                             userDetailsStore.role == 'student' &&
-                            isUnlocked &&
                             !isMastered &&
                             skill.type != 'domain'
                         "
@@ -520,7 +511,6 @@ export default {
                     <button
                         v-else-if="
                             userDetailsStore.role == 'student' &&
-                            isUnlocked &&
                             !isMastered &&
                             skill.type == 'domain'
                         "
@@ -682,7 +672,7 @@ export default {
                                 sessionDetailsStore.isLoggedIn &&
                                 isMastered == false &&
                                 isUnlocked == false &&
-                                goalExists == false &&
+                                isGoal == false &&
                                 userDetailsStore.role == 'student'
                             "
                             class="btn primary-btn"
@@ -934,13 +924,31 @@ export default {
                         ></div>
                     </div>
 
+                    <!-- Learning Objectives -->
+                    <div v-if="skill.type != 'domain'" class="mt-4">
+                        <h2 class="h4 secondary-heading">
+                            Learning Objectives
+                        </h2>
+                        <div class="bg-white rounded p-2">
+                            <ul>
+                                <li
+                                    v-for="learningObjective in skill.learningObjectives"
+                                >
+                                    <p>
+                                        {{ learningObjective.objective }}
+                                    </p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
                     <!-- Mastery Requirements -->
                     <div v-if="skill.type != 'domain'" class="mt-4">
                         <h2 class="h4 secondary-heading">
-                            Requirements for mastery
+                            Requirements for Mastery
                         </h2>
                         <div
-                            class="bg-white rounded p-2"
+                            class="bg-white rounded p-2 mastery-requirements-section"
                             v-html="skill.mastery_requirements"
                         ></div>
                     </div>
@@ -950,21 +958,9 @@ export default {
                     <div class="info-box p-2 mb-2">
                         <!-- AWS S3 hosted feature image -->
                         <!-- Using random number otherwise url doesnt change (cache)-->
-                        <a
-                            :href="
-                                'https://institute-skill-infobox-images.s3.amazonaws.com/' +
-                                skillUrl +
-                                '?' +
-                                randomNum
-                            "
-                        >
+                        <a :href="skill.image_url">
                             <img
-                                :src="
-                                    'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
-                                    skillUrl +
-                                    '?' +
-                                    randomNum
-                                "
+                                :src="skill.image_thumbnail_url"
                                 @error="imageUrlAlternative"
                                 class="rounded img-fluid"
                             />
@@ -1269,6 +1265,11 @@ export default {
 </template>
 
 <style scoped>
+/* Mastery Reqruirements Section */
+::v-deep(.mastery-requirements-section p) {
+    font-family: 'Poppins', sans-serif !important;
+}
+
 /* Tooltips */
 .info-panel {
     border-color: var(--primary-color);
@@ -1400,7 +1401,6 @@ export default {
     /* Modal Content/Box */
     .modal-content {
         width: 90% !important;
-
         margin: auto;
         margin-top: 30%;
     }

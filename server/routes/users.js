@@ -203,7 +203,8 @@ router.post('/new-editor/add', (req, res, next) => {
             username: req.body.username,
             email: req.body.email,
             password: hashedPassword,
-            role: 'editor'
+            role: 'editor',
+            theme: 'editor'
         };
 
         // Check if username or email address already exist.
@@ -232,7 +233,7 @@ router.post('/new-editor/add', (req, res, next) => {
                             } else {
                                 if (results.length > 0) {
                                     if (results[0].is_deleted) {
-                                        let restoreSql = `UPDATE users SET ? , is_deleted = 0 WHERE email = ?`;
+                                        let restoreSql = `UPDATE users SET ? , is_deleted = 0, theme = 'editor' WHERE email = ?`;
 
                                         conn.query(
                                             restoreSql,

@@ -36,10 +36,10 @@ export default {
             case 'original':
                 joystickColor = '#184e80';
                 break;
-            case 'apprentice':
+            case 'instructor':
                 joystickColor = '#000000';
                 break;
-            case 'scholar':
+            case 'editor':
                 joystickColor = '#ffffff';
                 break;
             default:

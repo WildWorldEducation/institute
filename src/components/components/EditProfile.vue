@@ -111,7 +111,7 @@ export default {
             var url = '/users/profile/' + this.id + '/edit-password';
             fetch(url, requestOptions).then(() => {
                 this.userDetailsStore.getUserDetails();
-                this.$router.push('/profile-settings');
+                this.$router.push('/profile');
             });
         },
         Submit() {
@@ -155,12 +155,12 @@ export default {
                         fetch(url, requestOptions).then(() => {
                             // refresh user list so the users page will show the update data
                             this.userDetailsStore.getUserDetails();
-                            this.$router.push('/profile-settings');
+                            this.$router.push('/profile');
                         });
                     } else {
                         // refresh user list so the users page will show the update data
                         this.userDetailsStore.getUserDetails();
-                        this.$router.push('/profile-settings');
+                        this.$router.push('/profile');
                     }
                 });
             }
