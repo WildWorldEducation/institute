@@ -42,6 +42,7 @@ export default {
             showMobileTutorialTip4: false,
             showTutorialTip5: false,
             showMobileTutorialTip5: false,
+            showMobileTutorialTip5_1: false,
             showTutorialTip6: false,
             showMobileTutorialTip6: false,
             showTutorialTip7: false,
@@ -244,8 +245,15 @@ export default {
                     this.showTutorialTip6 = true;
                 } else {
                     this.showMobileTutorialTip5 = false;
-                    this.showMobileTutorialTip6 = true;
+                    if (this.userDetailsStore.isSkillsLocked == 0) {
+                        this.showMobileTutorialTip6 = true;
+                    } else {
+                        this.showMobileTutorialTip5_1 = true;
+                    }
                 }
+            } else if (step == 5_1) {
+                this.showMobileTutorialTip5_1 = false;
+                this.showMobileTutorialTip6 = true;
             } else if (step == 6) {
                 if (this.isMobileCheck > 576) {
                     this.showTutorialTip6 = false;
@@ -286,6 +294,7 @@ export default {
             this.showTutorialTip5 = false;
             this.showTutorialTip6 = false;
             this.showTutorialTip7 = false;
+            this.showTutorialTip7_1 = false;
             this.showTutorialTip8 = false;
             this.isTutorialComplete = false;
         },
@@ -1109,7 +1118,10 @@ export default {
             v-if="showTutorialTip7_1"
             class="info-panel bg-light rounded p-2 mb-2"
         >
-            <p>Use this button to toggle between unlocked and locked skills.</p>
+            <p>
+                Use this button to toggle between showing only unlocked or all
+                skills.
+            </p>
             <button class="btn primary-btn" @click="progressTutorial(7_1)">
                 next
             </button>
@@ -1596,7 +1608,8 @@ export default {
             showTutorialTip8 ||
             showMobileTutorialTip4 ||
             showMobileTutorialTip5 ||
-            showMobileTutorialTip6
+            showMobileTutorialTip6 ||
+            showMobileTutorialTip5_1
         "
         class="modal"
     >
@@ -1659,6 +1672,15 @@ export default {
                     both subjects and levels.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(5)">
+                    next
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip5_1">
+                <p>
+                    Use the button at the bottom left to toggle between showing
+                    only unlocked or all skills.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(5_1)">
                     next
                 </button>
             </div>
