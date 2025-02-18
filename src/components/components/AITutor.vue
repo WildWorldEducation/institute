@@ -35,6 +35,9 @@ export default {
     computed: {},
     methods: {
         async SendMessage() {
+            if (this.waitForAIresponse) {
+                return;
+            }
             this.waitForAIresponse = true;
             try {
                 // Add user message to messages list
@@ -43,6 +46,7 @@ export default {
                     content: [{ text: { value: this.message } }]
                 };
                 this.messageList.push(userMessage);
+                this.message = '';
                 const requestOptions = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
