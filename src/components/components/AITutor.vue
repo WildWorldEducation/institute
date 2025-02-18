@@ -148,11 +148,11 @@ export default {
         <div class="d-flex flex-column flex-md-row gap-2 align-items-baseline">
             <div class="d-flex flex-row w-100 justify-content-between">
                 <div class="d-flex gap-2">
-                    <h2 class="heading">Learn With AI Tutor</h2>
+                    <h2 class="heading">Learn with the AI tutor</h2>
                     <TooltipBtn
                         v-if="mode === 'big'"
                         class="d-none d-md-block"
-                        toolTipText="Chat with ours AI Tutor about the subjects"
+                        toolTipText="Chat with our AI tutor about the subject"
                         bubbleWidth="350px"
                         trianglePosition="left"
                         absoluteTop="37px"
@@ -354,7 +354,7 @@ export default {
             />
         </svg>
     </div>
-    <h1>{{ mode }}</h1>
+    <!-- <h1>{{ mode }}</h1> -->
 </template>
 
 <style scoped>
