@@ -495,19 +495,25 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // Checking if skill is unlocked before allowing student to take assessment.
-    // if (to.name == 'assessment') {
-    //     const userSkillsStore = useUserSkillsStore();
+    if (to.name == 'assessment') {
+        const userSkillsStore = useUserSkillsStore();
 
-    //     await userSkillsStore.getUnnestedList(userDetailsStore.userId);
-    //     const currentSkill = userSkillsStore.unnestedList.find(
-    //         (item) => item.id == to.params.id
-    //     );
+        await userSkillsStore.getUnnestedList(userDetailsStore.userId);
+        const currentSkill = userSkillsStore.unnestedList.find(
+            (item) => item.id == to.params.id
+        );
 
-    //     if (currentSkill.is_accessible != 1 || currentSkill.is_mastered == 1) {
-    //         next({ path: '/skills/' + to.params.id });
-    //         return;
-    //     }
-    // }
+        // Only block them if their instructor enforced locking.
+        if (userDetailsStore.isSkillsLocked == 1) {
+            if (
+                currentSkill.is_accessible != 1 ||
+                currentSkill.is_mastered == 1
+            ) {
+                next({ path: '/skills' });
+                return;
+            }
+        }
+    }
 
     if (to.name == 'show-skill') {
         const skillsStore = useSkillsStore();
