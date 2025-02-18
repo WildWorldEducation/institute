@@ -22,7 +22,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
             subjectFilters: [],
             isUnlockedSkillsOnlyFilter: null,
             reputationScore: null,
-            cohortId: null
+            cohortId: null,
+            isSkillsLocked: 0
         };
     },
     actions: {
@@ -67,6 +68,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
             if (data.length > 0) {
                 this.instructorId = data[0].id;
                 this.instructorUsername = data[0].username;
+                this.isSkillsLocked = data[0].is_skills_locked;
             }
         },
         async updateProfile(userName, skillTreeTheme, avatar) {

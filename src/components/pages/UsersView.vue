@@ -27,7 +27,8 @@ export default {
                 lastName: null,
                 username: null,
                 avatar: null,
-                role: null
+                role: null,
+                isSkillsLocked: null
             },
             // Only for users with the "student" role.
             instructor: null,
@@ -90,6 +91,7 @@ export default {
             this.user.username = this.students[0].username;
             this.user.email = this.students[0].email;
             this.user.avatar = this.students[0].avatar;
+            this.user.isSkillsLocked = this.students[0].isSkillsLocked;
         } else if (this.userDetailsStore.role == 'editor') {
             this.user.id = this.usersStore.editors[0].id;
             this.user.firstName = this.usersStore.editors[0].first_name;
@@ -119,6 +121,7 @@ export default {
             this.user.email = user.email;
             this.user.avatar = user.avatar;
             this.user.role = user.role;
+            this.user.isSkillsLocked = user.isSkillsLocked;
             // turn on the show details flag
             this.showDetails = true;
             if (this.user.role == 'student') this.getInstructor();
@@ -148,7 +151,8 @@ export default {
             }
         },
         async getStudents() {
-            var studentIds = [];
+            this.students = [];
+            var instructorStudentData = [];
             for (
                 let i = 0;
                 i < this.instructorStudentsStore.instructorStudentsList.length;
@@ -158,15 +162,25 @@ export default {
                     this.instructorStudentsStore.instructorStudentsList[i]
                         .instructor_id == this.userDetailsStore.userId
                 ) {
-                    studentIds.push(
-                        this.instructorStudentsStore.instructorStudentsList[i]
-                            .student_id
-                    );
+                    instructorStudentData.push({
+                        id: this.instructorStudentsStore.instructorStudentsList[
+                            i
+                        ].student_id,
+                        isSkillsLocked:
+                            this.instructorStudentsStore.instructorStudentsList[
+                                i
+                            ].is_skills_locked
+                    });
                 }
             }
             for (let i = 0; i < this.usersStore.users.length; i++) {
-                for (let j = 0; j < studentIds.length; j++) {
-                    if (this.usersStore.users[i].id == studentIds[j]) {
+                for (let j = 0; j < instructorStudentData.length; j++) {
+                    if (
+                        this.usersStore.users[i].id ==
+                        instructorStudentData[j].id
+                    ) {
+                        this.usersStore.users[i].isSkillsLocked =
+                            instructorStudentData[j].isSkillsLocked;
                         this.students.push(this.usersStore.users[i]);
                     }
                 }
@@ -216,6 +230,22 @@ export default {
                 headers: { 'Content-Type': 'application/json' }
             };
             fetch(url, requestOptions);
+        },
+        updateSkillsLock() {
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    isSkillsLocked: this.user.isSkillsLocked
+                })
+            };
+
+            fetch(
+                '/instructor-students/' +
+                    this.user.id +
+                    '/update-locked-skills',
+                requestOptions
+            ).then(() => this.getStudents());
         }
     }
 };
@@ -292,10 +322,15 @@ export default {
                     <UserDetails
                         v-if="
                             userDetailsStore.role == 'admin' ||
-                            (userDetailsStore.role == 'instructor' &&
-                                students.length > 0) ||
                             (userDetailsStore.role == 'editor' &&
                                 usersStore.editors.length > 0)
+                        "
+                        :userId="user.id"
+                    />
+                    <UserDetails
+                        v-else-if="
+                            userDetailsStore.role == 'instructor' &&
+                            students.length > 0
                         "
                         :userId="user.id"
                     />

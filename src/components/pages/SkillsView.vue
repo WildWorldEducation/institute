@@ -30,6 +30,8 @@ export default {
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false,
+            showTutorialTip1_1: false,
+            showMobileTutorialTip1_1: false,
             showTutorialTip2: false,
             showMobileTutorialTip2: false,
             showTutorialTip3: false,
@@ -38,8 +40,6 @@ export default {
             showMobileTutorialTip4: false,
             showTutorialTip5: false,
             showMobileTutorialTip5: false,
-            showTutorialTip6: false,
-            showMobileTutorialTip6: false,
             isInstructorModeTutorialComplete: false,
             showInstructorModeTutorialTip1: false,
             showInstructorModeTutorialTip2: false,
@@ -115,10 +115,23 @@ export default {
                 else {
                     this.showTutorialTip1 = false;
                     if (this.isMobileCheck > 576) {
-                        this.showTutorialTip2 = true;
+                        if (this.userDetailsStore.isSkillsLocked == 1) {
+                            this.showTutorialTip1_1 = true;
+                        } else this.showTutorialTip2 = true;
                     } else {
+                        if (this.userDetailsStore.isSkillsLocked == 1) {
+                            this.showMobileTutorialTip1_1 = true;
+                        }
                         this.showMobileTutorialTip2 = true;
                     }
+                }
+            } else if (step == 1_1) {
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip1_1 = false;
+                    this.showTutorialTip2 = true;
+                } else {
+                    this.showMobileTutorialTip1_1 = false;
+                    this.showMobileTutorialTip2 = true;
                 }
             } else if (step == 2) {
                 // Only for instructors viewing their student's tree
@@ -161,20 +174,11 @@ export default {
             } else if (step == 5) {
                 if (this.isMobileCheck > 576) {
                     this.showTutorialTip5 = false;
-                    this.showTutorialTip6 = true;
                 } else {
                     this.showMobileTutorialTip5 = false;
-                    this.showMobileTutorialTip6 = true;
                 }
                 if (this.userDetailsStore.role == 'instructor') {
                     this.showTutorialTip5 = false;
-                    this.markTutorialComplete();
-                }
-            } else if (step == 6) {
-                if (this.isMobileCheck > 576) {
-                    this.showTutorialTip6 = false;
-                } else {
-                    this.showMobileTutorialTip6 = false;
                 }
                 this.markTutorialComplete();
             }
@@ -193,7 +197,6 @@ export default {
             this.showTutorialTip3 = false;
             this.showTutorialTip4 = false;
             this.showTutorialTip5 = false;
-            this.showTutorialTip6 = false;
             this.isTutorialComplete = false;
         },
         restartMobileTutorial() {
@@ -202,7 +205,6 @@ export default {
             this.showMobileTutorialTip3 = false;
             this.showMobileTutorialTip4 = false;
             this.showMobileTutorialTip5 = false;
-            this.showMobileTutorialTip6 = false;
             this.isTutorialComplete = false;
         },
         restartInstructorTutorial() {
@@ -352,22 +354,38 @@ export default {
                 <div
                     v-if="
                         userDetailsStore.role == 'student' &&
-                        (showTutorialTip2 ||
+                        (showTutorialTip1_1 ||
+                            showTutorialTip2 ||
                             showTutorialTip3 ||
                             showTutorialTip4 ||
-                            showTutorialTip5 ||
-                            showTutorialTip6)
+                            showTutorialTip5)
                     "
                     class="info-panel me-4 mt-1 bg-light"
                 >
                     <div
-                        v-if="showTutorialTip2"
+                        v-if="showTutorialTip1_1"
                         class="info-text mt-1 rounded p-2"
                     >
                         <p>
                             Greyed out nodes are locked until you pass the tests
                             of the skills that precede them.
                         </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(1_1)"
+                        >
+                            next
+                        </button>
+                    </div>
+                    <div
+                        v-if="showTutorialTip2"
+                        class="info-text mt-1 rounded p-2"
+                    >
+                        <p>
+                            A sad face icon indicates that the skill has not yet
+                            been mastered.
+                        </p>
+                        <p>Every mastered skill has a happy face icon.</p>
                         <button
                             class="btn primary-btn"
                             @click="progressTutorial(2)"
@@ -379,11 +397,12 @@ export default {
                         v-else-if="showTutorialTip3"
                         class="info-text mt-1 rounded p-2"
                     >
+                        <p>Some nodes feature a plus or minus sign.</p>
                         <p>
-                            A sad face icon indicates that the skill has not yet
-                            been mastered.
+                            This indicates that the skill contains mini-skills
+                            that need to be mastered before you can take an
+                            assessment to prove mastery of that larger skill.
                         </p>
-                        <p>Every mastered skill has a happy face icon.</p>
                         <button
                             class="btn primary-btn"
                             @click="progressTutorial(3)"
@@ -393,23 +412,6 @@ export default {
                     </div>
                     <div
                         v-else-if="showTutorialTip4"
-                        class="info-text mt-1 rounded p-2"
-                    >
-                        <p>Some nodes feature a plus or minus sign.</p>
-                        <p>
-                            This indicates that the skill contains mini-skills
-                            that need to be mastered before you can take an
-                            assessment to prove mastery of that larger skill.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(4)"
-                        >
-                            next
-                        </button>
-                    </div>
-                    <div
-                        v-else-if="showTutorialTip5"
                         class="info-text mt-1 rounded p-2"
                     >
                         <p>
@@ -424,26 +426,22 @@ export default {
                         </p>
                         <button
                             class="btn primary-btn"
-                            @click="progressTutorial(5)"
+                            @click="progressTutorial(4)"
                         >
                             next
                         </button>
                     </div>
                     <div
-                        v-else-if="showTutorialTip6"
+                        v-else-if="showTutorialTip5"
                         class="info-text mt-1 rounded p-2"
                     >
                         <p>
                             Click on a skill node to go to the page for that
                             skill.
                         </p>
-                        <p>
-                            Remember, you can only attempt to master unlocked
-                            skills.
-                        </p>
                         <button
                             class="btn primary-btn"
-                            @click="progressTutorial(6)"
+                            @click="progressTutorial(5)"
                         >
                             close
                         </button>
@@ -456,8 +454,7 @@ export default {
                         (showTutorialTip2 ||
                             showTutorialTip3 ||
                             showTutorialTip4 ||
-                            showTutorialTip5 ||
-                            showTutorialTip6)
+                            showTutorialTip5)
                     "
                     class="info-panel me-4 mt-1 bg-light"
                 >
@@ -519,8 +516,9 @@ export default {
                         class="info-text mt-1 rounded p-2"
                     >
                         <p>
-                            When a student unlocks a skill (by passing a quiz)
-                            the next skill will be unlocked.
+                            If locking is enabled, when a student masters a
+                            skill (by passing a quiz) the next skill will be
+                            unlocked.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -607,8 +605,7 @@ export default {
                 showMobileTutorialTip2 ||
                 showMobileTutorialTip3 ||
                 showMobileTutorialTip4 ||
-                showMobileTutorialTip5 ||
-                showMobileTutorialTip6)
+                showMobileTutorialTip5)
         "
         class="modal"
     >
@@ -626,28 +623,28 @@ export default {
                     next
                 </button>
             </div>
-            <div v-else-if="showMobileTutorialTip2">
+            <div v-else-if="showMobileTutorialTip1_1">
                 <p>
                     Greyed out nodes are locked until you pass the tests of the
                     skills that precede them.
                 </p>
 
-                <button class="btn primary-btn" @click="progressTutorial(2)">
+                <button class="btn primary-btn" @click="progressTutorial(1_1)">
                     next
                 </button>
             </div>
-            <div v-else-if="showMobileTutorialTip3">
+            <div v-else-if="showMobileTutorialTip2">
                 <p>
                     A sad face icon indicates that the skill has not yet been
                     mastered.
                 </p>
                 <p>Every mastered skill has a happy face icon.</p>
 
-                <button class="btn primary-btn" @click="progressTutorial(3)">
+                <button class="btn primary-btn" @click="progressTutorial(2)">
                     next
                 </button>
             </div>
-            <div v-else-if="showMobileTutorialTip4">
+            <div v-else-if="showMobileTutorialTip3">
                 <p>Some nodes feature a plus or minus sign.</p>
                 <p>
                     This indicates that the skill contains mini-skills that need
@@ -655,11 +652,11 @@ export default {
                     mastery of that larger skill.
                 </p>
 
-                <button class="btn primary-btn" @click="progressTutorial(4)">
+                <button class="btn primary-btn" @click="progressTutorial(3)">
                     next
                 </button>
             </div>
-            <div v-else-if="showMobileTutorialTip5">
+            <div v-else-if="showMobileTutorialTip4">
                 <p>
                     If you think a skill is missing (either from the site in
                     general or from a certain branch of the tree) you can
@@ -669,15 +666,14 @@ export default {
                     —just make sure you run a thorough search before making your
                     suggestion.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(5)">
+                <button class="btn primary-btn" @click="progressTutorial(4)">
                     next
                 </button>
             </div>
-            <div v-else-if="showMobileTutorialTip6">
+            <div v-else-if="showMobileTutorialTip5">
                 <p>Click on a skill node to go to the page for that skill.</p>
-                <p>Remember, you can only attempt to master unlocked skills.</p>
 
-                <button class="btn primary-btn" @click="progressTutorial(6)">
+                <button class="btn primary-btn" @click="progressTutorial(5)">
                     close
                 </button>
             </div>

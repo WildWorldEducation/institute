@@ -69,5 +69,53 @@ router.get('/:instructorId/list', (req, res, next) => {
     }
 });
 
+/**
+ * Get Is Skills Locked
+ *
+ * @return response()
+ */
+router.get('/:studentId/is-skills-locked', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT is_skills_locked
+        FROM instructor_students
+        WHERE student_id = '${req.params.studentId}';`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results[0].is_skills_locked);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
+ * Update whether student's skills are locked or not.
+ */
+router.put('/:userId/update-locked-skills', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `
+        UPDATE instructor_students
+        SET is_skills_locked = ${req.body.isSkillsLocked}
+        WHERE student_id = '${req.params.userId}';
+        `;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;
