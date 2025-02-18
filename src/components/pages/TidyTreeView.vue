@@ -45,6 +45,7 @@ export default {
             showTutorialTip6: false,
             showMobileTutorialTip6: false,
             showTutorialTip7: false,
+            showTutorialTip7_1: false,
             showTutorialTip8: false,
             isMobileCheck: window.innerWidth,
             // To enableinstructor to lock the tree for student.
@@ -256,6 +257,15 @@ export default {
             } else if (step == 7) {
                 if (this.isMobileCheck > 576) {
                     this.showTutorialTip7 = false;
+                    if (this.userDetailsStore.isSkillsLocked == 0) {
+                        this.showTutorialTip8 = true;
+                    } else {
+                        this.showTutorialTip7_1 = true;
+                    }
+                }
+            } else if (step == 7_1) {
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip7_1 = false;
                     this.showTutorialTip8 = true;
                 }
             } else if (step == 8) {
@@ -365,12 +375,9 @@ export default {
                     Filters
                 </button>
                 <button
-                   
                     v-if="sessionDetailsStore.isLoggedIn"
                     class="btn primary-btn d-md-block d-none"
-                   
                     @click="resetPos()"
-                
                 >
                     Center
                 </button>
@@ -1099,11 +1106,11 @@ export default {
         </button>
 
         <div
-            v-if="showTutorialTip6"
+            v-if="showTutorialTip7_1"
             class="info-panel bg-light rounded p-2 mb-2"
         >
             <p>Use this button to toggle between unlocked and locked skills.</p>
-            <button class="btn primary-btn" @click="progressTutorial(6)">
+            <button class="btn primary-btn" @click="progressTutorial(7_1)">
                 next
             </button>
         </div>
