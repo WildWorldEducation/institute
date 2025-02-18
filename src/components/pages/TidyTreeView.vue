@@ -60,7 +60,6 @@ export default {
                 );
             }
         }
-
         // Turn this on only if user is logged in.
         if (this.sessionDetailsStore.isLoggedIn) {
             this.checkIfTutorialComplete();
@@ -365,7 +364,14 @@ export default {
                 >
                     Filters
                 </button>
-                <button class="btn primary-btn" @click="resetPos()">
+                <button
+                   
+                    v-if="sessionDetailsStore.isLoggedIn"
+                    class="btn primary-btn d-md-block d-none"
+                   
+                    @click="resetPos()"
+                
+                >
                     Center
                 </button>
                 <!-- Restart tutorial button -->
@@ -400,11 +406,16 @@ export default {
                 />
                 <div class="d-flex justify-content-end">
                     <!-- Reset Button -->
-                    <button class="btn primary-btn me-2" @click="resetPos()">
+                    <button
+                        v-if="sessionDetailsStore.isLoggedIn"
+                        class="btn primary-btn me-2"
+                        @click="resetPos()"
+                    >
                         Center
                     </button>
                     <!-- Print Button -->
                     <button
+                        v-if="sessionDetailsStore.isLoggedIn"
                         class="btn primary-btn me-2"
                         @click="$refs.childComponent.printPDF()"
                     >
@@ -1938,6 +1949,8 @@ export default {
 @media (max-width: 480px) {
     .mobile-legend {
         display: flex;
+        justify-content: space-between;
+        gap: 15px;
     }
 
     .tablet-and-up-legend {
