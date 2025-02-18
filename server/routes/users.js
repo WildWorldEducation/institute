@@ -805,21 +805,46 @@ router.put(
                 avatar = req.body.avatar;
             }
 
-            let sqlQuery = `UPDATE users 
-            SET first_name = ${conn.escape(req.body.firstname)}, 
-            last_name = ${conn.escape(req.body.lastname)}, 
-            username = ${conn.escape(req.body.username)}, 
-            email = ${conn.escape(req.body.email)}, 
-            password = ${conn.escape(req.body.password)},
-            role = ${conn.escape(req.body.role)} 
-            WHERE id = ${conn.escape(req.params.id)};`;
+            // Initialize fields to update
+            let fieldsToUpdate = [];
+
+            // Check if user is an admin or instructor and set fields to update accordingly
+            if (req.session.role === 'admin') {
+                // Admin can update all fields
+                fieldsToUpdate = [
+                    { field: 'first_name', value: req.body.firstname },
+                    { field: 'last_name', value: req.body.lastname },
+                    { field: 'username', value: req.body.username },
+                    { field: 'email', value: req.body.email },
+                    { field: 'password', value: req.body.password },
+                    { field: 'role', value: req.body.role }
+                ];
+            } else if (req.session.role === 'instructor') {
+                // Instructor can only update specific fields
+                fieldsToUpdate = [
+                    { field: 'first_name', value: req.body.firstname },
+                    { field: 'last_name', value: req.body.lastname },
+                    { field: 'username', value: req.body.username },
+                    { field: 'email', value: req.body.email }
+                ];
+            }
+
+            // Build the SQL update query dynamically
+            let sqlQuery = 'UPDATE users SET ';
+            fieldsToUpdate.forEach((field, index) => {
+                sqlQuery += `${field.field} = ${conn.escape(field.value)}`;
+                if (index < fieldsToUpdate.length - 1) {
+                    sqlQuery += ', ';
+                }
+            });
+            sqlQuery += ` WHERE id = ${conn.escape(req.params.id)};`;
 
             conn.query(sqlQuery, async (err, results) => {
                 try {
                     if (err) {
                         throw err;
                     }
-                    // Upload avatar to AWS
+                    // Upload avatar to AWS if provided
                     if (avatar != '') {
                         await saveUserAvatarToAWS(req.params.id, avatar);
                     }
