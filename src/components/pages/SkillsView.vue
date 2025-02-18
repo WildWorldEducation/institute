@@ -30,6 +30,7 @@ export default {
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false,
+            showTutorialTip1_1: false,
             showTutorialTip2: false,
             showMobileTutorialTip2: false,
             showTutorialTip3: false,
@@ -112,12 +113,17 @@ export default {
                 // For students and instructors
                 else {
                     this.showTutorialTip1 = false;
-                    if (this.isMobileCheck > 576) {
+                    if (this.userDetailsStore.isSkillsLocked == 1) {
+                        this.showTutorialTip1_1 = true;
+                    } else if (this.isMobileCheck > 576) {
                         this.showTutorialTip2 = true;
                     } else {
                         this.showMobileTutorialTip2 = true;
                     }
                 }
+            } else if (step == 1_1) {
+                this.showTutorialTip1_1 = false;
+                this.showTutorialTip2 = true;
             } else if (step == 2) {
                 // Only for instructors viewing their student's tree
                 if (this.instructorMode) {
@@ -339,15 +345,16 @@ export default {
                 <div
                     v-if="
                         userDetailsStore.role == 'student' &&
-                        (showTutorialTip2 ||
+                        (showTutorialTip1_1 ||
+                            showTutorialTip2 ||
                             showTutorialTip3 ||
                             showTutorialTip4 ||
                             showTutorialTip5)
                     "
                     class="info-panel me-4 mt-1 bg-light"
                 >
-                    <!-- <div
-                        v-if="showTutorialTip2"
+                    <div
+                        v-if="showTutorialTip1_1"
                         class="info-text mt-1 rounded p-2"
                     >
                         <p>
@@ -356,11 +363,11 @@ export default {
                         </p>
                         <button
                             class="btn primary-btn"
-                            @click="progressTutorial(2)"
+                            @click="progressTutorial(1_1)"
                         >
                             next
                         </button>
-                    </div> -->
+                    </div>
                     <div
                         v-if="showTutorialTip2"
                         class="info-text mt-1 rounded p-2"
