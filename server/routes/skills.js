@@ -637,7 +637,7 @@ router.get('/url/:skillUrl', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     // Get skill.
     const sqlQuery = `SELECT s.id, s.name, s.url, s.parent, s.introduction, s.type, s.level, s.image_thumbnail_url, s.mastery_requirements,
-                        s.version_number, parent_skill.type AS parent_type
+                        s.version_number, s.order, parent_skill.type AS parent_type
                     FROM 
                         skills AS s
                     LEFT JOIN 
