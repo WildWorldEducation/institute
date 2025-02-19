@@ -76,7 +76,8 @@ export default {
             showTutorialTip5: false,
             showTutorialTip6: false,
             showCategoryCompletedModal: false,
-            nextSkillsInBranch: []
+            nextSkillsInBranch: [],
+            showAIBtns: false
         };
     },
     components: {
@@ -252,13 +253,11 @@ export default {
             this.selectedSkill = skill;
             this.toggleModal = true;
         },
-
         // Close the modal
         closeModal() {
             this.toggleModal = false;
             this.selectedSkill = null;
         },
-
         // Confirm create goal and execute the necessary logic
         async confirmCreateGoal() {
             if (!this.selectedSkill) return; // Ensure a skill is selected
@@ -418,7 +417,10 @@ export default {
                 headers: { 'Content-Type': 'application/json' }
             };
             fetch(url, requestOptions);
-        }
+        },
+
+        explainLearningObjective(learningObjective) {},
+        quizLearningObjective(learningObjective) {}
     },
     /**
      * Because in Vue when only the params change the component instance will NOT be load
@@ -928,6 +930,23 @@ export default {
                     <div v-if="skill.type != 'domain'" class="mt-4">
                         <h2 class="h4 secondary-heading">
                             Learning Objectives
+                            <button
+                                class="btn"
+                                @click="showAIBtns = !showAIBtns"
+                            >
+                                <!-- Robot icon -->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 640 512"
+                                    width="18"
+                                    height="18"
+                                    fill="black"
+                                >
+                                    <path
+                                        d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
+                                    />
+                                </svg>
+                            </button>
                         </h2>
                         <div class="bg-white rounded p-2">
                             <ul>
@@ -936,6 +955,53 @@ export default {
                                 >
                                     <p>
                                         {{ learningObjective.objective }}
+                                        <!-- learning objective explanation button -->
+                                        <button
+                                            v-if="showAIBtns"
+                                            class="btn"
+                                            @click="
+                                                explainLearningObjective(
+                                                    learningObjective.objective
+                                                )
+                                            "
+                                        >
+                                            <!-- Robot icon -->
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 640 512"
+                                                width="18"
+                                                height="18"
+                                                fill="black"
+                                            >
+                                                <path
+                                                    d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
+                                                />
+                                            </svg>
+                                        </button>
+                                        <!-- learning objective quiz button -->
+                                        <button
+                                            v-if="showAIBtns"
+                                            class="btn"
+                                            @click="
+                                                quizLearningObjective(
+                                                    learningObjective.objective
+                                                )
+                                            "
+                                        >
+                                            <!-- Question mark icon -->
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 512 512"
+                                                width="18"
+                                                height="18"
+                                                fill="black"
+                                            >
+                                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                                                <path
+                                                    d="M504 256c0 137-111 248-248 248S8 393 8 256C8 119.1 119 8 256 8s248 111.1 248 248zM262.7 90c-54.5 0-89.3 23-116.5 63.8-3.5 5.3-2.4 12.4 2.7 16.3l34.7 26.3c5.2 3.9 12.6 3 16.7-2.1 17.9-22.7 30.1-35.8 57.3-35.8 20.4 0 45.7 13.1 45.7 33 0 15-12.4 22.7-32.5 34C247.1 238.5 216 254.9 216 296v4c0 6.6 5.4 12 12 12h56c6.6 0 12-5.4 12-12v-1.3c0-28.5 83.2-29.6 83.2-106.7 0-58-60.2-102-116.5-102zM256 338c-25.4 0-46 20.6-46 46 0 25.4 20.6 46 46 46s46-20.6 46-46c0-25.4-20.6-46-46-46z"
+                                                />
+                                            </svg>
+                                        </button>
                                     </p>
                                 </li>
                             </ul>
@@ -1265,6 +1331,25 @@ export default {
 </template>
 
 <style scoped>
+/* Learning objectives */
+.tutor-button {
+    display: none;
+    border: 1px solid black;
+    cursor: pointer;
+}
+
+.learning-objective {
+    display: block;
+}
+
+.learning-objective:hover ~ .tutor-button {
+    display: block;
+}
+
+.learning-objective:hover {
+    display: none;
+}
+
 /* Mastery Reqruirements Section */
 ::v-deep(.mastery-requirements-section p) {
     font-family: 'Poppins', sans-serif !important;
