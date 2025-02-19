@@ -58,8 +58,6 @@ const saveImageToAWS = async (image, skillUrl, editUUID) => {
         Bucket: skillInfoboxImagesBucketName
     };
 
-    
-
     // Send to the bucket.
     const fullSizeCommand = new PutObjectCommand(fullSizeData);
     await s3.send(fullSizeCommand);
@@ -202,13 +200,16 @@ const saveBase64ImageToBucket = async (base64Image, imageName, bucket) => {
     }
 };
 
+/**
+ * Add skill icon base64 string into AWS
+ * (For user's avatar image)
+ */
 const saveUserAvatarToAWS = async (userId, base64Image) => {
     if (!base64Image) {
         return null;
     }
 
     // Extract MIME type and decode Base64
-
     const match = base64Image.match(/^data:(image\/(jpeg|png));base64,/);
     if (!match) {
         throw new Error(
