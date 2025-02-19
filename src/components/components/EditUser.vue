@@ -298,7 +298,7 @@ export default {
                             <input
                                 id="choose-avatar"
                                 type="file"
-                                accept="image/*"
+                                accept="image/png, image/jpeg"
                                 @change="onFileChange"
                                 hidden
                             />

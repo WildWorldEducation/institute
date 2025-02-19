@@ -791,7 +791,7 @@ router.delete('/:id', isAuthenticated, isAdmin, (req, res, next) => {
 });
 
 /**
- * Update User
+ * Admin edit User
  */
 router.put(
     '/:id/edit',
@@ -799,10 +799,22 @@ router.put(
     editUserPermission,
     (req, res, next) => {
         if (req.session.userName) {
+            // Need to decide whether avatar needs to be replaced.
+            let isReplaceAvatar = false;
+            // Check if avatar field is a url, in which case it does not need to be replaced.
+            function isValidHttpUrl(string) {
+                let url;
+                try {
+                    url = new URL(string);
+                } catch (_) {
+                    return false;
+                }
+                return url.protocol === 'http:' || url.protocol === 'https:';
+            }
             // Check if avatar field is empty.
-            let avatar = '';
-            if (req.body.avatar != null) {
-                avatar = req.body.avatar;
+            if (req.body.avatar != null && !isValidHttpUrl(req.body.avatar)) {
+                isReplaceAvatar = true;
+                req.body.avatar;
             }
 
             // Initialize fields to update
@@ -839,14 +851,17 @@ router.put(
             });
             sqlQuery += ` WHERE id = ${conn.escape(req.params.id)};`;
 
-            conn.query(sqlQuery, async (err, results) => {
+            conn.query(sqlQuery, async (err) => {
                 try {
                     if (err) {
                         throw err;
                     }
-                    // Upload avatar to AWS if provided
-                    if (avatar != '') {
-                        await saveUserAvatarToAWS(req.params.id, avatar);
+                    // Upload avatar to AWS
+                    if (isReplaceAvatar == true) {
+                        await saveUserAvatarToAWS(
+                            req.params.id,
+                            req.body.avatar
+                        );
                     }
                     res.end();
                 } catch (err) {
@@ -949,7 +964,7 @@ router.put(
     }
 );
 
-// User update their password
+// User update their password from profile page
 router.put(
     '/profile/:id/edit-password',
     isAuthenticated,
