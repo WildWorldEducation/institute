@@ -77,7 +77,9 @@ export default {
             currentNodeY: 0,
             visibleRangeX: 0,
             visibleRangeY: 0,
-            iconDictionary: []
+            iconDictionary: [],
+            numberOfLinkDraw: 0,
+            numberOfNodeDraw: 0
         };
     },
     components: {
@@ -301,6 +303,7 @@ export default {
             // Draw links.
             const links = this.root.links();
             this.context.beginPath();
+            this.numberOfLinkDraw = 0;
             for (const link of links) {
                 // Commented out as is buggy, lines that should be showing are disappearing on pan or zoom
                 // Do not render parts of tree not in the canvas
@@ -313,9 +316,15 @@ export default {
                 //     link.source,
                 //     transform
                 // );
+
+                if (!this.checkIfLinkInViews(link, transform)) {
+                    continue;
+                }
+
                 // if (!targetNodeInView && !sourceNodeInView) {
                 //     continue;
                 // }
+                this.numberOfLinkDraw = this.numberOfLinkDraw + 1;
                 this.drawLink(link);
             }
 
@@ -323,7 +332,7 @@ export default {
             this.context.beginPath();
 
             // Calculate max visible range
-
+            this.numberOfNodeDraw = 0;
             for (const node of this.nodes) {
                 // Do not render parts of tree not in the canvas
                 // to improve performance.
@@ -331,7 +340,7 @@ export default {
                 if (!nodeInView) {
                     continue;
                 }
-
+                this.numberOfNodeDraw = this.numberOfNodeDraw + 1;
                 if (node.renderCol) {
                     // Render clicked nodes in the color of their corresponding node
                     // on the hidden canvas.
@@ -355,15 +364,13 @@ export default {
                 // On the hidden canvas each rectangle gets a unique color.
                 this.hiddenCanvasContext.fillStyle = node.__pickColor;
 
-                // Only drawing node if it is in visible range. This help improve performance
-                if (this.checkingIfNodeInView(node, transform)) {
-                    this.drawNode(node);
-                }
+                this.drawNode(node);
             }
 
             this.context.restore();
             this.hiddenCanvasContext.restore();
         },
+
         drawNode(node) {
             // Make sure the nodes have solid outlines
             this.context.setLineDash([]);
@@ -1125,9 +1132,10 @@ export default {
             // Visible range is the rectangle with width and height equal to canvas context
             // Every time context is translate the visible range is changing too
 
-            const visibleRangeY = transformData.y - this.height;
+            const visibleRangeY = transformData.y - this.height - 250;
+            const visibleRangeX = this.width + 250;
             // Calculate real position of node with current scale
-            let realPositionX = node.y * transformData.k;
+            let realPositionX = node.y * transformData.k + 250;
             let realPositionY = -node.x * transformData.k;
 
             // I actually come up with this formula base on observe the changing of translate and node position when translate context
@@ -1135,7 +1143,7 @@ export default {
             let combinePosition = transformData.x + realPositionX;
             if (
                 combinePosition > 0 &&
-                combinePosition < this.width &&
+                combinePosition < visibleRangeX &&
                 transformData.y > realPositionY &&
                 realPositionY > visibleRangeY
             ) {
@@ -1143,7 +1151,47 @@ export default {
             }
             return false;
         },
+        checkIfLinkInViews(link, transformData) {
+            const targetNode = link.target;
+            const sourceNode = link.source;
+            let targetNodeInSideView = this.checkIfNodeInOneViewSide(
+                targetNode,
+                transformData
+            );
+            let sourceNodeInSideView = this.checkIfNodeInOneViewSide(
+                sourceNode,
+                transformData
+            );
+            return targetNodeInSideView || sourceNodeInSideView;
+        },
+        checkIfNodeInOneViewSide(node, transformData) {
+            let nodeInVisibleWidth = false;
+            let nodeInVisibleHeight = false;
 
+            // Calculate max visible range
+            // Visible range is the rectangle with width and height equal to canvas context
+            // Every time context is translate the visible range is changing too
+
+            const visibleRangeY = transformData.y - this.height - 250;
+            const visibleRangeX = this.width + 250;
+            // Calculate real position of node with current scale
+            let realPositionX = node.y * transformData.k + 250;
+            let realPositionY = -node.x * transformData.k;
+
+            // I actually come up with this formula base on observe the changing of translate and node position when translate context
+            // It doesn`t make sense to me but some how working correctly
+            let combinePosition = transformData.x + realPositionX;
+            if (combinePosition > 0 && combinePosition < visibleRangeX) {
+                nodeInVisibleWidth = true;
+            }
+            if (
+                transformData.y > realPositionY &&
+                realPositionY > visibleRangeY
+            ) {
+                nodeInVisibleHeight = true;
+            }
+            return nodeInVisibleHeight || nodeInVisibleWidth;
+        },
         async getIconData() {
             const res = await fetch('/skills/icon-list');
             const resData = await res.json();
@@ -1199,7 +1247,6 @@ export default {
                 xPosition = xPosition - 180;
             }
             ctx2.roundRect(xPosition, node.x - 20, 180, 40, 20);
-
             ctx2.fill();
         },
         // Draw round rectangle node
@@ -1532,6 +1579,10 @@ export default {
         <ZoomControl ref="ZoomControl" />
         <div id="sidepanel-backdrop"></div>
         <JoystickControl class="d-none" />
+        <div class="debug-console">
+            <div class="">Draw Links: {{ numberOfLinkDraw }}</div>
+            <div class="">Draw Node: {{ numberOfNodeDraw }}</div>
+        </div>
     </div>
 </template>
 
@@ -1669,6 +1720,16 @@ canvas {
     border-radius: 50%;
     transform: translate(-50%, -50%); /* Center the circle on click */
     animation: clickEffect 0.7s infinite ease-out;
+}
+
+.debug-console {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    z-index: 1000;
+    background-color: aqua;
+    color: black;
+    bottom: 100px;
 }
 
 @keyframes clickEffect {
