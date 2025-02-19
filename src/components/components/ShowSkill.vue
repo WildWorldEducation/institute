@@ -12,6 +12,7 @@ import { useShowSkillStore } from '../../stores/ShowSkillStore.js';
 // Import components
 import FlagModals from './FlagModals.vue';
 import Forum from './forum/Forum.vue';
+import AITutor from './AITutor.vue';
 
 export default {
     setup() {
@@ -80,7 +81,8 @@ export default {
     },
     components: {
         Forum,
-        FlagModals
+        FlagModals,
+        AITutor
     },
     async created() {
         await this.getSkill();
@@ -1050,6 +1052,15 @@ export default {
                 </div>
             </div>
         </div>
+        <!-- AI Tutor -->
+        <div v-if="sessionDetailsStore.isLoggedIn" class="row mt-3 mb-3">
+            <AITutor
+                v-if="isSkillLoaded"
+                :skillName="skill.name"
+                :skillUrl="skill.url"
+            />
+        </div>
+
         <!-- Posts -->
         <div v-if="skill.type != 'domain'">
             <div class="row mt-3 mb-3">
