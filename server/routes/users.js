@@ -791,7 +791,7 @@ router.delete('/:id', isAuthenticated, isAdmin, (req, res, next) => {
 });
 
 /**
- * Update User
+ * Admin edit User
  */
 router.put(
     '/:id/edit',
@@ -924,7 +924,7 @@ router.put(
     }
 );
 
-// User update their password
+// User update their password from profile page
 router.put(
     '/profile/:id/edit-password',
     isAuthenticated,
