@@ -636,7 +636,7 @@ router.get('/url/:skillUrl', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     // Get skill.
-    const sqlQuery = `SELECT s.id, s.name, s.url, s.parent, s.introduction, s.type, s.level, s.image_thumbnail_url, s.icon_url, s.mastery_requirements,
+    const sqlQuery = `SELECT s.id, s.name, s.url, s.parent, s.introduction, s.type, s.level, s.image_thumbnail_url, s.icon_url, s.icon, s.mastery_requirements,
                         s.version_number, s.order, parent_skill.type AS parent_type
                     FROM 
                         skills AS s
@@ -829,6 +829,9 @@ router.put(
                 const scaleDownData = req.body.icon.split(';base64,').pop();
                 const imgBuffer = Buffer.from(scaleDownData, 'base64');
                 scaledDownIcon = await scaleIcon(imgBuffer, 50);
+            } else {
+                iconUrl = req.body.icon_url;
+                scaledDownIcon = req.body.icon;
             }
 
             let addVersionHistoryInsertSQLQuery = `
