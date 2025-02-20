@@ -77,9 +77,7 @@ export default {
             currentNodeY: 0,
             visibleRangeX: 0,
             visibleRangeY: 0,
-            iconDictionary: [],
-            numberOfLinkDraw: 0,
-            numberOfNodeDraw: 0
+            iconDictionary: []
         };
     },
     components: {
@@ -303,28 +301,14 @@ export default {
             // Draw links.
             const links = this.root.links();
             this.context.beginPath();
-            this.numberOfLinkDraw = 0;
+
             for (const link of links) {
-                // Commented out as is buggy, lines that should be showing are disappearing on pan or zoom
                 // Do not render parts of tree not in the canvas
                 // to improve performance.
-                // const targetNodeInView = this.checkingIfNodeInView(
-                //     link.target,
-                //     transform
-                // );
-                // const sourceNodeInView = this.checkingIfNodeInView(
-                //     link.source,
-                //     transform
-                // );
-
-                if (!this.newCheckIfLinkInViews(link, transform)) {
+                if (!this.checkIfLinkInViews(link, transform)) {
                     continue;
                 }
 
-                // if (!targetNodeInView && !sourceNodeInView) {
-                //     continue;
-                // }
-                this.numberOfLinkDraw = this.numberOfLinkDraw + 1;
                 this.drawLink(link);
             }
 
@@ -332,7 +316,6 @@ export default {
             this.context.beginPath();
 
             // Calculate max visible range
-            this.numberOfNodeDraw = 0;
             for (const node of this.nodes) {
                 // Do not render parts of tree not in the canvas
                 // to improve performance.
@@ -340,7 +323,7 @@ export default {
                 if (!nodeInView) {
                     continue;
                 }
-                this.numberOfNodeDraw = this.numberOfNodeDraw + 1;
+
                 if (node.renderCol) {
                     // Render clicked nodes in the color of their corresponding node
                     // on the hidden canvas.
@@ -351,7 +334,7 @@ export default {
 
                 //
                 //  If we are rendering to the hidden canvas each element
-                // should get its own color.
+                //  should get its own color.
                 //
 
                 if (node.__pickColor === undefined) {
@@ -1151,7 +1134,7 @@ export default {
             }
             return false;
         },
-        newCheckIfLinkInViews(link, transformData) {
+        checkIfLinkInViews(link, transformData) {
             const targetNode = link.target;
             const sourceNode = link.source;
             let targetNodeInLinkView = this.checkNodeInLinksVisibleView(
@@ -1188,19 +1171,7 @@ export default {
             }
             return false;
         },
-        checkIfLinkInViews(link, transformData) {
-            const targetNode = link.target;
-            const sourceNode = link.source;
-            let targetNodeInSideView = this.checkIfNodeInOneViewSide(
-                targetNode,
-                transformData
-            );
-            let sourceNodeInSideView = this.checkIfNodeInOneViewSide(
-                sourceNode,
-                transformData
-            );
-            return targetNodeInSideView || sourceNodeInSideView;
-        },
+
         checkIfNodeInOneViewSide(node, transformData) {
             let nodeInVisibleWidth = false;
             let nodeInVisibleHeight = false;
@@ -1616,10 +1587,6 @@ export default {
         <ZoomControl ref="ZoomControl" />
         <div id="sidepanel-backdrop"></div>
         <JoystickControl class="d-none" />
-        <div class="debug-console">
-            <div class="">Draw Links: {{ numberOfLinkDraw }}</div>
-            <div class="">Draw Node: {{ numberOfNodeDraw }}</div>
-        </div>
     </div>
 </template>
 
@@ -1757,16 +1724,6 @@ canvas {
     border-radius: 50%;
     transform: translate(-50%, -50%); /* Center the circle on click */
     animation: clickEffect 0.7s infinite ease-out;
-}
-
-.debug-console {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    z-index: 1000;
-    background-color: aqua;
-    color: black;
-    bottom: 100px;
 }
 
 @keyframes clickEffect {
