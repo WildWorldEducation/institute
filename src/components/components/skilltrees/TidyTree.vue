@@ -317,7 +317,7 @@ export default {
                 //     transform
                 // );
 
-                if (!this.checkIfLinkInViews(link, transform)) {
+                if (!this.newCheckIfLinkInViews(link, transform)) {
                     continue;
                 }
 
@@ -1132,17 +1132,54 @@ export default {
             // Visible range is the rectangle with width and height equal to canvas context
             // Every time context is translate the visible range is changing too
 
-            const visibleRangeY = transformData.y - this.height - 250;
-            const visibleRangeX = this.width + 250;
+            const visibleRangeY = transformData.y - this.height - 500;
+            const visibleRangeX = this.width + 500;
             // Calculate real position of node with current scale
             let realPositionX = node.y * transformData.k + 250;
-            let realPositionY = -node.x * transformData.k;
+            let realPositionY = -node.x * transformData.k - 250;
 
             // I actually come up with this formula base on observe the changing of translate and node position when translate context
             // It doesn`t make sense to me but some how working correctly
             let combinePosition = transformData.x + realPositionX;
             if (
-                combinePosition > 0 &&
+                combinePosition > -500 &&
+                combinePosition < visibleRangeX &&
+                transformData.y > realPositionY &&
+                realPositionY > visibleRangeY
+            ) {
+                return true;
+            }
+            return false;
+        },
+        newCheckIfLinkInViews(link, transformData) {
+            const targetNode = link.target;
+            const sourceNode = link.source;
+            let targetNodeInLinkView = this.checkNodeInLinksVisibleView(
+                targetNode,
+                transformData
+            );
+            let sourceNodeInLinkView = this.checkNodeInLinksVisibleView(
+                sourceNode,
+                transformData
+            );
+            return targetNodeInLinkView || sourceNodeInLinkView;
+        },
+        checkNodeInLinksVisibleView(node, transformData) {
+            // Calculate max visible range
+            // Visible range is the rectangle with width and height equal to canvas context
+            // Every time context is translate the visible range is changing too
+
+            const visibleRangeY = transformData.y - this.height - 1000;
+            const visibleRangeX = this.width + 1000;
+            // Calculate real position of node with current scale
+            let realPositionX = node.y * transformData.k;
+            let realPositionY = -node.x * transformData.k - 1000;
+
+            // I actually come up with this formula base on observe the changing of translate and node position when translate context
+            // It doesn`t make sense to me but some how working correctly
+            let combinePosition = transformData.x + realPositionX;
+            if (
+                combinePosition > -1000 &&
                 combinePosition < visibleRangeX &&
                 transformData.y > realPositionY &&
                 realPositionY > visibleRangeY
