@@ -19,7 +19,8 @@ const {
     saveAssistantData,
     getMessagesList,
     getAssistantLearningObjectiveData,
-    saveAssistantLearningObjectiveData
+    saveAssistantLearningObjectiveData,
+    processingNewLearningObjectiveExplanation
 } = require('../utilities/openAIAssistant');
 const isAuthenticated = require('../middlewares/authMiddleware');
 // Include API key.
@@ -268,15 +269,15 @@ router.post(
         try {
             const assistantData = await getAssistantLearningObjectiveData(
                 req.body.userId,
-                req.body.learningObjective
+                req.body.learningObjectiveId
             );
-            console.log(assistantData);
-            const result = await processingNewMessage(
+
+            const result = await processingNewLearningObjectiveExplanation(
                 assistantData[0].thread_id,
                 assistantData[0].assistant_id,
                 req.body
             );
-            console.log(result);
+
             res.json({ message: result });
         } catch (error) {
             console.error(error);

@@ -72,6 +72,7 @@ export default {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         learningObjective: this.learningObjective,
+                        learningObjectiveId: this.learningObjectiveId,
                         userName: this.userDetailsStore.userName,
                         userId: this.userDetailsStore.userId,
                         skillName: this.skillName
@@ -88,12 +89,12 @@ export default {
                     return;
                 }
                 const resData = await res.json();
-                let response = resData.message;
+                let response = resData;
 
                 console.log(resData);
 
                 //this.message = response[0].content[0].text.value;
-                this.latestMessage = response[0].content[0].text.value;
+                this.latestMessage = message.content[0].text.value;
 
                 this.messageList.push(this.latestMessage);
                 this.waitForAIresponse = false;

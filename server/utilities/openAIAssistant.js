@@ -60,6 +60,32 @@ async function processingNewMessage(threadId, assistantId, messageData) {
     }
 }
 
+async function processingNewLearningObjectiveExplanation(
+    threadId,
+    assistantId,
+    messageData
+) {
+    // Add a Message to the Thread
+    const message = await openai.beta.threads.messages.create(threadId, {
+        role: 'user',
+        content: messageData.learningObjective
+    });
+
+    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+        assistant_id: assistantId,
+        instructions: `Please return the message as formatted html code. Please refer to the user as ${messageData.userName}. Please only talk about the topic: ${messageData.skillName};`
+    });
+
+    if (run.status === 'completed') {
+        const messages = await openai.beta.threads.messages.list(threadId);
+        const latestMessage = messages.data[0];
+
+        return latestMessage;
+    } else {
+        console.log(run.status);
+    }
+}
+
 async function saveAssistantData(data) {
     try {
         let queryString = `INSERT INTO user_assistant_messages (user_id, skill_url, assistant_id, thread_id)
@@ -198,5 +224,6 @@ module.exports = {
     getMessagesList,
     getAssistantData,
     getAssistantLearningObjectiveData,
-    saveAssistantLearningObjectiveData
+    saveAssistantLearningObjectiveData,
+    processingNewLearningObjectiveExplanation
 };
