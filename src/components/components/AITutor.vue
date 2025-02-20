@@ -123,7 +123,7 @@ export default {
             const scrollHeight = messageInput.scrollHeight;
             messageInput.style.height = height;
             const count = Math.floor(scrollHeight / lineHeightInPixels);
-
+         
             this.$nextTick(() => {
                 messageInput.setAttribute(
                     `style`,

@@ -12,7 +12,7 @@ export default {
     components: {},
     data() {
         return {
-            response: ''
+            message: ''
         };
     },
     async mounted() {},
@@ -54,7 +54,7 @@ export default {
                 }
                 const resData = await res.json();
                 let response = resData.message;
-                this.response = response[0].content[0].text.value;
+                this.message = response[0].content[0].text.value;
 
                 // this.messageList.push(this.latestMessage);
                 // this.waitForAIresponse = false;
@@ -77,28 +77,33 @@ export default {
     watch: {
         // Update text area height base on message input
         message: function (newItem, oldItem) {
-            let { messageInput } = this.$refs;
-            const lineHeightInPixels = 22;
+            let { messageTextArea } = this.$refs;
+            const lineHeightInPixels = 1000;
 
+            return;
             // Reset messageInput Height
-            messageInput.setAttribute(
+            messageTextArea.setAttribute(
                 `style`,
                 `height:${lineHeightInPixels}px;overflow-y:hidden;`
             );
 
+            console.log(this.message.scrollHeight);
+            console.log(this.message);
+
             // Calculate number of lines (soft and hard)
-            const height = messageInput.style.height;
-            const scrollHeight = messageInput.scrollHeight;
-            messageInput.style.height = height;
+            const height = messageTextArea.style.height;
+            const scrollHeight = this.message.scrollHeight;
+            messageTextArea.style.height = height;
             const count = Math.floor(scrollHeight / lineHeightInPixels);
 
+            console.log(count);
+            console.log(lineHeightInPixels);
+
             this.$nextTick(() => {
-                messageInput.setAttribute(
+                messageTextArea.setAttribute(
                     `style`,
                     `height:${count * lineHeightInPixels}px;overflow-y:hidden;`
                 );
-                // Also scroll to bottom of the chat div
-                this.scrollToMessageInput();
             });
         }
     }
@@ -140,15 +145,17 @@ export default {
         </button>
     </span>
     <div
-        class="learning-objective-chat-area rounded mb-3"
-        v-html="removeHTMLnotation(response)"
+        ref="messageTextArea"
+        class="rounded mb-3 chat-text-area"
+        v-html="removeHTMLnotation(message)"
     ></div>
 </template>
 
 <style scoped>
-/* Learning objectives */
-.learning-objective-chat-area {
-    height: 100px;
-    border: 1px solid black;
+.chat-text-area {
+    outline: none;
+    border: 0px;
+    width: 100%;
+    resize: none;
 }
 </style>

@@ -1054,6 +1054,8 @@ export default {
                                     :learningObjective="
                                         learningObjective.objective
                                     "
+                                    :skillName="skill.name"
+                                    :skillUrl="skill.url"
                                 />
                             </div>
                         </div>

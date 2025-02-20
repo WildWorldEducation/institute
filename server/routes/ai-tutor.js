@@ -156,14 +156,16 @@ router.post(
 
             let run = await openai.beta.threads.runs.createAndPoll(thread.id, {
                 assistant_id: assistant.id,
-                instructions: `Please return the message as formatted html code. Please refer to the user as ${req.body.userName}. Please only talk about the topic: ${req.body.skillName};`
+                instructions: `
+                Please return the message as formatted html code.                                               
+                `
             });
 
             if (run.status === 'completed') {
                 const messages = await openai.beta.threads.messages.list(
                     run.thread_id
                 );
-                console.log(messages.data);
+
                 res.json({ message: messages.data });
             } else {
                 console.log(run.status);
