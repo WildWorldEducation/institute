@@ -132,6 +132,9 @@ export default {
                 '/skill-learning-objectives/' + this.skillId + '/list'
             );
             this.skill.learningObjectives = await result.json();
+            for (let i = 0; i < this.skill.learningObjectives.length; i++) {
+                this.skill.learningObjectives[i].showAI = false;
+            }
         },
         recordSkillVisit(skillId) {
             fetch('/skills/record-visit/' + skillId);
@@ -1018,15 +1021,15 @@ export default {
                 <div class="bg-white rounded p-2">
                     <div
                         v-for="learningObjective in skill.learningObjectives"
-                        class="d-flex p-2 justify-content-between"
+                        class="d-flex mb-3 justify-content-between"
                     >
-                        <div class="d-flex flex-column">
+                        <div class="">
                             <svg
                                 v-if="!learningObjectivemastered"
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 512 512"
-                                width="8"
-                                height="8"
+                                width="6"
+                                height="6"
                             >
                                 <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
                                 <path
@@ -1049,7 +1052,7 @@ export default {
                         </div>
                         <div class="ms-2 w-100">
                             {{ learningObjective.objective }}
-                            <div v-if="showLearningObjectiveAI">
+                            <div v-if="learningObjective.showAI">
                                 <span class="d-flex justify-content-end">
                                     <!-- learning objective explanation button -->
                                     <button
@@ -1105,8 +1108,8 @@ export default {
                         <button
                             class="btn plus-btn"
                             @click="
-                                showLearningObjectiveAI =
-                                    !showLearningObjectiveAI
+                                learningObjective.showAI =
+                                    !learningObjective.showAI
                             "
                         >
                             <svg
