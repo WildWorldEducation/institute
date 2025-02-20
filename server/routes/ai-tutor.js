@@ -156,8 +156,10 @@ router.post(
 
             let run = await openai.beta.threads.runs.createAndPoll(thread.id, {
                 assistant_id: assistant.id,
-                instructions: `
-                Please return the message as formatted html code.                                               
+                instructions: `                
+                Do not include the content as the header of the response document.
+                Do not provide an introduction.
+                Please return the message as formatted html code.
                 `
             });
 

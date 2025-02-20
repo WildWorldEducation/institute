@@ -1048,7 +1048,9 @@ export default {
                             </svg>
                         </div>
                         <div class="ms-2 w-100">
-                            {{ learningObjective.objective }}
+                            <p class="mb-0">
+                                {{ learningObjective.objective }}
+                            </p>
                             <div v-if="learningObjective.showAI">
                                 <LearningObjectiveAITutor
                                     :learningObjective="
