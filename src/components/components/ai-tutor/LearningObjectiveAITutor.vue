@@ -9,18 +9,51 @@ export default {
             userDetailsStore
         };
     },
-    props: ['skillName', 'skillUrl', 'learningObjective'],
+    props: [
+        'skillName',
+        'skillUrl',
+        'learningObjective',
+        'learningObjectiveId'
+    ],
     components: { TutorLoadingSymbol },
     data() {
         return {
             message: '',
-            waitForAIresponse: false
+            messageList: [],
+            waitForAIresponse: false,
+            isGotMessages: false
         };
     },
-    async mounted() {},
+    async mounted() {
+        console.log(this.learningObjectiveId);
+        await this.getMessages();
+    },
     updated() {},
     computed: {},
     methods: {
+        async getMessages() {
+            try {
+                console.log('get messages');
+
+                const url = `/ai-tutor/learning-objectives/messages-list?userId=${encodeURIComponent(
+                    this.userDetailsStore.userId
+                )}&learningObjectiveId=${encodeURIComponent(
+                    this.learningObjectiveId
+                )}`;
+
+                const response = await fetch(url);
+                const resData = await response.json();
+                this.messageList = resData.messages.data;
+                // we reverse order of messages list because OpenAI return messages from newest to oldest
+                this.messageList.reverse();
+                // this.$nextTick(this.scrollToMessageInput());
+                console.log('got messages');
+                console.log(this.messageList);
+                this.isGotMessages = true;
+            } catch (error) {
+                console.error(error);
+            }
+        },
         async SendMessage() {
             if (this.waitForAIresponse) {
                 return;
@@ -28,10 +61,10 @@ export default {
             this.waitForAIresponse = true;
             try {
                 // Add user message to messages list
-                const userMessage = {
-                    role: 'user',
-                    content: [{ text: { value: this.message } }]
-                };
+                // const userMessage = {
+                //     role: 'user',
+                //     content: [{ text: { value: this.message } }]
+                // };
                 // this.messageList.push(userMessage);
 
                 const requestOptions = {
@@ -41,12 +74,12 @@ export default {
                         learningObjective: this.learningObjective,
                         userName: this.userDetailsStore.userName,
                         userId: this.userDetailsStore.userId,
-                        skillName: this.skillName,
-                        skillUrl: this.skillUrl
+                        skillName: this.skillName
                     })
                 };
 
-                var url = '/ai-tutor/explain-learning-objective';
+                //  var url = '/ai-tutor/explain-learning-objective';
+                var url = '/ai-tutor/learning-objectives/new-message';
                 // this.message = '';
                 const res = await fetch(url, requestOptions);
                 if (res.status === 500) {
@@ -56,9 +89,13 @@ export default {
                 }
                 const resData = await res.json();
                 let response = resData.message;
-                this.message = response[0].content[0].text.value;
 
-                // this.messageList.push(this.latestMessage);
+                console.log(resData);
+
+                //this.message = response[0].content[0].text.value;
+                this.latestMessage = response[0].content[0].text.value;
+
+                this.messageList.push(this.latestMessage);
                 this.waitForAIresponse = false;
             } catch (error) {
                 console.error(error);
@@ -118,7 +155,11 @@ export default {
 <template>
     <span class="d-flex justify-content-end">
         <!-- learning objective explanation button -->
-        <button class="btn" @click="explainLearningObjective()">
+        <button
+            v-if="isGotMessages"
+            class="btn"
+            @click="explainLearningObjective()"
+        >
             <!-- Robot icon -->
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -149,11 +190,28 @@ export default {
             </svg>
         </button> -->
     </span>
-    <div
+    <!-- <div
         ref="messageTextArea"
         class="rounded mb-3 chat-text-area"
         v-html="removeHTMLnotation(message)"
-    ></div>
+    ></div> -->
+    <div
+        class="d-flex my-3"
+        :class="{ 'flex-row-reverse': message.role === 'user' }"
+        v-for="message in messageList"
+    >
+        <div v-if="message.role === 'user'" class="user-conversation">
+            {{ message.content[0].text.value }}
+        </div>
+        <div
+            v-else-if="
+                message.role === 'assistant' &&
+                message.content[0].type == 'text'
+            "
+            class="tutor-conversation"
+            v-html="removeHTMLnotation(message.content[0].text.value)"
+        ></div>
+    </div>
     <div class="ai-tutor-processing" v-if="waitForAIresponse">
         <svg
             xmlns="http://www.w3.org/2000/svg"

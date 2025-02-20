@@ -10,14 +10,13 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-
 // node native promisify
-// convert callback 
+// convert callback
 const query = util.promisify(conn.query).bind(conn);
 
 async function createThread() {
     const thread = await openai.beta.threads.create();
-    return thread
+    return thread;
 }
 
 // TODO specific skill tutor role
@@ -29,14 +28,13 @@ async function createAssistant() {
         tools: [{ type: 'code_interpreter' }],
         model: 'gpt-4o'
     });
-    return assistant
+    return assistant;
 }
-
 
 async function initialAssistant() {
     const assistant = await createAssistant();
     const thread = await createThread();
-    const result = { assistant: assistant, thread: thread }
+    const result = { assistant: assistant, thread: thread };
     return result;
 }
 
@@ -53,12 +51,10 @@ async function processingNewMessage(threadId, assistantId, messageData) {
     });
 
     if (run.status === 'completed') {
-        const messages = await openai.beta.threads.messages.list(
-            threadId
-        );
-        const latestMessage = messages.data[0]
+        const messages = await openai.beta.threads.messages.list(threadId);
+        const latestMessage = messages.data[0];
 
-        return (latestMessage);
+        return latestMessage;
     } else {
         console.log(run.status);
     }
@@ -72,29 +68,87 @@ async function saveAssistantData(data) {
                ${conn.escape(data.skillUrl)},
                ${conn.escape(data.assistantId)},
                ${conn.escape(data.threadId)}
-               );`
+               );`;
         await query(queryString);
     } catch (error) {
-        console.error(error)
-        throw error
+        console.error(error);
+        throw error;
+    }
+}
+
+async function saveAssistantLearningObjectiveData(data) {
+    try {
+        let queryString = `INSERT INTO user_learning_objective_assistant_messages (user_id, learning_objective_id, assistant_id, thread_id)
+               VALUES (
+               ${conn.escape(data.userId)},
+               ${conn.escape(data.learningObjectiveId)},
+               ${conn.escape(data.assistantId)},
+               ${conn.escape(data.threadId)}
+               );`;
+        await query(queryString);
+    } catch (error) {
+        console.error(error);
+        throw error;
     }
 }
 /**
  *
  * get user assistant data of the skill
- * @param {string} userId 
+ * @param {string} userId
  * @param {string} skillId
- * @return {*} 
+ * @return {*}
  */
 async function getAssistantData(userId, skillUrl) {
     try {
         let queryString = `SELECT * 
                            FROM user_assistant_messages 
-                           WHERE user_assistant_messages.user_id = ${conn.escape(userId)} AND  user_assistant_messages.skill_url = ${conn.escape(skillUrl)}`
+                           WHERE user_assistant_messages.user_id = ${conn.escape(
+                               userId
+                           )} AND  user_assistant_messages.skill_url = ${conn.escape(
+            skillUrl
+        )}`;
         const result = await query(queryString);
         return result;
     } catch (error) {
-        throw error
+        throw error;
+    }
+}
+
+/**
+ *
+ * get user assistant data of the learning objective
+ * @param {string} userId
+ * @param {string} skillId
+ * @return {*}
+ */
+async function getAssistantLearningObjectiveData(userId, learningObjectiveId) {
+    try {
+        let queryString = `SELECT * 
+                           FROM user_learning_objective_assistant_messages
+                           WHERE user_id = ${conn.escape(
+                               userId
+                           )} AND learning_objective_id = ${conn.escape(
+            learningObjectiveId
+        )}`;
+        console.log(queryString);
+        // conn.query(queryString, (err, result) => {
+        //     try {
+        //         if (err) {
+        //             throw err;
+        //         }
+
+        //         console.log(result);
+        //         return result;
+        //     } catch (err) {
+        //         next(err);
+        //     }
+        // });
+
+        const result = await query(queryString);
+        console.log(result);
+        return result;
+    } catch (error) {
+        throw error;
     }
 }
 
@@ -102,14 +156,14 @@ async function getAssistantData(userId, skillUrl) {
  *
  * get user assistant data of the skill
  * @param {string} threadId
- * @return {object} message List 
+ * @return {object} message List
  */
 async function getMessagesList(threadId) {
     try {
         const messages = await openai.beta.threads.messages.list(threadId);
-        return messages
+        return messages;
     } catch (error) {
-        throw error
+        throw error;
     }
 }
 
@@ -118,19 +172,31 @@ async function getMessagesList(threadId) {
  * get user assistant data of the skill
  * @param {string} userId
  * @param {string} userId
- * @return {object} database data 
+ * @return {object} database data
  */
 async function getAssistantData(userId, skillUrl) {
     try {
         let queryString = `SELECT * 
                            FROM user_assistant_messages 
-                           WHERE user_assistant_messages.user_id = ${conn.escape(userId)} AND user_assistant_messages.skill_url = ${conn.escape(skillUrl)}`
+                           WHERE user_assistant_messages.user_id = ${conn.escape(
+                               userId
+                           )} AND user_assistant_messages.skill_url = ${conn.escape(
+            skillUrl
+        )}`;
         const result = await query(queryString);
-        return result
+        return result;
     } catch (error) {
-        throw error
+        throw error;
     }
 }
 
-module.exports = { initialAssistant, processingNewMessage, saveAssistantData, getAssistantData, getMessagesList, getAssistantData }
-
+module.exports = {
+    initialAssistant,
+    processingNewMessage,
+    saveAssistantData,
+    getAssistantData,
+    getMessagesList,
+    getAssistantData,
+    getAssistantLearningObjectiveData,
+    saveAssistantLearningObjectiveData
+};

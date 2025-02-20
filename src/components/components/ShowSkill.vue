@@ -137,6 +137,8 @@ export default {
             for (let i = 0; i < this.skill.learningObjectives.length; i++) {
                 this.skill.learningObjectives[i].showAI = false;
             }
+
+            console.log(this.skill.learningObjectives);
         },
         recordSkillVisit(skillId) {
             fetch('/skills/record-visit/' + skillId);
@@ -1056,6 +1058,7 @@ export default {
                                     :learningObjective="
                                         learningObjective.objective
                                     "
+                                    :learningObjectiveId="learningObjective.id"
                                     :skillName="skill.name"
                                     :skillUrl="skill.url"
                                 />

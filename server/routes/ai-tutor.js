@@ -7,6 +7,9 @@ const express = require('express');
 // Router.
 const router = express.Router();
 
+// Database connection
+const conn = require('../config/db');
+
 // Import OpenAI package.
 const { OpenAI } = require('openai');
 const {
@@ -14,7 +17,9 @@ const {
     initialAssistant,
     getAssistantData,
     saveAssistantData,
-    getMessagesList
+    getMessagesList,
+    getAssistantLearningObjectiveData,
+    saveAssistantLearningObjectiveData
 } = require('../utilities/openAIAssistant');
 const isAuthenticated = require('../middlewares/authMiddleware');
 // Include API key.
@@ -133,6 +138,11 @@ router.post(
         let learningObjective = req.body.learningObjective;
 
         try {
+            const assistantData = await getAssistantLearningObjectiveData(
+                req.body.userId,
+                req.body.learningObjective
+            );
+
             // Create an Assistant
             const assistant = await openai.beta.assistants.create({
                 name: 'General Tutor',
@@ -174,6 +184,100 @@ router.post(
                 res.status = 500;
                 res.json({ mess: 'fails! run status: ' + run.status });
             }
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
+        }
+    }
+);
+
+router.get(
+    '/learning-objectives/messages-list',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const userId = req.query.userId;
+            const learningObjectiveId = req.query.learningObjectiveId;
+            // let assistantData = await getAssistantLearningObjectiveData(
+            //     userId,
+            //     learningObjectiveId
+            // );
+
+            console.log(learningObjectiveId);
+
+            let queryString = `SELECT * 
+                           FROM user_learning_objective_assistant_messages
+                           WHERE user_id = ${conn.escape(
+                               userId
+                           )} AND learning_objective_id = ${conn.escape(
+                learningObjectiveId
+            )}`;
+            console.log(queryString);
+            conn.query(queryString, async (err, result) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    console.log(result);
+                    let assistantData = result;
+                    // Handle no assistant data case
+                    if (assistantData.length === 0) {
+                        const newAssistant = await initialAssistant();
+                        assistantData = [
+                            {
+                                userId: userId,
+                                learningObjectiveId: learningObjectiveId,
+                                assistantId: newAssistant.assistant.id,
+                                threadId: newAssistant.thread.id
+                            }
+                        ];
+                        await saveAssistantLearningObjectiveData(
+                            assistantData[0]
+                        );
+                        const messages = await getMessagesList(
+                            assistantData[0].threadId
+                        );
+                        res.json({ messages: messages });
+                        return;
+                    } else {
+                        const messages = await getMessagesList(
+                            assistantData[0].thread_id
+                        );
+                        res.json({ messages: messages });
+                    }
+                } catch (err) {
+                    next(err);
+                }
+            });
+
+            //  const result = await query(queryString);
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
+        }
+    }
+);
+
+router.post(
+    '/learning-objectives/new-message',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const assistantData = await getAssistantLearningObjectiveData(
+                req.body.userId,
+                req.body.learningObjective
+            );
+            console.log(assistantData);
+            const result = await processingNewMessage(
+                assistantData[0].thread_id,
+                assistantData[0].assistant_id,
+                req.body
+            );
+            console.log(result);
+            res.json({ message: result });
         } catch (error) {
             console.error(error);
             res.status = 500;
