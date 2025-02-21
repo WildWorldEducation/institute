@@ -170,7 +170,7 @@ router.post(
                 instructions: `                
                 Do not include the content as the header of the response document.
                 Do not provide an introduction.
-                Please return the message as formatted html code.
+                Do not repeat the question.
                 `
             });
 
