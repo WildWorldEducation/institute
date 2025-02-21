@@ -1172,34 +1172,6 @@ export default {
             return false;
         },
 
-        checkIfNodeInOneViewSide(node, transformData) {
-            let nodeInVisibleWidth = false;
-            let nodeInVisibleHeight = false;
-
-            // Calculate max visible range
-            // Visible range is the rectangle with width and height equal to canvas context
-            // Every time context is translate the visible range is changing too
-
-            const visibleRangeY = transformData.y - this.height - 250;
-            const visibleRangeX = this.width + 250;
-            // Calculate real position of node with current scale
-            let realPositionX = node.y * transformData.k + 250;
-            let realPositionY = -node.x * transformData.k;
-
-            // I actually come up with this formula base on observe the changing of translate and node position when translate context
-            // It doesn`t make sense to me but some how working correctly
-            let combinePosition = transformData.x + realPositionX;
-            if (combinePosition > 0 && combinePosition < visibleRangeX) {
-                nodeInVisibleWidth = true;
-            }
-            if (
-                transformData.y > realPositionY &&
-                realPositionY > visibleRangeY
-            ) {
-                nodeInVisibleHeight = true;
-            }
-            return nodeInVisibleHeight || nodeInVisibleWidth;
-        },
         async getIconData() {
             const res = await fetch('/skills/icon-list');
             const resData = await res.json();
