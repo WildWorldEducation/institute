@@ -18,6 +18,7 @@ const {
     getAssistantData,
     saveAssistantData,
     getMessagesList,
+    // for learning objective AI tutor
     getAssistantLearningObjectiveData,
     saveAssistantLearningObjectiveData,
     processingNewLearningObjectiveExplanation
@@ -29,55 +30,7 @@ const openai = new OpenAI({
 });
 
 /**
- * Create New Item
- *
- * @return response()
- */
-router.post('/', async (req, res, next) => {
-    let userQuestion = req.body.message;
-    if (req.session.userName) {
-        // Create an Assistant
-        const assistant = await openai.beta.assistants.create({
-            name: 'General Tutor',
-            instructions:
-                'You are a personal tutor. Answer any questions you are asked..',
-            tools: [{ type: 'code_interpreter' }],
-            model: 'gpt-4o'
-        });
-
-        // Create a Thread
-        const thread = await openai.beta.threads.create();
-
-        // Add a Message to the Thread
-        const message = await openai.beta.threads.messages.create(thread.id, {
-            role: 'user',
-            content: userQuestion
-        });
-
-        let run = await openai.beta.threads.runs.createAndPoll(thread.id, {
-            assistant_id: assistant.id,
-            instructions: `Please return the message as formatted html code. Please refer to the user as ${req.body.userName}. Please only talk about the topic: ${req.body.skillName};`
-        });
-
-        if (run.status === 'completed') {
-            const messages = await openai.beta.threads.messages.list(
-                run.thread_id
-            );
-            res.json({ message: messages.data });
-        } else {
-            console.log(run.status);
-            res.status = 500;
-            res.json({ mess: 'fails! run status: ' + run.status });
-        }
-    } else {
-        res.redirect('/login');
-    }
-});
-
-/**
- * Create New Item
- *
- * @return response()
+ * Send message to skill level AI tutor
  */
 router.post('/new-message', isAuthenticated, async (req, res, next) => {
     try {
@@ -98,6 +51,9 @@ router.post('/new-message', isAuthenticated, async (req, res, next) => {
     }
 });
 
+/**
+ * Get thread from skill level AI tutor
+ */
 router.get('/messages-list', isAuthenticated, async (req, res, next) => {
     try {
         const userId = req.query.userId;
@@ -130,61 +86,25 @@ router.get('/messages-list', isAuthenticated, async (req, res, next) => {
 });
 
 /**
- * Explain learning objective
+ * Send message to learning objective level AI tutor (at the moment, only explaining the learning objective)
  */
 router.post(
-    '/explain-learning-objective',
+    '/learning-objectives/new-message',
     isAuthenticated,
     async (req, res, next) => {
-        let learningObjective = req.body.learningObjective;
-
         try {
             const assistantData = await getAssistantLearningObjectiveData(
                 req.body.userId,
-                req.body.learningObjective
+                req.body.learningObjectiveId
             );
 
-            // Create an Assistant
-            const assistant = await openai.beta.assistants.create({
-                name: 'General Tutor',
-                instructions:
-                    'You are a personal tutor. Explain the topic please.',
-                tools: [],
-                model: 'gpt-4o'
-            });
-
-            // Create a Thread
-            const thread = await openai.beta.threads.create();
-
-            // Add a message to the Thread
-            const message = await openai.beta.threads.messages.create(
-                thread.id,
-                {
-                    role: 'user',
-                    content: learningObjective
-                }
+            const result = await processingNewLearningObjectiveExplanation(
+                assistantData[0].thread_id,
+                assistantData[0].assistant_id,
+                req.body
             );
 
-            let run = await openai.beta.threads.runs.createAndPoll(thread.id, {
-                assistant_id: assistant.id,
-                instructions: `                
-                Do not include the content as the header of the response document.
-                Do not provide an introduction.
-                Do not repeat the question.
-                `
-            });
-
-            if (run.status === 'completed') {
-                const messages = await openai.beta.threads.messages.list(
-                    run.thread_id
-                );
-
-                res.json({ message: messages.data });
-            } else {
-                console.log(run.status);
-                res.status = 500;
-                res.json({ mess: 'fails! run status: ' + run.status });
-            }
+            res.json({ message: result });
         } catch (error) {
             console.error(error);
             res.status = 500;
@@ -193,6 +113,9 @@ router.post(
     }
 );
 
+/**
+ * Get thread from learning objective level AI tutor
+ */
 router.get(
     '/learning-objectives/messages-list',
     isAuthenticated,
@@ -200,10 +123,6 @@ router.get(
         try {
             const userId = req.query.userId;
             const learningObjectiveId = req.query.learningObjectiveId;
-            // let assistantData = await getAssistantLearningObjectiveData(
-            //     userId,
-            //     learningObjectiveId
-            // );
 
             let queryString = `SELECT * 
                            FROM user_learning_objective_assistant_messages
@@ -248,33 +167,6 @@ router.get(
                     next(err);
                 }
             });
-
-            //  const result = await query(queryString);
-        } catch (error) {
-            console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
-        }
-    }
-);
-
-router.post(
-    '/learning-objectives/new-message',
-    isAuthenticated,
-    async (req, res, next) => {
-        try {
-            const assistantData = await getAssistantLearningObjectiveData(
-                req.body.userId,
-                req.body.learningObjectiveId
-            );
-
-            const result = await processingNewLearningObjectiveExplanation(
-                assistantData[0].thread_id,
-                assistantData[0].assistant_id,
-                req.body
-            );
-
-            res.json({ message: result });
         } catch (error) {
             console.error(error);
             res.status = 500;

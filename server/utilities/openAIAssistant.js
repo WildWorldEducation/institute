@@ -1,7 +1,9 @@
 // Database connection
 const conn = require('../config/db');
-
 const util = require('util');
+// node native promisify
+// convert callback
+const query = util.promisify(conn.query).bind(conn);
 
 // Import OpenAI package.
 const { OpenAI } = require('openai');
@@ -10,16 +12,14 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-// node native promisify
-// convert callback
-const query = util.promisify(conn.query).bind(conn);
-
+/**
+ * Shared functions --------------------------------------
+ */
 async function createThread() {
     const thread = await openai.beta.threads.create();
     return thread;
 }
 
-// TODO specific skill tutor role
 async function createAssistant() {
     const assistant = await openai.beta.assistants.create({
         name: 'General Tutor',
@@ -36,6 +36,61 @@ async function initialAssistant() {
     const thread = await createThread();
     const result = { assistant: assistant, thread: thread };
     return result;
+}
+
+/**
+ * Get AI tutor messages
+ * @param {string} threadId
+ * @return {object} message List
+ */
+async function getMessagesList(threadId) {
+    try {
+        const messages = await openai.beta.threads.messages.list(threadId);
+        return messages;
+    } catch (error) {
+        throw error;
+    }
+}
+
+/**
+ * Skill level tutor functions
+ */
+/**
+ * Get skill level AI tutor thread id
+ * @param {string} userId
+ * @param {string} userId
+ * @return {object} database data
+ */
+async function getAssistantData(userId, skillUrl) {
+    try {
+        let queryString = `SELECT * 
+                           FROM user_assistant_messages 
+                           WHERE user_assistant_messages.user_id = ${conn.escape(
+                               userId
+                           )} AND user_assistant_messages.skill_url = ${conn.escape(
+            skillUrl
+        )}`;
+        const result = await query(queryString);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function saveAssistantData(data) {
+    try {
+        let queryString = `INSERT INTO user_assistant_messages (user_id, skill_url, assistant_id, thread_id)
+               VALUES (
+               ${conn.escape(data.userId)},
+               ${conn.escape(data.skillUrl)},
+               ${conn.escape(data.assistantId)},
+               ${conn.escape(data.threadId)}
+               );`;
+        await query(queryString);
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
 }
 
 async function processingNewMessage(threadId, assistantId, messageData) {
@@ -57,6 +112,33 @@ async function processingNewMessage(threadId, assistantId, messageData) {
         return latestMessage;
     } else {
         console.log(run.status);
+    }
+}
+
+/**
+ * Learning objective level tutor functions
+ */
+/**
+ * Get learning objective level AI tutor thread id
+ * @param {string} userId
+ * @param {string} learningObjectiveId
+ * @return {*}
+ */
+async function getAssistantLearningObjectiveData(userId, learningObjectiveId) {
+    try {
+        let queryString = `SELECT * 
+                           FROM user_learning_objective_assistant_messages
+                           WHERE user_id = ${conn.escape(
+                               userId
+                           )} AND learning_objective_id = ${conn.escape(
+            learningObjectiveId
+        )}`;
+
+        const result = await query(queryString);
+
+        return result;
+    } catch (error) {
+        throw error;
     }
 }
 
@@ -86,22 +168,6 @@ async function processingNewLearningObjectiveExplanation(
     }
 }
 
-async function saveAssistantData(data) {
-    try {
-        let queryString = `INSERT INTO user_assistant_messages (user_id, skill_url, assistant_id, thread_id)
-               VALUES (
-               ${conn.escape(data.userId)},
-               ${conn.escape(data.skillUrl)},
-               ${conn.escape(data.assistantId)},
-               ${conn.escape(data.threadId)}
-               );`;
-        await query(queryString);
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
-}
-
 async function saveAssistantLearningObjectiveData(data) {
     try {
         let queryString = `INSERT INTO user_learning_objective_assistant_messages (user_id, learning_objective_id, assistant_id, thread_id)
@@ -114,91 +180,6 @@ async function saveAssistantLearningObjectiveData(data) {
         await query(queryString);
     } catch (error) {
         console.error(error);
-        throw error;
-    }
-}
-/**
- *
- * get user assistant data of the skill
- * @param {string} userId
- * @param {string} skillId
- * @return {*}
- */
-async function getAssistantData(userId, skillUrl) {
-    try {
-        let queryString = `SELECT * 
-                           FROM user_assistant_messages 
-                           WHERE user_assistant_messages.user_id = ${conn.escape(
-                               userId
-                           )} AND  user_assistant_messages.skill_url = ${conn.escape(
-            skillUrl
-        )}`;
-        const result = await query(queryString);
-        return result;
-    } catch (error) {
-        throw error;
-    }
-}
-
-/**
- *
- * get user assistant data of the learning objective
- * @param {string} userId
- * @param {string} skillId
- * @return {*}
- */
-async function getAssistantLearningObjectiveData(userId, learningObjectiveId) {
-    try {
-        let queryString = `SELECT * 
-                           FROM user_learning_objective_assistant_messages
-                           WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND learning_objective_id = ${conn.escape(
-            learningObjectiveId
-        )}`;
-
-        const result = await query(queryString);
-
-        return result;
-    } catch (error) {
-        throw error;
-    }
-}
-
-/**
- *
- * get user assistant data of the skill
- * @param {string} threadId
- * @return {object} message List
- */
-async function getMessagesList(threadId) {
-    try {
-        const messages = await openai.beta.threads.messages.list(threadId);
-        return messages;
-    } catch (error) {
-        throw error;
-    }
-}
-
-/**
- *
- * get user assistant data of the skill
- * @param {string} userId
- * @param {string} userId
- * @return {object} database data
- */
-async function getAssistantData(userId, skillUrl) {
-    try {
-        let queryString = `SELECT * 
-                           FROM user_assistant_messages 
-                           WHERE user_assistant_messages.user_id = ${conn.escape(
-                               userId
-                           )} AND user_assistant_messages.skill_url = ${conn.escape(
-            skillUrl
-        )}`;
-        const result = await query(queryString);
-        return result;
-    } catch (error) {
         throw error;
     }
 }
