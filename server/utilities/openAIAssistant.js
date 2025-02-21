@@ -15,9 +15,11 @@ const openai = new OpenAI({
 /**
  * Shared functions --------------------------------------
  */
-async function createThread() {
-    const thread = await openai.beta.threads.create();
-    return thread;
+async function initialAssistant() {
+    const assistant = await createAssistant();
+    const thread = await createThread();
+    const result = { assistant: assistant, thread: thread };
+    return result;
 }
 
 async function createAssistant() {
@@ -25,17 +27,15 @@ async function createAssistant() {
         name: 'General Tutor',
         instructions:
             'You are a personal tutor. Answer any questions you are asked..',
-        tools: [{ type: 'code_interpreter' }],
+        tools: [],
         model: 'gpt-4o'
     });
     return assistant;
 }
 
-async function initialAssistant() {
-    const assistant = await createAssistant();
-    const thread = await createThread();
-    const result = { assistant: assistant, thread: thread };
-    return result;
+async function createThread() {
+    const thread = await openai.beta.threads.create();
+    return thread;
 }
 
 /**
@@ -61,15 +61,13 @@ async function getMessagesList(threadId) {
  * @param {string} userId
  * @return {object} database data
  */
-async function getAssistantData(userId, skillUrl) {
+async function getAITutorSkillThread(userId, skillUrl) {
     try {
         let queryString = `SELECT * 
-                           FROM user_assistant_messages 
-                           WHERE user_assistant_messages.user_id = ${conn.escape(
+                           FROM ai_tutor_skill_threads 
+                           WHERE user_id = ${conn.escape(
                                userId
-                           )} AND user_assistant_messages.skill_url = ${conn.escape(
-            skillUrl
-        )}`;
+                           )} AND skill_url = ${conn.escape(skillUrl)}`;
         const result = await query(queryString);
         return result;
     } catch (error) {
@@ -77,9 +75,9 @@ async function getAssistantData(userId, skillUrl) {
     }
 }
 
-async function saveAssistantData(data) {
+async function saveAITutorSkillThread(data) {
     try {
-        let queryString = `INSERT INTO user_assistant_messages (user_id, skill_url, assistant_id, thread_id)
+        let queryString = `INSERT INTO ai_tutor_skill_threads (user_id, skill_url, assistant_id, thread_id)
                VALUES (
                ${conn.escape(data.userId)},
                ${conn.escape(data.skillUrl)},
@@ -93,7 +91,7 @@ async function saveAssistantData(data) {
     }
 }
 
-async function processingNewMessage(threadId, assistantId, messageData) {
+async function processingNewSkillMessage(threadId, assistantId, messageData) {
     // Add a Message to the Thread
     const message = await openai.beta.threads.messages.create(threadId, {
         role: 'user',
@@ -124,10 +122,10 @@ async function processingNewMessage(threadId, assistantId, messageData) {
  * @param {string} learningObjectiveId
  * @return {*}
  */
-async function getAssistantLearningObjectiveData(userId, learningObjectiveId) {
+async function getAITutorLearningObjectiveThread(userId, learningObjectiveId) {
     try {
         let queryString = `SELECT * 
-                           FROM user_learning_objective_assistant_messages
+                           FROM ai_tutor_learning_objective_threads
                            WHERE user_id = ${conn.escape(
                                userId
                            )} AND learning_objective_id = ${conn.escape(
@@ -168,9 +166,9 @@ async function processingNewLearningObjectiveExplanation(
     }
 }
 
-async function saveAssistantLearningObjectiveData(data) {
+async function saveAITutorLearningObjectiveThread(data) {
     try {
-        let queryString = `INSERT INTO user_learning_objective_assistant_messages (user_id, learning_objective_id, assistant_id, thread_id)
+        let queryString = `INSERT INTO ai_tutor_learning_objective_threads (user_id, learning_objective_id, assistant_id, thread_id)
                VALUES (
                ${conn.escape(data.userId)},
                ${conn.escape(data.learningObjectiveId)},
@@ -186,12 +184,11 @@ async function saveAssistantLearningObjectiveData(data) {
 
 module.exports = {
     initialAssistant,
-    processingNewMessage,
-    saveAssistantData,
-    getAssistantData,
+    processingNewSkillMessage,
+    saveAITutorSkillThread,    
     getMessagesList,
-    getAssistantData,
-    getAssistantLearningObjectiveData,
-    saveAssistantLearningObjectiveData,
+    getAITutorSkillThread,
+    getAITutorLearningObjectiveThread,
+    saveAITutorLearningObjectiveThread,
     processingNewLearningObjectiveExplanation
 };

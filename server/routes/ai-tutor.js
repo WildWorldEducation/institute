@@ -13,14 +13,14 @@ const conn = require('../config/db');
 // Import OpenAI package.
 const { OpenAI } = require('openai');
 const {
-    processingNewMessage,
+    processingNewSkillMessage,
     initialAssistant,
-    getAssistantData,
-    saveAssistantData,
+    getAITutorSkillThread,
+    saveAITutorSkillThread,
     getMessagesList,
     // for learning objective AI tutor
-    getAssistantLearningObjectiveData,
-    saveAssistantLearningObjectiveData,
+    getAITutorLearningObjectiveThread,
+    saveAITutorLearningObjectiveThread,
     processingNewLearningObjectiveExplanation
 } = require('../utilities/openAIAssistant');
 const isAuthenticated = require('../middlewares/authMiddleware');
@@ -34,11 +34,11 @@ const openai = new OpenAI({
  */
 router.post('/new-message', isAuthenticated, async (req, res, next) => {
     try {
-        const assistantData = await getAssistantData(
+        const assistantData = await getAITutorSkillThread(
             req.body.userId,
             req.body.skillUrl
         );
-        const result = await processingNewMessage(
+        const result = await processingNewSkillMessage(
             assistantData[0].thread_id,
             assistantData[0].assistant_id,
             req.body
@@ -58,7 +58,7 @@ router.get('/messages-list', isAuthenticated, async (req, res, next) => {
     try {
         const userId = req.query.userId;
         const skillUrl = req.query.skillUrl;
-        let assistantData = await getAssistantData(userId, skillUrl);
+        let assistantData = await getAITutorSkillThread(userId, skillUrl);
         // Handle no assistant data case
         if (assistantData.length === 0) {
             const newAssistant = await initialAssistant();
@@ -70,7 +70,7 @@ router.get('/messages-list', isAuthenticated, async (req, res, next) => {
                     threadId: newAssistant.thread.id
                 }
             ];
-            await saveAssistantData(assistantData[0]);
+            await saveAITutorSkillThread(assistantData[0]);
             const messages = await getMessagesList(assistantData[0].threadId);
             res.json({ messages: messages });
             return;
@@ -93,7 +93,7 @@ router.post(
     isAuthenticated,
     async (req, res, next) => {
         try {
-            const assistantData = await getAssistantLearningObjectiveData(
+            const assistantData = await getAITutorLearningObjectiveThread(
                 req.body.userId,
                 req.body.learningObjectiveId
             );
@@ -124,49 +124,34 @@ router.get(
             const userId = req.query.userId;
             const learningObjectiveId = req.query.learningObjectiveId;
 
-            let queryString = `SELECT * 
-                           FROM user_learning_objective_assistant_messages
-                           WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND learning_objective_id = ${conn.escape(
+            let assistantData = await getAITutorLearningObjectiveThread(
+                userId,
                 learningObjectiveId
-            )}`;
-            conn.query(queryString, async (err, result) => {
-                try {
-                    if (err) {
-                        throw err;
-                    }
+            );
 
-                    let assistantData = result;
-                    // Handle no assistant data case
-                    if (assistantData.length === 0) {
-                        const newAssistant = await initialAssistant();
-                        assistantData = [
-                            {
-                                userId: userId,
-                                learningObjectiveId: learningObjectiveId,
-                                assistantId: newAssistant.assistant.id,
-                                threadId: newAssistant.thread.id
-                            }
-                        ];
-                        await saveAssistantLearningObjectiveData(
-                            assistantData[0]
-                        );
-                        const messages = await getMessagesList(
-                            assistantData[0].threadId
-                        );
-                        res.json({ messages: messages });
-                        return;
-                    } else {
-                        const messages = await getMessagesList(
-                            assistantData[0].thread_id
-                        );
-                        res.json({ messages: messages });
+            // Handle no assistant data case
+            if (assistantData.length === 0) {
+                const newAssistant = await initialAssistant();
+                assistantData = [
+                    {
+                        userId: userId,
+                        learningObjectiveId: learningObjectiveId,
+                        assistantId: newAssistant.assistant.id,
+                        threadId: newAssistant.thread.id
                     }
-                } catch (err) {
-                    next(err);
-                }
-            });
+                ];
+                await saveAITutorLearningObjectiveThread(assistantData[0]);
+                const messages = await getMessagesList(
+                    assistantData[0].threadId
+                );
+                res.json({ messages: messages });
+                return;
+            } else {
+                const messages = await getMessagesList(
+                    assistantData[0].thread_id
+                );
+                res.json({ messages: messages });
+            }
         } catch (error) {
             console.error(error);
             res.status = 500;
