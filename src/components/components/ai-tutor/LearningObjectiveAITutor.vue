@@ -19,15 +19,18 @@ export default {
     data() {
         return {
             message: '',
+            // All messages in thread
             messageList: [],
             waitForAIresponse: false,
             isGotMessages: false
         };
     },
     async mounted() {
+        // load thread.
         await this.getMessages();
     },
     methods: {
+        // load thread
         async getMessages() {
             try {
                 const url = `/ai-tutor/learning-objectives/messages-list?userId=${encodeURIComponent(
@@ -42,12 +45,12 @@ export default {
                 // we reverse order of messages list because OpenAI return messages from newest to oldest
                 this.messageList.reverse();
 
-                // this.$nextTick(this.scrollToMessageInput());
                 this.isGotMessages = true;
             } catch (error) {
                 console.error(error);
             }
         },
+        // ask Open AI to explain the learning objective
         async explainLearningObjective() {
             if (this.waitForAIresponse) {
                 return;
@@ -85,12 +88,6 @@ export default {
                 console.error(error);
                 this.waitForAIresponse = false;
             }
-        },
-        // Because OpenAI returns the content with html
-        removeHTMLnotation(string) {
-            let result = string.replace(/```html/g, '');
-            result = result.replace(/```/g, '');
-            return result;
         },
         applyMarkDownFormatting(string) {
             const md = window.markdownit();
