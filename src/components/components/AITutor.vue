@@ -62,7 +62,7 @@ export default {
                 this.message = '';
                 const res = await fetch(url, requestOptions);
                 if (res.status === 500) {
-                    alert('Tutor can`t answer !!');
+                    alert('The tutor can`t answer !!');
                     this.waitForAIresponse = false;
                     return;
                 }
@@ -91,7 +91,7 @@ export default {
                 console.error(error);
             }
         },
-        // Because OpenAI return the content with it
+        // Because OpenAI returns the content with html
         removeHTMLnotation(string) {
             let result = string.replace(/```html/g, '');
             result = result.replace(/```/g, '');
@@ -123,7 +123,7 @@ export default {
             const scrollHeight = messageInput.scrollHeight;
             messageInput.style.height = height;
             const count = Math.floor(scrollHeight / lineHeightInPixels);
-
+         
             this.$nextTick(() => {
                 messageInput.setAttribute(
                     `style`,

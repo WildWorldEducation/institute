@@ -13,6 +13,7 @@ import { useShowSkillStore } from '../../stores/ShowSkillStore.js';
 import FlagModals from './FlagModals.vue';
 import Forum from './forum/Forum.vue';
 import AITutor from './AITutor.vue';
+import LearningObjectiveAITutor from './ai-tutor/LearningObjectiveAITutor.vue';
 
 export default {
     setup() {
@@ -76,13 +77,15 @@ export default {
             showTutorialTip5: false,
             showTutorialTip6: false,
             showCategoryCompletedModal: false,
-            nextSkillsInBranch: []
+            nextSkillsInBranch: [],
+            showLearningObjectiveAI: false
         };
     },
     components: {
         Forum,
         FlagModals,
-        AITutor
+        AITutor,
+        LearningObjectiveAITutor
     },
     async created() {
         await this.getSkill();
@@ -130,6 +133,10 @@ export default {
                 '/skill-learning-objectives/' + this.skillId + '/list'
             );
             this.skill.learningObjectives = await result.json();
+            for (let i = 0; i < this.skill.learningObjectives.length; i++) {
+                this.skill.learningObjectives[i].showAI = false;
+                this.skill.learningObjectives[i].mastered = false;
+            }
         },
         recordSkillVisit(skillId) {
             fetch('/skills/record-visit/' + skillId);
@@ -245,20 +252,17 @@ export default {
             this.showConfirmModal = true;
         },
         imageUrlAlternative(event) {
-            console.log('test');
             event.target.src = '/images/skill-avatar/recurso.png';
         },
         openModal(skill) {
             this.selectedSkill = skill;
             this.toggleModal = true;
         },
-
         // Close the modal
         closeModal() {
             this.toggleModal = false;
             this.selectedSkill = null;
         },
-
         // Confirm create goal and execute the necessary logic
         async confirmCreateGoal() {
             if (!this.selectedSkill) return; // Ensure a skill is selected
@@ -924,24 +928,6 @@ export default {
                         ></div>
                     </div>
 
-                    <!-- Learning Objectives -->
-                    <div v-if="skill.type != 'domain'" class="mt-4">
-                        <h2 class="h4 secondary-heading">
-                            Learning Objectives
-                        </h2>
-                        <div class="bg-white rounded p-2">
-                            <ul>
-                                <li
-                                    v-for="learningObjective in skill.learningObjectives"
-                                >
-                                    <p>
-                                        {{ learningObjective.objective }}
-                                    </p>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
                     <!-- Mastery Requirements -->
                     <div v-if="skill.type != 'domain'" class="mt-4">
                         <h2 class="h4 secondary-heading">
@@ -1022,6 +1008,79 @@ export default {
                                 </svg>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Learning Objectives -->
+            <div v-if="skill.type != 'domain'" class="mt-4">
+                <h2 class="h4 secondary-heading">Learning Objectives</h2>
+                <div class="bg-white rounded p-2">
+                    <div
+                        v-for="learningObjective in skill.learningObjectives"
+                        class="d-flex mb-3 justify-content-between"
+                    >
+                        <div>
+                            <svg
+                                v-if="!learningObjective.mastered"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="6"
+                                height="6"
+                            >
+                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                                <path
+                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z"
+                                />
+                            </svg>
+                            <svg
+                                v-else
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="18"
+                                height="18"
+                                fill="green"
+                            >
+                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                                <path
+                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
+                                />
+                            </svg>
+                        </div>
+                        <div class="ms-2 w-100">
+                            <p class="mb-0">
+                                {{ learningObjective.objective }}
+                            </p>
+                            <div v-if="learningObjective.showAI">
+                                <!-- AI tutor for this learning objective -->
+                                <LearningObjectiveAITutor
+                                    :learningObjective="
+                                        learningObjective.objective
+                                    "
+                                    :learningObjectiveId="learningObjective.id"
+                                    :skillName="skill.name"
+                                    :skillUrl="skill.url"
+                                />
+                            </div>
+                        </div>
+                        <button
+                            class="btn plus-btn"
+                            @click="
+                                learningObjective.showAI =
+                                    !learningObjective.showAI
+                            "
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                width="18"
+                                height="18"
+                            >
+                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                                <path
+                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                                />
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1265,6 +1324,10 @@ export default {
 </template>
 
 <style scoped>
+.plus-btn {
+    height: 44px;
+}
+
 /* Mastery Reqruirements Section */
 ::v-deep(.mastery-requirements-section p) {
     font-family: 'Poppins', sans-serif !important;
