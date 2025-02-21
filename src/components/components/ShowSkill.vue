@@ -252,7 +252,6 @@ export default {
             this.showConfirmModal = true;
         },
         imageUrlAlternative(event) {
-            console.log('test');
             event.target.src = '/images/skill-avatar/recurso.png';
         },
         openModal(skill) {

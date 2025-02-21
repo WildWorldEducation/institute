@@ -25,7 +25,6 @@ export default {
         };
     },
     async mounted() {
-        console.log(this.learningObjectiveId);
         await this.getMessages();
     },
     updated() {},
@@ -33,8 +32,6 @@ export default {
     methods: {
         async getMessages() {
             try {
-                console.log('get messages');
-
                 const url = `/ai-tutor/learning-objectives/messages-list?userId=${encodeURIComponent(
                     this.userDetailsStore.userId
                 )}&learningObjectiveId=${encodeURIComponent(
@@ -47,26 +44,17 @@ export default {
                 // we reverse order of messages list because OpenAI return messages from newest to oldest
                 this.messageList.reverse();
                 // this.$nextTick(this.scrollToMessageInput());
-                console.log('got messages');
-                console.log(this.messageList);
                 this.isGotMessages = true;
             } catch (error) {
                 console.error(error);
             }
         },
-        async SendMessage() {
+        async explainLearningObjective() {
             if (this.waitForAIresponse) {
                 return;
             }
             this.waitForAIresponse = true;
             try {
-                // Add user message to messages list
-                // const userMessage = {
-                //     role: 'user',
-                //     content: [{ text: { value: this.message } }]
-                // };
-                // this.messageList.push(userMessage);
-
                 const requestOptions = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -79,9 +67,8 @@ export default {
                     })
                 };
 
-                //  var url = '/ai-tutor/explain-learning-objective';
                 var url = '/ai-tutor/learning-objectives/new-message';
-                // this.message = '';
+
                 const res = await fetch(url, requestOptions);
                 if (res.status === 500) {
                     alert('The tutor can`t answer !!');
@@ -90,11 +77,7 @@ export default {
                 }
                 const resData = await res.json();
 
-                console.log(resData);
-
-                //this.message = response[0].content[0].text.value;
                 this.latestMessage = resData.message.content[0].text.value;
-
                 this.messageList.push(this.latestMessage);
                 this.getMessages();
                 this.waitForAIresponse = false;
@@ -108,48 +91,9 @@ export default {
             let result = string.replace(/```html/g, '');
             result = result.replace(/```/g, '');
             return result;
-        },
-        explainLearningObjective() {
-            this.SendMessage();
-        },
-        quizLearningObjective() {}
-    },
-    watch: {
-        // Update text area height base on message input
-        message: function (newItem, oldItem) {
-            let { messageTextArea } = this.$refs;
-            const lineHeightInPixels = 1000;
-
-            console.log(this.message);
-            console.log(this.message.scrollHeight);
-
-            return;
-            // Reset messageInput Height
-            messageTextArea.setAttribute(
-                `style`,
-                `height:${lineHeightInPixels}px;overflow-y:hidden;`
-            );
-
-            console.log(this.message.scrollHeight);
-            console.log(this.message);
-
-            // Calculate number of lines (soft and hard)
-            const height = messageTextArea.style.height;
-            const scrollHeight = this.message.scrollHeight;
-            messageTextArea.style.height = height;
-            const count = Math.floor(scrollHeight / lineHeightInPixels);
-
-            console.log(count);
-            console.log(lineHeightInPixels);
-
-            this.$nextTick(() => {
-                messageTextArea.setAttribute(
-                    `style`,
-                    `height:${count * lineHeightInPixels}px;overflow-y:hidden;`
-                );
-            });
         }
-    }
+    },
+    watch: {}
 };
 </script>
 
