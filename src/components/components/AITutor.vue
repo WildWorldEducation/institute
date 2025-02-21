@@ -148,7 +148,7 @@ export default {
         <div class="d-flex flex-column flex-md-row gap-2 align-items-baseline">
             <div class="d-flex flex-row w-100 justify-content-between">
                 <div class="d-flex gap-2">
-                    <h2 class="heading">Learn with the AI tutor</h2>
+                    <h2 class="heading">Ask the AI tutor a question</h2>
                     <TooltipBtn
                         v-if="mode === 'big'"
                         class="d-none d-md-block"
