@@ -13,7 +13,7 @@ const conn = require('../config/db');
 // Import OpenAI package.
 const { OpenAI } = require('openai');
 const {
-    processingNewMessage,
+    processingNewSkillMessage,
     initialAssistant,
     getAITutorSkillThread,
     saveAITutorSkillThread,
@@ -38,7 +38,7 @@ router.post('/new-message', isAuthenticated, async (req, res, next) => {
             req.body.userId,
             req.body.skillUrl
         );
-        const result = await processingNewMessage(
+        const result = await processingNewSkillMessage(
             assistantData[0].thread_id,
             assistantData[0].assistant_id,
             req.body

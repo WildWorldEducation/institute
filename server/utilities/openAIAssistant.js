@@ -91,7 +91,7 @@ async function saveAITutorSkillThread(data) {
     }
 }
 
-async function processingNewMessage(threadId, assistantId, messageData) {
+async function processingNewSkillMessage(threadId, assistantId, messageData) {
     // Add a Message to the Thread
     const message = await openai.beta.threads.messages.create(threadId, {
         role: 'user',
@@ -184,7 +184,7 @@ async function saveAITutorLearningObjectiveThread(data) {
 
 module.exports = {
     initialAssistant,
-    processingNewMessage,
+    processingNewSkillMessage,
     saveAITutorSkillThread,    
     getMessagesList,
     getAITutorSkillThread,
