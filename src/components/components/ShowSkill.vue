@@ -78,8 +78,7 @@ export default {
             showTutorialTip6: false,
             showCategoryCompletedModal: false,
             nextSkillsInBranch: [],
-            showLearningObjectiveAI: false,
-            learningObjectivemastered: false
+            showLearningObjectiveAI: false
         };
     },
     components: {
@@ -136,6 +135,7 @@ export default {
             this.skill.learningObjectives = await result.json();
             for (let i = 0; i < this.skill.learningObjectives.length; i++) {
                 this.skill.learningObjectives[i].showAI = false;
+                this.skill.learningObjectives[i].mastered = false;
             }
         },
         recordSkillVisit(skillId) {
@@ -1022,7 +1022,7 @@ export default {
                     >
                         <div class="">
                             <svg
-                                v-if="!learningObjectivemastered"
+                                v-if="!learningObjective.mastered"
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 512 512"
                                 width="6"
