@@ -543,6 +543,7 @@ body {
 /* Regular text */
 p {
     color: black !important;
+    font-family: 'Poppins', sans-serif;
 }
 
 /* Buttons */
