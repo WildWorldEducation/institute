@@ -92,7 +92,6 @@ export default {
         applyMarkDownFormatting(string) {
             const md = window.markdownit();
             let formattedMessage = md.render(string);
-            console.log(formattedMessage);
             return formattedMessage;
         }
     }
