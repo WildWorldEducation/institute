@@ -15,12 +15,12 @@ const { OpenAI } = require('openai');
 const {
     processingNewMessage,
     initialAssistant,
-    getAssistantData,
-    saveAssistantData,
+    getAITutorSkillThread,
+    saveAITutorSkillThread,
     getMessagesList,
     // for learning objective AI tutor
-    getAssistantLearningObjectiveData,
-    saveAssistantLearningObjectiveData,
+    getAITutorLearningObjectiveThread,
+    saveAITutorLearningObjectiveThread,
     processingNewLearningObjectiveExplanation
 } = require('../utilities/openAIAssistant');
 const isAuthenticated = require('../middlewares/authMiddleware');
@@ -34,7 +34,7 @@ const openai = new OpenAI({
  */
 router.post('/new-message', isAuthenticated, async (req, res, next) => {
     try {
-        const assistantData = await getAssistantData(
+        const assistantData = await getAITutorSkillThread(
             req.body.userId,
             req.body.skillUrl
         );
@@ -58,7 +58,7 @@ router.get('/messages-list', isAuthenticated, async (req, res, next) => {
     try {
         const userId = req.query.userId;
         const skillUrl = req.query.skillUrl;
-        let assistantData = await getAssistantData(userId, skillUrl);
+        let assistantData = await getAITutorSkillThread(userId, skillUrl);
         // Handle no assistant data case
         if (assistantData.length === 0) {
             const newAssistant = await initialAssistant();
@@ -70,7 +70,7 @@ router.get('/messages-list', isAuthenticated, async (req, res, next) => {
                     threadId: newAssistant.thread.id
                 }
             ];
-            await saveAssistantData(assistantData[0]);
+            await saveAITutorSkillThread(assistantData[0]);
             const messages = await getMessagesList(assistantData[0].threadId);
             res.json({ messages: messages });
             return;
@@ -93,7 +93,7 @@ router.post(
     isAuthenticated,
     async (req, res, next) => {
         try {
-            const assistantData = await getAssistantLearningObjectiveData(
+            const assistantData = await getAITutorLearningObjectiveThread(
                 req.body.userId,
                 req.body.learningObjectiveId
             );
@@ -149,7 +149,7 @@ router.get(
                                 threadId: newAssistant.thread.id
                             }
                         ];
-                        await saveAssistantLearningObjectiveData(
+                        await saveAITutorLearningObjectiveThread(
                             assistantData[0]
                         );
                         const messages = await getMessagesList(

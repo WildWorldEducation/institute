@@ -15,9 +15,11 @@ const openai = new OpenAI({
 /**
  * Shared functions --------------------------------------
  */
-async function createThread() {
-    const thread = await openai.beta.threads.create();
-    return thread;
+async function initialAssistant() {
+    const assistant = await createAssistant();
+    const thread = await createThread();
+    const result = { assistant: assistant, thread: thread };
+    return result;
 }
 
 async function createAssistant() {
@@ -31,11 +33,9 @@ async function createAssistant() {
     return assistant;
 }
 
-async function initialAssistant() {
-    const assistant = await createAssistant();
-    const thread = await createThread();
-    const result = { assistant: assistant, thread: thread };
-    return result;
+async function createThread() {
+    const thread = await openai.beta.threads.create();
+    return thread;
 }
 
 /**
@@ -61,7 +61,7 @@ async function getMessagesList(threadId) {
  * @param {string} userId
  * @return {object} database data
  */
-async function getAssistantData(userId, skillUrl) {
+async function getAITutorSkillThread(userId, skillUrl) {
     try {
         let queryString = `SELECT * 
                            FROM ai_tutor_skill_threads 
@@ -75,7 +75,7 @@ async function getAssistantData(userId, skillUrl) {
     }
 }
 
-async function saveAssistantData(data) {
+async function saveAITutorSkillThread(data) {
     try {
         let queryString = `INSERT INTO ai_tutor_skill_threads (user_id, skill_url, assistant_id, thread_id)
                VALUES (
@@ -122,7 +122,7 @@ async function processingNewMessage(threadId, assistantId, messageData) {
  * @param {string} learningObjectiveId
  * @return {*}
  */
-async function getAssistantLearningObjectiveData(userId, learningObjectiveId) {
+async function getAITutorLearningObjectiveThread(userId, learningObjectiveId) {
     try {
         let queryString = `SELECT * 
                            FROM ai_tutor_learning_objective_threads
@@ -166,7 +166,7 @@ async function processingNewLearningObjectiveExplanation(
     }
 }
 
-async function saveAssistantLearningObjectiveData(data) {
+async function saveAITutorLearningObjectiveThread(data) {
     try {
         let queryString = `INSERT INTO ai_tutor_learning_objective_threads (user_id, learning_objective_id, assistant_id, thread_id)
                VALUES (
@@ -185,11 +185,10 @@ async function saveAssistantLearningObjectiveData(data) {
 module.exports = {
     initialAssistant,
     processingNewMessage,
-    saveAssistantData,
-    getAssistantData,
+    saveAITutorSkillThread,    
     getMessagesList,
-    getAssistantData,
-    getAssistantLearningObjectiveData,
-    saveAssistantLearningObjectiveData,
+    getAITutorSkillThread,
+    getAITutorLearningObjectiveThread,
+    saveAITutorLearningObjectiveThread,
     processingNewLearningObjectiveExplanation
 };
