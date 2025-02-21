@@ -73,7 +73,7 @@ async function processingNewLearningObjectiveExplanation(
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
-        instructions: `Please return the message as formatted html code. Please refer to the user as ${messageData.userName}. Please only talk about the topic: ${messageData.skillName};`
+        instructions: `Please return the message as formatted html code.`
     });
 
     if (run.status === 'completed') {
@@ -155,23 +155,10 @@ async function getAssistantLearningObjectiveData(userId, learningObjectiveId) {
                                userId
                            )} AND learning_objective_id = ${conn.escape(
             learningObjectiveId
-        )}`;
-        console.log(queryString);
-        // conn.query(queryString, (err, result) => {
-        //     try {
-        //         if (err) {
-        //             throw err;
-        //         }
+        )}`;      
 
-        //         console.log(result);
-        //         return result;
-        //     } catch (err) {
-        //         next(err);
-        //     }
-        // });
-
-        const result = await query(queryString);
-        console.log(result);
+        const result = await query(queryString);      
+        
         return result;
     } catch (error) {
         throw error;

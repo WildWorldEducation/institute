@@ -205,8 +205,6 @@ router.get(
             //     learningObjectiveId
             // );
 
-            console.log(learningObjectiveId);
-
             let queryString = `SELECT * 
                            FROM user_learning_objective_assistant_messages
                            WHERE user_id = ${conn.escape(
@@ -214,14 +212,12 @@ router.get(
                            )} AND learning_objective_id = ${conn.escape(
                 learningObjectiveId
             )}`;
-            console.log(queryString);
             conn.query(queryString, async (err, result) => {
                 try {
                     if (err) {
                         throw err;
                     }
 
-                    console.log(result);
                     let assistantData = result;
                     // Handle no assistant data case
                     if (assistantData.length === 0) {
