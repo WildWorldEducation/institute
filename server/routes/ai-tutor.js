@@ -124,49 +124,34 @@ router.get(
             const userId = req.query.userId;
             const learningObjectiveId = req.query.learningObjectiveId;
 
-            let queryString = `SELECT * 
-                           FROM ai_tutor_learning_objective_threads
-                           WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND learning_objective_id = ${conn.escape(
+            let assistantData = await getAITutorLearningObjectiveThread(
+                userId,
                 learningObjectiveId
-            )}`;
-            conn.query(queryString, async (err, result) => {
-                try {
-                    if (err) {
-                        throw err;
-                    }
+            );
 
-                    let assistantData = result;
-                    // Handle no assistant data case
-                    if (assistantData.length === 0) {
-                        const newAssistant = await initialAssistant();
-                        assistantData = [
-                            {
-                                userId: userId,
-                                learningObjectiveId: learningObjectiveId,
-                                assistantId: newAssistant.assistant.id,
-                                threadId: newAssistant.thread.id
-                            }
-                        ];
-                        await saveAITutorLearningObjectiveThread(
-                            assistantData[0]
-                        );
-                        const messages = await getMessagesList(
-                            assistantData[0].threadId
-                        );
-                        res.json({ messages: messages });
-                        return;
-                    } else {
-                        const messages = await getMessagesList(
-                            assistantData[0].thread_id
-                        );
-                        res.json({ messages: messages });
+            // Handle no assistant data case
+            if (assistantData.length === 0) {
+                const newAssistant = await initialAssistant();
+                assistantData = [
+                    {
+                        userId: userId,
+                        learningObjectiveId: learningObjectiveId,
+                        assistantId: newAssistant.assistant.id,
+                        threadId: newAssistant.thread.id
                     }
-                } catch (err) {
-                    next(err);
-                }
-            });
+                ];
+                await saveAITutorLearningObjectiveThread(assistantData[0]);
+                const messages = await getMessagesList(
+                    assistantData[0].threadId
+                );
+                res.json({ messages: messages });
+                return;
+            } else {
+                const messages = await getMessagesList(
+                    assistantData[0].thread_id
+                );
+                res.json({ messages: messages });
+            }
         } catch (error) {
             console.error(error);
             res.status = 500;
