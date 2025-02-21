@@ -1019,7 +1019,7 @@ export default {
                         v-for="learningObjective in skill.learningObjectives"
                         class="d-flex mb-3 justify-content-between"
                     >
-                        <div class="">
+                        <div>
                             <svg
                                 v-if="!learningObjective.mastered"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -1051,6 +1051,7 @@ export default {
                                 {{ learningObjective.objective }}
                             </p>
                             <div v-if="learningObjective.showAI">
+                                <!-- AI tutor for this learning objective -->
                                 <LearningObjectiveAITutor
                                     :learningObjective="
                                         learningObjective.objective
