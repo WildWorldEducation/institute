@@ -125,7 +125,7 @@ router.get(
             const learningObjectiveId = req.query.learningObjectiveId;
 
             let queryString = `SELECT * 
-                           FROM user_learning_objective_assistant_messages
+                           FROM ai_tutor_learning_objective_threads
                            WHERE user_id = ${conn.escape(
                                userId
                            )} AND learning_objective_id = ${conn.escape(
