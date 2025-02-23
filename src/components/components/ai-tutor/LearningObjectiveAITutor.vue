@@ -37,13 +37,16 @@ export default {
                     this.userDetailsStore.userId
                 )}&learningObjectiveId=${encodeURIComponent(
                     this.learningObjectiveId
+                )}&learningObjective=${encodeURIComponent(
+                    this.learningObjective
                 )}`;
 
                 const response = await fetch(url);
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
+                console.log(this.messageList);
                 // we reverse order of messages list because OpenAI return messages from newest to oldest
-                this.messageList.reverse();
+                //   this.messageList.reverse();
 
                 this.isGotMessages = true;
             } catch (error) {
@@ -51,7 +54,7 @@ export default {
             }
         },
         // ask Open AI to explain the learning objective
-        async explainLearningObjective() {
+        async learningObjectiveMessage() {
             if (this.waitForAIresponse) {
                 return;
             }
@@ -65,7 +68,8 @@ export default {
                         learningObjectiveId: this.learningObjectiveId,
                         userName: this.userDetailsStore.userName,
                         userId: this.userDetailsStore.userId,
-                        skillName: this.skillName
+                        skillName: this.skillName,
+                        message: this.message
                     })
                 };
 
@@ -100,7 +104,7 @@ export default {
 </script>
 
 <template>
-    <!-- Loading animation -->
+    <!-- Thread loading animation -->
     <div
         v-if="isGotMessages == false"
         class="loading-animation d-flex justify-content-center align-items-center py-4"
@@ -108,12 +112,16 @@ export default {
         <span class="loader"></span>
     </div>
     <div v-else>
+        <!-- Suggested interaction buttons -->
         <span class="d-flex justify-content-end">
             <!-- learning objective explanation button -->
             <button
                 v-if="isGotMessages"
                 class="btn border"
-                @click="explainLearningObjective()"
+                @click="
+                    message = 'Please explain it.';
+                    learningObjectiveMessage();
+                "
             >
                 <!-- Robot icon -->
                 <svg
@@ -144,24 +152,33 @@ export default {
                     d="M504 256c0 137-111 248-248 248S8 393 8 256C8 119.1 119 8 256 8s248 111.1 248 248zM262.7 90c-54.5 0-89.3 23-116.5 63.8-3.5 5.3-2.4 12.4 2.7 16.3l34.7 26.3c5.2 3.9 12.6 3 16.7-2.1 17.9-22.7 30.1-35.8 57.3-35.8 20.4 0 45.7 13.1 45.7 33 0 15-12.4 22.7-32.5 34C247.1 238.5 216 254.9 216 296v4c0 6.6 5.4 12 12 12h56c6.6 0 12-5.4 12-12v-1.3c0-28.5 83.2-29.6 83.2-106.7 0-58-60.2-102-116.5-102zM256 338c-25.4 0-46 20.6-46 46 0 25.4 20.6 46 46 46s46-20.6 46-46c0-25.4-20.6-46-46-46z"
                 />
             </svg>
-            quiz me
+            Test me
         </button> -->
         </span>
-        <div
-            class="d-flex my-3"
-            :class="{ 'flex-row-reverse': message.role === 'user' }"
-            v-for="message in messageList"
-        >
-            <div
-                v-if="
-                    message.role === 'assistant' &&
-                    message.content[0].type == 'text'
-                "
-                class="tutor-conversation"
-                v-html="applyMarkDownFormatting(message.content[0].text.value)"
-            ></div>
-        </div>
-        <div class="ai-tutor-processing" v-if="waitForAIresponse">
+        <!-- Custom interactions text input -->
+        <span class="d-flex mt-1">
+            <input
+                class="chat-input border rounded"
+                v-model="message"
+                type="text"
+            />
+            <button class="btn border ms-1" @click="learningObjectiveMessage()">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    width="18"
+                    height="18"
+                    fill="black"
+                >
+                    <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                    <path
+                        d="M256 448c141.4 0 256-93.1 256-208S397.4 32 256 32S0 125.1 0 240c0 45.1 17.7 86.8 47.7 120.9c-1.9 24.5-11.4 46.3-21.4 62.9c-5.5 9.2-11.1 16.6-15.2 21.6c-2.1 2.5-3.7 4.4-4.9 5.7c-.6 .6-1 1.1-1.3 1.4l-.3 .3c0 0 0 0 0 0c0 0 0 0 0 0s0 0 0 0s0 0 0 0c-4.6 4.6-5.9 11.4-3.4 17.4c2.5 6 8.3 9.9 14.8 9.9c28.7 0 57.6-8.9 81.6-19.3c22.9-10 42.4-21.9 54.3-30.6c31.8 11.5 67 17.9 104.1 17.9zM128 208a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm128 0a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm96 32a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
+                    />
+                </svg>
+            </button>
+        </span>
+        <!-- Tutor loading animation -->
+        <div class="ai-tutor-processing mt-2" v-if="waitForAIresponse">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 640 512"
@@ -176,10 +193,45 @@ export default {
             Thinking
             <TutorLoadingSymbol />
         </div>
+        <!-- Message thread -->
+        <div
+            class="d-flex my-3 messages w-100"
+            :class="{
+                'd-flex justify-content-end': message.role === 'user'
+            }"
+            v-for="message in messageList"
+        >
+            <!-- Student messages -->
+            <div
+                v-if="message.role === 'user'"
+                class="border border-dark rounded p-2"
+            >
+                {{ message.content[0].text.value }}
+            </div>
+            <!-- AI tutor messages -->
+            <div
+                v-else-if="
+                    message.role === 'assistant' &&
+                    message.content[0].type == 'text'
+                "
+                class="tutor-conversation border border-dark rounded p-2"
+                v-html="applyMarkDownFormatting(message.content[0].text.value)"
+            ></div>
+        </div>
     </div>
 </template>
 
 <style scoped>
+.messages {
+    width: fit-content;
+}
+
+.chat-input {
+    width: 100%;
+    max-height: 600px;
+}
+
+/* Tutor loading animation */
 .ai-tutor-processing {
     display: flex;
     width: fit-content;
@@ -192,7 +244,7 @@ export default {
     margin-bottom: 15px;
 }
 
-/* Loading animation */
+/* Threads loading animation */
 .loader {
     width: 36px;
     height: 36px;

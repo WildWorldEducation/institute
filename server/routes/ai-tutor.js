@@ -21,7 +21,7 @@ const {
     // for learning objective AI tutor
     getAITutorLearningObjectiveThread,
     saveAITutorLearningObjectiveThread,
-    processingNewLearningObjectiveExplanation
+    processingNewLearningObjectiveMessage
 } = require('../utilities/openAIAssistant');
 const isAuthenticated = require('../middlewares/authMiddleware');
 // Include API key.
@@ -58,10 +58,11 @@ router.get('/messages-list', isAuthenticated, async (req, res, next) => {
     try {
         const userId = req.query.userId;
         const skillUrl = req.query.skillUrl;
+        const skillName = req.query.skillName;
         let assistantData = await getAITutorSkillThread(userId, skillUrl);
         // Handle no assistant data case
         if (assistantData.length === 0) {
-            const newAssistant = await initialAssistant();
+            const newAssistant = await initialAssistant(skillName);
             assistantData = [
                 {
                     userId: userId,
@@ -98,7 +99,7 @@ router.post(
                 req.body.learningObjectiveId
             );
 
-            const result = await processingNewLearningObjectiveExplanation(
+            const result = await processingNewLearningObjectiveMessage(
                 assistantData[0].thread_id,
                 assistantData[0].assistant_id,
                 req.body
@@ -123,6 +124,7 @@ router.get(
         try {
             const userId = req.query.userId;
             const learningObjectiveId = req.query.learningObjectiveId;
+            const learningObjective = req.query.learningObjective;
 
             let assistantData = await getAITutorLearningObjectiveThread(
                 userId,
@@ -131,7 +133,7 @@ router.get(
 
             // Handle no assistant data case
             if (assistantData.length === 0) {
-                const newAssistant = await initialAssistant();
+                const newAssistant = await initialAssistant(learningObjective);
                 assistantData = [
                     {
                         userId: userId,

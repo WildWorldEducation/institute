@@ -79,7 +79,9 @@ export default {
             try {
                 const url = `/ai-tutor/messages-list?userId=${encodeURIComponent(
                     this.userDetailsStore.userId
-                )}&skillUrl=${encodeURIComponent(this.skillUrl)}`;
+                )}&skillUrl=${encodeURIComponent(
+                    this.skillUrl
+                )}&skillName=${encodeURIComponent(this.skillName)}`;
 
                 const response = await fetch(url);
                 const resData = await response.json();
@@ -356,9 +358,7 @@ export default {
             />
         </svg>
     </div>
-    <!-- <h1>{{ mode }}</h1> -->
 </template>
-
 <style scoped>
 .tutor-conversation {
     font-family: 'Poppins', sans-serif;
