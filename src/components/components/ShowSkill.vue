@@ -440,7 +440,7 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3">
+    <div class="container">
         <div
             id="skill-info-container"
             :class="{ domain: skill.type == 'domain' }"
