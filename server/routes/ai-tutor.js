@@ -58,10 +58,11 @@ router.get('/messages-list', isAuthenticated, async (req, res, next) => {
     try {
         const userId = req.query.userId;
         const skillUrl = req.query.skillUrl;
+        const skillName = req.query.skillName;
         let assistantData = await getAITutorSkillThread(userId, skillUrl);
         // Handle no assistant data case
         if (assistantData.length === 0) {
-            const newAssistant = await initialAssistant();
+            const newAssistant = await initialAssistant(skillName);
             assistantData = [
                 {
                     userId: userId,
