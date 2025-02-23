@@ -195,7 +195,7 @@ export default {
         </div>
         <!-- Message thread -->
         <div
-            class="d-flex my-3 messages"
+            class="d-flex my-3 messages w-100"
             :class="{
                 'd-flex justify-content-end': message.role === 'user'
             }"
