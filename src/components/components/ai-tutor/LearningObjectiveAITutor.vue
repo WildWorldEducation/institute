@@ -37,6 +37,8 @@ export default {
                     this.userDetailsStore.userId
                 )}&learningObjectiveId=${encodeURIComponent(
                     this.learningObjectiveId
+                )}&learningObjective=${encodeURIComponent(
+                    this.learningObjective
                 )}`;
 
                 const response = await fetch(url);
@@ -176,7 +178,7 @@ export default {
             </button>
         </span>
         <!-- Tutor loading animation -->
-        <div class="ai-tutor-processing" v-if="waitForAIresponse">
+        <div class="ai-tutor-processing mt-2" v-if="waitForAIresponse">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 640 512"
@@ -193,19 +195,26 @@ export default {
         </div>
         <!-- Message thread -->
         <div
-            class="d-flex my-3 border border-dark rounded p-2"
-            :class="{ 'flex-row-reverse': message.role === 'user' }"
+            class="d-flex my-3 messages"
+            :class="{
+                'd-flex justify-content-end': message.role === 'user'
+            }"
             v-for="message in messageList"
         >
-            <div v-if="message.role === 'user'" class="rounded border p-2">
+            <!-- Student messages -->
+            <div
+                v-if="message.role === 'user'"
+                class="border border-dark rounded p-2"
+            >
                 {{ message.content[0].text.value }}
             </div>
+            <!-- AI tutor messages -->
             <div
                 v-else-if="
                     message.role === 'assistant' &&
                     message.content[0].type == 'text'
                 "
-                class="tutor-conversation"
+                class="tutor-conversation border border-dark rounded p-2"
                 v-html="applyMarkDownFormatting(message.content[0].text.value)"
             ></div>
         </div>
@@ -213,6 +222,10 @@ export default {
 </template>
 
 <style scoped>
+.messages {
+    width: fit-content;
+}
+
 .chat-input {
     width: 100%;
     max-height: 600px;

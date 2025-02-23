@@ -15,18 +15,19 @@ const openai = new OpenAI({
 /**
  * Shared functions --------------------------------------
  */
-async function initialAssistant() {
-    const assistant = await createAssistant();
+async function initialAssistant(topic) {
+    const assistant = await createAssistant(topic);
     const thread = await createThread();
     const result = { assistant: assistant, thread: thread };
     return result;
 }
 
-async function createAssistant() {
+async function createAssistant(topic) {
     const assistant = await openai.beta.assistants.create({
         name: 'General Tutor',
         instructions:
-            'You are a personal tutor. Answer any questions you are asked..',
+            'You are a personal tutor teaching about the following subject: ' +
+            topic,
         tools: [],
         model: 'gpt-4o'
     });
@@ -140,7 +141,7 @@ async function getAITutorLearningObjectiveThread(userId, learningObjectiveId) {
     }
 }
 
-async function processingNewLearningObjectiveExplanation(
+async function processingNewLearningObjectiveMessage(
     threadId,
     assistantId,
     messageData
@@ -148,16 +149,14 @@ async function processingNewLearningObjectiveExplanation(
     // Add a Message to the Thread
     const message = await openai.beta.threads.messages.create(threadId, {
         role: 'user',
-        content:
-            'With regards the following learning objective, ' +
-            messageData.learningObjective +
-            ': ' +
-            messageData.message
+        content: messageData.message
     });
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
-        instructions: `Please do not repeat the question.`
+        instructions:
+            `Please do not repeat the question. Please tutor about the topic: ` +
+            messageData.learningObjective
     });
 
     if (run.status === 'completed') {
@@ -194,5 +193,5 @@ module.exports = {
     getAITutorSkillThread,
     getAITutorLearningObjectiveThread,
     saveAITutorLearningObjectiveThread,
-    processingNewLearningObjectiveExplanation
+    processingNewLearningObjectiveMessage
 };
