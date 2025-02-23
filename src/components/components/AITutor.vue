@@ -356,9 +356,8 @@ export default {
             />
         </svg>
     </div>
-    <!-- <h1>{{ mode }}</h1> -->
+    
 </template>
-
 <style scoped>
 .tutor-conversation {
     font-family: 'Poppins', sans-serif;
