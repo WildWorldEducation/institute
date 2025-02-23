@@ -1063,6 +1063,7 @@ export default {
                             </div>
                         </div>
                         <button
+                            v-if="sessionDetailsStore.isLoggedIn"
                             class="btn plus-btn"
                             @click="
                                 learningObjective.showAI =
