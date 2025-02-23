@@ -148,7 +148,11 @@ async function processingNewLearningObjectiveExplanation(
     // Add a Message to the Thread
     const message = await openai.beta.threads.messages.create(threadId, {
         role: 'user',
-        content: messageData.learningObjective
+        content:
+            'With regards the following learning objective, ' +
+            messageData.learningObjective +
+            ': ' +
+            messageData.message
     });
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {

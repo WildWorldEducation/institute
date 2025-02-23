@@ -42,8 +42,9 @@ export default {
                 const response = await fetch(url);
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
+                console.log(this.messageList);
                 // we reverse order of messages list because OpenAI return messages from newest to oldest
-                this.messageList.reverse();
+                //   this.messageList.reverse();
 
                 this.isGotMessages = true;
             } catch (error) {
@@ -51,7 +52,7 @@ export default {
             }
         },
         // ask Open AI to explain the learning objective
-        async explainLearningObjective() {
+        async learningObjectiveMessage() {
             if (this.waitForAIresponse) {
                 return;
             }
@@ -65,7 +66,8 @@ export default {
                         learningObjectiveId: this.learningObjectiveId,
                         userName: this.userDetailsStore.userName,
                         userId: this.userDetailsStore.userId,
-                        skillName: this.skillName
+                        skillName: this.skillName,
+                        message: this.message
                     })
                 };
 
@@ -114,7 +116,10 @@ export default {
             <button
                 v-if="isGotMessages"
                 class="btn border"
-                @click="explainLearningObjective()"
+                @click="
+                    message = 'Please explain it.';
+                    learningObjectiveMessage();
+                "
             >
                 <!-- Robot icon -->
                 <svg
@@ -148,13 +153,14 @@ export default {
             Test me
         </button> -->
         </span>
+        <!-- Custom interactions text input -->
         <span class="d-flex mt-1">
             <input
                 class="chat-input border rounded"
                 v-model="message"
                 type="text"
             />
-            <button class="btn border ms-1">
+            <button class="btn border ms-1" @click="learningObjectiveMessage()">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
@@ -169,21 +175,6 @@ export default {
                 </svg>
             </button>
         </span>
-        <!-- Message thread -->
-        <div
-            class="d-flex my-3"
-            :class="{ 'flex-row-reverse': message.role === 'user' }"
-            v-for="message in messageList"
-        >
-            <div
-                v-if="
-                    message.role === 'assistant' &&
-                    message.content[0].type == 'text'
-                "
-                class="tutor-conversation"
-                v-html="applyMarkDownFormatting(message.content[0].text.value)"
-            ></div>
-        </div>
         <!-- Tutor loading animation -->
         <div class="ai-tutor-processing" v-if="waitForAIresponse">
             <svg
@@ -199,6 +190,24 @@ export default {
             </svg>
             Thinking
             <TutorLoadingSymbol />
+        </div>
+        <!-- Message thread -->
+        <div
+            class="d-flex my-3 border border-dark rounded p-2"
+            :class="{ 'flex-row-reverse': message.role === 'user' }"
+            v-for="message in messageList"
+        >
+            <div v-if="message.role === 'user'" class="rounded border p-2">
+                {{ message.content[0].text.value }}
+            </div>
+            <div
+                v-else-if="
+                    message.role === 'assistant' &&
+                    message.content[0].type == 'text'
+                "
+                class="tutor-conversation"
+                v-html="applyMarkDownFormatting(message.content[0].text.value)"
+            ></div>
         </div>
     </div>
 </template>
