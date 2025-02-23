@@ -89,6 +89,7 @@ export default {
                 this.waitForAIresponse = false;
             }
         },
+        // Format the response.
         applyMarkDownFormatting(string) {
             const md = window.markdownit();
             let formattedMessage = md.render(string);

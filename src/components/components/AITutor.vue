@@ -91,11 +91,11 @@ export default {
                 console.error(error);
             }
         },
-        // Because OpenAI returns the content with html
-        removeHTMLnotation(string) {
-            let result = string.replace(/```html/g, '');
-            result = result.replace(/```/g, '');
-            return result;
+        // Format the response.
+        applyMarkDownFormatting(string) {
+            const md = window.markdownit();
+            let formattedMessage = md.render(string);
+            return formattedMessage;
         },
         scrollToMessageInput() {
             let inputMessage = this.$refs.messageInputDiv;
@@ -123,7 +123,7 @@ export default {
             const scrollHeight = messageInput.scrollHeight;
             messageInput.style.height = height;
             const count = Math.floor(scrollHeight / lineHeightInPixels);
-         
+
             this.$nextTick(() => {
                 messageInput.setAttribute(
                     `style`,
@@ -251,7 +251,9 @@ export default {
                         message.content[0].type == 'text'
                     "
                     class="tutor-conversation"
-                    v-html="removeHTMLnotation(message.content[0].text.value)"
+                    v-html="
+                        applyMarkDownFormatting(message.content[0].text.value)
+                    "
                 ></div>
             </div>
             <div class="ai-tutor-processing" v-if="waitForAIresponse">
