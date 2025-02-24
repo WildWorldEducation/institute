@@ -79,7 +79,8 @@ export default {
                 'data:image/png;base64,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',
             iconDictionary: [],
             nodeWidth: 80,
-            nodeHeight: 800
+            nodeHeight: 800,
+            numberOfLinkDraw: 0
         };
     },
     components: {
@@ -271,17 +272,21 @@ export default {
             // Draw links.
             const links = this.root.links();
             this.context.beginPath();
+            this.numberOfLinkDraw = 0;
             for (const link of links) {
-                // Do not render parts of tree not in the canvas
-                // to improve performance.
-                if (!this.checkIfLinkInViews(link, transform)) {
-                    continue;
-                }
-                if (link.target.data.name === 'Science & Invention') {
+                if (link.target.data.name === 'Generating Fiction With AI') {
                     let ctx = this.context;
                     this.drawRectangle(ctx, link.target, link.source);
                 }
+                // Do not render parts of tree not in the canvas
+                // to improve performance.
+
+                if (!this.checkIfLinkInViews(link, transform)) {
+                    continue;
+                }
+
                 this.drawLink(link);
+                this.numberOfLinkDraw = this.numberOfLinkDraw + 1;
             }
 
             // Draw nodes.
@@ -731,27 +736,36 @@ export default {
         checkIfLinkInViews(link, transformData) {
             const targetNode = link.target;
             const sourceNode = link.source;
-            // let targetNodeInLinkView = this.checkNodeInLinksVisibleView(
-            //     targetNode,
-            //     transformData
-            // );
-            // let sourceNodeInLinkView = this.checkNodeInLinksVisibleView(
-            //     sourceNode,
-            //     transformData
-            // );
-
-            let targetNodeInLinkView = false;
-            // The idea is we will draw a rectangle with target node and source node surely this rectangle will contains the links
-            // => mean target and source point is two point on a rectangle with it diagonal line is source node and target node
-            // => That mean ours job is to find other two point on the other diagonal line to form a rectangle
-            // Then we can check if the rectangle is in view zone to see if the link is in view zone
-            // ( can also improve in the future to find even a smaller limit area that contain the links )
             const targetNodeCounterPoint = {
                 x: targetNode.x,
                 y: sourceNode.y
             };
 
-            return true;
+            const sourceNodeCounterPoint = {
+                x: sourceNode.x,
+                y: targetNode.y
+            };
+
+            // The idea is we will draw a rectangle with target node and source node surely this rectangle will contains the links
+            // => mean target and source point is two point on a rectangle with it diagonal line is source node and target node
+            // => That mean ours job is to find other two point on the other diagonal line to form a rectangle
+            // Then we can check if the rectangle is in view zone to see if the link is in view zone
+            // ( can also improve in the future to find even a smaller limit area that contain the links )
+            const rectangle = this.createRectangle(
+                targetNode,
+                sourceNode,
+                targetNodeCounterPoint,
+                sourceNodeCounterPoint
+            );
+            if (targetNode.data.name === 'Written Language') {
+                console.log(rectangle);
+            }
+            const isLinkInView = this.checkIfRectangleInView(
+                rectangle,
+                transformData
+            );
+
+            return isLinkInView;
         },
         checkIfPointInViews(point, transformData) {
             // Calculate max visible range
@@ -776,13 +790,192 @@ export default {
             }
             return false;
         },
-        checkIfRectangleInView(
-            point1,
-            point2,
-            point3,
-            point4,
-            transformData
-        ) {},
+        checkIfLineIsInView(point1, point2, transformData) {
+            // Calculate max visible range
+            // Visible range is the rectangle with width and height equal to canvas context
+            // Every time context is translate the visible range is changing too
+
+            const visibleRangeY = transformData.y - this.height;
+            // Calculate real position of node with current scale
+            let realPosition1X = point1.y * transformData.k;
+            let realPosition1Y = -point1.x * transformData.k;
+
+            let realPosition2X = point2.y * transformData.k;
+            let realPosition2Y = -point2.x * transformData.k;
+
+            // I actually come up with this formula base on observe the changing of translate and node position when translate context
+            // It doesn`t make sense to me but some how working correctly
+            let combinePosition1 = transformData.x + realPosition1X;
+            let combinePosition2 = transformData.x + realPosition2X;
+            // if (
+            //     combinePosition > 0 &&
+            //     combinePosition < this.width &&
+            //     transformData.y > realPositionY &&
+            //     realPositionY > visibleRangeY
+            // ) {
+            //     return true;
+            // }
+            // return false;
+            if (combinePosition1 < 0 && combinePosition2 > this.width) {
+                return true;
+            }
+            if (
+                realPosition1Y > transformData.y &&
+                realPosition2Y < visibleRangeY
+            ) {
+                return true;
+            }
+        },
+        createRectangle(point1, point2, point3, point4) {
+            const rectangleConner = {
+                topLeft: null,
+                topRight: null,
+                bottomLeft: null,
+                bottomRight: null
+            };
+
+            const points = [point1, point2, point3, point4];
+
+            const bottomRightPoint = {
+                x: point1.x,
+                y: point1.y
+            };
+
+            points.forEach((point) => {
+                if (point.x > bottomRightPoint.x) {
+                    bottomRightPoint.x = point.x;
+                }
+                if (point.y > bottomRightPoint.y) {
+                    bottomRightPoint.y = point.y;
+                }
+            });
+
+            points.forEach((point) => {
+                if (
+                    point.x === bottomRightPoint.x &&
+                    point.y === bottomRightPoint.y
+                ) {
+                    rectangleConner.bottomRight = point;
+                }
+                if (
+                    point.x === bottomRightPoint.x &&
+                    point.y < bottomRightPoint.y
+                ) {
+                    rectangleConner.topRight = point;
+                }
+                if (
+                    point.x < bottomRightPoint.x &&
+                    point.y === bottomRightPoint.y
+                ) {
+                    rectangleConner.bottomLeft = point;
+                }
+                if (
+                    point.x < bottomRightPoint.x &&
+                    point.y < bottomRightPoint.y
+                ) {
+                    rectangleConner.topLeft = point;
+                }
+            });
+            return rectangleConner;
+        },
+        checkIfRectangleInView(rectangle, transformData) {
+            try {
+                // normal case where all four point is inView
+                const point1InView = this.checkIfPointInViews(
+                    rectangle.topLeft,
+                    transformData
+                );
+                if (point1InView) {
+                    return true;
+                }
+
+                const point2InView = this.checkIfPointInViews(
+                    rectangle.topRight,
+                    transformData
+                );
+                if (point2InView) {
+                    return true;
+                }
+
+                const point3InView = this.checkIfPointInViews(
+                    rectangle.bottomLeft,
+                    transformData
+                );
+                if (point3InView) {
+                    return true;
+                }
+
+                const point4InView = this.checkIfPointInViews(
+                    rectangle.bottomRight,
+                    transformData
+                );
+                if (point4InView) {
+                    return true;
+                }
+
+                // Special case when fourPoint is out of view but the rectangle still in view
+                // By check for the rectangle width and height to see if their are bigger than the viewBox
+                if (
+                    this.checkIfLineIsInView(
+                        rectangle.topLeft,
+                        rectangle.topRight,
+                        transformData
+                    )
+                ) {
+                    return true;
+                }
+
+                if (
+                    this.checkIfLineIsInView(
+                        rectangle.topLeft,
+                        rectangle.bottomLeft,
+                        transformData
+                    )
+                ) {
+                    return true;
+                }
+
+                if (
+                    this.checkIfLineIsInView(
+                        rectangle.bottomLeft,
+                        rectangle.bottomRight,
+                        transformData
+                    )
+                ) {
+                    return true;
+                }
+
+                if (
+                    this.checkIfLineIsInView(
+                        rectangle.topRight,
+                        rectangle.bottomRight,
+                        transformData
+                    )
+                ) {
+                    return true;
+                }
+
+                return false;
+            } catch (error) {
+                console.error(error);
+                return false;
+            }
+        },
+        findPointPositionOnRectangle(point1, point2, point3, point4) {
+            const pointArray = [point1, point2, point3, point4];
+            const rectangleConner = {
+                topLeft: null,
+                topRight: null,
+                bottomLeft: null,
+                bottomRight: null
+            };
+            // find
+            for (let index = 0; index < pointArray.length; index++) {
+                const currentPoint = pointArray[index];
+
+                return rectangleConner;
+            }
+        },
         // ------=---------------=--=---=-==---=-=-=-=-=-=-=-=-=-=-=-======================================
         // DELETE LATER
         drawRectangle(ctx, targetNode, sourceNode) {
@@ -795,6 +988,13 @@ export default {
                 x: sourceNode.x,
                 y: targetNode.y
             };
+
+            this.findPointPositionOnRectangle(
+                targetNode,
+                targetNodeCounterPoint,
+                sourceNodeCounterPoint,
+                sourceNode
+            );
 
             ctx.strokeStyle = '#f02213';
 
@@ -985,7 +1185,7 @@ export default {
 
             ctx.closePath();
         },
-        // draw skill name based on it lenght
+        // draw skill name based on it length
         drawSkillName(node, ctx, isSearched) {
             if (!node.data.name) {
                 console.log(node.data);
@@ -1235,6 +1435,7 @@ export default {
 </script>
 
 <template>
+    <h1>{{ numberOfLinkDraw }}</h1>
     <!-- Loading animation -->
     <div
         v-if="isLoading == true"
