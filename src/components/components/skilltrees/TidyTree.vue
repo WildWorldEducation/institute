@@ -1111,59 +1111,63 @@ export default {
             fetch(url, requestOptions);
         },
         checkingIfNodeInView(node, transformData) {
-            // Calculate max visible range
-            // Visible range is the rectangle with width and height equal to canvas context
-            // Every time context is translate the visible range is changing too
-
-            const visibleRangeY = transformData.y - this.height - 500;
-            const visibleRangeX = this.width + 500;
-            // Calculate real position of node with current scale
-            let realPositionX = node.y * transformData.k + 250;
-            let realPositionY = -node.x * transformData.k - 250;
-
-            // I actually come up with this formula base on observe the changing of translate and node position when translate context
-            // It doesn`t make sense to me but some how working correctly
-            let combinePosition = transformData.x + realPositionX;
-            if (
-                combinePosition > -500 &&
-                combinePosition < visibleRangeX &&
-                transformData.y > realPositionY &&
-                realPositionY > visibleRangeY
-            ) {
-                return true;
-            }
-            return false;
+            const point = {
+                x: node.x,
+                y: node.y
+            };
+            return this.checkIfPointInViews(point, transformData);
         },
         checkIfLinkInViews(link, transformData) {
             const targetNode = link.target;
             const sourceNode = link.source;
-            let targetNodeInLinkView = this.checkNodeInLinksVisibleView(
+            const targetNodeCounterPoint = {
+                x: targetNode.x,
+                y: sourceNode.y
+            };
+
+            const sourceNodeCounterPoint = {
+                x: sourceNode.x,
+                y: targetNode.y
+            };
+
+            // The idea is we will draw a rectangle with target node and source node surely this rectangle will contains the links
+            // => mean target and source point is two point on a rectangle with it diagonal line is source node and target node
+            // => That mean ours job is to find other two point on the other diagonal line to form a rectangle
+            // Then we can check if the rectangle is in view zone to see if the link is in view zone
+            // ( can also improve in the future to find even a smaller limit area that contain the links )
+            const rectangle = this.createRectangle(
                 targetNode,
-                transformData
-            );
-            let sourceNodeInLinkView = this.checkNodeInLinksVisibleView(
                 sourceNode,
+                targetNodeCounterPoint,
+                sourceNodeCounterPoint
+            );
+
+            const isLinkInView = this.checkIfRectangleInView(
+                rectangle,
                 transformData
             );
-            return targetNodeInLinkView || sourceNodeInLinkView;
+
+            return isLinkInView;
         },
-        checkNodeInLinksVisibleView(node, transformData) {
+        checkIfPointInViews(point, transformData) {
+            if (!point) {
+                return false;
+            }
             // Calculate max visible range
             // Visible range is the rectangle with width and height equal to canvas context
             // Every time context is translate the visible range is changing too
 
-            const visibleRangeY = transformData.y - this.height - 1000;
-            const visibleRangeX = this.width + 1000;
+            const visibleRangeY = transformData.y - this.height;
             // Calculate real position of node with current scale
-            let realPositionX = node.y * transformData.k;
-            let realPositionY = -node.x * transformData.k - 1000;
+            let realPositionX = point.y * transformData.k;
+            let realPositionY = -point.x * transformData.k;
 
             // I actually come up with this formula base on observe the changing of translate and node position when translate context
             // It doesn`t make sense to me but some how working correctly
             let combinePosition = transformData.x + realPositionX;
             if (
-                combinePosition > -1000 &&
-                combinePosition < visibleRangeX &&
+                combinePosition > 0 &&
+                combinePosition < this.width &&
                 transformData.y > realPositionY &&
                 realPositionY > visibleRangeY
             ) {
@@ -1171,7 +1175,174 @@ export default {
             }
             return false;
         },
+        checkIfLineIsInView(point1, point2, transformData) {
+            if (!point1 || !point2) {
+                return false;
+            }
+            // Calculate max visible range
+            // Visible range is the rectangle with width and height equal to canvas context
+            // Every time context is translate the visible range is changing too
 
+            const visibleRangeY = transformData.y - this.height;
+            // Calculate real position of node with current scale
+            let realPosition1X = point1.y * transformData.k;
+            let realPosition1Y = -point1.x * transformData.k;
+
+            let realPosition2X = point2.y * transformData.k;
+            let realPosition2Y = -point2.x * transformData.k;
+
+            // I actually come up with this formula base on observe the changing of translate and node position when translate context
+            // It doesn`t make sense to me but some how working correctly
+            let combinePosition1 = transformData.x + realPosition1X;
+            let combinePosition2 = transformData.x + realPosition2X;
+
+            if (combinePosition1 < 0 && combinePosition2 > this.width) {
+                return true;
+            }
+            if (
+                realPosition1Y > transformData.y &&
+                realPosition2Y < visibleRangeY
+            ) {
+                return true;
+            }
+
+            return false;
+        },
+        createRectangle(point1, point2, point3, point4) {
+            const rectangleConner = {
+                topLeft: null,
+                topRight: null,
+                bottomLeft: null,
+                bottomRight: null
+            };
+
+            const points = [point1, point2, point3, point4];
+
+            const bottomRightPoint = {
+                x: point1.x,
+                y: point1.y
+            };
+
+            points.forEach((point) => {
+                if (point.x > bottomRightPoint.x) {
+                    bottomRightPoint.x = point.x;
+                }
+                if (point.y > bottomRightPoint.y) {
+                    bottomRightPoint.y = point.y;
+                }
+            });
+
+            points.forEach((point) => {
+                if (
+                    point.x === bottomRightPoint.x &&
+                    point.y === bottomRightPoint.y
+                ) {
+                    rectangleConner.bottomRight = point;
+                }
+                if (
+                    point.x === bottomRightPoint.x &&
+                    point.y < bottomRightPoint.y
+                ) {
+                    rectangleConner.topRight = point;
+                }
+                if (
+                    point.x < bottomRightPoint.x &&
+                    point.y === bottomRightPoint.y
+                ) {
+                    rectangleConner.bottomLeft = point;
+                }
+                if (
+                    point.x < bottomRightPoint.x &&
+                    point.y < bottomRightPoint.y
+                ) {
+                    rectangleConner.topLeft = point;
+                }
+            });
+            return rectangleConner;
+        },
+        checkIfRectangleInView(rectangle, transformData) {
+            try {
+                // normal case where all four point is inView
+                const point1InView = this.checkIfPointInViews(
+                    rectangle.topLeft,
+                    transformData
+                );
+                if (point1InView) {
+                    return true;
+                }
+
+                const point2InView = this.checkIfPointInViews(
+                    rectangle.topRight,
+                    transformData
+                );
+                if (point2InView) {
+                    return true;
+                }
+
+                const point3InView = this.checkIfPointInViews(
+                    rectangle.bottomLeft,
+                    transformData
+                );
+                if (point3InView) {
+                    return true;
+                }
+
+                const point4InView = this.checkIfPointInViews(
+                    rectangle.bottomRight,
+                    transformData
+                );
+                if (point4InView) {
+                    return true;
+                }
+
+                // Special case when fourPoint is out of view but the rectangle still in view
+                // By check for the rectangle width and height to see if their are bigger than the viewBox
+                if (
+                    this.checkIfLineIsInView(
+                        rectangle.topLeft,
+                        rectangle.topRight,
+                        transformData
+                    )
+                ) {
+                    return true;
+                }
+
+                if (
+                    this.checkIfLineIsInView(
+                        rectangle.topLeft,
+                        rectangle.bottomLeft,
+                        transformData
+                    )
+                ) {
+                    return true;
+                }
+
+                if (
+                    this.checkIfLineIsInView(
+                        rectangle.bottomLeft,
+                        rectangle.bottomRight,
+                        transformData
+                    )
+                ) {
+                    return true;
+                }
+
+                if (
+                    this.checkIfLineIsInView(
+                        rectangle.topRight,
+                        rectangle.bottomRight,
+                        transformData
+                    )
+                ) {
+                    return true;
+                }
+
+                return false;
+            } catch (error) {
+                console.error(error);
+                return false;
+            }
+        },
         async getIconData() {
             const res = await fetch('/skills/icon-list');
             const resData = await res.json();
