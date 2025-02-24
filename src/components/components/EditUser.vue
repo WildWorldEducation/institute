@@ -10,7 +10,6 @@ export default {
     setup() {
         const usersStore = useUsersStore();
         const instructorStudentsStore = useInstructorStudentsStore();
-
         return {
             usersStore,
             instructorStudentsStore
@@ -362,8 +361,8 @@ export default {
                 <div class="col-lg-4 mt-3">
                     <div class="mb-3">
                         <label for="firstname" class="form-label"
-                            >First name {{ firstName }}</label
-                        >
+                            >First name
+                        </label>
                         <input
                             v-model="user.first_name"
                             type="text"
@@ -576,8 +575,8 @@ export default {
                         </div>
                     </div>
                     <div class="d-flex justify-content-end gap-4">
-                        <router-link class="btn red-btn" to="/users">
-                            Cancel
+                        <router-link class="btn red-btn" to="/users"
+                            >Cancel
                         </router-link>
                         <button class="btn primary-btn" @click="ValidateForm()">
                             Submit
