@@ -137,6 +137,9 @@ export default {
                 this.waitForAIresponse = false;
             }
         },
+        async learningObjectiveAssessment() {
+            
+        },
         // Format the response.
         applyMarkDownFormatting(string) {
             const md = window.markdownit();
@@ -158,28 +161,25 @@ export default {
     <div v-else>
         <!-- Suggested interaction buttons -->
         <span class="d-flex justify-content-end mt-2">
-            <!-- learning objective explanation button -->
+            <!-- learning objective assess button -->
             <button
-                v-if="isGotMessages"
-                class="btn border border-dark"
-                @click="
-                    message = 'Please explain it.';
-                    learningObjectiveMessage();
-                "
+                class="btn border border-dark ms-1"
+                @click="learningObjectiveAssessment()"
             >
-                <!-- Robot icon -->
+                <!-- Graduation icon -->
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 640 512"
+                    viewBox="0 0 448 512"
                     width="18"
                     height="18"
                     fill="black"
                 >
+                    <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
                     <path
-                        d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
+                        d="M219.3 .5c3.1-.6 6.3-.6 9.4 0l200 40C439.9 42.7 448 52.6 448 64s-8.1 21.3-19.3 23.5L352 102.9l0 57.1c0 70.7-57.3 128-128 128s-128-57.3-128-128l0-57.1L48 93.3l0 65.1 15.7 78.4c.9 4.7-.3 9.6-3.3 13.3s-7.6 5.9-12.4 5.9l-32 0c-4.8 0-9.3-2.1-12.4-5.9s-4.3-8.6-3.3-13.3L16 158.4l0-71.8C6.5 83.3 0 74.3 0 64C0 52.6 8.1 42.7 19.3 40.5l200-40zM111.9 327.7c10.5-3.4 21.8 .4 29.4 8.5l71 75.5c6.3 6.7 17 6.7 23.3 0l71-75.5c7.6-8.1 18.9-11.9 29.4-8.5C401 348.6 448 409.4 448 481.3c0 17-13.8 30.7-30.7 30.7L30.7 512C13.8 512 0 498.2 0 481.3c0-71.9 47-132.7 111.9-153.6z"
                     />
                 </svg>
-                explain this
+                I'm ready, test me
             </button>
             <!-- learning objective ask question button -->
             <button
@@ -200,6 +200,29 @@ export default {
                     />
                 </svg>
                 ask me a question
+            </button>
+            <!-- learning objective explanation button -->
+            <button
+                v-if="isGotMessages"
+                class="btn border border-dark ms-1"
+                @click="
+                    message = 'Please explain it.';
+                    learningObjectiveMessage();
+                "
+            >
+                <!-- Robot icon -->
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 640 512"
+                    width="18"
+                    height="18"
+                    fill="black"
+                >
+                    <path
+                        d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
+                    />
+                </svg>
+                explain this
             </button>
         </span>
         <!-- Custom interactions text input -->
