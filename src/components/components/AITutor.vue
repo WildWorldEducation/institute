@@ -1,4 +1,5 @@
 <script>
+import { OutputLocationFilterSensitiveLog } from '@aws-sdk/client-s3';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import SendIconLoadingSymbol from './ai-tutor/sendIconLoadingSymbol.vue';
 import TutorLoadingSymbol from './ai-tutor/tutorLoadingSymbol.vue';
@@ -12,7 +13,7 @@ export default {
             userDetailsStore
         };
     },
-    props: ['skillName', 'skillUrl'],
+    props: ['skillName', 'skillUrl', 'skillLevel'],
     components: { SendIconLoadingSymbol, TutorLoadingSymbol, TooltipBtn },
     data() {
         return {
@@ -21,10 +22,12 @@ export default {
             latestMessage: null,
             messageList: [],
             waitForAIresponse: false,
-            mode: 'big'
+            mode: 'big',
+            englishSkillLevel: ''
         };
     },
     async mounted() {
+        this.englishSkillLevel = this.skillLevel.replace('_', ' ');
         await this.getMessagesList();
     },
     updated() {
@@ -55,7 +58,8 @@ export default {
                         userName: this.userDetailsStore.userName,
                         userId: this.userDetailsStore.userId,
                         skillName: this.skillName,
-                        skillUrl: this.skillUrl
+                        skillUrl: this.skillUrl,
+                        skillLevel: this.englishSkillLevel
                     })
                 };
                 var url = '/ai-tutor/new-message';
@@ -81,7 +85,9 @@ export default {
                     this.userDetailsStore.userId
                 )}&skillUrl=${encodeURIComponent(
                     this.skillUrl
-                )}&skillName=${encodeURIComponent(this.skillName)}`;
+                )}&skillName=${encodeURIComponent(this.skillName)}
+                &skillLevel=${encodeURIComponent(this.englishSkillLevel)}
+                `;
 
                 const response = await fetch(url);
                 const resData = await response.json();

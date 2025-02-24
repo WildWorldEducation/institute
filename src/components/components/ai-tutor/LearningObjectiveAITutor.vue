@@ -12,6 +12,7 @@ export default {
     props: [
         'skillName',
         'skillUrl',
+        'skillLevel',
         'learningObjective',
         'learningObjectiveId'
     ],
@@ -22,12 +23,14 @@ export default {
             // All messages in thread
             messageList: [],
             waitForAIresponse: false,
-            isGotMessages: false
+            isGotMessages: false,
+            englishSkillLevel: ''
         };
     },
     async mounted() {
+        this.englishSkillLevel = this.skillLevel.replace('_', ' ');
         // load thread.
-        await this.getMessages();
+        await this.getMessages();       
     },
     methods: {
         // load thread
@@ -39,7 +42,7 @@ export default {
                     this.learningObjectiveId
                 )}&learningObjective=${encodeURIComponent(
                     this.learningObjective
-                )}`;
+                )}&skillLevel=${encodeURIComponent(this.englishSkillLevel)}`;
 
                 const response = await fetch(url);
                 const resData = await response.json();
@@ -53,7 +56,7 @@ export default {
                 console.error(error);
             }
         },
-        // ask Open AI to explain the learning objective
+        // send Open AI message regarding the learning objective
         async learningObjectiveMessage() {
             if (this.waitForAIresponse) {
                 return;
@@ -69,6 +72,7 @@ export default {
                         userName: this.userDetailsStore.userName,
                         userId: this.userDetailsStore.userId,
                         skillName: this.skillName,
+                        skillLevel: this.englishSkillLevel,
                         message: this.message
                     })
                 };
@@ -109,7 +113,7 @@ export default {
         v-if="isGotMessages == false"
         class="loading-animation d-flex justify-content-center align-items-center py-4"
     >
-        <span class="loader"></span>
+        <span class="spinning-loader"></span>
     </div>
     <div v-else>
         <!-- Suggested interaction buttons -->
@@ -117,7 +121,7 @@ export default {
             <!-- learning objective explanation button -->
             <button
                 v-if="isGotMessages"
-                class="btn border"
+                class="btn border border-dark"
                 @click="
                     message = 'Please explain it.';
                     learningObjectiveMessage();
@@ -158,11 +162,14 @@ export default {
         <!-- Custom interactions text input -->
         <span class="d-flex mt-1">
             <input
-                class="chat-input border rounded"
+                class="chat-input border border-dark rounded"
                 v-model="message"
                 type="text"
             />
-            <button class="btn border ms-1" @click="learningObjectiveMessage()">
+            <button
+                class="btn border border-dark ms-1"
+                @click="learningObjectiveMessage()"
+            >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
@@ -245,7 +252,7 @@ export default {
 }
 
 /* Threads loading animation */
-.loader {
+.spinning-loader {
     width: 36px;
     height: 36px;
     border: 5px solid var(--primary-color);

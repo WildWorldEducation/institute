@@ -440,7 +440,7 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3">
+    <div class="container">
         <div
             id="skill-info-container"
             :class="{ domain: skill.type == 'domain' }"
@@ -1059,10 +1059,12 @@ export default {
                                     :learningObjectiveId="learningObjective.id"
                                     :skillName="skill.name"
                                     :skillUrl="skill.url"
+                                    :skillLevel="skill.level"
                                 />
                             </div>
                         </div>
                         <button
+                            v-if="sessionDetailsStore.isLoggedIn"
                             class="btn plus-btn"
                             @click="
                                 learningObjective.showAI =
@@ -1130,6 +1132,7 @@ export default {
                 v-if="isSkillLoaded"
                 :skillName="skill.name"
                 :skillUrl="skill.url"
+                :skillLevel="skill.level"
             />
         </div>
 
