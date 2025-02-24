@@ -25,10 +25,14 @@ export default {
     created() {
         this.localIsSkillsLocked = this.isSkillsLocked;
     },
-
+    computed: {
+        studentName() {
+            return `${this.$parent.user.firstName || ''}`.trim();
+        }
+    },
     methods: {
         updateSkillsLock() {
-            this.$parent.updateSkillsLock()
+            this.$parent.updateSkillsLock();
         }
     }
 };
@@ -133,7 +137,11 @@ export default {
                         class="btn primary-btn mt-2"
                         target="_blank"
                     >
-                        Skill tree
+                        {{
+                            studentName
+                                ? `${studentName}'s Skill Tree`
+                                : 'Skill Tree'
+                        }}
                     </router-link>
                     <!-- Collapsible skill tree -->
                     <router-link
@@ -141,7 +149,11 @@ export default {
                         class="btn primary-btn mt-2"
                         target="_blank"
                     >
-                        Collapsible tree
+                        {{
+                            studentName
+                                ? `${studentName}'s Collapsible Tree`
+                                : 'Collapsible Tree'
+                        }}
                     </router-link>
                     <!-- Goals -->
                     <router-link
@@ -149,7 +161,7 @@ export default {
                         class="btn primary-btn mt-2"
                         target="_blank"
                     >
-                        Goals
+                        {{ studentName ? `${studentName}'s Goals` : 'Goals' }}
                     </router-link>
                     <div class="mt-4">
                         <h3
