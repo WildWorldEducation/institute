@@ -274,15 +274,16 @@ export default {
             this.context.beginPath();
             this.numberOfLinkDraw = 0;
             for (const link of links) {
-                if (link.target.data.name === 'Generating Fiction With AI') {
-                    let ctx = this.context;
-                    this.drawRectangle(ctx, link.target, link.source);
-                }
                 // Do not render parts of tree not in the canvas
                 // to improve performance.
 
                 if (!this.checkIfLinkInViews(link, transform)) {
                     continue;
+                }
+
+                if (link.target.data.name === 'The Historic Muslim Dynasties') {
+                    let ctx = this.context;
+                    this.drawRectangle(ctx, link.target, link.source);
                 }
 
                 this.drawLink(link);
@@ -757,9 +758,7 @@ export default {
                 targetNodeCounterPoint,
                 sourceNodeCounterPoint
             );
-            if (targetNode.data.name === 'Written Language') {
-                console.log(rectangle);
-            }
+
             const isLinkInView = this.checkIfRectangleInView(
                 rectangle,
                 transformData
@@ -768,6 +767,9 @@ export default {
             return isLinkInView;
         },
         checkIfPointInViews(point, transformData) {
+            if (!point) {
+                return false;
+            }
             // Calculate max visible range
             // Visible range is the rectangle with width and height equal to canvas context
             // Every time context is translate the visible range is changing too
@@ -791,6 +793,9 @@ export default {
             return false;
         },
         checkIfLineIsInView(point1, point2, transformData) {
+            if (!point1 || !point2) {
+                return false;
+            }
             // Calculate max visible range
             // Visible range is the rectangle with width and height equal to canvas context
             // Every time context is translate the visible range is changing too
@@ -807,15 +812,7 @@ export default {
             // It doesn`t make sense to me but some how working correctly
             let combinePosition1 = transformData.x + realPosition1X;
             let combinePosition2 = transformData.x + realPosition2X;
-            // if (
-            //     combinePosition > 0 &&
-            //     combinePosition < this.width &&
-            //     transformData.y > realPositionY &&
-            //     realPositionY > visibleRangeY
-            // ) {
-            //     return true;
-            // }
-            // return false;
+
             if (combinePosition1 < 0 && combinePosition2 > this.width) {
                 return true;
             }
@@ -825,6 +822,8 @@ export default {
             ) {
                 return true;
             }
+
+            return false;
         },
         createRectangle(point1, point2, point3, point4) {
             const rectangleConner = {
@@ -1189,6 +1188,7 @@ export default {
         drawSkillName(node, ctx, isSearched) {
             if (!node.data.name) {
                 console.log(node.data);
+                return;
             }
             if (node.data.name.length < 19) {
                 this.drawShortSkillName(node, ctx, isSearched);
@@ -1411,6 +1411,9 @@ export default {
             }
         },
         drawNodeText(node, ctx1, isSearched) {
+            if (!node.data.name) {
+                return;
+            }
             // to avoid sharp artifacts with the stroke of the text.
             ctx1.lineJoin = 'bevel';
             // we move the skill name to the left and change the color if it a domain node
