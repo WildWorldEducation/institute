@@ -42,8 +42,7 @@ export default {
             subjectFilters: [],
             // Tutorial tooltips
             showTutorialTip1: false,
-            showTutorialTip2: false,
-            showTutorialTip3: false
+            showTutorialTip2: false
         };
     },
     components: {
@@ -214,15 +213,10 @@ export default {
             }
             if (step == 2) {
                 this.showTutorialTip2 = false;
-                this.showTutorialTip3 = true;
-            }
-            if (step == 3) {
-                this.showTutorialTip3 = false;
                 this.markTutorialComplete();
             }
         },
         restartTutorial() {
-            this.showTutorialTip3 = false;
             this.showTutorialTip2 = false;
             this.showTutorialTip1 = true;
         },
@@ -354,33 +348,6 @@ export default {
                         </h1>
                     </div>
                 </div>
-                <div
-                    v-if="
-                        userDetailsStore.role == 'instructor' &&
-                        showTutorialTip3
-                    "
-                    class="position-relative tool-tip-base me-4 mt-1 bg-light"
-                >
-                    <div class="explain-tool-tip triangle-top-left">
-                        <div class="tool-tip-text mt-1 rounded p-2">
-                            <div v-if="showTutorialTip3">
-                                <p>
-                                    This will prevent the student from being
-                                    able to master skills in the case that they
-                                    have not already mastered the skills that
-                                    come before them.
-                                </p>
-
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(3)"
-                                >
-                                    close
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
             <!-- User detail view specific for phone -->
             <div
@@ -390,33 +357,6 @@ export default {
             >
                 <div class="row">
                     <UserDetails :userId="user.id" />
-                </div>
-                <div
-                    v-if="
-                        userDetailsStore.role == 'instructor' &&
-                        showTutorialTip3
-                    "
-                    class="modal"
-                >
-                    <div class="modal-content">
-                        <div v-if="showTutorialTip3">
-                            <p>
-                                Within the selected student you can select
-                                whether you want to lock the students skill
-                                progress or not by clicking yes or no. This will
-                                prevent the student from being able to master
-                                skills in the case that they have not already
-                                mastered the skills that come before them.
-                            </p>
-
-                            <button
-                                class="btn primary-btn"
-                                @click="progressTutorial(3)"
-                            >
-                                close
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -605,78 +545,12 @@ export default {
     /* Could be more or less, depending on screen size */
 }
 
-/* Tooltip Box */
-.info-text {
-    border-color: var(--primary-color);
-    border-width: 2px;
-    border-style: solid;
-    position: relative;
-    background: white;
-    padding: 10px;
-    border-radius: 4px;
-}
-/* Tooltip Arrow (Base) */
-.tooltip-arrow {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 0;
-}
-.tool-tip-base {
-    position: absolute;
-    top: 12px;
-    z-index: 100;
-}
-
-.explain-tool-tip {
-    position: relative;
-    border: var(--primary-color) 1px solid;
-    border-radius: 5px;
-    background-color: white;
-    padding: 5px 10px;
-}
-
-.triangle-top-left:before {
-    content: '';
-    width: 0px;
-    height: 0px;
-    position: absolute;
-    border-bottom: 10px solid var(--primary-color);
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    left: 15px;
-    top: -10px;
-}
-
-.triangle-top-left::after {
-    content: '';
-    width: 0px;
-    height: 0px;
-    position: absolute;
-    border-bottom: 10px solid white;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    left: 15px;
-    top: -9px;
-}
-
-/* Bigger devices ( Tablet ) */
-@media (min-width: 481px) and (max-width: 1024px) {
-    .tool-tip-base {
-        right: 0px;
-        top: 4px;
-    }
-}
-
 /* Small devices (portrait phones) */
 @media (max-width: 480px) {
     /* Modal Content/Box */
     .modal-content {
         width: 90%;
         margin-top: 30%;
-    }
-    .tool-tip-base {
-        top: 4px;
     }
 }
 </style>

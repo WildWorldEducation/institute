@@ -19,7 +19,8 @@ export default {
     data() {
         return {
             showModal: false,
-            localIsSkillsLocked: null
+            localIsSkillsLocked: null,
+            openModal: false
         };
     },
     created() {
@@ -28,7 +29,7 @@ export default {
 
     methods: {
         updateSkillsLock() {
-            this.$parent.updateSkillsLock()
+            this.$parent.updateSkillsLock();
         }
     }
 };
@@ -151,28 +152,74 @@ export default {
                     >
                         Goals
                     </router-link>
-                    <div class="mt-4">
-                        <h3
-                            v-if="this.userDetailsStore.role == 'instructor'"
-                            class="secondary-heading h6"
+                    <div class="mt-4 d-flex justify-content-between">
+                        <div>
+                            <h3
+                                v-if="
+                                    this.userDetailsStore.role == 'instructor'
+                                "
+                                class="secondary-heading h6"
+                            >
+                                Lock skill progress?
+                            </h3>
+                            <input
+                                type="radio"
+                                value="0"
+                                v-model="$parent.user.isSkillsLocked"
+                                @change="updateSkillsLock()"
+                            />
+                            <label for="one">No</label>
+                            &nbsp;
+                            <input
+                                type="radio"
+                                value="1"
+                                v-model="$parent.user.isSkillsLocked"
+                                @change="updateSkillsLock()"
+                            />
+                            <label for="two">Yes</label>
+                        </div>
+                        <button
+                            data-v-ead48d2e=""
+                            class="btn primary-btn mt-3"
+                            @click="openModal = !openModal"
                         >
-                            Lock skill progress?
-                        </h3>
-                        <input
-                            type="radio"
-                            value="0"
-                            v-model="$parent.user.isSkillsLocked"
-                            @change="updateSkillsLock()"
-                        />
-                        <label for="one">No</label>
-                        &nbsp;
-                        <input
-                            type="radio"
-                            value="1"
-                            v-model="$parent.user.isSkillsLocked"
-                            @change="updateSkillsLock()"
-                        />
-                        <label for="two">Yes</label>
+                            <svg
+                                data-v-ead48d2e=""
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 192 512"
+                                width="20"
+                                height="20"
+                                fill="white"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                <path
+                                    data-v-ead48d2e=""
+                                    d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                                ></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div
+                    v-if="userDetailsStore.role === 'instructor' && openModal"
+                    class="modal"
+                >
+                    <div class="modal-content">
+                        <div>
+                            <p>
+                                This will prevent the student from being able to
+                                master skills in the case that they have not
+                                already mastered the skills that come before
+                                them.
+                            </p>
+
+                            <button
+                                class="btn primary-btn"
+                                @click="openModal = false"
+                            >
+                                close
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <!-- Editors -->
@@ -381,6 +428,10 @@ export default {
         border-radius: 0px;
         padding-bottom: 0px;
     }
+    .tool-tip-base {
+        right: 0px;
+        top: 4px;
+    }
 }
 
 /* Tablets */
@@ -403,6 +454,9 @@ export default {
     .green-btn {
         margin-left: 10px !important;
         margin-right: auto !important;
+    }
+    .tool-tip-base {
+        top: 4px;
     }
 }
 
