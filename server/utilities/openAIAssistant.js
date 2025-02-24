@@ -105,7 +105,8 @@ async function processingNewSkillMessage(threadId, assistantId, messageData) {
         assistant_id: assistantId,
         instructions: `Please refer to the user as ${messageData.userName}. 
         Please tutor about the topic: ${messageData.skillName}.
-        Tutor the user as if they are at a ${messageData.skillLevel} level and age.`
+        Tutor the user as if they are at a ${messageData.skillLevel} level and age.
+        Ask follow up questions.`
     });
 
     if (run.status === 'completed') {
@@ -163,7 +164,7 @@ async function processingNewLearningObjectiveMessage(
             messageData.learningObjective +
             '. Tutor the user as if they are at a ' +
             messageData.skillLevel +
-            ' level and age.`'
+            ' level and age. Ask follow up questions.`'
     });
 
     if (run.status === 'completed') {
