@@ -428,10 +428,6 @@ export default {
         border-radius: 0px;
         padding-bottom: 0px;
     }
-    .tool-tip-base {
-        right: 0px;
-        top: 4px;
-    }
 }
 
 /* Tablets */
@@ -454,9 +450,6 @@ export default {
     .green-btn {
         margin-left: 10px !important;
         margin-right: auto !important;
-    }
-    .tool-tip-base {
-        top: 4px;
     }
 }
 
