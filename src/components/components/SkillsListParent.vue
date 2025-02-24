@@ -28,6 +28,7 @@ export default {
             studentId: this.$route.params.studentId,
             instructorMode: false,
             studentUserSkills: [],
+            isStudentSkillsLocked: null,
             // For the loading animation.
             isLoading: true,
             path: []
@@ -51,15 +52,14 @@ export default {
                 await this.skillsStore.getFilteredNestedSkillsList();
             // Students.
             else if (this.userDetailsStore.role == 'student') {
-                //if (this.skillTreeStore.userSkills.length == 0) {
                 await this.skillTreeStore.getUserSkills();
-                // }
             }
         }
         // For instructors to view student's skill trees
         else {
             await this.skillTreeStore.getStudentSkills(this.studentId);
             this.studentUserSkills = this.skillTreeStore.studentSkills;
+            await this.checkIfStudentSkillsLocked();            
         }
 
         // For the loading animation.
@@ -164,20 +164,13 @@ export default {
             }
             this.findNodeLoading = false;
             return path;
+        },
+        async checkIfStudentSkillsLocked() {
+            const result = await fetch(
+                '/instructor-students/' + this.studentId + '/is-skills-locked'
+            );
+            this.isStudentSkillsLocked = await result.json();
         }
-        // async filter() {
-        //     if (this.userDetailsStore.role == 'student') {
-        //         this.skillTreeStore.userSkills = [];
-        //         await this.skillTreeStore.getUserSkills();
-
-        //     } else if (
-        //         this.userDetailsStore.role == 'instructor' ||
-        //         this.userDetailsStore.role == 'editor'
-        //     ) {
-        //         this.skillsStore.filteredNestedSkillsList = [];
-        //         await this.skillsStore.getFilteredNestedSkillsList();
-        //     }
-        // }
     },
     components: {
         SkillsListChildStudent,
@@ -283,6 +276,7 @@ export default {
                     :path="this.path"
                     :studentId="studentId"
                     :parent="skill.parent"
+                    :isStudentSkillsLocked="isStudentSkillsLocked"
                 >
                 </SkillsListChildInstructorMode>
             </div>

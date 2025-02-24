@@ -92,7 +92,7 @@ export default {
             await this.skillTreeStore.getVerticalTreeUserSkills(
                 this.userDetailsStore.gradeFilter,
                 this.userDetailsStore.subjectFilters,
-                0
+                this.userDetailsStore.isUnlockedSkillsOnlyFilter
             );
         }
 
@@ -989,7 +989,7 @@ export default {
             await this.skillTreeStore.getVerticalTreeUserSkills(
                 this.userDetailsStore.gradeFilter,
                 this.userDetailsStore.subjectFilters,
-                0
+                this.userDetailsStore.isUnlockedSkillsOnlyFilter
             );
 
             // If the student clicks a button on the grade level key,

@@ -42,9 +42,11 @@ export default {
             showMobileTutorialTip4: false,
             showTutorialTip5: false,
             showMobileTutorialTip5: false,
+            showMobileTutorialTip5_1: false,
             showTutorialTip6: false,
             showMobileTutorialTip6: false,
             showTutorialTip7: false,
+            showTutorialTip7_1: false,
             showTutorialTip8: false,
             isMobileCheck: window.innerWidth,
             // To enableinstructor to lock the tree for student.
@@ -60,7 +62,6 @@ export default {
                 );
             }
         }
-
         // Turn this on only if user is logged in.
         if (this.sessionDetailsStore.isLoggedIn) {
             this.checkIfTutorialComplete();
@@ -244,8 +245,15 @@ export default {
                     this.showTutorialTip6 = true;
                 } else {
                     this.showMobileTutorialTip5 = false;
-                    this.showMobileTutorialTip6 = true;
+                    if (this.userDetailsStore.isSkillsLocked == 0) {
+                        this.showMobileTutorialTip6 = true;
+                    } else {
+                        this.showMobileTutorialTip5_1 = true;
+                    }
                 }
+            } else if (step == 5_1) {
+                this.showMobileTutorialTip5_1 = false;
+                this.showMobileTutorialTip6 = true;
             } else if (step == 6) {
                 if (this.isMobileCheck > 576) {
                     this.showTutorialTip6 = false;
@@ -257,6 +265,15 @@ export default {
             } else if (step == 7) {
                 if (this.isMobileCheck > 576) {
                     this.showTutorialTip7 = false;
+                    if (this.userDetailsStore.isSkillsLocked == 0) {
+                        this.showTutorialTip8 = true;
+                    } else {
+                        this.showTutorialTip7_1 = true;
+                    }
+                }
+            } else if (step == 7_1) {
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip7_1 = false;
                     this.showTutorialTip8 = true;
                 }
             } else if (step == 8) {
@@ -277,6 +294,7 @@ export default {
             this.showTutorialTip5 = false;
             this.showTutorialTip6 = false;
             this.showTutorialTip7 = false;
+            this.showTutorialTip7_1 = false;
             this.showTutorialTip8 = false;
             this.isTutorialComplete = false;
         },
@@ -365,7 +383,11 @@ export default {
                 >
                     Filters
                 </button>
-                <button class="btn primary-btn" @click="resetPos()">
+                <button
+                    v-if="sessionDetailsStore.isLoggedIn"
+                    class="btn primary-btn d-md-block d-none"
+                    @click="resetPos()"
+                >
                     Center
                 </button>
                 <!-- Restart tutorial button -->
@@ -400,11 +422,16 @@ export default {
                 />
                 <div class="d-flex justify-content-end">
                     <!-- Reset Button -->
-                    <button class="btn primary-btn me-2" @click="resetPos()">
+                    <button
+                        v-if="sessionDetailsStore.isLoggedIn"
+                        class="btn primary-btn me-2"
+                        @click="resetPos()"
+                    >
                         Center
                     </button>
                     <!-- Print Button -->
                     <button
+                        v-if="sessionDetailsStore.isLoggedIn"
                         class="btn primary-btn me-2"
                         @click="$refs.childComponent.printPDF()"
                     >
@@ -1066,6 +1093,41 @@ export default {
         </div>
     </div>
 
+    <!-- Filter for showing only unlocked skills in bottom left corner -->
+    <div
+        v-if="
+            sessionDetailsStore.isLoggedIn &&
+            userDetailsStore.isSkillsLocked == 1
+        "
+        class="unlocked-filter d-flex flex-column-reverse"
+    >
+        <button
+            class="btn primary-btn"
+            @click="
+                toggleisUnlockedSkillsFilter();
+                $refs.childComponent.filter();
+            "
+        >
+            <span v-if="userDetailsStore.isUnlockedSkillsOnlyFilter"
+                >All skills</span
+            >
+            <span v-else>Available skills only</span>
+        </button>
+
+        <div
+            v-if="showTutorialTip7_1"
+            class="info-panel bg-light rounded p-2 mb-2"
+        >
+            <p>
+                Use this button to toggle between showing only unlocked or all
+                skills.
+            </p>
+            <button class="btn primary-btn" @click="progressTutorial(7_1)">
+                next
+            </button>
+        </div>
+    </div>
+
     <!-- Filters Modal for Mobile Phone View.-->
     <div v-if="showMobileFiltersModal" class="modal">
         <div class="modal-content">
@@ -1546,7 +1608,8 @@ export default {
             showTutorialTip8 ||
             showMobileTutorialTip4 ||
             showMobileTutorialTip5 ||
-            showMobileTutorialTip6
+            showMobileTutorialTip6 ||
+            showMobileTutorialTip5_1
         "
         class="modal"
     >
@@ -1609,6 +1672,15 @@ export default {
                     both subjects and levels.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(5)">
+                    next
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip5_1">
+                <p>
+                    Use the button at the bottom left to toggle between showing
+                    only unlocked or all skills.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(5_1)">
                     next
                 </button>
             </div>
@@ -1938,6 +2010,8 @@ export default {
 @media (max-width: 480px) {
     .mobile-legend {
         display: flex;
+        justify-content: space-between;
+        gap: 15px;
     }
 
     .tablet-and-up-legend {

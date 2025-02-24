@@ -45,7 +45,8 @@ export default {
         'DeleteSkill',
         'path',
         'studentId',
-        'parent'
+        'parent',
+        'isStudentSkillsLocked'
     ],
     computed: {
         indent() {
@@ -84,6 +85,7 @@ export default {
         }
     },
     async created() {
+        console.log(this.isStudentSkillsLocked);
         for (let i = 0; i < this.children.length; i++) {
             if (this.children[i].type == 'sub') {
                 this.subSkills.push(this.children[i]);
@@ -327,8 +329,8 @@ export default {
         :class="{
             domains: type == 'domain',
             // Colors and background images for top level skills.
-            unlocked: isUnlocked != 1,
-            unlocked: isUnlocked == 1,
+            unlocked: isUnlocked == 1 || isStudentSkillsLocked != 1,
+            locked: isUnlocked != 1 && isStudentSkillsLocked == 1,
             mastered: isMastered == 1,
             'sub-skill-button': type == 'sub',
             'grade-school-level': level == 'grade_school',
@@ -397,7 +399,6 @@ export default {
             <img
                 v-else
                 src="/images/skill-emoticons/middle-school-unlocked.png"
-                class="locked-skill-styling"
             />
         </div>
         <!-- Skill name. Ref added for dynamic class based on name length, see above. -->
@@ -574,6 +575,7 @@ export default {
         :path="path"
         :studentId="studentId"
         :parent="subSkill.parent"
+        :isStudentSkillsLocked="isStudentSkillsLocked"
     >
     </SkillsListChildInstructorMode>
 
@@ -595,6 +597,7 @@ export default {
         :path="path"
         :studentId="studentId"
         :parent="child.parent"
+        :isStudentSkillsLocked="isStudentSkillsLocked"
     >
     </SkillsListChildInstructorMode>
 </template>
@@ -732,14 +735,11 @@ export default {
 }
 
 /* Locked, unlocked and mastered styling */
-.locked-skill-styling {
-    -webkit-filter: grayscale(100%);
-    filter: grayscale(100%);
-}
-
 .locked {
     border-color: #c8d7da;
     background-color: #f3f2f5;
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
 }
 
 .mastered {
