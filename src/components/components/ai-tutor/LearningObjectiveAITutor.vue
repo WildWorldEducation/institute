@@ -117,7 +117,7 @@ export default {
             <!-- learning objective explanation button -->
             <button
                 v-if="isGotMessages"
-                class="btn border"
+                class="btn border border-dark"
                 @click="
                     message = 'Please explain it.';
                     learningObjectiveMessage();
@@ -158,11 +158,14 @@ export default {
         <!-- Custom interactions text input -->
         <span class="d-flex mt-1">
             <input
-                class="chat-input border rounded"
+                class="chat-input border border-dark rounded"
                 v-model="message"
                 type="text"
             />
-            <button class="btn border ms-1" @click="learningObjectiveMessage()">
+            <button
+                class="btn border border-dark ms-1"
+                @click="learningObjectiveMessage()"
+            >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
