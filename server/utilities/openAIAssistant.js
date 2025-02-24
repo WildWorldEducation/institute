@@ -103,8 +103,7 @@ async function processingNewSkillMessage(threadId, assistantId, messageData) {
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
-        instructions: `Please refer to the user as ${messageData.userName}. 
-        Please tutor about the topic: ${messageData.skillName}.
+        instructions: `Please tutor about the topic: ${messageData.skillName}.
         Tutor the user as if they are at a ${messageData.skillLevel} level and age.
         Ask follow up questions.`
     });

@@ -272,7 +272,6 @@ export default {
 </template>
 
 <style scoped>
-
 .messages {
     width: fit-content;
 }

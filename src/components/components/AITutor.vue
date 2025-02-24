@@ -37,6 +37,27 @@ export default {
     },
     computed: {},
     methods: {
+        // Get messages in thread.
+        async getMessagesList() {
+            try {
+                const url = `/ai-tutor/messages-list?userId=${encodeURIComponent(
+                    this.userDetailsStore.userId
+                )}&skillUrl=${encodeURIComponent(
+                    this.skillUrl
+                )}&skillName=${encodeURIComponent(this.skillName)}
+                &skillLevel=${encodeURIComponent(this.englishSkillLevel)}
+                `;
+
+                const response = await fetch(url);
+                const resData = await response.json();
+                this.messageList = resData.messages.data;
+                // we reverse oder of messages list because OpenAI return messages from newest to oldest
+                this.messageList.reverse();
+                this.$nextTick(this.scrollToMessageInput());
+            } catch (error) {
+                console.error(error);
+            }
+        },
         async SendMessage() {
             if (this.waitForAIresponse) {
                 return;
@@ -55,7 +76,6 @@ export default {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         message: this.message,
-                        userName: this.userDetailsStore.userName,
                         userId: this.userDetailsStore.userId,
                         skillName: this.skillName,
                         skillUrl: this.skillUrl,
@@ -77,26 +97,6 @@ export default {
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false;
-            }
-        },
-        async getMessagesList() {
-            try {
-                const url = `/ai-tutor/messages-list?userId=${encodeURIComponent(
-                    this.userDetailsStore.userId
-                )}&skillUrl=${encodeURIComponent(
-                    this.skillUrl
-                )}&skillName=${encodeURIComponent(this.skillName)}
-                &skillLevel=${encodeURIComponent(this.englishSkillLevel)}
-                `;
-
-                const response = await fetch(url);
-                const resData = await response.json();
-                this.messageList = resData.messages.data;
-                // we reverse oder of messages list because OpenAI return messages from newest to oldest
-                this.messageList.reverse();
-                this.$nextTick(this.scrollToMessageInput());
-            } catch (error) {
-                console.error(error);
             }
         },
         // Format the response.
@@ -244,7 +244,7 @@ export default {
                 class="btn suggested-interactions"
                 @click="
                     message = 'Please explain it.';
-                    learningObjectiveMessage();
+                    SendMessage();
                 "
             >
                 explain this
