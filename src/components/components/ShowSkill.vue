@@ -1059,6 +1059,7 @@ export default {
                                     :learningObjectiveId="learningObjective.id"
                                     :skillName="skill.name"
                                     :skillUrl="skill.url"
+                                    :skillLevel="skill.level"
                                 />
                             </div>
                         </div>
@@ -1131,6 +1132,7 @@ export default {
                 v-if="isSkillLoaded"
                 :skillName="skill.name"
                 :skillUrl="skill.url"
+                :skillLevel="skill.level"
             />
         </div>
 

@@ -15,18 +15,20 @@ const openai = new OpenAI({
 /**
  * Shared functions --------------------------------------
  */
-async function initialAssistant(topic) {
-    const assistant = await createAssistant(topic);
+async function initialAssistant(topic, level) {
+    const assistant = await createAssistant(topic, level);
     const thread = await createThread();
     const result = { assistant: assistant, thread: thread };
     return result;
 }
 
-async function createAssistant(topic) {
+async function createAssistant(topic, level) {
     const assistant = await openai.beta.assistants.create({
         name: 'General Tutor',
         instructions:
-            'You are a personal tutor teaching about the following subject: ' +
+            'You are a personal tutor teaching a ' +
+            level +
+            'student about the following subject: ' +
             topic,
         tools: [],
         model: 'gpt-4o'
@@ -102,7 +104,8 @@ async function processingNewSkillMessage(threadId, assistantId, messageData) {
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
         instructions: `Please refer to the user as ${messageData.userName}. 
-        Please tutor about the topic: ${messageData.skillName}.`
+        Please tutor about the topic: ${messageData.skillName}.
+        Tutor the user as if they are at a ${messageData.skillLevel} level and age.`
     });
 
     if (run.status === 'completed') {
@@ -157,7 +160,10 @@ async function processingNewLearningObjectiveMessage(
         assistant_id: assistantId,
         instructions:
             `Please do not repeat the question. Please tutor about the topic: ` +
-            messageData.learningObjective
+            messageData.learningObjective +
+            '. Tutor the user as if they are at a ' +
+            messageData.skillLevel +
+            ' level and age.`'
     });
 
     if (run.status === 'completed') {
