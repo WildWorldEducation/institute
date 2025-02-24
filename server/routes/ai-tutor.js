@@ -21,7 +21,8 @@ const {
     // for learning objective AI tutor
     getAITutorLearningObjectiveThread,
     saveAITutorLearningObjectiveThread,
-    processingNewLearningObjectiveMessage
+    processingNewLearningObjectiveMessage,
+    generateNewLearningObjectiveQuestion
 } = require('../utilities/openAIAssistant');
 const isAuthenticated = require('../middlewares/authMiddleware');
 // Include API key.
@@ -29,27 +30,7 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-/**
- * Send message to skill level AI tutor
- */
-router.post('/new-message', isAuthenticated, async (req, res, next) => {
-    try {
-        const assistantData = await getAITutorSkillThread(
-            req.body.userId,
-            req.body.skillUrl
-        );
-        const result = await processingNewSkillMessage(
-            assistantData[0].thread_id,
-            assistantData[0].assistant_id,
-            req.body
-        );
-        res.json({ message: result });
-    } catch (error) {
-        console.error(error);
-        res.status = 500;
-        res.json({ mess: 'something went wrong' });
-    }
-});
+// Learning objective tutor
 
 /**
  * Get thread from skill level AI tutor
@@ -89,32 +70,28 @@ router.get('/messages-list', isAuthenticated, async (req, res, next) => {
 });
 
 /**
- * Send message to learning objective level AI tutor (at the moment, only explaining the learning objective)
+ * Send message to skill level AI tutor
  */
-router.post(
-    '/learning-objectives/new-message',
-    isAuthenticated,
-    async (req, res, next) => {
-        try {
-            const assistantData = await getAITutorLearningObjectiveThread(
-                req.body.userId,
-                req.body.learningObjectiveId
-            );
-
-            const result = await processingNewLearningObjectiveMessage(
-                assistantData[0].thread_id,
-                assistantData[0].assistant_id,
-                req.body
-            );
-
-            res.json({ message: result });
-        } catch (error) {
-            console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
-        }
+router.post('/new-message', isAuthenticated, async (req, res, next) => {
+    try {
+        const assistantData = await getAITutorSkillThread(
+            req.body.userId,
+            req.body.skillUrl
+        );
+        const result = await processingNewSkillMessage(
+            assistantData[0].thread_id,
+            assistantData[0].assistant_id,
+            req.body
+        );
+        res.json({ message: result });
+    } catch (error) {
+        console.error(error);
+        res.status = 500;
+        res.json({ mess: 'something went wrong' });
     }
-);
+});
+
+// Learning objective tutor
 
 /**
  * Get thread from learning objective level AI tutor
@@ -160,6 +137,62 @@ router.get(
                 );
                 res.json({ messages: messages });
             }
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
+        }
+    }
+);
+
+/**
+ * Send message to learning objective level AI tutor (at the moment, only explaining the learning objective)
+ */
+router.post(
+    '/learning-objectives/new-message',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const assistantData = await getAITutorLearningObjectiveThread(
+                req.body.userId,
+                req.body.learningObjectiveId
+            );
+
+            const result = await processingNewLearningObjectiveMessage(
+                assistantData[0].thread_id,
+                assistantData[0].assistant_id,
+                req.body
+            );
+
+            res.json({ message: result });
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
+        }
+    }
+);
+
+/**
+ * Send message to learning objective level AI tutor (at the moment, only explaining the learning objective)
+ */
+router.post(
+    '/learning-objectives/ask-question',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const assistantData = await getAITutorLearningObjectiveThread(
+                req.body.userId,
+                req.body.learningObjectiveId
+            );
+
+            const result = await generateNewLearningObjectiveQuestion(
+                assistantData[0].thread_id,
+                assistantData[0].assistant_id,
+                req.body
+            );
+
+            res.json({ message: result });
         } catch (error) {
             console.error(error);
             res.status = 500;
