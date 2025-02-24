@@ -79,8 +79,7 @@ export default {
                 'data:image/png;base64,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',
             iconDictionary: [],
             nodeWidth: 80,
-            nodeHeight: 800,
-            numberOfLinkDraw: 0
+            nodeHeight: 800
         };
     },
     components: {
@@ -272,7 +271,6 @@ export default {
             // Draw links.
             const links = this.root.links();
             this.context.beginPath();
-            this.numberOfLinkDraw = 0;
             for (const link of links) {
                 // Do not render parts of tree not in the canvas
                 // to improve performance.
@@ -281,13 +279,7 @@ export default {
                     continue;
                 }
 
-                if (link.target.data.name === 'The Historic Muslim Dynasties') {
-                    let ctx = this.context;
-                    this.drawRectangle(ctx, link.target, link.source);
-                }
-
                 this.drawLink(link);
-                this.numberOfLinkDraw = this.numberOfLinkDraw + 1;
             }
 
             // Draw nodes.
@@ -960,101 +952,6 @@ export default {
                 return false;
             }
         },
-        findPointPositionOnRectangle(point1, point2, point3, point4) {
-            const pointArray = [point1, point2, point3, point4];
-            const rectangleConner = {
-                topLeft: null,
-                topRight: null,
-                bottomLeft: null,
-                bottomRight: null
-            };
-            // find
-            for (let index = 0; index < pointArray.length; index++) {
-                const currentPoint = pointArray[index];
-
-                return rectangleConner;
-            }
-        },
-        // ------=---------------=--=---=-==---=-=-=-=-=-=-=-=-=-=-=-======================================
-        // DELETE LATER
-        drawRectangle(ctx, targetNode, sourceNode) {
-            const targetNodeCounterPoint = {
-                x: targetNode.x,
-                y: sourceNode.y
-            };
-
-            const sourceNodeCounterPoint = {
-                x: sourceNode.x,
-                y: targetNode.y
-            };
-
-            this.findPointPositionOnRectangle(
-                targetNode,
-                targetNodeCounterPoint,
-                sourceNodeCounterPoint,
-                sourceNode
-            );
-
-            ctx.strokeStyle = '#f02213';
-
-            // Start a new Path 1
-            ctx.beginPath();
-            ctx.moveTo(targetNode.y, targetNode.x);
-            ctx.lineTo(targetNodeCounterPoint.y, targetNodeCounterPoint.x);
-
-            // Draw the Path
-            ctx.stroke();
-
-            // Start a new Path 2
-            ctx.beginPath();
-            ctx.moveTo(targetNodeCounterPoint.y, targetNodeCounterPoint.x);
-            ctx.lineTo(sourceNode.y, sourceNode.x);
-
-            // Draw the Path
-            ctx.stroke();
-
-            // Start a new Path 3
-            ctx.beginPath();
-            ctx.moveTo(sourceNode.y, sourceNode.x);
-            ctx.lineTo(sourceNodeCounterPoint.y, sourceNodeCounterPoint.x);
-
-            // Draw the Path
-            ctx.stroke();
-
-            // Start a new Path 4
-            ctx.beginPath();
-            ctx.moveTo(sourceNodeCounterPoint.y, sourceNodeCounterPoint.x);
-            ctx.lineTo(targetNode.y, targetNode.x);
-
-            // Draw the Path
-            ctx.stroke();
-        },
-        checkNodeInLinksVisibleView(node, transformData) {
-            // Calculate max visible range
-            // Visible range is the rectangle with width and height equal to canvas context
-            // Every time context is translate the visible range is changing too
-
-            const visibleRangeY = transformData.y - this.height - 1000;
-            const visibleRangeX = this.width + 1000;
-            // Calculate real position of node with current scale
-            let realPositionX = node.y * transformData.k;
-            let realPositionY =
-                -node.x * transformData.k - 1000 * transformData.k;
-
-            // I actually come up with this formula base on observe the changing of translate and node position when translate context
-            // It doesn`t make sense to me but some how working correctly
-            let combinePosition = transformData.x + realPositionX;
-            if (
-                combinePosition > -1000 &&
-                combinePosition < visibleRangeX &&
-                transformData.y > realPositionY &&
-                realPositionY > visibleRangeY
-            ) {
-                return true;
-            }
-            return false;
-        },
-
         async findHiddenSkill(searchString) {
             // Find the filtered parent of this skill
         },
@@ -1438,7 +1335,6 @@ export default {
 </script>
 
 <template>
-    <h1>{{ numberOfLinkDraw }}</h1>
     <!-- Loading animation -->
     <div
         v-if="isLoading == true"
