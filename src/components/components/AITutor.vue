@@ -1,4 +1,5 @@
 <script>
+import { OutputLocationFilterSensitiveLog } from '@aws-sdk/client-s3';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import SendIconLoadingSymbol from './ai-tutor/sendIconLoadingSymbol.vue';
 import TutorLoadingSymbol from './ai-tutor/tutorLoadingSymbol.vue';
@@ -12,7 +13,7 @@ export default {
             userDetailsStore
         };
     },
-    props: ['skillName', 'skillUrl'],
+    props: ['skillName', 'skillUrl', 'skillLevel'],
     components: { SendIconLoadingSymbol, TutorLoadingSymbol, TooltipBtn },
     data() {
         return {
@@ -21,10 +22,12 @@ export default {
             latestMessage: null,
             messageList: [],
             waitForAIresponse: false,
-            mode: 'big'
+            mode: 'big',
+            englishSkillLevel: ''
         };
     },
     async mounted() {
+        this.englishSkillLevel = this.skillLevel.replace('_', ' ');
         await this.getMessagesList();
     },
     updated() {
@@ -34,6 +37,27 @@ export default {
     },
     computed: {},
     methods: {
+        // Get messages in thread.
+        async getMessagesList() {
+            try {
+                const url = `/ai-tutor/messages-list?userId=${encodeURIComponent(
+                    this.userDetailsStore.userId
+                )}&skillUrl=${encodeURIComponent(
+                    this.skillUrl
+                )}&skillName=${encodeURIComponent(this.skillName)}
+                &skillLevel=${encodeURIComponent(this.englishSkillLevel)}
+                `;
+
+                const response = await fetch(url);
+                const resData = await response.json();
+                this.messageList = resData.messages.data;
+                // we reverse oder of messages list because OpenAI return messages from newest to oldest
+                this.messageList.reverse();
+                this.$nextTick(this.scrollToMessageInput());
+            } catch (error) {
+                console.error(error);
+            }
+        },
         async SendMessage() {
             if (this.waitForAIresponse) {
                 return;
@@ -52,10 +76,10 @@ export default {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         message: this.message,
-                        userName: this.userDetailsStore.userName,
                         userId: this.userDetailsStore.userId,
                         skillName: this.skillName,
-                        skillUrl: this.skillUrl
+                        skillUrl: this.skillUrl,
+                        skillLevel: this.englishSkillLevel
                     })
                 };
                 var url = '/ai-tutor/new-message';
@@ -73,24 +97,6 @@ export default {
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false;
-            }
-        },
-        async getMessagesList() {
-            try {
-                const url = `/ai-tutor/messages-list?userId=${encodeURIComponent(
-                    this.userDetailsStore.userId
-                )}&skillUrl=${encodeURIComponent(
-                    this.skillUrl
-                )}&skillName=${encodeURIComponent(this.skillName)}`;
-
-                const response = await fetch(url);
-                const resData = await response.json();
-                this.messageList = resData.messages.data;
-                // we reverse oder of messages list because OpenAI return messages from newest to oldest
-                this.messageList.reverse();
-                this.$nextTick(this.scrollToMessageInput());
-            } catch (error) {
-                console.error(error);
             }
         },
         // Format the response.
@@ -150,7 +156,7 @@ export default {
         <div class="d-flex flex-column flex-md-row gap-2 align-items-baseline">
             <div class="d-flex flex-row w-100 justify-content-between">
                 <div class="d-flex gap-2">
-                    <h2 class="heading">Ask the AI tutor a question</h2>
+                    <h2 class="secondary-heading">AI tutor</h2>
                     <TooltipBtn
                         v-if="mode === 'big'"
                         class="d-none d-md-block"
@@ -231,6 +237,27 @@ export default {
             </div>
         </div>
         <hr />
+        <!-- Suggested interaction buttons -->
+        <span class="d-flex justify-content-end">
+            <!-- explanation button -->
+            <button
+                class="btn suggested-interactions"
+                @click="
+                    message = 'Please give me an overview of this.';
+                    SendMessage();
+                "
+            >
+                give me an overview
+            </button>
+            <!-- ask question button -->
+            <!-- <button
+                class="btn suggested-interactions ms-1"
+                @click="learningObjectiveQuestion()"
+            >
+                ask me a question
+            </button> -->
+        </span>
+        <!-- Message thread -->
         <div
             class="d-flex flex-column mx-auto chat-component"
             :class="{
@@ -258,6 +285,7 @@ export default {
                     "
                 ></div>
             </div>
+            <!-- Tutor loading animation -->
             <div class="ai-tutor-processing" v-if="waitForAIresponse">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -273,8 +301,8 @@ export default {
                 Thinking
                 <TutorLoadingSymbol />
             </div>
-
-            <div :class="'user-chat-div'" v-if="mode === 'big'">
+            <!-- User input -->
+            <div class="user-chat-div rounded" v-if="mode === 'big'">
                 <textarea
                     ref="messageInput"
                     class="chat-text-area"
@@ -282,6 +310,7 @@ export default {
                     type="text"
                 >
                 </textarea>
+                <!-- Send button -->
                 <div
                     b-tooltip.hover
                     tile="send message"
@@ -296,12 +325,13 @@ export default {
                             v-if="!waitForAIresponse"
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
-                            height="18"
                             width="18"
+                            height="18"
                             fill="white"
                         >
+                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
                             <path
-                                d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480l0-83.6c0-4 1.5-7.8 4.2-10.8L331.8 202.8c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8 17.7 316.6C7.1 311.3 .3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z"
+                                d="M256 448c141.4 0 256-93.1 256-208S397.4 32 256 32S0 125.1 0 240c0 45.1 17.7 86.8 47.7 120.9c-1.9 24.5-11.4 46.3-21.4 62.9c-5.5 9.2-11.1 16.6-15.2 21.6c-2.1 2.5-3.7 4.4-4.9 5.7c-.6 .6-1 1.1-1.3 1.4l-.3 .3c0 0 0 0 0 0c0 0 0 0 0 0s0 0 0 0s0 0 0 0c-4.6 4.6-5.9 11.4-3.4 17.4c2.5 6 8.3 9.9 14.8 9.9c28.7 0 57.6-8.9 81.6-19.3c22.9-10 42.4-21.9 54.3-30.6c31.8 11.5 67 17.9 104.1 17.9zM128 208a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm128 0a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm96 32a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
                             />
                         </svg>
                         <SendIconLoadingSymbol v-else width="20px" />
@@ -359,7 +389,13 @@ export default {
         </svg>
     </div>
 </template>
+
 <style scoped>
+.suggested-interactions {
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
 .tutor-conversation {
     font-family: 'Poppins', sans-serif;
 }
@@ -374,14 +410,6 @@ export default {
     border: 1px solid #acacac;
     padding: 5px 10px;
     margin-bottom: 15px;
-}
-
-:deep(h1) {
-    font-size: 20px !important;
-}
-
-:deep(h2) {
-    font-size: 16px !important;
 }
 
 .chat-text-area {
@@ -404,7 +432,6 @@ export default {
     background-color: white;
     padding: 5px 10px;
     border-radius: 15px;
-    width: 75%;
 }
 
 .mini-chat-component {
@@ -431,7 +458,6 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 3px;
-    border-radius: 35px;
     border: 1px solid #e8e8e8;
     padding: 20px;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
@@ -493,7 +519,7 @@ export default {
 /* Tablet Styling */
 @media (min-width: 577px) and (max-width: 1023px) {
     .chat-component {
-        width: 95%;
+        width: 100%;
     }
 }
 

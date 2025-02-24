@@ -15,18 +15,20 @@ const openai = new OpenAI({
 /**
  * Shared functions --------------------------------------
  */
-async function initialAssistant(topic) {
-    const assistant = await createAssistant(topic);
+async function initialAssistant(topic, level) {
+    const assistant = await createAssistant(topic, level);
     const thread = await createThread();
     const result = { assistant: assistant, thread: thread };
     return result;
 }
 
-async function createAssistant(topic) {
+async function createAssistant(topic, level) {
     const assistant = await openai.beta.assistants.create({
         name: 'General Tutor',
         instructions:
-            'You are a personal tutor teaching about the following subject: ' +
+            'You are a personal tutor teaching a ' +
+            level +
+            'student about the following subject: ' +
             topic,
         tools: [],
         model: 'gpt-4o'
@@ -101,8 +103,9 @@ async function processingNewSkillMessage(threadId, assistantId, messageData) {
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
-        instructions: `Please refer to the user as ${messageData.userName}. 
-        Please tutor about the topic: ${messageData.skillName}.`
+        instructions: `Please tutor about the topic: ${messageData.skillName}.
+        Tutor the user as if they are at a ${messageData.skillLevel} level and age.
+        Ask follow up questions.`
     });
 
     if (run.status === 'completed') {
@@ -118,6 +121,23 @@ async function processingNewSkillMessage(threadId, assistantId, messageData) {
 /**
  * Learning objective level tutor functions
  */
+
+async function saveAITutorLearningObjectiveThread(data) {
+    try {
+        let queryString = `INSERT INTO ai_tutor_learning_objective_threads (user_id, learning_objective_id, assistant_id, thread_id)
+               VALUES (
+               ${conn.escape(data.userId)},
+               ${conn.escape(data.learningObjectiveId)},
+               ${conn.escape(data.assistantId)},
+               ${conn.escape(data.threadId)}
+               );`;
+        await query(queryString);
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
 /**
  * Get learning objective level AI tutor thread id
  * @param {string} userId
@@ -157,7 +177,10 @@ async function processingNewLearningObjectiveMessage(
         assistant_id: assistantId,
         instructions:
             `Please do not repeat the question. Please tutor about the topic: ` +
-            messageData.learningObjective
+            messageData.learningObjective +
+            '. Tutor the user as if they are at a ' +
+            messageData.skillLevel +
+            ' level and age. Ask follow up questions.`'
     });
 
     if (run.status === 'completed') {
@@ -170,19 +193,29 @@ async function processingNewLearningObjectiveMessage(
     }
 }
 
-async function saveAITutorLearningObjectiveThread(data) {
-    try {
-        let queryString = `INSERT INTO ai_tutor_learning_objective_threads (user_id, learning_objective_id, assistant_id, thread_id)
-               VALUES (
-               ${conn.escape(data.userId)},
-               ${conn.escape(data.learningObjectiveId)},
-               ${conn.escape(data.assistantId)},
-               ${conn.escape(data.threadId)}
-               );`;
-        await query(queryString);
-    } catch (error) {
-        console.error(error);
-        throw error;
+async function generateNewLearningObjectiveQuestion(
+    threadId,
+    assistantId,
+    messageData
+) {
+    // Add a message to the thread
+    const message = await openai.beta.threads.messages.create(threadId, {
+        role: 'user',
+        content: 'Ask me a questions about: ' + messageData.learningObjective
+    });
+
+    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+        assistant_id: assistantId,
+        instructions: `The user is at a ${messageData.skillLevel} level and age.`
+    });
+
+    if (run.status === 'completed') {
+        const messages = await openai.beta.threads.messages.list(threadId);
+        const latestMessage = messages.data[0];
+
+        return latestMessage;
+    } else {
+        console.log(run.status);
     }
 }
 
@@ -194,5 +227,6 @@ module.exports = {
     getAITutorSkillThread,
     getAITutorLearningObjectiveThread,
     saveAITutorLearningObjectiveThread,
-    processingNewLearningObjectiveMessage
+    processingNewLearningObjectiveMessage,
+    generateNewLearningObjectiveQuestion
 };
