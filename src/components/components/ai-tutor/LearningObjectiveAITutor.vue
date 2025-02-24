@@ -30,7 +30,7 @@ export default {
     async mounted() {
         this.englishSkillLevel = this.skillLevel.replace('_', ' ');
         // load thread.
-        await this.getMessages();       
+        await this.getMessages();
     },
     methods: {
         // load thread
@@ -97,6 +97,46 @@ export default {
                 this.waitForAIresponse = false;
             }
         },
+        // ask Open AI to ask a question about the learning objective
+        async learningObjectiveQuestion() {
+            if (this.waitForAIresponse) {
+                return;
+            }
+            this.waitForAIresponse = true;
+            try {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        learningObjective: this.learningObjective,
+                        learningObjectiveId: this.learningObjectiveId,
+                        userName: this.userDetailsStore.userName,
+                        userId: this.userDetailsStore.userId,
+                        skillName: this.skillName,
+                        skillLevel: this.englishSkillLevel
+                    })
+                };
+
+                var url = '/ai-tutor/learning-objectives/ask-question';
+
+                const res = await fetch(url, requestOptions);
+                if (res.status === 500) {
+                    alert('The tutor can`t answer !!');
+                    this.waitForAIresponse = false;
+                    return;
+                }
+                const resData = await res.json();
+
+                this.latestMessage = resData.message.content[0].text.value;
+                this.messageList.push(this.latestMessage);
+
+                this.getMessages();
+                this.waitForAIresponse = false;
+            } catch (error) {
+                console.error(error);
+                this.waitForAIresponse = false;
+            }
+        },
         // Format the response.
         applyMarkDownFormatting(string) {
             const md = window.markdownit();
@@ -117,7 +157,7 @@ export default {
     </div>
     <div v-else>
         <!-- Suggested interaction buttons -->
-        <span class="d-flex justify-content-end">
+        <span class="d-flex justify-content-end mt-2">
             <!-- learning objective explanation button -->
             <button
                 v-if="isGotMessages"
@@ -141,23 +181,26 @@ export default {
                 </svg>
                 explain this
             </button>
-            <!-- learning objective quiz button -->
-            <!-- <button class="btn border" @click="quizLearningObjective()"> -->
-            <!-- Question mark icon -->
-            <!-- <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 512 512"
-                width="18"
-                height="18"
-                fill="black"
-            > -->
-            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-            <!-- <path
-                    d="M504 256c0 137-111 248-248 248S8 393 8 256C8 119.1 119 8 256 8s248 111.1 248 248zM262.7 90c-54.5 0-89.3 23-116.5 63.8-3.5 5.3-2.4 12.4 2.7 16.3l34.7 26.3c5.2 3.9 12.6 3 16.7-2.1 17.9-22.7 30.1-35.8 57.3-35.8 20.4 0 45.7 13.1 45.7 33 0 15-12.4 22.7-32.5 34C247.1 238.5 216 254.9 216 296v4c0 6.6 5.4 12 12 12h56c6.6 0 12-5.4 12-12v-1.3c0-28.5 83.2-29.6 83.2-106.7 0-58-60.2-102-116.5-102zM256 338c-25.4 0-46 20.6-46 46 0 25.4 20.6 46 46 46s46-20.6 46-46c0-25.4-20.6-46-46-46z"
-                />
-            </svg>
-            Test me
-        </button> -->
+            <!-- learning objective ask question button -->
+            <button
+                class="btn border border-dark ms-1"
+                @click="learningObjectiveQuestion()"
+            >
+                <!-- Question mark icon -->
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    width="18"
+                    height="18"
+                    fill="black"
+                >
+                    <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                    <path
+                        d="M504 256c0 137-111 248-248 248S8 393 8 256C8 119.1 119 8 256 8s248 111.1 248 248zM262.7 90c-54.5 0-89.3 23-116.5 63.8-3.5 5.3-2.4 12.4 2.7 16.3l34.7 26.3c5.2 3.9 12.6 3 16.7-2.1 17.9-22.7 30.1-35.8 57.3-35.8 20.4 0 45.7 13.1 45.7 33 0 15-12.4 22.7-32.5 34C247.1 238.5 216 254.9 216 296v4c0 6.6 5.4 12 12 12h56c6.6 0 12-5.4 12-12v-1.3c0-28.5 83.2-29.6 83.2-106.7 0-58-60.2-102-116.5-102zM256 338c-25.4 0-46 20.6-46 46 0 25.4 20.6 46 46 46s46-20.6 46-46c0-25.4-20.6-46-46-46z"
+                    />
+                </svg>
+                ask me a question
+            </button>
         </span>
         <!-- Custom interactions text input -->
         <span class="d-flex mt-1">
