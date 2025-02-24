@@ -1,7 +1,9 @@
 // Database connection
 const conn = require('../config/db');
-
 const util = require('util');
+// node native promisify
+// convert callback
+const query = util.promisify(conn.query).bind(conn);
 
 // Import OpenAI package.
 const { OpenAI } = require('openai');
@@ -10,37 +12,87 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-
-// node native promisify
-// convert callback 
-const query = util.promisify(conn.query).bind(conn);
-
-async function createThread() {
-    const thread = await openai.beta.threads.create();
-    return thread
-}
-
-// TODO specific skill tutor role
-async function createAssistant() {
-    const assistant = await openai.beta.assistants.create({
-        name: 'General Tutor',
-        instructions:
-            'You are a personal tutor. Answer any questions you are asked..',
-        tools: [{ type: 'code_interpreter' }],
-        model: 'gpt-4o'
-    });
-    return assistant
-}
-
-
-async function initialAssistant() {
-    const assistant = await createAssistant();
+/**
+ * Shared functions --------------------------------------
+ */
+async function initialAssistant(topic) {
+    const assistant = await createAssistant(topic);
     const thread = await createThread();
-    const result = { assistant: assistant, thread: thread }
+    const result = { assistant: assistant, thread: thread };
     return result;
 }
 
-async function processingNewMessage(threadId, assistantId, messageData) {
+async function createAssistant(topic) {
+    const assistant = await openai.beta.assistants.create({
+        name: 'General Tutor',
+        instructions:
+            'You are a personal tutor teaching about the following subject: ' +
+            topic,
+        tools: [],
+        model: 'gpt-4o'
+    });
+    return assistant;
+}
+
+async function createThread() {
+    const thread = await openai.beta.threads.create();
+    return thread;
+}
+
+/**
+ * Get AI tutor messages
+ * @param {string} threadId
+ * @return {object} message List
+ */
+async function getMessagesList(threadId) {
+    try {
+        const messages = await openai.beta.threads.messages.list(threadId);
+        return messages;
+    } catch (error) {
+        throw error;
+    }
+}
+
+/**
+ * Skill level tutor functions
+ */
+/**
+ * Get skill level AI tutor thread id
+ * @param {string} userId
+ * @param {string} userId
+ * @return {object} database data
+ */
+async function getAITutorSkillThread(userId, skillUrl) {
+    try {
+        let queryString = `SELECT * 
+                           FROM ai_tutor_skill_threads 
+                           WHERE user_id = ${conn.escape(
+                               userId
+                           )} AND skill_url = ${conn.escape(skillUrl)}`;
+        const result = await query(queryString);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function saveAITutorSkillThread(data) {
+    try {
+        let queryString = `INSERT INTO ai_tutor_skill_threads (user_id, skill_url, assistant_id, thread_id)
+               VALUES (
+               ${conn.escape(data.userId)},
+               ${conn.escape(data.skillUrl)},
+               ${conn.escape(data.assistantId)},
+               ${conn.escape(data.threadId)}
+               );`;
+        await query(queryString);
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+async function processingNewSkillMessage(threadId, assistantId, messageData) {
     // Add a Message to the Thread
     const message = await openai.beta.threads.messages.create(threadId, {
         role: 'user',
@@ -49,88 +101,98 @@ async function processingNewMessage(threadId, assistantId, messageData) {
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
-        instructions: `Please return the message as formatted html code. Please refer to the user as ${messageData.userName}. Please only talk about the topic: ${messageData.skillName};`
+        instructions: `Please refer to the user as ${messageData.userName}. 
+        Please tutor about the topic: ${messageData.skillName}.`
     });
 
     if (run.status === 'completed') {
-        const messages = await openai.beta.threads.messages.list(
-            threadId
-        );
-        const latestMessage = messages.data[0]
+        const messages = await openai.beta.threads.messages.list(threadId);
+        const latestMessage = messages.data[0];
 
-        return (latestMessage);
+        return latestMessage;
     } else {
         console.log(run.status);
     }
 }
 
-async function saveAssistantData(data) {
-    try {
-        let queryString = `INSERT INTO user_assistant_messages (user_id, skill_url, assistant_id, thread_id)
-               VALUES (
-               ${conn.escape(data.userId)},
-               ${conn.escape(data.skillUrl)},
-               ${conn.escape(data.assistantId)},
-               ${conn.escape(data.threadId)}
-               );`
-        await query(queryString);
-    } catch (error) {
-        console.error(error)
-        throw error
-    }
-}
 /**
- *
- * get user assistant data of the skill
- * @param {string} userId 
- * @param {string} skillId
- * @return {*} 
+ * Learning objective level tutor functions
  */
-async function getAssistantData(userId, skillUrl) {
+/**
+ * Get learning objective level AI tutor thread id
+ * @param {string} userId
+ * @param {string} learningObjectiveId
+ * @return {*}
+ */
+async function getAITutorLearningObjectiveThread(userId, learningObjectiveId) {
     try {
         let queryString = `SELECT * 
-                           FROM user_assistant_messages 
-                           WHERE user_assistant_messages.user_id = ${conn.escape(userId)} AND  user_assistant_messages.skill_url = ${conn.escape(skillUrl)}`
+                           FROM ai_tutor_learning_objective_threads
+                           WHERE user_id = ${conn.escape(
+                               userId
+                           )} AND learning_objective_id = ${conn.escape(
+            learningObjectiveId
+        )}`;
+
         const result = await query(queryString);
+
         return result;
     } catch (error) {
-        throw error
+        throw error;
     }
 }
 
-/**
- *
- * get user assistant data of the skill
- * @param {string} threadId
- * @return {object} message List 
- */
-async function getMessagesList(threadId) {
-    try {
+async function processingNewLearningObjectiveMessage(
+    threadId,
+    assistantId,
+    messageData
+) {
+    // Add a Message to the Thread
+    const message = await openai.beta.threads.messages.create(threadId, {
+        role: 'user',
+        content: messageData.message
+    });
+
+    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+        assistant_id: assistantId,
+        instructions:
+            `Please do not repeat the question. Please tutor about the topic: ` +
+            messageData.learningObjective
+    });
+
+    if (run.status === 'completed') {
         const messages = await openai.beta.threads.messages.list(threadId);
-        return messages
-    } catch (error) {
-        throw error
+        const latestMessage = messages.data[0];
+
+        return latestMessage;
+    } else {
+        console.log(run.status);
     }
 }
 
-/**
- *
- * get user assistant data of the skill
- * @param {string} userId
- * @param {string} userId
- * @return {object} database data 
- */
-async function getAssistantData(userId, skillUrl) {
+async function saveAITutorLearningObjectiveThread(data) {
     try {
-        let queryString = `SELECT * 
-                           FROM user_assistant_messages 
-                           WHERE user_assistant_messages.user_id = ${conn.escape(userId)} AND user_assistant_messages.skill_url = ${conn.escape(skillUrl)}`
-        const result = await query(queryString);
-        return result
+        let queryString = `INSERT INTO ai_tutor_learning_objective_threads (user_id, learning_objective_id, assistant_id, thread_id)
+               VALUES (
+               ${conn.escape(data.userId)},
+               ${conn.escape(data.learningObjectiveId)},
+               ${conn.escape(data.assistantId)},
+               ${conn.escape(data.threadId)}
+               );`;
+        await query(queryString);
     } catch (error) {
-        throw error
+        console.error(error);
+        throw error;
     }
 }
 
-module.exports = { initialAssistant, processingNewMessage, saveAssistantData, getAssistantData, getMessagesList, getAssistantData }
-
+module.exports = {
+    initialAssistant,
+    processingNewSkillMessage,
+    saveAITutorSkillThread,
+    getMessagesList,
+    getAITutorSkillThread,
+    getAITutorLearningObjectiveThread,
+    saveAITutorLearningObjectiveThread,
+    processingNewLearningObjectiveMessage
+};

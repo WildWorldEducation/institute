@@ -62,7 +62,7 @@ export default {
                 this.message = '';
                 const res = await fetch(url, requestOptions);
                 if (res.status === 500) {
-                    alert('Tutor can`t answer !!');
+                    alert('The tutor can`t answer !!');
                     this.waitForAIresponse = false;
                     return;
                 }
@@ -79,7 +79,9 @@ export default {
             try {
                 const url = `/ai-tutor/messages-list?userId=${encodeURIComponent(
                     this.userDetailsStore.userId
-                )}&skillUrl=${encodeURIComponent(this.skillUrl)}`;
+                )}&skillUrl=${encodeURIComponent(
+                    this.skillUrl
+                )}&skillName=${encodeURIComponent(this.skillName)}`;
 
                 const response = await fetch(url);
                 const resData = await response.json();
@@ -91,11 +93,11 @@ export default {
                 console.error(error);
             }
         },
-        // Because OpenAI return the content with it
-        removeHTMLnotation(string) {
-            let result = string.replace(/```html/g, '');
-            result = result.replace(/```/g, '');
-            return result;
+        // Format the response.
+        applyMarkDownFormatting(string) {
+            const md = window.markdownit();
+            let formattedMessage = md.render(string);
+            return formattedMessage;
         },
         scrollToMessageInput() {
             let inputMessage = this.$refs.messageInputDiv;
@@ -148,7 +150,7 @@ export default {
         <div class="d-flex flex-column flex-md-row gap-2 align-items-baseline">
             <div class="d-flex flex-row w-100 justify-content-between">
                 <div class="d-flex gap-2">
-                    <h2 class="heading">Learn with the AI tutor</h2>
+                    <h2 class="heading">Ask the AI tutor a question</h2>
                     <TooltipBtn
                         v-if="mode === 'big'"
                         class="d-none d-md-block"
@@ -251,7 +253,9 @@ export default {
                         message.content[0].type == 'text'
                     "
                     class="tutor-conversation"
-                    v-html="removeHTMLnotation(message.content[0].text.value)"
+                    v-html="
+                        applyMarkDownFormatting(message.content[0].text.value)
+                    "
                 ></div>
             </div>
             <div class="ai-tutor-processing" v-if="waitForAIresponse">
@@ -354,9 +358,7 @@ export default {
             />
         </svg>
     </div>
-    <!-- <h1>{{ mode }}</h1> -->
 </template>
-
 <style scoped>
 .tutor-conversation {
     font-family: 'Poppins', sans-serif;
