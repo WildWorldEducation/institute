@@ -243,19 +243,19 @@ export default {
             <button
                 class="btn suggested-interactions"
                 @click="
-                    message = 'Please explain it.';
+                    message = 'Please give me an overview of this.';
                     SendMessage();
                 "
             >
-                explain this
+                give me an overview
             </button>
             <!-- ask question button -->
-            <button
+            <!-- <button
                 class="btn suggested-interactions ms-1"
                 @click="learningObjectiveQuestion()"
             >
                 ask me a question
-            </button>
+            </button> -->
         </span>
         <!-- Message thread -->
         <div
