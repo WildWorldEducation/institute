@@ -30,7 +30,7 @@ export default {
     async mounted() {
         this.englishSkillLevel = this.skillLevel.replace('_', ' ');
         // load thread.
-        await this.getMessages();
+        await this.getMessages();       
     },
     methods: {
         // load thread
@@ -113,7 +113,7 @@ export default {
         v-if="isGotMessages == false"
         class="loading-animation d-flex justify-content-center align-items-center py-4"
     >
-        <span class="loader"></span>
+        <span class="spinning-loader"></span>
     </div>
     <div v-else>
         <!-- Suggested interaction buttons -->
@@ -252,7 +252,7 @@ export default {
 }
 
 /* Threads loading animation */
-.loader {
+.spinning-loader {
     width: 36px;
     height: 36px;
     border: 5px solid var(--primary-color);
