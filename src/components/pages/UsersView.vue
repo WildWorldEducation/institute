@@ -213,9 +213,8 @@ export default {
             }
             if (step == 2) {
                 this.showTutorialTip2 = false;
-                this.showTutorialTip3 = true;
+                this.markTutorialComplete();
             }
-            this.markTutorialComplete();
         },
         restartTutorial() {
             this.showTutorialTip2 = false;
@@ -397,7 +396,7 @@ export default {
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(2)">
-                    close
+                    next
                 </button>
             </div>
         </div>
