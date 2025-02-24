@@ -99,6 +99,44 @@ export default {
                 this.waitForAIresponse = false;
             }
         },
+        // ask Open AI to ask a question about the skill
+        async requestQuestion() {
+            if (this.waitForAIresponse) {
+                return;
+            }
+            this.waitForAIresponse = true;
+            try {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userName: this.userDetailsStore.userName,
+                        userId: this.userDetailsStore.userId,
+                        skillName: this.skillName,
+                        skillLevel: this.englishSkillLevel
+                    })
+                };
+
+                var url = '/ai-tutor/ask-question';
+
+                const res = await fetch(url, requestOptions);
+                if (res.status === 500) {
+                    alert('The tutor can`t answer !!');
+                    this.waitForAIresponse = false;
+                    return;
+                }
+                const resData = await res.json();
+
+                this.latestMessage = resData.message.content[0].text.value;
+                this.messageList.push(this.latestMessage);
+
+                this.getMessages();
+                this.waitForAIresponse = false;
+            } catch (error) {
+                console.error(error);
+                this.waitForAIresponse = false;
+            }
+        },
         // Format the response.
         applyMarkDownFormatting(string) {
             const md = window.markdownit();
@@ -250,12 +288,12 @@ export default {
                 give me an overview
             </button>
             <!-- ask question button -->
-            <!-- <button
+            <button
                 class="btn suggested-interactions ms-1"
-                @click="learningObjectiveQuestion()"
+                @click="requestQuestion()"
             >
                 ask me a question
-            </button> -->
+            </button>
         </span>
         <!-- Message thread -->
         <div

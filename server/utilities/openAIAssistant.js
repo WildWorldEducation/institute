@@ -118,6 +118,28 @@ async function processingNewSkillMessage(threadId, assistantId, messageData) {
     }
 }
 
+async function generateQuestion(threadId, assistantId, messageData) {
+    // Add a message to the thread
+    const message = await openai.beta.threads.messages.create(threadId, {
+        role: 'user',
+        content: 'Ask me a questions about: ' + messageData.skillName
+    });
+
+    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+        assistant_id: assistantId,
+        instructions: `The user is at a ${messageData.skillLevel} level and age.`
+    });
+
+    if (run.status === 'completed') {
+        const messages = await openai.beta.threads.messages.list(threadId);
+        const latestMessage = messages.data[0];
+
+        return latestMessage;
+    } else {
+        console.log(run.status);
+    }
+}
+
 /**
  * Learning objective level tutor functions
  */
@@ -228,5 +250,6 @@ module.exports = {
     getAITutorLearningObjectiveThread,
     saveAITutorLearningObjectiveThread,
     processingNewLearningObjectiveMessage,
+    generateQuestion,
     generateNewLearningObjectiveQuestion
 };
