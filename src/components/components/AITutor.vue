@@ -241,44 +241,19 @@ export default {
         <span class="d-flex justify-content-end">
             <!-- explanation button -->
             <button
-                class="btn border border-dark"
+                class="btn suggested-interactions"
                 @click="
                     message = 'Please explain it.';
                     learningObjectiveMessage();
                 "
             >
-                <!-- Robot icon -->
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 640 512"
-                    width="18"
-                    height="18"
-                    fill="black"
-                >
-                    <path
-                        d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
-                    />
-                </svg>
                 explain this
             </button>
             <!-- ask question button -->
             <button
-                class="btn border border-dark ms-1"
+                class="btn suggested-interactions ms-1"
                 @click="learningObjectiveQuestion()"
             >
-                <!-- Question mark icon -->
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    width="18"
-                    height="18"
-                    fill="black"
-                >
-                    <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                    <path
-                        d="M504 256c0 137-111 248-248 248S8 393 8 256C8 119.1 119 8 256 8s248 111.1 248 248zM262.7 90c-54.5 0-89.3 23-116.5 63.8-3.5 5.3-2.4 12.4 2.7 16.3l34.7 26.3c5.2 3.9 12.6 3 16.7-2.1 17.9-22.7 30.1-35.8 57.3-35.8 20.4 0 45.7 13.1 45.7 33 0 15-12.4 22.7-32.5 34C247.1 238.5 216 254.9 216 296v4c0 6.6 5.4 12 12 12h56c6.6 0 12-5.4 12-12v-1.3c0-28.5 83.2-29.6 83.2-106.7 0-58-60.2-102-116.5-102zM256 338c-25.4 0-46 20.6-46 46 0 25.4 20.6 46 46 46s46-20.6 46-46c0-25.4-20.6-46-46-46z"
-                    />
-                </svg>
                 ask me a question
             </button>
         </span>
@@ -327,7 +302,7 @@ export default {
                 <TutorLoadingSymbol />
             </div>
             <!-- User input -->
-            <div :class="'user-chat-div'" v-if="mode === 'big'">
+            <div class="user-chat-div rounded" v-if="mode === 'big'">
                 <textarea
                     ref="messageInput"
                     class="chat-text-area"
@@ -335,6 +310,7 @@ export default {
                     type="text"
                 >
                 </textarea>
+                <!-- Send button -->
                 <div
                     b-tooltip.hover
                     tile="send message"
@@ -349,12 +325,13 @@ export default {
                             v-if="!waitForAIresponse"
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
-                            height="18"
                             width="18"
+                            height="18"
                             fill="white"
                         >
+                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
                             <path
-                                d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480l0-83.6c0-4 1.5-7.8 4.2-10.8L331.8 202.8c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8 17.7 316.6C7.1 311.3 .3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z"
+                                d="M256 448c141.4 0 256-93.1 256-208S397.4 32 256 32S0 125.1 0 240c0 45.1 17.7 86.8 47.7 120.9c-1.9 24.5-11.4 46.3-21.4 62.9c-5.5 9.2-11.1 16.6-15.2 21.6c-2.1 2.5-3.7 4.4-4.9 5.7c-.6 .6-1 1.1-1.3 1.4l-.3 .3c0 0 0 0 0 0c0 0 0 0 0 0s0 0 0 0s0 0 0 0c-4.6 4.6-5.9 11.4-3.4 17.4c2.5 6 8.3 9.9 14.8 9.9c28.7 0 57.6-8.9 81.6-19.3c22.9-10 42.4-21.9 54.3-30.6c31.8 11.5 67 17.9 104.1 17.9zM128 208a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm128 0a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm96 32a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
                             />
                         </svg>
                         <SendIconLoadingSymbol v-else width="20px" />
@@ -414,6 +391,11 @@ export default {
 </template>
 
 <style scoped>
+.suggested-interactions {
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
 .tutor-conversation {
     font-family: 'Poppins', sans-serif;
 }
@@ -450,7 +432,6 @@ export default {
     background-color: white;
     padding: 5px 10px;
     border-radius: 15px;
-    width: 75%;
 }
 
 .mini-chat-component {
@@ -477,7 +458,6 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 3px;
-    border-radius: 35px;
     border: 1px solid #e8e8e8;
     padding: 20px;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
@@ -539,7 +519,7 @@ export default {
 /* Tablet Styling */
 @media (min-width: 577px) and (max-width: 1023px) {
     .chat-component {
-        width: 95%;
+        width: 100%;
     }
 }
 
