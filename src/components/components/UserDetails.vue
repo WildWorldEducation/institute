@@ -28,7 +28,7 @@ export default {
 
     methods: {
         updateSkillsLock() {
-            this.$parent.updateSkillsLock()
+            this.$parent.updateSkillsLock();
         }
     }
 };
@@ -251,6 +251,17 @@ export default {
                         v-model="this.$parent.instructor"
                         disabled
                     />
+                </div>
+                <div
+                    v-if="userDetailsStore.role == 'instructor'"
+                    class="d-flex justify-content-start mt-3"
+                >
+                    <router-link
+                        :to="'/edit-student-password/' + this.$parent.user.id"
+                        class="btn primary-btn"
+                    >
+                        Change password
+                    </router-link>
                 </div>
             </div>
         </div>
