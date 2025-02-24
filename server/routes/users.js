@@ -817,39 +817,14 @@ router.put(
                 req.body.avatar;
             }
 
-            // Initialize fields to update
-            let fieldsToUpdate = [];
-
-            // Check if user is an admin or instructor and set fields to update accordingly
-            if (req.session.role === 'admin') {
-                // Admin can update all fields
-                fieldsToUpdate = [
-                    { field: 'first_name', value: req.body.firstname },
-                    { field: 'last_name', value: req.body.lastname },
-                    { field: 'username', value: req.body.username },
-                    { field: 'email', value: req.body.email },
-                    { field: 'password', value: req.body.password },
-                    { field: 'role', value: req.body.role }
-                ];
-            } else if (req.session.role === 'instructor') {
-                // Instructor can only update specific fields
-                fieldsToUpdate = [
-                    { field: 'first_name', value: req.body.firstname },
-                    { field: 'last_name', value: req.body.lastname },
-                    { field: 'username', value: req.body.username },
-                    { field: 'email', value: req.body.email }
-                ];
-            }
-
-            // Build the SQL update query dynamically
-            let sqlQuery = 'UPDATE users SET ';
-            fieldsToUpdate.forEach((field, index) => {
-                sqlQuery += `${field.field} = ${conn.escape(field.value)}`;
-                if (index < fieldsToUpdate.length - 1) {
-                    sqlQuery += ', ';
-                }
-            });
-            sqlQuery += ` WHERE id = ${conn.escape(req.params.id)};`;
+            let sqlQuery = `UPDATE users 
+            SET first_name = ${conn.escape(req.body.firstname)}, 
+            last_name = ${conn.escape(req.body.lastname)}, 
+            username = ${conn.escape(req.body.username)}, 
+            email = ${conn.escape(req.body.email)}, 
+            password = ${conn.escape(req.body.password)},
+            role = ${conn.escape(req.body.role)} 
+            WHERE id = ${conn.escape(req.params.id)};`;
 
             conn.query(sqlQuery, async (err) => {
                 try {
@@ -873,6 +848,52 @@ router.put(
         }
     }
 );
+
+// Allow instructor to change students details
+router.put('/:studentId/instructor/edit', isAuthenticated, (req, res, next) => {
+    if (req.session.userName) {
+        // Need to decide whether avatar needs to be replaced.
+        let isReplaceAvatar = false;
+        // Check if avatar field is a url, in which case it does not need to be replaced.
+        function isValidHttpUrl(string) {
+            let url;
+            try {
+                url = new URL(string);
+            } catch (_) {
+                return false;
+            }
+            return url.protocol === 'http:' || url.protocol === 'https:';
+        }
+        // Check if avatar field is empty.
+        if (req.body.avatar != null && !isValidHttpUrl(req.body.avatar)) {
+            isReplaceAvatar = true;
+            req.body.avatar;
+        }
+
+        let sqlQuery = `UPDATE users
+            SET first_name = ${conn.escape(req.body.firstname)},
+            last_name = ${conn.escape(req.body.lastname)},
+            username = ${conn.escape(req.body.username)},
+            email = ${conn.escape(req.body.email)}
+            WHERE id = ${conn.escape(req.params.studentId)};`;
+
+        conn.query(sqlQuery, async (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                if (isReplaceAvatar == true) {
+                    await saveUserAvatarToAWS(req.params.id, req.body.avatar);
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
 
 /**
  * Update User Theme
