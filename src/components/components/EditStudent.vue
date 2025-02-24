@@ -65,17 +65,17 @@ export default {
                 this.Submit();
             }
         },
-        ValidateEmail() {
-            if (
-                /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
-                    this.user.email
-                )
-            ) {
-                this.validate.emailFormat = false;
-            } else {
-                this.validate.emailFormat = true;
-            }
-        },
+        // ValidateEmail() {
+        //     if (
+        //         /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
+        //             this.user.email
+        //         )
+        //     ) {
+        //         this.validate.emailFormat = false;
+        //     } else {
+        //         this.validate.emailFormat = true;
+        //     }
+        // },
         Submit() {
             let reqBody = {};
 
@@ -280,15 +280,6 @@ export default {
                     type="text"
                     class="form-control"
                 />
-                <div
-                    v-if="
-                        validate.first_name &&
-                        (user.first_name == '' || user.first_name == null)
-                    "
-                    class="form-validate"
-                >
-                    please enter a first name !
-                </div>
             </div>
             <div class="mb-3">
                 <label for="lastname" class="form-label">Last name</label>
@@ -297,15 +288,6 @@ export default {
                     type="text"
                     class="form-control"
                 />
-                <div
-                    v-if="
-                        validate.last_name &&
-                        (user.last_name == '' || user.last_name == null)
-                    "
-                    class="form-validate"
-                >
-                    please enter a last name !
-                </div>
             </div>
             <div class="mb-3">
                 <label class="form-label">Username</label>
@@ -326,24 +308,7 @@ export default {
             </div>
             <div class="mb-3">
                 <label class="form-label">Email address</label>
-                <input
-                    v-model="user.email"
-                    type="email"
-                    class="form-control"
-                    @blur="ValidateEmail"
-                />
-                <div
-                    v-if="
-                        validate.email &&
-                        (user.email == '' || user.email == null)
-                    "
-                    class="form-validate"
-                >
-                    please enter an email !
-                </div>
-                <div v-if="validate.emailFormat" class="form-validate">
-                    please enter a valid email !
-                </div>
+                <input v-model="user.email" type="email" class="form-control" />
             </div>
             <div class="d-flex justify-content-end gap-4">
                 <router-link class="btn red-btn" to="/students"
