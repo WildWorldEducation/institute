@@ -71,6 +71,7 @@ async function getAITutorSkillThread(userId, skillUrl) {
                            WHERE user_id = ${conn.escape(
                                userId
                            )} AND skill_url = ${conn.escape(skillUrl)}`;
+
         const result = await query(queryString);
         return result;
     } catch (error) {
