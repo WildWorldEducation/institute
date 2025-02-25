@@ -31,21 +31,40 @@ function unlockInitialSkills(userId) {
             }
 
             for (let i = 0; i < firstLevelSkills.length; i++) {
-                // Recursive function.
-                makeMastered(userId, firstLevelSkills[i]);
+                makeAccessible(userId, firstLevelSkills[i]);
             }
-            function makeMastered(userId, skill) {
-                let sqlQuery = `
-                    INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible) 
-                    VALUES(${conn.escape(userId)},
-                    ${conn.escape(skill.id)},
-                    0,
-                    1) 
-                    ON DUPLICATE KEY UPDATE is_mastered = 0, 
-                    is_accessible = 1;`;
+            // function makeMastered(userId, skill) {
+            //     let sqlQuery = `
+            //         INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible)
+            //         VALUES(${conn.escape(userId)},
+            //         ${conn.escape(skill.id)},
+            //         0,
+            //         1)
+            //         ON DUPLICATE KEY UPDATE is_mastered = 0,
+            //         is_accessible = 1;`;
 
-                //
-                conn.query(sqlQuery, (err, results) => {
+            //     //
+            //     conn.query(sqlQuery, (err, results) => {
+            //         try {
+            //             if (err) {
+            //                 throw err;
+            //             }
+            //         } catch (err) {
+            //             console.log('error:' + err);
+            //         }
+            //     });
+            // }
+
+            function makeAccessible(userId, skill) {
+                // Make this skill accessible.
+                let sqlQuery3 = `
+            INSERT INTO user_skills (user_id, skill_id, is_accessible)
+            VALUES(${conn.escape(userId)},
+            ${conn.escape(skill.id)},
+            1)
+            ON DUPLICATE KEY UPDATE is_accessible=1;
+            `;
+                conn.query(sqlQuery3, (err, results) => {
                     try {
                         if (err) {
                             throw err;
@@ -55,26 +74,6 @@ function unlockInitialSkills(userId) {
                     }
                 });
             }
-
-            //     function makeAccessible(userId, skillId) {
-            //         // Make this skill accessible.
-            //         let sqlQuery3 = `
-            // INSERT INTO user_skills (user_id, skill_id, is_accessible)
-            // VALUES(${conn.escape(userId)},
-            // ${conn.escape(skillId)},
-            // 1)
-            // ON DUPLICATE KEY UPDATE is_accessible=1;
-            // `;
-            //         conn.query(sqlQuery3, (err, results) => {
-            //             try {
-            //                 if (err) {
-            //                     throw err;
-            //                 }
-            //             } catch (err) {
-            //                 console.log('error:' + err);
-            //             }
-            //         });
-            //     }
         } catch (err) {
             console.log('error:' + err);
         }

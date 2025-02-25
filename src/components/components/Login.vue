@@ -40,7 +40,11 @@ export default {
                     if (data.account == 'authorized') {
                         if (data.role == 'student') {
                             router.push({ name: 'skill-tree' });
-                        } else router.push({ name: 'hub' });
+                        } else if (data.role == 'instructor') {
+                            router.push({ name: 'students' });
+                        } else if (data.role == 'editor') {
+                            router.push({ name: 'todo' });
+                        } else router.push({ name: 'skills' });
                     } else if (data.account == 'wrong-password') {
                         alert('wrong password');
                     } else {
@@ -74,7 +78,7 @@ export default {
                 />
             </div>
             <!-- Heading -->
-            <h1 class="h3 mt-2 font-weight-normal">Student sign in</h1>
+            <h1 class="h3 mt-2 font-weight-normal">Sign in</h1>
             <!-- Form -->
             <div class="form">
                 <label class="mb-4 welcome-message"

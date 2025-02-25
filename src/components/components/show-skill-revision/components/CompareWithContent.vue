@@ -24,6 +24,11 @@ export default {
                 this.compareWithRevision.mastery_requirements
             );
 
+            const introductionDiff = diffWords(
+                this.viewingRevision.introduction,
+                this.compareWithRevision.introduction
+            );
+
             const nameDiff = diffWords(
                 this.viewingRevision.name,
                 this.compareWithRevision.name
@@ -32,6 +37,7 @@ export default {
             return {
                 masteryDiff: masteryDiff,
                 nameDiff: nameDiff,
+                introductionDiff: introductionDiff,
                 skillData: this.compareWithRevision,
                 currentViewingRevision: this.viewingRevision
             };
@@ -126,6 +132,8 @@ export default {
             <hr class="border border-1 opacity-100 hr" />
             <div class="d-flex flex-column-reverse flex-md-row gap-4">
                 <div class="mastery-requirements">
+                    <!-- Mastery Requirements -->
+                    <h2 class="secondary-heading">Mastery Requirements</h2>
                     <div v-html="compareData.masteryDiff"></div>
                 </div>
                 <!-- Infobox -->

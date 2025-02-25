@@ -19,29 +19,33 @@ export default {
 </script>
 
 <template>
-    <h2 class="secondary-heading h4">Last Visited Skills</h2>
+    <h2 class="tertiary-heading h5">Last Visited Skills</h2>
     <div id="skill-list">
-        <div v-for="skill in visitedSkills">
-            <router-link
-                :class="{
-                    'grade-school': skill.level == 'grade_school',
-                    'middle-school': skill.level == 'middle_school',
-                    'high-school': skill.level == 'high_school',
-                    college: skill.level == 'college',
-                    phd: skill.level == 'phd'
-                }"
-                class="skill-link btn"
-                :to="`/skills/${skill.url}`"
-                target="_blank"
-            >
-                {{ skill.name }}
-            </router-link>
-        </div>
-        <div v-if="noSkills" id="no-skill-cell"></div>
+        <router-link
+            v-for="skill in visitedSkills"
+            :class="{
+                'grade-school': skill.level == 'grade_school',
+                'middle-school': skill.level == 'middle_school',
+                'high-school': skill.level == 'high_school',
+                college: skill.level == 'college',
+                phd: skill.level == 'phd'
+            }"
+            class="skill-link btn m-2 d-flex"
+            :to="`/skills/${skill.url}`"
+            target="_blank"
+        >
+            <img class="icons" :src="skill.icon" />&nbsp; {{ skill.name }}
+        </router-link>
     </div>
 </template>
 
 <style scoped>
+.icons {
+    /*  mix-blend-mode: multiply; */
+    height: 30px;
+    border-radius: 50%;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
     width: 12px;
@@ -65,8 +69,8 @@ export default {
 
 #skill-list {
     overflow-y: auto;
-    max-height: 300px;
-    background-color: rgb(33, 37, 41);
+    /* max-height: 300px;
+     background-color: rgb(33, 37, 41); */
     border-radius: 10px;
 }
 
@@ -74,9 +78,8 @@ export default {
     padding: 10px 6px;
 }
 
-.skill-link {
-    text-decoration: none !important;
-    color: black;
+.skill-link:hover {
+    border: 1px solid black;
 }
 
 /* Level colors */
@@ -96,6 +99,11 @@ export default {
 .phd {
     background-color: #ff0000;
     color: white;
+}
+
+.skill-link {
+    width: fit-content;
+    padding-left: 0.35rem;
 }
 
 #skill-list div:hover {

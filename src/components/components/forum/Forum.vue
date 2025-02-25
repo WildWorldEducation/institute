@@ -16,7 +16,8 @@ export default {
             userDetailsStore
         };
     },
-    props: ['skillId'],
+    emits: ['progressTutorial'],
+    props: ['skillId', 'showTutorialTip6', 'userRole'],
     data() {
         return {
             sourcePosts: [],
@@ -247,7 +248,7 @@ export default {
 <template>
     <div class="container-fluid mt-4">
         <div class="forum-header">
-            <h2 class="heading">Best Places To Learn This</h2>
+            <h2 class="secondary-heading">Other Places To Learn This</h2>
 
             <!-- Navigation Tabs -->
             <!-- If guest account, we dont show tutors, only sources -->
@@ -318,6 +319,9 @@ export default {
             :posts="posts"
             :user="user"
             :skillId="skillId"
+            :showTutorialTip6="showTutorialTip6"
+            :userRole="userDetailsStore.role"
+            @progressTutorial="$emit('progressTutorial', $event)"
         />
     </div>
     <!-- Flagging Component -->
@@ -331,7 +335,7 @@ export default {
 
 <style scoped>
 .forum-header {
-    background-color: white;
+    background-color: #f2edffcc;
     border-radius: 10px;
     padding: 10px;
 }
@@ -411,10 +415,6 @@ export default {
 
 :deep(.userDownVote) {
     background-color: red;
-}
-
-h2 {
-    font-size: 1.75rem;
 }
 
 .plus-icon {

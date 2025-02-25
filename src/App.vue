@@ -2,6 +2,7 @@
 // Import the stores.
 import { useSessionDetailsStore } from './stores/SessionDetailsStore.js';
 import { useUserDetailsStore } from './stores/UserDetailsStore.js';
+import router from './router';
 
 export default {
     setup() {
@@ -16,23 +17,25 @@ export default {
     data() {
         return {
             isMobileCheck: window.innerWidth,
-            currentTab: null
+            currentTab: null,
+            isDropdownOpen: false
         };
     },
     async mounted() {
         await this.userDetailsStore.getUserDetails();
 
-        // Kids theme
-        if (this.userDetailsStore.theme == 'apprentice') {
-            document.body.classList.remove('scholar-theme');
-            document.body.classList.add('apprentice-theme');
-        } else if (this.userDetailsStore.theme == 'scholar') {
-            document.body.classList.add('scholar-theme');
-            document.body.classList.remove('apprentice-theme');
+        // Instructor theme
+        if (this.userDetailsStore.theme == 'instructor') {
+            document.body.classList.remove('editor-theme');
+            document.body.classList.add('instructor-theme');
+            // Editor theme.
+        } else if (this.userDetailsStore.theme == 'editor') {
+            document.body.classList.add('editor-theme');
+            document.body.classList.remove('instructor-theme');
             // Original theme.
         } else {
-            document.body.classList.remove('scholar-theme');
-            document.body.classList.remove('apprentice-theme');
+            document.body.classList.remove('editor-theme');
+            document.body.classList.remove('instructor-theme');
         }
         this.closeNavbarOnClick();
     },
@@ -42,6 +45,12 @@ export default {
         }
     },
     methods: {
+        toggleDropdown() {
+            this.isDropdownOpen = !this.isDropdownOpen;
+        },
+        closeDropdown() {
+            this.isDropdownOpen = false;
+        },
         closeNavbarOnClick() {
             const links = document.querySelectorAll('.close-on-click');
             const navbarToggler = document.querySelector('.navbar-toggler');
@@ -79,6 +88,22 @@ export default {
                     }
                 }, 300);
             }
+        },
+        LogOut() {
+            document.getElementsByTagName('body')[0].style =
+                'background-image: none;';
+
+            this.sessionDetailsStore.isLoggedIn = false;
+
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            var url = '/logout';
+
+            fetch(url, requestOptions).then(function (response) {
+                router.push({ name: 'login' });
+            });
         }
     }
 };
@@ -92,15 +117,16 @@ export default {
             :class="{
                 'fixed-top':
                     $route.name == 'skill-tree' ||
-                    $route.name == 'my-skill-tree' ||
+                    $route.name == 'pathways' ||
                     $route.name == 'radial-tree' ||
-                    $route.name == 'student-vertical-tree'
+                    $route.name == 'student-vertical-tree' ||
+                    $route.name == 'learning-tracks'
             }"
         >
             <div class="container-fluid">
                 <RouterLink to="/" class="nav-link logo">
                     <img
-                        v-if="userDetailsStore.theme == 'scholar'"
+                        v-if="userDetailsStore.theme == 'editor'"
                         src="/images/logo-white.png"
                         alt=""
                         width="50"
@@ -130,23 +156,29 @@ export default {
                     id="navbarSupportedContent"
                 >
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
-                    <ul class="navbar-nav d-flex bg-white rounded p-2">
-                        <div
-                            v-if="
-                                !sessionDetailsStore.isLoggedIn &&
-                                this.$route.name == 'skill-tree'
-                            "
-                            class="p-2 rounded me-2 mb-1"
-                            style="background-color: #fff3cd; height: 37.6px"
-                        >
-                            You cannot master skills until signed in
-                        </div>
+                    <ul class="navbar-nav d-flex bg-white rounded pt-2 pb-2">
                         <li
-                            v-if="sessionDetailsStore.isLoggedIn"
+                            v-if="
+                                sessionDetailsStore.isLoggedIn &&
+                                userDetailsStore.role == 'student'
+                            "
                             class="nav-item"
                         >
                             <RouterLink to="/" class="nav-link close-on-click"
                                 >Hub</RouterLink
+                            >
+                        </li>
+                        <li
+                            v-if="
+                                userDetailsStore.role == 'student' ||
+                                userDetailsStore.role == 'editor'
+                            "
+                            class="nav-item"
+                        >
+                            <RouterLink
+                                to="/skill-tree"
+                                class="nav-link close-on-click"
+                                >Skill Tree</RouterLink
                             >
                         </li>
                         <li
@@ -164,39 +196,17 @@ export default {
                                 <span>Todo</span>
                             </RouterLink>
                         </li>
+
                         <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
                             <RouterLink
-                                to="/skill-tree"
+                                to="/learning-tracks"
                                 class="nav-link close-on-click"
-                                >Skill Tree</RouterLink
+                                >Learning Tracks</RouterLink
                             >
                         </li>
-                        <li
-                            v-if="userDetailsStore.role == 'student'"
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                to="/my-skill-tree"
-                                class="nav-link close-on-click"
-                                >Customizable Tree</RouterLink
-                            >
-                        </li>
-
-                        <li
-                            v-if="sessionDetailsStore.isLoggedIn"
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                to="/skills"
-                                class="nav-link close-on-click"
-                            >
-                                <span>Skills</span>
-                            </RouterLink>
-                        </li>
-
                         <li
                             v-if="!sessionDetailsStore.isLoggedIn"
                             class="nav-item"
@@ -209,7 +219,6 @@ export default {
                         </li>
                         <li
                             v-if="
-                                userDetailsStore.role == 'instructor' ||
                                 userDetailsStore.role == 'admin' ||
                                 userDetailsStore.role == 'editor'
                             "
@@ -224,18 +233,59 @@ export default {
                                 </span>
                                 <span
                                     v-else-if="
-                                        userDetailsStore.role == 'instructor'
-                                    "
-                                    >Students</span
-                                >
-                                <span
-                                    v-else-if="
                                         userDetailsStore.role == 'editor'
                                     "
                                     >Editors</span
                                 >
                             </RouterLink>
                         </li>
+                        <li
+                            v-if="userDetailsStore.role == 'instructor'"
+                            class="nav-item dropdown"
+                        >
+                            <div class="d-flex align-items-center">
+                                <!-- Navigation link to /students -->
+                                <RouterLink
+                                    to="/students"
+                                    class="nav-link"
+                                    @click="closeDropdown"
+                                >
+                                    <span>Students</span>
+                                </RouterLink>
+
+                                <!-- Dropdown toggle button -->
+                                <button
+                                    class="nav-link dropdown-toggle border-0 bg-transparent"
+                                    @click.stop="toggleDropdown"
+                                ></button>
+                            </div>
+
+                            <!-- Dropdown menu (conditionally shown) -->
+                            <ul
+                                class="dropdown-menu"
+                                :class="{ show: isDropdownOpen }"
+                            >
+                                <li>
+                                    <RouterLink
+                                        to="/student-questions"
+                                        class="dropdown-item close-on-click"
+                                        @click="closeDropdown"
+                                    >
+                                        Student Questions
+                                    </RouterLink>
+                                </li>
+                                <li>
+                                    <RouterLink
+                                        to="/student-assessments"
+                                        class="dropdown-item close-on-click"
+                                        @click="closeDropdown"
+                                    >
+                                        Mark Assessments
+                                    </RouterLink>
+                                </li>
+                            </ul>
+                        </li>
+
                         <li
                             v-if="userDetailsStore.role == 'instructor'"
                             class="nav-item"
@@ -252,15 +302,100 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink
-                                to="/profile-settings"
-                                class="nav-link profile-btn close-on-click"
+                                to="/skills"
+                                class="nav-link close-on-click"
                             >
-                                <img
-                                    id="user-avatar"
-                                    :src="userDetailsStore.avatar"
-                                    alt="user avatar"
-                                />
+                                <span>Skills</span>
                             </RouterLink>
+                        </li>
+                        <li
+                            v-if="sessionDetailsStore.isLoggedIn"
+                            class="nav-item"
+                        >
+                            <div class="dropdown d-none d-sm-block">
+                                <a
+                                    href="#"
+                                    class="nav-link dropdown-toggle"
+                                    id="navbarDropdown"
+                                    role="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                >
+                                    <img
+                                        id="user-avatar"
+                                        :src="userDetailsStore.avatar"
+                                        alt="user avatar"
+                                    />
+                                </a>
+
+                                <div
+                                    class="dropdown-menu dropdown-menu-end"
+                                    aria-labelledby="navbarDropdown"
+                                >
+                                    <RouterLink
+                                        to="/profile"
+                                        class="dropdown-item"
+                                    >
+                                        Profile
+                                    </RouterLink>
+                                    <RouterLink
+                                        to="/settings"
+                                        class="dropdown-item"
+                                    >
+                                        Settings
+                                    </RouterLink>
+                                    <RouterLink
+                                        to="/news-and-notifications"
+                                        class="dropdown-item"
+                                    >
+                                        News & Notifications
+                                    </RouterLink>
+                                    <RouterLink
+                                        v-if="
+                                            userDetailsStore.role ==
+                                                'student' ||
+                                            userDetailsStore.role ==
+                                                'instructor'
+                                        "
+                                        to="/reputation"
+                                        class="dropdown-item"
+                                    >
+                                        Reputation
+                                    </RouterLink>
+                                    <div class="dropdown-divider"></div>
+                                    <a
+                                        v-if="sessionDetailsStore.isLoggedIn"
+                                        @click="LogOut()"
+                                        class="dropdown-item logout-btn"
+                                    >
+                                        Log out
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="d-sm-none">
+                                <RouterLink to="/profile" class="nav-link">
+                                    Profile
+                                </RouterLink>
+                                <RouterLink to="/settings" class="nav-link">
+                                    Settings
+                                </RouterLink>
+                                <RouterLink
+                                    to="/news-and-notifications"
+                                    class="nav-link"
+                                >
+                                    News & Notifications
+                                </RouterLink>
+                                <RouterLink to="/reputation" class="nav-link">
+                                    Reputation
+                                </RouterLink>
+                                <a
+                                    v-if="sessionDetailsStore.isLoggedIn"
+                                    @click="LogOut()"
+                                    class="nav-link logout-btn"
+                                >
+                                    Log out
+                                </a>
+                            </div>
                         </li>
                         <li
                             class="nav-item"
@@ -306,34 +441,40 @@ Themes
     --secondary-color: #c6e76c;
     --secondary-contrast-color: black;
 
+    --tertiary-color: #5f31dd;
+
     --skill-tree-background-color: white;
     --skill-tree-color: black;
 
     --stroke-width: 0px;
 }
 
-/* The Apprentice theme */
-.apprentice-theme {
+/* The Instructor theme */
+.instructor-theme {
     --primary-color: #040095;
     --primary-contrast-color: white;
 
     --secondary-color: gold;
     --secondary-contrast-color: #040095;
 
-    --skill-tree-background-color: skyblue;
+    --tertiary-color: #040095;
+
+    --skill-tree-background-color: white;
     --skill-tree-color: black;
 
     --stroke-width: 1px;
-    --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg');
+   /* --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg'); */
 }
 
-/* The Scholar theme */
-.scholar-theme {
+/* The Editor theme */
+.editor-theme {
     --primary-color: black;
     --primary-contrast-color: white;
 
     --secondary-color: gold;
     --secondary-contrast-color: black;
+
+    --tertiary-color: white
 
     --skill-tree-background-color: black;
     --skill-tree-color: white;
@@ -357,6 +498,10 @@ Themes
     display: flex;
     flex-direction: row;
     align-items: baseline;
+}
+.logout-btn{
+    cursor: pointer;
+    color: black;
 }
 
 .nav-link .active {
@@ -389,9 +534,16 @@ body {
     font-weight: 500;
 }
 
+.tertiary-heading {
+    color: var(--tertiary-color) !important;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
 /* Regular text */
 p {
     color: black !important;
+    font-family: 'Poppins', sans-serif;
 }
 
 /* Buttons */
@@ -486,7 +638,7 @@ p {
 }
 
 .profile-btn {
-    padding: 0px;
+    padding: 0px !important;
     background-color: transparent;
 }
 

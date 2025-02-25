@@ -12,16 +12,315 @@ export default {
             shake: false,
             showDropDown: false,
             // list of pre-made template
-            templates: [
-                `Grammar or spelling error: `,
-                `Inappropriate content: `,
-                `Incorrect or misleading: `,
-                `Content used to attack another user: `,
-                `Spam, adverts or low quality content: `
-            ]
+            genericTemplates: [
+                {
+                    title: 'Grammar or Spelling Error',
+                    explanation:
+                        'The content contains grammatical mistakes or spelling errors that affect readability and clarity.'
+                },
+                {
+                    title: 'Inappropriate Content',
+                    explanation:
+                        'The content includes offensive, explicit, or otherwise inappropriate language, images, or themes.'
+                },
+                {
+                    title: 'Incorrect or Misleading',
+                    explanation:
+                        'The content contains false or misleading information that may confuse or misinform users.'
+                },
+                {
+                    title: 'Content Used to Attack Another User',
+                    explanation:
+                        'The content is intentionally hostile, aggressive, or used to harass or insult another user.'
+                },
+                {
+                    title: 'Spam, Adverts, or Low-Quality Content',
+                    explanation:
+                        'The content is irrelevant, promotional, or does not contribute to meaningful discussion or learning.'
+                }
+            ],
+            mcQuestionTemplate: [
+                {
+                    title: 'Too Difficult or Too Easy',
+                    explanation:
+                        'The question is disproportionately difficult or too easy for the skill level.'
+                },
+                {
+                    title: 'Incorrect Answer Key',
+                    explanation:
+                        'The marked correct answer is actually incorrect.'
+                },
+                {
+                    title: 'Ambiguous Question',
+                    explanation:
+                        'The wording is unclear, leading to multiple possible correct answers.'
+                },
+                {
+                    title: 'Duplicate Answers',
+                    explanation:
+                        'More than one option is identical or essentially the same.'
+                },
+                {
+                    title: 'Missing Correct Answer',
+                    explanation:
+                        'None of the given choices are actually correct.'
+                },
+                {
+                    title: 'Incorrect Answer Randomization',
+                    explanation:
+                        'The correct answer always appears in the same position due to faulty randomization.'
+                },
+                {
+                    title: 'Culturally Insensitive Content',
+                    explanation:
+                        'The question contains offensive or inappropriate language.'
+                },
+                {
+                    title: 'Off-Topic Question',
+                    explanation:
+                        "The question does not align with the exam's syllabus or intended learning objectives."
+                },
+                {
+                    title: 'Too obvious',
+                    explanation: 'The correct answer is too obvious.'
+                }
+            ],
+            essayQuestionTemplate: [
+                {
+                    title: 'Too Broad or Too Narrow',
+                    explanation:
+                        'The question is either too general to allow focused responses or too specific to allow critical thinking.'
+                },
+                {
+                    title: 'Incorrect or Misleading Information',
+                    explanation:
+                        'The question contains factual errors or misleading details.'
+                },
+                {
+                    title: 'Off-Topic Question',
+                    explanation:
+                        'The question does not align with the syllabus or intended learning objectives.'
+                },
+                {
+                    title: 'Culturally Insensitive Content',
+                    explanation:
+                        'The question includes offensive or inappropriate language.'
+                },
+                {
+                    title: 'Sensitive or Controversial Topics',
+                    explanation:
+                        'The question addresses a highly sensitive issue that may make students uncomfortable or is not appropriate for the exam setting.'
+                },
+                {
+                    title: 'Requires External Knowledge Beyond Course Scope',
+                    explanation:
+                        'The question assumes knowledge that was not covered in the course materials.'
+                }
+            ],
+            imageQuestionTemplate: [
+                {
+                    title: 'Too Broad or Too Narrow',
+                    explanation:
+                        'The question is either too general to allow focused responses or too specific to allow critical thinking.'
+                },
+                {
+                    title: 'Incorrect or Misleading Information',
+                    explanation:
+                        'The question contains factual errors or misleading details.'
+                },
+                {
+                    title: 'Off-Topic Question',
+                    explanation:
+                        'The question does not align with the syllabus or intended learning objectives.'
+                },
+                {
+                    title: 'Image Upload Issues',
+                    explanation:
+                        'Students may experience technical difficulties uploading their images due to system limitations.'
+                },
+                {
+                    title: 'Incompatible Devices',
+                    explanation:
+                        'Some students may not have access to devices (such as a camera or scanner) required to generate or upload an image.'
+                },
+                {
+                    title: 'Culturally Insensitive Content',
+                    explanation:
+                        'The question includes offensive or inappropriate language.'
+                },
+                {
+                    title: 'Sensitive or Controversial Topics',
+                    explanation:
+                        'The question addresses a highly sensitive issue that may make students uncomfortable or is not appropriate for the exam setting.'
+                },
+                {
+                    title: 'Requires External Knowledge Beyond Course Scope',
+                    explanation:
+                        'The question assumes knowledge that was not covered in the course materials.'
+                }
+            ],
+            resourceTemplate: [
+                {
+                    title: 'Inaccurate or Misleading Information',
+                    explanation:
+                        'The resource contains factual errors or promotes incorrect knowledge.'
+                },
+                {
+                    title: 'Off-Topic Resource',
+                    explanation:
+                        "The resource does not align with the forum's subject or course objectives."
+                },
+                {
+                    title: 'Duplicate Post',
+                    explanation:
+                        'The same resource has already been shared in the forum.'
+                },
+                {
+                    title: 'Culturally Insensitive or Offensive Content',
+                    explanation:
+                        'The resource contains language, images, or viewpoints that may be inappropriate or disrespectful.'
+                },
+                {
+                    title: 'Overly Promotional or Spammy Content',
+                    explanation:
+                        'The resource is primarily promoting a product or service rather than contributing to learning.'
+                },
+                {
+                    title: 'Broken Link or Missing File',
+                    explanation:
+                        'The resource link is invalid, expired, or leads to a non-existent page.'
+                },
+                {
+                    title: 'Unverified or Unreliable Source',
+                    explanation:
+                        'The resource comes from a questionable or biased source that lacks credibility.'
+                },
+                {
+                    title: 'Requires Paid Access',
+                    explanation:
+                        'The resource is behind a paywall, making it inaccessible to some learners.'
+                },
+                {
+                    title: 'Poorly Explained or Low-Quality Resource',
+                    explanation:
+                        'The post does not provide enough context or explanation for how the resource is useful.'
+                },
+                {
+                    title: 'Too Advanced or Too Basic',
+                    explanation:
+                        'The resource is either too complex or too simple for the intended audience.'
+                }
+            ],
+            skillTemplate: [
+                {
+                    title: 'Inaccurate or Misleading Advice',
+                    explanation:
+                        'The post provides incorrect or misleading guidance on developing academic skills, which could negatively impact learners.'
+                },
+                {
+                    title: 'Plagiarism or Copyright Violation',
+                    explanation:
+                        'The content includes copied material from other sources without proper attribution, violating academic integrity standards.'
+                },
+                {
+                    title: 'Off-Topic Discussion',
+                    explanation:
+                        'The post does not relate to academic skills, study strategies, or relevant learning techniques.'
+                },
+                {
+                    title: 'Culturally Insensitive or Inappropriate Content',
+                    explanation:
+                        'The post contains language, examples, or advice that may be offensive or disrespectful to certain groups.'
+                },
+                {
+                    title: 'Unverified or Unreliable Study Techniques',
+                    explanation:
+                        'The suggested study methods or academic strategies lack scientific backing or professional endorsement.'
+                },
+                {
+                    title: 'Overly Promotional or Self-Advertising',
+                    explanation:
+                        'The post is primarily aimed at promoting a personal service, course, or product rather than providing genuine academic guidance.'
+                },
+                {
+                    title: 'Encourages Academic Dishonesty',
+                    explanation:
+                        'The content promotes cheating, plagiarism, or unethical shortcuts in learning and assessments.'
+                },
+                {
+                    title: 'Duplicate or Repetitive Content',
+                    explanation:
+                        'The same topic or advice has already been posted multiple times in the forum.'
+                },
+                {
+                    title: 'Poorly Explained or Confusing Guidance',
+                    explanation:
+                        'The advice lacks clarity, structure, or sufficient details to be useful to learners.'
+                }
+            ],
+            tutorPostTemplate: [
+                {
+                    title: 'Lack of Qualifications',
+                    explanation:
+                        'The proposed instructor does not have relevant credentials or expertise in the subject.'
+                },
+                {
+                    title: 'Inaccurate or Misleading Information',
+                    explanation:
+                        'The proposal includes false claims about the instructor’s background, experience, or teaching methods.'
+                },
+                {
+                    title: 'Vague or Incomplete Details',
+                    explanation:
+                        'The proposal does not provide enough information about the instructor’s experience, teaching style, or course structure.'
+                },
+                {
+                    title: 'Unverified Claims',
+                    explanation:
+                        "The instructor's achievements or experience cannot be confirmed through reliable sources."
+                },
+                {
+                    title: 'Duplicate Submission',
+                    explanation:
+                        'The same instructor has already been proposed multiple times.'
+                },
+                {
+                    title: 'Poor Reviews or Reputation',
+                    explanation:
+                        'The instructor has a history of negative feedback from students or institutions.'
+                }
+            ],
+            template: []
         };
     },
-    mounted() {},
+    created() {
+        this.toTileCase(this.contentType);
+
+        // Add specific reason for each content type
+        switch (this.contentType) {
+            case 'mc_question':
+                this.template = this.mcQuestionTemplate;
+                break;
+            case 'mc_question':
+                this.template = this.mcQuestionTemplate;
+                break;
+            case `essay_question`:
+                this.template = this.essayQuestionTemplate;
+                break;
+            case `image`:
+                this.template = this.imageQuestionTemplate;
+                break;
+            case `skill`:
+                this.template = this.skillTemplate;
+            case `resource`:
+                this.template = this.resourceTemplate;
+            default:
+                break;
+        }
+
+        // Add generic template
+        this.template = this.template.concat(this.genericTemplates);
+    },
     computed: {},
     methods: {
         closeModal() {
@@ -57,6 +356,15 @@ export default {
                 this.showReasonPopup = false;
                 this.showThankModal = true;
             });
+        },
+        toTileCase(string) {
+            const result = string.replace(/_/g, ' ');
+            return result;
+        },
+        handleTemplateChoose(template) {
+            this.reason = template.title + ' - ' + template.explanation;
+
+            this.showDropDown = false;
         }
     }
 };
@@ -142,7 +450,10 @@ export default {
             <!-- Modal content -->
             <div class="modal-content reason-popup">
                 <div class="d-flex flex-column">
-                    <div>Please tell us why you want to flag this skill,</div>
+                    <div>
+                        Please tell us why you want to flag this
+                        {{ toTileCase(contentType) }}:
+                    </div>
                     <div class="reason-suggestion">
                         including where the issue happens,
                     </div>
@@ -200,14 +511,13 @@ export default {
                     <Transition name="dropdown">
                         <div v-if="showDropDown" class="custom-dropdown-base">
                             <div
-                                v-for="template in templates"
+                                b-tooltip.hover
+                                :tile="template.explanation"
+                                v-for="template in template"
                                 class="custom-dropdown-option"
-                                @click="
-                                    reason = template;
-                                    showDropDown = false;
-                                "
+                                @click="handleTemplateChoose(template)"
                             >
-                                {{ template }}
+                                {{ template.title }}
                             </div>
                         </div>
                     </Transition>
@@ -451,6 +761,8 @@ export default {
 }
 
 .custom-dropdown-base {
+    max-height: 250px;
+    overflow-y: auto;
     border-radius: 8px;
     border: 1px;
     background: linear-gradient(0deg, #ffffff, #ffffff);
@@ -554,7 +866,6 @@ export default {
 }
 
 /* ---- End of shake animation ---- */
-
 
 .green-btn {
     background-color: #36c1af;

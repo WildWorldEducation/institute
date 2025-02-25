@@ -1,14 +1,17 @@
 <script>
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
+import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
         const userSkillsStore = useUserSkillsStore();
+        const skillTreeStore = useSkillTreeStore();
         return {
             skillsStore,
-            userSkillsStore
+            userSkillsStore,
+            skillTreeStore
         };
     },
     data() {
@@ -22,7 +25,9 @@ export default {
             // Used for goals feature.
             skill: {},
             accessibleSkills: [],
-            goalSteps: []
+            goalSteps: [],
+            // To allow for making the button grey without needing refresh, after goal created
+            isPseudoGoal: false
         };
     },
     props: [
@@ -31,6 +36,7 @@ export default {
         'name',
         'isUnlocked',
         'isMastered',
+        'isGoal',
         'type',
         'level',
         'depth',
@@ -39,7 +45,8 @@ export default {
         'DeleteSkill',
         'path',
         'studentId',
-        'parent'
+        'parent',
+        'isStudentSkillsLocked'
     ],
     computed: {
         indent() {
@@ -78,6 +85,7 @@ export default {
         }
     },
     async created() {
+        console.log(this.isStudentSkillsLocked);
         for (let i = 0; i < this.children.length; i++) {
             if (this.children[i].type == 'sub') {
                 this.subSkills.push(this.children[i]);
@@ -93,6 +101,7 @@ export default {
         this.skill.parent = this.parent;
         this.skill.is_mastered = this.isMastered;
         this.skill.is_accessible = this.isUnlocked;
+        this.skill.is_goal = this.isGoal;
 
         // Will need this list to create the goal steps.
         await this.userSkillsStore.getFilteredUnnestedList(this.studentId);
@@ -217,7 +226,7 @@ export default {
                 this.createGoal(this.skill);
             }
         },
-        createGoal(skill) {
+        async createGoal(skill) {
             if (skill.type != 'domain') {
                 // Add ancestor skill to array.
                 this.goalSteps.push(skill);
@@ -262,6 +271,7 @@ export default {
             // or if its sub skill is unlocked
             if (inAccessibleList || isSubSkillUnlocked) {
                 this.populateGoalSteps();
+                this.isPseudoGoal = true;
                 return;
             }
 
@@ -279,11 +289,11 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    skillId: this.skill.id,
                     goalSteps: this.goalSteps
                 })
             };
-            const url = '/goals/' + this.studentId + '/add';
+            const url =
+                '/user-skills/set-goal/' + this.studentId + '/' + this.skill.id;
             fetch(url, requestOptions).then(() => {
                 alert('Goal created.');
             });
@@ -319,8 +329,8 @@ export default {
         :class="{
             domains: type == 'domain',
             // Colors and background images for top level skills.
-            locked: isUnlocked != 1,
-            unlocked: isUnlocked == 1,
+            unlocked: isUnlocked == 1 || isStudentSkillsLocked != 1,
+            locked: isUnlocked != 1 && isStudentSkillsLocked == 1,
             mastered: isMastered == 1,
             'sub-skill-button': type == 'sub',
             'grade-school-level': level == 'grade_school',
@@ -346,7 +356,7 @@ export default {
                 src="/images/skill-emoticons/grade-school-mastered.png"
             />
             <img
-                v-else-if="level == 'grade_school' && isUnlocked == 1"
+                v-else-if="level == 'grade_school'"
                 src="/images/skill-emoticons/grade-school-unlocked.png"
             />
             <!-- Middle School level -->
@@ -355,7 +365,7 @@ export default {
                 src="/images/skill-emoticons/middle-school-mastered.png"
             />
             <img
-                v-else-if="level == 'middle_school' && isUnlocked == 1"
+                v-else-if="level == 'middle_school'"
                 src="/images/skill-emoticons/middle-school-unlocked.png"
             />
             <!-- High School level -->
@@ -364,7 +374,7 @@ export default {
                 src="/images/skill-emoticons/high-school-mastered.png"
             />
             <img
-                v-else-if="level == 'high_school' && isUnlocked == 1"
+                v-else-if="level == 'high_school'"
                 src="/images/skill-emoticons/high-school-unlocked.png"
             />
             <!-- College level -->
@@ -373,7 +383,7 @@ export default {
                 src="/images/skill-emoticons/college-mastered.png"
             />
             <img
-                v-else-if="level == 'college' && isUnlocked == 1"
+                v-else-if="level == 'college'"
                 src="/images/skill-emoticons/college-unlocked.png"
             />
             <!-- PHD level -->
@@ -382,14 +392,13 @@ export default {
                 src="/images/skill-emoticons/phd-mastered.png"
             />
             <img
-                v-else-if="level == 'phd' && isUnlocked == 1"
+                v-else-if="level == 'phd'"
                 src="/images/skill-emoticons/phd-unlocked.png"
             />
             <!-- If skill is locked -->
             <img
                 v-else
                 src="/images/skill-emoticons/middle-school-unlocked.png"
-                class="locked-skill-styling"
             />
         </div>
         <!-- Skill name. Ref added for dynamic class based on name length, see above. -->
@@ -412,7 +421,11 @@ export default {
                 v-if="type != 'domain'"
                 class="btn"
                 title="create a goal"
-                @click="confirmCreateGoal()"
+                @click.stop="
+                    isMastered == 1 || isUnlocked == 1 || isGoal || isPseudoGoal
+                        ? $event.preventDefault()
+                        : confirmCreateGoal()
+                "
             >
                 <!-- Create goal button-->
                 <svg
@@ -422,8 +435,17 @@ export default {
                     width="20"
                     heigth="20"
                 >
-                    <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                    <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
+                        :style="{
+                            fill:
+                                isMastered == 1 ||
+                                isUnlocked == 1 ||
+                                isGoal ||
+                                isPseudoGoal
+                                    ? '#d3d3d3'
+                                    : 'primary-icon'
+                        }"
                         d="M448 256A192 192 0 1 0 64 256a192 192 0 1 0 384 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm0-224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zM224 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
                     />
                 </svg>
@@ -520,7 +542,7 @@ export default {
                 </svg>
                 <svg
                     v-else
-                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns="http://www.w3.org/20da00/svg"
                     viewBox="0 0 512 512"
                     width="18"
                     height="18"
@@ -543,6 +565,7 @@ export default {
         :children="subSkill.children"
         :isUnlocked="subSkill.is_accessible"
         :isMastered="subSkill.is_mastered"
+        :isGoal="subSkill.is_goal"
         :type="subSkill.type"
         :level="subSkill.level"
         :name="subSkill.skill_name"
@@ -552,6 +575,7 @@ export default {
         :path="path"
         :studentId="studentId"
         :parent="subSkill.parent"
+        :isStudentSkillsLocked="isStudentSkillsLocked"
     >
     </SkillsListChildInstructorMode>
 
@@ -563,6 +587,7 @@ export default {
         :children="child.children"
         :isUnlocked="child.is_accessible"
         :isMastered="child.is_mastered"
+        :isGoal="child.is_goal"
         :type="child.type"
         :level="child.level"
         :name="child.skill_name"
@@ -572,6 +597,7 @@ export default {
         :path="path"
         :studentId="studentId"
         :parent="child.parent"
+        :isStudentSkillsLocked="isStudentSkillsLocked"
     >
     </SkillsListChildInstructorMode>
 </template>
@@ -709,14 +735,11 @@ export default {
 }
 
 /* Locked, unlocked and mastered styling */
-.locked-skill-styling {
-    -webkit-filter: grayscale(100%);
-    filter: grayscale(100%);
-}
-
 .locked {
     border-color: #c8d7da;
     background-color: #f3f2f5;
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
 }
 
 .mastered {

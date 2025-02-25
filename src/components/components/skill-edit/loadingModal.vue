@@ -51,9 +51,8 @@ export default {
                             d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
                         />
                     </svg>
-                    Revert Success
+                    Edit Success
                 </div>
-                <div>You will go back to skill forum soon.</div>
             </div>
             <div class="d-flex flex-column" v-if="revertResult === 'fails'">
                 <div class="d-flex fails-text align-items-center">
@@ -69,9 +68,9 @@ export default {
                             d="M367.2 412.5L99.5 144.8C77.1 176.1 64 214.5 64 256c0 106 86 192 192 192c41.5 0 79.9-13.1 111.2-35.5zm45.3-45.3C434.9 335.9 448 297.5 448 256c0-106-86-192-192-192c-41.5 0-79.9 13.1-111.2 35.5L412.5 367.2zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"
                         />
                     </svg>
-                    Revert Fails!
+                    Edit Failed!
                 </div>
-                <div>Some thing went wrong !!</div>
+                <div>Something went wrong !!</div>
                 <button
                     type="button"
                     class="btn green-btn modal-btn mx-auto mt-2"

@@ -28,6 +28,7 @@ export default {
             studentId: this.$route.params.studentId,
             instructorMode: false,
             studentUserSkills: [],
+            isStudentSkillsLocked: null,
             // For the loading animation.
             isLoading: true,
             path: []
@@ -51,15 +52,14 @@ export default {
                 await this.skillsStore.getFilteredNestedSkillsList();
             // Students.
             else if (this.userDetailsStore.role == 'student') {
-                //if (this.skillTreeStore.userSkills.length == 0) {
                 await this.skillTreeStore.getUserSkills();
-                // }
             }
         }
         // For instructors to view student's skill trees
         else {
             await this.skillTreeStore.getStudentSkills(this.studentId);
             this.studentUserSkills = this.skillTreeStore.studentSkills;
+            await this.checkIfStudentSkillsLocked();            
         }
 
         // For the loading animation.
@@ -165,18 +165,11 @@ export default {
             this.findNodeLoading = false;
             return path;
         },
-        async filter() {
-            if (this.userDetailsStore.role == 'student') {
-                this.skillTreeStore.userSkills = [];
-                await this.skillTreeStore.getUserSkills();
-                
-            } else if (
-                this.userDetailsStore.role == 'instructor' ||
-                this.userDetailsStore.role == 'editor'
-            ) {
-                this.skillsStore.filteredNestedSkillsList = [];
-                await this.skillsStore.getFilteredNestedSkillsList();
-            }
+        async checkIfStudentSkillsLocked() {
+            const result = await fetch(
+                '/instructor-students/' + this.studentId + '/is-skills-locked'
+            );
+            this.isStudentSkillsLocked = await result.json();
         }
     },
     components: {
@@ -189,7 +182,7 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid bg-white">
+    <div class="bg-white">
         <!-- Loading animation -->
         <div
             v-if="isLoading == true"
@@ -204,7 +197,9 @@ export default {
                 position: absolute;
                 height: -webkit-fill-available;
                 width: 100%;
+                left: -5px;
             "
+            class="content"
         >
             <!-- Students -->
             <div
@@ -274,12 +269,14 @@ export default {
                     :name="skill.skill_name"
                     :isUnlocked="skill.is_accessible"
                     :isMastered="skill.is_mastered"
+                    :isGoal="skill.is_goal"
                     :type="skill.type"
                     :level="skill.level"
                     :role="userDetailsStore.role"
                     :path="this.path"
                     :studentId="studentId"
                     :parent="skill.parent"
+                    :isStudentSkillsLocked="isStudentSkillsLocked"
                 >
                 </SkillsListChildInstructorMode>
             </div>
@@ -288,6 +285,22 @@ export default {
 </template>
 
 <style scoped>
+.content {
+    scrollbar-width: auto;
+    scrollbar-color: #9f9f9f;
+}
+.content::-webkit-scrollbar-thumb {
+    background: #9f9f9f;
+    border-radius: 5px;
+}
+
+.content::-webkit-scrollbar-track {
+    background: #d8d8d8;
+    border-radius: 5px;
+}
+.content::-webkit-scrollbar {
+    width: 10px;
+}
 .loader {
     width: 48px;
     height: 48px;
@@ -313,16 +326,13 @@ export default {
         transform: rotate(360deg);
     }
 }
-
-@media screen and (min-width: 992px) {
-    /* Loading animation */
-    .loading-animation {
-        min-height: 100%;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        -webkit-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
-    }
+/* Loading animation */
+.loading-animation {
+    min-height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 }
 </style>

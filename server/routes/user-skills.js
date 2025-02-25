@@ -194,14 +194,14 @@ router.get('/unnested-list/:userId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-    SELECT skills.id, name, is_accessible, is_mastered, type, url, level
+    SELECT skills.id, name, is_accessible, is_mastered, type, url, level, icon
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
     WHERE user_skills.user_id = ${conn.escape(req.params.userId)}
 
     UNION
-    SELECT skills.id, name, "", "", type, url, level
+    SELECT skills.id, name, "", "", type, url, level, icon
     FROM skills
     WHERE skills.id NOT IN 
 
@@ -233,7 +233,7 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-    SELECT skills.id, name, is_accessible, is_mastered, type, parent, url, level
+    SELECT skills.id, name, is_accessible, is_mastered, is_goal, type, parent, url, level
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
@@ -241,7 +241,7 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
     AND is_filtered = 'available'
 
     UNION
-    SELECT skills.id, name, "", "", type, parent, url, level
+    SELECT skills.id, name, "", "", "", type, parent, url, level
     FROM skills
     WHERE skills.id NOT IN 
 
@@ -267,30 +267,10 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
 });
 
 /* Nested list of user-skills, filtered by 1 cohort that student is a member of*/
-// For Collapsible Tree.
+// For Collapsible Tree and Instructor view of student skills Collapsible Tree.
 router.get('/filter-by-cohort/:userId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        /* Apply grade level and subject filters
-         */
-        // Level will be sent in query param (eg: ?level='middle_school')
-        const level = req.query.level;
-        // Default is to show all.
-        let levelsToShow =
-            "'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
-        if (level == 'grade_school') {
-            levelsToShow = "'grade_school'";
-        } else if (level == 'middle_school') {
-            levelsToShow = "'grade_school', 'middle_school'";
-        } else if (level == 'high_school') {
-            levelsToShow = "'grade_school', 'middle_school', 'high_school'";
-        } else if (level == 'college') {
-            levelsToShow =
-                "'grade_school', 'middle_school', 'high_school', 'college'";
-        } else if (level == 'phd') {
-            levelsToShow =
-                "'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
-        }
 
         // Check if student is member of a cohort
         let isInCohortSQLQuery = `
@@ -311,21 +291,20 @@ router.get('/filter-by-cohort/:userId', (req, res, next) => {
 
                 // Check what skills are available for this cohort.
                 let sqlQuery = `
-            SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, show_children
+            SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, show_children, is_goal
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id
             WHERE user_skills.user_id = ${conn.escape(req.params.userId)}
             AND is_filtered = 'available' 
-            AND is_deleted = 0
-            AND level IN (${levelsToShow})
+            AND is_deleted = 0          
             AND skills.id NOT IN 
             (SELECT skill_id 
             FROM cohort_skill_filters
             WHERE cohort_id = ${conn.escape(cohortId)})
             
             UNION
-            SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, ""
+            SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, "", ""
             FROM skills
             WHERE skills.id NOT IN 
             
@@ -335,8 +314,7 @@ router.get('/filter-by-cohort/:userId', (req, res, next) => {
             ON skills.id = user_skills.skill_id
             WHERE user_skills.user_id = ${conn.escape(req.params.userId)}) 
             AND is_filtered = 'available' 
-            AND is_deleted = 0
-            AND level IN (${levelsToShow})
+            AND is_deleted = 0         
             AND skills.id NOT IN 
             (SELECT skill_id 
             FROM cohort_skill_filters
@@ -552,10 +530,40 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                                     // Go through all rows again, add children
                                     for (let j = 0; j < results.length; j++) {
                                         if (results[j].id == parentId) {
+                                            // Add accessible nodes
                                             if (results[i].is_accessible == 1) {
                                                 results[j].children.push(
                                                     results[i]
                                                 );
+                                            }
+                                            // For the case of super skills that are not accessible,
+                                            // but have accessible sub skills that should show
+                                            else {
+                                                for (
+                                                    let k = 0;
+                                                    k < results.length;
+                                                    k++
+                                                ) {
+                                                    if (
+                                                        results[k].parent ==
+                                                        results[i].id
+                                                    ) {
+                                                        if (
+                                                            results[k].type ==
+                                                                'sub' &&
+                                                            results[k]
+                                                                .is_accessible ==
+                                                                1
+                                                        ) {
+                                                            results[
+                                                                j
+                                                            ].children.push(
+                                                                results[i]
+                                                            );
+                                                            break;
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -720,30 +728,33 @@ router.get('/subskills/:userId', (req, res, next) => {
 });
 
 /* Nested list of user-skills, filtered by 1 cohort that student is a member of*/
-// For My Vertical Tree.
-router.get('/filter-by-cohort/my-vertical-tree/:userId', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        // Check if student is member of a cohort
-        let isInCohortSQLQuery = `
+// For Custom Learning Track.
+// Only showing skills where 'show children' is true.
+router.get(
+    '/filter-by-cohort/custom-learning-track-skills/:userId',
+    (req, res, next) => {
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+            // Check if student is member of a cohort
+            let isInCohortSQLQuery = `
         SELECT cohort_id 
         FROM skill_tree.cohorts_users
         WHERE user_id = ${conn.escape(req.params.userId)};
         `;
-        conn.query(isInCohortSQLQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
+            conn.query(isInCohortSQLQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
 
-                let cohortId;
-                if (results.length == 0) {
-                    cohortId = -1;
-                } else cohortId = results[0].cohort_id;
+                    let cohortId;
+                    if (results.length == 0) {
+                        cohortId = -1;
+                    } else cohortId = results[0].cohort_id;
 
-                // Check what skills are available for this cohort.
-                let sqlQuery = `
-            SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, show_children
+                    // Check what skills are available for this cohort.
+                    let sqlQuery = `
+            SELECT skills.id, name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, show_children
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id
@@ -774,112 +785,114 @@ router.get('/filter-by-cohort/my-vertical-tree/:userId', (req, res, next) => {
             ORDER BY skillorder, id;
             `;
 
-                conn.query(sqlQuery, (err, results) => {
-                    try {
-                        if (err) {
-                            throw err;
-                        }
-
-                        // Give each object a 'children' element.
-                        for (var i = 0; i < results.length; i++) {
-                            results[i].children = [];
-                        }
-
-                        // Deal with skills that have multiple parents.
-                        // These skills have secret copies in the table.
-                        for (var i = 0; i < results.length; i++) {
-                            if (results[i].display_name != null) {
-                                results[i].skill_name = results[i].display_name;
-
-                                for (var j = 0; j < results.length; j++) {
-                                    if (
-                                        results[i].is_copy_of_skill_id ==
-                                        results[j].id
-                                    ) {
-                                        results[i].is_accessible =
-                                            results[j].is_accessible;
-                                        results[i].is_mastered =
-                                            results[j].is_mastered;
-                                    }
-                                }
+                    conn.query(sqlQuery, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
                             }
-                        }
 
-                        // Assign children to parent skills.
-                        for (var i = 0; i < results.length; i++) {
-                            // Check that not first level nodes.
-                            if (
-                                results[i].parent != null &&
-                                results[i].parent != 0
-                            ) {
-                                var parentId = results[i].parent;
+                            // Give each object a 'children' element.
+                            for (var i = 0; i < results.length; i++) {
+                                results[i].children = [];
+                            }
 
-                                // Go through all rows again, add children
-                                for (let j = 0; j < results.length; j++) {
-                                    if (results[j].id == parentId) {
-                                        // Add a flag to say this node has child skills, so it can be expanded.
-                                        results[j].has_children = true;
-                                        // Here we show or hide the child nodes for the Vertical Tree
-                                        // based on whether the student has collapsed the node or not.
-                                        if (results[j].show_children == 1) {
-                                            results[j].children.push(
-                                                results[i]
-                                            );
+                            // Deal with skills that have multiple parents.
+                            // These skills have secret copies in the table.
+                            for (var i = 0; i < results.length; i++) {
+                                if (results[i].display_name != null) {
+                                    results[i].skill_name =
+                                        results[i].display_name;
+
+                                    for (var j = 0; j < results.length; j++) {
+                                        if (
+                                            results[i].is_copy_of_skill_id ==
+                                            results[j].id
+                                        ) {
+                                            results[i].is_accessible =
+                                                results[j].is_accessible;
+                                            results[i].is_mastered =
+                                                results[j].is_mastered;
                                         }
                                     }
                                 }
                             }
-                        }
 
-                        let studentSkills = [];
-                        for (var i = 0; i < results.length; i++) {
-                            if (
-                                results[i].parent == null ||
-                                results[i].parent == 0
-                            ) {
-                                studentSkills.push(results[i]);
+                            // Assign children to parent skills.
+                            for (var i = 0; i < results.length; i++) {
+                                // Check that not first level nodes.
+                                if (
+                                    results[i].parent != null &&
+                                    results[i].parent != 0
+                                ) {
+                                    var parentId = results[i].parent;
+
+                                    // Go through all rows again, add children
+                                    for (let j = 0; j < results.length; j++) {
+                                        if (results[j].id == parentId) {
+                                            // Add a flag to say this node has child skills, so it can be expanded.
+                                            results[j].has_children = true;
+                                            // Here we show or hide the child nodes for the Vertical Tree
+                                            // based on whether the student has collapsed the node or not.
+                                            if (results[j].show_children == 1) {
+                                                results[j].children.push(
+                                                    results[i]
+                                                );
+                                            }
+                                        }
+                                    }
+                                }
                             }
+
+                            let studentSkills = [];
+                            for (var i = 0; i < results.length; i++) {
+                                if (
+                                    results[i].parent == null ||
+                                    results[i].parent == 0
+                                ) {
+                                    studentSkills.push(results[i]);
+                                }
+                            }
+
+                            // Find the depth of nodes expanded, to determine width of Vertical Tree
+                            // let depth = 0;
+                            // let skillDepth;
+                            // function determineDepth(parentChildren, depth) {
+                            //     depth++;
+                            //     skillDepth = depth;
+                            //     var i = parentChildren.length;
+                            //     while (i--) {
+                            //         if (typeof parentChildren[i] !== 'undefined') {
+                            //             /*
+                            //              * Run the above function again recursively.
+                            //              */
+                            //             if (
+                            //                 parentChildren[i].children &&
+                            //                 Array.isArray(
+                            //                     parentChildren[i].children
+                            //                 ) &&
+                            //                 parentChildren[i].children.length > 0
+                            //             )
+                            //                 determineDepth(
+                            //                     parentChildren[i].children,
+                            //                     depth
+                            //                 );
+                            //         }
+                            //     }
+                            // }
+
+                            // determineDepth(studentSkills, depth);
+                            res.json(studentSkills);
+                        } catch (err) {
+                            next(err);
                         }
-
-                        // Find the depth of nodes expanded, to determine width of Vertical Tree
-                        // let depth = 0;
-                        // let skillDepth;
-                        // function determineDepth(parentChildren, depth) {
-                        //     depth++;
-                        //     skillDepth = depth;
-                        //     var i = parentChildren.length;
-                        //     while (i--) {
-                        //         if (typeof parentChildren[i] !== 'undefined') {
-                        //             /*
-                        //              * Run the above function again recursively.
-                        //              */
-                        //             if (
-                        //                 parentChildren[i].children &&
-                        //                 Array.isArray(
-                        //                     parentChildren[i].children
-                        //                 ) &&
-                        //                 parentChildren[i].children.length > 0
-                        //             )
-                        //                 determineDepth(
-                        //                     parentChildren[i].children,
-                        //                     depth
-                        //                 );
-                        //         }
-                        //     }
-                        // }
-
-                        // determineDepth(studentSkills, depth);
-                        res.json(studentSkills);
-                    } catch (err) {
-                        next(err);
-                    }
-                });
-            } catch (err) {
-                next(err);
-            }
-        });
+                    });
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
     }
-});
+);
 
 /* Nested list of user-skills, filtered by 1 cohort that student is a member of*/
 // For Radial Tree.
@@ -1094,7 +1107,7 @@ router.get(
             let isInCohortSQLQuery = `
         SELECT cohort_id 
         FROM skill_tree.cohorts_users
-        WHERE user_id = ${conn.escape(req.params.userId)};
+        WHERE user_id = ${conn.escape(req.params.studentId)};
         `;
             conn.query(isInCohortSQLQuery, (err, results) => {
                 try {
@@ -1114,7 +1127,7 @@ router.get(
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id
-            WHERE user_skills.user_id = ${conn.escape(req.params.userId)}
+            WHERE user_skills.user_id = ${conn.escape(req.params.studentId)}
             AND is_filtered = 'available' 
             AND is_deleted = 0
             AND level IN (${levelsToShow})
@@ -1134,7 +1147,7 @@ router.get(
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id
-            WHERE user_skills.user_id = ${conn.escape(req.params.userId)}) 
+            WHERE user_skills.user_id = ${conn.escape(req.params.studentId)}) 
             AND is_filtered = 'available' 
             AND is_deleted = 0           
             AND skills.id NOT IN 
@@ -1195,6 +1208,7 @@ router.get(
                                             j++
                                         ) {
                                             if (results[j].id == parentId) {
+                                                // Add accessible nodes
                                                 if (
                                                     results[i].is_accessible ==
                                                     1
@@ -1202,6 +1216,36 @@ router.get(
                                                     results[j].children.push(
                                                         results[i]
                                                     );
+                                                }
+                                                // For the case of super skills that are not accessible,
+                                                // but have accessible sub skills that should show
+                                                else {
+                                                    for (
+                                                        let k = 0;
+                                                        k < results.length;
+                                                        k++
+                                                    ) {
+                                                        if (
+                                                            results[k].parent ==
+                                                            results[i].id
+                                                        ) {
+                                                            if (
+                                                                results[k]
+                                                                    .type ==
+                                                                    'sub' &&
+                                                                results[k]
+                                                                    .is_accessible ==
+                                                                    1
+                                                            ) {
+                                                                results[
+                                                                    j
+                                                                ].children.push(
+                                                                    results[i]
+                                                                );
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
@@ -1313,7 +1357,7 @@ router.get('/inaccessible/:userId/:skillId', (req, res, next) => {
  *
  * @return response()
  */
-// Hide child nodes on the Vertical Skill Tree.
+// Hide child nodes on the Custom Track.
 router.get('/hide-children/:userId/:skillId', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery = `
@@ -1339,7 +1383,7 @@ router.get('/hide-children/:userId/:skillId', (req, res, next) => {
     }
 });
 
-// Show child nodes on the Vertical Skill Tree.
+// Show child nodes on the Custom Track.
 router.get('/show-children/:userId/:skillId', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery = `
@@ -1365,7 +1409,7 @@ router.get('/show-children/:userId/:skillId', (req, res, next) => {
     }
 });
 
-// Expand all child nodes on the Vertical Skill Tree.
+// Expand all child nodes on the Custom Track.
 router.get('/expand-all-children/:userId', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery = `
@@ -1389,7 +1433,7 @@ router.get('/expand-all-children/:userId', (req, res, next) => {
 });
 
 /**
- * this route handle a case when user want to find node that hidden by their parent
+ * this route handles the case when user want to find node that hidden by their parent
  * we find a node in user cohort and their parent until we hit a node that toggle child off.
  *
  * @return response()
@@ -1628,12 +1672,13 @@ router.post('/make-mastered/:userId', (req, res, next) => {
 
                         function makeMastered(userId, skill) {
                             let sqlQuery = `
-                            INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible) 
+                            INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible, is_goal) 
                             VALUES(${conn.escape(req.params.userId)},
                             ${conn.escape(skill.id)},
                             1,
-                            1) 
-                            ON DUPLICATE KEY UPDATE is_mastered= 1, is_accessible=1;
+                            1,
+                            0) 
+                            ON DUPLICATE KEY UPDATE is_mastered= 1, is_accessible=1, is_goal=0;
                             `;
 
                             conn.query(sqlQuery, (err) => {
@@ -1832,6 +1877,183 @@ router.get(
         }
     }
 );
+
+/**
+ * Goals ---------------------------------------
+ */
+
+/**
+ * Student Add Goal
+ */
+router.post('/set-goal/:userId/:skillId', (req, res, next) => {
+    const goalSteps = req.body.goalSteps;
+
+    if (req.session.userName) {
+        let sqlQuery = `
+        INSERT INTO user_skills (user_id, skill_id, is_goal) 
+        VALUES(${conn.escape(req.params.userId)},
+        ${conn.escape(req.params.skillId)}, 1) 
+        ON DUPLICATE KEY UPDATE is_goal=1;
+        `;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    // Record each goal step for the goal, in 'goal_skills' table.
+
+                    for (let i = 0; i < goalSteps.length; i++) {
+                        let sqlQuery = `INSERT INTO goal_skills (user_id, goal_skill_id, skill_id)
+                        VALUES (${conn.escape(
+                            req.params.userId
+                        )}, ${conn.escape(req.params.skillId)}, ${conn.escape(
+                            goalSteps[i].id
+                        )});`;
+
+                        conn.query(sqlQuery, (err) => {
+                            try {
+                                if (err) {
+                                    throw err;
+                                } else {
+                                    if (i == goalSteps.length - 1) {
+                                        res.end();
+                                    }
+                                }
+                            } catch (err) {
+                                next(err);
+                            }
+                        });
+                    }
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Student Remove Goal
+ *
+ */
+router.get('/remove-goal/:userId/:skillId', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `
+        INSERT INTO user_skills (user_id, skill_id, is_goal) 
+        VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
+            req.params.skillId
+        )}, 0) 
+        ON DUPLICATE KEY UPDATE is_goal=0;
+        `;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.redirect('back');
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * List Goals per Student
+ */
+router.get('/goals/:userId/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT skill_id 
+        FROM user_skills
+        WHERE user_id = ${conn.escape(req.params.userId)}
+        AND is_goal = 1;`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
+ * List Goal Steps per Student
+ */
+router.get('/:userId/:skillId/goal-steps/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT skill_id
+        FROM goal_skills
+        WHERE user_id = ${conn.escape(req.params.userId)}
+        AND goal_skill_id = ${conn.escape(req.params.skillId)}
+        ORDER BY id DESC;`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
+ * Delete Item
+ */
+router.delete('/:userId/:skillId', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `
+        INSERT INTO user_skills (user_id, skill_id, is_goal) 
+        VALUES(${conn.escape(req.params.userId)},
+        ${conn.escape(req.params.skillId)}, 0) 
+        ON DUPLICATE KEY UPDATE is_goal=0;
+        `;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                let sqlQuery2 = `DELETE 
+                FROM goal_skills
+                WHERE user_id = ${conn.escape(req.params.userId)}
+                AND goal_skill_id = ${conn.escape(req.params.skillId)};`;
+
+                conn.query(sqlQuery2, (err) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        res.end();
+                    } catch (err) {
+                        next(err);
+                    }
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
 
 router.get('*', (req, res) => {
     res.redirect('/');

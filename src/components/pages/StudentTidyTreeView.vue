@@ -15,6 +15,7 @@ export default {
     data() {
         return {
             studentName: '',
+            studentId: this.$route.params.studentId,
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false,
@@ -22,6 +23,12 @@ export default {
             showTutorialTip3: false,
             showTutorialTip4: false,
             showTutorialTip5: false,
+            showTutorialTip6: false,
+            showTutorialTip7: false,
+            showTutorialTip8: false,
+            showMobileTutorialTip5: false,
+            showMobileTutorialTip6: false,
+            showMobileTutorialTip7: false,
             isGradeFilter: true,
             isSubjectFilter: true,
             gradeFilter: 'phd',
@@ -35,7 +42,9 @@ export default {
                 'Dangerous Ideas'
             ],
             isUnlockedSkillsOnlyFilter: false,
-            showMobileFiltersModal: false
+            showMobileFiltersModal: false,
+            isMobileCheck: window.innerWidth,
+            isSkillsLocked: null
         };
     },
     async created() {
@@ -50,10 +59,12 @@ export default {
         }
         if (this.usersStore.users.length == 0) await this.usersStore.getUsers();
         for (let i = 0; i < this.usersStore.users.length; i++) {
-            if (this.usersStore.users[i].id == this.$route.params.studentId) {
+            if (this.usersStore.users[i].id == this.studentId) {
                 this.studentName = this.usersStore.users[i].username;
             }
         }
+
+        await this.checkIfSkillsLocked();
 
         // Check if tutorial has been seen.
         this.checkIfTutorialComplete();
@@ -62,6 +73,12 @@ export default {
         StudentTidyTree
     },
     methods: {
+        async checkIfSkillsLocked() {
+            const result = await fetch(
+                '/instructor-students/' + this.studentId + '/is-skills-locked'
+            );
+            this.isSkillsLocked = await result.json();
+        },
         // Filters
         updateSubjectFilters(subject) {
             // if all subjects are selected, show only the clicked subject
@@ -119,7 +136,46 @@ export default {
                 this.showTutorialTip2 = true;
             } else if (step == 2) {
                 this.showTutorialTip2 = false;
-                this.markTutorialComplete();
+                this.showTutorialTip3 = true;
+            } else if (step == 3) {
+                this.showTutorialTip3 = false;
+                this.showTutorialTip4 = true;
+            } else if (step == 4) {
+                this.showTutorialTip4 = false;
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip5 = true;
+                } else {
+                    this.showMobileTutorialTip5 = true;
+                }
+            } else if (step == 5) {
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip5 = false;
+                    this.showTutorialTip6 = true;
+                } else {
+                    this.showMobileTutorialTip5 = false;
+                    this.showMobileTutorialTip6 = true;
+                }
+            } else if (step == 6) {
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip6 = false;
+                    this.showTutorialTip7 = true;
+                } else {
+                    this.showMobileTutorialTip6 = false;
+                    this.showMobileTutorialTip7 = true;
+                }
+            } else if (step == 7) {
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip7 = false;
+                    this.showTutorialTip8 = true;
+                } else {
+                    this.showMobileTutorialTip7 = false;
+                    this.markTutorialComplete();
+                }
+            } else if (step == 8) {
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip8 = false;
+                    this.markTutorialComplete();
+                }
             }
         },
         restartTutorial() {
@@ -154,7 +210,7 @@ export default {
                         Filters
                     </button>
                     <button
-                        class="btn primary-btn me-1"
+                        class="btn primary-btn me-1 d-md-block d-none"
                         @click="$refs.childComponent.resetPos()"
                     >
                         Center
@@ -184,37 +240,57 @@ export default {
             <div class="d-flex justify-content-between w-100">
                 <h1 class="heading h2">{{ studentName }}</h1>
                 <div>
-                    <!-- Reset Button -->
-                    <button
-                        class="btn primary-btn me-2"
-                        @click="$refs.childComponent.resetPos()"
-                    >
-                        Center
-                    </button>
-                    <!-- Print Button -->
-                    <button
-                        class="btn primary-btn me-2"
-                        @click="$refs.childComponent.printPDF()"
-                    >
-                        Print
-                    </button>
-                    <!-- Restart Tutorial Button -->
+                    <div>
+                        <!-- Reset Button -->
+                        <button
+                            class="btn primary-btn me-2"
+                            @click="$refs.childComponent.resetPos()"
+                        >
+                            Center
+                        </button>
+                        <!-- Print Button -->
+                        <button
+                            class="btn primary-btn me-2"
+                            @click="$refs.childComponent.printPDF()"
+                        >
+                            Print
+                        </button>
+                        <!-- Restart Tutorial Button -->
+                        <button
+                            class="btn primary-btn"
+                            @click="$refs.childComponent.restartTutorial()"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 192 512"
+                                width="20"
+                                height="20"
+                                fill="white"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                <path
+                                    d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                                />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Tooltips -->
+            <div class="d-flex justify-content-end w-100">
+                <div
+                    v-if="showTutorialTip8"
+                    class="info-panel bg-light rounded p-2 mb-2 mt-2 float-right"
+                >
+                    <p>
+                        Use the center button to center the skill tree,<br />
+                        and the print button to print a PDF.
+                    </p>
                     <button
                         class="btn primary-btn"
-                        @click="$refs.childComponent.restartTutorial()"
+                        @click="progressTutorial(8)"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 192 512"
-                            width="20"
-                            height="20"
-                            fill="white"
-                        >
-                            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
-                            />
-                        </svg>
+                        close
                     </button>
                 </div>
             </div>
@@ -240,11 +316,11 @@ export default {
     <div class="tablet-and-up-legend position-absolute bottom-legend-div">
         <!-- Tooltip -->
         <div
-            v-if="showTutorialTip3"
+            v-if="showTutorialTip5"
             class="info-panel bg-light rounded p-2 mb-2"
         >
             <p>Use the buttons below to filter the skills by level.</p>
-            <button class="btn primary-btn" @click="progressTutorial(3)">
+            <button class="btn primary-btn" @click="progressTutorial(5)">
                 next
             </button>
         </div>
@@ -552,16 +628,19 @@ export default {
             </button>
         </div>
         <!-- Tooltip -->
-        <div v-if="showTutorialTip4" class="info-panel bg-light rounded p-2">
+        <div v-if="showTutorialTip6" class="info-panel bg-light rounded p-2">
             Use the buttons on the left to filter the skills by subject.<br />
-            <button class="btn primary-btn" @click="progressTutorial(4)">
+            <button class="btn primary-btn" @click="progressTutorial(6)">
                 next
             </button>
         </div>
     </div>
 
     <!-- Filter for showing only unlocked skills in bottom left corner -->
-    <div class="unlocked-filter d-flex flex-column-reverse">
+    <div
+        v-if="userDetailsStore.isSkillsLocked == 1"
+        class="unlocked-filter d-flex flex-column-reverse"
+    >
         <button
             class="btn primary-btn"
             @click="
@@ -579,11 +658,11 @@ export default {
         </button>
 
         <div
-            v-if="showTutorialTip5"
+            v-if="showTutorialTip7"
             class="info-panel bg-light rounded p-2 mb-2"
         >
             <p>Use this button to toggle between unlocked and locked skills.</p>
-            <button class="btn primary-btn" @click="progressTutorial(5)">
+            <button class="btn primary-btn" @click="progressTutorial(7)">
                 next
             </button>
         </div>
@@ -840,7 +919,18 @@ export default {
     </div>
 
     <!-- Tooltip modal -->
-    <div v-if="showTutorialTip1 || showTutorialTip2" class="modal">
+    <div
+        v-if="
+            showTutorialTip1 ||
+            showTutorialTip2 ||
+            showTutorialTip3 ||
+            showTutorialTip4 ||
+            showMobileTutorialTip5 ||
+            showMobileTutorialTip6 ||
+            showMobileTutorialTip7
+        "
+        class="modal"
+    >
         <div class="modal-content">
             <div v-if="showTutorialTip1">
                 <p>This is your student's skill tree.</p>
@@ -853,6 +943,58 @@ export default {
                     You can get a bird's eye view of their progress from here.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(2)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showTutorialTip3">
+                <strong>Navigation</strong>
+                <p>
+                    If you know how to use Google Maps, you should know how to
+                    navigate here.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(3)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showTutorialTip4">
+                <p>On a computer, use the mouse to navigate around.</p>
+                <p>
+                    Zoom in and out using the mousewheel, or by pressing the
+                    <em>PageUp</em> and <em>PageDown</em> keys.
+                </p>
+                <p>
+                    On a tablet or phone, navigate by dragging the screen. Zoom
+                    in and out by pinching and zooming.
+                </p>
+                <p>
+                    For computers and tablets, there are also zoom buttons at
+                    the bottom right.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(4)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showMobileTutorialTip5">
+                <p>
+                    The filter button will show ways to filter the skill tree by
+                    both subjects and levels.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(5)">
+                    next
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip6">
+                <p>The center button will recenter the tree</p>
+                <button class="btn primary-btn" @click="progressTutorial(6)">
+                    next
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip7">
+                <p>
+                    Use the lock button below on the lower left side of the
+                    screen to toggle between unlocked and locked skills.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(7)">
                     close
                 </button>
             </div>
@@ -952,7 +1094,7 @@ export default {
 .legend-div {
     width: 100%;
     z-index: 2;
-    top: 70px;
+    top: 80px;
 }
 
 .bottom-legend-div {
@@ -1137,5 +1279,14 @@ export default {
 }
 .unlocked-filter button {
     border: 1px solid black;
+}
+
+/* Tutorials */
+/* Tooltips */
+.info-panel {
+    border-color: var(--primary-color);
+    border-width: 2px;
+    border-style: solid;
+    width: fit-content;
 }
 </style>

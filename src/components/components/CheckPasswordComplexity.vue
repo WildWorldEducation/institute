@@ -28,7 +28,7 @@ export default {
         body.addEventListener(
             'click',
             () => {
-                if(this.$parent.validate.passwordComplex){
+                if (this.$parent.validate.passwordComplex) {
                     this.showCriteria = false;
                 }
             },
@@ -128,17 +128,18 @@ export default {
                 if (newVal.password) {
                     if (
                         newVal.password.length > 0 &&
-                        newVal.password != oldVal.password
+                        newVal.password !== oldVal.password
                     ) {
                         this.showCriteria = true;
                         const passwordStrengthScore = this.checkStrength(
                             newVal.password
                         );
                         this.strengthScore = passwordStrengthScore;
-                        // Determine complex power base on password score
+
                         switch (passwordStrengthScore) {
                             case 0:
                                 this.strength = 'very weak';
+                                break;
                             case 1:
                                 this.strength = 'weak';
                                 break;
@@ -156,16 +157,11 @@ export default {
                                 break;
                         }
 
-                        // We only accept password with power 4 or greater
-                        if (passwordStrengthScore >= 4) {
-                            this.$parent.validate.passwordComplex = true;
-                        } else {
-                            this.$parent.validate.passwordComplex = false;
-                        }
+                        this.$parent.validate.passwordComplex =
+                            passwordStrengthScore >= 4;
 
-                        // Check predictable password
-
-                        if (
+                        // Predictability check
+                        const isPredictable =
                             (newVal.username &&
                                 newVal.password
                                     .toLowerCase()
@@ -183,26 +179,27 @@ export default {
                             (newVal.lastName &&
                                 newVal.password
                                     .toLowerCase()
-                                    .includes(newVal.lastName.toLowerCase()))
-                        ) {
+                                    .includes(newVal.lastName.toLowerCase()));
+
+                        if (isPredictable) {
                             this.criteriaFlag.predictable = true;
-                            // if the password is predictable it strength return to 0
                             this.strengthScore = 0;
                             this.strength = 'weak';
                             this.$parent.validate.passwordComplex = false;
                         } else {
                             this.criteriaFlag.predictable = false;
                         }
-                    } else {
-                        if(this.$parent.validate.passwordComplex){
+
+                        // Hide the hint if all criteria are met
+                        const allCriteriaMet = Object.values(
+                            this.criteriaFlag
+                        ).every((flag) => !flag);
+                        if (allCriteriaMet) {
                             this.showCriteria = false;
                         }
                     }
-                } else {
-                    //this.showCriteria = false;
                 }
-            },
-            deep: true
+            }
         }
     }
 };

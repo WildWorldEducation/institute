@@ -1,6 +1,6 @@
 <script>
 // Joystick library.
-import nipplejs from 'nipplejs';
+// import nipplejs from 'nipplejs';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 export default {
     setup() {
@@ -31,15 +31,15 @@ export default {
     },
     computed: {},
     async mounted() {
-        let joystickColor = '#184e80';
+        let joystickColor = '#184e80';  
         switch (this.userDetailsStore.theme) {
             case 'original':
                 joystickColor = '#184e80';
                 break;
-            case 'apprentice':
+            case 'instructor':
                 joystickColor = '#000000';
                 break;
-            case 'scholar':
+            case 'editor':
                 joystickColor = '#ffffff';
                 break;
             default:
@@ -49,13 +49,13 @@ export default {
         // store initial scale
         this.oldScale = this.$parent.scale;
         // Panning, using NippleJS.
-        var panJoystick = nipplejs.create({
-            zone: document.getElementById('panJoystick'),
-            mode: 'static',
-            dynamicPage: true,
-            position: { right: '70%', bottom: '33%' },
-            color: joystickColor
-        });
+        // var panJoystick = nipplejs.create({
+        //     zone: document.getElementById('panJoystick'),
+        //     mode: 'static',
+        //     dynamicPage: true,
+        //     position: { right: '70%', bottom: '33%' },
+        //     color: joystickColor
+        // });
 
         // we calculate the interval time with fps
         const intervalTime = Math.floor(1000 / this.fps) + 1;
@@ -252,15 +252,15 @@ export default {
                         // We also add page up and page down to zoom in and out
                         case 'Equal':
                             this.interval = setInterval(() => {
-                                if(this.$parent.scale < 2){
-                                    this.scaleTree(0.03)
+                                if (this.$parent.scale < 2) {
+                                    this.scaleTree(0.03);
                                 }
                             }, 50);
                             break;
                         case 'Minus':
                             this.interval = setInterval(() => {
-                                if(this.$parent.scale > 0.3){
-                                    this.scaleTree(-0.03)
+                                if (this.$parent.scale > 0.3) {
+                                    this.scaleTree(-0.03);
                                 }
                             }, 50);
                             break;
@@ -355,18 +355,22 @@ export default {
     },
     watch: {},
     methods: {
-        scaleTree(step){
-            const canvaCenterX = this.$parent.context.canvas.width / 2
-            const canvaCenterY = this.$parent.context.canvas.height / 2
-            const newScale = this.$parent.scale + step
+        scaleTree(step) {
+            const canvaCenterX = this.$parent.context.canvas.width / 2;
+            const canvaCenterY = this.$parent.context.canvas.height / 2;
+            const newScale = this.$parent.scale + step;
 
             // calculate the proportion of new scale and ole scale
             const scaleProportion = newScale / this.$parent.scale;
-            
+
             // Calculate the appropriate panning after scaling to maintain the canvas center
-            let panX = canvaCenterX + ((this.$parent.panX - canvaCenterX)*scaleProportion)
-            let panY = canvaCenterY + ((this.$parent.panY - canvaCenterY)*scaleProportion)
-            
+            let panX =
+                canvaCenterX +
+                (this.$parent.panX - canvaCenterX) * scaleProportion;
+            let panY =
+                canvaCenterY +
+                (this.$parent.panY - canvaCenterY) * scaleProportion;
+
             this.$parent.scale = newScale;
             // store new scale value
             this.oldScale = newScale;
@@ -377,6 +381,8 @@ export default {
 </script>
 
 <template>
+    <!-- Note: the thumbstick is no longer used.
+    We still use component for navigation though -->
     <div id="controlsWrapper">
         <div id="panJoystick"></div>
     </div>

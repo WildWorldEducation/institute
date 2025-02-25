@@ -466,9 +466,9 @@ export default {
                 // Determine colour of links based on user's theme
                 if (this.userDetailsStore.theme == 'original') {
                     color = '#000';
-                } else if (this.userDetailsStore.theme == 'apprentice') {
+                } else if (this.userDetailsStore.theme == 'instructor') {
                     color = '#000';
-                } else if (this.userDetailsStore.theme == 'scholar') {
+                } else if (this.userDetailsStore.theme == 'editor') {
                     color = '#fff';
                 }
             }
@@ -1054,15 +1054,13 @@ canvas {
     }
 }
 
-@media screen and (min-width: 992px) {
-    /* Loading animation */
-    .loading-animation {
-        min-height: 100%;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        -webkit-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
-    }
+/* Loading animation */
+.loading-animation {
+    min-height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 }
 </style>

@@ -243,8 +243,11 @@ export default {
             this.hiddenCanvasContext.restore();
         },
         drawNode(node) {
+            // Make sure the nodes have solid outlines
+            this.context.setLineDash([]);
+
             let ctx1 = this.context;
-            let ctx2 = this.hiddenCanvasContext;
+            //   let ctx2 = this.hiddenCanvasContext;
 
             // Visible context.
             // If not a domain, make node a circle.
@@ -328,26 +331,26 @@ export default {
             }
 
             // Hidden context.
-            if (node.data.type != 'domain') {
-                ctx2.beginPath();
-                ctx2.moveTo(node.y, node.x);
-                ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
-                ctx2.fill();
-            } else {
-                ctx2.beginPath();
-                ctx2.moveTo(node.y, node.x - 10);
-                // top left edge.
-                ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
-                // bottom left edge.
-                ctx2.lineTo(node.y, node.x - 10 + 20);
-                // bottom right edge.
-                ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
-                // closing the path automatically creates the top right edge.
-                ctx2.closePath();
-                ctx2.lineWidth = 2;
-                ctx2.fill();
-                ctx2.stroke();
-            }
+            // if (node.data.type != 'domain') {
+            //     ctx2.beginPath();
+            //     ctx2.moveTo(node.y, node.x);
+            //     ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+            //     ctx2.fill();
+            // } else {
+            //     ctx2.beginPath();
+            //     ctx2.moveTo(node.y, node.x - 10);
+            //     // top left edge.
+            //     ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
+            //     // bottom left edge.
+            //     ctx2.lineTo(node.y, node.x - 10 + 20);
+            //     // bottom right edge.
+            //     ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
+            //     // closing the path automatically creates the top right edge.
+            //     ctx2.closePath();
+            //     ctx2.lineWidth = 2;
+            //     ctx2.fill();
+            //     ctx2.stroke();
+            // }
         },
         drawLink(link) {
             const linkGenerator = d3
@@ -365,7 +368,7 @@ export default {
                 // Determine colour of links based on user's theme
                 if (this.userDetailsStore.theme == 'original')
                     this.context.strokeStyle = '#000';
-                else if (this.userDetailsStore.theme == 'apprentice') {
+                else if (this.userDetailsStore.theme == 'instructor') {
                     this.context.strokeStyle = '#000';
                 } else this.context.strokeStyle = '#fff';
             }
@@ -706,12 +709,39 @@ export default {
                 subjectFilters,
                 isUnlockedSkillsOnlyFilter
             );
+        },
+        async findHiddenSkill(searchString) {
+            // if we cant find the node it mean the node is hide in children
+            var url =
+                '/user-skills/find-hidden-skill/' +
+                this.userDetailsStore.userId;
+
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    skillName: searchString
+                })
+            });
+            const data = await res.json();
+            if (data?.mess === 'ok') {
+                await this.reloadTree();
+
+                try {
+                    const resultNode = this.findNodeWithName(searchString);
+                    this.goToLocation(resultNode);
+                } catch (error) {
+                    // Skill get filter by user instead of being hidden
+                    // Handle filtered case
+                    this.removeFilterForHiddenSkill(searchString);
+                }
+            }
         }
     }
 };
 </script>
 
-<template>   
+<template>
     <!-- Loading animation -->
     <div
         v-if="isLoading == true"
@@ -922,16 +952,13 @@ input[type='button'] {
         flex-direction: column;
     }
 }
-
-@media screen and (min-width: 992px) {
-    /* Loading animation */
-    .loading-animation {
-        min-height: 100%;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        -webkit-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
-    }
+/* Loading animation */
+.loading-animation {
+    min-height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 }
 </style>

@@ -18,10 +18,23 @@ export default {
     },
     data() {
         return {
-            showModal: false
+            showModal: false,
+            localIsSkillsLocked: null
         };
     },
-    methods: {}
+    created() {
+        this.localIsSkillsLocked = this.isSkillsLocked;
+    },
+    computed: {
+        studentName() {
+            return `${this.$parent.user.firstName || ''}`.trim();
+        }
+    },
+    methods: {
+        updateSkillsLock() {
+            this.$parent.updateSkillsLock();
+        }
+    }
 };
 </script>
 
@@ -124,7 +137,11 @@ export default {
                         class="btn primary-btn mt-2"
                         target="_blank"
                     >
-                        Skill tree
+                        {{
+                            studentName
+                                ? `${studentName}'s Skill Tree`
+                                : 'Skill Tree'
+                        }}
                     </router-link>
                     <!-- Collapsible skill tree -->
                     <router-link
@@ -132,7 +149,11 @@ export default {
                         class="btn primary-btn mt-2"
                         target="_blank"
                     >
-                        Collapsible tree
+                        {{
+                            studentName
+                                ? `${studentName}'s Collapsible Tree`
+                                : 'Collapsible Tree'
+                        }}
                     </router-link>
                     <!-- Goals -->
                     <router-link
@@ -140,8 +161,31 @@ export default {
                         class="btn primary-btn mt-2"
                         target="_blank"
                     >
-                        Goals
+                        {{ studentName ? `${studentName}'s Goals` : 'Goals' }}
                     </router-link>
+                    <div class="mt-4">
+                        <h3
+                            v-if="this.userDetailsStore.role == 'instructor'"
+                            class="secondary-heading h6"
+                        >
+                            Lock skill progress?
+                        </h3>
+                        <input
+                            type="radio"
+                            value="0"
+                            v-model="$parent.user.isSkillsLocked"
+                            @change="updateSkillsLock()"
+                        />
+                        <label for="one">No</label>
+                        &nbsp;
+                        <input
+                            type="radio"
+                            value="1"
+                            v-model="$parent.user.isSkillsLocked"
+                            @change="updateSkillsLock()"
+                        />
+                        <label for="two">Yes</label>
+                    </div>
                 </div>
                 <!-- Editors -->
                 <div class="mt-2">
@@ -261,10 +305,6 @@ export default {
     border-radius: 12px;
     padding: 33px 28px;
     overflow: hidden;
-}
-
-#user-information label {
-    font-weight: 600;
 }
 
 .user-input-information {

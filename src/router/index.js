@@ -16,10 +16,11 @@ const router = createRouter({
             meta: { preventZoom: true, title: 'Skill tree' }
         },
         {
-            path: '/my-skill-tree',
-            name: 'my-skill-tree',
-            component: () => import('../components/pages/MyTidyTreeView.vue'),
-            meta: { preventZoom: true, title: 'My skill tree' }
+            path: '/learning-tracks',
+            name: 'learning-tracks',
+            component: () =>
+                import('../components/pages/LearningTracksView.vue'),
+            meta: { preventZoom: true, title: 'Learning Tracks' }
         },
         {
             path: '/student/:studentId/skill-tree',
@@ -35,14 +36,18 @@ const router = createRouter({
         {
             path: '/',
             name: 'hub',
-            component: () => import('../components/pages/HubView.vue')
+            component: () => import('../components/pages/HubView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['student', 'admin']
+            }
         },
-        {
-            path: '/radial-tree',
-            name: 'radial-tree',
-            component: () => import('../components/pages/RadialTreeView.vue'),
-            meta: { preventZoom: true, title: 'Radial skill tree' }
-        },
+        // {
+        //     path: '/radial-tree',
+        //     name: 'radial-tree',
+        //     component: () => import('../components/pages/RadialTreeView.vue'),
+        //     meta: { preventZoom: true, title: 'Radial skill tree' }
+        // },
         {
             path: '/login',
             name: 'login',
@@ -106,6 +111,15 @@ const router = createRouter({
             name: 'skill-revision',
             component: () =>
                 import('../components/pages/ShowSkillRevisionView.vue')
+        },
+        // Learning Objectives
+        {
+            path: '/skills/:skillUrl/learning-objectives',
+            name: 'list-learning-objectives',
+            component: () =>
+                import(
+                    '../components/pages/learning-objectives/ListLearningObjectivesView.vue'
+                )
         },
         {
             path: '/skills/:id/question-bank/add',
@@ -200,7 +214,36 @@ const router = createRouter({
             component: () => import('../components/pages/UsersView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['instructor', 'admin', 'editor']
+                roles: ['admin', 'editor']
+            }
+        },
+        {
+            path: '/students',
+            name: 'students',
+            component: () => import('../components/pages/UsersView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['instructor', 'admin']
+            }
+        },
+        {
+            path: '/student-questions',
+            name: 'student-questions',
+            component: () =>
+                import('../components/pages/StudentQuestionListView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['instructor', 'admin']
+            }
+        },
+        {
+            path: '/student-assessments',
+            name: 'student-assessments',
+            component: () =>
+                import('../components/pages/MarkAssessmentView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['instructor', 'admin']
             }
         },
         {
@@ -236,10 +279,36 @@ const router = createRouter({
             meta: { requiresAuth: true, roles: ['editor', 'admin'] }
         },
         {
-            path: '/profile-settings',
-            name: 'profile-settings',
+            path: '/profile',
+            name: 'profile',
             component: () =>
-                import('../components/pages/ProfileSettingsView.vue')
+                import(
+                    '../components/pages/dropdown-menu-pages/ProfileView.vue'
+                )
+        },
+        {
+            path: '/settings',
+            name: 'settings',
+            component: () =>
+                import(
+                    '../components/pages/dropdown-menu-pages/SettingsView.vue'
+                )
+        },
+        {
+            path: '/news-and-notifications',
+            name: 'news-and-notifications',
+            component: () =>
+                import(
+                    '../components/pages/dropdown-menu-pages/NewsAndNotificationsView.vue'
+                )
+        },
+        {
+            path: '/reputation',
+            name: 'reputation',
+            component: () =>
+                import(
+                    '../components/pages/dropdown-menu-pages/ReputationView.vue'
+                )
         },
         {
             path: '/profile/edit',
@@ -286,7 +355,7 @@ const router = createRouter({
         },
         {
             path: '/todo',
-            name: 'todo-list',
+            name: 'todo',
             component: () => import('../components/pages/TodoListView.vue'),
             meta: { requiresAuth: true, roles: ['admin', 'editor'] }
         },
@@ -342,7 +411,7 @@ const router = createRouter({
                 )
         },
         {
-            path: '/goals/:goalId',
+            path: '/goals/:userId/:skillId',
             name: 'goal',
             component: () => import('../components/pages/goals/GoalView.vue')
         },
@@ -411,17 +480,17 @@ router.beforeEach(async (to, from, next) => {
         from.name == 'student-signup' ||
         from.name == 'editor-signup'
     ) {
-        // Kids theme
-        if (userDetailsStore.theme == 'apprentice') {
-            document.body.classList.remove('scholar-theme');
-            document.body.classList.add('apprentice-theme');
-        } else if (userDetailsStore.theme == 'scholar') {
-            document.body.classList.add('scholar-theme');
-            document.body.classList.remove('apprentice-theme');
+        // Instructor theme
+        if (userDetailsStore.theme == 'instructor') {
+            document.body.classList.remove('editor-theme');
+            document.body.classList.add('instructor-theme');
+        } else if (userDetailsStore.theme == 'editor') {
+            document.body.classList.add('editor-theme');
+            document.body.classList.remove('instructor-theme');
             // Original theme.
         } else {
-            document.body.classList.remove('scholar-theme');
-            document.body.classList.remove('apprentice-theme');
+            document.body.classList.remove('editor-theme');
+            document.body.classList.remove('instructor-theme');
         }
     }
 
@@ -434,9 +503,15 @@ router.beforeEach(async (to, from, next) => {
             (item) => item.id == to.params.id
         );
 
-        if (currentSkill.is_accessible != 1 || currentSkill.is_mastered == 1) {
-            next({ path: '/skills/' + to.params.id });
-            return;
+        // Only block them if their instructor enforced locking.
+        if (userDetailsStore.isSkillsLocked == 1) {
+            if (
+                currentSkill.is_accessible != 1 ||
+                currentSkill.is_mastered == 1
+            ) {
+                next({ path: '/skills' });
+                return;
+            }
         }
     }
 
@@ -482,7 +557,14 @@ router.beforeEach(async (to, from, next) => {
             if (to.meta.roles.includes(userRole)) {
                 next();
             } else {
-                next({ name: 'hub' }); // Redirect to Home if user doesn't have the required role
+                if (userDetailsStore.role == 'student') {
+                    next({ name: 'hub' });
+                } // Redirect to Home if user doesn't have the required role
+                else if (userDetailsStore.role == 'instructor') {
+                    next({ name: 'users' });
+                } else if (userDetailsStore.role == 'editor') {
+                    next({ name: 'todo' });
+                }
             }
         } else {
             next(); // Proceed if only authentication is required and user is authenticated
@@ -494,7 +576,7 @@ router.beforeEach(async (to, from, next) => {
     // To remove the vertical scroll bar.
     if (
         to.name == 'skill-tree' ||
-        to.name == 'my-skill-tree' ||
+        to.name == 'learning-tracks' ||
         to.name == 'radial-tree' ||
         to.name == 'skills' ||
         to.name == 'student-skills' ||

@@ -18,7 +18,7 @@ export default {
         return {
             studentId: this.$route.params.studentId,
             studentName: '',
-            goals: [],
+            userSkills: [],
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false
@@ -43,49 +43,59 @@ export default {
     },
     methods: {
         async getGoals() {
-            const result = await fetch('/goals/' + this.studentId + '/list');
-            this.goals = await result.json();
-            for (let i = 0; i < this.goals.length; i++) {
-                await this.getGoalSteps(this.goals[i]);
+            const result = await fetch(
+                '/user-skills/goals/' + this.studentId + '/list'
+            );
+            this.userSkills = await result.json();
+            for (let i = 0; i < this.userSkills.length; i++) {
+                await this.getGoalSteps(this.userSkills[i]);
             }
             this.prepareGoals();
         },
-        async getGoalSteps(goal) {
+        async getGoalSteps(userSkill) {
             const result = await fetch(
-                '/goals/' + goal.id + '/goal-steps/list'
+                '/user-skills/' +
+                    this.studentId +
+                    '/' +
+                    userSkill.skill_id +
+                    '/goal-steps/list'
             );
-            goal.steps = await result.json();
+            userSkill.goalSteps = await result.json();
         },
         prepareGoals() {
-            for (let i = 0; i < this.goals.length; i++) {
+            for (let i = 0; i < this.userSkills.length; i++) {
                 let skillObj = this.userSkillsStore.filteredUnnestedList.find(
-                    (skill) => skill.id === this.goals[i].skill_id
+                    (skill) => skill.id === this.userSkills[i].skill_id
                 );
-                this.goals[i].name = skillObj.name;
-                this.goals[i].level = skillObj.level;
-                this.goals[i].showSteps = false;
+                this.userSkills[i].name = skillObj.name;
+                this.userSkills[i].level = skillObj.level;
+                this.userSkills[i].showSteps = false;
 
-                for (let j = 0; j < this.goals[i].steps.length; j++) {
+                for (let j = 0; j < this.userSkills[i].goalSteps.length; j++) {
                     let userSkillObj =
                         this.userSkillsStore.filteredUnnestedList.find(
                             (skill) =>
-                                skill.id == this.goals[i].steps[j].skill_id
+                                skill.id ==
+                                this.userSkills[i].goalSteps[j].skill_id
                         );
 
-                    this.goals[i].steps[j].name = userSkillObj.name;
-                    this.goals[i].steps[j].level = userSkillObj.level;
-                    this.goals[i].steps[j].url = userSkillObj.url;
-                    this.goals[i].steps[j].isMastered =
+                    this.userSkills[i].goalSteps[j].name = userSkillObj.name;
+                    this.userSkills[i].goalSteps[j].level = userSkillObj.level;
+                    this.userSkills[i].goalSteps[j].url = userSkillObj.url;
+                    this.userSkills[i].goalSteps[j].isMastered =
                         userSkillObj.is_mastered;
                 }
             }
         },
-        async deleteGoal(goalId) {
+        async deleteGoal(skillId) {
             let text = 'Are you sure you want to delete this goal?';
             if (confirm(text) == true) {
-                const result = await fetch('/goals/' + goalId, {
-                    method: 'DELETE'
-                });
+                const result = await fetch(
+                    '/user-skills/' + this.studentId + '/' + skillId,
+                    {
+                        method: 'DELETE'
+                    }
+                );
 
                 if (result.error) {
                     console.log(result.error);
@@ -155,18 +165,18 @@ export default {
 
         <h2 class="secondary-heading">Goal Progress</h2>
         <div id="goal-list">
-            <div v-for="goal in goals">
+            <div v-for="userSkill in userSkills">
                 <div class="d-flex">
                     <h2 class="goal h4">
-                        {{ goal.name }}
+                        {{ userSkill.name }}
                         <!-- Expand/Collapse button -->
                         <button
                             class="btn"
-                            @click="goal.showSteps = !goal.showSteps"
+                            @click="userSkill.showSteps = !userSkill.showSteps"
                         >
                             <!-- Plus sign -->
                             <svg
-                                v-if="!goal.showSteps"
+                                v-if="!userSkill.showSteps"
                                 width="18"
                                 height="18"
                                 class="primary-icon"
@@ -194,7 +204,10 @@ export default {
                             </svg>
                         </button>
                         <!-- Delete button -->
-                        <button class="btn" @click="deleteGoal(goal.id)">
+                        <button
+                            class="btn"
+                            @click="deleteGoal(userSkill.skill_id)"
+                        >
                             <!-- Trash sign -->
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -211,8 +224,8 @@ export default {
                         </button>
                     </h2>
                 </div>
-                <ul v-if="goal.showSteps">
-                    <li v-for="step in goal.steps">
+                <ul v-if="userSkill.showSteps">
+                    <li v-for="step in userSkill.goalSteps">
                         <svg
                             v-if="step.isMastered != 1"
                             xmlns="http://www.w3.org/2000/svg"

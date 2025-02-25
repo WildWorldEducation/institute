@@ -20,6 +20,7 @@ const skillInfoboxImageThumbnailsBucketName =
     process.env.S3_SKILL_INFOBOX_IMAGE_THUMBNAILS_BUCKET_NAME;
 const userAvatarImageThumbnailsBucketName =
     process.env.S3_USER_AVATAR_IMAGE_THUMBNAILS_BUCKET_NAME;
+const skillIconBucketName = process.env.S3_SKILL_ICON_BUCKET_NAME;
 const bucketRegion = process.env.S3_BUCKET_REGION;
 const accessKeyId = process.env.S3_ACCESS_KEY_ID;
 const accessSecretKey = process.env.S3_SECRET_ACCESS_KEY;
@@ -43,11 +44,18 @@ const checkRoleHierarchy = require('../middlewares/roleMiddleware');
 const { recordUserAction } = require('../utilities/record-user-action');
 
 // Helper Function
-const { saveIconToAWS } = require('../utilities/save-image-to-aws');
+const {
+    saveImageToAWS,
+    saveIconToAWS,
+    scaleIcon,
+    updateImage
+} = require('../utilities/save-image-to-aws');
 const {
     getVectorData,
     insertSkillsVectorIntoDataBase
 } = require('../utilities/vectorization-skill');
+
+const { getImageBase64Data } = require('../utilities/getAWSskillsIcon');
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -55,7 +63,6 @@ Routes
 --------------------------------------------*/
 /**
  * Create New Item
- *
  */
 router.post(
     '/add',
@@ -326,8 +333,6 @@ router.post(
 
 /**
  * Get All Items
- *
- * @return response()
  */
 // Used for choosing parent skill when adding a new skill.
 router.get('/list', (req, res, next) => {
@@ -496,9 +501,7 @@ router.get('/guest-mode/full-vertical-tree', (req, res, next) => {
 // Filtered Nested List - for "Instructor" and "Editor" roles - Collapsable Tree.
 router.get('/filtered-nested-list', (req, res, next) => {
     if (req.session.userName) {
-        /*
-         * Apply grade level filters
-         */
+        //Apply grade level filters
         // Level will be sent in query param (eg: ?level='middle_school')
         const level = req.query.level;
 
@@ -577,8 +580,6 @@ router.get('/filtered-nested-list', (req, res, next) => {
 
 /**
  * Get Single Item
- *
- * @return response()
  */
 router.get('/show/:id', (req, res, next) => {
     let skill;
@@ -635,9 +636,8 @@ router.get('/url/:skillUrl', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     // Get skill.
-    const sqlQuery = `SELECT 
-                        s.*,
-                        parent_skill.type AS parent_type
+    const sqlQuery = `SELECT s.id, s.name, s.url, s.parent, s.introduction, s.type, s.level, s.image_url, s.image_thumbnail_url, s.icon_url, s.icon, s.mastery_requirements,
+                        s.version_number, s.order, parent_skill.type AS parent_type
                     FROM 
                         skills AS s
                     LEFT JOIN 
@@ -764,7 +764,7 @@ router.get('/last-visited', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         //Get last visited.
         let sqlQuery = `
-            SELECT skills.id, name, skills.url, level
+            SELECT skills.id, name, skills.url, level, icon
             FROM user_visited_skills
             INNER JOIN skills 
             ON skills.id = user_visited_skills.skill_id
@@ -789,8 +789,6 @@ router.get('/last-visited', (req, res, next) => {
 
 /**
  * Edit Skill
- *
- * @return response()
  */
 router.put(
     '/:id/edit',
@@ -801,32 +799,61 @@ router.put(
             // Add new record to the skills_versions table.
             let versionNumber = req.body.version_number + 1;
             let url = req.body.url;
-
             const uuidDate = Date.now();
-            // Save edit icon to AWS
-            const iconUrl = await saveIconToAWS(
-                req.body.icon_image,
-                url,
-                uuidDate
-            );
+            let iconUrl = req.body.icon_url;
+            let scaledDownIcon = req.body.icon;
+            let imageUrl = '';
+            let imageThumbnailUrl = '';
+
+            // Save image to AWS if it has been updated.
+            if (req.body.isImageUpdated) {
+                let imageName = await saveImageToAWS(
+                    req.body.image,
+                    url,
+                    uuidDate
+                );
+                imageUrl = `https://${skillInfoboxImagesBucketName}.s3.amazonaws.com/${imageName}`;
+                imageThumbnailUrl = `https://${skillInfoboxImageThumbnailsBucketName}.s3.amazonaws.com/${imageName}`;
+            } else {
+                imageUrl = req.body.image;
+                imageThumbnailUrl = req.body.imageThumbnail;
+            }
+
+            // Save icon to AWS if it has been updated
+            if (req.body.isIconUpdated) {
+                iconUrl = await saveIconToAWS(iconUrl, url, uuidDate);
+                iconUrl = `https://${skillIconBucketName}.s3.amazonaws.com/${iconUrl}`;
+
+                // Scale down icon to much smaller, as it must be saved in DB
+                // this is the version used for the skill tree in the canvas.
+                const scaleDownData = req.body.icon.split(';base64,').pop();
+                const imgBuffer = Buffer.from(scaleDownData, 'base64');
+                scaledDownIcon = await scaleIcon(imgBuffer, 50);
+            } else {
+                iconUrl = req.body.icon_url;
+                scaledDownIcon = req.body.icon;
+            }
 
             let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
-                    (id, version_number, user_id, name, description, icon_image,
-                    mastery_requirements, level, skill_history.order, comment)
+                    (id, version_number, user_id, name, description, icon_image, icon,
+                    mastery_requirements, level, skill_history.order, comment, introduction)
                     VALUES
                     (${conn.escape(req.params.id)},
                     ${conn.escape(versionNumber)},
                     ${conn.escape(req.session.userId)},
                     ${conn.escape(req.body.name)},                    
                     ${conn.escape(req.body.description)},
+                    ${conn.escape(imageUrl)},
                     ${conn.escape(iconUrl)},
                     ${conn.escape(
                         req.body.mastery_requirements
                     )},                    
                     ${conn.escape(req.body.level)},                    
                     ${conn.escape(req.body.order)},
-                    ${conn.escape(req.body.comment)});`;
+                    ${conn.escape(req.body.comment)},
+                    ${conn.escape(req.body.introduction)});`;
+
             conn.query(addVersionHistoryInsertSQLQuery, async (err) => {
                 try {
                     if (err) {
@@ -845,9 +872,16 @@ router.put(
                             req.body.mastery_requirements
                         )}, 
                         type = ${conn.escape(req.body.type)}, 
-                        level = ${conn.escape(req.body.level)}, 
+                        level = ${conn.escape(req.body.level)},
+                        introduction = ${conn.escape(req.body.introduction)},
                         skills.order = ${conn.escape(req.body.order)}, 
-                        version_number = ${conn.escape(versionNumber)}, 
+                        version_number = ${conn.escape(
+                            versionNumber
+                        )},                        
+                        icon = ${conn.escape(scaledDownIcon)},             
+                        image_url = ${conn.escape(imageUrl)},
+                        image_thumbnail_url = ${conn.escape(imageThumbnailUrl)},
+                        icon_url = ${conn.escape(iconUrl)},             
                         edited_date = current_timestamp, 
                         is_human_edited = 1
                         WHERE id = ${conn.escape(req.params.id)};`;
@@ -857,11 +891,6 @@ router.put(
                             if (err) {
                                 throw err;
                             } else {
-                                // Update new Icon to if user changed it
-
-                                // Save edit icon to AWS
-                                await saveIconToAWS(req.body.icon_image, url);
-
                                 // add edit (update) action into user_actions table
                                 const actionData = {
                                     action: 'update',
@@ -897,30 +926,32 @@ router.put(
 
 /**
  * Submit skill edit for review.
- *
- * @return response()
  */
 router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {
         // Add data.
-        let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, mastery_requirements, icon_image, comment)
+        let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, mastery_requirements, image, icon, comment, introduction)
          VALUES (${conn.escape(req.params.id)}, 
          ${conn.escape(req.body.userId)}, 
          ${conn.escape(req.body.mastery_requirements)}, 
-         ${conn.escape(req.body.icon_image)},          
-         ${conn.escape(req.body.comment)})
+         ${conn.escape(req.body.image)},
+         ${conn.escape(req.body.icon)},          
+         ${conn.escape(req.body.comment)},
+         ${conn.escape(req.body.introduction)})
          
          ON DUPLICATE KEY
          UPDATE mastery_requirements = ${conn.escape(
              req.body.mastery_requirements
          )}, 
          date = CURRENT_TIMESTAMP(), 
-         icon_image = ${conn.escape(req.body.icon_image)},          
-         comment = ${conn.escape(req.body.comment)};`;
+         image = ${conn.escape(req.body.image)},          
+         icon = ${conn.escape(req.body.icon)},     
+         comment = ${conn.escape(req.body.comment)},
+         introduction = ${conn.escape(req.body.introduction)}         
+         ;`;
 
         // Update record in skill table.
-
-        conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err) => {
             try {
                 if (err) {
                     throw err;
@@ -952,8 +983,6 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
 
 /**
  * Accept skill submitted for review.
- *
- * @return response()
  */
 router.put(
     '/:id/edit-for-review/save',
@@ -968,7 +997,7 @@ router.put(
                 req.params.id
             )};`;
 
-            conn.query(getPreviousRecordSQLQuery, (err, results) => {
+            conn.query(getPreviousRecordSQLQuery, async (err, results) => {
                 try {
                     if (err) {
                         throw err;
@@ -980,27 +1009,64 @@ router.put(
                     let previousLevel = results[0].level;
                     let previousOrder = results[0].order;
                     let versionNumber = results[0].version_number;
+                    let imageUrl = results[0].image_url;
+                    let imageThumbnailUrl = results[0].image_thumbnail_url;
+                    let iconUrl = results[0].icon_url;
+                    let scaledDownIcon = results[0].icon;
                     let url = results[0].url;
 
                     versionNumber = versionNumber + 1;
 
+                    // Save node icon to AWS
+                    const uuidDate = Date.now();
+
+                    // Save image to AWS if it has been updated.
+                    if (req.body.isImageUpdated) {
+                        let imageName = await saveImageToAWS(
+                            req.body.image,
+                            url,
+                            uuidDate
+                        );
+                        imageUrl = `https://${skillInfoboxImagesBucketName}.s3.amazonaws.com/${imageName}`;
+                        imageThumbnailUrl = `https://${skillInfoboxImageThumbnailsBucketName}.s3.amazonaws.com/${imageName}`;
+                    }
+
+                    // Save icon to AWS if it has been updated
+                    if (req.body.isIconUpdated) {
+                        iconUrl = await saveIconToAWS(
+                            req.body.icon,
+                            url,
+                            uuidDate
+                        );
+                        iconUrl = `https://${skillIconBucketName}.s3.amazonaws.com/${iconUrl}`;
+                        // Scale down icon to much smaller, as it must be saved in DB
+                        // this is the version used for the skill tree in the canvas.
+                        const scaleDownData = req.body.icon
+                            .split(';base64,')
+                            .pop();
+                        const imgBuffer = Buffer.from(scaleDownData, 'base64');
+                        scaledDownIcon = await scaleIcon(imgBuffer, 50);
+                    }
+
                     let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
-                    (id, version_number, user_id, name, description, icon_image,
-                    mastery_requirements, level, skill_history.order, comment)
+                    (id, version_number, user_id, name, description, icon_image, icon,
+                    mastery_requirements, level, skill_history.order, comment, introduction)
                     VALUES
                     (${conn.escape(previousId)},
                     ${conn.escape(versionNumber)},
                     ${conn.escape(req.session.userId)},
                     ${conn.escape(previousName)},                    
                     ${conn.escape(previousDescription)},
-                    ${conn.escape(req.body.icon_image)},                    
+                    ${conn.escape(imageUrl)},
+                    ${conn.escape(iconUrl)},
                     ${conn.escape(
                         req.body.mastery_requirements
                     )},                    
                     ${conn.escape(previousLevel)},                    
                     ${conn.escape(previousOrder)},
-                    ${conn.escape(req.body.comment)});`;
+                    ${conn.escape(req.body.comment)},
+                    ${conn.escape(req.body.introduction)});`;
 
                     conn.query(addVersionHistoryInsertSQLQuery, async (err) => {
                         try {
@@ -1008,67 +1074,25 @@ router.put(
                                 throw err;
                             }
 
-                            /*
-                             * Send icon image to S3
-                             */
-                            if (req.body.icon_image.length > 1) {
-                                // Get file from Base64 encoding (client sends as base64)
-                                let fileData = Buffer.from(
-                                    req.body.icon_image.replace(
-                                        /^data:image\/\w+;base64,/,
-                                        ''
-                                    ),
-                                    'base64'
-                                );
-
-                                let fullSizeData = {
-                                    // The name it will be saved as on S3
-                                    Key: url,
-                                    // The image
-                                    Body: fileData,
-                                    ContentEncoding: 'base64',
-                                    ContentType: 'image/jpeg',
-                                    // The S3 bucket
-                                    Bucket: skillInfoboxImagesBucketName
-                                };
-
-                                // Send to the bucket.
-                                const fullSizeCommand = new PutObjectCommand(
-                                    fullSizeData
-                                );
-                                await s3.send(fullSizeCommand);
-
-                                const thumbnailFileData = await sharp(fileData)
-                                    .resize({ width: 330 })
-                                    .toBuffer();
-
-                                let thumbnailData = {
-                                    // The name it will be saved as on S3
-                                    Key: url,
-                                    // The image
-                                    Body: thumbnailFileData,
-                                    ContentEncoding: 'base64',
-                                    ContentType: 'image/jpeg',
-                                    // The S3 bucket
-                                    Bucket: skillInfoboxImageThumbnailsBucketName
-                                };
-
-                                // Send to the bucket.
-                                const thumbnailCommand = new PutObjectCommand(
-                                    thumbnailData
-                                );
-                                await s3.send(thumbnailCommand);
-                            }
-
                             // Update record in skill table.
                             let updateRecordSQLQuery = `UPDATE skills SET 
                             mastery_requirements = ${conn.escape(
                                 req.body.mastery_requirements
                             )},      
-                            is_human_edited = 1,                                                  
-                            version_number = ${conn.escape(
-                                versionNumber
-                            )}                               
+                            introduction = ${conn.escape(
+                                req.body.introduction
+                            )},
+                            is_human_edited = 1,
+                            icon = ${conn.escape(scaledDownIcon)},             
+                            image_url = ${conn.escape(imageUrl)},
+                            image_thumbnail_url = ${conn.escape(
+                                imageThumbnailUrl
+                            )},    
+                            icon_url = ${conn.escape(
+                                iconUrl
+                            )},                                       
+                            version_number = ${conn.escape(versionNumber)},
+                            edited_date = current_timestamp                               
                             WHERE id = ${conn.escape(req.params.id)};`;
 
                             conn.query(updateRecordSQLQuery, (err) => {
@@ -1105,6 +1129,7 @@ router.put(
                         }
                     });
                 } catch (err) {
+                    console.error(err);
                     next(err);
                 }
             });
@@ -1116,8 +1141,6 @@ router.put(
 
 /**
  * Get all skills submitted for review.
- *
- * @return response()
  */
 // Used for choosing parent skill when adding a new skill.
 router.get('/submitted-for-review/list', (req, res, next) => {
@@ -1453,6 +1476,9 @@ router.post(
     }
 );
 
+/*
+ * Search
+ */
 // For the search feature on the Collapsable Skill Tree.
 router.get('/name-list', (req, res, next) => {
     if (req.session) {
@@ -1700,6 +1726,7 @@ router.get('/name-list-old', (req, res, next) => {
 // Advanced / Semantic Search Feature.
 // Import OpenAI package.
 const { OpenAI } = require('openai');
+const { path } = require('pdfkit');
 // To access the .env file.
 require('dotenv').config();
 // Include API key.
@@ -1707,61 +1734,8 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-// router.get('/skills-vectorization', isAuthenticated, async (req, res, next) => {
-//     try {
-//         const rowData = {
-//             rows: []
-//         }
-//         // get skill name list
-//         let sqlQuery = 'SELECT * FROM skills';
-//         conn.query(sqlQuery, async (err, results) => {
-//             if (err) {
-//                 throw err;
-//             }
-//             const promises = [];
-//             console.log(results.length)
-//             // We use text-embedding-3-small model to make vector data from skill name
-//             for (let index = 0; index < results.length; index++) {
-//                 const element = results[index];
-
-//                 promises.push(getVectorData(element, rowData))
-//             }
-//             res.json(results)
-
-//             Promise.all(promises)
-//                 .then(async () => {
-//                     console.log(rowData)
-//                     const content = JSON.stringify(rowData)
-//                     await fs.writeFile('./vector.json', content);
-//                     res.json('all done check vector.json : ');
-//                 })
-//                 .catch((e) => {
-//                     throw e
-//                 });
-//         })
-//     } catch (err) {
-//         res.status = 500;
-//         console.log(err);
-//         res.json({ mess: 'fails' })
-//     }
-// })
-const vectorList = require('../../vector.json');
-
-router.get('/insert-vectors-to-db', async (req, res) => {
-    try {
-        console.log(vectorList.rows.length);
-        const promises = [];
-        vectorList.rows.forEach((skillVector) => {
-            promises.push(insertSkillsVectorIntoDataBase(skillVector));
-        });
-        Promise.all(promises).then(res.json({ mess: 'seem good' }));
-    } catch (error) {
-        res.status = 500;
-        res.end;
-        console.error(error);
-    }
-});
-
+// Semantic search route, using the vector table
+// For the search bars in the skill tree and collapsible tree.
 router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
     try {
         const response = await openai.embeddings.create({
@@ -1773,10 +1747,9 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
         const inputVector = response.data[0].embedding;
         let sqlQuery = `SELECT *
                     FROM skills_vector
-                    ORDER BY VEC_DISTANCE(skills_vector.embedding,
+                    ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
                           VEC_FromText('[${inputVector}]'))
                     LIMIT 25`;
-        // sql for instructor and editor account
         conn.query(sqlQuery, (err, results) => {
             if (err) {
                 throw err;
@@ -1789,5 +1762,117 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
         res.end;
     }
 });
+
+router.get('/icon-list', (req, res) => {
+    let sqlQuery = 'SELECT skills.url, skills.icon FROM skills';
+    try {
+        conn.query(sqlQuery, (err, result) => {
+            if (err) {
+                err;
+            }
+            res.json(result);
+        });
+    } catch (error) {
+        console.error();
+    }
+});
+
+// ======================================================================================
+router.get('/url-list', async (req, res) => {
+    try {
+        let sqlUrl =
+            'SELECT skills.`url`, skills.`name`, skills.icon FROM skills ORDER BY skills.`url` asc';
+        conn.query(sqlUrl, (err, result) => {
+            if (err) throw err;
+            res.json(result);
+        });
+    } catch (error) {
+        console.error(error);
+        res.status = 500;
+        res.json(error);
+    }
+});
+
+// Return recommended skills, based on user query
+router.post(
+    '/get-recommended-skills',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            let userId = req.body.userId;
+            let cohortId = req.body.cohortId;
+            let query = req.body.query;
+
+            let prompt = `        
+            From the following string, please extract what skill or career the writer wants to learn. Please return only this
+            skill or career, and refer to this as the "subject".
+            If the query relates to a career, please phrase this as "skills related to being a 'subject'",
+            while if the query relates to a skill, please phrase this as "skills related to 'subject'".
+
+            Please return this in a JSON object, and name the response "subjectResponse".
+
+            String: ${query}
+        `;
+
+            const subject = await openai.chat.completions.create({
+                messages: [
+                    {
+                        role: 'user',
+                        content: prompt + ` Please respond with a JSON object.`
+                    }
+                ],
+                model: 'gpt-4o',
+                response_format: { type: 'json_object' }
+            });
+            let responseJSON = subject.choices[0].message.content;
+            // Escape newline characters in response.
+            if (responseJSON) {
+                responseJSON = responseJSON.replace(/\\n/g, '\\n');
+            }
+            // Convert string to object.       ;
+            let subjectObject = JSON.parse(responseJSON);
+
+            const response = await openai.embeddings.create({
+                model: 'text-embedding-3-small',
+                input: subjectObject.subjectResponse,
+                dimensions: 720
+            });
+
+            const inputVector = response.data[0].embedding;
+
+            let sqlQuery = `SELECT skills.id, skills.name, skills.url, skills.level, skills.parent
+                    FROM skills_vector
+                    JOIN skills
+                    ON skills.id = skills_vector.skill_id                    
+                    WHERE VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
+                          VEC_FromText('[${inputVector}]')) < 1.1
+                    AND skills.id NOT IN 
+                    (SELECT skill_id
+                    FROM user_skills
+                    WHERE user_id = ${conn.escape(userId)}
+                    AND is_mastered = 1)     
+                    AND skills.id NOT IN 
+                    (SELECT skill_id 
+                    FROM cohort_skill_filters
+                    WHERE cohort_id = ${conn.escape(cohortId)})               
+                    ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
+                          VEC_FromText('[${inputVector}]'))
+                          LIMIT 50
+                    `;
+            // sql for instructor and editor account
+            conn.query(sqlQuery, async (err, resultsSortedByRelevence) => {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(resultsSortedByRelevence);
+            });
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.end;
+        }
+    }
+);
 
 module.exports = router;

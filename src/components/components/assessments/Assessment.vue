@@ -440,12 +440,12 @@ export default {
                     await this.MakeMastered(this.skill);
                     this.isQuizPassed = true;
                     // show result page and hide assessment part
-                    this.assessmentStatus = 'pass';
+                    this.assessmentStatus = 'You passed';
                     this.showResult = true;
                 } else {
                     // show result page and hide assessment part
                     this.isQuizPassed = true;
-                    this.assessmentStatus = 'fails';
+                    this.assessmentStatus = 'You failed';
                     this.showResult = true;
                 }
             }
@@ -583,12 +583,12 @@ export default {
                         await this.MakeMastered(this.skill);
                         this.isQuizPassed = true;
                         // show result page and hide assessment part
-                        this.assessmentStatus = 'pass';
+                        this.assessmentStatus = 'You passed';
                         this.showResult = true;
                     } else {
                         // show result page and hide assessment part
                         this.isQuizPassed = true;
-                        this.assessmentStatus = 'fails';
+                        this.assessmentStatus = 'You failed';
                         this.showResult = true;
                     }
                 }
@@ -1243,6 +1243,16 @@ export default {
     100% {
         transform: rotate(360deg);
     }
+}
+
+/* Loading animation */
+.loading-animation {
+    min-height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 }
 /******************************/
 /* Mobile Styling */

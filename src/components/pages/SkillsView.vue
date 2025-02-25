@@ -27,28 +27,11 @@ export default {
             // flag to make watcher do not react when user choose a result
             updateChooseResult: false,
             nameList: [],
-            gradeLevels: [
-                {
-                    level: 'grade_school',
-                    text: 'Grade school',
-                    class: 'grade-school'
-                },
-                {
-                    level: 'middle_school',
-                    text: 'Middle school',
-                    class: 'middle-school'
-                },
-                {
-                    level: 'high_school',
-                    text: 'High school',
-                    class: 'high-school'
-                },
-                { level: 'college', text: 'College', class: 'college' },
-                { level: 'phd', text: 'PHD', class: 'phd' }
-            ],
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false,
+            showTutorialTip1_1: false,
+            showMobileTutorialTip1_1: false,
             showTutorialTip2: false,
             showMobileTutorialTip2: false,
             showTutorialTip3: false,
@@ -57,8 +40,6 @@ export default {
             showMobileTutorialTip4: false,
             showTutorialTip5: false,
             showMobileTutorialTip5: false,
-            showTutorialTip6: false,
-            showMobileTutorialTip6: false,
             isInstructorModeTutorialComplete: false,
             showInstructorModeTutorialTip1: false,
             showInstructorModeTutorialTip2: false,
@@ -70,7 +51,6 @@ export default {
         SkillTreeSearchBar
     },
     async created() {
-        console.log(this.userDetailsStore.gradeFilter);
         // Check if regular or instructor mode.
         if (typeof this.studentId == 'string') {
             this.instructorMode = true;
@@ -83,7 +63,6 @@ export default {
                 }
             }
         }
-
         if (this.instructorMode) {
             this.checkIfInstructorModeTutorialComplete();
         } else {
@@ -96,10 +75,6 @@ export default {
         },
         findNode(skillName) {
             this.$refs.skillList.findNode(skillName);
-        },
-        setGradeFilter(level) {
-            this.userDetailsStore.gradeFilter = level;
-            this.$refs.skillList.filter();
         },
 
         // Tutorial
@@ -140,10 +115,23 @@ export default {
                 else {
                     this.showTutorialTip1 = false;
                     if (this.isMobileCheck > 576) {
-                        this.showTutorialTip2 = true;
+                        if (this.userDetailsStore.isSkillsLocked == 1) {
+                            this.showTutorialTip1_1 = true;
+                        } else this.showTutorialTip2 = true;
                     } else {
+                        if (this.userDetailsStore.isSkillsLocked == 1) {
+                            this.showMobileTutorialTip1_1 = true;
+                        }
                         this.showMobileTutorialTip2 = true;
                     }
+                }
+            } else if (step == 1_1) {
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip1_1 = false;
+                    this.showTutorialTip2 = true;
+                } else {
+                    this.showMobileTutorialTip1_1 = false;
+                    this.showMobileTutorialTip2 = true;
                 }
             } else if (step == 2) {
                 // Only for instructors viewing their student's tree
@@ -186,20 +174,11 @@ export default {
             } else if (step == 5) {
                 if (this.isMobileCheck > 576) {
                     this.showTutorialTip5 = false;
-                    this.showTutorialTip6 = true;
                 } else {
                     this.showMobileTutorialTip5 = false;
-                    this.showMobileTutorialTip6 = true;
                 }
                 if (this.userDetailsStore.role == 'instructor') {
                     this.showTutorialTip5 = false;
-                    this.markTutorialComplete();
-                }
-            } else if (step == 6) {
-                if (this.isMobileCheck > 576) {
-                    this.showTutorialTip6 = false;
-                } else {
-                    this.showMobileTutorialTip6 = false;
                 }
                 this.markTutorialComplete();
             }
@@ -218,7 +197,6 @@ export default {
             this.showTutorialTip3 = false;
             this.showTutorialTip4 = false;
             this.showTutorialTip5 = false;
-            this.showTutorialTip6 = false;
             this.isTutorialComplete = false;
         },
         restartMobileTutorial() {
@@ -227,7 +205,6 @@ export default {
             this.showMobileTutorialTip3 = false;
             this.showMobileTutorialTip4 = false;
             this.showMobileTutorialTip5 = false;
-            this.showMobileTutorialTip6 = false;
             this.isTutorialComplete = false;
         },
         restartInstructorTutorial() {
@@ -260,12 +237,19 @@ export default {
 </script>
 
 <template>
-    <div id="legend" class="container-fluid">
-        <div class="position-absolute legend-div">
+    <div id="legend">
+        <div class="position-absolute container-fluid legend-div">
             <!-- Mobile -->
             <div id="mobile-legend">
                 <div v-if="instructorMode" class="col-lg-9">
                     <h1 class="heading h4">{{ studentName }}</h1>
+                </div>
+                <div class="search-mobile-row">
+                    <!-- Search feature -->
+                    <SkillTreeSearchBar
+                        :findNode="findNode"
+                        :clearResults="clearResults"
+                    />
                 </div>
                 <!-- Add skill button -->
                 <router-link class="btn primary-btn me-2" to="/skills/add"
@@ -284,13 +268,6 @@ export default {
                         />
                     </svg>
                 </router-link>
-                <div class="search-mobile-row">
-                    <!-- Search feature -->
-                    <SkillTreeSearchBar
-                        :findNode="findNode"
-                        :clearResults="clearResults"
-                    />
-                </div>
                 <button class="btn primary-btn" @click="restartTutorial">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -308,72 +285,20 @@ export default {
             </div>
             <!-- Tablet and up -->
             <div id="tablet-and-up-legend">
-                <div class="legend row d-flex align-items-center w-100">
-                    <!-- Grade level filter -->
-                    <div
-                        v-if="
-                            !instructorMode && userDetailsStore.role != 'admin'
-                        "
-                        class="col d-flex align-items-center justify-content-center"
-                    >
-                        <div
-                            class="d-flex w-100 justify-content-md-between gap-3 custom-grade-buttons"
-                        >
-                            <button
-                                v-for="grade in gradeLevels"
-                                :key="grade.level"
-                                class="btn w-100"
-                                :class="{
-                                    'primary-btn': true,
-                                    'active-grade-filter':
-                                        userDetailsStore.gradeFilter ==
-                                        grade.level,
-                                    [grade.class]: true
-                                }"
-                                @click="setGradeFilter(grade.level)"
-                            >
-                                {{ grade.text }}
-                            </button>
-                            <!-- Skill filters button -->
-                            <div
-                                v-if="userDetailsStore.role == 'admin'"
-                                class="d-flex gap-2"
-                            >
-                                <router-link class="btn primary-btn" to="/tags"
-                                    >Skill Filters</router-link
-                                >
-                            </div>
-                        </div>
-                    </div>
+                <div class="legend d-flex justify-content-between">
                     <!-- Student name -->
-                    <div v-else-if="instructorMode" class="col">
+                    <div v-if="instructorMode" class="col">
                         <h1 class="heading h4">Student: {{ studentName }}</h1>
                     </div>
-
+                    <!-- Search Feature -->
+                    <SkillTreeSearchBar
+                        :findNode="findNode"
+                        :clearResults="clearResults"
+                    />
                     <div
                         id="skill-btn-search-bar-container"
-                        class="col-lg d-flex w-md-full justify-content-md-start justify-content-lg-end align-items-center"
+                        class="d-flex justify-content-end"
                     >
-                        <!-- Add skill button -->
-                        <router-link
-                            class="btn primary-btn me-2"
-                            to="/skills/add"
-                        >
-                            New skill&nbsp;
-                            <!-- Plus sign -->
-                            <svg
-                                width="18"
-                                height="18"
-                                viewBox="0 0 20 20"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M6.34811 20.0423L6.34811 13.6494L-0.0358702 13.6583C-0.320945 13.6579 -0.594203 13.5444 -0.795782 13.3428C-0.997361 13.1412 -1.11082 12.868 -1.11132 12.5829L-1.11729 7.41477C-1.1168 7.1297 -1.00334 6.85644 -0.801757 6.65486C-0.600179 6.45328 -0.326921 6.33982 -0.0418461 6.33933L6.3481 6.34231L6.3481 -0.0506238C6.34659 -0.193451 6.3736 -0.335145 6.42756 -0.467396C6.48152 -0.599646 6.56134 -0.719794 6.66234 -0.820794C6.76334 -0.921794 6.88349 -1.00161 7.01574 -1.05557C7.14799 -1.10953 7.28969 -1.13655 7.43251 -1.13503L12.5827 -1.12308C12.8678 -1.12259 13.141 -1.00913 13.3426 -0.807549C13.5442 -0.60597 13.6577 -0.332713 13.6582 -0.047637L13.6552 6.34231L20.0481 6.34231C20.3325 6.34248 20.6052 6.45552 20.8063 6.65661C21.0074 6.8577 21.1204 7.13039 21.1206 7.41477L21.1325 12.565C21.1324 12.8494 21.0193 13.122 20.8182 13.3231C20.6171 13.5242 20.3444 13.6373 20.0601 13.6374L13.6552 13.6494L13.6641 20.0334C13.6636 20.3184 13.5502 20.5917 13.3486 20.7933C13.147 20.9948 12.8738 21.1083 12.5887 21.1088L7.43252 21.1267C7.28969 21.1282 7.148 21.1012 7.01575 21.0473C6.88349 20.9933 6.76335 20.9135 6.66235 20.8125C6.56135 20.7115 6.48153 20.5913 6.42757 20.4591C6.37361 20.3268 6.34659 20.1851 6.34811 20.0423Z"
-                                    fill="white"
-                                />
-                            </svg>
-                        </router-link>
                         <!-- Skill filters button -->
                         <div
                             v-if="userDetailsStore.role == 'admin'"
@@ -384,15 +309,27 @@ export default {
                             >
                         </div>
 
-                        <div class="search-bar-container">
-                            <!-- Search Feature -->
-                            <SkillTreeSearchBar
-                                class="w-100"
-                                :findNode="findNode"
-                                :clearResults="clearResults"
-                            />
-                        </div>
                         <div>
+                            <!-- Add skill button -->
+                            <router-link
+                                class="btn primary-btn me-2"
+                                to="/skills/add"
+                            >
+                                New skill&nbsp;
+                                <!-- Plus sign -->
+                                <svg
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 20 20"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        d="M6.34811 20.0423L6.34811 13.6494L-0.0358702 13.6583C-0.320945 13.6579 -0.594203 13.5444 -0.795782 13.3428C-0.997361 13.1412 -1.11082 12.868 -1.11132 12.5829L-1.11729 7.41477C-1.1168 7.1297 -1.00334 6.85644 -0.801757 6.65486C-0.600179 6.45328 -0.326921 6.33982 -0.0418461 6.33933L6.3481 6.34231L6.3481 -0.0506238C6.34659 -0.193451 6.3736 -0.335145 6.42756 -0.467396C6.48152 -0.599646 6.56134 -0.719794 6.66234 -0.820794C6.76334 -0.921794 6.88349 -1.00161 7.01574 -1.05557C7.14799 -1.10953 7.28969 -1.13655 7.43251 -1.13503L12.5827 -1.12308C12.8678 -1.12259 13.141 -1.00913 13.3426 -0.807549C13.5442 -0.60597 13.6577 -0.332713 13.6582 -0.047637L13.6552 6.34231L20.0481 6.34231C20.3325 6.34248 20.6052 6.45552 20.8063 6.65661C21.0074 6.8577 21.1204 7.13039 21.1206 7.41477L21.1325 12.565C21.1324 12.8494 21.0193 13.122 20.8182 13.3231C20.6171 13.5242 20.3444 13.6373 20.0601 13.6374L13.6552 13.6494L13.6641 20.0334C13.6636 20.3184 13.5502 20.5917 13.3486 20.7933C13.147 20.9948 12.8738 21.1083 12.5887 21.1088L7.43252 21.1267C7.28969 21.1282 7.148 21.1012 7.01575 21.0473C6.88349 20.9933 6.76335 20.9135 6.66235 20.8125C6.56135 20.7115 6.48153 20.5913 6.42757 20.4591C6.37361 20.3268 6.34659 20.1851 6.34811 20.0423Z"
+                                        fill="white"
+                                    />
+                                </svg>
+                            </router-link>
                             <button
                                 class="btn primary-btn"
                                 @click="restartTutorial"
@@ -417,22 +354,38 @@ export default {
                 <div
                     v-if="
                         userDetailsStore.role == 'student' &&
-                        (showTutorialTip2 ||
+                        (showTutorialTip1_1 ||
+                            showTutorialTip2 ||
                             showTutorialTip3 ||
                             showTutorialTip4 ||
-                            showTutorialTip5 ||
-                            showTutorialTip6)
+                            showTutorialTip5)
                     "
                     class="info-panel me-4 mt-1 bg-light"
                 >
                     <div
-                        v-if="showTutorialTip2"
+                        v-if="showTutorialTip1_1"
                         class="info-text mt-1 rounded p-2"
                     >
                         <p>
                             Greyed out nodes are locked until you pass the tests
                             of the skills that precede them.
                         </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(1_1)"
+                        >
+                            next
+                        </button>
+                    </div>
+                    <div
+                        v-if="showTutorialTip2"
+                        class="info-text mt-1 rounded p-2"
+                    >
+                        <p>
+                            A sad face icon indicates that the skill has not yet
+                            been mastered.
+                        </p>
+                        <p>Every mastered skill has a happy face icon.</p>
                         <button
                             class="btn primary-btn"
                             @click="progressTutorial(2)"
@@ -444,11 +397,12 @@ export default {
                         v-else-if="showTutorialTip3"
                         class="info-text mt-1 rounded p-2"
                     >
+                        <p>Some nodes feature a plus or minus sign.</p>
                         <p>
-                            A sad face icon indicates that the skill has not yet
-                            been mastered.
+                            This indicates that the skill contains mini-skills
+                            that need to be mastered before you can take an
+                            assessment to prove mastery of that larger skill.
                         </p>
-                        <p>Every mastered skill has a happy face icon.</p>
                         <button
                             class="btn primary-btn"
                             @click="progressTutorial(3)"
@@ -458,23 +412,6 @@ export default {
                     </div>
                     <div
                         v-else-if="showTutorialTip4"
-                        class="info-text mt-1 rounded p-2"
-                    >
-                        <p>Some nodes feature a plus or minus sign.</p>
-                        <p>
-                            This indicates that the skill contains mini-skills
-                            that need to be mastered before you can take an
-                            assessment to prove mastery of that larger skill.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(4)"
-                        >
-                            next
-                        </button>
-                    </div>
-                    <div
-                        v-else-if="showTutorialTip5"
                         class="info-text mt-1 rounded p-2"
                     >
                         <p>
@@ -489,26 +426,22 @@ export default {
                         </p>
                         <button
                             class="btn primary-btn"
-                            @click="progressTutorial(5)"
+                            @click="progressTutorial(4)"
                         >
                             next
                         </button>
                     </div>
                     <div
-                        v-else-if="showTutorialTip6"
+                        v-else-if="showTutorialTip5"
                         class="info-text mt-1 rounded p-2"
                     >
                         <p>
                             Click on a skill node to go to the page for that
                             skill.
                         </p>
-                        <p>
-                            Remember, you can only attempt to master unlocked
-                            skills.
-                        </p>
                         <button
                             class="btn primary-btn"
-                            @click="progressTutorial(6)"
+                            @click="progressTutorial(5)"
                         >
                             close
                         </button>
@@ -521,8 +454,7 @@ export default {
                         (showTutorialTip2 ||
                             showTutorialTip3 ||
                             showTutorialTip4 ||
-                            showTutorialTip5 ||
-                            showTutorialTip6)
+                            showTutorialTip5)
                     "
                     class="info-panel me-4 mt-1 bg-light"
                 >
@@ -584,8 +516,9 @@ export default {
                         class="info-text mt-1 rounded p-2"
                     >
                         <p>
-                            When a student unlocks a skill (by passing a quiz)
-                            the next skill will be unlocked.
+                            If locking is enabled, when a student masters a
+                            skill (by passing a quiz) the next skill will be
+                            unlocked.
                         </p>
                         <button
                             class="btn primary-btn"
@@ -661,7 +594,7 @@ export default {
         </div>
     </div>
 
-    <SkillsListParent ref="skillList" />
+    <SkillsListParent />
 
     <!-- Tutorials -->
     <!-- Student Introduction modal -->
@@ -672,8 +605,7 @@ export default {
                 showMobileTutorialTip2 ||
                 showMobileTutorialTip3 ||
                 showMobileTutorialTip4 ||
-                showMobileTutorialTip5 ||
-                showMobileTutorialTip6)
+                showMobileTutorialTip5)
         "
         class="modal"
     >
@@ -691,28 +623,28 @@ export default {
                     next
                 </button>
             </div>
-            <div v-else-if="showMobileTutorialTip2">
+            <div v-else-if="showMobileTutorialTip1_1">
                 <p>
                     Greyed out nodes are locked until you pass the tests of the
                     skills that precede them.
                 </p>
 
-                <button class="btn primary-btn" @click="progressTutorial(2)">
+                <button class="btn primary-btn" @click="progressTutorial(1_1)">
                     next
                 </button>
             </div>
-            <div v-else-if="showMobileTutorialTip3">
+            <div v-else-if="showMobileTutorialTip2">
                 <p>
                     A sad face icon indicates that the skill has not yet been
                     mastered.
                 </p>
                 <p>Every mastered skill has a happy face icon.</p>
 
-                <button class="btn primary-btn" @click="progressTutorial(3)">
+                <button class="btn primary-btn" @click="progressTutorial(2)">
                     next
                 </button>
             </div>
-            <div v-else-if="showMobileTutorialTip4">
+            <div v-else-if="showMobileTutorialTip3">
                 <p>Some nodes feature a plus or minus sign.</p>
                 <p>
                     This indicates that the skill contains mini-skills that need
@@ -720,11 +652,11 @@ export default {
                     mastery of that larger skill.
                 </p>
 
-                <button class="btn primary-btn" @click="progressTutorial(4)">
+                <button class="btn primary-btn" @click="progressTutorial(3)">
                     next
                 </button>
             </div>
-            <div v-else-if="showMobileTutorialTip5">
+            <div v-else-if="showMobileTutorialTip4">
                 <p>
                     If you think a skill is missing (either from the site in
                     general or from a certain branch of the tree) you can
@@ -734,15 +666,14 @@ export default {
                     —just make sure you run a thorough search before making your
                     suggestion.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(5)">
+                <button class="btn primary-btn" @click="progressTutorial(4)">
                     next
                 </button>
             </div>
-            <div v-else-if="showMobileTutorialTip6">
+            <div v-else-if="showMobileTutorialTip5">
                 <p>Click on a skill node to go to the page for that skill.</p>
-                <p>Remember, you can only attempt to master unlocked skills.</p>
 
-                <button class="btn primary-btn" @click="progressTutorial(6)">
+                <button class="btn primary-btn" @click="progressTutorial(5)">
                     close
                 </button>
             </div>
@@ -1032,6 +963,10 @@ export default {
     height: auto;
     width: 100%;
 }
+.search-bar-container {
+    flex-grow: 1;
+    max-width: 80%;
+}
 
 .topnav {
     padding: 5px 10px;
@@ -1070,6 +1005,9 @@ export default {
     #tablet-and-up-legend {
         display: none;
     }
+    .search-bar-container {
+        flex-grow: 0;
+    }
 
     #print-btn {
         margin-bottom: 5px;
@@ -1107,9 +1045,6 @@ export default {
 
     .legend span {
         flex-shrink: 0;
-    }
-    .search-bar-container {
-        flex-grow: 1;
     }
     #skill-btn-search-bar-container {
         margin-top: 5px;

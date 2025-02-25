@@ -18,7 +18,12 @@ export default {
             unavailableStudents: [],
             members: [],
             showFilters: false,
-            showMembers: false
+            showMembers: false,
+            isLoading: false,
+            showSuccessModal: false,
+            showDeleteModal: false,
+            deleteMessage: '',
+            hideOkButton: false
         };
     },
     async created() {
@@ -97,6 +102,7 @@ export default {
                 });
         },
         submit() {
+            this.isLoading = true;
             let index = 0;
             this.updateCohortMembers(index);
         },
@@ -115,30 +121,36 @@ export default {
                     index++;
                     this.updateCohortMembers(index);
                 } else {
-                    alert('Cohort updated');
                     this.getMembers();
+                    this.isLoading = false;
+                    this.showSuccessModal = true;
                     return;
                 }
             });
         },
+        openDeleteModal() {
+            this.showDeleteModal = true;
+            this.deleteMessage = 'Are you sure you want to delete this cohort?';
+            this.hideOkButton = false;
+        },
         async deleteCohort() {
-            let text = 'Are you sure you want to delete this cohort?';
-            if (confirm(text) == true) {
-                if (this.members.length > 0) {
-                    alert(
-                        'Please remove all members from this cohort before deleting it.'
-                    );
-                } else {
-                    const result = await fetch('/cohorts/' + this.cohortId, {
-                        method: 'DELETE'
-                    });
-
-                    if (result.error) {
-                        console.log(result.error);
-                    }
-
-                    this.$router.push('/cohorts');
+            if (this.members.length > 0) {
+                this.deleteMessage =
+                    'Please remove all members from this cohort before deleting it.';
+                this.hideOkButton = true;
+                return;
+            }
+            try {
+                const result = await fetch(`/cohorts/${this.cohortId}`, {
+                    method: 'DELETE'
+                });
+                if (!result.ok) {
+                    console.log(result.error);
                 }
+                this.showDeleteModal = false;
+                this.$router.push('/cohorts');
+            } catch (err) {
+                console.error(err);
             }
         }
     }
@@ -149,115 +161,236 @@ export default {
     <div class="container cohort-page bg-light rounded p-3">
         <span class="d-flex justify-content-between"
             ><h1 class="heading">{{ cohort.name }}</h1>
-            <button class="btn red-btn" @click="deleteCohort">
+            <button class="btn red-btn" @click="openDeleteModal">
                 Delete
             </button></span
         >
-        <!-- Filters -->
-        <div class="d-flex flex-column">
-            <div class="d-flex flex-row justify-content-between">
-                <div
-                    class="log-type"
-                    @click="showMembers = !showMembers"
-                    b-on-hover
-                    :title="showMembers ? 'collapse' : 'expand'"
-                >
-                    <div class="d-flex">
-                        <h2 class="secondary-heading h4">Available Students</h2>
-                        <!-- Arrow Icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 320 512"
-                            width="22"
-                            height="22"
-                            fill="#667085"
-                            :class="[
-                                showMembers
-                                    ? 'arrow-point-down mb-2'
-                                    : 'arrow-point-up '
-                            ]"
-                        >
-                            <path
-                                d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
-                            />
-                        </svg>
+        <!-- Members -->
+        <div v-if="isLoading == false">
+            <div class="d-flex flex-column">
+                <div class="d-flex flex-row justify-content-between">
+                    <div
+                        class="log-type"
+                        @click="showMembers = !showMembers"
+                        b-on-hover
+                        :title="showMembers ? 'collapse' : 'expand'"
+                    >
+                        <div class="d-flex">
+                            <h2 class="secondary-heading h4">
+                                Available Students
+                            </h2>
+                            <!-- Arrow Icon -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 320 512"
+                                width="22"
+                                height="22"
+                                fill="#667085"
+                                :class="[
+                                    showMembers
+                                        ? 'arrow-point-down mb-2'
+                                        : 'arrow-point-up '
+                                ]"
+                            >
+                                <path
+                                    d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
+                                />
+                            </svg>
+                        </div>
+                        <p>
+                            <em
+                                >Please note that a student can only be in one
+                                cohort.</em
+                            >
+                        </p>
                     </div>
-                    <p>
-                        <em
-                            >Please note that a student can only be in one
-                            cohort.</em
-                        >
-                    </p>
                 </div>
             </div>
-        </div>
-        <div v-if="showMembers">
-            <ul style="list-style: none">
-                <li v-for="student in students">
-                    <!-- <input
+            <div v-if="showMembers">
+                <ul style="list-style: none">
+                    <li v-for="student in students">
+                        <!-- <input
                         type="checkbox"
                         :value="student.id"
                         v-model="student.isMember"
                         :disabled="student.unavailable ? true : false"
                     /> -->
-                    <div class="form-check">
-                        <label class="control control-checkbox">
-                            <input
-                                type="checkbox"
-                                :value="student.id"
-                                v-model="student.isMember"
-                                :disabled="student.unavailable ? true : false"
-                            />
-                            <div class="control_indicator"></div>
-                        </label>
-                        <span class="students">{{ student.username }}</span>
-                    </div>
-                </li>
-            </ul>
-            <button class="green-btn btn" @click="submit">Submit</button>
-        </div>
+                        <div class="form-check">
+                            <label class="control control-checkbox">
+                                <input
+                                    type="checkbox"
+                                    :value="student.id"
+                                    v-model="student.isMember"
+                                    :disabled="
+                                        student.unavailable ? true : false
+                                    "
+                                />
+                                <div class="control_indicator"></div>
+                            </label>
+                            <span class="students">{{ student.username }}</span>
+                        </div>
+                    </li>
+                </ul>
+                <button class="green-btn btn" @click="submit">Submit</button>
+            </div>
 
-        <!-- Filters -->
-        <div class="d-flex flex-column mt-4">
-            <div class="d-flex flex-row justify-content-between">
-                <div
-                    class="log-type"
-                    @click="showFilters = !showFilters"
-                    b-on-hover
-                    :title="showFilters ? 'collapse' : 'expand'"
-                >
-                    <div class="d-flex">
-                        <h2 class="secondary-heading h4">Filters</h2>
-                        <!-- Arrow Icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 320 512"
-                            width="22"
-                            height="22"
-                            fill="#667085"
-                            :class="[
-                                showFilters
-                                    ? 'arrow-point-down mb-2'
-                                    : 'arrow-point-up '
-                            ]"
-                        >
-                            <path
-                                d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
-                            />
-                        </svg>
+            <!-- Filters -->
+            <div class="d-flex flex-column mt-4">
+                <div class="d-flex flex-row justify-content-between">
+                    <div
+                        class="log-type"
+                        @click="showFilters = !showFilters"
+                        b-on-hover
+                        :title="showFilters ? 'collapse' : 'expand'"
+                    >
+                        <div class="d-flex">
+                            <h2 class="secondary-heading h4">Filters</h2>
+                            <!-- Arrow Icon -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 320 512"
+                                width="22"
+                                height="22"
+                                fill="#667085"
+                                :class="[
+                                    showFilters
+                                        ? 'arrow-point-down mb-2'
+                                        : 'arrow-point-up '
+                                ]"
+                            >
+                                <path
+                                    d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
+                                />
+                            </svg>
+                        </div>
                     </div>
                 </div>
             </div>
+            <Transition name="dropdown">
+                <div v-if="showFilters">
+                    <FilterParent />
+                </div>
+            </Transition>
         </div>
-        <Transition name="dropdown">
-            <div v-if="showFilters">
-                <FilterParent />
+
+        <!-- Loading animation -->
+        <div
+            v-if="isLoading == true"
+            class="loading-animation d-flex justify-content-center align-items-center py-4"
+        >
+            <span class="loader"></span>
+        </div>
+        <!-- Success Modal -->
+        <div v-if="showSuccessModal" class="modal">
+            <div class="modal-content bg-light">
+                <p>Cohort updated</p>
+                <button
+                    class="btn primary-btn"
+                    @click="showSuccessModal = false"
+                >
+                    close
+                </button>
             </div>
-        </Transition>
+        </div>
+        <!-- Pending delete Modal -->
+        <div v-if="showDeleteModal" class="modal">
+            <div class="modal-content bg-light">
+                <p>{{ deleteMessage }}</p>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn red-btn"
+                        @click="showDeleteModal = false"
+                    >
+                        Close
+                    </button>
+                    <button
+                        class="btn primary-btn"
+                        :style="{ display: hideOkButton ? 'none' : 'block' }"
+                        @click="deleteCohort"
+                    >
+                        Ok
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <style scoped>
+/* Modals */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 2000;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 520px;
+    font-size: 18px;
+    /* Could be more or less, depending on screen size */
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 480px) {
+    /* Modal Content/Box */
+    .modal-content {
+        width: 90%;
+        margin-top: 30%;
+    }
+}
+/* Loading animation */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Loading animation */
+.loading-animation {
+    min-height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+/* End of loading animation */
+
 .cohort-page {
     height: 100%;
     position: relative;

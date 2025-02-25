@@ -42,13 +42,15 @@ export default {
             showMobileTutorialTip4: false,
             showTutorialTip5: false,
             showMobileTutorialTip5: false,
+            showMobileTutorialTip5_1: false,
             showTutorialTip6: false,
             showMobileTutorialTip6: false,
-            showMobileTutorialTip7: false,
             showTutorialTip7: false,
+            showTutorialTip7_1: false,
             showTutorialTip8: false,
-            showTutorialTip9: false,
-            isMobileCheck: window.innerWidth
+            isMobileCheck: window.innerWidth,
+            // To enableinstructor to lock the tree for student.
+            isTreeLocked: false
         };
     },
     async created() {
@@ -60,7 +62,6 @@ export default {
                 );
             }
         }
-
         // Turn this on only if user is logged in.
         if (this.sessionDetailsStore.isLoggedIn) {
             this.checkIfTutorialComplete();
@@ -79,7 +80,11 @@ export default {
     mounted() {
         this.GetGoogleLoginResult();
     },
-    components: { TidyTree, TidyTreeNoAccount, SkillTreeSearchBar },
+    components: {
+        TidyTree,
+        TidyTreeNoAccount,
+        SkillTreeSearchBar
+    },
     methods: {
         resetPos() {
             this.$refs.childComponent.resetPos();
@@ -112,7 +117,10 @@ export default {
         // Filters
         updateSubjectFilters(subject) {
             // Only if user is logged in.
-            if (this.sessionDetailsStore.isLoggedIn == true) {
+            if (
+                this.sessionDetailsStore.isLoggedIn == true &&
+                this.userDetailsStore.role == 'student'
+            ) {
                 // if all subjects are selected, show only the clicked subject
                 if (this.userDetailsStore.subjectFilters.length == 7) {
                     this.userDetailsStore.subjectFilters = [];
@@ -237,29 +245,39 @@ export default {
                     this.showTutorialTip6 = true;
                 } else {
                     this.showMobileTutorialTip5 = false;
-                    this.showMobileTutorialTip6 = true;
+                    if (this.userDetailsStore.isSkillsLocked == 0) {
+                        this.showMobileTutorialTip6 = true;
+                    } else {
+                        this.showMobileTutorialTip5_1 = true;
+                    }
                 }
+            } else if (step == 5_1) {
+                this.showMobileTutorialTip5_1 = false;
+                this.showMobileTutorialTip6 = true;
             } else if (step == 6) {
                 if (this.isMobileCheck > 576) {
                     this.showTutorialTip6 = false;
                     this.showTutorialTip7 = true;
                 } else {
                     this.showMobileTutorialTip6 = false;
-                    this.showMobileTutorialTip7 = true;
+                    this.markTutorialComplete();
                 }
             } else if (step == 7) {
                 if (this.isMobileCheck > 576) {
                     this.showTutorialTip7 = false;
+                    if (this.userDetailsStore.isSkillsLocked == 0) {
+                        this.showTutorialTip8 = true;
+                    } else {
+                        this.showTutorialTip7_1 = true;
+                    }
+                }
+            } else if (step == 7_1) {
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip7_1 = false;
                     this.showTutorialTip8 = true;
-                } else {
-                    this.showMobileTutorialTip7 = false;
-                    this.markTutorialComplete();
                 }
             } else if (step == 8) {
                 this.showTutorialTip8 = false;
-                this.showTutorialTip9 = true;
-            } else if (step == 9) {
-                this.showTutorialTip9 = false;
                 this.markTutorialComplete();
             }
         },
@@ -276,8 +294,8 @@ export default {
             this.showTutorialTip5 = false;
             this.showTutorialTip6 = false;
             this.showTutorialTip7 = false;
+            this.showTutorialTip7_1 = false;
             this.showTutorialTip8 = false;
-            this.showTutorialTip9 = false;
             this.isTutorialComplete = false;
         },
         restartMobileTutorial() {
@@ -287,7 +305,6 @@ export default {
             this.showMobileTutorialTip4 = false;
             this.showMobileTutorialTip5 = false;
             this.showMobileTutorialTip6 = false;
-            this.showMobileTutorialTip7 = false;
             this.isTutorialComplete = false;
         },
         markTutorialComplete() {
@@ -329,7 +346,6 @@ export default {
             // Mark all tutorials as complete
             await this.markAllTutorialsComplete();
         },
-
         async markAllTutorialsComplete() {
             try {
                 const response = await fetch(
@@ -367,7 +383,11 @@ export default {
                 >
                     Filters
                 </button>
-                <button class="btn primary-btn" @click="resetPos()">
+                <button
+                    v-if="sessionDetailsStore.isLoggedIn"
+                    class="btn primary-btn d-md-block d-none"
+                    @click="resetPos()"
+                >
                     Center
                 </button>
                 <!-- Restart tutorial button -->
@@ -396,17 +416,22 @@ export default {
                 <!-- Search bar, reset, expand all, print buttons -->
                 <!-- Search Feature -->
                 <SkillTreeSearchBar
-                    class="ms-2"
+                    class=""
                     :findNode="handleChooseResult"
                     :clearResults="clearResult"
                 />
                 <div class="d-flex justify-content-end">
                     <!-- Reset Button -->
-                    <button class="btn primary-btn me-2" @click="resetPos()">
+                    <button
+                        v-if="sessionDetailsStore.isLoggedIn"
+                        class="btn primary-btn me-2"
+                        @click="resetPos()"
+                    >
                         Center
                     </button>
                     <!-- Print Button -->
                     <button
+                        v-if="sessionDetailsStore.isLoggedIn"
                         class="btn primary-btn me-2"
                         @click="$refs.childComponent.printPDF()"
                     >
@@ -435,23 +460,23 @@ export default {
             </div>
             <!-- Tooltips -->
             <div
-                v-if="showTutorialTip7"
+                v-if="showTutorialTip6"
                 class="info-panel bg-light rounded p-2 mb-2"
             >
                 <p>Use the search field to search for specific skills.</p>
-                <button class="btn primary-btn" @click="progressTutorial(7)">
+                <button class="btn primary-btn" @click="progressTutorial(6)">
                     next
                 </button>
             </div>
             <div
-                v-else-if="showTutorialTip8"
+                v-else-if="showTutorialTip7"
                 class="info-panel bg-light rounded p-2 mb-2 mt-2 float-right"
             >
                 <p>
                     Use the center button to center the skill tree,<br />
                     and the print button to print a PDF.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(8)">
+                <button class="btn primary-btn" @click="progressTutorial(7)">
                     next
                 </button>
             </div>
@@ -462,7 +487,10 @@ export default {
     <Suspense>
         <template #default>
             <TidyTree
-                v-if="sessionDetailsStore.isLoggedIn"
+                v-if="
+                    sessionDetailsStore.isLoggedIn &&
+                    userDetailsStore.role == 'student'
+                "
                 ref="childComponent"
             />
             <TidyTreeNoAccount v-else ref="childComponent" />
@@ -486,7 +514,13 @@ export default {
         </div>
         <!-- Grade buttons -->
         <!-- If user is logged in -->
-        <div v-if="sessionDetailsStore.isLoggedIn" class="d-flex">
+        <div
+            v-if="
+                sessionDetailsStore.isLoggedIn &&
+                userDetailsStore.role == 'student'
+            "
+            class="d-flex"
+        >
             <div v-if="isGradeFilter" class="legend">
                 <button
                     class="btn grade-school me-2"
@@ -709,7 +743,11 @@ export default {
     <div class="tablet-and-up-legend position-absolute left-legend-div">
         <div>
             <div
-                v-if="isSubjectFilter && sessionDetailsStore.isLoggedIn"
+                v-if="
+                    isSubjectFilter &&
+                    sessionDetailsStore.isLoggedIn &&
+                    userDetailsStore.role == 'student'
+                "
                 class="d-flex flex-column"
             >
                 <button
@@ -1057,7 +1095,10 @@ export default {
 
     <!-- Filter for showing only unlocked skills in bottom left corner -->
     <div
-        v-if="sessionDetailsStore.isLoggedIn"
+        v-if="
+            sessionDetailsStore.isLoggedIn &&
+            userDetailsStore.isSkillsLocked == 1
+        "
         class="unlocked-filter d-flex flex-column-reverse"
     >
         <button
@@ -1074,11 +1115,14 @@ export default {
         </button>
 
         <div
-            v-if="showTutorialTip6"
+            v-if="showTutorialTip7_1"
             class="info-panel bg-light rounded p-2 mb-2"
         >
-            <p>Use this button to toggle between unlocked and locked skills.</p>
-            <button class="btn primary-btn" @click="progressTutorial(6)">
+            <p>
+                Use this button to toggle between showing only unlocked or all
+                skills.
+            </p>
+            <button class="btn primary-btn" @click="progressTutorial(7_1)">
                 next
             </button>
         </div>
@@ -1555,16 +1599,17 @@ export default {
             </div>
         </div>
     </div>
+    <!-- Tutorial -->
     <div
         v-if="
             showTutorialTip1 ||
             showTutorialTip2 ||
             showTutorialTip3 ||
-            showTutorialTip9 ||
+            showTutorialTip8 ||
             showMobileTutorialTip4 ||
             showMobileTutorialTip5 ||
             showMobileTutorialTip6 ||
-            showMobileTutorialTip7
+            showMobileTutorialTip5_1
         "
         class="modal"
     >
@@ -1599,19 +1644,19 @@ export default {
                     in and out by pinching and zooming.
                 </p>
                 <p>
-                    For computers and tablets, there is also a zoom slider bar
-                    at the bottom right.
+                    For computers and tablets, there are also zoom buttons at
+                    the bottom right.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(3)">
                     next
                 </button>
             </div>
-            <div v-else-if="showTutorialTip9">
+            <div v-else-if="showTutorialTip8">
                 <p>
                     When you're ready, try another page by clicking one in the
                     navigation bar at the top right.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(9)">
+                <button class="btn primary-btn" @click="progressTutorial(8)">
                     close
                 </button>
             </div>
@@ -1630,18 +1675,18 @@ export default {
                     next
                 </button>
             </div>
-            <div v-if="showMobileTutorialTip6">
-                <p>The center button will recenter the tree</p>
-                <button class="btn primary-btn" @click="progressTutorial(6)">
+            <div v-if="showMobileTutorialTip5_1">
+                <p>
+                    Use the button at the bottom left to toggle between showing
+                    only unlocked or all skills.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(5_1)">
                     next
                 </button>
             </div>
-            <div v-if="showMobileTutorialTip7">
-                <p>
-                    Use the lock button below on the lower left side of the
-                    screen to toggle between unlocked and locked skills.
-                </p>
-                <button class="btn primary-btn" @click="progressTutorial(7)">
+            <div v-if="showMobileTutorialTip6">
+                <p>The center button will recenter the tree</p>
+                <button class="btn primary-btn" @click="progressTutorial(6)">
                     close
                 </button>
             </div>
@@ -1837,7 +1882,7 @@ export default {
 .legend-div {
     width: 100%;
     z-index: 2;
-    top: 70px;
+    top: 80px;
 }
 
 /* Modal filters */
@@ -1965,6 +2010,8 @@ export default {
 @media (max-width: 480px) {
     .mobile-legend {
         display: flex;
+        justify-content: space-between;
+        gap: 15px;
     }
 
     .tablet-and-up-legend {

@@ -7,6 +7,8 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 
 import { useRouter } from 'vue-router';
 import LoadingModal from './skill-edit/loadingModal.vue';
+import FailsModal from './share-components/FailsModal.vue';
+import TooltipBtn from './share-components/TooltipBtn.vue';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
@@ -32,7 +34,9 @@ export default {
                 name: '',
                 parent: '',
                 description: '',
-                icon_image: '',
+                introduction: '',
+                image_url: '',
+                icon_url: '',
                 mastery_requirements: '',
                 tags: [],
                 type: null,
@@ -41,7 +45,9 @@ export default {
                 url: ''
             },
             filterChecked: false,
-            iconImage: '',
+            image: '',
+            icon: '',
+            originalImageUrl: '',
             superSkills: [],
             levels: [
                 {
@@ -83,6 +89,7 @@ export default {
                 violated: false,
                 name: false,
                 description: false,
+                introduction: false,
                 orphan: false,
                 superValidate: false,
                 noChild: false
@@ -102,7 +109,11 @@ export default {
             loadingStatus: '',
             showLoadingModal: false,
             originalSkill: {},
-            parentLevel: ''
+            parentLevel: '',
+            showIconSizeWarn: false,
+            iconSize: '',
+            originalImageUrl: '',
+            originalIconUrl: ''
         };
     },
     async mounted() {
@@ -144,14 +155,29 @@ export default {
                     }
                 })
                 .then(() => {
-                    $('#summernote')
+                    $('#summernote-introduction')
+                        .summernote({
+                            disableDragAndDrop: true,
+                            toolbar: [
+                                ['font', ['bold', 'underline', 'clear']],
+                                ['para', ['ul', 'ol', 'paragraph']],
+                                ['view', ['fullscreen', 'codeview', 'help']]
+                            ],
+                            callbacks: {
+                                // To determine if content has changed, to unlock the "Submit" button.
+                                onChange: (contents) => {
+                                    this.skill.introduction = contents;
+                                }
+                            }
+                        })
+                        .summernote('code', this.skill.introduction);
+
+                    $('#summernote-mastery-requirements')
                         .summernote({
                             disableDragAndDrop: true,
                             toolbar: [
                                 ['style', ['style']],
                                 ['font', ['bold', 'underline', 'clear']],
-                                ['fontname', ['fontname']],
-                                ['color', ['color']],
                                 ['para', ['ul', 'ol', 'paragraph']],
                                 ['table', ['table']],
                                 ['insert', ['link']],
@@ -165,6 +191,7 @@ export default {
                             }
                         })
                         .summernote('code', this.skill.mastery_requirements);
+
                     // Background for fullscreen view.
                     $('.note-editor .note-editable').css(
                         'background-color',
@@ -185,6 +212,12 @@ export default {
                         this.clusterParentInput.inputText = parentResult.name;
                     }
 
+                    this.originalImageUrl = this.skill.image_url;
+                    this.originalIconUrl = this.skill.icon_url;
+                    this.image = this.skill.image_thumbnail_url;
+                    this.icon = this.skill.icon_url;
+
+                    console.log(this.skill);
                     this.getSkillFilters();
                 });
         },
@@ -215,10 +248,32 @@ export default {
             this.router.push('/skills');
         },
         // For image upload.
-        onFileChange(e) {
+        onFileChange(e, fileType) {
             var files = e.target.files || e.dataTransfer.files;
             if (!files.length) return;
-            this.createImage(files[0]);
+            if (fileType === 'image') {
+                this.createImage(files[0]);
+                return;
+            }
+
+            if (fileType === 'icon') {
+                const fileSize = this.calculateFileSize(files[0].size);
+                this.iconSize = fileSize.size + fileSize.unit;
+
+                // if file size is larger than Kilobyte unit we show a warning
+                if (fileSize.unit !== 'B' && fileSize.unit !== 'KB') {
+                    this.showIconSizeWarn = true;
+                    return;
+                }
+
+                // if file size is larger than 100 KB we also show the warning
+                if (fileSize.size > 100 && fileSize.unit === 'KB') {
+                    this.showIconSizeWarn = true;
+                    return;
+                }
+                this.createIcon(files[0]);
+                return;
+            }
         },
         createImage(file) {
             var image = new Image();
@@ -227,8 +282,20 @@ export default {
 
             reader.onload = (e) => {
                 vm.image = e.target.result;
-                this.iconImage = e.target.result;
-                this.skill.icon_image = this.iconImage;
+                this.image = e.target.result;
+                this.skill.image_url = this.image;
+            };
+            reader.readAsDataURL(file);
+        },
+        createIcon(file) {
+            var image = new Image();
+            var reader = new FileReader();
+            var vm = this;
+
+            reader.onload = (e) => {
+                vm.icon = e.target.result;
+                this.icon = e.target.result;
+                this.skill.icon_url = this.icon;
             };
             reader.readAsDataURL(file);
         },
@@ -238,8 +305,13 @@ export default {
             input.click();
         },
         deleteImage(type) {
+            if (type == 'image') {
+                this.image = '';
+                return;
+            }
             if (type == 'icon') {
-                this.iconImage = '';
+                this.icon = '';
+                return;
             }
         },
         SubmitFilters() {
@@ -337,8 +409,12 @@ export default {
                 !this.isAnotherInstanceOfExistingSkill
             ) {
                 // Update the skill.
-                this.skill.mastery_requirements =
-                    $('#summernote').summernote('code');
+                this.skill.mastery_requirements = $(
+                    '#summernote-mastery-requirements'
+                ).summernote('code');
+                this.skill.introduction = $(
+                    '#summernote-introduction'
+                ).summernote('code');
             }
 
             if (this.skill.name === '' || this.skill.name === null) {
@@ -356,6 +432,19 @@ export default {
             this.skill.url = this.skill.name.replace(/\//g, 'or');
             this.skill.url = this.skill.url.replace(/ /g, '_');
 
+            // Check to see if image and icon have been changed
+            // so we know whether to update AWS.
+            let isImageUpdated = false;
+            if (this.skill.image_url !== this.originalImageUrl) {
+                isImageUpdated = true;
+            }
+
+            let isIconUpdated = false;
+            if (this.skill.icon_url !== this.originalIconUrl) {
+                this.skill.icon = this.skill.icon_url;
+                isIconUpdated = true;
+            }
+
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -363,7 +452,13 @@ export default {
                     name: this.skill.name,
                     parent: this.skill.parent,
                     description: this.skill.description,
-                    icon_image: this.iconImage,
+                    introduction: this.skill.introduction,
+                    image: this.skill.image_url,
+                    isImageUpdated: isImageUpdated,
+                    imageThumbnail: this.skill.image_thumbnail_url,
+                    icon_url: this.skill.icon_url,
+                    icon: this.skill.icon,
+                    isIconUpdated: isIconUpdated,
                     mastery_requirements: this.skill.mastery_requirements,
                     type: this.skill.type,
                     level: this.skill.level,
@@ -403,16 +498,23 @@ export default {
         },
         // If edit is from a student or instructor.
         SubmitForReview() {
-            this.skill.mastery_requirements =
-                $('#summernote').summernote('code');
+            // Update the skill.
+            this.skill.mastery_requirements = $(
+                '#summernote-mastery-requirements'
+            ).summernote('code');
+            this.skill.introduction = $('#summernote-introduction').summernote(
+                'code'
+            );
 
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     userId: this.userDetailsStore.userId,
-                    icon_image: this.iconImage,
+                    image: this.skill.image_url,
+                    icon: this.skill.icon_url,
                     mastery_requirements: this.skill.mastery_requirements,
+                    introduction: this.skill.introduction,
                     comment: this.comment
                 })
             };
@@ -504,17 +606,67 @@ export default {
         },
         closeModal() {
             this.showLoadingModal = false;
+        },
+        closeIconSizeWarnModal() {
+            this.showIconSizeWarn = false;
+        },
+        calculateFileSize(fileSize) {
+            const TerabyteSize = Math.pow(1024, 4);
+            const GigaByteSize = Math.pow(1024, 3);
+            const MegaByteSize = Math.pow(1024, 2);
+            const KiloByteSize = 1024;
+            if (fileSize > TerabyteSize) {
+                const resultFileSize = Math.round(fileSize / TerabyteSize);
+                return {
+                    size: resultFileSize,
+                    unit: 'TB'
+                };
+            }
+
+            if (fileSize > GigaByteSize) {
+                const resultFileSize = Math.round(fileSize / GigaByteSize);
+
+                return {
+                    size: resultFileSize,
+                    unit: 'GB'
+                };
+            }
+
+            if (fileSize > MegaByteSize) {
+                const resultFileSize = Math.round(fileSize / MegaByteSize);
+
+                return {
+                    size: resultFileSize,
+                    unit: 'MB'
+                };
+            }
+
+            if (fileSize > KiloByteSize) {
+                const resultFileSize = Math.round(fileSize / KiloByteSize);
+
+                return {
+                    size: resultFileSize,
+                    unit: 'KB'
+                };
+            }
+
+            return {
+                size: fileSize,
+                unit: 'B'
+            };
         }
     },
     components: {
-        LoadingModal
+        LoadingModal,
+        FailsModal,
+        TooltipBtn
     },
     computed: {
         isFormChanged() {
             return (
                 this.skill.name !== this.originalSkill.name ||
                 this.skill.parent !== this.originalSkill.parent ||
-                this.iconImage !== '' ||
+                this.image !== '' ||
                 this.skill.type !== this.originalSkill.type ||
                 this.skill.level !== this.originalSkill.level ||
                 this.skill.mastery_requirements !==
@@ -529,25 +681,34 @@ export default {
     <div class="container bg-light rounded p-3">
         <div class="d-flex justify-content-between top-row">
             <h1 class="heading">{{ skill.name }}</h1>
-            <!-- Question Bank -->
-            <router-link
-                v-if="skill.type != 'domain' && skill.type != 'super'"
-                class="btn primary-btn me-1"
-                :to="'/skills/' + skillUrl + '/question-bank'"
-                >Edit Questions&nbsp;
-                <!-- Question icon -->
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 384 512"
-                    width="18"
-                    height="20"
-                    fill="white"
-                >
-                    <path
-                        d="M192 0c-41.8 0-77.4 26.7-90.5 64L64 64C28.7 64 0 92.7 0 128L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64l-37.5 0C269.4 26.7 233.8 0 192 0zm0 64a32 32 0 1 1 0 64 32 32 0 1 1 0-64zM105.8 229.3c7.9-22.3 29.1-37.3 52.8-37.3l58.3 0c34.9 0 63.1 28.3 63.1 63.1c0 22.6-12.1 43.5-31.7 54.8L216 328.4c-.2 13-10.9 23.6-24 23.6c-13.3 0-24-10.7-24-24l0-13.5c0-8.6 4.6-16.5 12.1-20.8l44.3-25.4c4.7-2.7 7.6-7.7 7.6-13.1c0-8.4-6.8-15.1-15.1-15.1l-58.3 0c-3.4 0-6.4 2.1-7.5 5.3l-.4 1.2c-4.4 12.5-18.2 19-30.6 14.6s-19-18.2-14.6-30.6l.4-1.2zM160 416a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
-                    />
-                </svg>
-            </router-link>
+            <span>
+                <!-- Learning Objectives -->
+                <!-- <router-link
+                    v-if="skill.type != 'domain'"
+                    class="btn primary-btn me-1"
+                    :to="'/skills/' + skillUrl + '/learning-objectives'"
+                    >Learning Objectives&nbsp;
+                </router-link> -->
+                <!-- Question Bank -->
+                <router-link
+                    v-if="skill.type != 'domain' && skill.type != 'super'"
+                    class="btn primary-btn me-1"
+                    :to="'/skills/' + skillUrl + '/question-bank'"
+                    >Questions&nbsp;
+                    <!-- Question icon -->
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="20"
+                        fill="white"
+                    >
+                        <path
+                            d="M192 0c-41.8 0-77.4 26.7-90.5 64L64 64C28.7 64 0 92.7 0 128L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64l-37.5 0C269.4 26.7 233.8 0 192 0zm0 64a32 32 0 1 1 0 64 32 32 0 1 1 0-64zM105.8 229.3c7.9-22.3 29.1-37.3 52.8-37.3l58.3 0c34.9 0 63.1 28.3 63.1 63.1c0 22.6-12.1 43.5-31.7 54.8L216 328.4c-.2 13-10.9 23.6-24 23.6c-13.3 0-24-10.7-24-24l0-13.5c0-8.6 4.6-16.5 12.1-20.8l44.3-25.4c4.7-2.7 7.6-7.7 7.6-13.1c0-8.4-6.8-15.1-15.1-15.1l-58.3 0c-3.4 0-6.4 2.1-7.5 5.3l-.4 1.2c-4.4 12.5-18.2 19-30.6 14.6s-19-18.2-14.6-30.6l.4-1.2zM160 416a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
+                        />
+                    </svg>
+                </router-link>
+            </span>
         </div>
 
         <div v-if="!isAnotherInstanceOfExistingSkill">
@@ -820,26 +981,37 @@ export default {
             </div>
         </div>
         <div v-if="!isAnotherInstanceOfExistingSkill">
-            <!-- Icon Image -->
+            <!-- Image For Skill -->
             <div class="row">
-                <!-- Icon chooser -->
+                <!-- Image chooser -->
                 <div class="col-8 col-md-3 col-lg-2 mt-2">
                     <div
                         class="mb-3 row d-flex justify-content-center justify-content-md-start w-100"
                     >
-                        <h2 class="secondary-heading h4">Icon</h2>
-                        <div v-if="!iconImage">
+                        <div
+                            class="d-flex flex-row gap-2 align-items-start my-3"
+                        >
+                            <h2 class="secondary-heading h4">Image</h2>
+                            <TooltipBtn
+                                class="mt-1"
+                                toolTipText="A detailed image to use on this skill's description page."
+                                bubbleWidth="350px"
+                                trianglePosition="left"
+                                absoluteTop="37px"
+                            />
+                        </div>
+                        <div v-if="!image">
                             <input
                                 class="form-control d-none"
                                 type="file"
                                 accept="image/*"
-                                @change="onFileChange($event, 'icon')"
-                                id="iconFileChoose"
+                                @change="onFileChange($event, 'image')"
+                                id="imageFile"
                             />
                             <div class="default-no-img">
                                 <div
                                     class="plus-svg"
-                                    @click="openImage('iconFileChoose')"
+                                    @click="openImage('imageFile')"
                                 >
                                     <!-- The plus Icon On Top Of the avatar -->
                                     <svg
@@ -875,18 +1047,130 @@ export default {
                                 </div>
                             </div>
                             <p style="font-size: 14px">
-                                <em class="text">Maximum file size 15mb</em>
+                                <em class="text">Maximum file size 2mb</em>
                             </p>
                         </div>
                         <div v-else>
                             <p>
                                 <img
-                                    :src="iconImage"
+                                    :src="image"
                                     height="158"
                                     width="158"
                                     style="background-color: lightgrey"
                                 />
                             </p>
+                            <p>
+                                <button
+                                    class="btn red-btn"
+                                    @click="deleteImage('image')"
+                                >
+                                    Remove &nbsp;&nbsp;
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 448 512"
+                                        width="20"
+                                        height="20"
+                                        fill="white"
+                                    >
+                                        <path
+                                            d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
+                                        />
+                                    </svg>
+                                </button>
+                            </p>
+                        </div>
+                        <!-- Using random number otherwise url doesn't change (cache)-->
+                        <img
+                            id="originalImage"
+                            class="d-none"
+                            :src="
+                                'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
+                                skillUrl
+                            "
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Icon -->
+            <div class="row">
+                <!-- Image chooser -->
+                <div class="col-8 col-md-3 col-lg-2 mt-2">
+                    <div
+                        class="mb-3 row d-flex justify-content-center justify-content-md-start w-100"
+                    >
+                        <div
+                            class="d-flex flex-row gap-2 align-items-start my-3"
+                        >
+                            <h2 class="secondary-heading h4">Icon</h2>
+                            <TooltipBtn
+                                class="mt-1"
+                                toolTipText="A simple icon to use in the skill tree."
+                                bubbleWidth="350px"
+                                trianglePosition="left"
+                                absoluteTop="37px"
+                            />
+                        </div>
+                        <div v-if="!icon">
+                            <input
+                                class="form-control d-none"
+                                type="file"
+                                accept="image/*"
+                                @change="onFileChange($event, 'icon')"
+                                id="iconFile"
+                            />
+                            <div class="default-no-img">
+                                <div
+                                    class="plus-svg"
+                                    @click="openImage('iconFile')"
+                                >
+                                    <!-- The plus Icon On Top Of the image -->
+                                    <svg
+                                        width="33"
+                                        height="33"
+                                        viewBox="0 0 53 53"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <circle
+                                            cx="26.5"
+                                            cy="26.5"
+                                            r="26.5"
+                                            fill="#D9D9D9"
+                                        />
+                                        <g clip-path="url(#clip0_372_11959)">
+                                            <path
+                                                d="M19.7439 45.0784L19.7439 33.2515L7.93354 33.268C7.40615 33.2671 6.90063 33.0572 6.52771 32.6843C6.15479 32.3114 5.94488 31.8059 5.94396 31.2785L5.93291 21.7174C5.93382 21.1901 6.14373 20.6845 6.51665 20.3116C6.88957 19.9387 7.3951 19.7288 7.92249 19.7279L19.7439 19.7334L19.7439 7.90646C19.7411 7.64223 19.7911 7.38009 19.8909 7.13543C19.9907 6.89076 20.1384 6.66849 20.3252 6.48164C20.5121 6.29479 20.7344 6.14713 20.979 6.0473C21.2237 5.94747 21.4858 5.8975 21.75 5.9003L31.2779 5.92241C31.8053 5.92332 32.3108 6.13322 32.6838 6.50615C33.0567 6.87907 33.2666 7.38459 33.2675 7.91198L33.262 19.7334L45.0889 19.7334C45.615 19.7337 46.1195 19.9428 46.4915 20.3148C46.8635 20.6869 47.0726 21.1913 47.073 21.7174L47.0951 31.2453C47.0948 31.7714 46.8856 32.2759 46.5136 32.6479C46.1416 33.0199 45.6371 33.229 45.111 33.2294L33.262 33.2515L33.2786 45.0618C33.2776 45.5892 33.0677 46.0947 32.6948 46.4677C32.3219 46.8406 31.8164 47.0505 31.289 47.0514L21.7501 47.0846C21.4858 47.0874 21.2237 47.0374 20.979 46.9376C20.7344 46.8377 20.5121 46.6901 20.3252 46.5032C20.1384 46.3164 19.9907 46.0941 19.8909 45.8494C19.7911 45.6048 19.7411 45.3426 19.7439 45.0784Z"
+                                                fill="white"
+                                            />
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clip0_372_11959">
+                                                <rect
+                                                    width="37"
+                                                    height="37"
+                                                    fill="white"
+                                                    transform="translate(8 8)"
+                                                />
+                                            </clipPath>
+                                        </defs>
+                                    </svg>
+                                </div>
+                            </div>
+                            <p style="font-size: 14px">
+                                <em class="text">Maximum file size 100kb</em>
+                            </p>
+                        </div>
+                        <div v-else>
+                            <p>
+                                <img
+                                    :src="icon"
+                                    height="158"
+                                    width="158"
+                                    style="background-color: lightgrey"
+                                />
+                            </p>
+                            <div class="mb-2">Icon size: {{ iconSize }}</div>
                             <p>
                                 <button
                                     class="btn red-btn"
@@ -907,15 +1191,6 @@ export default {
                                 </button>
                             </p>
                         </div>
-                        <!-- Using random number otherwise url doesnt change (cache)-->
-                        <img
-                            id="originalImage"
-                            class="d-none"
-                            :src="
-                                'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
-                                skillUrl
-                            "
-                        />
                     </div>
                 </div>
             </div>
@@ -938,6 +1213,24 @@ export default {
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col">
+                    <div class="mb-3">
+                        <h2 class="secondary-heading h4">Introduction</h2>
+                        <textarea
+                            v-model="skill.introduction"
+                            class="form-control"
+                            rows="2"
+                            id="summernote-introduction"
+                        ></textarea>
+                    </div>
+                    <div>
+                        <div v-if="validate.introduction" class="form-validate">
+                            please enter introduction for skill
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Mastery Requirement summernote -->
             <div v-if="skill.type != 'domain'" class="mb-3">
@@ -946,7 +1239,7 @@ export default {
                 <textarea
                     class="form-control"
                     v-model="skill.mastery_requirements"
-                    id="summernote"
+                    id="summernote-mastery-requirements"
                     rows="3"
                 ></textarea>
             </div>
@@ -1147,6 +1440,7 @@ export default {
             </div>
         </div>
     </div>
+    <!-- ================ || Modal Components || ================ -->
     <!-- Warning Modal  -->
     <div v-if="showModal" id="myModal" class="modal">
         <!-- Modal content -->
@@ -1217,6 +1511,12 @@ export default {
         :loadingStatus="loadingStatus"
         :showLoadingModal="showLoadingModal"
         :closeModal="closeModal"
+    />
+    <!-- Warn The User if the node icon is too big -->
+    <FailsModal
+        v-if="showIconSizeWarn"
+        :handleOkClick="closeIconSizeWarnModal"
+        :message="`Your icon is too big ! (${iconSize} / 100kb)`"
     />
 </template>
 

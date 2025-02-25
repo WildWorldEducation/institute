@@ -12,6 +12,8 @@ import { useShowSkillStore } from '../../stores/ShowSkillStore.js';
 // Import components
 import FlagModals from './FlagModals.vue';
 import Forum from './forum/Forum.vue';
+import AITutor from './AITutor.vue';
+import LearningObjectiveAITutor from './ai-tutor/LearningObjectiveAITutor.vue';
 
 export default {
     setup() {
@@ -24,7 +26,7 @@ export default {
         const sessionDetailsStore = useSessionDetailsStore();
         const showSkillStore = useShowSkillStore();
 
-        // If method hasnt been run before.
+        // If method hasn`t been run before.
         if (tagsStore.tagsList.length == 0) {
             // Run the GET request.
             tagsStore.getTagsList();
@@ -45,10 +47,13 @@ export default {
         return {
             skillUrl: this.$route.params.skillUrl,
             skillId: null,
-            skill: {},
+            skill: {
+                learningObjectives: []
+            },
             userSkills: [],
             isMastered: false,
             isUnlocked: false,
+            isGoal: false,
             filters: [],
             showFlaggingModal: false,
             ancestor: this.$route.params.id,
@@ -60,7 +65,6 @@ export default {
             isSkillLoaded: false,
             randomNum: 0,
             goalSteps: [],
-            goalExists: false,
             goals: [],
             toggleModal: false, // Controls the modal visibility
             selectedSkill: null, // Stores the selected skill for modal context
@@ -73,14 +77,16 @@ export default {
             showTutorialTip5: false,
             showTutorialTip6: false,
             showCategoryCompletedModal: false,
-            nextSkillsInBranch: []
+            nextSkillsInBranch: [],
+            showLearningObjectiveAI: false
         };
     },
     components: {
         Forum,
-        FlagModals
+        FlagModals,
+        AITutor,
+        LearningObjectiveAITutor
     },
-
     async created() {
         await this.getSkill();
         this.isSkillLoaded = true;
@@ -94,15 +100,8 @@ export default {
         }
 
         if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
-        await this.checkIfGoalExists();
     },
     methods: {
-        async getGoals() {
-            const result = await fetch(
-                '/goals/' + this.userDetailsStore.userId + '/list'
-            );
-            this.goals = await result.json();
-        },
         async getSkill() {
             // solution for image to be changed when we change it from AWS
             this.randomNum = Math.random();
@@ -110,6 +109,9 @@ export default {
             await this.showSkillStore.findSkill(this.skillUrl);
             this.skill = this.showSkillStore.skill;
             this.skillId = this.skill.id;
+
+            // Get learning objectives for the skill
+            await this.getLearningObjectives();
 
             // Meta title for SEO
             document.title = this.skill.name + ' - The Collins Institute';
@@ -125,6 +127,16 @@ export default {
             // Record that the user visited this skill.
             if (this.userDetailsStore.role == 'student')
                 this.recordSkillVisit(this.skillId);
+        },
+        async getLearningObjectives() {
+            const result = await fetch(
+                '/skill-learning-objectives/' + this.skillId + '/list'
+            );
+            this.skill.learningObjectives = await result.json();
+            for (let i = 0; i < this.skill.learningObjectives.length; i++) {
+                this.skill.learningObjectives[i].showAI = false;
+                this.skill.learningObjectives[i].mastered = false;
+            }
         },
         recordSkillVisit(skillId) {
             fetch('/skills/record-visit/' + skillId);
@@ -159,6 +171,7 @@ export default {
                     }
                     if (this.userSkills[i].is_accessible == 1)
                         this.isUnlocked = true;
+                    if (this.userSkills[i].is_goal == 1) this.isGoal = true;
                 }
                 // also get the accessible skill list of this user for the find nearest accessible ancestor method
                 if (this.userSkills[i].is_accessible == 1) {
@@ -241,28 +254,15 @@ export default {
         imageUrlAlternative(event) {
             event.target.src = '/images/skill-avatar/recurso.png';
         },
-        /*
-         * Goals: this feature allows students to choose a skill to be a goal,
-         * to create a pathway for them to get to that goal.
-         */
-        async checkIfGoalExists() {
-            const result = await fetch(
-                '/goals/' + this.userDetailsStore.userId + '/' + this.skillId
-            );
-            const data = await result.json();
-            this.goalExists = data.goalExists;
-        },
         openModal(skill) {
             this.selectedSkill = skill;
             this.toggleModal = true;
         },
-
         // Close the modal
         closeModal() {
             this.toggleModal = false;
             this.selectedSkill = null;
         },
-
         // Confirm create goal and execute the necessary logic
         async confirmCreateGoal() {
             if (!this.selectedSkill) return; // Ensure a skill is selected
@@ -339,21 +339,19 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    skillId: this.skillId,
                     goalSteps: this.goalSteps
                 })
             };
-            const url = '/goals/' + this.userDetailsStore.userId + '/add';
+            const url =
+                '/user-skills/set-goal/' +
+                this.userDetailsStore.userId +
+                '/' +
+                this.skillId;
             fetch(url, requestOptions).then(() => {
                 alert('A goal for this skill has been added on the Hub page.');
-                this.getGoals().then(() => {
-                    const createdGoal = this.goals.find(
-                        (goal) => goal.skill_id === this.skillId
-                    );
-                    if (createdGoal) {
-                        this.$router.push(`/goals/${createdGoal.id}`);
-                    }
-                });
+                this.$router.push(
+                    `/goals/${this.userDetailsStore.userId}/${this.skillId}`
+                );
             });
         },
         // Tutorial
@@ -388,12 +386,19 @@ export default {
                 this.showTutorialTip5 = false;
                 this.showTutorialTip6 = true;
                 if (
-                    this.userDetailsStore.role == 'editor' ||
-                    this.userDetailsStore.role == 'instructor'
-                )
-                    this.markTutorialComplete();
+                    this.userDetailsStore.role === 'editor' ||
+                    this.userDetailsStore.role === 'instructor'
+                ) {
+                    this.showTutorialTip7 = true;
+                }
             } else if (step == 6) {
                 this.showTutorialTip6 = false;
+                if (
+                    this.userDetailsStore.role === 'editor' ||
+                    this.userDetailsStore.role === 'instructor'
+                ) {
+                    this.showTutorialTip7 = false;
+                }
                 this.markTutorialComplete();
             }
         },
@@ -404,6 +409,8 @@ export default {
             this.showTutorialTip4 = false;
             this.showTutorialTip5 = false;
             this.showTutorialTip6 = false;
+            this.showTutorialTip7 = false;
+            this.showInstructorEditorTutorialTip = false;
             this.isTutorialComplete = false;
         },
         markTutorialComplete() {
@@ -433,7 +440,7 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3">
+    <div class="container">
         <div
             id="skill-info-container"
             :class="{ domain: skill.type == 'domain' }"
@@ -446,6 +453,7 @@ export default {
                     <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
                     <router-link
                         v-if="
+                            userDetailsStore.isSkillsLocked == 1 &&
                             userDetailsStore.role == 'student' &&
                             !isUnlocked &&
                             !isMastered &&
@@ -471,7 +479,6 @@ export default {
                     <router-link
                         v-else-if="
                             userDetailsStore.role == 'student' &&
-                            isUnlocked &&
                             !isMastered &&
                             skill.type != 'domain'
                         "
@@ -508,7 +515,6 @@ export default {
                     <button
                         v-else-if="
                             userDetailsStore.role == 'student' &&
-                            isUnlocked &&
                             !isMastered &&
                             skill.type == 'domain'
                         "
@@ -670,7 +676,7 @@ export default {
                                 sessionDetailsStore.isLoggedIn &&
                                 isMastered == false &&
                                 isUnlocked == false &&
-                                goalExists == false &&
+                                isGoal == false &&
                                 userDetailsStore.role == 'student'
                             "
                             class="btn primary-btn"
@@ -916,18 +922,21 @@ export default {
                     <!-- Introduction -->
                     <div class="">
                         <h2 class="h4 secondary-heading">Introduction</h2>
-                        <div v-html="skill.introduction"></div>
+                        <div
+                            class="bg-white rounded p-2"
+                            v-html="skill.introduction"
+                        ></div>
                     </div>
 
                     <!-- Mastery Requirements -->
-                    <div
-                        v-if="skill.type != 'domain'"
-                        class="mastery-requirements mt-4"
-                    >
+                    <div v-if="skill.type != 'domain'" class="mt-4">
                         <h2 class="h4 secondary-heading">
-                            Requirements for mastery
+                            Requirements for Mastery
                         </h2>
-                        <div v-html="skill.mastery_requirements"></div>
+                        <div
+                            class="bg-white rounded p-2 mastery-requirements-section"
+                            v-html="skill.mastery_requirements"
+                        ></div>
                     </div>
                 </div>
                 <!-- Infobox -->
@@ -935,21 +944,9 @@ export default {
                     <div class="info-box p-2 mb-2">
                         <!-- AWS S3 hosted feature image -->
                         <!-- Using random number otherwise url doesnt change (cache)-->
-                        <a
-                            :href="
-                                'https://institute-skill-infobox-images.s3.amazonaws.com/' +
-                                skillUrl +
-                                '?' +
-                                randomNum
-                            "
-                        >
+                        <a :href="skill.image_url">
                             <img
-                                :src="
-                                    'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
-                                    skillUrl +
-                                    '?' +
-                                    randomNum
-                                "
+                                :src="skill.image_thumbnail_url"
                                 @error="imageUrlAlternative"
                                 class="rounded img-fluid"
                             />
@@ -1014,6 +1011,94 @@ export default {
                     </div>
                 </div>
             </div>
+            <!-- Learning Objectives -->
+            <div v-if="skill.type != 'domain'" class="mt-4">
+                <h2 class="h4 secondary-heading">Learning Objectives</h2>
+                <div class="bg-white rounded p-2">
+                    <div
+                        v-for="learningObjective in skill.learningObjectives"
+                        class="d-flex mb-3 justify-content-between"
+                    >
+                        <div>
+                            <svg
+                                v-if="!learningObjective.mastered"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="6"
+                                height="6"
+                            >
+                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                                <path
+                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z"
+                                />
+                            </svg>
+                            <svg
+                                v-else
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="18"
+                                height="18"
+                                fill="green"
+                            >
+                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                                <path
+                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
+                                />
+                            </svg>
+                        </div>
+                        <div class="ms-2 w-100">
+                            <p class="mb-0">
+                                {{ learningObjective.objective }}
+                            </p>
+                            <div v-if="learningObjective.showAI">
+                                <!-- AI tutor for this learning objective -->
+                                <LearningObjectiveAITutor
+                                    :learningObjective="
+                                        learningObjective.objective
+                                    "
+                                    :learningObjectiveId="learningObjective.id"
+                                    :skillName="skill.name"
+                                    :skillUrl="skill.url"
+                                    :skillLevel="skill.level"
+                                />
+                            </div>
+                        </div>
+                        <button
+                            v-if="sessionDetailsStore.isLoggedIn"
+                            class="btn plus-btn"
+                            @click="
+                                learningObjective.showAI =
+                                    !learningObjective.showAI
+                            "
+                        >
+                            <svg
+                                v-if="!learningObjective.showAI"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                width="18"
+                                height="18"
+                            >
+                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                                <path
+                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                                />
+                            </svg>
+                            <svg
+                                v-else
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                width="18"
+                                height="18"
+                            >
+                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                                <path
+                                    d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                                />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             <!-- A line divide -->
             <div v-if="userDetailsStore.role == 'admin'">
@@ -1041,10 +1126,26 @@ export default {
                 </div>
             </div>
         </div>
+        <!-- AI Tutor -->
+        <div v-if="sessionDetailsStore.isLoggedIn" class="row mt-3 mb-3">
+            <AITutor
+                v-if="isSkillLoaded"
+                :skillName="skill.name"
+                :skillUrl="skill.url"
+                :skillLevel="skill.level"
+            />
+        </div>
+
         <!-- Posts -->
         <div v-if="skill.type != 'domain'">
             <div class="row mt-3 mb-3">
-                <Forum v-if="isSkillLoaded" :skillId="skill.id" />
+                <Forum
+                    v-if="isSkillLoaded"
+                    :skillId="skill.id"
+                    :showTutorialTip6="showTutorialTip6"
+                    :userRole="userDetailsStore.role"
+                    @progressTutorial="progressTutorial"
+                />
             </div>
         </div>
         <p>&nbsp;</p>
@@ -1127,7 +1228,7 @@ export default {
     <div
         v-if="
             userDetailsStore.role == 'student' &&
-            (showTutorialTip1 || showTutorialTip5 || showTutorialTip6)
+            (showTutorialTip1 || showTutorialTip5)
         "
         class="modal"
     >
@@ -1149,16 +1250,6 @@ export default {
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(5)">
                     next
-                </button>
-            </div>
-            <div v-else-if="showTutorialTip6">
-                <p>
-                    At the bottom of the page, in the "Best Places To Learn
-                    This" section, you can find various sites and resources to
-                    learn about this topic.
-                </p>
-                <button class="btn primary-btn" @click="progressTutorial(6)">
-                    close
                 </button>
             </div>
         </div>
@@ -1200,7 +1291,7 @@ export default {
                 </p>
                 <p>You can add more, vote on these, or edit them.</p>
                 <button class="btn primary-btn" @click="progressTutorial(5)">
-                    close
+                    next
                 </button>
             </div>
         </div>
@@ -1241,7 +1332,7 @@ export default {
                 </p>
                 <p>You can add more and vote on these.</p>
                 <button class="btn primary-btn" @click="progressTutorial(5)">
-                    close
+                    next
                 </button>
             </div>
         </div>
@@ -1249,6 +1340,15 @@ export default {
 </template>
 
 <style scoped>
+.plus-btn {
+    height: 44px;
+}
+
+/* Mastery Reqruirements Section */
+::v-deep(.mastery-requirements-section p) {
+    font-family: 'Poppins', sans-serif !important;
+}
+
 /* Tooltips */
 .info-panel {
     border-color: var(--primary-color);
@@ -1289,18 +1389,12 @@ export default {
     color: #888;
 }
 
-.mastery-requirements {
-    background-color: rgba(255, 255, 255, 0.692);
-    border-radius: 5px;
-    width: 98%;
-}
-
 .hr {
     border-color: var(--dark-color) !important;
 }
 
 #skill-info-container {
-    background-color: #f2edff;
+    background-color: #f2edffcc;
     border-radius: 12px;
     padding: 10px 30px;
 }
@@ -1326,16 +1420,7 @@ export default {
     }
 
     #skill-info-container {
-        background-color: #f2edffcc;
-        border-radius: 12px;
         padding: 10px 20px;
-    }
-
-    .mastery-requirements {
-        width: 100%;
-        margin-left: 0px;
-        padding-left: 0px;
-        padding-right: 0px;
     }
 
     .skill-name {
@@ -1395,7 +1480,6 @@ export default {
     /* Modal Content/Box */
     .modal-content {
         width: 90% !important;
-
         margin: auto;
         margin-top: 30%;
     }
