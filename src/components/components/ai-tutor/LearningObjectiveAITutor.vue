@@ -24,7 +24,8 @@ export default {
             messageList: [],
             waitForAIresponse: false,
             isGotMessages: false,
-            englishSkillLevel: ''
+            englishSkillLevel: '',
+            isAssessment: false
         };
     },
     async mounted() {
@@ -73,7 +74,8 @@ export default {
                         userId: this.userDetailsStore.userId,
                         skillName: this.skillName,
                         skillLevel: this.englishSkillLevel,
-                        message: this.message
+                        message: this.message,
+                        isAssessment: this.isAssessment
                     })
                 };
 
@@ -138,7 +140,45 @@ export default {
             }
         },
         async learningObjectiveAssessment() {
-            
+            this.isAssessment = true;
+
+            if (this.waitForAIresponse) {
+                return;
+            }
+            this.waitForAIresponse = true;
+            try {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        learningObjective: this.learningObjective,
+                        learningObjectiveId: this.learningObjectiveId,
+                        userName: this.userDetailsStore.userName,
+                        userId: this.userDetailsStore.userId,
+                        skillName: this.skillName,
+                        skillLevel: this.englishSkillLevel
+                    })
+                };
+
+                var url = '/ai-tutor/learning-objectives/assessment';
+
+                const res = await fetch(url, requestOptions);
+                if (res.status === 500) {
+                    alert('The tutor can`t answer !!');
+                    this.waitForAIresponse = false;
+                    return;
+                }
+                const resData = await res.json();
+
+                this.latestMessage = resData.message.content[0].text.value;
+                this.messageList.push(this.latestMessage);
+
+                this.getMessages();
+                this.waitForAIresponse = false;
+            } catch (error) {
+                console.error(error);
+                this.waitForAIresponse = false;
+            }
         },
         // Format the response.
         applyMarkDownFormatting(string) {

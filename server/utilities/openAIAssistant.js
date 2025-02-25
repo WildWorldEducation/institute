@@ -185,7 +185,7 @@ async function getAITutorLearningObjectiveThread(userId, learningObjectiveId) {
     }
 }
 
-async function processingNewLearningObjectiveMessage(
+async function processLearningObjectiveMessage(
     threadId,
     assistantId,
     messageData
@@ -216,7 +216,7 @@ async function processingNewLearningObjectiveMessage(
     }
 }
 
-async function generateNewLearningObjectiveQuestion(
+async function generateLearningObjectiveQuestion(
     threadId,
     assistantId,
     messageData
@@ -229,7 +229,63 @@ async function generateNewLearningObjectiveQuestion(
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
-        instructions: `The user is at a ${messageData.skillLevel} level and age.`
+        instructions: `The user is at a ${messageData.skillLevel} level and age.
+         Make sure the questions are at this level.`
+    });
+
+    if (run.status === 'completed') {
+        const messages = await openai.beta.threads.messages.list(threadId);
+        const latestMessage = messages.data[0];
+
+        return latestMessage;
+    } else {
+        console.log(run.status);
+    }
+}
+
+async function generateLearningObjectiveAssessment(
+    threadId,
+    assistantId,
+    messageData
+) {
+    // Add a message to the thread
+    const message = await openai.beta.threads.messages.create(threadId, {
+        role: 'user',
+        content: 'Ask me 8 questions about: ' + messageData.learningObjective
+    });
+
+    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+        assistant_id: assistantId,
+        instructions: `The user is at a ${messageData.skillLevel} level and age. 
+        Make sure the questions are at this level. Do not offer to explain the questions.`
+    });
+
+    if (run.status === 'completed') {
+        const messages = await openai.beta.threads.messages.list(threadId);
+        const latestMessage = messages.data[0];
+
+        return latestMessage;
+    } else {
+        console.log(run.status);
+    }
+}
+
+async function gradeLearningObjectiveAssessment(
+    threadId,
+    assistantId,
+    messageData
+) {
+    // Add a message to the thread
+    const message = await openai.beta.threads.messages.create(threadId, {
+        role: 'user',
+        content:
+            'Review the answers to the 8 questions. State how many the user answered correctly.'
+    });
+
+    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+        assistant_id: assistantId,
+        instructions: `The user is at a ${messageData.skillLevel} level and age. 
+        Make sure the questions are assessed at this level.`
     });
 
     if (run.status === 'completed') {
@@ -250,7 +306,9 @@ module.exports = {
     getAITutorSkillThread,
     getAITutorLearningObjectiveThread,
     saveAITutorLearningObjectiveThread,
-    processingNewLearningObjectiveMessage,
+    processLearningObjectiveMessage,
     generateQuestion,
-    generateNewLearningObjectiveQuestion
+    generateLearningObjectiveQuestion,
+    generateLearningObjectiveAssessment,
+    gradeLearningObjectiveAssessment
 };

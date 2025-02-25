@@ -18,12 +18,14 @@ const {
     getAITutorSkillThread,
     saveAITutorSkillThread,
     getMessagesList,
+    generateQuestion,
     // for learning objective AI tutor
     getAITutorLearningObjectiveThread,
     saveAITutorLearningObjectiveThread,
-    processingNewLearningObjectiveMessage,
-    generateNewLearningObjectiveQuestion,
-    generateQuestion
+    processLearningObjectiveMessage,
+    generateLearningObjectiveQuestion,
+    generateLearningObjectiveAssessment,
+    gradeLearningObjectiveAssessment
 } = require('../utilities/openAIAssistant');
 const isAuthenticated = require('../middlewares/authMiddleware');
 // Include API key.
@@ -183,11 +185,23 @@ router.post(
                 req.body.learningObjectiveId
             );
 
-            const result = await processingNewLearningObjectiveMessage(
-                assistantData[0].thread_id,
-                assistantData[0].assistant_id,
-                req.body
-            );
+            let result;
+            // Regular message
+            if (!req.body.isAssessment) {
+                result = await processLearningObjectiveMessage(
+                    assistantData[0].thread_id,
+                    assistantData[0].assistant_id,
+                    req.body
+                );
+            }
+            // Marking/grading assessment
+            else {
+                result = await gradeLearningObjectiveAssessment(
+                    assistantData[0].thread_id,
+                    assistantData[0].assistant_id,
+                    req.body
+                );
+            }
 
             res.json({ message: result });
         } catch (error) {
@@ -211,7 +225,35 @@ router.post(
                 req.body.learningObjectiveId
             );
 
-            const result = await generateNewLearningObjectiveQuestion(
+            const result = await generateLearningObjectiveQuestion(
+                assistantData[0].thread_id,
+                assistantData[0].assistant_id,
+                req.body
+            );
+
+            res.json({ message: result });
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
+        }
+    }
+);
+
+/**
+ * Assessment for learning objective
+ */
+router.post(
+    '/learning-objectives/assessment',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const assistantData = await getAITutorLearningObjectiveThread(
+                req.body.userId,
+                req.body.learningObjectiveId
+            );
+
+            const result = await generateLearningObjectiveAssessment(
                 assistantData[0].thread_id,
                 assistantData[0].assistant_id,
                 req.body
