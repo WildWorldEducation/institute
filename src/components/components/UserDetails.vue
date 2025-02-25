@@ -2,9 +2,13 @@
 // Import the stores.
 import { useUsersStore } from '../../stores/UsersStore';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import TooltipBtn from './share-components/TooltipBtn.vue';
 
 export default {
     props: ['userId'],
+    components: {
+        TooltipBtn
+    },
     setup() {
         const usersStore = useUsersStore();
         const userDetailsStore = useUserDetailsStore();
@@ -20,13 +24,12 @@ export default {
         return {
             showModal: false,
             localIsSkillsLocked: null,
-            openModal: false
+            mode: 'big'
         };
     },
     created() {
         this.localIsSkillsLocked = this.isSkillsLocked;
     },
-
     methods: {
         updateSkillsLock() {
             this.$parent.updateSkillsLock();
@@ -152,8 +155,8 @@ export default {
                     >
                         Goals
                     </router-link>
-                    <div class="mt-4 d-flex justify-content-between">
-                        <div>
+                    <div class="mt-4">
+                        <div class="d-flex gap-1">
                             <h3
                                 v-if="
                                     this.userDetailsStore.role == 'instructor'
@@ -162,64 +165,47 @@ export default {
                             >
                                 Lock skill progress?
                             </h3>
-                            <input
-                                type="radio"
-                                value="0"
-                                v-model="$parent.user.isSkillsLocked"
-                                @change="updateSkillsLock()"
-                            />
-                            <label for="one">No</label>
-                            &nbsp;
-                            <input
-                                type="radio"
-                                value="1"
-                                v-model="$parent.user.isSkillsLocked"
-                                @change="updateSkillsLock()"
-                            />
-                            <label for="two">Yes</label>
-                        </div>
-                        <button
-                            data-v-ead48d2e=""
-                            class="btn primary-btn mt-3"
-                            @click="openModal = !openModal"
-                        >
-                            <svg
-                                data-v-ead48d2e=""
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 192 512"
-                                width="20"
-                                height="20"
-                                fill="white"
-                            >
-                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                <path
-                                    data-v-ead48d2e=""
-                                    d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
-                                ></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                <div
-                    v-if="userDetailsStore.role === 'instructor' && openModal"
-                    class="modal"
-                >
-                    <div class="modal-content">
-                        <div>
-                            <p>
-                                This will prevent the student from being able to
+                            <div class="tooltip-wrapper">
+                                <TooltipBtn
+                                    v-if="mode === 'big'"
+                                    class="d-none d-md-block"
+                                    toolTipText="This will prevent the student from being able to
                                 master skills in the case that they have not
                                 already mastered the skills that come before
-                                them.
-                            </p>
-
-                            <button
-                                class="btn primary-btn"
-                                @click="openModal = false"
-                            >
-                                close
-                            </button>
+                                them."
+                                    bubbleWidth="350px"
+                                    trianglePosition="left"
+                                    absoluteTop="37px"
+                                />
+                                <!-- Mobile tooltip have smaller width -->
+                                <TooltipBtn
+                                    v-if="mode === 'big'"
+                                    class="d-md-none"
+                                    toolTipText="This will prevent the student from being able to
+                                master skills in the case that they have not
+                                already mastered the skills that come before
+                                them."
+                                    bubbleWidth="100px"
+                                    trianglePosition="left"
+                                    absoluteTop="37px"
+                                />
+                            </div>
                         </div>
+                        <input
+                            type="radio"
+                            value="0"
+                            v-model="$parent.user.isSkillsLocked"
+                            @change="updateSkillsLock()"
+                        />
+                        <label for="one">No</label>
+                        &nbsp;
+                        <input
+                            type="radio"
+                            value="1"
+                            v-model="$parent.user.isSkillsLocked"
+                            @change="updateSkillsLock()"
+                        />
+                        <label for="two">Yes</label>
                     </div>
                 </div>
                 <!-- Editors -->
@@ -339,7 +325,6 @@ export default {
     border: 1px solid var(--primary-color);
     border-radius: 12px;
     padding: 33px 28px;
-    overflow: hidden;
 }
 
 .user-input-information {
