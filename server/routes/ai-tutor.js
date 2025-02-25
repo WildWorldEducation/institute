@@ -22,7 +22,8 @@ const {
     getAITutorLearningObjectiveThread,
     saveAITutorLearningObjectiveThread,
     processingNewLearningObjectiveMessage,
-    generateNewLearningObjectiveQuestion
+    generateNewLearningObjectiveQuestion,
+    generateQuestion
 } = require('../utilities/openAIAssistant');
 const isAuthenticated = require('../middlewares/authMiddleware');
 // Include API key.
@@ -30,7 +31,7 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-// Learning objective tutor
+// Skill tutor ---------------------
 
 /**
  * Get thread from skill level AI tutor
@@ -91,7 +92,31 @@ router.post('/new-message', isAuthenticated, async (req, res, next) => {
     }
 });
 
-// Learning objective tutor
+/**
+ * Get the AI tutor to ask a question
+ */
+router.post('/ask-question', isAuthenticated, async (req, res, next) => {
+    try {
+        const assistantData = await getAITutorSkillThread(
+            req.body.userId,
+            req.body.skillUrl
+        );
+
+        const result = await generateQuestion(
+            assistantData[0].thread_id,
+            assistantData[0].assistant_id,
+            req.body
+        );
+
+        res.json({ message: result });
+    } catch (error) {
+        console.error(error);
+        res.status = 500;
+        res.json({ mess: 'something went wrong' });
+    }
+});
+
+// Learning objective tutor ------------------
 
 /**
  * Get thread from learning objective level AI tutor
@@ -146,7 +171,7 @@ router.get(
 );
 
 /**
- * Send message to learning objective level AI tutor (at the moment, only explaining the learning objective)
+ * Send message to learning objective level AI tutor
  */
 router.post(
     '/learning-objectives/new-message',
@@ -174,7 +199,7 @@ router.post(
 );
 
 /**
- * Send message to learning objective level AI tutor (at the moment, only explaining the learning objective)
+ * Get the learning objective AI tutor to ask a question
  */
 router.post(
     '/learning-objectives/ask-question',

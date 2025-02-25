@@ -71,6 +71,7 @@ async function getAITutorSkillThread(userId, skillUrl) {
                            WHERE user_id = ${conn.escape(
                                userId
                            )} AND skill_url = ${conn.escape(skillUrl)}`;
+
         const result = await query(queryString);
         return result;
     } catch (error) {
@@ -103,10 +104,31 @@ async function processingNewSkillMessage(threadId, assistantId, messageData) {
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
-        instructions: `Please refer to the user as ${messageData.userName}. 
-        Please tutor about the topic: ${messageData.skillName}.
+        instructions: `Please tutor about the topic: ${messageData.skillName}.
         Tutor the user as if they are at a ${messageData.skillLevel} level and age.
         Ask follow up questions.`
+    });
+
+    if (run.status === 'completed') {
+        const messages = await openai.beta.threads.messages.list(threadId);
+        const latestMessage = messages.data[0];
+
+        return latestMessage;
+    } else {
+        console.log(run.status);
+    }
+}
+
+async function generateQuestion(threadId, assistantId, messageData) {
+    // Add a message to the thread
+    const message = await openai.beta.threads.messages.create(threadId, {
+        role: 'user',
+        content: 'Ask me a questions about: ' + messageData.skillName
+    });
+
+    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+        assistant_id: assistantId,
+        instructions: `The user is at a ${messageData.skillLevel} level and age.`
     });
 
     if (run.status === 'completed') {
@@ -229,5 +251,6 @@ module.exports = {
     getAITutorLearningObjectiveThread,
     saveAITutorLearningObjectiveThread,
     processingNewLearningObjectiveMessage,
+    generateQuestion,
     generateNewLearningObjectiveQuestion
 };
