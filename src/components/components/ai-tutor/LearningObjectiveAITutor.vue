@@ -265,13 +265,21 @@ export default {
                 explain this
             </button>
         </span>
-        <!-- Custom interactions text input -->
+        <!-- text input -->
         <span class="d-flex mt-1">
             <input
+                v-if="!isAssessment"
                 class="chat-input border border-dark rounded"
                 v-model="message"
                 type="text"
             />
+            <textarea
+                v-else
+                class="chat-input border border-dark rounded"
+                v-model="message"
+                type="text"
+                rows="3"
+            ></textarea>
             <button
                 class="btn border border-dark ms-1"
                 @click="learningObjectiveMessage()"

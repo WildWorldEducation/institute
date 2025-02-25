@@ -278,14 +278,14 @@ async function gradeLearningObjectiveAssessment(
     // Add a message to the thread
     const message = await openai.beta.threads.messages.create(threadId, {
         role: 'user',
-        content:
-            'Review the answers to the 8 questions. State how many the user answered correctly.'
+        content: messageData.message
     });
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
         instructions: `The user is at a ${messageData.skillLevel} level and age. 
-        Make sure the questions are assessed at this level.`
+        Make sure the questions are assessed at this level.
+        Review the answers to the 8 questions. State how many the user answered correctly.`
     });
 
     if (run.status === 'completed') {
