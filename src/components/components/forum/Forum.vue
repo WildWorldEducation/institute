@@ -248,7 +248,7 @@ export default {
 <template>
     <div class="container-fluid mt-4">
         <div class="forum-header">
-            <h2 class="heading">Best Places To Learn This</h2>
+            <h2 class="secondary-heading">Other Places To Learn This</h2>
 
             <!-- Navigation Tabs -->
             <!-- If guest account, we dont show tutors, only sources -->
