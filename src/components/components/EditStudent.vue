@@ -27,6 +27,9 @@ export default {
                 // flag to show warning when cancel crop
                 notCropped: false
             },
+            // This is meant to render the error messages we get from the backend.
+            errorUsernameMessage: '',
+            errorEmailMessage: '',
             // Flag and data of crop image component
             showCropModal: false,
             cropCanvas: '',
@@ -65,24 +68,33 @@ export default {
                 this.Submit();
             }
         },
-        // ValidateEmail() {
-        //     if (
-        //         /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
-        //             this.user.email
-        //         )
-        //     ) {
-        //         this.validate.emailFormat = false;
-        //     } else {
-        //         this.validate.emailFormat = true;
-        //     }
-        // },
-        Submit() {
+        ValidateEmail() {
+            const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+            if (this.user.email && !emailRegex.test(this.user.email)) {
+                this.errorEmailMessage = 'Please enter a valid email address!';
+                return false; // Return false if the email is invalid
+            }
+            return true; // Return true if the email is valid
+        },
+        clearUsernameError() {
+            this.errorUsernameMessage = '';
+        },
+        clearEmailError() {
+            this.errorEmailMessage = '';
+        },
+        async Submit() {
             let reqBody = {};
-
             if (this.user.first_name) reqBody.firstname = this.user.first_name;
             if (this.user.last_name) reqBody.lastname = this.user.last_name;
             reqBody.username = this.user.username;
-            if (this.user.email) reqBody.email = this.user.email;
+
+            // Validate email first, and if valid, add it to the request
+            if (this.user.email && this.ValidateEmail()) {
+                reqBody.email = this.user.email;
+            } else if (this.user.email && !this.ValidateEmail()) {
+                return; // Stop further processing if email is invalid
+            }
+
             if (this.user.avatar) reqBody.avatar = this.user.avatar;
 
             const requestOptions = {
@@ -91,12 +103,36 @@ export default {
                 body: JSON.stringify(reqBody)
             };
 
-            var url = '/users/' + this.userId + '/instructor/edit';
-            fetch(url, requestOptions).then(() => {
-                // refresh user list so the users page will show the update data
-                this.usersStore.getUsers();
+            const url = '/users/' + this.userId + '/instructor/edit';
+
+            try {
+                const res = await fetch(url, requestOptions);
+
+                if (!res.ok) {
+                    const err = await res.json();
+
+                    // Reset error messages
+                    this.errorUsernameMessage = '';
+                    this.errorEmailMessage = '';
+
+                    // Display errors if returned by the backend
+                    if (err.errors) {
+                        if (err.errors.username) {
+                            this.errorUsernameMessage = err.errors.username;
+                        }
+                        if (err.errors.email) {
+                            this.errorEmailMessage = err.errors.email;
+                        }
+                    }
+
+                    return; // Stop further actions if there's an error
+                }
+
+                await this.usersStore.getUsers();
                 this.$router.push('/students');
-            });
+            } catch (error) {
+                console.error(error);
+            }
         },
         // For image upload.
         onFileChange(e) {
@@ -295,21 +331,35 @@ export default {
                     v-model="user.username"
                     type="text"
                     class="form-control"
+                    @input="clearUsernameError"
                 />
                 <div
                     v-if="
-                        validate.username &&
-                        (user.username == '' || user.username == null)
+                        (validate.username &&
+                            (user.username == '' || user.username == null)) ||
+                        errorUsernameMessage
                     "
                     class="form-validate"
                 >
-                    please enter a user name !
+                    {{ errorUsernameMessage || 'Please enter a username!' }}
                 </div>
             </div>
             <div class="mb-3">
                 <label class="form-label">Email address</label>
-                <input v-model="user.email" type="email" class="form-control" />
+                <input
+                    v-model="user.email"
+                    type="email"
+                    class="form-control"
+                    @input="clearEmailError"
+                />
+                <div v-if="errorEmailMessage" class="form-validate">
+                    {{
+                        errorEmailMessage ||
+                        'Please enter a valid email address!'
+                    }}
+                </div>
             </div>
+
             <div class="d-flex justify-content-end gap-4">
                 <router-link class="btn red-btn" to="/students"
                     >Cancel
