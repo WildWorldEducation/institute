@@ -2,9 +2,13 @@
 // Import the stores.
 import { useUsersStore } from '../../stores/UsersStore';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import TooltipBtn from './share-components/TooltipBtn.vue';
 
 export default {
     props: ['userId'],
+    components: {
+        TooltipBtn
+    },
     setup() {
         const usersStore = useUsersStore();
         const userDetailsStore = useUserDetailsStore();
@@ -19,7 +23,8 @@ export default {
     data() {
         return {
             showModal: false,
-            localIsSkillsLocked: null
+            localIsSkillsLocked: null,
+            mode: 'big'
         };
     },
     created() {
@@ -32,7 +37,7 @@ export default {
     },
     methods: {
         updateSkillsLock() {
-            this.$parent.updateSkillsLock();
+            this.$parent.updateSkillsLock();;
         }
     }
 };
@@ -164,12 +169,41 @@ export default {
                         {{ studentName ? `${studentName}'s Goals` : 'Goals' }}
                     </router-link>
                     <div class="mt-4">
-                        <h3
-                            v-if="this.userDetailsStore.role == 'instructor'"
-                            class="secondary-heading h6"
-                        >
-                            Lock skill progress?
-                        </h3>
+                        <div class="d-flex gap-1">
+                            <h3
+                                v-if="
+                                    this.userDetailsStore.role == 'instructor'
+                                "
+                                class="secondary-heading h6"
+                            >
+                                Lock skill progress?
+                            </h3>
+                            <div class="tooltip-wrapper">
+                                <TooltipBtn
+                                    v-if="mode === 'big'"
+                                    class="d-none d-md-block"
+                                    toolTipText="This will prevent the student from being able to
+                                master skills in the case that they have not
+                                already mastered the skills that come before
+                                them."
+                                    bubbleWidth="350px"
+                                    trianglePosition="left"
+                                    absoluteTop="37px"
+                                />
+                                <!-- Mobile tooltip have smaller width -->
+                                <TooltipBtn
+                                    v-if="mode === 'big'"
+                                    class="d-md-none"
+                                    toolTipText="This will prevent the student from being able to
+                                master skills in the case that they have not
+                                already mastered the skills that come before
+                                them."
+                                    bubbleWidth="100px"
+                                    trianglePosition="left"
+                                    absoluteTop="37px"
+                                />
+                            </div>
+                        </div>
                         <input
                             type="radio"
                             value="0"
@@ -304,7 +338,6 @@ export default {
     border: 1px solid var(--primary-color);
     border-radius: 12px;
     padding: 33px 28px;
-    overflow: hidden;
 }
 
 .user-input-information {
