@@ -940,6 +940,32 @@ router.put(
 );
 
 // User update their password from profile page
+router.put('/profile/:id/edit-password', isAuthenticated, (req, res, next) => {
+    // Hash the password.
+    bcrypt.hash(req.body.password, saltRounds, function (err, hashedPassword) {
+        if (err) {
+            console.log(err);
+        }
+
+        // Add data.
+        let sqlQuery = `UPDATE users 
+                    SET password = ${conn.escape(hashedPassword)} 
+                    WHERE id = ${conn.escape(req.params.id)};`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    });
+});
+
+// Allow instructor to edit student password
 router.put(
     '/:studentId/edit-student-password',
     isAuthenticated,
