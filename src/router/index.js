@@ -309,6 +309,13 @@ const router = createRouter({
                 )
         },
         {
+            path: '/edit-student-password/:id',
+            name: 'edit-student-password',
+            component: () =>
+                import('../components/pages/ChangeStudentPasswordView.vue'),
+            meta: { requiresAuth: true, roles: ['instructor'] }
+        },
+        {
             path: '/reputation',
             name: 'reputation',
             component: () =>
