@@ -239,6 +239,38 @@ async function generateLearningObjectiveQuestion(
     }
 }
 
+async function autoCheckLearningObjectiveMastery(
+    threadId,
+    assistantId,
+    messageData
+) {
+    // Add a message to the thread
+    const message = await openai.beta.threads.messages.create(threadId, {
+        role: 'user',
+        content: `Do you think I understand this learning objective?`
+    });
+
+    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+        assistant_id: assistantId,
+        instructions: `The subject is: ${messageData.learningObjective}. 
+        The level to be assessed is: ${messageData.skillLevel}.
+        Review the interactions within this thread and determine if the user understands
+        this subject.
+        If not, or if you are not sure, return only the word: "no". 
+        If yes, return only the word: "yes", exactly as I have spelled it with the quotation marks,
+        with no punctuation.`
+    });
+
+    if (run.status === 'completed') {
+        const messages = await openai.beta.threads.messages.list(threadId);
+        const latestMessage = messages.data[0];
+
+        return latestMessage;
+    } else {
+        console.log(run.status);
+    }
+}
+
 module.exports = {
     createAssistantAndThread,
     skillMessage,
@@ -249,5 +281,6 @@ module.exports = {
     saveLearningObjectiveThread,
     learningObjectiveMessage,
     generateQuestion,
-    generateLearningObjectiveQuestion
+    generateLearningObjectiveQuestion,
+    autoCheckLearningObjectiveMastery
 };
