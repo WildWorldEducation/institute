@@ -15,7 +15,7 @@ const openai = new OpenAI({
 /**
  * Shared functions --------------------------------------
  */
-async function initialAssistant(topic, level) {
+async function createAssistant(topic, level) {
     const assistant = await createAssistant(topic, level);
     const thread = await createThread();
     const result = { assistant: assistant, thread: thread };
@@ -26,10 +26,11 @@ async function createAssistant(topic, level) {
     const assistant = await openai.beta.assistants.create({
         name: 'General Tutor',
         instructions:
-            'You are a personal tutor teaching a ' +
+            `You are a personal tutor teaching a ` +
             level +
-            'student about the following subject: ' +
-            topic,
+            `student about the following subject: ` +
+            topic +
+            `. You are also testing the student's knowledge of the subject.`,
         tools: [],
         model: 'gpt-4o'
     });
@@ -56,7 +57,7 @@ async function getMessagesList(threadId) {
 }
 
 /**
- * Skill level tutor functions
+ * Skill level tutor functions ---------------------
  */
 /**
  * Get skill level AI tutor thread id
@@ -64,7 +65,7 @@ async function getMessagesList(threadId) {
  * @param {string} userId
  * @return {object} database data
  */
-async function getAITutorSkillThread(userId, skillUrl) {
+async function getSkillThread(userId, skillUrl) {
     try {
         let queryString = `SELECT * 
                            FROM ai_tutor_skill_threads 
@@ -95,7 +96,7 @@ async function saveAITutorSkillThread(data) {
     }
 }
 
-async function processingNewSkillMessage(threadId, assistantId, messageData) {
+async function skillMessage(threadId, assistantId, messageData) {
     // Add a Message to the Thread
     const message = await openai.beta.threads.messages.create(threadId, {
         role: 'user',
@@ -142,10 +143,10 @@ async function generateQuestion(threadId, assistantId, messageData) {
 }
 
 /**
- * Learning objective level tutor functions
+ * Learning objective level tutor functions --------------------
  */
 
-async function saveAITutorLearningObjectiveThread(data) {
+async function saveLearningObjectiveThread(data) {
     try {
         let queryString = `INSERT INTO ai_tutor_learning_objective_threads (user_id, learning_objective_id, assistant_id, thread_id)
                VALUES (
@@ -167,7 +168,7 @@ async function saveAITutorLearningObjectiveThread(data) {
  * @param {string} learningObjectiveId
  * @return {*}
  */
-async function getAITutorLearningObjectiveThread(userId, learningObjectiveId) {
+async function getLearningObjectiveThread(userId, learningObjectiveId) {
     try {
         let queryString = `SELECT * 
                            FROM ai_tutor_learning_objective_threads
@@ -243,13 +244,13 @@ async function generateNewLearningObjectiveQuestion(
 }
 
 module.exports = {
-    initialAssistant,
-    processingNewSkillMessage,
+    createAssistant,
+    skillMessage,
     saveAITutorSkillThread,
     getMessagesList,
-    getAITutorSkillThread,
-    getAITutorLearningObjectiveThread,
-    saveAITutorLearningObjectiveThread,
+    getSkillThread,
+    getLearningObjectiveThread,
+    saveLearningObjectiveThread,
     processingNewLearningObjectiveMessage,
     generateQuestion,
     generateNewLearningObjectiveQuestion
