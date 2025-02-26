@@ -15,7 +15,7 @@ const openai = new OpenAI({
 /**
  * Shared functions --------------------------------------
  */
-async function createAssistant(topic, level) {
+async function createAssistantAndThread(topic, level) {
     const assistant = await createAssistant(topic, level);
     const thread = await createThread();
     const result = { assistant: assistant, thread: thread };
@@ -186,11 +186,7 @@ async function getLearningObjectiveThread(userId, learningObjectiveId) {
     }
 }
 
-async function processingNewLearningObjectiveMessage(
-    threadId,
-    assistantId,
-    messageData
-) {
+async function learningObjectiveMessage(threadId, assistantId, messageData) {
     // Add a Message to the Thread
     const message = await openai.beta.threads.messages.create(threadId, {
         role: 'user',
@@ -217,7 +213,7 @@ async function processingNewLearningObjectiveMessage(
     }
 }
 
-async function generateNewLearningObjectiveQuestion(
+async function generateLearningObjectiveQuestion(
     threadId,
     assistantId,
     messageData
@@ -244,14 +240,14 @@ async function generateNewLearningObjectiveQuestion(
 }
 
 module.exports = {
-    createAssistant,
+    createAssistantAndThread,
     skillMessage,
     saveAITutorSkillThread,
     getMessagesList,
     getSkillThread,
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
-    processingNewLearningObjectiveMessage,
+    learningObjectiveMessage,
     generateQuestion,
-    generateNewLearningObjectiveQuestion
+    generateLearningObjectiveQuestion
 };

@@ -61,6 +61,7 @@ export default {
             if (this.waitForAIresponse) {
                 return;
             }
+            // Turn on loading icon
             this.waitForAIresponse = true;
             try {
                 const requestOptions = {
@@ -73,12 +74,12 @@ export default {
                         userId: this.userDetailsStore.userId,
                         skillName: this.skillName,
                         skillLevel: this.englishSkillLevel,
+                        // Whatever the user typed.
                         message: this.message
                     })
                 };
 
                 var url = '/ai-tutor/learning-objectives/new-message';
-
                 const res = await fetch(url, requestOptions);
                 if (res.status === 500) {
                     alert('The tutor can`t answer !!');
@@ -86,9 +87,9 @@ export default {
                     return;
                 }
                 const resData = await res.json();
-
                 this.latestMessage = resData.message.content[0].text.value;
-                this.messageList.push(this.latestMessage);
+                // Add message to thread.
+                //  this.messageList.push(this.latestMessage);
 
                 this.getMessages();
                 this.waitForAIresponse = false;

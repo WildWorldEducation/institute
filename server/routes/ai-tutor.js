@@ -14,15 +14,15 @@ const conn = require('../config/db');
 const { OpenAI } = require('openai');
 const {
     skillMessage,
-    createAssistant,
+    createAssistantAndThread,
     getSkillThread,
     saveAITutorSkillThread,
     getMessagesList,
     // for learning objective AI tutor
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
-    processingNewLearningObjectiveMessage,
-    generateNewLearningObjectiveQuestion,
+    learningObjectiveMessage,
+    generateLearningObjectiveQuestion,
     generateQuestion
 } = require('../utilities/openAIAssistant');
 const isAuthenticated = require('../middlewares/authMiddleware');
@@ -46,7 +46,10 @@ router.get('/messages-list', isAuthenticated, async (req, res, next) => {
         let assistantData = await getSkillThread(userId, skillUrl);
         // Create assistant
         if (assistantData.length === 0) {
-            const newAssistant = await createAssistant(skillName, skillLevel);
+            const newAssistant = await createAssistantAndThread(
+                skillName,
+                skillLevel
+            );
             assistantData = [
                 {
                     userId: userId,
@@ -139,7 +142,7 @@ router.get(
             // If Open AI assistant has not yet been created for this user + learning objective
             if (assistantData.length === 0) {
                 // Create new Open AI assistant.
-                const newAssistant = await createAssistant(
+                const newAssistant = await createAssistantAndThread(
                     learningObjective,
                     skillLevel
                 );
@@ -187,7 +190,7 @@ router.post(
                 req.body.learningObjectiveId
             );
 
-            const result = await processingNewLearningObjectiveMessage(
+            const result = await learningObjectiveMessage(
                 assistantData[0].thread_id,
                 assistantData[0].assistant_id,
                 req.body
@@ -215,7 +218,7 @@ router.post(
                 req.body.learningObjectiveId
             );
 
-            const result = await generateNewLearningObjectiveQuestion(
+            const result = await generateLearningObjectiveQuestion(
                 assistantData[0].thread_id,
                 assistantData[0].assistant_id,
                 req.body
