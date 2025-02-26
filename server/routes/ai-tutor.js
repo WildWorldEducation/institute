@@ -180,6 +180,7 @@ router.post(
     isAuthenticated,
     async (req, res, next) => {
         try {
+            // First get the message thread.
             const assistantData = await getAITutorLearningObjectiveThread(
                 req.body.userId,
                 req.body.learningObjectiveId

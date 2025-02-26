@@ -139,6 +139,7 @@ export default {
                 this.waitForAIresponse = false;
             }
         },
+        // ask Open AI to set a short quiz about the learning objective
         async learningObjectiveAssessment() {
             this.isAssessment = true;
 
