@@ -50,8 +50,7 @@ export default {
                 const response = await fetch(url);
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
-                // we reverse oder of messages list because OpenAI return messages from newest to oldest
-                //this.messageList.reverse();
+
                 this.$nextTick(this.scrollToMessageInput());
             } catch (error) {
                 console.error(error);
@@ -176,7 +175,7 @@ export default {
                     `height:${count * lineHeightInPixels}px;overflow-y:hidden;`
                 );
                 // Also scroll to bottom of the chat div
-                //     this.scrollToMessageInput();
+                //this.scrollToMessageInput();
             });
         }
     }
@@ -360,12 +359,14 @@ export default {
         >
             <div
                 class="d-flex my-3"
-                :class="{ 'flex-row-reverse': message.role === 'user' }"
+                :class="{ 'justify-content-end': message.role === 'user' }"
                 v-for="message in messageList"
             >
+                <!-- Student messages -->
                 <div v-if="message.role === 'user'" class="user-conversation">
                     {{ message.content[0].text.value }}
                 </div>
+                <!-- AI tutor messages -->
                 <div
                     v-else-if="
                         message.role === 'assistant' &&

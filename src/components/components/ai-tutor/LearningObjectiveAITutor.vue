@@ -289,7 +289,7 @@ export default {
         <div
             class="d-flex my-3 messages w-100"
             :class="{
-                'd-flex justify-content-end': message.role === 'user'
+                'justify-content-end': message.role === 'user'
             }"
             v-for="message in messageList"
         >
