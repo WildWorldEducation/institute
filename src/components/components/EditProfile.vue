@@ -97,7 +97,6 @@ export default {
                     password: this.password
                 })
             };
-
             var url = '/users/profile/' + this.id + '/edit-password';
             fetch(url, requestOptions).then(() => {
                 this.userDetailsStore.getUserDetails();
@@ -459,7 +458,6 @@ export default {
                         Submit
                     </button>
                 </div>
-
                 <hr class="mt-5 mb-5" />
                 <!-- Password Section -->
                 <h2 class="secondary-heading h4">Update Password</h2>
@@ -694,19 +692,16 @@ export default {
 #img-background {
     border-radius: 12px;
 }
-
 .password-div {
     position: relative;
     display: flex;
     flex-direction: row;
     align-items: center;
 }
-
 .eye-icon {
     position: absolute;
     right: 20px;
 }
-
 .eye-icon:hover {
     cursor: pointer;
 }
