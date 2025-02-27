@@ -86,6 +86,7 @@ export default {
     },
     async mounted() {
         await this.getIconData();
+        canvas.addEventListener('click',this.clickCallBack);
     },
     methods: {
         async loadTree() {
@@ -104,8 +105,29 @@ export default {
             });
             hiddenCanvas.style.display = 'none';
 
-            // Listen for clicks on the main canvas
-            canvas.addEventListener('click', async (e) => {
+            // Zoom and pan with mouse
+            // We have to construct the d3 zoom function and assign the zoom event
+            this.d3Zoom = d3
+                .zoom()
+                .scaleExtent([0.05, 4])
+                .on('zoom', ({ transform }) => {
+                    this.debugScale = transform.k;
+                    this.transformX = transform.x;
+                    this.transformY = transform.y;
+                    this.drawTree(transform);
+                    // update slider percent ( Handle by us not d3 but will invoke when the d3 zoom event is call )
+                });
+
+            // Bind the above object to canvas so it can zoom the tree
+            d3.select(this.context.canvas).call(this.d3Zoom);
+
+            // Set initial zoom value.
+            this.resetPos();
+
+            // For the loading animation.
+            this.isLoading = false;
+        },
+        async clickCallBack(e){
                 // We actually only need to draw the hidden canvas when
                 // there is an interaction. This sketch can draw it on
                 // each loop, but that is only for demonstration.
@@ -128,10 +150,14 @@ export default {
 
                 // This will return that pixel's color
                 var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
+                var col2 = ctx.getImageData(mouseX + 28 * this.scale, mouseY, 1, 1 ).data;
 
                 //Our map uses these rgb strings as keys to nodes.
                 var colString =
                     'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
+                var colString2 =
+                    'rgb(' + col2[0] + ',' + col2[1] + ',' + col2[2] + ')';
+
                 var node = this.colToNode[colString];
 
                 if (node && node.data.id) {
@@ -159,32 +185,21 @@ export default {
                     const result2 = await result.json();
                     this.skill.introduction = result2.introduction;
                     this.skill.url = result2.url;
-                    this.showSkillPanel = true;
+                    if (colString !== colString2) {
+                        if (this.skill.has_children) {
+                            if (this.skill.show_children == 0) {
+                                this.toggleShowChildren(this.skill);
+                            } else {
+                                this.toggleHideChildren(this.skill);
+                            }
+                        } else {
+                            this.showSkillPanel = true;
+                        }
+                    } else {
+                        this.showSkillPanel = true;
+                    }
                 }
-            });
-
-            // Zoom and pan with mouse
-            // We have to construct the d3 zoom function and assign the zoom event
-            this.d3Zoom = d3
-                .zoom()
-                .scaleExtent([0.05, 4])
-                .on('zoom', ({ transform }) => {
-                    this.debugScale = transform.k;
-                    this.transformX = transform.x;
-                    this.transformY = transform.y;
-                    this.drawTree(transform);
-                    // update slider percent ( Handle by us not d3 but will invoke when the d3 zoom event is call )
-                });
-
-            // Bind the above object to canvas so it can zoom the tree
-            d3.select(this.context.canvas).call(this.d3Zoom);
-
-            // Set initial zoom value.
-            this.resetPos();
-
-            // For the loading animation.
-            this.isLoading = false;
-        },
+            },
         getAlgorithm() {
             // Create a tree layout.
             this.data = {
@@ -319,8 +334,7 @@ export default {
             let ctx1 = this.context;
             let ctx2 = this.hiddenCanvasContext;
             // A flag to determine if this node was searched by user
-            const isSearched =
-                node.data.name === this.resultNode?.data.name;
+            const isSearched = node.data.name === this.resultNode?.data.name;
 
             if (this.scale > 0.6) {
                 this.drawRoundRectNode(ctx1, node);
@@ -340,8 +354,8 @@ export default {
 
             // If child nodes are collapsed, add the 'plus' sign.
             let plusShift = 0;
-            if(this.scale > 0.6){
-                plusShift = 179;
+            if (this.scale > 0.6) {
+                plusShift = 177;
             }
             if (
                 node.data.type != 'sub' &&
@@ -354,14 +368,31 @@ export default {
 
                 // Draw vertical line
                 ctx1.beginPath();
-                ctx1.moveTo(node.y - 10  + plusShift, node.x);
-                ctx1.lineTo(node.y + 10  + plusShift, node.x); // Draw to the bottom-middle
+                ctx1.moveTo(node.y - 10 + plusShift, node.x);
+                ctx1.lineTo(node.y + 10 + plusShift, node.x); // Draw to the bottom-middle
                 ctx1.stroke();
 
                 // Draw horizontal line
                 ctx1.beginPath();
-                ctx1.moveTo(node.y  + plusShift, node.x - 10);
-                ctx1.lineTo(node.y  + plusShift, node.x + 10); // Draw to the middle-right
+                ctx1.moveTo(node.y + plusShift, node.x - 10);
+                ctx1.lineTo(node.y + plusShift, node.x + 10); // Draw to the middle-right
+                ctx1.stroke();
+            } else if (
+                node.data.type != 'sub' &&
+                node.data.has_children == true
+            ) {
+                if (this.scale > 0.6) {
+                    plusShift = -19;
+                }
+
+                // Set line properties
+                ctx1.lineWidth = 4;
+                ctx1.strokeStyle = '#8d6ce7';
+
+                // Draw vertical line
+                ctx1.beginPath();
+                ctx1.moveTo(node.y - 10 + plusShift, node.x);
+                ctx1.lineTo(node.y + 10 + plusShift, node.x); // Draw to the bottom-middle
                 ctx1.stroke();
             }
 
@@ -377,88 +408,86 @@ export default {
         },
         drawNodeCircle(ctx, node) {
             const ctx1 = ctx;
-            
-                // Node size
-                let radius;
-                if (node.data.type == 'sub') {
-                    radius = 7.5;
-                } else {
-                    radius = 10;
-                }
 
-                ctx1.beginPath();
-                ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
-                // get the color associate with skill level
-                const skillColor = node.data.level
-                    ? this.hexColor(node.data.level)
-                    : '#000';
+            // Node size
+            let radius;
+            if (node.data.type == 'sub') {
+                radius = 7.5;
+            } else {
+                radius = 10;
+            }
 
-                // If mastered, make a solid shape.
-                if (node.data.is_mastered == 1) {
-                    ctx1.fillStyle = skillColor;
-                    ctx1.fill();
-                    const outlineColor = this.hexBorderColor(node.data.level);
-                    ctx1.lineWidth = 2;
-                    ctx1.strokeStyle = outlineColor;
-                    ctx1.stroke();
-                }
-                // If not, just an outline.
-                else {
-                    ctx1.lineWidth = 2;
-                    ctx1.fillStyle = '#FFF';
-                    ctx1.fill();
-                    ctx1.strokeStyle = skillColor;
-                    ctx1.stroke();
-                }
-                
+            ctx1.beginPath();
+            ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
+            // get the color associate with skill level
+            const skillColor = node.data.level
+                ? this.hexColor(node.data.level)
+                : '#000';
+
+            // If mastered, make a solid shape.
+            if (node.data.is_mastered == 1) {
+                ctx1.fillStyle = skillColor;
+                ctx1.fill();
+                const outlineColor = this.hexBorderColor(node.data.level);
+                ctx1.lineWidth = 2;
+                ctx1.strokeStyle = outlineColor;
+                ctx1.stroke();
+            }
+            // If not, just an outline.
+            else {
+                ctx1.lineWidth = 2;
+                ctx1.fillStyle = '#FFF';
+                ctx1.fill();
+                ctx1.strokeStyle = skillColor;
+                ctx1.stroke();
+            }
         },
         // Draw round rectangle node
         drawRoundRectNode(ctx, node) {
             const ctx1 = ctx;
-           
-                // Node size
-                let radius;
-                if (node.data.type == 'sub') {
-                    radius = 7.5;
+
+            // Node size
+            let radius;
+            if (node.data.type == 'sub') {
+                radius = 7.5;
+            } else {
+                radius = 10;
+            }
+
+            ctx1.beginPath();
+            // ctx1.arc(node.y, node.x, radius * 1.5, 0, 2 * Math.PI);
+            let xPosition = node.y;
+            if (node.data.children.length > 0) {
+                xPosition = xPosition - 195;
+            }
+            ctx1.roundRect(xPosition, node.x - 20, 195, 40, 20);
+            // get the color associate with skill level
+            const skillColor = node.data.level
+                ? this.hexColor(node.data.level)
+                : '#000';
+
+            // If mastered, make a solid shape.
+            if (node.data.is_mastered == 1) {
+                ctx1.fillStyle = skillColor;
+                ctx1.fill();
+                const outlineColor = this.hexBorderColor(node.data.level);
+                ctx1.lineWidth = 2;
+                ctx1.strokeStyle = outlineColor;
+                ctx1.stroke();
+            }
+
+            // If not, just an outline.
+            else {
+                ctx1.lineWidth = 4;
+                if (node.data.type == 'domain') {
+                    ctx1.fillStyle = '#eee';
                 } else {
-                    radius = 10;
+                    ctx1.fillStyle = '#fff';
                 }
-
-                ctx1.beginPath();
-                // ctx1.arc(node.y, node.x, radius * 1.5, 0, 2 * Math.PI);
-                let xPosition = node.y;
-                if (node.data.children.length > 0) {
-                    xPosition = xPosition - 180;
-                }
-                ctx1.roundRect(xPosition, node.x - 20, 180, 40, 20);
-                // get the color associate with skill level
-                const skillColor = node.data.level
-                    ? this.hexColor(node.data.level)
-                    : '#000';
-
-                // If mastered, make a solid shape.
-                if (node.data.is_mastered == 1) {
-                    ctx1.fillStyle = skillColor;
-                    ctx1.fill();
-                    const outlineColor = this.hexBorderColor(node.data.level);
-                    ctx1.lineWidth = 2;
-                    ctx1.strokeStyle = outlineColor;
-                    ctx1.stroke();
-                }
-
-                // If not, just an outline.
-                else {
-                    ctx1.lineWidth = 4;
-                    if(node.data.type == 'domain'){
-                        ctx1.fillStyle = '#eee';
-                    }else{
-                        ctx1.fillStyle = '#fff';
-                    }
-                    ctx1.fill();
-                    ctx1.strokeStyle = skillColor;
-                    ctx1.stroke();
-                }
-            
+                ctx1.fill();
+                ctx1.strokeStyle = skillColor;
+                ctx1.stroke();
+            }
         },
         drawNodeText(node, ctx1, isSearched) {
             // to avoid sharp artifacts with the stroke of the text.
@@ -483,17 +512,16 @@ export default {
         drawNodeOnHiddenCanvas(ctx, node) {
             const ctx2 = ctx;
 
-                ctx2.beginPath();
-                ctx2.moveTo(node.y, node.x);
-                //ctx2.arc(node.y, node.x, 20, 0, 2 * Math.PI);
-                let xPosition = node.y;
-                if (node.data.children.length > 0) {
-                    xPosition = xPosition - 180;
-                }
-                ctx2.roundRect(xPosition, node.x - 20, 180, 40, 20);
+            ctx2.beginPath();
+            ctx2.moveTo(node.y, node.x);
+            //ctx2.arc(node.y, node.x, 20, 0, 2 * Math.PI);
+            let xPosition = node.y;
+            if (node.data.children.length > 0) {
+                xPosition = xPosition - 195;
+            }
+            ctx2.roundRect(xPosition, node.x - 20, 195, 40, 20);
 
-                ctx2.fill();
-            
+            ctx2.fill();
         },
         drawSkillName(node, ctx, isSearched) {
             if (node.data.name.length < 19) {
@@ -513,7 +541,7 @@ export default {
             ctx1.lineJoin = 'bevel';
             // we move the skill name to the left and change the color if it a domain node
             // using the non domain as if condition will save us some compute time as none domain node is more common
-            
+
             ctx1.beginPath();
             // Background stroke
             ctx1.strokeStyle = '#FFF';
@@ -533,11 +561,10 @@ export default {
 
             let xPosition = node.y + 45;
             if (node.data.children.length > 0) {
-                xPosition = xPosition - 180;
+                xPosition = xPosition - 195;
             }
             ctx1.strokeText(node.data.name, xPosition, node.x + 4);
             ctx1.fillText(node.data.name, xPosition, node.x + 4);
-        
         },
         drawMediumSkillName(node, ctx, isSearched) {
             // Number use to fit text into node
@@ -575,7 +602,7 @@ export default {
 
             let xPosition = node.y + 45;
             if (node.data.children.length > 0) {
-                xPosition = xPosition - 180;
+                xPosition = xPosition - 195;
             }
 
             ctx1.strokeText(
@@ -635,7 +662,7 @@ export default {
 
             let xPosition = node.y + 45;
             if (node.data.children.length > 0) {
-                xPosition = xPosition - 180;
+                xPosition = xPosition - 195;
             }
 
             // draw the first line of text
@@ -675,7 +702,7 @@ export default {
 
                 let xPosition = node.y + 2;
                 if (node.data.children.length > 0) {
-                    xPosition = xPosition - 178;
+                    xPosition = xPosition - 195;
                 }
                 ctx1.save();
                 this.roundedImage(ctx1, xPosition, node.x - 18, 36, 36, 20);
