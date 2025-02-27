@@ -377,74 +377,81 @@ export default {
                             next
                         </button>
                     </div>
-                    <div
-                        v-if="showTutorialTip2"
-                        class="info-text mt-1 rounded p-2"
-                    >
-                        <p>
-                            A sad face icon indicates that the skill has not yet
-                            been mastered.
-                        </p>
-                        <p>Every mastered skill has a happy face icon.</p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(2)"
-                        >
-                            next
-                        </button>
+                    <div v-if="showTutorialTip2" class="tool-tip-base">
+                        <div class="explain-tool-tip triangle-top-right">
+                            <div class="tool-tip-text">
+                                <p>
+                                    A sad face icon indicates that the skill has
+                                    not yet been mastered.
+                                </p>
+                                <p>
+                                    Every mastered skill has a happy face icon.
+                                </p>
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(2)"
+                                >
+                                    next
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div
-                        v-else-if="showTutorialTip3"
-                        class="info-text mt-1 rounded p-2"
-                    >
-                        <p>Some nodes feature a plus or minus sign.</p>
-                        <p>
-                            This indicates that the skill contains mini-skills
-                            that need to be mastered before you can take an
-                            assessment to prove mastery of that larger skill.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(3)"
-                        >
-                            next
-                        </button>
+                    <div v-else-if="showTutorialTip3" class="tool-tip-base">
+                        <div class="explain-tool-tip triangle-top-right">
+                            <div class="tool-tip-text">
+                                <p>Some nodes feature a plus or minus sign.</p>
+                                <p>
+                                    This indicates that the skill contains
+                                    mini-skills that need to be mastered before
+                                    you can take an assessment to prove mastery
+                                    of that larger skill.
+                                </p>
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(3)"
+                                >
+                                    next
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div
-                        v-else-if="showTutorialTip4"
-                        class="info-text mt-1 rounded p-2"
-                    >
-                        <p>
-                            If you think a skill is missing (either from the
-                            site in general or from a certain branch of the
-                            tree) you can propose its addition with the "New
-                            Skill" button
-                        </p>
-                        <p>
-                            —just make sure you run a thorough search before
-                            making your suggestion.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(4)"
-                        >
-                            next
-                        </button>
+                    <div v-else-if="showTutorialTip4" class="tool-tip-base">
+                        <div class="explain-tool-tip triangle-top-right">
+                            <div class="tool-tip-text">
+                                <p>
+                                    If you think a skill is missing (either from
+                                    the site in general or from a certain branch
+                                    of the tree) you can propose its addition
+                                    with the "New Skill" button
+                                </p>
+                                <p>
+                                    —just make sure you run a thorough search
+                                    before making your suggestion.
+                                </p>
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(4)"
+                                >
+                                    next
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div
-                        v-else-if="showTutorialTip5"
-                        class="info-text mt-1 rounded p-2"
-                    >
-                        <p>
-                            Click on a skill node to go to the page for that
-                            skill.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(5)"
-                        >
-                            close
-                        </button>
+                    <div v-else-if="showTutorialTip5" class="tool-tip-base">
+                        <div class="explain-tool-tip triangle-top-right">
+                            <div class="tool-tip-text">
+                                <p>
+                                    Click on a skill node to go to the page for
+                                    that skill.
+                                </p>
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(5)"
+                                >
+                                    close
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <!-- Instructor Tooltips -->
@@ -458,74 +465,80 @@ export default {
                     "
                     class="info-panel me-4 mt-1 bg-light"
                 >
-                    <div
-                        v-if="showTutorialTip2"
-                        class="info-text mt-1 rounded p-2"
-                    >
-                        <p>
-                            At the top, one can filter the skills by grade
-                            level, and search for a specific skill.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(2)"
-                        >
-                            next
-                        </button>
+                    <div v-if="showTutorialTip2" class="tool-tip-base">
+                        <div class="explain-tool-tip triangle-top-right">
+                            <div class="tool-tip-text">
+                                <p>
+                                    At the top, one can filter the skills by
+                                    grade level, and search for a specific
+                                    skill.
+                                </p>
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(2)"
+                                >
+                                    next
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div
-                        v-else-if="showTutorialTip3"
-                        class="info-text mt-1 rounded p-2"
-                    >
-                        <p>Some nodes feature a plus or minus sign.</p>
-                        <p>
-                            This indicates that the skill contains mini-skills
-                            that need to be mastered before you can take an
-                            assessment to prove mastery of that larger skill.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(3)"
-                        >
-                            next
-                        </button>
+                    <div v-else-if="showTutorialTip3" class="tool-tip-base">
+                        <div class="explain-tool-tip triangle-top-right">
+                            <div class="tool-tip-text">
+                                <p>Some nodes feature a plus or minus sign.</p>
+                                <p>
+                                    This indicates that the skill contains
+                                    mini-skills that need to be mastered before
+                                    you can take an assessment to prove mastery
+                                    of that larger skill.
+                                </p>
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(3)"
+                                >
+                                    next
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div
-                        v-else-if="showTutorialTip4"
-                        class="info-text mt-1 rounded p-2"
-                    >
-                        <p>
-                            If you think a skill is missing (either from the
-                            site in general or from a certain branch of the
-                            tree) you can propose its addition with the "New
-                            Skill" button
-                        </p>
-                        <p>
-                            —just make sure you run a thorough search before
-                            making your suggestion.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(4)"
-                        >
-                            next
-                        </button>
+                    <div v-else-if="showTutorialTip4" class="tool-tip-base">
+                        <div class="explain-tool-tip triangle-top-right">
+                            <div class="tool-tip-text">
+                                <p>
+                                    If you think a skill is missing (either from
+                                    the site in general or from a certain branch
+                                    of the tree) you can propose its addition
+                                    with the "New Skill" button
+                                </p>
+                                <p>
+                                    —just make sure you run a thorough search
+                                    before making your suggestion.
+                                </p>
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(4)"
+                                >
+                                    next
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div
-                        v-else-if="showTutorialTip5"
-                        class="info-text mt-1 rounded p-2"
-                    >
-                        <p>
-                            If locking is enabled, when a student masters a
-                            skill (by passing a quiz) the next skill will be
-                            unlocked.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(5)"
-                        >
-                            close
-                        </button>
+                    <div v-else-if="showTutorialTip5" class="tool-tip-base">
+                        <div class="explain-tool-tip triangle-top-right">
+                            <div class="tool-tip-text">
+                                <p>
+                                    If locking is enabled, when a student
+                                    masters a skill (by passing a quiz) the next
+                                    skill will be unlocked.
+                                </p>
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(5)"
+                                >
+                                    close
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <!-- Editor Tooltips -->
@@ -538,56 +551,61 @@ export default {
                     "
                     class="info-panel me-4 mt-1 bg-light"
                 >
-                    <div
-                        v-if="showTutorialTip2"
-                        class="info-text mt-1 rounded p-2"
-                    >
-                        <p>
-                            At the top, one can filter the skills by grade
-                            level, and search for a specific skill.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(2)"
-                        >
-                            next
-                        </button>
+                    <div v-if="showTutorialTip2" class="tool-tip-base">
+                        <div class="explain-tool-tip triangle-top-right">
+                            <div class="tool-tip-text">
+                                <p>
+                                    At the top, one can filter the skills by
+                                    grade level, and search for a specific
+                                    skill.
+                                </p>
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(2)"
+                                >
+                                    next
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div
-                        v-else-if="showTutorialTip3"
-                        class="info-text mt-1 rounded p-2"
-                    >
-                        <p>
-                            If you think a skill is missing (either from the
-                            site in general or from a certain branch of the
-                            tree) you can propose its addition with the "New
-                            Skill" button
-                        </p>
-                        <p>
-                            —just make sure you run a thorough search before
-                            making your suggestion.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(3)"
-                        >
-                            next
-                        </button>
+                    <div v-else-if="showTutorialTip3" class="tool-tip-base">
+                        <div class="explain-tool-tip triangle-top-right">
+                            <div class="tool-tip-text">
+                                <p>
+                                    If you think a skill is missing (either from
+                                    the site in general or from a certain branch
+                                    of the tree) you can propose its addition
+                                    with the "New Skill" button
+                                </p>
+                                <p>
+                                    —just make sure you run a thorough search
+                                    before making your suggestion.
+                                </p>
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(3)"
+                                >
+                                    next
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div
-                        v-else-if="showTutorialTip4"
-                        class="info-text mt-1 rounded p-2"
-                    >
-                        <p>Some nodes feature a plus or minus sign.</p>
-                        <p>
-                            This indicates that the skill contains mini-skills.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(4)"
-                        >
-                            close
-                        </button>
+                    <div v-else-if="showTutorialTip4" class="tool-tip-base">
+                        <div class="explain-tool-tip triangle-top-right">
+                            <div class="tool-tip-text">
+                                <p>Some nodes feature a plus or minus sign.</p>
+                                <p>
+                                    This indicates that the skill contains
+                                    mini-skills.
+                                </p>
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(4)"
+                                >
+                                    close
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

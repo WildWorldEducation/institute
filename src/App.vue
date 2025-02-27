@@ -672,4 +672,178 @@ p {
     cursor: not-allowed !important;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2) !important;
 }
+
+
+/* Tooltip Arrow (Base) */
+.tooltip-arrow {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+.tool-tip-base {
+    position: relative;
+    top: 12px;
+    z-index: 100;
+}
+
+.explain-tool-tip {
+    position: relative;
+    border: var(--primary-color) 1px solid;
+    border-radius: 5px;
+    background-color: white;
+    padding: 5px 10px;
+}
+
+.triangle-top-left:before {
+    content: '';
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border-bottom: 10px solid var(--primary-color);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    left: 15px;
+    top: -10px;
+}
+
+.triangle-top-left::after {
+    content: '';
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border-bottom: 10px solid white;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    left: 15px;
+    top: -9px;
+}
+/* Tooltip Arrow - Top Middle */
+.triangle-top-middle::before {
+    content: '';
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border-bottom: 10px solid var(--primary-color);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -10px;
+}
+
+.triangle-top-middle::after {
+    content: '';
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border-bottom: 10px solid white;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -9px;
+}
+
+/* Tooltip Arrow - Top Right */
+.triangle-top-right::before {
+    content: '';
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border-bottom: 10px solid var(--primary-color);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    right: 15px;
+    top: -10px;
+}
+
+.triangle-top-right::after {
+    content: '';
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border-bottom: 10px solid white;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    right: 15px;
+    top: -9px;
+}
+
+/* Tooltip Arrow - Bottom Left */
+.triangle-bottom-left::before {
+    content: '';
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border-top: 10px solid var(--primary-color);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    left: 15px;
+    bottom: -10px;
+}
+
+.triangle-bottom-left::after {
+    content: '';
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border-top: 10px solid white;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    left: 15px;
+    bottom: -9px;
+}
+
+/* Tooltip Arrow - Bottom Middle */
+.triangle-bottom-middle::before {
+    content: '';
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border-top: 10px solid var(--primary-color);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -10px;
+}
+
+.triangle-bottom-middle::after {
+    content: '';
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border-top: 10px solid white;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -9px;
+}
+
+/* Tooltip Arrow - Bottom Right */
+.triangle-bottom-right::before {
+    content: '';
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border-top: 10px solid var(--primary-color);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    right: 15px;
+    bottom: -10px;
+}
+
+.triangle-bottom-right::after {
+    content: '';
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border-top: 10px solid white;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    right: 15px;
+    bottom: -9px;
+}
 </style>
