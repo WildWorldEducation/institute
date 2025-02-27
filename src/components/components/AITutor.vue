@@ -31,11 +31,10 @@ export default {
         await this.getMessagesList();
     },
     updated() {
-        if (this.mode !== 'hide') {
-            this.scrollToMessageInput();
-        }
+        // if (this.mode !== 'hide') {
+        //     this.scrollToMessageInput();
+        // }
     },
-    computed: {},
     methods: {
         // Get messages in thread.
         async getMessagesList() {
@@ -52,7 +51,7 @@ export default {
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
                 // we reverse oder of messages list because OpenAI return messages from newest to oldest
-                this.messageList.reverse();
+                //this.messageList.reverse();
                 this.$nextTick(this.scrollToMessageInput());
             } catch (error) {
                 console.error(error);
@@ -93,6 +92,45 @@ export default {
                 const resData = await res.json();
                 this.latestMessage = resData.message;
                 this.messageList.push(this.latestMessage);
+                this.waitForAIresponse = false;
+            } catch (error) {
+                console.error(error);
+                this.waitForAIresponse = false;
+            }
+        },
+        // ask Open AI to ask a question about the skill
+        async requestQuestion() {
+            if (this.waitForAIresponse) {
+                return;
+            }
+            this.waitForAIresponse = true;
+            try {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userName: this.userDetailsStore.userName,
+                        userId: this.userDetailsStore.userId,
+                        skillName: this.skillName,
+                        skillLevel: this.englishSkillLevel,
+                        skillUrl: this.skillUrl
+                    })
+                };
+
+                var url = '/ai-tutor/ask-question';
+
+                const res = await fetch(url, requestOptions);
+                if (res.status === 500) {
+                    alert('The tutor can`t answer !!');
+                    this.waitForAIresponse = false;
+                    return;
+                }
+                const resData = await res.json();
+
+                this.latestMessage = resData.message.content[0].text.value;
+                this.messageList.push(this.latestMessage);
+
+                this.getMessagesList();
                 this.waitForAIresponse = false;
             } catch (error) {
                 console.error(error);
@@ -146,7 +184,7 @@ export default {
                     `height:${count * lineHeightInPixels}px;overflow-y:hidden;`
                 );
                 // Also scroll to bottom of the chat div
-                this.scrollToMessageInput();
+                //     this.scrollToMessageInput();
             });
         }
     }
@@ -246,7 +284,7 @@ export default {
         </div>
         <hr />
         <!-- Suggested interaction buttons -->
-        <span class="d-flex justify-content-end">
+        <span v-if="mode === 'big'" class="d-flex justify-content-end">
             <!-- explanation button -->
             <button
                 class="btn suggested-interactions"
@@ -258,13 +296,67 @@ export default {
                 give me an overview
             </button>
             <!-- ask question button -->
-            <!-- <button
+            <button
                 class="btn suggested-interactions ms-1"
-                @click="learningObjectiveQuestion()"
+                @click="requestQuestion()"
             >
                 ask me a question
-            </button> -->
+            </button>
         </span>
+        <!-- Tutor loading animation -->
+        <div class="ai-tutor-processing" v-if="waitForAIresponse">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 640 512"
+                width="18"
+                height="18"
+                fill="black"
+            >
+                <path
+                    d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
+                />
+            </svg>
+            Thinking
+            <TutorLoadingSymbol />
+        </div>
+        <!-- User input (big mode) -->
+        <div class="user-chat-div rounded" v-if="mode === 'big'">
+            <textarea
+                ref="messageInput"
+                class="chat-text-area"
+                v-model="message"
+                type="text"
+            >
+            </textarea>
+            <!-- Send button -->
+            <div
+                b-tooltip.hover
+                tile="send message"
+                class="d-flex flex-row-reverse"
+            >
+                <button
+                    class="btn primary-btn send-btn"
+                    :class="{ 'loading-send-btn': waitForAIresponse }"
+                    @click="SendMessage()"
+                >
+                    <!-- Speech bubble icon -->
+                    <svg
+                        v-if="!waitForAIresponse"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="18"
+                        height="18"
+                        fill="white"
+                    >
+                        <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M256 448c141.4 0 256-93.1 256-208S397.4 32 256 32S0 125.1 0 240c0 45.1 17.7 86.8 47.7 120.9c-1.9 24.5-11.4 46.3-21.4 62.9c-5.5 9.2-11.1 16.6-15.2 21.6c-2.1 2.5-3.7 4.4-4.9 5.7c-.6 .6-1 1.1-1.3 1.4l-.3 .3c0 0 0 0 0 0c0 0 0 0 0 0s0 0 0 0s0 0 0 0c-4.6 4.6-5.9 11.4-3.4 17.4c2.5 6 8.3 9.9 14.8 9.9c28.7 0 57.6-8.9 81.6-19.3c22.9-10 42.4-21.9 54.3-30.6c31.8 11.5 67 17.9 104.1 17.9zM128 208a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm128 0a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm96 32a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
+                        />
+                    </svg>
+                    <SendIconLoadingSymbol v-else width="20px" />
+                </button>
+            </div>
+        </div>
         <!-- Message thread -->
         <div
             class="d-flex flex-column mx-auto chat-component"
@@ -293,60 +385,8 @@ export default {
                     "
                 ></div>
             </div>
-            <!-- Tutor loading animation -->
-            <div class="ai-tutor-processing" v-if="waitForAIresponse">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 640 512"
-                    width="18"
-                    height="18"
-                    fill="black"
-                >
-                    <path
-                        d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
-                    />
-                </svg>
-                Thinking
-                <TutorLoadingSymbol />
-            </div>
-            <!-- User input -->
-            <div class="user-chat-div rounded" v-if="mode === 'big'">
-                <textarea
-                    ref="messageInput"
-                    class="chat-text-area"
-                    v-model="message"
-                    type="text"
-                >
-                </textarea>
-                <!-- Send button -->
-                <div
-                    b-tooltip.hover
-                    tile="send message"
-                    class="d-flex flex-row-reverse"
-                >
-                    <button
-                        class="btn primary-btn send-btn"
-                        :class="{ 'loading-send-btn': waitForAIresponse }"
-                        @click="SendMessage()"
-                    >
-                        <svg
-                            v-if="!waitForAIresponse"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            width="18"
-                            height="18"
-                            fill="white"
-                        >
-                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                            <path
-                                d="M256 448c141.4 0 256-93.1 256-208S397.4 32 256 32S0 125.1 0 240c0 45.1 17.7 86.8 47.7 120.9c-1.9 24.5-11.4 46.3-21.4 62.9c-5.5 9.2-11.1 16.6-15.2 21.6c-2.1 2.5-3.7 4.4-4.9 5.7c-.6 .6-1 1.1-1.3 1.4l-.3 .3c0 0 0 0 0 0c0 0 0 0 0 0s0 0 0 0s0 0 0 0c-4.6 4.6-5.9 11.4-3.4 17.4c2.5 6 8.3 9.9 14.8 9.9c28.7 0 57.6-8.9 81.6-19.3c22.9-10 42.4-21.9 54.3-30.6c31.8 11.5 67 17.9 104.1 17.9zM128 208a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm128 0a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm96 32a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
-                            />
-                        </svg>
-                        <SendIconLoadingSymbol v-else width="20px" />
-                    </button>
-                </div>
-            </div>
         </div>
+        <!-- User input (mini mode) -->
         <div :class="'mini-user-chat-div'" v-if="mode === 'mini'">
             <textarea
                 ref="messageInput"
@@ -365,16 +405,18 @@ export default {
                     :class="{ 'loading-send-btn': waitForAIresponse }"
                     @click="SendMessage()"
                 >
+                    <!-- Speech bubble icon -->
                     <svg
                         v-if="!waitForAIresponse"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 512 512"
-                        height="18"
                         width="18"
+                        height="18"
                         fill="white"
                     >
+                        <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
                         <path
-                            d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480l0-83.6c0-4 1.5-7.8 4.2-10.8L331.8 202.8c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8 17.7 316.6C7.1 311.3 .3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z"
+                            d="M256 448c141.4 0 256-93.1 256-208S397.4 32 256 32S0 125.1 0 240c0 45.1 17.7 86.8 47.7 120.9c-1.9 24.5-11.4 46.3-21.4 62.9c-5.5 9.2-11.1 16.6-15.2 21.6c-2.1 2.5-3.7 4.4-4.9 5.7c-.6 .6-1 1.1-1.3 1.4l-.3 .3c0 0 0 0 0 0c0 0 0 0 0 0s0 0 0 0s0 0 0 0c-4.6 4.6-5.9 11.4-3.4 17.4c2.5 6 8.3 9.9 14.8 9.9c28.7 0 57.6-8.9 81.6-19.3c22.9-10 42.4-21.9 54.3-30.6c31.8 11.5 67 17.9 104.1 17.9zM128 208a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm128 0a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm96 32a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
                         />
                     </svg>
                     <SendIconLoadingSymbol v-else width="20px" />
@@ -467,7 +509,7 @@ export default {
     flex-direction: column;
     gap: 3px;
     border: 1px solid #e8e8e8;
-    padding: 20px;
+    padding: 10px;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
         rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
     background-color: white;

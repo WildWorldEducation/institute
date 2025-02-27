@@ -15,7 +15,7 @@ const openai = new OpenAI({
 /**
  * Shared functions --------------------------------------
  */
-async function initialAssistant(topic, level) {
+async function createAssistantAndThread(topic, level) {
     const assistant = await createAssistant(topic, level);
     const thread = await createThread();
     const result = { assistant: assistant, thread: thread };
@@ -26,10 +26,11 @@ async function createAssistant(topic, level) {
     const assistant = await openai.beta.assistants.create({
         name: 'General Tutor',
         instructions:
-            'You are a personal tutor teaching a ' +
+            `You are a personal tutor teaching a ` +
             level +
-            'student about the following subject: ' +
-            topic,
+            `student about the following subject: ` +
+            topic +
+            `. You are also testing the student's knowledge of the subject.`,
         tools: [],
         model: 'gpt-4o'
     });
@@ -56,7 +57,7 @@ async function getMessagesList(threadId) {
 }
 
 /**
- * Skill level tutor functions
+ * Skill level tutor functions ---------------------
  */
 /**
  * Get skill level AI tutor thread id
@@ -64,13 +65,14 @@ async function getMessagesList(threadId) {
  * @param {string} userId
  * @return {object} database data
  */
-async function getAITutorSkillThread(userId, skillUrl) {
+async function getSkillThread(userId, skillUrl) {
     try {
         let queryString = `SELECT * 
                            FROM ai_tutor_skill_threads 
                            WHERE user_id = ${conn.escape(
             userId
         )} AND skill_url = ${conn.escape(skillUrl)}`;
+
         const result = await query(queryString);
         return result;
     } catch (error) {
@@ -94,7 +96,7 @@ async function saveAITutorSkillThread(data) {
     }
 }
 
-async function processingNewSkillMessage(threadId, assistantId, messageData) {
+async function skillMessage(threadId, assistantId, messageData) {
     // Add a Message to the Thread
     const message = await openai.beta.threads.messages.create(threadId, {
         role: 'user',
@@ -118,11 +120,33 @@ async function processingNewSkillMessage(threadId, assistantId, messageData) {
     }
 }
 
+async function generateQuestion(threadId, assistantId, messageData) {
+    // Add a message to the thread
+    const message = await openai.beta.threads.messages.create(threadId, {
+        role: 'user',
+        content: 'Ask me a questions about: ' + messageData.skillName
+    });
+
+    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+        assistant_id: assistantId,
+        instructions: `The user is at a ${messageData.skillLevel} level and age.`
+    });
+
+    if (run.status === 'completed') {
+        const messages = await openai.beta.threads.messages.list(threadId);
+        const latestMessage = messages.data[0];
+
+        return latestMessage;
+    } else {
+        console.log(run.status);
+    }
+}
+
 /**
- * Learning objective level tutor functions
+ * Learning objective level tutor functions --------------------
  */
 
-async function saveAITutorLearningObjectiveThread(data) {
+async function saveLearningObjectiveThread(data) {
     try {
         let queryString = `INSERT INTO ai_tutor_learning_objective_threads (user_id, learning_objective_id, assistant_id, thread_id)
                VALUES (
@@ -144,7 +168,7 @@ async function saveAITutorLearningObjectiveThread(data) {
  * @param {string} learningObjectiveId
  * @return {*}
  */
-async function getAITutorLearningObjectiveThread(userId, learningObjectiveId) {
+async function getLearningObjectiveThread(userId, learningObjectiveId) {
     try {
         let queryString = `SELECT * 
                            FROM ai_tutor_learning_objective_threads
@@ -162,11 +186,7 @@ async function getAITutorLearningObjectiveThread(userId, learningObjectiveId) {
     }
 }
 
-async function processingNewLearningObjectiveMessage(
-    threadId,
-    assistantId,
-    messageData
-) {
+async function learningObjectiveMessage(threadId, assistantId, messageData) {
     // Add a Message to the Thread
     const message = await openai.beta.threads.messages.create(threadId, {
         role: 'user',
@@ -192,7 +212,7 @@ async function processingNewLearningObjectiveMessage(
     }
 }
 
-async function generateNewLearningObjectiveQuestion(
+async function generateLearningObjectiveQuestion(
     threadId,
     assistantId,
     messageData
@@ -218,14 +238,48 @@ async function generateNewLearningObjectiveQuestion(
     }
 }
 
+async function autoCheckLearningObjectiveMastery(
+    threadId,
+    assistantId,
+    messageData
+) {
+    // Add a message to the thread
+    const message = await openai.beta.threads.messages.create(threadId, {
+        role: 'user',
+        content: `Do you think I understand this learning objective?`
+    });
+
+    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+        assistant_id: assistantId,
+        instructions: `The subject is: ${messageData.learningObjective}. 
+        The level to be assessed is: ${messageData.skillLevel}.
+        Review the interactions within this thread and determine if the user understands
+        this subject.
+        If not, or if you are not sure, return only the word: "no". 
+        If yes, return only the word: "yes", exactly as I have spelled it with the quotation marks,
+        with no punctuation.`
+    });
+
+    if (run.status === 'completed') {
+        const messages = await openai.beta.threads.messages.list(threadId);
+        const latestMessage = messages.data[0];
+
+        return latestMessage;
+    } else {
+        console.log(run.status);
+    }
+}
+
 module.exports = {
-    initialAssistant,
-    processingNewSkillMessage,
+    createAssistantAndThread,
+    skillMessage,
     saveAITutorSkillThread,
     getMessagesList,
-    getAITutorSkillThread,
-    getAITutorLearningObjectiveThread,
-    saveAITutorLearningObjectiveThread,
-    processingNewLearningObjectiveMessage,
-    generateNewLearningObjectiveQuestion
+    getSkillThread,
+    getLearningObjectiveThread,
+    saveLearningObjectiveThread,
+    learningObjectiveMessage,
+    generateQuestion,
+    generateLearningObjectiveQuestion,
+    autoCheckLearningObjectiveMastery
 };

@@ -35,6 +35,7 @@ export default {
     methods: {
         // load thread
         async getMessages() {
+            this.message = '';
             try {
                 const url = `/ai-tutor/learning-objectives/messages-list?userId=${encodeURIComponent(
                     this.userDetailsStore.userId
@@ -48,19 +49,26 @@ export default {
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
 
-                // we reverse order of messages list because OpenAI return messages from newest to oldest
-                //   this.messageList.reverse();
+                console.log(this.messageList.length);
+                // AI should check for mastery after every 5 interactions from the user.
+                // This assumes the user will interact for every second message.
+                if (this.messageList.length > 9) {
+                    if (this.messageList.length % 10 === 0)
+                        this.automaticMasteryCheck();
+                }
 
+                // Close loading animation
                 this.isGotMessages = true;
             } catch (error) {
                 console.error(error);
             }
         },
         // send Open AI message regarding the learning objective
-        async learningObjectiveMessage() {
+        async sendMessage() {
             if (this.waitForAIresponse) {
                 return;
             }
+            // Turn on loading icon
             this.waitForAIresponse = true;
             try {
                 const requestOptions = {
@@ -73,12 +81,12 @@ export default {
                         userId: this.userDetailsStore.userId,
                         skillName: this.skillName,
                         skillLevel: this.englishSkillLevel,
+                        // Whatever the user typed.
                         message: this.message
                     })
                 };
 
                 var url = '/ai-tutor/learning-objectives/new-message';
-
                 const res = await fetch(url, requestOptions);
                 if (res.status === 500) {
                     alert('The tutor can`t answer !!');
@@ -86,9 +94,7 @@ export default {
                     return;
                 }
                 const resData = await res.json();
-
                 this.latestMessage = resData.message.content[0].text.value;
-                this.messageList.push(this.latestMessage);
 
                 this.getMessages();
                 this.waitForAIresponse = false;
@@ -98,7 +104,7 @@ export default {
             }
         },
         // ask Open AI to ask a question about the learning objective
-        async learningObjectiveQuestion() {
+        async requestQuestion() {
             if (this.waitForAIresponse) {
                 return;
             }
@@ -132,6 +138,42 @@ export default {
 
                 this.getMessages();
                 this.waitForAIresponse = false;
+            } catch (error) {
+                console.error(error);
+                this.waitForAIresponse = false;
+            }
+        },
+        async automaticMasteryCheck() {
+            try {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        learningObjective: this.learningObjective,
+                        learningObjectiveId: this.learningObjectiveId,
+                        userName: this.userDetailsStore.userName,
+                        userId: this.userDetailsStore.userId,
+                        skillName: this.skillName,
+                        skillLevel: this.englishSkillLevel
+                    })
+                };
+
+                var url = '/ai-tutor/learning-objectives/auto-check-mastery';
+                const res = await fetch(url, requestOptions);
+                if (res.status === 500) {
+                    this.waitForAIresponse = false;
+                    return;
+                }
+                const resData = await res.json();
+                console.log(resData.message.content[0].text.value);
+                if (
+                    resData.message.content[0].text.value == 'Yes' ||
+                    resData.message.content[0].text.value == 'yes' ||
+                    resData.message.content[0].text.value == 'Yes.' ||
+                    resData.message.content[0].text.value == 'yes.'
+                ) {
+                    alert('You seem to understand this learning objective!');
+                }
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false;
@@ -172,7 +214,7 @@ export default {
                 class="btn border border-dark"
                 @click="
                     message = 'Please explain it.';
-                    learningObjectiveMessage();
+                    sendMessage();
                 "
             >
                 <!-- Robot icon -->
@@ -192,7 +234,7 @@ export default {
             <!-- learning objective ask question button -->
             <button
                 class="btn border border-dark ms-1"
-                @click="learningObjectiveQuestion()"
+                @click="requestQuestion()"
             >
                 <!-- Question mark icon -->
                 <svg
@@ -212,14 +254,14 @@ export default {
         </span>
         <!-- Custom interactions text input -->
         <span class="d-flex mt-1">
-            <input
+            <textarea
                 class="chat-input border border-dark rounded"
                 v-model="message"
                 type="text"
             />
             <button
-                class="btn border border-dark ms-1"
-                @click="learningObjectiveMessage()"
+                class="btn border border-dark ms-1 message-btn"
+                @click="sendMessage()"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -280,6 +322,11 @@ export default {
 </template>
 
 <style scoped>
+.message-btn {
+    height: 40px;
+    width: 42px;
+}
+
 .messages {
     width: fit-content;
 }

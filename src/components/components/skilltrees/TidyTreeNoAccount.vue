@@ -67,7 +67,8 @@ export default {
             majorSubject: [
                 'Language',
                 'Mathematics',
-                'Science & Invention',
+                // please keep spelling like this (dont use "&")
+                'Science and Invention',
                 'Computer Science',
                 'History',
                 'Life',
@@ -193,8 +194,8 @@ export default {
         // Set initial zoom value.
         this.resetPos();
 
+        // This is for the search functions
         this.updateParentSubjectFilter();
-        // For the loading animation.
 
         // Get skill icon data
         await this.getIconData();
@@ -272,19 +273,13 @@ export default {
             const links = this.root.links();
             this.context.beginPath();
             for (const link of links) {
-                // Check if the links are in view.
-                // Dont render them if they are not, for performance benefit.
-                const targetNodeInView = this.checkingIfNodeInView(
-                    link.target,
-                    transform
-                );
-                const sourceNodeInView = this.checkingIfNodeInView(
-                    link.source,
-                    transform
-                );
-                if (!targetNodeInView && !sourceNodeInView) {
+                // Do not render parts of tree not in the canvas
+                // to improve performance.
+
+                if (!this.checkIfLinkInViews(link, transform)) {
                     continue;
                 }
+
                 this.drawLink(link);
             }
 
@@ -292,7 +287,7 @@ export default {
             this.context.beginPath();
             for (const node of this.nodes) {
                 // Check if the nodes are in view.
-                // Dont render them if they are not, for performance benefit.
+                // Don`t render them if they are not, for performance benefit.
                 const nodeInView = this.checkingIfNodeInView(node, transform);
                 if (!nodeInView) {
                     continue;
@@ -342,11 +337,10 @@ export default {
             }
 
             // Drawing Image
-            
+
             if (this.scale >= 0.75 && this.iconDictionary) {
                 this.drawImage(node, ctx1);
             }
-
 
             // Drawing Text.
             if (this.scale > 0.6) {
@@ -727,17 +721,59 @@ export default {
             );
         },
         checkingIfNodeInView(node, transformData) {
+            const point = {
+                x: node.x,
+                y: node.y
+            };
+            return this.checkIfPointInViews(point, transformData);
+        },
+        checkIfLinkInViews(link, transformData) {
+            const targetNode = link.target;
+            const sourceNode = link.source;
+            const targetNodeCounterPoint = {
+                x: targetNode.x,
+                y: sourceNode.y
+            };
+
+            const sourceNodeCounterPoint = {
+                x: sourceNode.x,
+                y: targetNode.y
+            };
+
+            // The idea is we will draw a rectangle with target node and source node surely this rectangle will contains the links
+            // => mean target and source point is two point on a rectangle with it diagonal line is source node and target node
+            // => That mean ours job is to find other two point on the other diagonal line to form a rectangle
+            // Then we can check if the rectangle is in view zone to see if the link is in view zone
+            // ( can also improve in the future to find even a smaller limit area that contain the links )
+            const rectangle = this.createRectangle(
+                targetNode,
+                sourceNode,
+                targetNodeCounterPoint,
+                sourceNodeCounterPoint
+            );
+
+            const isLinkInView = this.checkIfRectangleInView(
+                rectangle,
+                transformData
+            );
+
+            return isLinkInView;
+        },
+        checkIfPointInViews(point, transformData) {
+            if (!point) {
+                return false;
+            }
             // Calculate max visible range
             // Visible range is the rectangle with width and height equal to canvas context
             // Every time context is translate the visible range is changing too
 
             const visibleRangeY = transformData.y - this.height;
             // Calculate real position of node with current scale
-            let realPositionX = node.y * transformData.k;
-            let realPositionY = -node.x * transformData.k;
+            let realPositionX = point.y * transformData.k;
+            let realPositionY = -point.x * transformData.k;
 
-            // I acctually come up with this fomula base on obserse the changing of translate and node position when translate context
-            // It dosen`t make sense to me but some how woking correctly
+            // I actually come up with this formula base on observe the changing of translate and node position when translate context
+            // It doesn`t make sense to me but some how working correctly
             let combinePosition = transformData.x + realPositionX;
             if (
                 combinePosition > 0 &&
@@ -749,11 +785,187 @@ export default {
             }
             return false;
         },
+        checkIfLineIsInView(point1, point2, transformData) {
+            if (!point1 || !point2) {
+                return false;
+            }
+            // Calculate max visible range
+            // Visible range is the rectangle with width and height equal to canvas context
+            // Every time context is translate the visible range is changing too
+
+            const visibleRangeY = transformData.y - this.height;
+            // Calculate real position of node with current scale
+            let realPosition1X = point1.y * transformData.k;
+            let realPosition1Y = -point1.x * transformData.k;
+
+            let realPosition2X = point2.y * transformData.k;
+            let realPosition2Y = -point2.x * transformData.k;
+
+            // I actually come up with this formula base on observe the changing of translate and node position when translate context
+            // It doesn`t make sense to me but some how working correctly
+            let combinePosition1 = transformData.x + realPosition1X;
+            let combinePosition2 = transformData.x + realPosition2X;
+
+            if (combinePosition1 < 0 && combinePosition2 > this.width) {
+                return true;
+            }
+            if (
+                realPosition1Y > transformData.y &&
+                realPosition2Y < visibleRangeY
+            ) {
+                return true;
+            }
+
+            return false;
+        },
+        createRectangle(point1, point2, point3, point4) {
+            const rectangleConner = {
+                topLeft: null,
+                topRight: null,
+                bottomLeft: null,
+                bottomRight: null
+            };
+
+            const points = [point1, point2, point3, point4];
+
+            const bottomRightPoint = {
+                x: point1.x,
+                y: point1.y
+            };
+
+            points.forEach((point) => {
+                if (point.x > bottomRightPoint.x) {
+                    bottomRightPoint.x = point.x;
+                }
+                if (point.y > bottomRightPoint.y) {
+                    bottomRightPoint.y = point.y;
+                }
+            });
+
+            points.forEach((point) => {
+                if (
+                    point.x === bottomRightPoint.x &&
+                    point.y === bottomRightPoint.y
+                ) {
+                    rectangleConner.bottomRight = point;
+                }
+                if (
+                    point.x === bottomRightPoint.x &&
+                    point.y < bottomRightPoint.y
+                ) {
+                    rectangleConner.topRight = point;
+                }
+                if (
+                    point.x < bottomRightPoint.x &&
+                    point.y === bottomRightPoint.y
+                ) {
+                    rectangleConner.bottomLeft = point;
+                }
+                if (
+                    point.x < bottomRightPoint.x &&
+                    point.y < bottomRightPoint.y
+                ) {
+                    rectangleConner.topLeft = point;
+                }
+            });
+            return rectangleConner;
+        },
+        checkIfRectangleInView(rectangle, transformData) {
+            try {
+                // normal case where all four point is inView
+                const point1InView = this.checkIfPointInViews(
+                    rectangle.topLeft,
+                    transformData
+                );
+                if (point1InView) {
+                    return true;
+                }
+
+                const point2InView = this.checkIfPointInViews(
+                    rectangle.topRight,
+                    transformData
+                );
+                if (point2InView) {
+                    return true;
+                }
+
+                const point3InView = this.checkIfPointInViews(
+                    rectangle.bottomLeft,
+                    transformData
+                );
+                if (point3InView) {
+                    return true;
+                }
+
+                const point4InView = this.checkIfPointInViews(
+                    rectangle.bottomRight,
+                    transformData
+                );
+                if (point4InView) {
+                    return true;
+                }
+
+                // Special case when fourPoint is out of view but the rectangle still in view
+                // By check for the rectangle width and height to see if their are bigger than the viewBox
+                if (
+                    this.checkIfLineIsInView(
+                        rectangle.topLeft,
+                        rectangle.topRight,
+                        transformData
+                    )
+                ) {
+                    return true;
+                }
+
+                if (
+                    this.checkIfLineIsInView(
+                        rectangle.topLeft,
+                        rectangle.bottomLeft,
+                        transformData
+                    )
+                ) {
+                    return true;
+                }
+
+                if (
+                    this.checkIfLineIsInView(
+                        rectangle.bottomLeft,
+                        rectangle.bottomRight,
+                        transformData
+                    )
+                ) {
+                    return true;
+                }
+
+                if (
+                    this.checkIfLineIsInView(
+                        rectangle.topRight,
+                        rectangle.bottomRight,
+                        transformData
+                    )
+                ) {
+                    return true;
+                }
+
+                return false;
+            } catch (error) {
+                console.error(error);
+                return false;
+            }
+        },
         async findHiddenSkill(searchString) {
             // Find the filtered parent of this skill
         },
+
         updateParentSubjectFilter() {
             const showSubjects = this.skill.children.map((e) => e.name);
+
+            // Dealing with the troublesome '&' symbol.
+            for (let i = 0; i < showSubjects.length; i++) {
+                if (showSubjects[i] == 'Science & Invention') {
+                    showSubjects[i] = 'Science and Invention';
+                }
+            }
 
             let filteredSubjects = this.majorSubject;
             showSubjects.forEach((subject) => {
@@ -774,103 +986,100 @@ export default {
         },
         drawNodeCircle(ctx, node) {
             const ctx1 = ctx;
-            
-                // Node size
-                let radius;
-                if (node.data.type == 'sub') {
-                    radius = 7.5;
-                } else {
-                    radius = 10;
-                }
 
-                ctx1.beginPath();
-                ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
-                // get the color associate with skill level
-                const skillColor = node.data.level
-                    ? this.hexColor(node.data.level)
-                    : '#000';
+            // Node size
+            let radius;
+            if (node.data.type == 'sub') {
+                radius = 7.5;
+            } else {
+                radius = 10;
+            }
 
-                // If mastered, make a solid shape.
-                if (node.data.is_mastered == 1) {
-                    ctx1.fillStyle = skillColor;
-                    ctx1.fill();
-                    const outlineColor = this.hexBorderColor(node.data.level);
-                    ctx1.lineWidth = 2;
-                    ctx1.strokeStyle = outlineColor;
-                    ctx1.stroke();
-                }
-                // If not, just an outline.
-                else {
-                    ctx1.lineWidth = 2;
-                    ctx1.fillStyle = '#FFF';
-                    ctx1.fill();
-                    ctx1.strokeStyle = skillColor;
-                    ctx1.stroke();
-                }
-                
+            ctx1.beginPath();
+            ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
+            // get the color associate with skill level
+            const skillColor = node.data.level
+                ? this.hexColor(node.data.level)
+                : '#000';
+
+            // If mastered, make a solid shape.
+            if (node.data.is_mastered == 1) {
+                ctx1.fillStyle = skillColor;
+                ctx1.fill();
+                const outlineColor = this.hexBorderColor(node.data.level);
+                ctx1.lineWidth = 2;
+                ctx1.strokeStyle = outlineColor;
+                ctx1.stroke();
+            }
+            // If not, just an outline.
+            else {
+                ctx1.lineWidth = 2;
+                ctx1.fillStyle = '#FFF';
+                ctx1.fill();
+                ctx1.strokeStyle = skillColor;
+                ctx1.stroke();
+            }
         },
         drawNodeOnHiddenCanvas(ctx, node) {
             const ctx2 = ctx;
 
-                ctx2.beginPath();
-                ctx2.moveTo(node.y, node.x);
-                //ctx2.arc(node.y, node.x, 20, 0, 2 * Math.PI);
-                let xPosition = node.y;
-                if (node.data.children.length > 0) {
-                    xPosition = xPosition - 180;
-                }
-                ctx2.roundRect(xPosition, node.x - 20, 180, 40, 20);
+            ctx2.beginPath();
+            ctx2.moveTo(node.y, node.x);
+            //ctx2.arc(node.y, node.x, 20, 0, 2 * Math.PI);
+            let xPosition = node.y;
+            if (node.data.children.length > 0) {
+                xPosition = xPosition - 180;
+            }
+            ctx2.roundRect(xPosition, node.x - 20, 180, 40, 20);
 
-                ctx2.fill();
-
+            ctx2.fill();
         },
         // Draw round rectangle node
         drawRoundRectNode(ctx, node) {
             const ctx1 = ctx;
-            
-                // Node size
-                let radius;
-                if (node.data.type == 'sub') {
-                    radius = 7.5;
+
+            // Node size
+            let radius;
+            if (node.data.type == 'sub') {
+                radius = 7.5;
+            } else {
+                radius = 10;
+            }
+
+            ctx1.beginPath();
+            // ctx1.arc(node.y, node.x, radius * 1.5, 0, 2 * Math.PI);
+            let xPosition = node.y;
+            if (node.data.children.length > 0) {
+                xPosition = xPosition - 180;
+            }
+            ctx1.roundRect(xPosition, node.x - 20, 180, 40, 20);
+            // get the color associate with skill level
+            const skillColor = node.data.level
+                ? this.hexColor(node.data.level)
+                : '#000';
+
+            // If mastered, make a solid shape.
+            if (node.data.is_mastered == 1) {
+                ctx1.fillStyle = skillColor;
+                ctx1.fill();
+                const outlineColor = this.hexBorderColor(node.data.level);
+                ctx1.lineWidth = 2;
+                ctx1.strokeStyle = outlineColor;
+                ctx1.stroke();
+            }
+
+            // If not, just an outline.
+            else {
+                ctx1.lineWidth = 4;
+                if (node.data.type == 'domain') {
+                    ctx1.fillStyle = '#eee';
                 } else {
-                    radius = 10;
+                    ctx1.fillStyle = '#fff';
                 }
-
-                ctx1.beginPath();
-                // ctx1.arc(node.y, node.x, radius * 1.5, 0, 2 * Math.PI);
-                let xPosition = node.y;
-                if (node.data.children.length > 0) {
-                    xPosition = xPosition - 180;
-                }
-                ctx1.roundRect(xPosition, node.x - 20, 180, 40, 20);
-                // get the color associate with skill level
-                const skillColor = node.data.level
-                    ? this.hexColor(node.data.level)
-                    : '#000';
-
-                // If mastered, make a solid shape.
-                if (node.data.is_mastered == 1) {
-                    ctx1.fillStyle = skillColor;
-                    ctx1.fill();
-                    const outlineColor = this.hexBorderColor(node.data.level);
-                    ctx1.lineWidth = 2;
-                    ctx1.strokeStyle = outlineColor;
-                    ctx1.stroke();
-                }
-
-                // If not, just an outline.
-                else {
-                    ctx1.lineWidth = 4;
-                    if(node.data.type == 'domain'){
-                        ctx1.fillStyle = '#eee';
-                    }else{
-                        ctx1.fillStyle = '#fff';
-                    }
-                    ctx1.fill();
-                    ctx1.strokeStyle = skillColor;
-                    ctx1.stroke();
-                }
-                
+                ctx1.fill();
+                ctx1.strokeStyle = skillColor;
+                ctx1.stroke();
+            }
         },
 
         // Draw a round rectangle and using clip to make image rounded
@@ -881,10 +1090,11 @@ export default {
 
             ctx.closePath();
         },
-        // draw skill name based on it lenght
+        // draw skill name based on it length
         drawSkillName(node, ctx, isSearched) {
             if (!node.data.name) {
                 console.log(node.data);
+                return;
             }
             if (node.data.name.length < 19) {
                 this.drawShortSkillName(node, ctx, isSearched);
@@ -1107,6 +1317,9 @@ export default {
             }
         },
         drawNodeText(node, ctx1, isSearched) {
+            if (!node.data.name) {
+                return;
+            }
             // to avoid sharp artifacts with the stroke of the text.
             ctx1.lineJoin = 'bevel';
             // we move the skill name to the left and change the color if it a domain node
