@@ -67,7 +67,8 @@ export default {
             majorSubject: [
                 'Language',
                 'Mathematics',
-                'Science & Invention',
+                // please keep spelling like this (dont use "&")
+                'Science and Invention',
                 'Computer Science',
                 'History',
                 'Life',
