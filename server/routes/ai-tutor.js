@@ -83,12 +83,12 @@ router.post('/new-message', isAuthenticated, async (req, res, next) => {
             req.body.userId,
             req.body.skillUrl
         );
-        const result = await skillMessage(
+        await skillMessage(
             assistantData[0].thread_id,
             assistantData[0].assistant_id,
             req.body
         );
-        res.json({ message: result });
+        res.end();
     } catch (error) {
         console.error(error);
         res.status = 500;
@@ -106,13 +106,13 @@ router.post('/ask-question', isAuthenticated, async (req, res, next) => {
             req.body.skillUrl
         );
 
-        const result = await generateQuestion(
+        await generateQuestion(
             assistantData[0].thread_id,
             assistantData[0].assistant_id,
             req.body
         );
 
-        res.json({ message: result });
+        res.end();
     } catch (error) {
         console.error(error);
         res.status = 500;
@@ -191,13 +191,13 @@ router.post(
                 req.body.learningObjectiveId
             );
 
-            const result = await learningObjectiveMessage(
+            await learningObjectiveMessage(
                 assistantData[0].thread_id,
                 assistantData[0].assistant_id,
                 req.body
             );
 
-            res.json({ message: result });
+            res.end();
         } catch (error) {
             console.error(error);
             res.status = 500;
@@ -219,13 +219,13 @@ router.post(
                 req.body.learningObjectiveId
             );
 
-            const result = await generateLearningObjectiveQuestion(
+            await generateLearningObjectiveQuestion(
                 assistantData[0].thread_id,
                 assistantData[0].assistant_id,
                 req.body
             );
 
-            res.json({ message: result });
+            res.end();
         } catch (error) {
             console.error(error);
             res.status = 500;

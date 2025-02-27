@@ -51,7 +51,6 @@ export default {
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
 
-                console.log(this.messageList);
                 // this.$nextTick(this.scrollToMessageInput());
             } catch (error) {
                 console.error(error);
@@ -125,10 +124,6 @@ export default {
                     this.waitForAIresponse = false;
                     return;
                 }
-                const resData = await res.json();
-
-                this.latestMessage = resData.message.content[0].text.value;
-                this.messageList.push(this.latestMessage);
 
                 this.getMessagesList();
                 this.waitForAIresponse = false;
@@ -162,31 +157,31 @@ export default {
     },
     watch: {
         // Update text area height base on message input
-        message: function (newItem, oldItem) {
-            let { messageInput } = this.$refs;
-            const lineHeightInPixels = 22;
+        // message: function (newItem, oldItem) {
+        //     let { messageInput } = this.$refs;
+        //     const lineHeightInPixels = 22;
 
-            // Reset messageInput Height
-            messageInput.setAttribute(
-                `style`,
-                `height:${lineHeightInPixels}px;overflow-y:hidden;`
-            );
+        //     // Reset messageInput Height
+        //     messageInput.setAttribute(
+        //         `style`,
+        //         `height:${lineHeightInPixels}px;overflow-y:hidden;`
+        //     );
 
-            // Calculate number of lines (soft and hard)
-            const height = messageInput.style.height;
-            const scrollHeight = messageInput.scrollHeight;
-            messageInput.style.height = height;
-            const count = Math.floor(scrollHeight / lineHeightInPixels);
+        //     // Calculate number of lines (soft and hard)
+        //     const height = messageInput.style.height;
+        //     const scrollHeight = messageInput.scrollHeight;
+        //     messageInput.style.height = height;
+        //     const count = Math.floor(scrollHeight / lineHeightInPixels);
 
-            this.$nextTick(() => {
-                messageInput.setAttribute(
-                    `style`,
-                    `height:${count * lineHeightInPixels}px;overflow-y:hidden;`
-                );
-                // Also scroll to bottom of the chat div
-                //this.scrollToMessageInput();
-            });
-        }
+        //     this.$nextTick(() => {
+        //         messageInput.setAttribute(
+        //             `style`,
+        //             `height:${count * lineHeightInPixels}px;overflow-y:hidden;`
+        //         );
+        //         // Also scroll to bottom of the chat div
+        //         //this.scrollToMessageInput();
+        //     });
+        // }
     }
 };
 </script>

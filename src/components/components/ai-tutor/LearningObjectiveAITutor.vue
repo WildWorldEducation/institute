@@ -92,8 +92,6 @@ export default {
                     this.waitForAIresponse = false;
                     return;
                 }
-                const resData = await res.json();
-                this.latestMessage = resData.message.content[0].text.value;
 
                 this.getMessages();
                 this.waitForAIresponse = false;
@@ -130,9 +128,7 @@ export default {
                     this.waitForAIresponse = false;
                     return;
                 }
-                const resData = await res.json();
 
-                this.latestMessage = resData.message.content[0].text.value;
                 this.messageList.push(this.latestMessage);
 
                 this.getMessages();
