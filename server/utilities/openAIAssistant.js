@@ -69,8 +69,8 @@ async function getAITutorSkillThread(userId, skillUrl) {
         let queryString = `SELECT * 
                            FROM ai_tutor_skill_threads 
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND skill_url = ${conn.escape(skillUrl)}`;
+            userId
+        )} AND skill_url = ${conn.escape(skillUrl)}`;
         const result = await query(queryString);
         return result;
     } catch (error) {
@@ -105,7 +105,7 @@ async function processingNewSkillMessage(threadId, assistantId, messageData) {
         assistant_id: assistantId,
         instructions: `Please tutor about the topic: ${messageData.skillName}.
         Tutor the user as if they are at a ${messageData.skillLevel} level and age.
-        Ask follow up questions.`
+        Ask follow up questions. Make sure to have $ delimiters before any science and math string that can convert to Latex`
     });
 
     if (run.status === 'completed') {
@@ -149,8 +149,8 @@ async function getAITutorLearningObjectiveThread(userId, learningObjectiveId) {
         let queryString = `SELECT * 
                            FROM ai_tutor_learning_objective_threads
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND learning_objective_id = ${conn.escape(
+            userId
+        )} AND learning_objective_id = ${conn.escape(
             learningObjectiveId
         )}`;
 
@@ -180,13 +180,12 @@ async function processingNewLearningObjectiveMessage(
             messageData.learningObjective +
             '. Tutor the user as if they are at a ' +
             messageData.skillLevel +
-            ' level and age. Ask follow up questions.`'
+            ' level and age. Ask follow up questions. Make sure to have $ delimiters before any science and math string that can convert to Latex`'
     });
 
     if (run.status === 'completed') {
         const messages = await openai.beta.threads.messages.list(threadId);
         const latestMessage = messages.data[0];
-
         return latestMessage;
     } else {
         console.log(run.status);

@@ -1,7 +1,7 @@
 <script>
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
-
+import katex from 'katex';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
@@ -47,7 +47,7 @@ export default {
                 const response = await fetch(url);
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
-                console.log(this.messageList);
+
                 // we reverse order of messages list because OpenAI return messages from newest to oldest
                 //   this.messageList.reverse();
 
@@ -139,7 +139,15 @@ export default {
         },
         // Format the response.
         applyMarkDownFormatting(string) {
-            const md = window.markdownit();
+            const md = window.markdownit().use(window.texmath, {
+                engine: katex,
+                delimiters: ['brackets', 'dollars'],
+                katexOptions: { macros: { '\\RR': '\\mathbb{R}' } }
+            });
+
+            // let newString = string.replace('\\[ ', '$');
+            // newString = newString.replace(' \\]', '$');
+
             let formattedMessage = md.render(string);
             return formattedMessage;
         }
