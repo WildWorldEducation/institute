@@ -49,7 +49,6 @@ export default {
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
 
-                console.log(this.messageList.length);
                 // AI should check for mastery after every 5 interactions from the user.
                 // This assumes the user will interact for every second message.
                 if (this.messageList.length > 9) {
