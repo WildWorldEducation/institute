@@ -461,24 +461,41 @@ export default {
             <!-- Tooltips -->
             <div
                 v-if="showTutorialTip6"
-                class="info-panel bg-light rounded p-2 mb-2"
+                class="tool-tip-base mt-2"
+                :style="{ maxWidth: '300px' }"
             >
-                <p>Use the search field to search for specific skills.</p>
-                <button class="btn primary-btn" @click="progressTutorial(6)">
-                    next
-                </button>
+                <div class="explain-tool-tip triangle-top-left">
+                    <div class="tool-tip-text">
+                        <p>
+                            Use the search field to search for specific skills.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(6)"
+                        >
+                            next
+                        </button>
+                    </div>
+                </div>
             </div>
             <div
                 v-else-if="showTutorialTip7"
-                class="info-panel bg-light rounded p-2 mb-2 mt-2 float-right"
+                class="tool-tip-base mt-2 float-right"
             >
-                <p>
-                    Use the center button to center the skill tree,<br />
-                    and the print button to print a PDF.
-                </p>
-                <button class="btn primary-btn" @click="progressTutorial(7)">
-                    next
-                </button>
+                <div class="explain-tool-tip triangle-top-right">
+                    <div class="tool-tip-text">
+                        <p>
+                            Use the center button to center the skill tree,<br />
+                            and the print button to print a PDF.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(7)"
+                        >
+                            next
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -503,14 +520,14 @@ export default {
     <!-- Bottom grade level truncation filters -->
     <div class="tablet-and-up-legend position-absolute bottom-legend-div">
         <!-- Tooltip -->
-        <div
-            v-if="showTutorialTip5"
-            class="info-panel bg-light rounded p-2 mb-2"
-        >
-            <p>Use the buttons below to filter the skills by level.</p>
-            <button class="btn primary-btn" @click="progressTutorial(5)">
-                next
-            </button>
+        <div v-if="showTutorialTip5" class="tool-tip-base pb-3">
+            <div class="explain-tool-tip triangle-bottom-left">
+                <div class="tool-tip-text"></div>
+                <p>Use the buttons below to filter the skills by level.</p>
+                <button class="btn primary-btn" @click="progressTutorial(5)">
+                    next
+                </button>
+            </div>
         </div>
         <!-- Grade buttons -->
         <!-- If user is logged in -->
@@ -1085,11 +1102,19 @@ export default {
             </button>
         </div>
         <!-- Tooltip -->
-        <div v-if="showTutorialTip4" class="info-panel bg-light rounded p-2">
-            Use the buttons on the left to filter the skills by subject.<br />
-            <button class="btn primary-btn" @click="progressTutorial(4)">
-                next
-            </button>
+        <div v-if="showTutorialTip4" class="tool-tip-base bg-light rounded p-2">
+            <div class="explain-tool-tip triangle-top-left">
+                <div class="tool-tip-text">
+                    Use the buttons on the left to filter the skills by
+                    subject.<br />
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(4)"
+                    >
+                        next
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1705,6 +1730,7 @@ export default {
 
 .float-right {
     float: right;
+    right: 120px;
 }
 
 /*
@@ -1861,9 +1887,6 @@ export default {
     top: 50%;
     transform: translateY(-50%);
     left: 3px;
-    /* For the tooltip */
-    display: flex;
-    align-items: center;
 }
 
 .left-legend-div button {
@@ -2014,6 +2037,11 @@ export default {
         gap: 15px;
     }
 
+    .tool-tip-base {
+        right: 0px;
+        top: 4px;
+    }
+
     .tablet-and-up-legend {
         display: none !important;
     }
@@ -2044,6 +2072,9 @@ export default {
     }
     .legend span {
         flex-shrink: 0;
+    }
+    .tool-tip-base {
+        top: 4px;
     }
 }
 /*---*/

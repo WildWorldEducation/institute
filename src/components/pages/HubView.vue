@@ -174,15 +174,23 @@ export default {
                     v-if="
                         showTutorialTip2 && userDetailsStore.role == 'student'
                     "
-                    class="info-panel bg-light rounded p-2 mt-2"
+                    class="tool-tip-base"
+                    :style="{ maxWidth: '300px' }"
                 >
-                    <p>Type a career or skill here to get recommendations.</p>
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(2)"
-                    >
-                        next
-                    </button>
+                    <div class="explain-tool-tip triangle-top-left">
+                        <div class="tool-tip-text">
+                            <p>
+                                Type a career or skill here to get
+                                recommendations.
+                            </p>
+                            <button
+                                class="btn primary-btn"
+                                @click="progressTutorial(2)"
+                            >
+                                next
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -199,18 +207,22 @@ export default {
                             showTutorialTip3 &&
                             userDetailsStore.role == 'student'
                         "
-                        class="info-panel bg-light rounded p-2 mb-2"
+                        class="tool-tip-base mb-3"
                     >
-                        <p>
-                            This section shows your the last 5 skill pages you
-                            visited.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(3)"
-                        >
-                            next
-                        </button>
+                        <div class="explain-tool-tip triangle-bottom-left">
+                            <div class="tool-tip-text">
+                                <p>
+                                    This section shows your the last 5 skill
+                                    pages you visited.
+                                </p>
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(3)"
+                                >
+                                    next
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <LastVisitedSkills
                         v-if="userDetailsStore.role == 'student'"
@@ -230,19 +242,27 @@ export default {
                             showTutorialTip4 &&
                             userDetailsStore.role == 'student'
                         "
-                        class="info-panel bg-light rounded p-2 mb-2"
+                        class="tool-tip-base mb-3"
                     >
-                        <p>This section shows any goals you might have made.</p>
-                        <p>
-                            You can make a goal when there is a skill you want
-                            to master but it is not unlocked yet.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(4)"
-                        >
-                            close
-                        </button>
+                        <div class="explain-tool-tip triangle-bottom-left">
+                            <div class="tool-tip-text">
+                                <p>
+                                    This section shows any goals you might have
+                                    made.
+                                </p>
+                                <p>
+                                    You can make a goal when there is a skill
+                                    you want to master but it is not unlocked
+                                    yet.
+                                </p>
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(4)"
+                                >
+                                    close
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <Goals />
                 </div>
