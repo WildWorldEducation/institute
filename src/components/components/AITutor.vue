@@ -51,7 +51,6 @@ export default {
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
 
-                console.log(this.messageList);
                 // this.$nextTick(this.scrollToMessageInput());
             } catch (error) {
                 console.error(error);
@@ -125,10 +124,6 @@ export default {
                     this.waitForAIresponse = false;
                     return;
                 }
-                const resData = await res.json();
-
-                this.latestMessage = resData.message.content[0].text.value;
-                this.messageList.push(this.latestMessage);
 
                 this.getMessagesList();
                 this.waitForAIresponse = false;

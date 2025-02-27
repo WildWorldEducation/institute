@@ -88,7 +88,7 @@ router.post('/new-message', isAuthenticated, async (req, res, next) => {
             assistantData[0].assistant_id,
             req.body
         );
-        res.json({ message: result });
+        res.end();
     } catch (error) {
         console.error(error);
         res.status = 500;
@@ -112,7 +112,7 @@ router.post('/ask-question', isAuthenticated, async (req, res, next) => {
             req.body
         );
 
-        res.json({ message: result });
+        res.end();
     } catch (error) {
         console.error(error);
         res.status = 500;
