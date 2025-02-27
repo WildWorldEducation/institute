@@ -198,6 +198,7 @@ export default {
             'minimize-chat-container': mode === 'mini'
         }"
     >
+        <!-- Heading, tooltip and minimise/maximise buttons -->
         <div class="d-flex flex-column flex-md-row gap-2 align-items-baseline">
             <div class="d-flex flex-row w-100 justify-content-between">
                 <div class="d-flex gap-2">
@@ -303,22 +304,6 @@ export default {
                 ask me a question
             </button>
         </span>
-        <!-- Tutor loading animation -->
-        <div class="ai-tutor-processing" v-if="waitForAIresponse">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 640 512"
-                width="18"
-                height="18"
-                fill="black"
-            >
-                <path
-                    d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
-                />
-            </svg>
-            Thinking
-            <TutorLoadingSymbol />
-        </div>
         <!-- User input (big mode) -->
         <div class="d-flex mt-1" v-if="mode === 'big'">
             <textarea
@@ -350,6 +335,22 @@ export default {
                     </svg>
                 </button>
             </div>
+        </div>
+        <!-- Tutor loading animation -->
+        <div class="ai-tutor-processing mt-1" v-if="waitForAIresponse">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 640 512"
+                width="18"
+                height="18"
+                fill="black"
+            >
+                <path
+                    d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
+                />
+            </svg>
+            Thinking
+            <TutorLoadingSymbol />
         </div>
         <!-- Message thread -->
         <div
@@ -415,7 +416,7 @@ export default {
             </div>
         </div>
     </div>
-    <!-- Tutor Symbol -->
+    <!-- Maximise button -->
     <div class="hidden-chat-symbol" v-else @click="mode = 'mini'">
         <svg
             xmlns="http://www.w3.org/2000/svg"
