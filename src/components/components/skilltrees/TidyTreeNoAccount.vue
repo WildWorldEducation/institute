@@ -194,8 +194,8 @@ export default {
         // Set initial zoom value.
         this.resetPos();
 
+        // This is for the search functions
         this.updateParentSubjectFilter();
-        // For the loading animation.
 
         // Get skill icon data
         await this.getIconData();
@@ -956,8 +956,16 @@ export default {
         async findHiddenSkill(searchString) {
             // Find the filtered parent of this skill
         },
+
         updateParentSubjectFilter() {
             const showSubjects = this.skill.children.map((e) => e.name);
+
+            // Dealing with the troublesome '&' symbol.
+            for (let i = 0; i < showSubjects.length; i++) {
+                if (showSubjects[i] == 'Science & Invention') {
+                    showSubjects[i] = 'Science and Invention';
+                }
+            }
 
             let filteredSubjects = this.majorSubject;
             showSubjects.forEach((subject) => {
