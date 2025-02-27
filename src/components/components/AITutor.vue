@@ -51,7 +51,8 @@ export default {
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
 
-                this.$nextTick(this.scrollToMessageInput());
+                console.log(this.messageList);
+                // this.$nextTick(this.scrollToMessageInput());
             } catch (error) {
                 console.error(error);
             }
@@ -80,6 +81,7 @@ export default {
                         skillLevel: this.englishSkillLevel
                     })
                 };
+
                 var url = '/ai-tutor/new-message';
                 this.message = '';
                 const res = await fetch(url, requestOptions);
@@ -88,9 +90,8 @@ export default {
                     this.waitForAIresponse = false;
                     return;
                 }
-                const resData = await res.json();
-                this.latestMessage = resData.message;
-                this.messageList.push(this.latestMessage);
+                this.getMessagesList();
+
                 this.waitForAIresponse = false;
             } catch (error) {
                 console.error(error);
