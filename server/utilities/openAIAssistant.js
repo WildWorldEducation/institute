@@ -70,8 +70,8 @@ async function getSkillThread(userId, skillUrl) {
         let queryString = `SELECT * 
                            FROM ai_tutor_skill_threads 
                            WHERE user_id = ${conn.escape(
-            userId
-        )} AND skill_url = ${conn.escape(skillUrl)}`;
+                               userId
+                           )} AND skill_url = ${conn.escape(skillUrl)}`;
 
         const result = await query(queryString);
         return result;
@@ -124,7 +124,7 @@ async function generateQuestion(threadId, assistantId, messageData) {
     // Add a message to the thread
     const message = await openai.beta.threads.messages.create(threadId, {
         role: 'user',
-        content: 'Ask me a questions about: ' + messageData.skillName
+        content: 'Ask me a question about: ' + messageData.skillName
     });
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
@@ -173,8 +173,8 @@ async function getLearningObjectiveThread(userId, learningObjectiveId) {
         let queryString = `SELECT * 
                            FROM ai_tutor_learning_objective_threads
                            WHERE user_id = ${conn.escape(
-            userId
-        )} AND learning_objective_id = ${conn.escape(
+                               userId
+                           )} AND learning_objective_id = ${conn.escape(
             learningObjectiveId
         )}`;
 
