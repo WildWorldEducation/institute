@@ -24,7 +24,9 @@ export default {
             waitForAIresponse: false,
             mode: 'big',
             englishSkillLevel: '',
-            learningObjectives: []
+            learningObjectives: [],
+            isReadyForAssessment: false,
+            numberOfQuestionsAsked: 0
         };
     },
     async mounted() {
@@ -56,6 +58,13 @@ export default {
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
 
+                if (
+                    this.messageList.length >=
+                    this.learningObjectives.length * 2
+                ) {
+                    // this.isReadyForAssessment = true;
+                }
+
                 // this.$nextTick(this.scrollToMessageInput());
             } catch (error) {
                 console.error(error);
@@ -66,6 +75,7 @@ export default {
                 return;
             }
             this.waitForAIresponse = true;
+
             try {
                 // Add user message to messages list
                 const userMessage = {
@@ -107,6 +117,13 @@ export default {
             if (this.waitForAIresponse) {
                 return;
             }
+
+            // Allow for check mastery once question on all learning objectives asked.
+            this.numberOfQuestionsAsked++;
+            if (this.numberOfQuestionsAsked >= this.learningObjectives.length) {
+                // this.isReadyForAssessment = true;
+            }
+
             this.waitForAIresponse = true;
             try {
                 const requestOptions = {
@@ -139,7 +156,7 @@ export default {
             }
         },
         // ask Open AI to ask a question about the skill
-        async initiateAssessment() {
+        async assessMastery() {
             if (this.waitForAIresponse) {
                 return;
             }
@@ -153,11 +170,12 @@ export default {
                         userId: this.userDetailsStore.userId,
                         skillName: this.skillName,
                         skillLevel: this.englishSkillLevel,
-                        skillUrl: this.skillUrl
+                        skillUrl: this.skillUrl,
+                        learningObjectives: this.learningObjectives
                     })
                 };
 
-                var url = '/ai-tutor/ask-question';
+                var url = '/ai-tutor/assessment';
 
                 const res = await fetch(url, requestOptions);
                 if (res.status === 500) {
@@ -165,6 +183,10 @@ export default {
                     this.waitForAIresponse = false;
                     return;
                 }
+
+                const response = await fetch(url);
+                const resData = await response.json();
+                console.log(resData.assessmentResult);
 
                 this.getMessagesList();
                 this.waitForAIresponse = false;
@@ -321,18 +343,19 @@ export default {
         <!-- Suggested interaction buttons -->
         <span v-if="mode === 'big'" class="d-flex justify-content-end">
             <!-- explanation button -->
-            <!-- <button
+            <button
+                v-if="isReadyForAssessment"
                 class="btn suggested-interactions"
-                @click="initiateAssessment()"
+                @click="assessMastery()"
             >
-                I'm ready, test me!
-            </button> -->
+                Have I mastered this skill?
+            </button>
             <!-- ask question button -->
             <button
                 class="btn suggested-interactions ms-1"
                 @click="requestQuestion()"
             >
-                ask me a question
+                test me
             </button>
             <!-- explanation button -->
             <button
