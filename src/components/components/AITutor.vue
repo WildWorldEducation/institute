@@ -13,7 +13,7 @@ export default {
             userDetailsStore
         };
     },
-    props: ['skillName', 'skillUrl', 'skillLevel'],
+    props: ['skillName', 'skillUrl', 'skillLevel', 'learningObjectiveObjects'],
     components: { TutorLoadingSymbol, TooltipBtn },
     data() {
         return {
@@ -23,10 +23,15 @@ export default {
             messageList: [],
             waitForAIresponse: false,
             mode: 'big',
-            englishSkillLevel: ''
+            englishSkillLevel: '',
+            learningObjectives: []
         };
     },
     async mounted() {
+        this.learningObjectives = this.learningObjectiveObjects.map(
+            (a) => a.objective
+        );
+
         this.englishSkillLevel = this.skillLevel.replace('_', ' ');
         await this.getMessagesList();
     },
@@ -112,6 +117,42 @@ export default {
                         userId: this.userDetailsStore.userId,
                         skillName: this.skillName,
                         skillLevel: this.englishSkillLevel,
+                        skillUrl: this.skillUrl,
+                        learningObjectives: this.learningObjectives
+                    })
+                };
+
+                var url = '/ai-tutor/ask-question';
+
+                const res = await fetch(url, requestOptions);
+                if (res.status === 500) {
+                    alert('The tutor can`t answer !!');
+                    this.waitForAIresponse = false;
+                    return;
+                }
+
+                this.getMessagesList();
+                this.waitForAIresponse = false;
+            } catch (error) {
+                console.error(error);
+                this.waitForAIresponse = false;
+            }
+        },
+        // ask Open AI to ask a question about the skill
+        async initiateAssessment() {
+            if (this.waitForAIresponse) {
+                return;
+            }
+            this.waitForAIresponse = true;
+            try {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userName: this.userDetailsStore.userName,
+                        userId: this.userDetailsStore.userId,
+                        skillName: this.skillName,
+                        skillLevel: this.englishSkillLevel,
                         skillUrl: this.skillUrl
                     })
                 };
@@ -160,19 +201,16 @@ export default {
         // message: function (newItem, oldItem) {
         //     let { messageInput } = this.$refs;
         //     const lineHeightInPixels = 22;
-
         //     // Reset messageInput Height
         //     messageInput.setAttribute(
         //         `style`,
         //         `height:${lineHeightInPixels}px;overflow-y:hidden;`
         //     );
-
         //     // Calculate number of lines (soft and hard)
         //     const height = messageInput.style.height;
         //     const scrollHeight = messageInput.scrollHeight;
         //     messageInput.style.height = height;
         //     const count = Math.floor(scrollHeight / lineHeightInPixels);
-
         //     this.$nextTick(() => {
         //         messageInput.setAttribute(
         //             `style`,
@@ -283,21 +321,28 @@ export default {
         <!-- Suggested interaction buttons -->
         <span v-if="mode === 'big'" class="d-flex justify-content-end">
             <!-- explanation button -->
-            <button
+            <!-- <button
                 class="btn suggested-interactions"
-                @click="
-                    message = 'Please give me an overview of this.';
-                    SendMessage();
-                "
+                @click="initiateAssessment()"
             >
-                give me an overview
-            </button>
+                I'm ready, test me!
+            </button> -->
             <!-- ask question button -->
             <button
                 class="btn suggested-interactions ms-1"
                 @click="requestQuestion()"
             >
                 ask me a question
+            </button>
+            <!-- explanation button -->
+            <button
+                class="btn suggested-interactions ms-1"
+                @click="
+                    message = 'Please give me an overview of this.';
+                    SendMessage();
+                "
+            >
+                give me an overview
             </button>
         </span>
         <!-- User input (big mode) -->
