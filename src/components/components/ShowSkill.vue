@@ -1133,6 +1133,7 @@ export default {
                 :skillName="skill.name"
                 :skillUrl="skill.url"
                 :skillLevel="skill.level"
+                :learningObjectiveObjects="skill.learningObjectives"
             />
         </div>
 

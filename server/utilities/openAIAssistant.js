@@ -124,12 +124,13 @@ async function generateQuestion(threadId, assistantId, messageData) {
     // Add a message to the thread
     const message = await openai.beta.threads.messages.create(threadId, {
         role: 'user',
-        content: 'Ask me a question about: ' + messageData.skillName
+        content: 'Ask me a question'
     });
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
-        instructions: `The user is at a ${messageData.skillLevel} level and age.`
+        instructions: `The user is at a ${messageData.skillLevel} level and age.
+        Ask them a question about one of the following: ${messageData.learningObjectives}`
     });
 
     if (run.status === 'completed') {
