@@ -24,9 +24,7 @@ export default {
             waitForAIresponse: false,
             mode: 'big',
             englishSkillLevel: '',
-            learningObjectives: [],
-            isReadyForAssessment: false,
-            numberOfQuestionsAsked: 0
+            learningObjectives: []
         };
     },
     async mounted() {
@@ -57,13 +55,6 @@ export default {
                 const response = await fetch(url);
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
-
-                if (
-                    this.messageList.length >=
-                    this.learningObjectives.length * 2
-                ) {
-                    // this.isReadyForAssessment = true;
-                }
 
                 // this.$nextTick(this.scrollToMessageInput());
             } catch (error) {
@@ -152,12 +143,6 @@ export default {
         async requestQuestion() {
             if (this.waitForAIresponse) {
                 return;
-            }
-
-            // Allow for check mastery once question on all learning objectives asked.
-            this.numberOfQuestionsAsked++;
-            if (this.numberOfQuestionsAsked >= this.learningObjectives.length) {
-                // this.isReadyForAssessment = true;
             }
 
             this.waitForAIresponse = true;
@@ -379,11 +364,7 @@ export default {
         <!-- Suggested interaction buttons -->
         <span v-if="mode === 'big'" class="d-flex justify-content-end">
             <!-- explanation button -->
-            <button
-                v-if="isReadyForAssessment"
-                class="btn suggested-interactions"
-                @click="assessMastery()"
-            >
+            <button class="btn suggested-interactions" @click="assessMastery()">
                 Have I mastered this skill?
             </button>
             <!-- ask question button -->
