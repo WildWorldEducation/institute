@@ -24,6 +24,7 @@ const {
     learningObjectiveMessage,
     generateLearningObjectiveQuestion,
     generateQuestion,
+    teach,
     assess
 } = require('../utilities/openAIAssistant');
 const isAuthenticated = require('../middlewares/authMiddleware');
@@ -88,6 +89,30 @@ router.post('/new-message', isAuthenticated, async (req, res, next) => {
             assistantData[0].assistant_id,
             req.body
         );
+        res.end();
+    } catch (error) {
+        console.error(error);
+        res.status = 500;
+        res.json({ mess: 'something went wrong' });
+    }
+});
+
+/**
+ * Get the AI tutor to teach
+ */
+router.post('/teach', isAuthenticated, async (req, res, next) => {
+    try {
+        const assistantData = await getSkillThread(
+            req.body.userId,
+            req.body.skillUrl
+        );
+
+        await teach(
+            assistantData[0].thread_id,
+            assistantData[0].assistant_id,
+            req.body
+        );
+
         res.end();
     } catch (error) {
         console.error(error);

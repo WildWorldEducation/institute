@@ -32,7 +32,7 @@ async function createAssistant(topic, level) {
             topic +
             `.`,
         tools: [],
-        model: 'gpt-4o'
+        model: 'gpt-4o-mini'
     });
     return assistant;
 }
@@ -108,6 +108,31 @@ async function skillMessage(threadId, assistantId, messageData) {
         instructions: `Please tutor about the topic: ${messageData.skillName}.
         Tutor the user as if they are at a ${messageData.skillLevel} level and age.
         Make sure to have $ delimiters before any science and math strings that can convert to Latex`
+    });
+
+    if (run.status === 'completed') {
+        const messages = await openai.beta.threads.messages.list(threadId);
+        const latestMessage = messages.data[0];
+
+        return latestMessage;
+    } else {
+        console.log(run.status);
+    }
+}
+
+async function teach(threadId, assistantId, messageData) {
+    // Add a message to the thread
+    const message = await openai.beta.threads.messages.create(threadId, {
+        role: 'user',
+        content: 'Teach me'
+    });
+
+    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+        assistant_id: assistantId,
+        instructions: `The user is at a ${messageData.skillLevel} level and age.
+        Teach them about one of the following learning objectives: ${messageData.learningObjectives}.
+        Do not ask teach about the same learning objective more than once, until you have taught
+        about all the ones in the list.`
     });
 
     if (run.status === 'completed') {
@@ -280,5 +305,6 @@ module.exports = {
     learningObjectiveMessage,
     generateQuestion,
     generateLearningObjectiveQuestion,
+    teach,
     assess
 };

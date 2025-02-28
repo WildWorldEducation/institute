@@ -112,6 +112,42 @@ export default {
                 this.waitForAIresponse = false;
             }
         },
+        async requestTeaching() {
+            if (this.waitForAIresponse) {
+                return;
+            }
+
+            this.waitForAIresponse = true;
+            try {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userName: this.userDetailsStore.userName,
+                        userId: this.userDetailsStore.userId,
+                        skillName: this.skillName,
+                        skillLevel: this.englishSkillLevel,
+                        skillUrl: this.skillUrl,
+                        learningObjectives: this.learningObjectives
+                    })
+                };
+
+                var url = '/ai-tutor/teach';
+
+                const res = await fetch(url, requestOptions);
+                if (res.status === 500) {
+                    alert('The tutor can`t answer !!');
+                    this.waitForAIresponse = false;
+                    return;
+                }
+
+                this.getMessagesList();
+                this.waitForAIresponse = false;
+            } catch (error) {
+                console.error(error);
+                this.waitForAIresponse = false;
+            }
+        },
         // ask Open AI to ask a question about the skill
         async requestQuestion() {
             if (this.waitForAIresponse) {
@@ -356,6 +392,13 @@ export default {
                 @click="requestQuestion()"
             >
                 test me
+            </button>
+            <!-- explanation button -->
+            <button
+                class="btn suggested-interactions ms-1"
+                @click="requestTeaching()"
+            >
+                teach me
             </button>
             <!-- explanation button -->
             <button
