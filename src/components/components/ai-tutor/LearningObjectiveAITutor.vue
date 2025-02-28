@@ -1,7 +1,7 @@
 <script>
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
-import katex from 'katex';
+
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
