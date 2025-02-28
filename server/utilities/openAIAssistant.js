@@ -30,9 +30,9 @@ async function createAssistant(topic, level) {
             level +
             `student about the following subject: ` +
             topic +
-            `. You are also testing the student's knowledge of the subject.`,
+            `.`,
         tools: [],
-        model: 'gpt-4o'
+        model: 'gpt-4o-mini'
     });
     return assistant;
 }
@@ -107,7 +107,32 @@ async function skillMessage(threadId, assistantId, messageData) {
         assistant_id: assistantId,
         instructions: `Please tutor about the topic: ${messageData.skillName}.
         Tutor the user as if they are at a ${messageData.skillLevel} level and age.
-        Ask follow up questions. Make sure to have $ delimiters before any science and math string that can convert to Latex`
+        Make sure to have $ delimiters before any science and math strings that can convert to Latex`
+    });
+
+    if (run.status === 'completed') {
+        const messages = await openai.beta.threads.messages.list(threadId);
+        const latestMessage = messages.data[0];
+
+        return latestMessage;
+    } else {
+        console.log(run.status);
+    }
+}
+
+async function teach(threadId, assistantId, messageData) {
+    // Add a message to the thread
+    const message = await openai.beta.threads.messages.create(threadId, {
+        role: 'user',
+        content: 'Teach me'
+    });
+
+    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+        assistant_id: assistantId,
+        instructions: `The user is at a ${messageData.skillLevel} level and age.
+        Teach them about one of the following learning objectives: ${messageData.learningObjectives}.
+        Do not ask teach about the same learning objective more than once, until you have taught
+        about all the ones in the list.`
     });
 
     if (run.status === 'completed') {
@@ -130,7 +155,37 @@ async function generateQuestion(threadId, assistantId, messageData) {
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
         instructions: `The user is at a ${messageData.skillLevel} level and age.
-        Ask them a question about one of the following: ${messageData.learningObjectives}`
+        Ask them a question about one of the following learning objectives: ${messageData.learningObjectives}.
+        Do not ask a question about the same learning objective more than once, until you have asked a 
+        question about all the ones in the list.`
+    });
+
+    if (run.status === 'completed') {
+        const messages = await openai.beta.threads.messages.list(threadId);
+        const latestMessage = messages.data[0];
+
+        return latestMessage;
+    } else {
+        console.log(run.status);
+    }
+}
+
+// Assess for mastery of skill
+async function assess(threadId, assistantId, messageData) {
+    // Add a message to the thread
+    const message = await openai.beta.threads.messages.create(threadId, {
+        role: 'user',
+        content: 'Do you think I have mastered this topic?'
+    });
+
+    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+        assistant_id: assistantId,
+        instructions: `The user is at a ${messageData.skillLevel} level and age.
+        Review this chat stream and determine if they have understood and mastered the 
+        following learning objectives: ${messageData.learningObjectives}.
+        
+        If they have, return only the word "yes" and no other words.
+        If not, or if it is unclear, let them know and explain why.`
     });
 
     if (run.status === 'completed') {
@@ -239,38 +294,6 @@ async function generateLearningObjectiveQuestion(
     }
 }
 
-async function autoCheckLearningObjectiveMastery(
-    threadId,
-    assistantId,
-    messageData
-) {
-    // Add a message to the thread
-    const message = await openai.beta.threads.messages.create(threadId, {
-        role: 'user',
-        content: `Do you think I understand this learning objective?`
-    });
-
-    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-        assistant_id: assistantId,
-        instructions: `The subject is: ${messageData.learningObjective}. 
-        The level to be assessed is: ${messageData.skillLevel}.
-        Review the interactions within this thread and determine if the user understands
-        this subject.
-        If not, or if you are not sure, return only the word: "no". 
-        If yes, return only the word: "yes", exactly as I have spelled it with the quotation marks,
-        with no punctuation.`
-    });
-
-    if (run.status === 'completed') {
-        const messages = await openai.beta.threads.messages.list(threadId);
-        const latestMessage = messages.data[0];
-
-        return latestMessage;
-    } else {
-        console.log(run.status);
-    }
-}
-
 module.exports = {
     createAssistantAndThread,
     skillMessage,
@@ -282,5 +305,6 @@ module.exports = {
     learningObjectiveMessage,
     generateQuestion,
     generateLearningObjectiveQuestion,
-    autoCheckLearningObjectiveMastery
+    teach,
+    assess
 };

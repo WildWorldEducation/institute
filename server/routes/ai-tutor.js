@@ -24,7 +24,8 @@ const {
     learningObjectiveMessage,
     generateLearningObjectiveQuestion,
     generateQuestion,
-    autoCheckLearningObjectiveMastery
+    teach,
+    assess
 } = require('../utilities/openAIAssistant');
 const isAuthenticated = require('../middlewares/authMiddleware');
 // Include API key.
@@ -97,6 +98,30 @@ router.post('/new-message', isAuthenticated, async (req, res, next) => {
 });
 
 /**
+ * Get the AI tutor to teach
+ */
+router.post('/teach', isAuthenticated, async (req, res, next) => {
+    try {
+        const assistantData = await getSkillThread(
+            req.body.userId,
+            req.body.skillUrl
+        );
+
+        await teach(
+            assistantData[0].thread_id,
+            assistantData[0].assistant_id,
+            req.body
+        );
+
+        res.end();
+    } catch (error) {
+        console.error(error);
+        res.status = 500;
+        res.json({ mess: 'something went wrong' });
+    }
+});
+
+/**
  * Get the AI tutor to ask a question
  */
 router.post('/ask-question', isAuthenticated, async (req, res, next) => {
@@ -113,6 +138,30 @@ router.post('/ask-question', isAuthenticated, async (req, res, next) => {
         );
 
         res.end();
+    } catch (error) {
+        console.error(error);
+        res.status = 500;
+        res.json({ mess: 'something went wrong' });
+    }
+});
+
+/**
+ * Get the AI tutor to assess for mastery
+ */
+router.post('/assessment', isAuthenticated, async (req, res, next) => {
+    try {
+        const assistantData = await getSkillThread(
+            req.body.userId,
+            req.body.skillUrl
+        );
+
+        let assessmentResult = await assess(
+            assistantData[0].thread_id,
+            assistantData[0].assistant_id,
+            req.body
+        );
+
+        res.json({ assessmentResult: assessmentResult });
     } catch (error) {
         console.error(error);
         res.status = 500;
