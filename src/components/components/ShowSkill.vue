@@ -1128,8 +1128,9 @@ export default {
         </div>
         <!-- AI Tutor -->
         <div v-if="sessionDetailsStore.isLoggedIn" class="row mt-3 mb-3">
+            <!-- Only show AI tutor for Student -->
             <AITutor
-                v-if="isSkillLoaded"
+                v-if="isSkillLoaded && userDetailsStore.role === 'student'"
                 :skillName="skill.name"
                 :skillUrl="skill.url"
                 :skillLevel="skill.level"
