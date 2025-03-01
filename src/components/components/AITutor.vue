@@ -24,9 +24,7 @@ export default {
             waitForAIresponse: false,
             mode: 'big',
             englishSkillLevel: '',
-            learningObjectives: [],
-            isReadyForAssessment: false,
-            numberOfQuestionsAsked: 0
+            learningObjectives: []
         };
     },
     async mounted() {
@@ -57,13 +55,6 @@ export default {
                 const response = await fetch(url);
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
-
-                if (
-                    this.messageList.length >=
-                    this.learningObjectives.length * 2
-                ) {
-                    // this.isReadyForAssessment = true;
-                }
 
                 // this.$nextTick(this.scrollToMessageInput());
             } catch (error) {
@@ -154,12 +145,6 @@ export default {
                 return;
             }
 
-            // Allow for check mastery once question on all learning objectives asked.
-            this.numberOfQuestionsAsked++;
-            if (this.numberOfQuestionsAsked >= this.learningObjectives.length) {
-                // this.isReadyForAssessment = true;
-            }
-
             this.waitForAIresponse = true;
             try {
                 const requestOptions = {
@@ -220,9 +205,21 @@ export default {
                     return;
                 }
 
-                const response = await fetch(url);
-                const resData = await response.json();
-                console.log(resData.assessmentResult);
+                const response = await res.json();
+                console.log(response.assessmentResult);
+
+                if (
+                    response.assessmentResult == 'yes' ||
+                    response.assessmentResult == 'Yes' ||
+                    response.assessmentResult == 'yes.' ||
+                    response.assessmentResult == 'Yes.'
+                ) {
+                    alert('congrats, you have amstered this skill!');
+                } else {
+                    alert(
+                        "You need to answer more questions correctly to master the skill. Press the 'test me' button to begin."
+                    );
+                }
 
                 this.getMessagesList();
                 this.waitForAIresponse = false;
@@ -379,12 +376,8 @@ export default {
         <!-- Suggested interaction buttons -->
         <span v-if="mode === 'big'" class="d-flex justify-content-end">
             <!-- explanation button -->
-            <button
-                v-if="isReadyForAssessment"
-                class="btn suggested-interactions"
-                @click="assessMastery()"
-            >
-                Have I mastered this skill?
+            <button class="btn suggested-interactions" @click="assessMastery()">
+                have I mastered this skill?
             </button>
             <!-- ask question button -->
             <button
