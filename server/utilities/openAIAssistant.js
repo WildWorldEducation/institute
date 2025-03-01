@@ -155,9 +155,12 @@ async function generateQuestion(threadId, assistantId, messageData) {
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
         instructions: `The user is at a ${messageData.skillLevel} level and age.
-        Ask them a question about one of the following learning objectives: ${messageData.learningObjectives}.
-        Do not ask a question about the same learning objective more than once, until you have asked a 
-        question about all the ones in the list.`
+        Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
+        
+        If the student has already shown understanding of a learning objective, do not ask a question about it.
+        If the student has not yet shown understanding of a learning objective, do ask a question about it.
+        Once the student has shown an understanding of all the learning objectives, let them know they have mastered
+        the subject, and stop asking questions.`
     });
 
     if (run.status === 'completed') {
@@ -185,7 +188,7 @@ async function assess(threadId, assistantId, messageData) {
         following learning objectives: ${messageData.learningObjectives}.
         
         If they have, return only the word "yes" and no other words.
-        If not, or if it is unclear, let them know and explain why.`
+        If not, or if it is unclear, let them know that they need to answer more questions correctly.`
     });
 
     if (run.status === 'completed') {
