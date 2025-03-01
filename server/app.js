@@ -17,6 +17,11 @@ const isAuthenticated = require('./middlewares/authMiddleware');
 const conn = require('./config/db');
 const xmlbuilder = require('xmlbuilder');
 
+// Initiate Socket IO connection
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
 // Allow things to work.
 var cors = require('cors');
 app.use(cors());
@@ -606,6 +611,14 @@ function apiResponse(results) {
 Server listening
 --------------------------------------------
 --------------------------------------------*/
-app.listen(3000, () => {
-    console.log('Server started on port 3000...');
+// app.listen(3000, () => {
+//     console.log('Server started on port 3000...');
+// });
+
+io.on('connection', (socket) => {
+    console.log('a user connected with socket info: ' + socket);
+});
+
+server.listen(3000, () => {
+    console.log('sever listening on *:3000');
 });

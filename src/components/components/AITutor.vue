@@ -4,7 +4,7 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 // import SendIconLoadingSymbol from './ai-tutor/sendIconLoadingSymbol.vue';
 import TutorLoadingSymbol from './ai-tutor/tutorLoadingSymbol.vue';
 import TooltipBtn from './share-components/TooltipBtn.vue';
-
+import { state, socket } from '../../socket.js';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
@@ -29,6 +29,7 @@ export default {
     async mounted() {
         this.englishSkillLevel = this.skillLevel.replace('_', ' ');
         await this.getMessagesList();
+        this.connect();
     },
     updated() {
         // if (this.mode !== 'hide') {
@@ -153,6 +154,12 @@ export default {
         smoothScrollToMessageInput() {
             let inputMessage = this.$refs.messageInputDiv;
             inputMessage.scrollIntoView({ behavior: 'smooth' });
+        },
+        connect() {
+            socket.connect();
+        },
+        disconnect() {
+            socket.disconnect();
         }
     },
     watch: {
@@ -160,19 +167,16 @@ export default {
         // message: function (newItem, oldItem) {
         //     let { messageInput } = this.$refs;
         //     const lineHeightInPixels = 22;
-
         //     // Reset messageInput Height
         //     messageInput.setAttribute(
         //         `style`,
         //         `height:${lineHeightInPixels}px;overflow-y:hidden;`
         //     );
-
         //     // Calculate number of lines (soft and hard)
         //     const height = messageInput.style.height;
         //     const scrollHeight = messageInput.scrollHeight;
         //     messageInput.style.height = height;
         //     const count = Math.floor(scrollHeight / lineHeightInPixels);
-
         //     this.$nextTick(() => {
         //         messageInput.setAttribute(
         //             `style`,
