@@ -161,8 +161,7 @@ router.post('/assessment', isAuthenticated, async (req, res, next) => {
             req.body
         );
 
-        console.log(assessmentResult);
-        res.json({ assessmentResult: assessmentResult });
+        res.json({ assessmentResult: assessmentResult.content[0].text.value });
     } catch (error) {
         console.error(error);
         res.status = 500;

@@ -205,10 +205,21 @@ export default {
                     return;
                 }
 
-                const response = await fetch(url);
-                console.log(response);
-                const resData = await response.json();
-                console.log(resData);
+                const response = await res.json();
+                console.log(response.assessmentResult);
+
+                if (
+                    response.assessmentResult == 'yes' ||
+                    response.assessmentResult == 'Yes' ||
+                    response.assessmentResult == 'yes.' ||
+                    response.assessmentResult == 'Yes.'
+                ) {
+                    alert('congrats, you have amstered this skill!');
+                } else {
+                    alert(
+                        "You need to answer more questions correctly to master the skill. Press the 'test me' button to begin."
+                    );
+                }
 
                 this.getMessagesList();
                 this.waitForAIresponse = false;
