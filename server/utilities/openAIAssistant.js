@@ -185,7 +185,7 @@ async function assess(threadId, assistantId, messageData) {
         following learning objectives: ${messageData.learningObjectives}.
         
         If they have, return only the word "yes" and no other words.
-        If not, or if it is unclear, let them know and explain why.`
+        If not, or if it is unclear, let them know and explain why, in one sentence.`
     });
 
     if (run.status === 'completed') {

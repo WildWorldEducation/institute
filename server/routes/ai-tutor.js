@@ -161,6 +161,7 @@ router.post('/assessment', isAuthenticated, async (req, res, next) => {
             req.body
         );
 
+        console.log(assessmentResult);
         res.json({ assessmentResult: assessmentResult });
     } catch (error) {
         console.error(error);

@@ -206,8 +206,9 @@ export default {
                 }
 
                 const response = await fetch(url);
+                console.log(response);
                 const resData = await response.json();
-                console.log(resData.assessmentResult);
+                console.log(resData);
 
                 this.getMessagesList();
                 this.waitForAIresponse = false;
@@ -365,7 +366,7 @@ export default {
         <span v-if="mode === 'big'" class="d-flex justify-content-end">
             <!-- explanation button -->
             <button class="btn suggested-interactions" @click="assessMastery()">
-                Have I mastered this skill?
+                have I mastered this skill?
             </button>
             <!-- ask question button -->
             <button
