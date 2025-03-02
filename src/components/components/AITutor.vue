@@ -29,7 +29,9 @@ export default {
     async mounted() {
         this.englishSkillLevel = this.skillLevel.replace('_', ' ');
         await this.getMessagesList();
-        this.connect();
+    },
+    created() {
+        this.connectToSocketSever();
     },
     updated() {
         // if (this.mode !== 'hide') {
@@ -155,10 +157,10 @@ export default {
             let inputMessage = this.$refs.messageInputDiv;
             inputMessage.scrollIntoView({ behavior: 'smooth' });
         },
-        connect() {
+        connectToSocketSever() {
             socket.connect();
         },
-        disconnect() {
+        disconnectToSocketSever() {
             socket.disconnect();
         }
     },

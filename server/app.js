@@ -616,7 +616,8 @@ Server listening
 // });
 
 io.on('connection', (socket) => {
-    console.log('a user connected with socket info: ' + socket);
+    console.log('a user connected with socket info: ');
+    console.log(socket.data)
 });
 
 server.listen(3000, () => {

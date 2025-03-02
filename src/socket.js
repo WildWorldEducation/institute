@@ -24,6 +24,7 @@ socket.on("disconnect", () => {
 });
 
 socket.on("foo", (...args) => {
+    console.log('HA HA THEY SEND POO: ' + args[0])
     state.fooEvents.push(args);
 });
 
