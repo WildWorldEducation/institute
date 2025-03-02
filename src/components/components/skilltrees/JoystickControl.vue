@@ -1,6 +1,6 @@
 <script>
 // Joystick library.
-// import nipplejs from 'nipplejs';
+import nipplejs from 'nipplejs';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 export default {
     setup() {
@@ -60,113 +60,113 @@ export default {
         // we calculate the interval time with fps
         const intervalTime = Math.floor(1000 / this.fps) + 1;
 
-        panJoystick
-            .on(
-                'dir:up plain:up dir:left plain:left dir:down ' +
-                    'plain:down dir:right plain:right',
-                (evt, data) => {
-                    // if a new direction is fired we clear the old interval
-                    clearInterval(this.interval);
-                    this.interval = null;
-                    // reset hold time
-                    this.holdTime = 0;
-                    // if the scale < 0 we panning further
-                    const panAddition =
-                        /**
-                         * by divide with scale we can add more when the scale get smaller thus we will panning more
-                         */
-                        this.$parent.scale >= 1
-                            ? this.$parent.scale * 10
-                            : 20 / this.$parent.scale;
+        // panJoystick
+        //     .on(
+        //         'dir:up plain:up dir:left plain:left dir:down ' +
+        //             'plain:down dir:right plain:right',
+        //         (evt, data) => {
+        //             // if a new direction is fired we clear the old interval
+        //             clearInterval(this.interval);
+        //             this.interval = null;
+        //             // reset hold time
+        //             this.holdTime = 0;
+        //             // if the scale < 0 we panning further
+        //             const panAddition =
+        //                 /**
+        //                  * by divide with scale we can add more when the scale get smaller thus we will panning more
+        //                  */
+        //                 this.$parent.scale >= 1
+        //                     ? this.$parent.scale * 10
+        //                     : 20 / this.$parent.scale;
 
-                    // hold time multiplier is scale with zoom too
-                    const holdTimeMultiplier =
-                        this.$parent.scale > 1
-                            ? this.$parent.scale * 15
-                            : 20 / this.$parent.scale;
+        //             // hold time multiplier is scale with zoom too
+        //             const holdTimeMultiplier =
+        //                 this.$parent.scale > 1
+        //                     ? this.$parent.scale * 15
+        //                     : 20 / this.$parent.scale;
 
-                    // call new interval with new direction if there are no interval
-                    if (this.interval == null) {
-                        switch (data.direction.angle) {
-                            /**
-                             * we add more panning base on the zoom scale and hold time
-                             */
-                            case 'right':
-                                this.interval = setInterval(() => {
-                                    this.$parent.panX =
-                                        this.$parent.panX -
-                                        20 -
-                                        (this.holdTime * holdTimeMultiplier +
-                                            panAddition);
-                                    this.$parent.panInD3(
-                                        this.$parent.panX,
-                                        this.$parent.panY
-                                    );
-                                }, intervalTime);
-                                break;
-                            case 'left':
-                                this.interval = setInterval(() => {
-                                    this.$parent.panX =
-                                        this.$parent.panX +
-                                        20 +
-                                        (this.holdTime * holdTimeMultiplier +
-                                            panAddition);
-                                    this.$parent.panInD3(
-                                        this.$parent.panX,
-                                        this.$parent.panY
-                                    );
-                                }, intervalTime);
-                                break;
-                            case 'up':
-                                this.interval = setInterval(() => {
-                                    this.$parent.panY =
-                                        this.$parent.panY +
-                                        20 +
-                                        (this.holdTime * holdTimeMultiplier +
-                                            panAddition);
-                                    this.$parent.panInD3(
-                                        this.$parent.panX,
-                                        this.$parent.panY
-                                    );
-                                }, intervalTime);
-                                break;
-                            case 'down':
-                                this.interval = setInterval(() => {
-                                    this.$parent.panY =
-                                        this.$parent.panY -
-                                        20 -
-                                        (this.holdTime * holdTimeMultiplier +
-                                            panAddition);
-                                    this.$parent.panInD3(
-                                        this.$parent.panX,
-                                        this.$parent.panY
-                                    );
-                                }, intervalTime);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-            )
-            .on('end', (evt, data) => {
-                clearInterval(this.interval);
-            });
+        //             // call new interval with new direction if there are no interval
+        //             if (this.interval == null) {
+        //                 switch (data.direction.angle) {
+        //                     /**
+        //                      * we add more panning base on the zoom scale and hold time
+        //                      */
+        //                     case 'right':
+        //                         this.interval = setInterval(() => {
+        //                             this.$parent.panX =
+        //                                 this.$parent.panX -
+        //                                 20 -
+        //                                 (this.holdTime * holdTimeMultiplier +
+        //                                     panAddition);
+        //                             this.$parent.panInD3(
+        //                                 this.$parent.panX,
+        //                                 this.$parent.panY
+        //                             );
+        //                         }, intervalTime);
+        //                         break;
+        //                     case 'left':
+        //                         this.interval = setInterval(() => {
+        //                             this.$parent.panX =
+        //                                 this.$parent.panX +
+        //                                 20 +
+        //                                 (this.holdTime * holdTimeMultiplier +
+        //                                     panAddition);
+        //                             this.$parent.panInD3(
+        //                                 this.$parent.panX,
+        //                                 this.$parent.panY
+        //                             );
+        //                         }, intervalTime);
+        //                         break;
+        //                     case 'up':
+        //                         this.interval = setInterval(() => {
+        //                             this.$parent.panY =
+        //                                 this.$parent.panY +
+        //                                 20 +
+        //                                 (this.holdTime * holdTimeMultiplier +
+        //                                     panAddition);
+        //                             this.$parent.panInD3(
+        //                                 this.$parent.panX,
+        //                                 this.$parent.panY
+        //                             );
+        //                         }, intervalTime);
+        //                         break;
+        //                     case 'down':
+        //                         this.interval = setInterval(() => {
+        //                             this.$parent.panY =
+        //                                 this.$parent.panY -
+        //                                 20 -
+        //                                 (this.holdTime * holdTimeMultiplier +
+        //                                     panAddition);
+        //                             this.$parent.panInD3(
+        //                                 this.$parent.panX,
+        //                                 this.$parent.panY
+        //                             );
+        //                         }, intervalTime);
+        //                         break;
+        //                     default:
+        //                         break;
+        //                 }
+        //             }
+        //         }
+        //     )
+        //     .on('end', (evt, data) => {
+        //         clearInterval(this.interval);
+        //     });
 
         /**
          * Listen to joystick start and end event to calculate hold time
          */
-        panJoystick
-            .on('start', (evt, data) => {
-                this.holdTimeInterval = setInterval(() => {
-                    this.holdTime += 1;
-                }, 300);
-            })
-            .on('end', (evt, data) => {
-                clearInterval(this.holdTimeInterval);
-                this.holdTime = 0;
-                this.interval = null;
-            });
+        // panJoystick
+        //     .on('start', (evt, data) => {
+        //         this.holdTimeInterval = setInterval(() => {
+        //             this.holdTime += 1;
+        //         }, 300);
+        //     })
+        //     .on('end', (evt, data) => {
+        //         clearInterval(this.holdTimeInterval);
+        //         this.holdTime = 0;
+        //         this.interval = null;
+        //     });
 
         // Listen for the arrow key on canvas
         this.$parent.$refs.canvas.addEventListener(
