@@ -1,6 +1,8 @@
 <script>
 import { OutputLocationFilterSensitiveLog } from '@aws-sdk/client-s3';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
+import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 // import SendIconLoadingSymbol from './ai-tutor/sendIconLoadingSymbol.vue';
 import TutorLoadingSymbol from './ai-tutor/tutorLoadingSymbol.vue';
 import TooltipBtn from './share-components/TooltipBtn.vue';
@@ -8,12 +10,16 @@ import TooltipBtn from './share-components/TooltipBtn.vue';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const userSkillsStore = useUserSkillsStore();
+        const skillTreeStore = useSkillTreeStore();
 
         return {
-            userDetailsStore
+            userDetailsStore,
+            userSkillsStore,
+            skillTreeStore
         };
     },
-    props: ['skillName', 'skillUrl', 'skillLevel', 'learningObjectiveObjects'],
+    props: ['skill'],
     components: { TutorLoadingSymbol, TooltipBtn },
     data() {
         return {
@@ -28,11 +34,11 @@ export default {
         };
     },
     async mounted() {
-        this.learningObjectives = this.learningObjectiveObjects.map(
+        this.learningObjectives = this.skill.learningObjectives.map(
             (a) => a.objective
         );
 
-        this.englishSkillLevel = this.skillLevel.replace('_', ' ');
+        this.englishSkillLevel = this.skill.level.replace('_', ' ');
         await this.getMessagesList();
     },
     updated() {
@@ -47,8 +53,8 @@ export default {
                 const url = `/ai-tutor/messages-list?userId=${encodeURIComponent(
                     this.userDetailsStore.userId
                 )}&skillUrl=${encodeURIComponent(
-                    this.skillUrl
-                )}&skillName=${encodeURIComponent(this.skillName)}
+                    this.skill.url
+                )}&skillName=${encodeURIComponent(this.skill.name)}
                 &skillLevel=${encodeURIComponent(this.englishSkillLevel)}
                 `;
 
@@ -81,8 +87,8 @@ export default {
                     body: JSON.stringify({
                         message: this.message,
                         userId: this.userDetailsStore.userId,
-                        skillName: this.skillName,
-                        skillUrl: this.skillUrl,
+                        skillName: this.skill.name,
+                        skillUrl: this.skill.url,
                         skillLevel: this.englishSkillLevel
                     })
                 };
@@ -116,9 +122,9 @@ export default {
                     body: JSON.stringify({
                         userName: this.userDetailsStore.userName,
                         userId: this.userDetailsStore.userId,
-                        skillName: this.skillName,
+                        skillName: this.skill.name,
                         skillLevel: this.englishSkillLevel,
-                        skillUrl: this.skillUrl,
+                        skillUrl: this.skill.url,
                         learningObjectives: this.learningObjectives
                     })
                 };
@@ -153,9 +159,9 @@ export default {
                     body: JSON.stringify({
                         userName: this.userDetailsStore.userName,
                         userId: this.userDetailsStore.userId,
-                        skillName: this.skillName,
+                        skillName: this.skill.name,
                         skillLevel: this.englishSkillLevel,
-                        skillUrl: this.skillUrl,
+                        skillUrl: this.skill.url,
                         learningObjectives: this.learningObjectives
                     })
                 };
@@ -189,9 +195,9 @@ export default {
                     body: JSON.stringify({
                         userName: this.userDetailsStore.userName,
                         userId: this.userDetailsStore.userId,
-                        skillName: this.skillName,
+                        skillName: this.skill.name,
                         skillLevel: this.englishSkillLevel,
-                        skillUrl: this.skillUrl,
+                        skillUrl: this.skill.url,
                         learningObjectives: this.learningObjectives
                     })
                 };
@@ -214,7 +220,8 @@ export default {
                     response.assessmentResult == 'yes.' ||
                     response.assessmentResult == 'Yes.'
                 ) {
-                    alert('congrats, you have amstered this skill!');
+                    alert('congrats, you have mastered this skill!');
+                    this.makeMastered();
                 } else {
                     alert(
                         "You need to answer more questions correctly to master the skill. Press the 'test me' button to begin."
@@ -249,6 +256,14 @@ export default {
         smoothScrollToMessageInput() {
             let inputMessage = this.$refs.messageInputDiv;
             inputMessage.scrollIntoView({ behavior: 'smooth' });
+        },
+        async makeMastered() {
+            await this.userSkillsStore.MakeMastered(
+                this.userDetailsStore.userId,
+                this.skill
+            );
+            // Reload the skills list for the student.
+            await this.skillTreeStore.getUserSkills();
         }
     },
     watch: {
