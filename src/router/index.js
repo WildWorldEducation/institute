@@ -259,6 +259,12 @@ const router = createRouter({
             meta: { requiresAuth: true, roles: ['instructor', 'admin'] }
         },
         {
+            path: '/edit/student/:id/',
+            name: 'edit-student',
+            component: () => import('../components/components/EditStudent.vue'),
+            meta: { requiresAuth: true, roles: ['instructor'] }
+        },
+        {
             path: '/users/activity-report/:id',
             name: 'user-activity-report',
             component: () =>

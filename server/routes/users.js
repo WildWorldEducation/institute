@@ -849,6 +849,95 @@ router.put(
     }
 );
 
+// Allow instructor to change students details
+router.put('/:studentId/instructor/edit', isAuthenticated, (req, res, next) => {
+    if (req.session.userName) {
+        // Need to decide whether avatar needs to be replaced.
+        let isReplaceAvatar = false;
+
+        // Check if avatar field is a URL, in which case it does not need to be replaced.
+        function isValidHttpUrl(string) {
+            let url;
+            try {
+                url = new URL(string);
+            } catch (_) {
+                return false;
+            }
+            return url.protocol === 'http:' || url.protocol === 'https:';
+        }
+
+        // Check if avatar field is empty.
+        if (req.body.avatar != null && !isValidHttpUrl(req.body.avatar)) {
+            isReplaceAvatar = true;
+        }
+
+        // Check for duplicate username or email
+        const checkDuplicateQuery = `
+            SELECT * FROM users WHERE (username = ${conn.escape(
+                req.body.username
+            )} 
+            OR email = ${conn.escape(req.body.email)}) AND id != ${conn.escape(
+            req.params.studentId
+        )}`;
+
+        conn.query(checkDuplicateQuery, (err, results) => {
+            if (err) {
+                return next(err);
+            }
+            let errors = {};
+            // Check if username is already taken
+            if (
+                results.some((result) => result.username === req.body.username)
+            ) {
+                errors.username =
+                    'Username already exists, please choose a different one.';
+            }
+
+            // Check if email is already taken
+            if (results.some((result) => result.email === req.body.email)) {
+                errors.email =
+                    'Email already exists, please choose a different one.';
+            }
+
+            if (Object.keys(errors).length > 0) {
+                return res.status(409).json({
+                    errors: errors
+                });
+            }
+
+            // Proceed with the update if no duplicates are found
+            let sqlQuery = `UPDATE users
+                SET first_name = ${conn.escape(req.body.firstname)},
+                    last_name = ${conn.escape(req.body.lastname)},
+                    username = ${conn.escape(req.body.username)},
+                    email = ${conn.escape(req.body.email)}
+                WHERE id = ${conn.escape(req.params.studentId)};`;
+
+            conn.query(sqlQuery, async (err) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    // If avatar needs to be replaced
+                    if (isReplaceAvatar && req.body.avatar) {
+                        await saveUserAvatarToAWS(
+                            req.params.id,
+                            req.body.avatar
+                        );
+                    }
+
+                    res.json({ message: 'User details updated successfully!' });
+                } catch (err) {
+                    next(err);
+                }
+            });
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 /**
  * Update User Theme
  */
