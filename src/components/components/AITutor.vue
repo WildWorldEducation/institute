@@ -32,6 +32,9 @@ export default {
     },
     created() {
         this.connectToSocketSever();
+        socket.on('response-message', (...args) => {
+            console.log(args[0]);
+        });
     },
     updated() {
         // if (this.mode !== 'hide') {
@@ -94,10 +97,12 @@ export default {
                 // }
                 // this.getMessagesList();
                 socket.emit('send-message', this.message, (response) => {
-                    console.log();
+                    console.log('sever replied with: ' + response);
                 });
 
-                this.waitForAIresponse = false;
+                setTimeout(() => {
+                    this.waitForAIresponse = false;
+                }, 5000);
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false;

@@ -38,3 +38,8 @@ socket.on('send-message', (...args) => {
     console.log('user send message')
     console.log(args)
 })
+
+socket.on('response-message', (...args) => {
+    console.log('sever response with: ')
+    console.log(args)
+})
