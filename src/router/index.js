@@ -38,7 +38,7 @@ const router = createRouter({
             name: 'hub',
             component: () => import('../components/pages/HubView.vue'),
             meta: {
-                requiresAuth: true,
+                requiresAuth: false,
                 roles: ['student', 'admin']
             }
         },
@@ -550,9 +550,10 @@ router.beforeEach(async (to, from, next) => {
         to.name !== 'reset-password' &&
         // For guest access.
         to.name !== 'skill-tree' &&
-        to.name !== 'show-skill'
+        to.name !== 'show-skill' &&
+        to.name !== 'hub'
     ) {
-        next({ name: 'skill-tree' });
+        next({ name: 'hub' });
         return;
     }
 
