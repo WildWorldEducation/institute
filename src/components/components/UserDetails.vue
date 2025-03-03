@@ -330,7 +330,7 @@ export default {
                 </div>
                 <div
                     v-if="userDetailsStore.role == 'instructor'"
-                    class="d-flex justify-content-start mt-3"
+                    class="d-flex justify-content-end mt-3"
                 >
                     <router-link
                         :to="'/edit-student-password/' + this.$parent.user.id"

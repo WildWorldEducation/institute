@@ -42,7 +42,9 @@ export default {
             subjectFilters: [],
             // Tutorial tooltips
             showTutorialTip1: false,
-            showTutorialTip2: false
+            showTutorialTip2: false,
+            // Flag to prevent initial selection from triggering updates
+            isInitializing: true
         };
     },
     components: {
@@ -53,78 +55,128 @@ export default {
     async created() {
         this.checkIfTutorialComplete();
 
-        // Set up the first user in the array to be selected on the page initially.
+        // Load data
         if (
-            this.userDetailsStore.role == 'admin' ||
-            this.userDetailsStore.role == 'instructor'
+            this.userDetailsStore.role === 'admin' ||
+            this.userDetailsStore.role === 'instructor'
         ) {
             if (this.usersStore.users.length < 1) {
                 await this.usersStore.getUsers();
             }
-        } else if (this.userDetailsStore.role == 'editor') {
+        } else if (this.userDetailsStore.role === 'editor') {
             if (this.usersStore.editors.length < 1) {
                 await this.usersStore.getEditors();
             }
         }
 
-        if (this.userDetailsStore.role != 'editor') {
-            // Always refresh for the student instruction list because the edit and add user may change the list
+        if (this.userDetailsStore.role !== 'editor') {
             await this.instructorStudentsStore.getInstructorStudentsList();
+        }
+
+        if (this.userDetailsStore.role === 'instructor') {
+            await this.getStudents();
         }
 
         this.isLoading = false;
 
-        // TODO: May be better refactored using computed proprty for users/students.
-        if (this.userDetailsStore.role == 'admin') {
-            this.user.id = this.usersStore.users[0].id;
-            this.user.firstName = this.usersStore.users[0].first_name;
-            this.user.lastName = this.usersStore.users[0].last_name;
-            this.user.username = this.usersStore.users[0].username;
-            this.user.email = this.usersStore.users[0].email;
-            this.user.avatar = this.usersStore.users[0].avatar;
-            this.user.role = this.usersStore.users[0].role;
-        } else if (this.userDetailsStore.role == 'instructor') {
-            await this.getStudents();
-            this.user.id = this.students[0].id;
-            this.user.firstName = this.students[0].first_name;
-            this.user.lastName = this.students[0].last_name;
-            this.user.username = this.students[0].username;
-            this.user.email = this.students[0].email;
-            this.user.avatar = this.students[0].avatar;
-            this.user.isSkillsLocked = this.students[0].isSkillsLocked;
-        } else if (this.userDetailsStore.role == 'editor') {
-            this.user.id = this.usersStore.editors[0].id;
-            this.user.firstName = this.usersStore.editors[0].first_name;
-            this.user.lastName = this.usersStore.editors[0].last_name;
-            this.user.username = this.usersStore.editors[0].username;
-            this.user.email = this.usersStore.editors[0].email;
-            this.user.avatar = this.usersStore.editors[0].avatar;
-        }
+        // Handle initial user selection
+        this.initializeSelectedUser();
+
+        // Mark initialization as complete
+        this.$nextTick(() => {
+            this.isInitializing = false;
+        });
     },
-    computed: {},
     methods: {
-        // This method will always get call by child element to restore current user to the first one
-        changeUserToDefault() {
-            this.user.id = this.usersStore.users[0].id;
-            this.user.firstName = this.usersStore.users[0].first_name;
-            this.user.lastName = this.usersStore.users[0].last_name;
-            this.user.username = this.usersStore.users[0].username;
-            this.user.email = this.usersStore.users[0].email;
-            this.user.avatar = this.usersStore.users[0].avatar;
-            this.user.role = this.usersStore.users[0].role;
+        initializeSelectedUser() {
+            const selectedId = this.usersStore.selectedUserId;
+            let userFound = false;
+
+            // Try to use previously selected user if available
+            if (selectedId) {
+                if (this.userDetailsStore.role === 'admin') {
+                    const selectedUser = this.usersStore.users.find(
+                        (user) => user.id === selectedId
+                    );
+                    if (selectedUser) {
+                        userFound = true;
+                        this.updateUserDetails(selectedUser, true);
+                    }
+                } else if (this.userDetailsStore.role === 'instructor') {
+                    const selectedStudent = this.students.find(
+                        (student) => student.id === selectedId
+                    );
+                    if (selectedStudent) {
+                        userFound = true;
+                        this.updateUserDetails(selectedStudent, true);
+                    }
+                } else if (this.userDetailsStore.role === 'editor') {
+                    const selectedEditor = this.usersStore.editors.find(
+                        (editor) => editor.id === selectedId
+                    );
+                    if (selectedEditor) {
+                        userFound = true;
+                        this.updateUserDetails(selectedEditor, true);
+                    }
+                }
+            }
+
+            // Default to first user if no selection or selected user not found
+            if (!userFound) {
+                if (
+                    this.userDetailsStore.role === 'admin' &&
+                    this.usersStore.users.length > 0
+                ) {
+                    this.updateUserDetails(this.usersStore.users[0], true);
+                } else if (
+                    this.userDetailsStore.role === 'instructor' &&
+                    this.students.length > 0
+                ) {
+                    this.updateUserDetails(this.students[0], true);
+                } else if (
+                    this.userDetailsStore.role === 'editor' &&
+                    this.usersStore.editors.length > 0
+                ) {
+                    this.updateUserDetails(this.usersStore.editors[0], true);
+                }
+            }
         },
-        changeUserId(user) {
-            this.user.id = user.id;
-            this.user.firstName = user.first_name;
-            this.user.lastName = user.last_name;
-            this.user.username = user.username;
-            this.user.email = user.email;
-            this.user.avatar = user.avatar;
-            this.user.role = user.role;
-            this.user.isSkillsLocked = user.isSkillsLocked;
-            // turn on the show details flag
+
+        // Updated method to handle both initial setup and user selections
+        updateUserDetails(selectedUser, isInitial = false) {
+            if (!selectedUser) return;
+
+            // Update local state
+            this.user.id = selectedUser.id;
+            this.user.firstName = selectedUser.first_name;
+            this.user.lastName = selectedUser.last_name;
+            this.user.username = selectedUser.username;
+            this.user.email = selectedUser.email;
+            this.user.avatar = selectedUser.avatar;
+            this.user.role = selectedUser.role;
+
+            if (selectedUser.isSkillsLocked !== undefined) {
+                this.user.isSkillsLocked = selectedUser.isSkillsLocked;
+            }
+
+            // Update store directly during initialization to avoid triggering watches
+            if (isInitial) {
+                this.usersStore.selectedUserId = selectedUser.id;
+            } else {
+                // Regular update through the action
+                this.usersStore.setSelectedUser(selectedUser.id);
+            }
+
+            // Show details
             this.showDetails = true;
-            if (this.user.role == 'student') this.getInstructor();
+
+            // Get instructor info if needed
+            if (
+                this.user.role === 'student' ||
+                this.userDetailsStore.role === 'instructor'
+            ) {
+                this.getInstructor();
+            }
         },
         getInstructor() {
             // Get the instructor's user id.
@@ -187,12 +239,11 @@ export default {
             }
         },
         updateShowUserDetails(newUser) {
-            this.showDetails = true;
-            this.user = newUser;
+            this.setUserState(newUser);
+            this.usersStore.selectedUserId = newUser.id;
         },
-        // only for search bar to update the choose user id
 
-        // Tutorial
+        // Tutorial methods unchanged
         async checkIfTutorialComplete() {
             const result = await fetch(
                 '/users/check-tutorial-progress/users/' +
@@ -245,6 +296,16 @@ export default {
                     '/update-locked-skills',
                 requestOptions
             ).then(() => this.getStudents());
+        }
+    },
+    // Only watch for changes after initial setup
+    watch: {
+        'usersStore.selectedUserId': {
+            handler(newId) {
+                if (newId && this.initialSetupComplete) {
+                    this.updateUserFromStore(newId);
+                }
+            }
         }
     }
 };
@@ -310,10 +371,7 @@ export default {
     <div v-else id="user-container" class="container-fluid">
         <div class="row position-relative">
             <div class="col-lg-4 col-md-5">
-                <UsersList
-                    @changeUserId="changeUserId($event)"
-                    :searchBarCurrentUserId="currentUserId"
-                />
+                <UsersList />
             </div>
             <!-- User detail view for PC and Tablet View -->
             <div class="col-lg-8 col-md-7 d-none d-md-block">
