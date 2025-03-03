@@ -20,7 +20,7 @@ export default {
 
 <template>
     <h2 class="tertiary-heading h5">Last Visited Skills</h2>
-    <div id="skill-list">
+    <div id="skill-list" class="d-flex flex-wrap">
         <router-link
             v-for="skill in visitedSkills"
             :class="{
@@ -113,12 +113,5 @@ export default {
 
 #no-skill-cell {
     height: 41px;
-}
-
-@media (max-width: 480px) {
-    #skill-list {
-        max-height: 200px;
-        margin-left: 1px;
-    }
 }
 </style>

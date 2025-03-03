@@ -42,12 +42,6 @@ const router = createRouter({
                 roles: ['student', 'admin']
             }
         },
-        // {
-        //     path: '/radial-tree',
-        //     name: 'radial-tree',
-        //     component: () => import('../components/pages/RadialTreeView.vue'),
-        //     meta: { preventZoom: true, title: 'Radial skill tree' }
-        // },
         {
             path: '/login',
             name: 'login',

@@ -169,6 +169,14 @@ export default {
                             >
                         </li>
                         <li
+                            v-else-if="!sessionDetailsStore.isLoggedIn"
+                            class="nav-item"
+                        >
+                            <RouterLink to="/" class="nav-link close-on-click"
+                                >Search</RouterLink
+                            >
+                        </li>
+                        <li
                             v-if="
                                 userDetailsStore.role == 'student' ||
                                 userDetailsStore.role == 'editor'

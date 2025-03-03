@@ -5,14 +5,17 @@ import Goals from '../components/hub-components/Goals.vue';
 import RecommendedSkillsGenerator from '../components/hub-components/RecommendedSkillsGenerator.vue';
 // Import store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import { useSessionDetailsStore } from '../../stores/SessionDetailsStore';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const sessionDetailsStore = useSessionDetailsStore();
         // Run the GET request.
         userDetailsStore.getUserDetails();
         return {
-            userDetailsStore
+            userDetailsStore,
+            sessionDetailsStore
         };
     },
     data() {
@@ -40,7 +43,7 @@ export default {
         }
     },
     async created() {
-        this.checkIfTutorialComplete();
+        if (this.sessionDetailsStore.isLoggedIn) this.checkIfTutorialComplete();
     },
     methods: {
         // Tutorial
@@ -147,7 +150,10 @@ export default {
 
 <template>
     <!-- Tutorial button -->
-    <div class="container-fluid d-flex justify-content-end my-1">
+    <div
+        v-if="sessionDetailsStore.isLoggedIn"
+        class="container-fluid d-flex info-btn"
+    >
         <button class="btn" @click="restartTutorial">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -164,9 +170,18 @@ export default {
         </button>
     </div>
 
-    <div class="container min-vh-100">
+    <!-- Image -->
+    <div class="text-center app-logo-wrapper">
+        <img
+            class="img-fluid"
+            src="/images/app-logo.jpg"
+            alt="icon of a skill tree"
+        />
+    </div>
+
+    <div class="container">
         <!-- Generate recommended skills bar -->
-        <div class="row mb-5">
+        <div class="row mb-4">
             <div class="col">
                 <RecommendedSkillsGenerator />
                 <!-- Tooltip -->
@@ -194,12 +209,10 @@ export default {
                 </div>
             </div>
         </div>
-        <!--  Mark Assessments, 
-          Last Visited Skills / Student Suggested Questions,
-          Goals -->
-        <div class="row">
+        <!--  Last Visited Skills -->
+        <div v-if="sessionDetailsStore.isLoggedIn" class="row">
             <!--  Last Visited Skills / Mark Assessments -->
-            <div class="col-md-6 mb-2">
+            <div class="col mb-2">
                 <div class="h-100">
                     <!-- Tooltip -->
                     <div
@@ -231,10 +244,7 @@ export default {
                 </div>
             </div>
             <!-- Goals / Student Suggested Questions -->
-            <div
-                v-if="userDetailsStore.role == 'student'"
-                class="col-md-6 mb-2"
-            >
+            <div v-if="userDetailsStore.role == 'xyz'" class="col-md-6 mb-2">
                 <div class="h-100">
                     <!-- Tooltip -->
                     <div
@@ -310,6 +320,15 @@ export default {
 </template>
 
 <style scoped>
+.info-btn {
+    position: absolute;
+}
+
+/* Image */
+.app-logo-wrapper img {
+    max-height: 250px;
+}
+
 /* Tooltips */
 .info-panel {
     border-color: var(--primary-color);

@@ -1794,6 +1794,7 @@ router.get('/url-list', async (req, res) => {
 });
 
 // Return recommended skills, based on user query
+// Route for logged in users
 router.post(
     '/get-recommended-skills',
     isAuthenticated,
@@ -1874,5 +1875,72 @@ router.post(
         }
     }
 );
+
+// Route for guest users
+router.post('/guest-user/get-recommended-skills', async (req, res, next) => {
+    try {
+        let query = req.body.query;
+
+        let prompt = `        
+            From the following string, please extract what skill or career the writer wants to learn. Please return only this
+            skill or career, and refer to this as the "subject".
+            If the query relates to a career, please phrase this as "skills related to being a 'subject'",
+            while if the query relates to a skill, please phrase this as "skills related to 'subject'".
+
+            Please return this in a JSON object, and name the response "subjectResponse".
+
+            String: ${query}
+        `;
+
+        const subject = await openai.chat.completions.create({
+            messages: [
+                {
+                    role: 'user',
+                    content: prompt + ` Please respond with a JSON object.`
+                }
+            ],
+            model: 'gpt-4o',
+            response_format: { type: 'json_object' }
+        });
+        let responseJSON = subject.choices[0].message.content;
+        // Escape newline characters in response.
+        if (responseJSON) {
+            responseJSON = responseJSON.replace(/\\n/g, '\\n');
+        }
+        // Convert string to object.       ;
+        let subjectObject = JSON.parse(responseJSON);
+
+        const response = await openai.embeddings.create({
+            model: 'text-embedding-3-small',
+            input: subjectObject.subjectResponse,
+            dimensions: 720
+        });
+
+        const inputVector = response.data[0].embedding;
+
+        let sqlQuery = `SELECT skills.id, skills.name, skills.url, skills.level, skills.parent
+                    FROM skills_vector
+                    JOIN skills
+                    ON skills.id = skills_vector.skill_id                    
+                    WHERE VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
+                          VEC_FromText('[${inputVector}]')) < 1.1                              
+                    ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
+                          VEC_FromText('[${inputVector}]'))
+                          LIMIT 50
+                    `;
+        // sql for instructor and editor account
+        conn.query(sqlQuery, async (err, resultsSortedByRelevence) => {
+            if (err) {
+                throw err;
+            }
+
+            res.json(resultsSortedByRelevence);
+        });
+    } catch (error) {
+        console.error(error);
+        res.status = 500;
+        res.end;
+    }
+});
 
 module.exports = router;
