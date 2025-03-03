@@ -39,7 +39,7 @@ export default {
                 .then(function (data) {
                     if (data.account == 'authorized') {
                         if (data.role == 'student') {
-                            router.push({ name: 'skill-tree' });
+                            router.push({ name: 'hub' });
                         } else if (data.role == 'instructor') {
                             router.push({ name: 'students' });
                         } else if (data.role == 'editor') {
