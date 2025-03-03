@@ -32,7 +32,7 @@ export default {
     },
     computed: {
         studentName() {
-            return `${this.$parent.user.firstName || ''}`.trim();
+            return `${this.$parent.user.username}`.trim();
         }
     },
     methods: {
