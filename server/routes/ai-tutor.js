@@ -24,7 +24,8 @@ const {
     learningObjectiveMessage,
     generateLearningObjectiveQuestion,
     generateQuestion,
-    autoCheckLearningObjectiveMastery
+    teach,
+    assess
 } = require('../utilities/openAIAssistant');
 const isAuthenticated = require('../middlewares/authMiddleware');
 // Include API key.
@@ -83,12 +84,36 @@ router.post('/new-message', isAuthenticated, async (req, res, next) => {
             req.body.userId,
             req.body.skillUrl
         );
-        const result = await skillMessage(
+        await skillMessage(
             assistantData[0].thread_id,
             assistantData[0].assistant_id,
             req.body
         );
-        res.json({ message: result });
+        res.end();
+    } catch (error) {
+        console.error(error);
+        res.status = 500;
+        res.json({ mess: 'something went wrong' });
+    }
+});
+
+/**
+ * Get the AI tutor to teach
+ */
+router.post('/teach', isAuthenticated, async (req, res, next) => {
+    try {
+        const assistantData = await getSkillThread(
+            req.body.userId,
+            req.body.skillUrl
+        );
+
+        await teach(
+            assistantData[0].thread_id,
+            assistantData[0].assistant_id,
+            req.body
+        );
+
+        res.end();
     } catch (error) {
         console.error(error);
         res.status = 500;
@@ -106,13 +131,37 @@ router.post('/ask-question', isAuthenticated, async (req, res, next) => {
             req.body.skillUrl
         );
 
-        const result = await generateQuestion(
+        await generateQuestion(
             assistantData[0].thread_id,
             assistantData[0].assistant_id,
             req.body
         );
 
-        res.json({ message: result });
+        res.end();
+    } catch (error) {
+        console.error(error);
+        res.status = 500;
+        res.json({ mess: 'something went wrong' });
+    }
+});
+
+/**
+ * Get the AI tutor to assess for mastery
+ */
+router.post('/assessment', isAuthenticated, async (req, res, next) => {
+    try {
+        const assistantData = await getSkillThread(
+            req.body.userId,
+            req.body.skillUrl
+        );
+
+        let assessmentResult = await assess(
+            assistantData[0].thread_id,
+            assistantData[0].assistant_id,
+            req.body
+        );
+
+        res.json({ assessmentResult: assessmentResult.content[0].text.value });
     } catch (error) {
         console.error(error);
         res.status = 500;
@@ -191,13 +240,13 @@ router.post(
                 req.body.learningObjectiveId
             );
 
-            const result = await learningObjectiveMessage(
+            await learningObjectiveMessage(
                 assistantData[0].thread_id,
                 assistantData[0].assistant_id,
                 req.body
             );
 
-            res.json({ message: result });
+            res.end();
         } catch (error) {
             console.error(error);
             res.status = 500;
@@ -219,13 +268,13 @@ router.post(
                 req.body.learningObjectiveId
             );
 
-            const result = await generateLearningObjectiveQuestion(
+            await generateLearningObjectiveQuestion(
                 assistantData[0].thread_id,
                 assistantData[0].assistant_id,
                 req.body
             );
 
-            res.json({ message: result });
+            res.end();
         } catch (error) {
             console.error(error);
             res.status = 500;

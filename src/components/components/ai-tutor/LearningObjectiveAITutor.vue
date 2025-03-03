@@ -49,7 +49,6 @@ export default {
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
 
-                console.log(this.messageList.length);
                 // AI should check for mastery after every 5 interactions from the user.
                 // This assumes the user will interact for every second message.
                 if (this.messageList.length > 9) {
@@ -93,8 +92,6 @@ export default {
                     this.waitForAIresponse = false;
                     return;
                 }
-                const resData = await res.json();
-                this.latestMessage = resData.message.content[0].text.value;
 
                 this.getMessages();
                 this.waitForAIresponse = false;
@@ -131,9 +128,7 @@ export default {
                     this.waitForAIresponse = false;
                     return;
                 }
-                const resData = await res.json();
 
-                this.latestMessage = resData.message.content[0].text.value;
                 this.messageList.push(this.latestMessage);
 
                 this.getMessages();
@@ -181,7 +176,15 @@ export default {
         },
         // Format the response.
         applyMarkDownFormatting(string) {
-            const md = window.markdownit();
+            const md = window.markdownit().use(window.texmath, {
+                engine: katex,
+                delimiters: ['brackets', 'dollars'],
+                katexOptions: { macros: { '\\RR': '\\mathbb{R}' } }
+            });
+
+            // let newString = string.replace('\\[ ', '$');
+            // newString = newString.replace(' \\]', '$');
+
             let formattedMessage = md.render(string);
             return formattedMessage;
         }
@@ -289,7 +292,7 @@ export default {
         <div
             class="d-flex my-3 messages w-100"
             :class="{
-                'd-flex justify-content-end': message.role === 'user'
+                'justify-content-end': message.role === 'user'
             }"
             v-for="message in messageList"
         >
