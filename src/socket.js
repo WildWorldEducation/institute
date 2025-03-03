@@ -12,6 +12,8 @@ const URL = process.env.NODE_ENV === "production" ? undefined : "http://localhos
 
 export const socket = io(URL);
 
+
+
 socket.on("connect", () => {
     state.connected = true;
     console.log('Connect to Sever')
@@ -19,7 +21,7 @@ socket.on("connect", () => {
 
 socket.on("disconnect", () => {
     state.connected = false;
-    console.log('Disconnect From Sever')
+    console.log('Disconnect From Sever');
 
 });
 
@@ -31,3 +33,8 @@ socket.on("foo", (...args) => {
 socket.on("bar", (...args) => {
     state.barEvents.push(args);
 });
+
+socket.on('send-message', (...args) => {
+    console.log('user send message')
+    console.log(args)
+})

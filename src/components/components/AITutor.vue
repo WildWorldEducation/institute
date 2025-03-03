@@ -66,33 +66,36 @@ export default {
             this.waitForAIresponse = true;
             try {
                 // Add user message to messages list
-                const userMessage = {
-                    role: 'user',
-                    content: [{ text: { value: this.message } }]
-                };
-                this.messageList.push(userMessage);
+                // const userMessage = {
+                //     role: 'user',
+                //     content: [{ text: { value: this.message } }]
+                // };
+                // this.messageList.push(userMessage);
 
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        message: this.message,
-                        userId: this.userDetailsStore.userId,
-                        skillName: this.skillName,
-                        skillUrl: this.skillUrl,
-                        skillLevel: this.englishSkillLevel
-                    })
-                };
+                // const requestOptions = {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({
+                //         message: this.message,
+                //         userId: this.userDetailsStore.userId,
+                //         skillName: this.skillName,
+                //         skillUrl: this.skillUrl,
+                //         skillLevel: this.englishSkillLevel
+                //     })
+                // };
 
-                var url = '/ai-tutor/new-message';
-                this.message = '';
-                const res = await fetch(url, requestOptions);
-                if (res.status === 500) {
-                    alert('The tutor can`t answer !!');
-                    this.waitForAIresponse = false;
-                    return;
-                }
-                this.getMessagesList();
+                // var url = '/ai-tutor/new-message';
+                // this.message = '';
+                // const res = await fetch(url, requestOptions);
+                // if (res.status === 500) {
+                //     alert('The tutor can`t answer !!');
+                //     this.waitForAIresponse = false;
+                //     return;
+                // }
+                // this.getMessagesList();
+                socket.emit('send-message', this.message, (response) => {
+                    console.log();
+                });
 
                 this.waitForAIresponse = false;
             } catch (error) {

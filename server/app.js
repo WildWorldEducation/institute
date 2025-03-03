@@ -13,6 +13,7 @@ const publicPath = path.join(path.resolve(), 'public');
 const distPath = path.join(path.resolve(), 'dist');
 const isAdmin = require('./middlewares/adminMiddleware');
 const isAuthenticated = require('./middlewares/authMiddleware');
+
 // Database Connection
 const conn = require('./config/db');
 const xmlbuilder = require('xmlbuilder');
@@ -20,8 +21,10 @@ const xmlbuilder = require('xmlbuilder');
 // Initiate Socket IO connection
 const http = require('http');
 const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
+
+const { createSocket } = require('./config/socketConfig')
+createSocket(server)
+
 // Allow things to work.
 var cors = require('cors');
 app.use(cors());
@@ -382,6 +385,7 @@ app.get('/login-status', (req, res) => {
 // Log in with username and password.
 // For password decryption.
 const bcrypt = require('bcrypt');
+
 app.post('/login-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     // Look for user.
@@ -615,10 +619,7 @@ Server listening
 //     console.log('Server started on port 3000...');
 // });
 
-io.on('connection', (socket) => {
-    console.log('a user connected with socket info: ');
-    console.log(socket.data)
-});
+
 
 server.listen(3000, () => {
     console.log('sever listening on *:3000');
