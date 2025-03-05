@@ -78,7 +78,9 @@ export default {
             showTutorialTip6: false,
             showCategoryCompletedModal: false,
             nextSkillsInBranch: [],
-            showLearningObjectiveAI: false
+            showLearningObjectiveAI: false,
+            // Defaults to true. False only for certain skills.
+            showLearningObjectives: true
         };
     },
     components: {
@@ -110,8 +112,18 @@ export default {
             this.skill = this.showSkillStore.skill;
             this.skillId = this.skill.id;
 
+
+            /*
+            * Learning Objectives
+            */           
+            // Hide learning objectives for certain skills
+            if (this.skill.name.includes('Vocabulary Test')) {
+                this.showLearningObjectives = false;
+            }
+
             // Get learning objectives for the skill
-            await this.getLearningObjectives();
+            this.skill.learningObjectives = []
+            if (this.showLearningObjectives) await this.getLearningObjectives();
 
             // Meta title for SEO
             document.title = this.skill.name + ' - The Collins Institute';
@@ -1012,7 +1024,10 @@ export default {
                 </div>
             </div>
             <!-- Learning Objectives -->
-            <div v-if="skill.type != 'domain'" class="mt-4">
+            <div
+                v-if="skill.type != 'domain' && showLearningObjectives"
+                class="mt-4"
+            >
                 <h2 class="h4 secondary-heading">Learning Objectives</h2>
                 <div class="bg-white rounded p-2">
                     <div
@@ -1136,7 +1151,7 @@ export default {
                     userDetailsStore.role === 'student' &&
                     skill.type !== 'domain'
                 "
-                :skill="skill"                
+                :skill="skill"
             />
         </div>
 
