@@ -82,14 +82,11 @@ export default {
                     {{ skill?.name }}
                 </h1>
                 <img
-                    :src="
-                        'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
-                        skill.url
-                    "
+                    :src="skill.image_thumbnail_url"
                     class="rounded img-fluid mx-auto"
                     @error="imageUrlAlternative"
                 />
-                <!-- Mastery requirements -->
+                <!-- Introduction -->
                 <div
                     class="skill-introduction text-start mt-1 mb-4"
                     v-html="skill.introduction"
