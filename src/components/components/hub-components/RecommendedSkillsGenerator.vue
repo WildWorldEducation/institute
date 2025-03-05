@@ -118,6 +118,16 @@ export default {
                 "Learning track created. You can view it on the 'Learning Tracks' tab."
             );
         }
+    },
+    watch: {
+        recommendedSkillsOrderedByRelevance: {
+            handler(newValue) {
+                if (newValue.length === 0) {
+                    this.showRecommendedSkills = false;
+                }
+            },
+            deep: true
+        }
     }
 };
 </script>
