@@ -51,6 +51,13 @@ export default {
             };
             const result = await fetch(url, requestOption);
             const readableResult = await result.json();
+
+            if (readableResult.length === 0) {
+                alert('can`t find any result that match yours need');
+                this.showRecommendedSkills = false;
+                return;
+            }
+
             this.recommendedSkillsOrderedByRelevance = readableResult;
             this.showRecommendedSkills = true;
         },
@@ -69,6 +76,12 @@ export default {
             const result = await fetch(url, requestOption);
             const readableResult = await result.json();
             this.recommendedSkillsOrderedByRelevance = readableResult;
+            console.log('result is: ');
+            console.log(this.recommendedSkillsOrderedByRelevance);
+            alert(this.recommendedSkillsOrderedByRelevance);
+            if (!this.recommendedSkillsOrderedByRelevance) {
+                this.showRecommendedSkills = false;
+            }
             this.showRecommendedSkills = true;
         },
         removeRecommendedSkill(index) {
@@ -153,10 +166,11 @@ export default {
             </button>
         </div>
     </div>
+    <h1>{{ showRecommendedSkills }}</h1>
     <!-- Recommended Skills by Relevance -->
     <div v-if="showRecommendedSkills">
         <h2 class="secondary-heading h5 bg-white rounded p-2 mt-2">
-            Recommended Skills
+            Recommended Skills He he
         </h2>
         <div
             :class="{ 'd-flex flex-wrap': !sessionDetailsStore.isLoggedIn }"
