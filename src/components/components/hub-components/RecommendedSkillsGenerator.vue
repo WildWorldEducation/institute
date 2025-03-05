@@ -29,6 +29,10 @@ export default {
         input.addEventListener('keypress', function (event) {
             // If the user presses the "Enter" key on the keyboard
             if (event.key === 'Enter') {
+                // Not progress if user do not type in any word
+                if (this.query === '' || this.query === null) {
+                    return;
+                }
                 // Cancel the default action, if needed
                 event.preventDefault();
                 // Trigger the button element with a click
@@ -39,6 +43,9 @@ export default {
     methods: {
         // For logged in users
         async getRecommendedSkills() {
+            if (this.query === '' || this.query === null) {
+                return;
+            }
             let url = '/skills/get-recommended-skills';
             const requestOption = {
                 method: 'POST',
@@ -63,6 +70,9 @@ export default {
         },
         // For guest users
         async getRecommendedSkillsGuestMode() {
+            if (this.query === '' || this.query === null) {
+                return;
+            }
             let url = '/skills/guest-user/get-recommended-skills';
             const requestOption = {
                 method: 'POST',
@@ -76,9 +86,6 @@ export default {
             const result = await fetch(url, requestOption);
             const readableResult = await result.json();
             this.recommendedSkillsOrderedByRelevance = readableResult;
-            console.log('result is: ');
-            console.log(this.recommendedSkillsOrderedByRelevance);
-            alert(this.recommendedSkillsOrderedByRelevance);
             if (!this.recommendedSkillsOrderedByRelevance) {
                 this.showRecommendedSkills = false;
             }
@@ -166,11 +173,11 @@ export default {
             </button>
         </div>
     </div>
-    <h1>{{ showRecommendedSkills }}</h1>
+
     <!-- Recommended Skills by Relevance -->
     <div v-if="showRecommendedSkills">
         <h2 class="secondary-heading h5 bg-white rounded p-2 mt-2">
-            Recommended Skills He he
+            Recommended Skills
         </h2>
         <div
             :class="{ 'd-flex flex-wrap': !sessionDetailsStore.isLoggedIn }"
