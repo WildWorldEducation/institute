@@ -77,8 +77,7 @@ export default {
             showTutorialTip5: false,
             showTutorialTip6: false,
             showCategoryCompletedModal: false,
-            nextSkillsInBranch: [],
-            showLearningObjectiveAI: false
+            nextSkillsInBranch: []
         };
     },
     components: {
@@ -135,7 +134,6 @@ export default {
             this.skill.learningObjectives = await result.json();
             for (let i = 0; i < this.skill.learningObjectives.length; i++) {
                 this.skill.learningObjectives[i].showAI = false;
-                this.skill.learningObjectives[i].mastered = false;
             }
         },
         recordSkillVisit(skillId) {
@@ -1021,7 +1019,6 @@ export default {
                     >
                         <div>
                             <svg
-                                v-if="!learningObjective.mastered"
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 512 512"
                                 width="6"
@@ -1030,19 +1027,6 @@ export default {
                                 <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
                                 <path
                                     d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z"
-                                />
-                            </svg>
-                            <svg
-                                v-else
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="18"
-                                height="18"
-                                fill="green"
-                            >
-                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                                <path
-                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
                                 />
                             </svg>
                         </div>
@@ -1136,7 +1120,7 @@ export default {
                     userDetailsStore.role === 'student' &&
                     skill.type !== 'domain'
                 "
-                :skill="skill"                
+                :skill="skill"
             />
         </div>
 

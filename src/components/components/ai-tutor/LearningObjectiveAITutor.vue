@@ -138,42 +138,6 @@ export default {
                 this.waitForAIresponse = false;
             }
         },
-        async automaticMasteryCheck() {
-            try {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        learningObjective: this.learningObjective,
-                        learningObjectiveId: this.learningObjectiveId,
-                        userName: this.userDetailsStore.userName,
-                        userId: this.userDetailsStore.userId,
-                        skillName: this.skillName,
-                        skillLevel: this.englishSkillLevel
-                    })
-                };
-
-                var url = '/ai-tutor/learning-objectives/auto-check-mastery';
-                const res = await fetch(url, requestOptions);
-                if (res.status === 500) {
-                    this.waitForAIresponse = false;
-                    return;
-                }
-                const resData = await res.json();
-                console.log(resData.message.content[0].text.value);
-                if (
-                    resData.message.content[0].text.value == 'Yes' ||
-                    resData.message.content[0].text.value == 'yes' ||
-                    resData.message.content[0].text.value == 'Yes.' ||
-                    resData.message.content[0].text.value == 'yes.'
-                ) {
-                    alert('You seem to understand this learning objective!');
-                }
-            } catch (error) {
-                console.error(error);
-                this.waitForAIresponse = false;
-            }
-        },
         // Format the response.
         applyMarkDownFormatting(string) {
             const md = window.markdownit().use(window.texmath, {

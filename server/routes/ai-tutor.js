@@ -283,33 +283,5 @@ router.post(
     }
 );
 
-/**
- * Ask the learning objective AI tutor to automatically check for mastery
- */
-router.post(
-    '/learning-objectives/auto-check-mastery',
-    isAuthenticated,
-    async (req, res, next) => {
-        try {
-            const assistantData = await getLearningObjectiveThread(
-                req.body.userId,
-                req.body.learningObjectiveId
-            );
-
-            const result = await autoCheckLearningObjectiveMastery(
-                assistantData[0].thread_id,
-                assistantData[0].assistant_id,
-                req.body
-            );
-
-            res.json({ message: result });
-        } catch (error) {
-            console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
-        }
-    }
-);
-
 // Export the router for app to use.
 module.exports = router;
