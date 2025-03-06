@@ -150,17 +150,17 @@ async function createAssessingAssistantAndThread(
 
 async function createAssessingAssistant(topic, level, learningObjectives) {
     const assistant = await openai.beta.assistants.create({
-        name: 'Socratic Tutor',
+        name: 'Assessment Tutor',
         instructions:
-            `You are a personal tutor teaching a ` +
-            level +
-            `student about the following subject: ` +
+            `You are responsible for assessing whether the user understands the following subject:` +
             topic +
-            `, which consists of the following learning objectives:` +
+            `, which consists of the following learning objectives: ` +
             learningObjectives +
+            `, at the following level:` +
+            level +
             `.`,
         tools: [],
-        model: 'gpt-4o'
+        model: 'o1'
     });
     return assistant;
 }
@@ -216,9 +216,9 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
-        instructions: `Please tutor about the subject: ${messageData.skillName}, 
+        instructions: `Please assess the user's understanding of the subject: ${messageData.skillName}, 
         comprising the following learning objectives: ${messageData.learningObjectives}.
-        Tutor the user as if they are at a ${messageData.skillLevel} level and age.
+        Assess the user's understanding at a ${messageData.skillLevel} level.
         Make sure to have $ delimiters before any science and math strings that can convert to Latex`
     });
 
