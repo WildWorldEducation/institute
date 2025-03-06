@@ -333,11 +333,14 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- Suggested interaction buttons -->
+        <!--Tutor types -->
         <span v-if="mode === 'big'" class="d-flex justify-content-end">
             <!-- Exam Agent: assesses student -->
             <button
                 class="btn suggested-interactions ms-1"
+                :class="{
+                    'assessing-chat': tutorType === 'assessing'
+                }"
                 @click="changeTutorType('assessing')"
             >
                 Test me
@@ -345,6 +348,9 @@ export default {
             <!-- Socratic Tutor agent -->
             <button
                 class="btn suggested-interactions ms-1"
+                :class="{
+                    'socratic-chat': tutorType === 'socratic'
+                }"
                 @click="changeTutorType('socratic')"
             >
                 Socratic Tutor
