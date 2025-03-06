@@ -73,7 +73,7 @@ export default {
                 if (this.tutorType == 'socratic') {
                     url = `/ai-tutor/socratic/messages-list`;
                 } else if (this.tutorType == 'assessing') {
-                    url = `/ai-tutor/messages-list`;
+                    url = `/ai-tutor/assessing/messages-list`;
                 }
 
                 const response = await fetch(url, requestOptions);
@@ -110,7 +110,7 @@ export default {
                     })
                 };
 
-                var url = '/ai-tutor/new-message';
+                var url = '/ai-tutor/socratic/new-message';
                 this.message = '';
                 const res = await fetch(url, requestOptions);
                 if (res.status === 500) {

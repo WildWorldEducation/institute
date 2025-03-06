@@ -77,7 +77,7 @@ async function createSocraticAssistantThread() {
 async function getSocraticTutorThread(userId, skillUrl) {
     try {
         let queryString = `SELECT * 
-                           FROM ai_tutor_skill_threads 
+                           FROM ai_socratic_tutor_threads 
                            WHERE user_id = ${conn.escape(
                                userId
                            )} AND skill_url = ${conn.escape(skillUrl)}`;
@@ -91,7 +91,7 @@ async function getSocraticTutorThread(userId, skillUrl) {
 
 async function saveSocraticTutorThread(data) {
     try {
-        let queryString = `INSERT INTO ai_tutor_skill_threads (user_id, skill_url, assistant_id, thread_id)
+        let queryString = `INSERT INTO ai_socratic_tutor_threads (user_id, skill_url, assistant_id, thread_id)
                VALUES (
                ${conn.escape(data.userId)},
                ${conn.escape(data.skillUrl)},

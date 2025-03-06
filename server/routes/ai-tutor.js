@@ -88,26 +88,30 @@ router.post(
 );
 
 /**
- * Send message to skill level AI tutor
+ * Send message to Socratic AI tutor
  */
-router.post('/new-message', isAuthenticated, async (req, res, next) => {
-    try {
-        const assistantData = await getSkillThread(
-            req.body.userId,
-            req.body.skillUrl
-        );
-        await skillMessage(
-            assistantData[0].thread_id,
-            assistantData[0].assistant_id,
-            req.body
-        );
-        res.end();
-    } catch (error) {
-        console.error(error);
-        res.status = 500;
-        res.json({ mess: 'something went wrong' });
+router.post(
+    '/socratic/new-message',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const assistantData = await getSkillThread(
+                req.body.userId,
+                req.body.skillUrl
+            );
+            await skillMessage(
+                assistantData[0].thread_id,
+                assistantData[0].assistant_id,
+                req.body
+            );
+            res.end();
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
+        }
     }
-});
+);
 
 /**
  * Get the AI tutor to teach
