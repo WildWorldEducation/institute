@@ -1,11 +1,10 @@
 <script>
 import { OutputLocationFilterSensitiveLog } from '@aws-sdk/client-s3';
-import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
-import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
-import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
-// import SendIconLoadingSymbol from './ai-tutor/sendIconLoadingSymbol.vue';
-import TutorLoadingSymbol from './ai-tutor/tutorLoadingSymbol.vue';
-import TooltipBtn from './share-components/TooltipBtn.vue';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
+import { useUserSkillsStore } from '../../../stores/UserSkillsStore.js';
+import { useSkillTreeStore } from '../../../stores/SkillTreeStore.js';
+import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
+import TooltipBtn from './../share-components/TooltipBtn.vue';
 
 export default {
     setup() {
