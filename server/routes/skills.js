@@ -694,7 +694,7 @@ router.get('/introduction-and-url/:id', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     // Get skill.
-    const sqlQuery = `SELECT introduction, url
+    const sqlQuery = `SELECT introduction, url, image_thumbnail_url
     FROM skills
     WHERE skills.id = ${conn.escape(req.params.id)}
      AND skills.is_deleted = 0;`;
