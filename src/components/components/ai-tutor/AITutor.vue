@@ -79,6 +79,7 @@ export default {
                 const response = await fetch(url, requestOptions);
                 const resData = await response.json();
                 this.socraticTutorChatHistory = resData.messages.data;
+                this.chatHistory = this.socraticTutorChatHistory;
             } catch (error) {
                 console.error(error);
             }
@@ -91,11 +92,11 @@ export default {
 
             try {
                 // Add user message to messages list
-                const userMessage = {
-                    role: 'user',
-                    content: [{ text: { value: this.message } }]
-                };
-                this.socraticTutorChatHistory.push(userMessage);
+                // const userMessage = {
+                //     role: 'user',
+                //     content: [{ text: { value: this.message } }]
+                // };
+                // this.socraticTutorChatHistory.push(userMessage);
 
                 const requestOptions = {
                     method: 'POST',
@@ -118,7 +119,7 @@ export default {
                     this.waitForAIresponse = false;
                     return;
                 }
-                this.getMessagesList();
+                this.getChatHistory();
 
                 this.waitForAIresponse = false;
             } catch (error) {
@@ -172,7 +173,7 @@ export default {
                     );
                 }
 
-                this.getMessagesList();
+                this.getChatHistory();
                 this.waitForAIresponse = false;
             } catch (error) {
                 console.error(error);
