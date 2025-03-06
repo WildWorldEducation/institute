@@ -105,11 +105,7 @@ async function saveSocraticTutorThread(data) {
     }
 }
 
-/**
- * Skill level tutor functions ---------------------
- */
-
-async function skillMessage(threadId, assistantId, messageData) {
+async function socraticTutorMessage(threadId, assistantId, messageData) {
     // Add a Message to the Thread
     const message = await openai.beta.threads.messages.create(threadId, {
         role: 'user',
@@ -133,6 +129,10 @@ async function skillMessage(threadId, assistantId, messageData) {
         console.log(run.status);
     }
 }
+
+/**
+ * Skill level tutor functions ---------------------
+ */
 
 async function teach(threadId, assistantId, messageData) {
     // Add a message to the thread
@@ -342,11 +342,10 @@ module.exports = {
     createSocraticAssistantAndThread,
     getSocraticTutorThread,
     saveSocraticTutorThread,
+    socraticTutorMessage,
 
     getMessagesList,
     // Skill level tutor
-
-    skillMessage,
     generateQuestion,
     teach,
     assess,

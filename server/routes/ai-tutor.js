@@ -17,9 +17,9 @@ const {
     createSocraticAssistantAndThread,
     getSocraticTutorThread,
     saveSocraticTutorThread,
+    socraticTutorMessage,
 
     getMessagesList,
-    skillMessage,
     teach,
     assess,
     // for learning objective AI tutor
@@ -95,11 +95,12 @@ router.post(
     isAuthenticated,
     async (req, res, next) => {
         try {
-            const assistantData = await getSkillThread(
+            const assistantData = await getSocraticTutorThread(
                 req.body.userId,
                 req.body.skillUrl
             );
-            await skillMessage(
+
+            await socraticTutorMessage(
                 assistantData[0].thread_id,
                 assistantData[0].assistant_id,
                 req.body
