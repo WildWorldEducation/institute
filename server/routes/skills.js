@@ -209,11 +209,11 @@ router.post(
                             1,
                             ${conn.escape(req.session.userId)},
                             ${conn.escape(
-                                req.body.name
-                            )},                           
+                                    req.body.name
+                                )},                           
                             ${conn.escape(
-                                req.body.description
-                            )},                                                      
+                                    req.body.description
+                                )},                                                      
                             ${conn.escape(req.body.mastery_requirements)},
                             ${conn.escape(req.body.level)});`;
 
@@ -277,8 +277,8 @@ router.post(
         const sqlQuery = `SELECT *
                           FROM skills
                           WHERE skills.id = ${conn.escape(
-                              req.body.skillToBeCopied.id
-                          )} AND skills.is_deleted = 0;`;
+            req.body.skillToBeCopied.id
+        )} AND skills.is_deleted = 0;`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -643,8 +643,8 @@ router.get('/url/:skillUrl', (req, res, next) => {
                     LEFT JOIN 
                         skills AS parent_skill ON s.parent = parent_skill.id
                     WHERE s.url = ${conn.escape(
-                        req.params.skillUrl
-                    )} AND s.is_deleted = 0`;
+        req.params.skillUrl
+    )} AND s.is_deleted = 0`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -847,8 +847,8 @@ router.put(
                     ${conn.escape(imageUrl)},
                     ${conn.escape(iconUrl)},
                     ${conn.escape(
-                        req.body.mastery_requirements
-                    )},                    
+                req.body.mastery_requirements
+            )},                    
                     ${conn.escape(req.body.level)},                    
                     ${conn.escape(req.body.order)},
                     ${conn.escape(req.body.comment)},
@@ -866,18 +866,18 @@ router.put(
                         url = ${conn.escape(req.body.url)},
                         parent = ${conn.escape(req.body.parent)},
                         description = ${conn.escape(
-                            req.body.description
-                        )},                         
+                        req.body.description
+                    )},                         
                         mastery_requirements = ${conn.escape(
-                            req.body.mastery_requirements
-                        )}, 
+                        req.body.mastery_requirements
+                    )}, 
                         type = ${conn.escape(req.body.type)}, 
                         level = ${conn.escape(req.body.level)},
                         introduction = ${conn.escape(req.body.introduction)},
                         skills.order = ${conn.escape(req.body.order)}, 
                         version_number = ${conn.escape(
-                            versionNumber
-                        )},                        
+                        versionNumber
+                    )},                        
                         icon = ${conn.escape(scaledDownIcon)},             
                         image_url = ${conn.escape(imageUrl)},
                         image_thumbnail_url = ${conn.escape(imageThumbnailUrl)},
@@ -941,8 +941,8 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
          
          ON DUPLICATE KEY
          UPDATE mastery_requirements = ${conn.escape(
-             req.body.mastery_requirements
-         )}, 
+            req.body.mastery_requirements
+        )}, 
          date = CURRENT_TIMESTAMP(), 
          image = ${conn.escape(req.body.image)},          
          icon = ${conn.escape(req.body.icon)},     
@@ -1103,11 +1103,10 @@ router.put(
                                         recordUserAction(
                                             {
                                                 userId: req.session.userId,
-                                                userAction: `${
-                                                    req.body.edit
+                                                userAction: `${req.body.edit
                                                         ? 'edit_and_approve'
                                                         : 'approve'
-                                                }`,
+                                                    }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
                                             },
