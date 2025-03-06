@@ -57,6 +57,7 @@ export default {
 
             this.getChatHistory();
         },
+        // For both tutors
         async getChatHistory() {
             try {
                 const requestOptions = {
@@ -133,8 +134,13 @@ export default {
                 this.waitForAIresponse = false;
             }
         },
-        // ask Open AI to ask a question about the skill
-        async assessMastery() {
+        // Socratic tutor
+        async provideOverview() {
+            this.message = 'Please provide an overview';
+            this.sendMessage();
+        },
+        // assessing tutor
+        async testStudent() {
             if (this.waitForAIresponse) {
                 return;
             }
@@ -153,7 +159,7 @@ export default {
                     })
                 };
 
-                var url = '/ai-tutor/assessment';
+                var url = '/ai-tutor/assessing/test-student';
 
                 const res = await fetch(url, requestOptions);
                 if (res.status === 500) {
@@ -163,21 +169,21 @@ export default {
                 }
 
                 const response = await res.json();
-                console.log(response.assessmentResult);
+                // console.log(response.assessmentResult);
 
-                if (
-                    response.assessmentResult == 'yes' ||
-                    response.assessmentResult == 'Yes' ||
-                    response.assessmentResult == 'yes.' ||
-                    response.assessmentResult == 'Yes.'
-                ) {
-                    alert('congrats, you have mastered this skill!');
-                    this.makeMastered();
-                } else {
-                    alert(
-                        "You need to answer more questions correctly to master the skill. Press the 'test me' button to begin."
-                    );
-                }
+                // if (
+                //     response.assessmentResult == 'yes' ||
+                //     response.assessmentResult == 'Yes' ||
+                //     response.assessmentResult == 'yes.' ||
+                //     response.assessmentResult == 'Yes.'
+                // ) {
+                //     alert('congrats, you have mastered this skill!');
+                //     this.makeMastered();
+                // } else {
+                //     alert(
+                //         "You need to answer more questions correctly to master the skill. Press the 'test me' button to begin."
+                //     );
+                // }
 
                 this.getChatHistory();
                 this.waitForAIresponse = false;
@@ -366,9 +372,16 @@ export default {
             <button
                 v-if="tutorType === 'assessing'"
                 class="btn suggested-interactions ms-1"
-                @click="changeTutorType('assessing')"
+                @click="testStudent()"
             >
                 test me
+            </button>
+            <button
+                v-if="tutorType === 'socratic'"
+                class="btn suggested-interactions ms-1"
+                @click="provideOverview()"
+            >
+                give me an overview
             </button>
         </span>
         <!-- User input (big mode) -->

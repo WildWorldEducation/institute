@@ -25,6 +25,7 @@ const {
     getAssessingTutorThread,
     saveAssessingTutorThread,
     assessingTutorMessage,
+    testStudent,
     // Learning objective tutor
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
@@ -198,26 +199,32 @@ router.post(
 /**
  * Get the AI tutor to assess for mastery
  */
-router.post('/assessment', isAuthenticated, async (req, res, next) => {
-    try {
-        const assistantData = await getSkillThread(
-            req.body.userId,
-            req.body.skillUrl
-        );
+router.post(
+    '/assessing/test-student',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const assistantData = await getAssessingTutorThread(
+                req.body.userId,
+                req.body.skillUrl
+            );
 
-        let assessmentResult = await assess(
-            assistantData[0].thread_id,
-            assistantData[0].assistant_id,
-            req.body
-        );
+            let assessmentResult = await testStudent(
+                assistantData[0].thread_id,
+                assistantData[0].assistant_id,
+                req.body
+            );
 
-        res.json({ assessmentResult: assessmentResult.content[0].text.value });
-    } catch (error) {
-        console.error(error);
-        res.status = 500;
-        res.json({ mess: 'something went wrong' });
+            res.json({
+                assessmentResult: assessmentResult.content[0].text.value
+            });
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
+        }
     }
-});
+);
 
 // Learning objective tutor ------------------
 

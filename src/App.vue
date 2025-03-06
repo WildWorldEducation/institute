@@ -165,7 +165,7 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink to="/" class="nav-link close-on-click"
-                                >Hub</RouterLink
+                                >Search</RouterLink
                             >
                         </li>
                         <li
