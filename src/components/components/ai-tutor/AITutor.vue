@@ -54,6 +54,8 @@ export default {
                 this.chatHistory = this.socraticTutorChatHistory;
             else if (type == 'assessing')
                 this.chatHistory = this.assessingTutorChatHistory;
+
+            this.getChatHistory();
         },
         async getChatHistory() {
             try {
@@ -78,8 +80,14 @@ export default {
 
                 const response = await fetch(url, requestOptions);
                 const resData = await response.json();
-                this.socraticTutorChatHistory = resData.messages.data;
-                this.chatHistory = this.socraticTutorChatHistory;
+                if (this.tutorType == 'socratic') {
+                    this.socraticTutorChatHistory = resData.messages.data;
+                    this.chatHistory = this.socraticTutorChatHistory;
+                } else if (this.tutorType == 'assessing') {
+                    this.assessingTutorChatHistory = resData.messages.data;
+                    this.chatHistory = this.assessingTutorChatHistory;
+                    console.log(this.chatHistory);
+                }
             } catch (error) {
                 console.error(error);
             }
@@ -91,13 +99,6 @@ export default {
             this.waitForAIresponse = true;
 
             try {
-                // Add user message to messages list
-                // const userMessage = {
-                //     role: 'user',
-                //     content: [{ text: { value: this.message } }]
-                // };
-                // this.socraticTutorChatHistory.push(userMessage);
-
                 const requestOptions = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -110,8 +111,12 @@ export default {
                         learningObjectives: this.learningObjectives
                     })
                 };
+                let url = '';
+                if (this.tutorType == 'socratic')
+                    url = '/ai-tutor/socratic/new-message';
+                else if (this.tutorType == 'assessing')
+                    url = '/ai-tutor/assessing/new-message';
 
-                var url = '/ai-tutor/socratic/new-message';
                 this.message = '';
                 const res = await fetch(url, requestOptions);
                 if (res.status === 500) {
@@ -119,6 +124,7 @@ export default {
                     this.waitForAIresponse = false;
                     return;
                 }
+
                 this.getChatHistory();
 
                 this.waitForAIresponse = false;
@@ -334,26 +340,35 @@ export default {
             </div>
         </div>
         <!--Tutor types -->
-        <span v-if="mode === 'big'" class="d-flex justify-content-end">
-            <!-- Exam Agent: assesses student -->
+        <span v-if="mode === 'big'" class="d-flex justify-content-between">
+            <span>
+                <!-- Socratic Tutor agent -->
+                <button
+                    class="btn suggested-interactions ms-1"
+                    :class="{
+                        'socratic-chat': tutorType === 'socratic'
+                    }"
+                    @click="changeTutorType('socratic')"
+                >
+                    Socratic Tutor
+                </button>
+                <!-- Exam Agent: assesses student -->
+                <button
+                    class="btn suggested-interactions ms-1"
+                    :class="{
+                        'assessing-chat': tutorType === 'assessing'
+                    }"
+                    @click="changeTutorType('assessing')"
+                >
+                    Assessment Tutor
+                </button>
+            </span>
             <button
+                v-if="tutorType === 'assessing'"
                 class="btn suggested-interactions ms-1"
-                :class="{
-                    'assessing-chat': tutorType === 'assessing'
-                }"
                 @click="changeTutorType('assessing')"
             >
-                Test me
-            </button>
-            <!-- Socratic Tutor agent -->
-            <button
-                class="btn suggested-interactions ms-1"
-                :class="{
-                    'socratic-chat': tutorType === 'socratic'
-                }"
-                @click="changeTutorType('socratic')"
-            >
-                Socratic Tutor
+                test me
             </button>
         </span>
         <!-- User input (big mode) -->
@@ -371,7 +386,14 @@ export default {
                 tile="send message"
                 class="d-flex flex-row-reverse"
             >
-                <button class="btn primary-btn send-btn" @click="sendMessage()">
+                <button
+                    class="btn send-btn"
+                    :class="{
+                        'socratic-send-btn': tutorType === 'socratic',
+                        'assessing-send-btn': tutorType === 'assessing'
+                    }"
+                    @click="sendMessage()"
+                >
                     <!-- Speech bubble icon -->
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -517,14 +539,17 @@ export default {
     padding: 10px 15px;
     background-color: #f3f3f3;
     border-radius: 50px;
+    color: black;
 }
 
 .socratic-chat {
-    background-color: lightblue;
+    background-color: #031e27;
+    color: white;
 }
 
 .assessing-chat {
-    background-color: lightcoral;
+    background-color: #290707;
+    color: white;
 }
 
 .chat-component {
@@ -555,6 +580,14 @@ export default {
 .send-btn {
     height: fit-content;
     width: fit-content;
+}
+
+.socratic-send-btn {
+    background-color: #031e27;
+}
+
+.assessing-send-btn {
+    background-color: #290707;
 }
 
 .minimize-chat-container {

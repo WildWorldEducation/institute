@@ -550,7 +550,7 @@ body {
 
 /* Regular text */
 p {
-    color: black !important;
+    /* color: black; */
     font-family: 'Poppins', sans-serif;
 }
 
