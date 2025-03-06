@@ -97,9 +97,9 @@ export default {
                     if (data.account == 'authorized') {
                         alert('Account created.');
                         if (this.newUser.accountType == 'student')
-                            router.push({ name: 'skill-tree' });
+                            router.push({ name: 'hub' });
                         else if (this.newUser.accountType == 'instructor')
-                            router.push({ name: 'users' });                      
+                            router.push({ name: 'students' });
                     } else if (data.account == 'username already taken') {
                         alert(data.account);
                     } else if (data.account == 'email already taken') {

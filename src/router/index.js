@@ -38,16 +38,10 @@ const router = createRouter({
             name: 'hub',
             component: () => import('../components/pages/HubView.vue'),
             meta: {
-                requiresAuth: true,
+                requiresAuth: false,
                 roles: ['student', 'admin']
             }
         },
-        // {
-        //     path: '/radial-tree',
-        //     name: 'radial-tree',
-        //     component: () => import('../components/pages/RadialTreeView.vue'),
-        //     meta: { preventZoom: true, title: 'Radial skill tree' }
-        // },
         {
             path: '/login',
             name: 'login',
@@ -263,6 +257,12 @@ const router = createRouter({
             name: 'edit-user',
             component: () => import('../components/pages/EditUserView.vue'),
             meta: { requiresAuth: true, roles: ['instructor', 'admin'] }
+        },
+        {
+            path: '/edit/student/:id/',
+            name: 'edit-student',
+            component: () => import('../components/components/EditStudent.vue'),
+            meta: { requiresAuth: true, roles: ['instructor'] }
         },
         {
             path: '/users/activity-report/:id',
@@ -530,15 +530,15 @@ router.beforeEach(async (to, from, next) => {
         );
     }
 
-    // To prevent the background image (from certain themes) from flashing when switching between skill tree pages.
-    if (
-        (to.name == 'skill-tree' && from.name == 'radial-tree') ||
-        (from.name == 'skill-tree' && to.name == 'radial-tree')
-    ) {
-        document.body.classList.add('skill-tree-transition');
-    } else if (from.name == 'radial-tree' || from.name == 'skill-tree') {
-        document.body.classList.remove('skill-tree-transition');
-    }
+    // // To prevent the background image (from certain themes) from flashing when switching between skill tree pages.
+    // if (
+    //     (to.name == 'skill-tree' && from.name == 'radial-tree') ||
+    //     (from.name == 'skill-tree' && to.name == 'radial-tree')
+    // ) {
+    //     document.body.classList.add('skill-tree-transition');
+    // } else if (from.name == 'radial-tree' || from.name == 'skill-tree') {
+    //     document.body.classList.remove('skill-tree-transition');
+    // }
 
     // Check if initial data has been loaded and user is not logged in, redirect to login
     if (
@@ -550,9 +550,10 @@ router.beforeEach(async (to, from, next) => {
         to.name !== 'reset-password' &&
         // For guest access.
         to.name !== 'skill-tree' &&
-        to.name !== 'show-skill'
+        to.name !== 'show-skill' &&
+        to.name !== 'hub'
     ) {
-        next({ name: 'skill-tree' });
+        next({ name: 'hub' });
         return;
     }
 

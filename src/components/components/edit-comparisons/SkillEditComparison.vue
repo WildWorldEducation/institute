@@ -2,6 +2,7 @@
 import HtmlDiff from 'htmldiff-js';
 import { nextTick } from 'vue';
 import MasteryEditDetails from './MasteryEditDetails.vue';
+import LoadingModal from '../skill-edit/loadingModal.vue';
 
 export default {
     setup() {},
@@ -29,10 +30,16 @@ export default {
                 icon: false,
                 mastery_requirements: false,
                 introduction: false
-            }
+            },
+            // Add these variables for the loading spinner
+            loadingStatus: '',
+            showLoadingModal: false
         };
     },
-    components: { MasteryEditDetails },
+    components: {
+        MasteryEditDetails,
+        LoadingModal
+    },
     async created() {
         await this.getSkillEdit();
         await this.getSkill();
@@ -87,6 +94,9 @@ export default {
             .attr('contenteditable', false);
     },
     methods: {
+        closeModal() {
+            this.showLoadingModal = false;
+        },
         async getSkillEdit() {
             await fetch(
                 '/skills/submitted-for-review/' +
@@ -203,6 +213,9 @@ export default {
             });
         },
         saveEdit() {
+            // Show loading spinner
+            this.showLoadingModal = true;
+
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -220,24 +233,36 @@ export default {
 
             var url =
                 '/skills/' + this.skillEdit.skill_id + '/edit-for-review/save';
-            fetch(url, requestOptions).then(() => {
-                this.$router.back();
-            });
-
-            // Delete it afterwards.
-            const result = fetch(
-                '/skills/submitted-for-review/' +
-                    this.skillId +
-                    '/' +
-                    this.userId,
-                {
-                    method: 'DELETE'
-                }
-            );
-
-            if (result.error) {
-                console.log(result.error);
-            }
+            fetch(url, requestOptions)
+                .then((res) => {
+                    if (res.ok) {
+                        this.loadingStatus = 'success';
+                    } else {
+                        this.loadingStatus = 'fails';
+                    }
+                })
+                .then(() => {
+                    // Delete it afterwards.
+                    return fetch(
+                        '/skills/submitted-for-review/' +
+                            this.skillId +
+                            '/' +
+                            this.userId,
+                        {
+                            method: 'DELETE'
+                        }
+                    );
+                })
+                .then((result) => {
+                    if (result.error) {
+                        console.log(result.error);
+                    }
+                    this.$router.back();
+                })
+                .catch((error) => {
+                    console.error('Error saving edit:', error);
+                    this.loadingStatus = 'fails';
+                });
         }
     }
 };
@@ -831,6 +856,14 @@ export default {
             </div>
         </div>
     </div>
+
+    <!-- Loading Modal -->
+    <LoadingModal
+        :skillUrl="skill.url"
+        :loadingStatus="loadingStatus"
+        :showLoadingModal="showLoadingModal"
+        :closeModal="closeModal"
+    />
 </template>
 
 <style scoped>

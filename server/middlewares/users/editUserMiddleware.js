@@ -6,7 +6,7 @@ const editUserPermission = (req, res, next) => {
     // Admin can edit any
     if (userRole === 'admin') {
         return next();
-    }else {
+    } else {
         // If the conditions are not met, forbid the action
         return res.status(403).json({
             message: 'Forbidden: You do not have permission to edit this user'

@@ -7,9 +7,15 @@ export const useUsersStore = defineStore('users', {
         instructors: [],
         editors: [],
         studentsOfInstructor: [],
-
+        selectedUserId: null // Add this to track selected user
     }),
     actions: {
+        setSelectedUser(id) {
+            this.selectedUserId = id;
+        },
+        clearSelectedUser(id) {
+            this.selectedUserId = null;
+        },
         async getUsers() {
             const result = await fetch('/users/list');
             const data = await result.json();
@@ -31,11 +37,12 @@ export const useUsersStore = defineStore('users', {
             this.editors = data;
         },
         async getStudentsOfUser(instructorId) {
-            const result = await fetch(`/users/student-of-instructors/${instructorId}`)
+            const result = await fetch(
+                `/users/student-of-instructors/${instructorId}`
+            );
             const data = await result.json();
 
-            this.studentsOfInstructor = data
-
+            this.studentsOfInstructor = data;
         },
         async deleteUser(id) {
             this.users = this.users.filter((u) => {
@@ -49,6 +56,6 @@ export const useUsersStore = defineStore('users', {
             if (result.error) {
                 console.log(result.error);
             }
-        },
+        }
     }
 });

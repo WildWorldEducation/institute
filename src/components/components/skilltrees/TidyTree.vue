@@ -200,6 +200,7 @@ export default {
                 }
                 this.skill.introduction = result2.introduction;
                 this.skill.url = result2.url;
+                this.skill.image_thumbnail_url = result2.image_thumbnail_url;
                 this.showSkillPanel = true;
             }
         });

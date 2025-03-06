@@ -1136,9 +1136,7 @@ export default {
                     userDetailsStore.role === 'student' &&
                     skill.type !== 'domain'
                 "
-                :skillName="skill.name"
-                :skillUrl="skill.url"
-                :skillLevel="skill.level"
+                :skill="skill"                
             />
         </div>
 

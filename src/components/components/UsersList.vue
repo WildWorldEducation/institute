@@ -15,23 +15,29 @@ export default {
             userDetailsStore
         };
     },
-    props: ['searchBarCurrentUserId'],
     data() {
         return {
-            currentUserId: null
+            // Local tracking of which item is selected to ensure accurate UI rendering
+            selectedItemId: null
         };
     },
-    async created() {},
-    methods: {
-        changeUserId(user) {
-            this.currentUserId = user.id;
-            this.$emit('changeUserId', user);
-        }
+    created() {
+        // Initialize from the store
+        this.selectedItemId = this.usersStore.selectedUserId;
     },
-    watch: {
-        searchBarCurrentUserId: {
-            handler(newValue) {
-                this.currentUserId = newValue;
+    methods: {
+        selectUser(user) {
+            // Set local value first for immediate UI response
+            this.selectedItemId = user.id;
+
+            // Then update the store without triggering the watcher again
+            if (this.usersStore.selectedUserId !== user.id) {
+                this.usersStore.selectedUserId = user.id;
+
+                // Directly notify parent component without using a watch
+                if (this.$parent && this.$parent.updateUserDetails) {
+                    this.$parent.updateUserDetails(user);
+                }
             }
         }
     }
@@ -44,6 +50,7 @@ export default {
         <div
             v-if="userDetailsStore.role == 'admin'"
             v-for="user in usersStore.users"
+            :key="user.id"
         >
             <div class="d-flex bg-light rounded p-2">
                 <img
@@ -53,24 +60,24 @@ export default {
                 />
                 <button
                     :class="
-                        user.id == currentUserId
+                        user.id === selectedItemId
                             ? 'isCurrentlyChoose'
                             : 'user-buttons'
                     "
-                    @click="changeUserId(user)"
+                    @click="selectUser(user)"
                 >
                     {{ user.username }}
                 </button>
             </div>
-            <!-- divide line for pc and tablet view -->
             <hr class="border border-1 opacity-0 w-75 d-none d-md-block" />
-            <!-- divide line for phone view specific -->
             <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
         </div>
+
         <!-- Instructors -->
         <div
             v-else-if="userDetailsStore.role == 'instructor'"
             v-for="student in $parent.students"
+            :key="student.id"
         >
             <div class="d-flex bg-light rounded p-2">
                 <img
@@ -80,16 +87,18 @@ export default {
                 />
                 <button
                     :class="
-                        student.id == currentUserId
+                        student.id === selectedItemId
                             ? 'isCurrentlyChoose'
                             : 'user-buttons'
                     "
-                    @click="changeUserId(student)"
+                    @click="selectUser(student)"
                 >
                     {{ student.username }}
                 </button>
             </div>
         </div>
+
+        <!-- Add Student Link -->
         <RouterLink
             v-if="userDetailsStore.role == 'instructor'"
             to="/users/add-student"
@@ -97,10 +106,12 @@ export default {
         >
             Add Student
         </RouterLink>
+
         <!-- Editors -->
         <div
             v-if="userDetailsStore.role == 'editor'"
             v-for="editor in $parent.usersStore.editors"
+            :key="editor.id"
         >
             <div class="d-flex bg-light rounded p-2">
                 <img
@@ -110,18 +121,16 @@ export default {
                 />
                 <button
                     :class="
-                        editor.id == currentUserId
+                        editor.id === selectedItemId
                             ? 'isCurrentlyChoose'
                             : 'user-buttons'
                     "
-                    @click="changeUserId(editor)"
+                    @click="selectUser(editor)"
                 >
                     {{ editor.username }}
                 </button>
             </div>
-            <!-- divide line for pc and tablet view -->
             <hr class="border border-1 opacity-0 w-75 d-none d-md-block" />
-            <!-- divide line for phone view specific -->
             <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
         </div>
     </div>

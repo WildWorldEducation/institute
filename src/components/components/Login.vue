@@ -39,7 +39,7 @@ export default {
                 .then(function (data) {
                     if (data.account == 'authorized') {
                         if (data.role == 'student') {
-                            router.push({ name: 'skill-tree' });
+                            router.push({ name: 'hub' });
                         } else if (data.role == 'instructor') {
                             router.push({ name: 'students' });
                         } else if (data.role == 'editor') {
@@ -241,14 +241,5 @@ h1 {
     margin: auto;
     max-height: 100%;
     max-width: 100%;
-}
-
-.app-icon {
-    /* max-height: 100% !important;
-    height: 100%; */
-    /* width: 100%;
-    height: 100%;
-    object-fit: cover;
-    overflow: hidden; */
 }
 </style>

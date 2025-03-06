@@ -60,6 +60,7 @@ export default {
             d3Zoom: null,
             // For the loading animation.
             //   isLoading: true,
+            isFirstLoad: true,
             xPos: 0,
             yPos: 0,
             showAnimation: false,
@@ -122,7 +123,10 @@ export default {
             d3.select(this.context.canvas).call(this.d3Zoom);
 
             // Set initial zoom value.
-            this.resetPos();
+            if(this.isFirstLoad){
+                this.resetPos();
+                this.isFirstLoad = false;
+            }
 
             // For the loading animation.
             this.isLoading = false;
@@ -964,23 +968,22 @@ export default {
         },
         // programmatic d3 zoom
         zoomInD3(scale, panX, panY) {
+            this.scale = scale;
             d3.select(this.context.canvas).call(
                 this.d3Zoom.transform,
                 d3.zoomIdentity.translate(panX, panY).scale(scale)
             );
         },
         // zoom and pan to a node
-        goToLocation(node) {
+        goToLocation(node, shift=0) {
             const skillTreeHeight = this.$refs.wrapper.clientHeight;
             const skillTreeWidth = this.$refs.wrapper.clientWidth;
-            const zoomedScale = skillTreeWidth > 480 ? 1.75 : 1.2;
             const centerYOffset = skillTreeWidth > 480 ? 2.5 : 2.8;
             const centerXOffset = 2;
-            this.resultNode = node;
             const translateX =
-                -node.y * zoomedScale + skillTreeWidth / centerXOffset;
+                -node.y * this.scale + shift + skillTreeWidth / centerXOffset;
             const translateY =
-                -node.x * zoomedScale + skillTreeHeight / centerYOffset;
+                -node.x * this.scale + skillTreeHeight / centerYOffset;
 
             d3.select(this.context.canvas)
                 .transition()
@@ -989,7 +992,7 @@ export default {
                     this.d3Zoom.transform,
                     d3.zoomIdentity
                         .translate(translateX, translateY)
-                        .scale(zoomedScale)
+                        .scale(this.scale)
                 );
         },
         // Pan with arrow keys.
@@ -1112,8 +1115,9 @@ export default {
                 this.userDetailsStore.userId +
                 '/' +
                 node.id;
-            fetch(url).then(() => {
-                this.loadTree(node);
+            fetch(url).then(async () => {
+                await this.loadTree();
+                this.goToLocation(node);
             });
         },
         toggleShowChildren(node) {
@@ -1122,8 +1126,9 @@ export default {
                 this.userDetailsStore.userId +
                 '/' +
                 node.id;
-            fetch(url).then(() => {
-                this.loadTree(node);
+            fetch(url).then(async () => {
+                await this.loadTree();
+                this.goToLocation(node, -700);
             });
         },
         checkingIfNodeInView(node, transformData) {

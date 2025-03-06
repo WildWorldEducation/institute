@@ -1,6 +1,8 @@
 <script>
 import { OutputLocationFilterSensitiveLog } from '@aws-sdk/client-s3';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
+import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 // import SendIconLoadingSymbol from './ai-tutor/sendIconLoadingSymbol.vue';
 import TutorLoadingSymbol from './ai-tutor/tutorLoadingSymbol.vue';
 import TooltipBtn from './share-components/TooltipBtn.vue';
@@ -8,12 +10,16 @@ import { state, socket } from '../../socket.js';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const userSkillsStore = useUserSkillsStore();
+        const skillTreeStore = useSkillTreeStore();
 
         return {
-            userDetailsStore
+            userDetailsStore,
+            userSkillsStore,
+            skillTreeStore
         };
     },
-    props: ['skillName', 'skillUrl', 'skillLevel'],
+    props: ['skill'],
     components: { TutorLoadingSymbol, TooltipBtn },
     data() {
         return {
@@ -23,11 +29,16 @@ export default {
             messageList: [],
             waitForAIresponse: false,
             mode: 'big',
-            englishSkillLevel: ''
+            englishSkillLevel: '',
+            learningObjectives: []
         };
     },
     async mounted() {
-        this.englishSkillLevel = this.skillLevel.replace('_', ' ');
+        this.learningObjectives = this.skill.learningObjectives.map(
+            (a) => a.objective
+        );
+
+        this.englishSkillLevel = this.skill.level.replace('_', ' ');
         await this.getMessagesList();
     },
     created() {
@@ -48,8 +59,8 @@ export default {
                 const url = `/ai-tutor/messages-list?userId=${encodeURIComponent(
                     this.userDetailsStore.userId
                 )}&skillUrl=${encodeURIComponent(
-                    this.skillUrl
-                )}&skillName=${encodeURIComponent(this.skillName)}
+                    this.skill.url
+                )}&skillName=${encodeURIComponent(this.skill.name)}
                 &skillLevel=${encodeURIComponent(this.englishSkillLevel)}
                 `;
 
@@ -67,6 +78,7 @@ export default {
                 return;
             }
             this.waitForAIresponse = true;
+
             try {
                 // Add user message to messages list
                 // const userMessage = {
@@ -108,8 +120,81 @@ export default {
                 this.waitForAIresponse = false;
             }
         },
+        async requestTeaching() {
+            if (this.waitForAIresponse) {
+                return;
+            }
+
+            this.waitForAIresponse = true;
+            try {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userName: this.userDetailsStore.userName,
+                        userId: this.userDetailsStore.userId,
+                        skillName: this.skill.name,
+                        skillLevel: this.englishSkillLevel,
+                        skillUrl: this.skill.url,
+                        learningObjectives: this.learningObjectives
+                    })
+                };
+
+                var url = '/ai-tutor/teach';
+
+                const res = await fetch(url, requestOptions);
+                if (res.status === 500) {
+                    alert('The tutor can`t answer !!');
+                    this.waitForAIresponse = false;
+                    return;
+                }
+
+                this.getMessagesList();
+                this.waitForAIresponse = false;
+            } catch (error) {
+                console.error(error);
+                this.waitForAIresponse = false;
+            }
+        },
         // ask Open AI to ask a question about the skill
         async requestQuestion() {
+            if (this.waitForAIresponse) {
+                return;
+            }
+
+            this.waitForAIresponse = true;
+            try {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userName: this.userDetailsStore.userName,
+                        userId: this.userDetailsStore.userId,
+                        skillName: this.skill.name,
+                        skillLevel: this.englishSkillLevel,
+                        skillUrl: this.skill.url,
+                        learningObjectives: this.learningObjectives
+                    })
+                };
+
+                var url = '/ai-tutor/ask-question';
+
+                const res = await fetch(url, requestOptions);
+                if (res.status === 500) {
+                    alert('The tutor can`t answer !!');
+                    this.waitForAIresponse = false;
+                    return;
+                }
+
+                this.getMessagesList();
+                this.waitForAIresponse = false;
+            } catch (error) {
+                console.error(error);
+                this.waitForAIresponse = false;
+            }
+        },
+        // ask Open AI to ask a question about the skill
+        async assessMastery() {
             if (this.waitForAIresponse) {
                 return;
             }
@@ -121,19 +206,37 @@ export default {
                     body: JSON.stringify({
                         userName: this.userDetailsStore.userName,
                         userId: this.userDetailsStore.userId,
-                        skillName: this.skillName,
+                        skillName: this.skill.name,
                         skillLevel: this.englishSkillLevel,
-                        skillUrl: this.skillUrl
+                        skillUrl: this.skill.url,
+                        learningObjectives: this.learningObjectives
                     })
                 };
 
-                var url = '/ai-tutor/ask-question';
+                var url = '/ai-tutor/assessment';
 
                 const res = await fetch(url, requestOptions);
                 if (res.status === 500) {
                     alert('The tutor can`t answer !!');
                     this.waitForAIresponse = false;
                     return;
+                }
+
+                const response = await res.json();
+                console.log(response.assessmentResult);
+
+                if (
+                    response.assessmentResult == 'yes' ||
+                    response.assessmentResult == 'Yes' ||
+                    response.assessmentResult == 'yes.' ||
+                    response.assessmentResult == 'Yes.'
+                ) {
+                    alert('congrats, you have mastered this skill!');
+                    this.makeMastered();
+                } else {
+                    alert(
+                        "You need to answer more questions correctly to master the skill. Press the 'test me' button to begin."
+                    );
                 }
 
                 this.getMessagesList();
@@ -297,21 +400,32 @@ export default {
         <!-- Suggested interaction buttons -->
         <span v-if="mode === 'big'" class="d-flex justify-content-end">
             <!-- explanation button -->
-            <button
-                class="btn suggested-interactions"
-                @click="
-                    message = 'Please give me an overview of this.';
-                    SendMessage();
-                "
-            >
-                give me an overview
+            <button class="btn suggested-interactions" @click="assessMastery()">
+                have I mastered this skill?
             </button>
             <!-- ask question button -->
             <button
                 class="btn suggested-interactions ms-1"
                 @click="requestQuestion()"
             >
-                ask me a question
+                test me
+            </button>
+            <!-- explanation button -->
+            <button
+                class="btn suggested-interactions ms-1"
+                @click="requestTeaching()"
+            >
+                teach me
+            </button>
+            <!-- explanation button -->
+            <button
+                class="btn suggested-interactions ms-1"
+                @click="
+                    message = 'Please give me an overview of this.';
+                    SendMessage();
+                "
+            >
+                give me an overview
             </button>
         </span>
         <!-- User input (big mode) -->
