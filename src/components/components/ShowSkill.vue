@@ -12,7 +12,7 @@ import { useShowSkillStore } from '../../stores/ShowSkillStore.js';
 // Import components
 import FlagModals from './FlagModals.vue';
 import Forum from './forum/Forum.vue';
-import AITutor from './AITutor.vue';
+import AITutor from './ai-tutor/AITutor.vue';
 import LearningObjectiveAITutor from './ai-tutor/LearningObjectiveAITutor.vue';
 
 export default {
@@ -111,17 +111,16 @@ export default {
             this.skill = this.showSkillStore.skill;
             this.skillId = this.skill.id;
 
-
             /*
-            * Learning Objectives
-            */           
+             * Learning Objectives
+             */
             // Hide learning objectives for certain skills
             if (this.skill.name.includes('Vocabulary Test')) {
                 this.showLearningObjectives = false;
             }
 
             // Get learning objectives for the skill
-            this.skill.learningObjectives = []
+            this.skill.learningObjectives = [];
             if (this.showLearningObjectives) await this.getLearningObjectives();
 
             // Meta title for SEO

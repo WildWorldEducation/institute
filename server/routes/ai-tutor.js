@@ -13,21 +13,25 @@ const conn = require('../config/db');
 // Import OpenAI package.
 const { OpenAI } = require('openai');
 const {
-    createAssistantAndThread,
-    saveAITutorSkillThread,
+    // Shared
     getMessagesList,
-    // for skill level tutor
-    getSkillThread,
-    skillMessage,
-    teach,
-    assess,
-    // for learning objective AI tutor
+    // Socratic tutor
+    createSocraticAssistantAndThread,
+    getSocraticTutorThread,
+    saveSocraticTutorThread,
+    socraticTutorMessage,
+    // Assessing tutor
+    createAssessingAssistantAndThread,
+    getAssessingTutorThread,
+    saveAssessingTutorThread,
+    assessingTutorMessage,
+    testStudent,
+    // Learning objective tutor
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
     learningObjectiveMessage,
     requestLearningObjectiveTutoring,
-    generateLearningObjectiveQuestion,
-    generateQuestion
+    generateLearningObjectiveQuestion
 } = require('../utilities/openAIAssistant');
 const isAuthenticated = require('../middlewares/authMiddleware');
 // Include API key.
@@ -35,141 +39,192 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-// Skill tutor ---------------------
-
+// Socratic tutor ---------------------
 /**
- * Get thread from skill level AI tutor
+ * Get thread from Socratic AI tutor
  */
-router.get('/messages-list', isAuthenticated, async (req, res, next) => {
-    try {
-        const userId = req.query.userId;
-        const skillUrl = req.query.skillUrl;
-        const skillName = req.query.skillName;
-        const skillLevel = req.query.skillLevel;
+router.post(
+    '/socratic/messages-list',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const userId = req.body.userId;
+            const skillUrl = req.body.skillUrl;
+            const skillName = req.body.skillName;
+            const skillLevel = req.body.skillLevel;
+            const learningObjectives = req.body.learningObjectives;
 
-        let assistantData = await getSkillThread(userId, skillUrl);
-        // Create assistant
-        if (assistantData.length === 0) {
-            const newAssistant = await createAssistantAndThread(
-                skillName,
-                skillLevel
-            );
-            assistantData = [
-                {
-                    userId: userId,
-                    skillUrl: skillUrl,
-                    assistantId: newAssistant.assistant.id,
-                    threadId: newAssistant.thread.id
-                }
-            ];
-            await saveAITutorSkillThread(assistantData[0]);
-            const messages = await getMessagesList(assistantData[0].threadId);
-            res.json({ messages: messages });
-            return;
-        } else {
-            const messages = await getMessagesList(assistantData[0].thread_id);
-            res.json({ messages: messages });
+            let assistantData = await getSocraticTutorThread(userId, skillUrl);
+            // Create assistant
+            if (assistantData.length === 0) {
+                const newAssistant = await createSocraticAssistantAndThread(
+                    skillName,
+                    skillLevel,
+                    learningObjectives
+                );
+                assistantData = [
+                    {
+                        userId: userId,
+                        skillUrl: skillUrl,
+                        assistantId: newAssistant.assistant.id,
+                        threadId: newAssistant.thread.id
+                    }
+                ];
+                await saveSocraticTutorThread(assistantData[0]);
+                const messages = await getMessagesList(
+                    assistantData[0].threadId
+                );
+                res.json({ messages: messages });
+                return;
+            } else {
+                const messages = await getMessagesList(
+                    assistantData[0].thread_id
+                );
+                res.json({ messages: messages });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
         }
-    } catch (error) {
-        console.error(error);
-        res.status = 500;
-        res.json({ mess: 'something went wrong' });
     }
-});
+);
 
 /**
- * Send message to skill level AI tutor
+ * Send message to Socratic AI tutor
  */
-router.post('/new-message', isAuthenticated, async (req, res, next) => {
-    try {
-        const assistantData = await getSkillThread(
-            req.body.userId,
-            req.body.skillUrl
-        );
-        await skillMessage(
-            assistantData[0].thread_id,
-            assistantData[0].assistant_id,
-            req.body
-        );
-        res.end();
-    } catch (error) {
-        console.error(error);
-        res.status = 500;
-        res.json({ mess: 'something went wrong' });
+router.post(
+    '/socratic/new-message',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const assistantData = await getSocraticTutorThread(
+                req.body.userId,
+                req.body.skillUrl
+            );
+
+            await socraticTutorMessage(
+                assistantData[0].thread_id,
+                assistantData[0].assistant_id,
+                req.body
+            );
+            res.end();
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
+        }
     }
-});
+);
+
+// Assessing tutor ---------------------
+/**
+ * Get thread from Assessing AI tutor
+ */
+router.post(
+    '/assessing/messages-list',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const userId = req.body.userId;
+            const skillUrl = req.body.skillUrl;
+            const skillName = req.body.skillName;
+            const skillLevel = req.body.skillLevel;
+            const learningObjectives = req.body.learningObjectives;
+
+            let assistantData = await getAssessingTutorThread(userId, skillUrl);
+            // Create assistant
+            if (assistantData.length === 0) {
+                const newAssistant = await createAssessingAssistantAndThread(
+                    skillName,
+                    skillLevel,
+                    learningObjectives
+                );
+                assistantData = [
+                    {
+                        userId: userId,
+                        skillUrl: skillUrl,
+                        assistantId: newAssistant.assistant.id,
+                        threadId: newAssistant.thread.id
+                    }
+                ];
+                await saveAssessingTutorThread(assistantData[0]);
+                const messages = await getMessagesList(
+                    assistantData[0].threadId
+                );
+                res.json({ messages: messages });
+                return;
+            } else {
+                const messages = await getMessagesList(
+                    assistantData[0].thread_id
+                );
+
+                res.json({ messages: messages });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
+        }
+    }
+);
 
 /**
- * Get the AI tutor to teach
+ * Send message to Assessing AI tutor
  */
-router.post('/teach', isAuthenticated, async (req, res, next) => {
-    try {
-        const assistantData = await getSkillThread(
-            req.body.userId,
-            req.body.skillUrl
-        );
+router.post(
+    '/assessing/new-message',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const assistantData = await getAssessingTutorThread(
+                req.body.userId,
+                req.body.skillUrl
+            );
 
-        await teach(
-            assistantData[0].thread_id,
-            assistantData[0].assistant_id,
-            req.body
-        );
-
-        res.end();
-    } catch (error) {
-        console.error(error);
-        res.status = 500;
-        res.json({ mess: 'something went wrong' });
+            await assessingTutorMessage(
+                assistantData[0].thread_id,
+                assistantData[0].assistant_id,
+                req.body
+            );
+            res.end();
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
+        }
     }
-});
-
-/**
- * Get the AI tutor to ask a question
- */
-router.post('/ask-question', isAuthenticated, async (req, res, next) => {
-    try {
-        const assistantData = await getSkillThread(
-            req.body.userId,
-            req.body.skillUrl
-        );
-
-        await generateQuestion(
-            assistantData[0].thread_id,
-            assistantData[0].assistant_id,
-            req.body
-        );
-
-        res.end();
-    } catch (error) {
-        console.error(error);
-        res.status = 500;
-        res.json({ mess: 'something went wrong' });
-    }
-});
+);
 
 /**
  * Get the AI tutor to assess for mastery
  */
-router.post('/assessment', isAuthenticated, async (req, res, next) => {
-    try {
-        const assistantData = await getSkillThread(
-            req.body.userId,
-            req.body.skillUrl
-        );
+router.post(
+    '/assessing/test-student',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const assistantData = await getAssessingTutorThread(
+                req.body.userId,
+                req.body.skillUrl
+            );
 
-        let assessmentResult = await assess(
-            assistantData[0].thread_id,
-            assistantData[0].assistant_id,
-            req.body
-        );
+            let assessmentResult = await testStudent(
+                assistantData[0].thread_id,
+                assistantData[0].assistant_id,
+                req.body
+            );
 
-        res.json({ assessmentResult: assessmentResult.content[0].text.value });
-    } catch (error) {
-        console.error(error);
-        res.status = 500;
-        res.json({ mess: 'something went wrong' });
+            res.json({
+                assessmentResult: assessmentResult.content[0].text.value
+            });
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
+        }
     }
-});
+);
 
 // Learning objective tutor ------------------
 
