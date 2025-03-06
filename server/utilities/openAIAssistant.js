@@ -32,7 +32,7 @@ async function createAssistant(topic, level) {
             topic +
             `.`,
         tools: [],
-        model: 'gpt-4o'
+        model: 'o1'
     });
     return assistant;
 }
