@@ -13,37 +13,9 @@ const openai = new OpenAI({
 });
 
 /**
- * Shared functions --------------------------------------
- */
-async function createAssistantAndThread(topic, level) {
-    const assistant = await createAssistant(topic, level);
-    const thread = await createThread();
-    const result = { assistant: assistant, thread: thread };
-    return result;
-}
-
-async function createAssistant(topic, level) {
-    const assistant = await openai.beta.assistants.create({
-        name: 'General Tutor',
-        instructions:
-            `You are a personal tutor teaching a ` +
-            level +
-            `student about the following subject: ` +
-            topic +
-            `.`,
-        tools: [],
-        model: 'o1'
-    });
-    return assistant;
-}
-
-async function createThread() {
-    const thread = await openai.beta.threads.create();
-    return thread;
-}
-
-/**
- * Get AI tutor messages
+ * Shared function
+ *
+ * Get chat history from any tutor
  * @param {string} threadId
  * @return {object} message List
  */
@@ -57,15 +29,52 @@ async function getMessagesList(threadId) {
 }
 
 /**
- * Skill level tutor functions ---------------------
+ * Socratic tutor functions --------------------------------------
  */
+async function createSocraticAssistantAndThread(
+    topic,
+    level,
+    learningObjectives
+) {
+    const assistant = await createSocraticAssistant(
+        topic,
+        level,
+        learningObjectives
+    );
+    const thread = await createSocraticAssistantThread();
+    const result = { assistant: assistant, thread: thread };
+    return result;
+}
+
+async function createSocraticAssistant(topic, level, learningObjectives) {
+    const assistant = await openai.beta.assistants.create({
+        name: 'Socratic Tutor',
+        instructions:
+            `You are a personal tutor teaching a ` +
+            level +
+            `student about the following subject: ` +
+            topic +
+            `, which consists of the following learning objectives:` +
+            learningObjectives +
+            `.`,
+        tools: [],
+        model: 'o1'
+    });
+    return assistant;
+}
+
+async function createSocraticAssistantThread() {
+    const thread = await openai.beta.threads.create();
+    return thread;
+}
+
 /**
- * Get skill level AI tutor thread id
+ * Get Socractic tutor thread id
  * @param {string} userId
  * @param {string} userId
  * @return {object} database data
  */
-async function getSkillThread(userId, skillUrl) {
+async function getSocraticTutorThread(userId, skillUrl) {
     try {
         let queryString = `SELECT * 
                            FROM ai_tutor_skill_threads 
@@ -80,7 +89,7 @@ async function getSkillThread(userId, skillUrl) {
     }
 }
 
-async function saveAITutorSkillThread(data) {
+async function saveSocraticTutorThread(data) {
     try {
         let queryString = `INSERT INTO ai_tutor_skill_threads (user_id, skill_url, assistant_id, thread_id)
                VALUES (
@@ -95,6 +104,10 @@ async function saveAITutorSkillThread(data) {
         throw error;
     }
 }
+
+/**
+ * Skill level tutor functions ---------------------
+ */
 
 async function skillMessage(threadId, assistantId, messageData) {
     // Add a Message to the Thread
@@ -325,12 +338,14 @@ async function generateLearningObjectiveQuestion(
 }
 
 module.exports = {
-    // shared
-    createAssistantAndThread,
-    saveAITutorSkillThread,
+    // Socratic
+    createSocraticAssistantAndThread,
+    getSocraticTutorThread,
+    saveSocraticTutorThread,
+
     getMessagesList,
     // Skill level tutor
-    getSkillThread,
+
     skillMessage,
     generateQuestion,
     teach,

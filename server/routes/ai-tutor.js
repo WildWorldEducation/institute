@@ -13,11 +13,12 @@ const conn = require('../config/db');
 // Import OpenAI package.
 const { OpenAI } = require('openai');
 const {
-    createAssistantAndThread,
-    saveAITutorSkillThread,
+    // For Socratic tutor
+    createSocraticAssistantAndThread,
+    getSocraticTutorThread,
+    saveSocraticTutorThread,
+
     getMessagesList,
-    // for skill level tutor
-    getSkillThread,
     skillMessage,
     teach,
     assess,
@@ -35,47 +36,56 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-// Skill tutor ---------------------
-
+// Socratic tutor ---------------------
 /**
- * Get thread from skill level AI tutor
+ * Get thread from Socratic AI tutor
  */
-router.get('/messages-list', isAuthenticated, async (req, res, next) => {
-    try {
-        const userId = req.query.userId;
-        const skillUrl = req.query.skillUrl;
-        const skillName = req.query.skillName;
-        const skillLevel = req.query.skillLevel;
+router.post(
+    '/socratic/messages-list',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const userId = req.body.userId;
+            const skillUrl = req.body.skillUrl;
+            const skillName = req.body.skillName;
+            const skillLevel = req.body.skillLevel;
+            const learningObjectives = req.body.learningObjectives;
 
-        let assistantData = await getSkillThread(userId, skillUrl);
-        // Create assistant
-        if (assistantData.length === 0) {
-            const newAssistant = await createAssistantAndThread(
-                skillName,
-                skillLevel
-            );
-            assistantData = [
-                {
-                    userId: userId,
-                    skillUrl: skillUrl,
-                    assistantId: newAssistant.assistant.id,
-                    threadId: newAssistant.thread.id
-                }
-            ];
-            await saveAITutorSkillThread(assistantData[0]);
-            const messages = await getMessagesList(assistantData[0].threadId);
-            res.json({ messages: messages });
-            return;
-        } else {
-            const messages = await getMessagesList(assistantData[0].thread_id);
-            res.json({ messages: messages });
+            let assistantData = await getSocraticTutorThread(userId, skillUrl);
+            // Create assistant
+            if (assistantData.length === 0) {
+                const newAssistant = await createSocraticAssistantAndThread(
+                    skillName,
+                    skillLevel,
+                    learningObjectives
+                );
+                assistantData = [
+                    {
+                        userId: userId,
+                        skillUrl: skillUrl,
+                        assistantId: newAssistant.assistant.id,
+                        threadId: newAssistant.thread.id
+                    }
+                ];
+                await saveSocraticTutorThread(assistantData[0]);
+                const messages = await getMessagesList(
+                    assistantData[0].threadId
+                );
+                res.json({ messages: messages });
+                return;
+            } else {
+                const messages = await getMessagesList(
+                    assistantData[0].thread_id
+                );
+                res.json({ messages: messages });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
         }
-    } catch (error) {
-        console.error(error);
-        res.status = 500;
-        res.json({ mess: 'something went wrong' });
     }
-});
+);
 
 /**
  * Send message to skill level AI tutor
@@ -102,14 +112,14 @@ router.post('/new-message', isAuthenticated, async (req, res, next) => {
 /**
  * Get the AI tutor to teach
  */
-router.post('/teach', isAuthenticated, async (req, res, next) => {
+router.post('/socratic-tutor', isAuthenticated, async (req, res, next) => {
     try {
         const assistantData = await getSkillThread(
             req.body.userId,
             req.body.skillUrl
         );
 
-        await teach(
+        await socraticTutor(
             assistantData[0].thread_id,
             assistantData[0].assistant_id,
             req.body

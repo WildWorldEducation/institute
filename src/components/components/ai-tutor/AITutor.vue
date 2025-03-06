@@ -23,13 +23,14 @@ export default {
     data() {
         return {
             message: '',
-            previousMessages: [],
-            latestMessage: null,
-            messageList: [],
+            socraticTutorChatHistory: [],
+            assessingTutorChatHistory: [],
+            chatHistory: [],
             waitForAIresponse: false,
             mode: 'big',
             englishSkillLevel: '',
-            learningObjectives: []
+            learningObjectives: [],
+            tutorType: 'socratic'
         };
     },
     async mounted() {
@@ -38,7 +39,7 @@ export default {
         );
 
         this.englishSkillLevel = this.skill.level.replace('_', ' ');
-        await this.getMessagesList();
+        await this.getChatHistory();
     },
     updated() {
         // if (this.mode !== 'hide') {
@@ -46,27 +47,43 @@ export default {
         // }
     },
     methods: {
-        // Get messages in thread.
-        async getMessagesList() {
+        // 2 different threads
+        changeTutorType(type) {
+            this.tutorType = type;
+            if (type == 'socratic')
+                this.chatHistory = this.socraticTutorChatHistory;
+            else if (type == 'assessing')
+                this.chatHistory = this.assessingTutorChatHistory;
+        },
+        async getChatHistory() {
             try {
-                const url = `/ai-tutor/messages-list?userId=${encodeURIComponent(
-                    this.userDetailsStore.userId
-                )}&skillUrl=${encodeURIComponent(
-                    this.skill.url
-                )}&skillName=${encodeURIComponent(this.skill.name)}
-                &skillLevel=${encodeURIComponent(this.englishSkillLevel)}
-                `;
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: this.userDetailsStore.userId,
+                        skillName: this.skill.name,
+                        skillUrl: this.skill.url,
+                        skillLevel: this.englishSkillLevel,
+                        learningObjectives: this.learningObjectives
+                    })
+                };
 
-                const response = await fetch(url);
+                let url = '';
+                if (this.tutorType == 'socratic') {
+                    url = `/ai-tutor/socratic/messages-list`;
+                } else if (this.tutorType == 'assessing') {
+                    url = `/ai-tutor/messages-list`;
+                }
+
+                const response = await fetch(url, requestOptions);
                 const resData = await response.json();
-                this.messageList = resData.messages.data;
-
-                // this.$nextTick(this.scrollToMessageInput());
+                this.socraticTutorChatHistory = resData.messages.data;
             } catch (error) {
                 console.error(error);
             }
         },
-        async SendMessage() {
+        async sendMessage() {
             if (this.waitForAIresponse) {
                 return;
             }
@@ -78,7 +95,7 @@ export default {
                     role: 'user',
                     content: [{ text: { value: this.message } }]
                 };
-                this.messageList.push(userMessage);
+                this.socraticTutorChatHistory.push(userMessage);
 
                 const requestOptions = {
                     method: 'POST',
@@ -103,79 +120,6 @@ export default {
                 }
                 this.getMessagesList();
 
-                this.waitForAIresponse = false;
-            } catch (error) {
-                console.error(error);
-                this.waitForAIresponse = false;
-            }
-        },
-        async requestTeaching() {
-            if (this.waitForAIresponse) {
-                return;
-            }
-
-            this.waitForAIresponse = true;
-            try {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        userName: this.userDetailsStore.userName,
-                        userId: this.userDetailsStore.userId,
-                        skillName: this.skill.name,
-                        skillLevel: this.englishSkillLevel,
-                        skillUrl: this.skill.url,
-                        learningObjectives: this.learningObjectives
-                    })
-                };
-
-                var url = '/ai-tutor/teach';
-
-                const res = await fetch(url, requestOptions);
-                if (res.status === 500) {
-                    alert('The tutor can`t answer !!');
-                    this.waitForAIresponse = false;
-                    return;
-                }
-
-                this.getMessagesList();
-                this.waitForAIresponse = false;
-            } catch (error) {
-                console.error(error);
-                this.waitForAIresponse = false;
-            }
-        },
-        // ask Open AI to ask a question about the skill
-        async requestQuestion() {
-            if (this.waitForAIresponse) {
-                return;
-            }
-
-            this.waitForAIresponse = true;
-            try {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        userName: this.userDetailsStore.userName,
-                        userId: this.userDetailsStore.userId,
-                        skillName: this.skill.name,
-                        skillLevel: this.englishSkillLevel,
-                        skillUrl: this.skill.url,
-                        learningObjectives: this.learningObjectives
-                    })
-                };
-
-                var url = '/ai-tutor/ask-question';
-
-                const res = await fetch(url, requestOptions);
-                if (res.status === 500) {
-                    alert('The tutor can`t answer !!');
-                    this.waitForAIresponse = false;
-                    return;
-                }
-
-                this.getMessagesList();
                 this.waitForAIresponse = false;
             } catch (error) {
                 console.error(error);
@@ -390,33 +334,19 @@ export default {
         </div>
         <!-- Suggested interaction buttons -->
         <span v-if="mode === 'big'" class="d-flex justify-content-end">
-            <!-- explanation button -->
-            <button class="btn suggested-interactions" @click="assessMastery()">
-                have I mastered this skill?
-            </button>
-            <!-- ask question button -->
+            <!-- Exam Agent: assesses student -->
             <button
                 class="btn suggested-interactions ms-1"
-                @click="requestQuestion()"
+                @click="changeTutorType('assessing')"
             >
-                test me
+                Test me
             </button>
-            <!-- explanation button -->
+            <!-- Socratic Tutor agent -->
             <button
                 class="btn suggested-interactions ms-1"
-                @click="requestTeaching()"
+                @click="changeTutorType('socratic')"
             >
-                teach me
-            </button>
-            <!-- explanation button -->
-            <button
-                class="btn suggested-interactions ms-1"
-                @click="
-                    message = 'Please give me an overview of this.';
-                    SendMessage();
-                "
-            >
-                give me an overview
+                Socratic Tutor
             </button>
         </span>
         <!-- User input (big mode) -->
@@ -434,7 +364,7 @@ export default {
                 tile="send message"
                 class="d-flex flex-row-reverse"
             >
-                <button class="btn primary-btn send-btn" @click="SendMessage()">
+                <button class="btn primary-btn send-btn" @click="sendMessage()">
                     <!-- Speech bubble icon -->
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -472,14 +402,16 @@ export default {
             class="d-flex flex-column mx-auto chat-component"
             :class="{
                 'chat-component': mode === 'big',
-                'mini-chat-component': mode === 'mini'
+                'mini-chat-component': mode === 'mini',
+                'socratic-chat': tutorType === 'socratic',
+                'assessing-chat': tutorType === 'assessing'
             }"
             ref="messageInputDiv"
         >
             <div
                 class="d-flex my-3"
                 :class="{ 'justify-content-end': message.role === 'user' }"
-                v-for="message in messageList"
+                v-for="message in chatHistory"
             >
                 <!-- Student messages -->
                 <div v-if="message.role === 'user'" class="user-conversation">
@@ -513,7 +445,7 @@ export default {
                 tile="send message"
                 class="d-flex flex-row-reverse"
             >
-                <button class="btn primary-btn send-btn" @click="SendMessage()">
+                <button class="btn primary-btn send-btn" @click="sendMessage()">
                     <!-- Speech bubble icon -->
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -580,10 +512,17 @@ export default {
     border-radius: 50px;
 }
 
+.socratic-chat {
+    background-color: lightblue;
+}
+
+.assessing-chat {
+    background-color: lightcoral;
+}
+
 .chat-component {
     max-height: 100vh;
     overflow-y: auto;
-    background-color: white;
     padding: 5px 10px;
     border-radius: 15px;
 }
