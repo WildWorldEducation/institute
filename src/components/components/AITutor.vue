@@ -89,7 +89,8 @@ export default {
                         userId: this.userDetailsStore.userId,
                         skillName: this.skill.name,
                         skillUrl: this.skill.url,
-                        skillLevel: this.englishSkillLevel
+                        skillLevel: this.englishSkillLevel,
+                        learningObjectives: this.learningObjectives
                     })
                 };
 

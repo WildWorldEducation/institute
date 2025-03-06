@@ -32,7 +32,7 @@ async function createAssistant(topic, level) {
             topic +
             `.`,
         tools: [],
-        model: 'gpt-4o'
+        model: 'o1'
     });
     return assistant;
 }
@@ -105,7 +105,8 @@ async function skillMessage(threadId, assistantId, messageData) {
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
-        instructions: `Please tutor about the topic: ${messageData.skillName}.
+        instructions: `Please tutor about the subject: ${messageData.skillName}, 
+        comprising the following learning objectives: ${messageData.learningObjectives}.
         Tutor the user as if they are at a ${messageData.skillLevel} level and age.
         Make sure to have $ delimiters before any science and math strings that can convert to Latex`
     });
