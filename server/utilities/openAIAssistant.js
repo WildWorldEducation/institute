@@ -255,7 +255,7 @@ async function learningObjectiveMessage(threadId, assistantId, messageData) {
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
         instructions:
-            `Please do not repeat the question. Please tutor about the topic: ` +
+            `Please do not repeat the request. Please tutor about the topic: ` +
             messageData.learningObjective +
             '. Tutor the user as if they are at a ' +
             messageData.skillLevel +
@@ -265,6 +265,32 @@ async function learningObjectiveMessage(threadId, assistantId, messageData) {
     if (run.status === 'completed') {
         const messages = await openai.beta.threads.messages.list(threadId);
         const latestMessage = messages.data[0];
+        return latestMessage;
+    } else {
+        console.log(run.status);
+    }
+}
+
+async function requestLearningObjectiveTutoring(
+    threadId,
+    assistantId,
+    messageData
+) {
+    // Add a message to the thread
+    const message = await openai.beta.threads.messages.create(threadId, {
+        role: 'user',
+        content: 'Tutor me on: ' + messageData.learningObjective
+    });
+
+    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+        assistant_id: assistantId,
+        instructions: `The user is at a ${messageData.skillLevel} level and age.`
+    });
+
+    if (run.status === 'completed') {
+        const messages = await openai.beta.threads.messages.list(threadId);
+        const latestMessage = messages.data[0];
+
         return latestMessage;
     } else {
         console.log(run.status);
@@ -298,16 +324,20 @@ async function generateLearningObjectiveQuestion(
 }
 
 module.exports = {
+    // shared
     createAssistantAndThread,
-    skillMessage,
     saveAITutorSkillThread,
     getMessagesList,
+    // Skill level tutor
     getSkillThread,
+    skillMessage,
+    generateQuestion,
+    teach,
+    assess,
+    // Learning objective level tutor
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
     learningObjectiveMessage,
-    generateQuestion,
-    generateLearningObjectiveQuestion,
-    teach,
-    assess
+    requestLearningObjectiveTutoring,
+    generateLearningObjectiveQuestion
 };

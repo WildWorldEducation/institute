@@ -13,19 +13,21 @@ const conn = require('../config/db');
 // Import OpenAI package.
 const { OpenAI } = require('openai');
 const {
-    skillMessage,
     createAssistantAndThread,
-    getSkillThread,
     saveAITutorSkillThread,
     getMessagesList,
+    // for skill level tutor
+    getSkillThread,
+    skillMessage,
+    teach,
+    assess,
     // for learning objective AI tutor
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
     learningObjectiveMessage,
+    requestLearningObjectiveTutoring,
     generateLearningObjectiveQuestion,
-    generateQuestion,
-    teach,
-    assess
+    generateQuestion
 } = require('../utilities/openAIAssistant');
 const isAuthenticated = require('../middlewares/authMiddleware');
 // Include API key.
@@ -241,6 +243,34 @@ router.post(
             );
 
             await learningObjectiveMessage(
+                assistantData[0].thread_id,
+                assistantData[0].assistant_id,
+                req.body
+            );
+
+            res.end();
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
+        }
+    }
+);
+
+/**
+ * Get the learning objective AI tutor to tutor on that learning objective
+ */
+router.post(
+    '/learning-objectives/request-tutoring',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const assistantData = await getLearningObjectiveThread(
+                req.body.userId,
+                req.body.learningObjectiveId
+            );
+
+            await requestLearningObjectiveTutoring(
                 assistantData[0].thread_id,
                 assistantData[0].assistant_id,
                 req.body

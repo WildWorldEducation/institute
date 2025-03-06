@@ -101,6 +101,44 @@ export default {
             }
         },
         // ask Open AI to ask a question about the learning objective
+        async requestTutoring() {
+            if (this.waitForAIresponse) {
+                return;
+            }
+            this.waitForAIresponse = true;
+            try {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        learningObjective: this.learningObjective,
+                        learningObjectiveId: this.learningObjectiveId,
+                        userName: this.userDetailsStore.userName,
+                        userId: this.userDetailsStore.userId,
+                        skillName: this.skillName,
+                        skillLevel: this.englishSkillLevel
+                    })
+                };
+
+                var url = '/ai-tutor/learning-objectives/request-tutoring';
+
+                const res = await fetch(url, requestOptions);
+                if (res.status === 500) {
+                    alert('The tutor can`t answer !!');
+                    this.waitForAIresponse = false;
+                    return;
+                }
+
+                this.messageList.push(this.latestMessage);
+
+                this.getMessages();
+                this.waitForAIresponse = false;
+            } catch (error) {
+                console.error(error);
+                this.waitForAIresponse = false;
+            }
+        },
+        // ask Open AI to ask a question about the learning objective
         async requestQuestion() {
             if (this.waitForAIresponse) {
                 return;
@@ -171,10 +209,7 @@ export default {
             <button
                 v-if="isGotMessages"
                 class="btn border border-dark"
-                @click="
-                    message = 'Please explain it.';
-                    sendMessage();
-                "
+                @click="requestTutoring()"
             >
                 <!-- Robot icon -->
                 <svg
@@ -188,7 +223,7 @@ export default {
                         d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
                     />
                 </svg>
-                explain this
+                tutor me on this
             </button>
             <!-- learning objective ask question button -->
             <button
