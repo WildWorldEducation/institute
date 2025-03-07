@@ -56,8 +56,10 @@ export default {
 
             if (type == 'socratic')
                 this.chatHistory = this.socraticTutorChatHistory;
-            else if (type == 'assessing')
+            else if (type == 'assessing') {
                 this.chatHistory = this.assessingTutorChatHistory;
+                this.askQuestion();
+            }
         },
         // For both tutors
         async getChatHistory() {
@@ -412,13 +414,13 @@ export default {
                     Assessment Tutor
                 </button>
             </span>
-            <button
+            <!-- <button
                 v-if="tutorType === 'assessing'"
                 class="btn suggested-interactions ms-1"
                 @click="askQuestion()"
             >
                 ask me a question
-            </button>
+            </button> -->
             <button
                 v-if="tutorType === 'socratic'"
                 class="btn suggested-interactions ms-1"
