@@ -1342,6 +1342,10 @@ export default {
 </template>
 
 <style scoped>
+p {
+    color: black !important;
+}
+
 .plus-btn {
     height: 44px;
 }

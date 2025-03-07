@@ -48,14 +48,15 @@ export default {
     },
     methods: {
         // 2 different threads
-        changeTutorType(type) {
+        async changeTutorType(type) {
             this.tutorType = type;
+
+            await this.getChatHistory();
+
             if (type == 'socratic')
                 this.chatHistory = this.socraticTutorChatHistory;
             else if (type == 'assessing')
                 this.chatHistory = this.assessingTutorChatHistory;
-
-            this.getChatHistory();
         },
         // For both tutors
         async getChatHistory() {
