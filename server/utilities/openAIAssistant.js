@@ -70,8 +70,8 @@ async function getSkillThread(userId, skillUrl) {
         let queryString = `SELECT * 
                            FROM ai_tutor_skill_threads 
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND skill_url = ${conn.escape(skillUrl)}`;
+            userId
+        )} AND skill_url = ${conn.escape(skillUrl)}`;
 
         const result = await query(queryString);
         return result;
@@ -118,6 +118,34 @@ async function skillMessage(threadId, assistantId, messageData) {
     } else {
         console.log(run.status);
     }
+}
+
+
+
+async function createRunStream(threadId, assistantId,) {
+    const run = openai.beta.threads.runs.stream(threadId, {
+        assistant_id: assistantId
+    })
+        .on('runStepCreated', (runStep) => { console.log('run created: '); console.log(runStep) })
+        .on('textCreated', (text) => process.stdout.write('\nassistant > '))
+        .on('textDelta', (textDelta, snapshot) => { process.stdout.write(textDelta.value); console.log(textDelta) })
+        .on('toolCallCreated', (toolCall) => process.stdout.write(`\nassistant > ${toolCall.type}\n\n`))
+        .on('toolCallDelta', (toolCallDelta, snapshot) => {
+            if (toolCallDelta.type === 'code_interpreter') {
+                if (toolCallDelta.code_interpreter.input) {
+                    process.stdout.write(toolCallDelta.code_interpreter.input);
+                }
+                if (toolCallDelta.code_interpreter.outputs) {
+                    process.stdout.write("\noutput >\n");
+                    toolCallDelta.code_interpreter.outputs.forEach(output => {
+                        if (output.type === "logs") {
+                            process.stdout.write(`\n${output.logs}\n`);
+                        }
+                    });
+                }
+            }
+        });
+    return run
 }
 
 async function teach(threadId, assistantId, messageData) {
@@ -232,8 +260,8 @@ async function getLearningObjectiveThread(userId, learningObjectiveId) {
         let queryString = `SELECT * 
                            FROM ai_tutor_learning_objective_threads
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND learning_objective_id = ${conn.escape(
+            userId
+        )} AND learning_objective_id = ${conn.escape(
             learningObjectiveId
         )}`;
 
@@ -309,5 +337,6 @@ module.exports = {
     generateQuestion,
     generateLearningObjectiveQuestion,
     teach,
-    assess
+    assess,
+    createRunStream
 };

@@ -46,6 +46,7 @@ export default {
         socket.on('response-message', (...args) => {
             console.log(args[0]);
         });
+        this.createChatStream();
     },
     updated() {
         // if (this.mode !== 'hide') {
@@ -273,6 +274,20 @@ export default {
         },
         disconnectToSocketSever() {
             socket.disconnect();
+        },
+        createChatStream() {
+            socket.emit(
+                'create-stream',
+                this.userDetailsStore.userId,
+                this.skill.id,
+                this.skill.name,
+                this.skill.level,
+                this.skill.url,
+                (val) => {
+                    console.log('sever said: ');
+                    console.log(val);
+                }
+            );
         }
     },
     watch: {
