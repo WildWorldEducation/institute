@@ -351,20 +351,16 @@ export default {
             <span>
                 <!-- Socratic Tutor agent -->
                 <button
-                    class="btn suggested-interactions ms-1"
-                    :class="{
-                        'socratic-chat': tutorType === 'socratic'
-                    }"
+                    class="btn suggested-interactions ms-1 socratic-btn"
+                    :class="{ underline: tutorType === 'socratic' }"
                     @click="changeTutorType('socratic')"
                 >
                     Socratic Tutor
                 </button>
                 <!-- Exam Agent: assesses student -->
                 <button
-                    class="btn suggested-interactions ms-1"
-                    :class="{
-                        'assessing-chat': tutorType === 'assessing'
-                    }"
+                    class="btn suggested-interactions ms-1 assessing-btn"
+                    :class="{ underline: tutorType === 'assessing' }"
                     @click="changeTutorType('assessing')"
                 >
                     Assessment Tutor
@@ -403,8 +399,8 @@ export default {
                 <button
                     class="btn send-btn"
                     :class="{
-                        'socratic-send-btn': tutorType === 'socratic',
-                        'assessing-send-btn': tutorType === 'assessing'
+                        'socratic-btn': tutorType === 'socratic',
+                        'assessing-btn': tutorType === 'assessing'
                     }"
                     @click="sendMessage()"
                 >
@@ -523,6 +519,10 @@ export default {
 </template>
 
 <style scoped>
+.underline {
+    text-decoration: underline;
+}
+
 .suggested-interactions {
     color: black;
     border: 1px solid black;
@@ -596,12 +596,14 @@ export default {
     width: fit-content;
 }
 
-.socratic-send-btn {
-    background-color: #031e27;
+.socratic-btn {
+    background-color: #31315f;
+    color: white;
 }
 
-.assessing-send-btn {
-    background-color: #290707;
+.assessing-btn {
+    background-color: #7f1e1e;
+    color: white;
 }
 
 .minimize-chat-container {
