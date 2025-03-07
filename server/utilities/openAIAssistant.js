@@ -237,7 +237,7 @@ async function testStudent(threadId, assistantId, messageData) {
     // Add a message to the thread
     const message = await openai.beta.threads.messages.create(threadId, {
         role: 'user',
-        content: 'Test me'
+        content: 'Ask me a question'
     });
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
@@ -247,8 +247,8 @@ async function testStudent(threadId, assistantId, messageData) {
 
         If the student has already shown understanding of a learning objective, do not ask a question about it.
         If the student has not yet shown understanding of a learning objective, do ask a question about it.
-        Once the student has shown an understanding of all the learning objectives, let them know they have mastered
-        the subject, and stop asking questions.
+        Only ask one question, not more than one.        
+
         Make sure to have $ delimiters before any science and math strings that can convert to Latex`
     });
 
