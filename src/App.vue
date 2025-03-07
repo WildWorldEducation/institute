@@ -164,7 +164,9 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/" class="nav-link close-on-click"
+                            <RouterLink
+                                to="/hub"
+                                class="nav-link close-on-click"
                                 >Search</RouterLink
                             >
                         </li>
@@ -172,7 +174,9 @@ export default {
                             v-else-if="!sessionDetailsStore.isLoggedIn"
                             class="nav-item"
                         >
-                            <RouterLink to="/" class="nav-link close-on-click"
+                            <RouterLink
+                                to="/hub"
+                                class="nav-link close-on-click"
                                 >Search</RouterLink
                             >
                         </li>
