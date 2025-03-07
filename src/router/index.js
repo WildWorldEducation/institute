@@ -34,7 +34,7 @@ const router = createRouter({
             }
         },
         {
-            path: '/',
+            path: '/hub',
             name: 'hub',
             component: () => import('../components/pages/HubView.vue'),
             meta: {
@@ -553,7 +553,7 @@ router.beforeEach(async (to, from, next) => {
         to.name !== 'show-skill' &&
         to.name !== 'hub'
     ) {
-        next({ name: 'hub' });
+        next({ name: 'skill-tree' });
         return;
     }
 
@@ -566,7 +566,7 @@ router.beforeEach(async (to, from, next) => {
                 next();
             } else {
                 if (userDetailsStore.role == 'student') {
-                    next({ name: 'hub' });
+                    next({ name: 'skill-tree' });
                 } // Redirect to Home if user doesn't have the required role
                 else if (userDetailsStore.role == 'instructor') {
                     next({ name: 'users' });
