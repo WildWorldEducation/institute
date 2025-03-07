@@ -557,6 +557,11 @@ router.beforeEach(async (to, from, next) => {
         return;
     }
 
+    if (to.path == '/') {
+        next({ name: 'skill-tree' });
+        return;
+    }
+
     // Route requires authentication
     if (to.matched.some((record) => record.meta.requiresAuth)) {
         if (!isLoggedIn) {
