@@ -25,6 +25,7 @@ export default {
             message: '',
             socraticTutorChatHistory: [],
             assessingTutorChatHistory: [],
+            transcriptForAssessment: [],
             chatHistory: [],
             waitForAIresponse: false,
             mode: 'big',
@@ -88,7 +89,14 @@ export default {
                 } else if (this.tutorType == 'assessing') {
                     this.assessingTutorChatHistory = resData.messages.data;
                     this.chatHistory = this.assessingTutorChatHistory;
-                    console.log(this.chatHistory);
+                    console.log(this.chatHistory.length);
+                    if (
+                        this.chatHistory.length >=
+                        this.learningObjectives.length * 2
+                    ) {
+                        alert('assess');
+                        this.assessMastery();
+                    }
                 }
             } catch (error) {
                 console.error(error);
@@ -141,7 +149,7 @@ export default {
             this.sendMessage();
         },
         // assessing tutor
-        async testStudent() {
+        async askQuestion() {
             if (this.waitForAIresponse) {
                 return;
             }
@@ -160,7 +168,7 @@ export default {
                     })
                 };
 
-                var url = '/ai-tutor/assessing/test-student';
+                var url = '/ai-tutor/assessing/ask-question';
 
                 const res = await fetch(url, requestOptions);
                 if (res.status === 500) {
@@ -169,24 +177,60 @@ export default {
                     return;
                 }
 
-                const response = await res.json();
-                // console.log(response.assessmentResult);
-
-                // if (
-                //     response.assessmentResult == 'yes' ||
-                //     response.assessmentResult == 'Yes' ||
-                //     response.assessmentResult == 'yes.' ||
-                //     response.assessmentResult == 'Yes.'
-                // ) {
-                //     alert('congrats, you have mastered this skill!');
-                //     this.makeMastered();
-                // } else {
-                //     alert(
-                //         "You need to answer more questions correctly to master the skill. Press the 'test me' button to begin."
-                //     );
-                // }
-
                 this.getChatHistory();
+                this.waitForAIresponse = false;
+            } catch (error) {
+                console.error(error);
+                this.waitForAIresponse = false;
+            }
+        },
+        async assessMastery() {
+            for (let i = 0; i < this.assessingTutorChatHistory.length; i++) {
+                let chat = this.assessingTutorChatHistory[i];
+                // AI question
+                if (chat.role == 'assistant') {
+                    let question = chat.content[0].text.value;
+                    let transcriptItem = {
+                        examiner: question
+                    };
+                    this.transcriptForAssessment.push(transcriptItem);
+                }
+                // Student answer
+                else if (chat.role == 'user') {
+                    let answer = chat.content[0].text.value;
+                    let transcriptItem = {
+                        student: answer
+                    };
+                    this.transcriptForAssessment.push(transcriptItem);
+                }
+            }
+            this.transcriptForAssessment =
+                this.transcriptForAssessment.reverse();
+
+            try {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: this.userDetailsStore.userId,
+                        skillName: this.skill.name,
+                        skillUrl: this.skill.url,
+                        skillLevel: this.englishSkillLevel,
+                        learningObjectives: this.learningObjectives,
+                        transcriptForAssessment: this.transcriptForAssessment
+                    })
+                };
+
+                const url = '/ai-tutor/assessing/assess';
+
+                const res = await fetch(url, requestOptions);
+                if (res.status === 500) {
+                    return;
+                }
+
+                const response = await res.json();
+                console.log(response.result.result);
+
                 this.waitForAIresponse = false;
             } catch (error) {
                 console.error(error);
@@ -369,7 +413,7 @@ export default {
             <button
                 v-if="tutorType === 'assessing'"
                 class="btn suggested-interactions ms-1"
-                @click="testStudent()"
+                @click="askQuestion()"
             >
                 ask me a question
             </button>

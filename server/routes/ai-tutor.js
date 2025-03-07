@@ -25,7 +25,8 @@ const {
     getAssessingTutorThread,
     saveAssessingTutorThread,
     assessingTutorMessage,
-    testStudent,
+    askQuestion,
+    // assessStudent,
     // Learning objective tutor
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
@@ -197,10 +198,10 @@ router.post(
 );
 
 /**
- * Get the AI tutor to assess for mastery
+ * Get the AI tutor to ask a question
  */
 router.post(
-    '/assessing/test-student',
+    '/assessing/ask-question',
     isAuthenticated,
     async (req, res, next) => {
         try {
@@ -209,7 +210,7 @@ router.post(
                 req.body.skillUrl
             );
 
-            let assessmentResult = await testStudent(
+            let assessmentResult = await askQuestion(
                 assistantData[0].thread_id,
                 assistantData[0].assistant_id,
                 req.body
@@ -225,6 +226,55 @@ router.post(
         }
     }
 );
+
+/**
+ * AI tutor automatically assess
+ */
+router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
+    try {
+        let transcriptForAssessment = JSON.stringify(
+            req.body.transcriptForAssessment
+        );
+
+        let prompt = `Please review the following conversation between an examiner and a student: ${transcriptForAssessment}.
+                    
+                    The examiner is asking the student questions, while the student is trying to answer them.
+                    Determine what percentage of the questions the student answered correctly.
+                    Bear in mind that the student is being examined at the following level:
+                    ${req.body.skillLevel}.
+                    
+                    The subject that the student is being examined on is ${req.body.skillName},
+                    which consists of the following learning objectives: ${req.body.learningObjectives}.
+                    
+                    Please return only the percentage of correct answers, and nothing else.
+                    Please return a single JSON object containing the result, named "result".                    
+                    `;
+
+        const completion = await openai.chat.completions.create({
+            model: 'gpt-4o',
+            response_format: { type: 'json_object' },
+            messages: [
+                { role: 'system', content: 'You are a helpful assistant.' },
+                {
+                    role: 'user',
+                    content: prompt
+                }
+            ]
+        });
+
+        let responseJSON = completion.choices[0].message.content;
+        // Convert string to object.       ;
+        let result = JSON.parse(responseJSON);
+        console.log(result);
+        res.json({
+            result: result
+        });
+    } catch (error) {
+        console.error(error);
+        res.status = 500;
+        res.json({ mess: 'something went wrong' });
+    }
+});
 
 // Learning objective tutor ------------------
 
