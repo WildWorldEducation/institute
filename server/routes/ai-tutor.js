@@ -265,7 +265,7 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
         let responseJSON = completion.choices[0].message.content;
         // Convert string to object.       ;
         let result = JSON.parse(responseJSON);
-        console.log(result);
+        // console.log(result);
         res.json({
             result: result
         });
