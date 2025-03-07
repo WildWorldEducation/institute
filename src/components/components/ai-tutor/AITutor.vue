@@ -371,7 +371,7 @@ export default {
                 class="btn suggested-interactions ms-1"
                 @click="testStudent()"
             >
-                test me
+                ask me a question
             </button>
             <button
                 v-if="tutorType === 'socratic'"
