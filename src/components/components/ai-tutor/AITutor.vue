@@ -89,12 +89,10 @@ export default {
                 } else if (this.tutorType == 'assessing') {
                     this.assessingTutorChatHistory = resData.messages.data;
                     this.chatHistory = this.assessingTutorChatHistory;
-                    console.log(this.chatHistory.length);
                     if (
                         this.chatHistory.length >=
                         this.learningObjectives.length * 2
                     ) {
-                        alert('assess');
                         this.assessMastery();
                     }
                 }
@@ -229,7 +227,10 @@ export default {
                 }
 
                 const response = await res.json();
-                console.log(response.result.result);
+                let result = response.result.result;
+                if (result >= 70) {
+                    this.makeMastered();
+                }
 
                 this.waitForAIresponse = false;
             } catch (error) {
@@ -260,6 +261,7 @@ export default {
             inputMessage.scrollIntoView({ behavior: 'smooth' });
         },
         async makeMastered() {
+            alert('Congratulations, you have mastered this skill!');
             await this.userSkillsStore.MakeMastered(
                 this.userDetailsStore.userId,
                 this.skill
