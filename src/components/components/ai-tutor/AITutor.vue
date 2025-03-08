@@ -58,7 +58,6 @@ export default {
                 this.chatHistory = this.socraticTutorChatHistory;
             else if (type == 'assessing') {
                 this.chatHistory = this.assessingTutorChatHistory;
-                this.askQuestion();
             }
         },
         // For both tutors
@@ -105,6 +104,11 @@ export default {
             }
         },
         async sendMessage() {
+            console.log(this.message);
+            if (this.message == '' || this.message == ' ') {
+                console.log('test');
+            }
+
             if (this.waitForAIresponse) {
                 return;
             }
@@ -417,13 +421,13 @@ export default {
                     Assessment Tutor
                 </button>
             </span>
-            <!-- <button
+            <button
                 v-if="tutorType === 'assessing'"
                 class="btn suggested-interactions ms-1"
                 @click="askQuestion()"
             >
-                ask me a question
-            </button> -->
+                test me
+            </button>
             <button
                 v-if="tutorType === 'socratic'"
                 class="btn suggested-interactions ms-1"
@@ -453,6 +457,7 @@ export default {
                         'socratic-btn': tutorType === 'socratic',
                         'assessing-btn': tutorType === 'assessing'
                     }"
+                    :disabled="this.message == '' || this.message == ' '"
                     @click="sendMessage()"
                 >
                     <!-- Speech bubble icon -->
@@ -505,7 +510,7 @@ export default {
             >
                 <!-- Student messages -->
                 <div v-if="message.role === 'user'" class="user-conversation">
-                    {{ message.content[0].text.value }}
+                    <em>{{ message.content[0].text.value }}</em>
                 </div>
                 <!-- AI tutor messages -->
                 <div
@@ -602,9 +607,8 @@ export default {
 
 .user-conversation {
     padding: 10px 15px;
-    background-color: #f3f3f3;
     border-radius: 50px;
-    color: black;
+    color: white;
 }
 
 .socratic-chat {
