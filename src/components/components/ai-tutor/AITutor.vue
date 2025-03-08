@@ -31,7 +31,9 @@ export default {
             mode: 'big',
             englishSkillLevel: '',
             learningObjectives: [],
-            tutorType: 'socratic'
+            tutorType: 'socratic',
+            // hide / show chat
+            showChat: true
         };
     },
     async mounted() {
@@ -421,20 +423,48 @@ export default {
                     Assessment Tutor
                 </button>
             </span>
-            <button
-                v-if="tutorType === 'assessing'"
-                class="btn suggested-interactions ms-1"
-                @click="askQuestion()"
-            >
-                test me
-            </button>
-            <button
-                v-if="tutorType === 'socratic'"
-                class="btn suggested-interactions ms-1"
-                @click="provideOverview()"
-            >
-                give me an overview
-            </button>
+            <span>
+                <button
+                    v-if="tutorType === 'assessing'"
+                    class="btn suggested-interactions ms-1"
+                    @click="askQuestion()"
+                >
+                    test me
+                </button>
+                <button
+                    v-if="tutorType === 'socratic'"
+                    class="btn suggested-interactions ms-1"
+                    @click="provideOverview()"
+                >
+                    give me an overview
+                </button>
+                <button class="btn plus-btn ms-1" @click="showChat = !showChat">
+                    <svg
+                        v-if="!showChat"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 448 512"
+                        width="18"
+                        height="18"
+                    >
+                        <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                        />
+                    </svg>
+                    <svg
+                        v-else
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 448 512"
+                        width="18"
+                        height="18"
+                    >
+                        <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                        />
+                    </svg>
+                </button>
+            </span>
         </span>
         <!-- User input (big mode) -->
         <div class="d-flex mt-1" v-if="mode === 'big'">
@@ -494,6 +524,7 @@ export default {
         </div>
         <!-- Message thread -->
         <div
+            v-if="showChat"
             class="d-flex flex-column mx-auto chat-component"
             :class="{
                 'chat-component': mode === 'big',
@@ -602,7 +633,6 @@ export default {
 
 .chat-text-area {
     width: 100%;
-    max-height: 600px;
 }
 
 .user-conversation {
@@ -622,8 +652,7 @@ export default {
 }
 
 .chat-component {
-    max-height: 100vh;
-    overflow-y: auto;
+    overflow-x: hidden;
     padding: 5px 10px;
     border-radius: 15px;
 }
