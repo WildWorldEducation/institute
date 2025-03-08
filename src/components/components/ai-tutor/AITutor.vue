@@ -104,6 +104,11 @@ export default {
             }
         },
         async sendMessage() {
+            console.log(this.message);
+            if (this.message == '' || this.message == ' ') {
+                console.log('test');
+            }
+
             if (this.waitForAIresponse) {
                 return;
             }
@@ -452,6 +457,7 @@ export default {
                         'socratic-btn': tutorType === 'socratic',
                         'assessing-btn': tutorType === 'assessing'
                     }"
+                    :disabled="this.message == '' || this.message == ' '"
                     @click="sendMessage()"
                 >
                     <!-- Speech bubble icon -->
