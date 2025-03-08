@@ -2,6 +2,7 @@ const { Server } = require("socket.io");
 const { getSkillThread, createRunStream, createAssistantAndThread, saveAITutorSkillThread } = require("../utilities/openAIAssistant");
 
 
+
 let io = null
 
 const getAssistantData = async (userId, skillId, skillName, skillLevel, skillUrl) => {
@@ -40,20 +41,19 @@ const createSocket = (server) => {
         console.log(socket.id)
         // create a new run if a socket is connect
 
-        socket.on('send-message', (text, callback) => {
-            console.log('user said: ')
-            console.log(text)
-            callback('Sever heard you loud and clear: ' + socket.client)
-        })
-        socket.on('create-stream', async (userId, skillId, skillName, skillLevel, skillUrl, callback) => {
+        socket.on('send-message', async (clientData, callback) => {
             try {
-                const assistantData = await getAssistantData(userId, skillId, skillName, skillLevel, skillUrl);
-                await createRunStream(assistantData.threadId, assistantData.assistantId);
-                callback('create run successfully');
+
+                await createRunStream(clientData.threadId, clientData.assistantId, clientData.message, socket);
+
+
             } catch (error) {
+                socket.emit('error', error)
                 console.error(error)
             }
         })
+
+
     });
 }
 

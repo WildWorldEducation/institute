@@ -62,11 +62,15 @@ router.get('/messages-list', isAuthenticated, async (req, res, next) => {
             ];
             await saveAITutorSkillThread(assistantData[0]);
             const messages = await getMessagesList(assistantData[0].threadId);
-            res.json({ messages: messages });
+            res.json({ messages: messages, assistantData: assistantData });
             return;
         } else {
             const messages = await getMessagesList(assistantData[0].thread_id);
-            res.json({ messages: messages });
+            const clientAssistantData = {
+                threadId: assistantData[0].thread_id,
+                assistantId: assistantData[0].assistant_id,
+            }
+            res.json({ messages: messages, assistantData: clientAssistantData });
         }
     } catch (error) {
         console.error(error);

@@ -113,7 +113,6 @@ async function skillMessage(threadId, assistantId, messageData) {
     if (run.status === 'completed') {
         const messages = await openai.beta.threads.messages.list(threadId);
         const latestMessage = messages.data[0];
-
         return latestMessage;
     } else {
         console.log(run.status);
@@ -122,13 +121,23 @@ async function skillMessage(threadId, assistantId, messageData) {
 
 
 
-async function createRunStream(threadId, assistantId,) {
+async function createRunStream(threadId, assistantId, userMessage, socket) {
+
+    const message = await openai.beta.threads.messages.create(
+        threadId,
+        {
+            role: "user",
+            content: userMessage
+        }
+    );
+
     const run = openai.beta.threads.runs.stream(threadId, {
         assistant_id: assistantId
     })
         .on('runStepCreated', (runStep) => { console.log('run created: '); console.log(runStep) })
         .on('textCreated', (text) => process.stdout.write('\nassistant > '))
-        .on('textDelta', (textDelta, snapshot) => { process.stdout.write(textDelta.value); console.log(textDelta) })
+        .on('messageCreated', (message) => { console.log('created message: '); console.log(message) })
+        .on('textDelta', (textDelta, snapshot) => { process.stdout.write(textDelta.value) })
         .on('toolCallCreated', (toolCall) => process.stdout.write(`\nassistant > ${toolCall.type}\n\n`))
         .on('toolCallDelta', (toolCallDelta, snapshot) => {
             if (toolCallDelta.type === 'code_interpreter') {

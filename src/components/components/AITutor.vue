@@ -30,7 +30,11 @@ export default {
             waitForAIresponse: false,
             mode: 'big',
             englishSkillLevel: '',
-            learningObjectives: []
+            learningObjectives: [],
+            assistantData: {
+                assistantId: null,
+                threadId: null
+            }
         };
     },
     async mounted() {
@@ -43,10 +47,6 @@ export default {
     },
     created() {
         this.connectToSocketSever();
-        socket.on('response-message', (...args) => {
-            console.log(args[0]);
-        });
-        this.createChatStream();
     },
     updated() {
         // if (this.mode !== 'hide') {
@@ -68,7 +68,11 @@ export default {
                 const response = await fetch(url);
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
-
+                this.assistantData.assistantId =
+                    resData.assistantData.assistantId;
+                this.assistantData.threadId = resData.assistantData.threadId;
+                console.log('assistant data: ');
+                console.log(this.assistantData);
                 // this.$nextTick(this.scrollToMessageInput());
             } catch (error) {
                 console.error(error);
@@ -109,7 +113,12 @@ export default {
                 //     return;
                 // }
                 // this.getMessagesList();
-                socket.emit('send-message', this.message, (response) => {
+                const messageData = {
+                    threadId: this.assistantData.threadId,
+                    assistantId: this.assistantData.assistantId,
+                    message: this.message
+                };
+                socket.emit('send-message', messageData, (response) => {
                     console.log('sever replied with: ' + response);
                 });
 
@@ -326,7 +335,7 @@ export default {
             'minimize-chat-container': mode === 'mini'
         }"
     >
-        <!-- Heading, tooltip and minimise/maximise buttons -->
+        <!-- Heading, tooltip and minimize/maximize buttons -->
         <div class="d-flex flex-column flex-md-row gap-2 align-items-baseline">
             <div class="d-flex flex-row w-100 justify-content-between">
                 <div class="d-flex gap-2">

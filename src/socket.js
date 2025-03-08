@@ -3,8 +3,8 @@ import { io } from "socket.io-client";
 
 export const state = reactive({
     connected: false,
-    fooEvents: [],
-    barEvents: []
+    assistantData: [],
+    testVar: 'ha ha'
 });
 
 // "undefined" means the URL will be computed from the `window.location` object ( This is pretty brilliant as we do not have )
@@ -22,24 +22,22 @@ socket.on("connect", () => {
 socket.on("disconnect", () => {
     state.connected = false;
     console.log('Disconnect From Sever');
-
 });
 
-socket.on("foo", (...args) => {
-    console.log('HA HA THEY SEND POO: ' + args[0])
-    state.fooEvents.push(args);
-});
-
-socket.on("bar", (...args) => {
-    state.barEvents.push(args);
-});
 
 socket.on('send-message', (...args) => {
     console.log('user send message')
     console.log(args)
 })
 
+
 socket.on('response-message', (...args) => {
-    console.log('sever response with: ')
-    console.log(args)
+    console.log(args[0]);
+    state.testVar = args[0];
+});
+
+socket.on('assistant-data', (...args) => {
+    console.log('assistant data: ')
+    console.log(args[0])
+    state.testVar = args[0];
 })
