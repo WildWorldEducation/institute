@@ -245,7 +245,7 @@ async function askQuestion(threadId, assistantId, messageData) {
     // Add a message to the thread
     const message = await openai.beta.threads.messages.create(threadId, {
         role: 'user',
-        content: 'Ask me a question'
+        content: 'Test me'
     });
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
