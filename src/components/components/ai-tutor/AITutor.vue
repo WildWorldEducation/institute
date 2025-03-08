@@ -98,6 +98,8 @@ export default {
                         this.assessMastery();
                     }
                 }
+
+                console.log(this.chatHistory);
             } catch (error) {
                 console.error(error);
             }
@@ -242,14 +244,15 @@ export default {
         },
         // Format the response.
         applyMarkDownFormatting(string) {
-            const md = window.markdownit().use(window.texmath, {
-                engine: katex,
-                delimiters: ['brackets', 'dollars'],
-                katexOptions: { macros: { '\\RR': '\\mathbb{R}' } }
-            });
-
-            // let newString = string.replace('\\[ ', '$');
-            // newString = newString.replace(' \\]', '$');
+            const md = window
+                .markdownit({
+                    breaks: true
+                })
+                .use(window.texmath, {
+                    engine: katex,
+                    delimiters: ['brackets', 'dollars'],
+                    katexOptions: { macros: { '\\RR': '\\mathbb{R}' } }
+                });
 
             let formattedMessage = md.render(string);
             return formattedMessage;
