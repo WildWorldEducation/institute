@@ -504,7 +504,7 @@ export default {
             >
                 <!-- Student messages -->
                 <div v-if="message.role === 'user'" class="user-conversation">
-                    {{ message.content[0].text.value }}
+                    <em>{{ message.content[0].text.value }}</em>
                 </div>
                 <!-- AI tutor messages -->
                 <div
@@ -601,9 +601,8 @@ export default {
 
 .user-conversation {
     padding: 10px 15px;
-    background-color: #f3f3f3;
     border-radius: 50px;
-    color: black;
+    color: white;
 }
 
 .socratic-chat {
