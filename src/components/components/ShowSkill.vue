@@ -79,6 +79,7 @@ export default {
             showCategoryCompletedModal: false,
             nextSkillsInBranch: [],
             // Defaults to true. False only for certain skills.
+            // This is just to prevent them displaying. They are still loaded, as used by the AI.
             showLearningObjectives: true
         };
     },
@@ -121,7 +122,8 @@ export default {
 
             // Get learning objectives for the skill
             this.skill.learningObjectives = [];
-            if (this.showLearningObjectives) await this.getLearningObjectives();
+
+            await this.getLearningObjectives();
 
             // Meta title for SEO
             document.title = this.skill.name + ' - The Collins Institute';
