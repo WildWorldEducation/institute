@@ -26,8 +26,8 @@ const {
     saveAssessingTutorThread,
     assessingTutorMessage,
     askQuestion,
-    // assessStudent,
     // Learning objective tutor
+    createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
     learningObjectiveMessage,
@@ -299,10 +299,11 @@ router.get(
             // If Open AI assistant has not yet been created for this user + learning objective
             if (assistantData.length === 0) {
                 // Create new Open AI assistant.
-                const newAssistant = await createAssistantAndThread(
-                    learningObjective,
-                    skillLevel
-                );
+                const newAssistant =
+                    await createLearningObjectiveAssistantAndThread(
+                        learningObjective,
+                        skillLevel
+                    );
                 assistantData = [
                     {
                         userId: userId,
