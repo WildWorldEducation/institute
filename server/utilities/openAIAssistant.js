@@ -276,6 +276,39 @@ async function askQuestion(threadId, assistantId, messageData) {
  * Learning objective level tutor functions --------------------
  */
 
+async function createLearningObjectiveAssistantAndThread(
+    learningObjective,
+    level
+) {
+    const assistant = await createLearningObjectiveAssistant(
+        level,
+        learningObjective
+    );
+    const thread = await createLearningObjectiveAssistantThread();
+    const result = { assistant: assistant, thread: thread };
+    return result;
+}
+
+async function createLearningObjectiveAssistant(level, learningObjective) {
+    const assistant = await openai.beta.assistants.create({
+        name: 'Learning Objective Tutor',
+        instructions:
+            `You are a personal tutor teaching a ` +
+            level +
+            `student about the following subject: ` +
+            learningObjective +
+            `.`,
+        tools: [],
+        model: 'o1'
+    });
+    return assistant;
+}
+
+async function createLearningObjectiveAssistantThread() {
+    const thread = await openai.beta.threads.create();
+    return thread;
+}
+
 async function saveLearningObjectiveThread(data) {
     try {
         let queryString = `INSERT INTO ai_tutor_learning_objective_threads (user_id, learning_objective_id, assistant_id, thread_id)
@@ -408,8 +441,8 @@ module.exports = {
     saveAssessingTutorThread,
     assessingTutorMessage,
     askQuestion,
-    // assessStudent,
     // Learning objective tutor
+    createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
     learningObjectiveMessage,

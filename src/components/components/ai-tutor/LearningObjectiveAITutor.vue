@@ -178,11 +178,15 @@ export default {
         },
         // Format the response.
         applyMarkDownFormatting(string) {
-            const md = window.markdownit().use(window.texmath, {
-                engine: katex,
-                delimiters: ['brackets', 'dollars'],
-                katexOptions: { macros: { '\\RR': '\\mathbb{R}' } }
-            });
+            const md = window
+                .markdownit({
+                    breaks: true
+                })
+                .use(window.texmath, {
+                    engine: katex,
+                    delimiters: ['brackets', 'dollars'],
+                    katexOptions: { macros: { '\\RR': '\\mathbb{R}' } }
+                });
 
             // let newString = string.replace('\\[ ', '$');
             // newString = newString.replace(' \\]', '$');
