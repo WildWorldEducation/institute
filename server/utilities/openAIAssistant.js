@@ -118,7 +118,9 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         comprising the following learning objectives: ${messageData.learningObjectives}.
         Tutor the user as if they are at a ${messageData.skillLevel} level and age.
         Ask follow up questions after responding to the message.
-        Make sure to have $ delimiters before any science and math strings that can convert to Latex`
+        Make sure to have $ delimiters before any science and math strings that can convert to Latex
+
+        If the message content is empty, please ask the user to write something.`
     });
 
     if (run.status === 'completed') {
@@ -227,7 +229,9 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
 
         Do not provide feedback to the student after they answer the question.
 
-        Make sure to have $ delimiters before any science and math strings that can convert to Latex`
+        Make sure to have $ delimiters before any science and math strings that can convert to Latex.
+        
+        If the message content is empty, please ask the user to write something.`
     });
 
     if (run.status === 'completed') {
@@ -361,9 +365,10 @@ async function learningObjectiveMessage(threadId, assistantId, messageData) {
         instructions:
             `Please do not repeat the request. Please tutor about the topic: ` +
             messageData.learningObjective +
-            '. Tutor the user as if they are at a ' +
+            `. Tutor the user as if they are at a ` +
             messageData.skillLevel +
-            ' level and age. Ask follow up questions. Make sure to have $ delimiters before any science and math string that can convert to Latex`'
+            ` level and age. Ask follow up questions. Make sure to have $ delimiters before any science and math string that can convert to Latex.
+            If the message content is empty, please ask the user to write something.`
     });
 
     if (run.status === 'completed') {

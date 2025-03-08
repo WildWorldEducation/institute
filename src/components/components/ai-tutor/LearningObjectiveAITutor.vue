@@ -260,6 +260,7 @@ export default {
             <button
                 class="btn border border-dark ms-1 message-btn"
                 @click="sendMessage()"
+                :disabled="this.message == '' || this.message == ' '"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
