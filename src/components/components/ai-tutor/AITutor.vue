@@ -1,5 +1,4 @@
 <script>
-import { OutputLocationFilterSensitiveLog } from '@aws-sdk/client-s3';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import { useUserSkillsStore } from '../../../stores/UserSkillsStore.js';
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore.js';
@@ -33,7 +32,8 @@ export default {
             learningObjectives: [],
             tutorType: 'socratic',
             // hide / show chat
-            showChat: true
+            showChat: true,
+            isTextToSpeech: false
         };
     },
     async mounted() {
@@ -43,11 +43,6 @@ export default {
 
         this.englishSkillLevel = this.skill.level.replace('_', ' ');
         await this.getChatHistory();
-    },
-    updated() {
-        // if (this.mode !== 'hide') {
-        //     this.scrollToMessageInput();
-        // }
     },
     methods: {
         // 2 different threads
@@ -100,17 +95,17 @@ export default {
                     }
                 }
 
-                console.log(this.chatHistory);
+                let latestMessage = this.chatHistory[0].content[0].text.value;
+                if (this.isTextToSpeech) {
+                    this.textToSpeech(latestMessage);
+                }
+                console.log();
             } catch (error) {
                 console.error(error);
             }
         },
+        async textToSpeech(latestMessage) {},
         async sendMessage() {
-            console.log(this.message);
-            if (this.message == '' || this.message == ' ') {
-                console.log('test');
-            }
-
             if (this.waitForAIresponse) {
                 return;
             }
@@ -422,6 +417,14 @@ export default {
                 >
                     Assessment Tutor
                 </button>
+                <!-- Text to speech -->
+                <button
+                    class="btn suggested-interactions ms-1"
+                    @click="isTextToSpeech = !isTextToSpeech"
+                    :class="{ lineThrough: isTextToSpeech == false }"
+                >
+                    Speech
+                </button>
             </span>
             <span>
                 <button
@@ -606,6 +609,10 @@ export default {
 </template>
 
 <style scoped>
+.lineThrough {
+    text-decoration: line-through;
+}
+
 .underline {
     text-decoration: underline;
 }
