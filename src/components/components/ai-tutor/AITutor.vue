@@ -34,7 +34,8 @@ export default {
             tutorType: 'socratic',
             // hide / show chat
             showChat: true,
-            isTextToSpeech: true
+            isTextToSpeech: true,
+            threadID: ''
         };
     },
     async mounted() {
@@ -96,6 +97,9 @@ export default {
                     }
                 }
 
+                this.threadID = this.chatHistory[0].thread_id;
+                console.log(this.chatHistory);
+
                 this.mostRecentMessage =
                     this.chatHistory[0].content[0].text.value;
             } catch (error) {
@@ -107,22 +111,24 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    latestMessage: this.mostRecentMessage
+                    //latestMessage: this.mostRecentMessage,
+                    latestMessage: 'testing testing 123',
+                    threadID: this.threadID
                 })
             };
             const url = `/ai-tutor/tts/latest-message`;
             const response = await fetch(url, requestOptions);
 
-            const data = await response.arrayBuffer();
-            const blob = new Blob([data], { type: 'audio/mp3' });
-            const blobUrl = URL.createObjectURL(blob);
-            const audio = new Audio();
-            audio.src = blobUrl;
-            audio.controls = true;
-            document.body.appendChild(audio);
+            // const data = await response.arrayBuffer();
+            // const blob = new Blob([data], { type: 'audio/mp3' });
+            // const blobUrl = URL.createObjectURL(blob);
+            // const audio = new Audio();
+            // audio.src = blobUrl;
+            // audio.controls = true;
+            // document.body.appendChild(audio);
 
-            // Optionally, if you want to start playing right away:
-            audio.play();
+            // // Optionally, if you want to start playing right away:
+            // audio.play();
         },
         async sendMessage() {
             if (this.waitForAIresponse) {

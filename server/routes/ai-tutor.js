@@ -101,7 +101,11 @@ router.post(
  */
 router.post('/tts/latest-message', isAuthenticated, async (req, res, next) => {
     try {
-        textToSpeech(res, req.body.latestMessage);
+        const latestMessage = req.body.latestMessage;
+        const threadID = req.body.threadID;
+        const messageNumber = 0;
+
+        textToSpeech(latestMessage, threadID, messageNumber);
     } catch (error) {
         console.error(error);
         res.status = 500;
