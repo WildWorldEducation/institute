@@ -26,6 +26,7 @@ export default {
             assessingTutorChatHistory: [],
             transcriptForAssessment: [],
             chatHistory: [],
+            mostRecentMessage: '',
             waitForAIresponse: false,
             mode: 'big',
             englishSkillLevel: '',
@@ -33,7 +34,7 @@ export default {
             tutorType: 'socratic',
             // hide / show chat
             showChat: true,
-            isTextToSpeech: false
+            isTextToSpeech: true
         };
     },
     async mounted() {
@@ -95,16 +96,34 @@ export default {
                     }
                 }
 
-                let latestMessage = this.chatHistory[0].content[0].text.value;
-                if (this.isTextToSpeech) {
-                    this.textToSpeech(latestMessage);
-                }
-                console.log();
+                this.mostRecentMessage =
+                    this.chatHistory[0].content[0].text.value;
             } catch (error) {
                 console.error(error);
             }
         },
-        async textToSpeech(latestMessage) {},
+        async textToSpeech() {
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    latestMessage: this.mostRecentMessage
+                })
+            };
+            const url = `/ai-tutor/tts/latest-message`;
+            const response = await fetch(url, requestOptions);
+
+            const data = await response.arrayBuffer();
+            const blob = new Blob([data], { type: 'audio/mp3' });
+            const blobUrl = URL.createObjectURL(blob);
+            const audio = new Audio();
+            audio.src = blobUrl;
+            audio.controls = true;
+            document.body.appendChild(audio);
+
+            // Optionally, if you want to start playing right away:
+            audio.play();
+        },
         async sendMessage() {
             if (this.waitForAIresponse) {
                 return;
@@ -337,6 +356,7 @@ export default {
                         </svg>
                     </btn>
                     <h2 class="secondary-heading">AI tutor</h2>
+
                     <TooltipBtn
                         v-if="mode === 'big'"
                         class="d-none d-md-block"
@@ -420,7 +440,7 @@ export default {
                 <!-- Text to speech -->
                 <button
                     class="btn suggested-interactions ms-1"
-                    @click="isTextToSpeech = !isTextToSpeech"
+                    @click="textToSpeech()"
                     :class="{ lineThrough: isTextToSpeech == false }"
                 >
                     Speech

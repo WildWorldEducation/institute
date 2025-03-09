@@ -9,7 +9,7 @@ const router = express.Router();
 
 // Database connection
 const conn = require('../config/db');
-
+const fs = require('fs');
 // Import OpenAI package.
 const { OpenAI } = require('openai');
 const {
@@ -84,11 +84,9 @@ router.post(
                     assistantData[0].thread_id
                 );
 
-                let mostRecentMessage = messages.data[0].content[0].text.value;
-                const speechMP3 = await textToSpeech(mostRecentMessage);
-                console.log(speechMP3);
-                console.log(messages.data[0].content[0].text.value);
-                res.json({ messages: messages });
+                res.json({
+                    messages: messages
+                });
             }
         } catch (error) {
             console.error(error);
@@ -97,6 +95,19 @@ router.post(
         }
     }
 );
+
+/**
+ * Get thread from Socratic AI tutor
+ */
+router.post('/tts/latest-message', isAuthenticated, async (req, res, next) => {
+    try {
+        textToSpeech(res, req.body.latestMessage);
+    } catch (error) {
+        console.error(error);
+        res.status = 500;
+        res.json({ mess: 'something went wrong' });
+    }
+});
 
 /**
  * Send message to Socratic AI tutor
