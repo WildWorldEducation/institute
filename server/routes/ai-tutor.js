@@ -34,6 +34,7 @@ const {
     requestLearningObjectiveTutoring,
     generateLearningObjectiveQuestion
 } = require('../utilities/openAIAssistant');
+const { textToSpeech } = require('../utilities/textToSpeech');
 const isAuthenticated = require('../middlewares/authMiddleware');
 // Include API key.
 const openai = new OpenAI({
@@ -75,12 +76,18 @@ router.post(
                 const messages = await getMessagesList(
                     assistantData[0].threadId
                 );
+
                 res.json({ messages: messages });
                 return;
             } else {
                 const messages = await getMessagesList(
                     assistantData[0].thread_id
                 );
+
+                let mostRecentMessage = messages.data[0].content[0].text.value;
+                const speechMP3 = await textToSpeech(mostRecentMessage);
+                console.log(speechMP3);
+                console.log(messages.data[0].content[0].text.value);
                 res.json({ messages: messages });
             }
         } catch (error) {
