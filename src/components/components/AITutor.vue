@@ -6,14 +6,15 @@ import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 // import SendIconLoadingSymbol from './ai-tutor/sendIconLoadingSymbol.vue';
 import TutorLoadingSymbol from './ai-tutor/tutorLoadingSymbol.vue';
 import TooltipBtn from './share-components/TooltipBtn.vue';
-import { state, socket } from '../../socket.js';
+import { socket, socketState } from '../../socket.js';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
         const userSkillsStore = useUserSkillsStore();
         const skillTreeStore = useSkillTreeStore();
-
+        const stateOfSocket = socketState;
         return {
+            stateOfSocket,
             userDetailsStore,
             userSkillsStore,
             skillTreeStore
@@ -34,7 +35,8 @@ export default {
             assistantData: {
                 assistantId: null,
                 threadId: null
-            }
+            },
+            steamingMessage: 'HA HA HA HA'
         };
     },
     async mounted() {
@@ -47,6 +49,8 @@ export default {
     },
     created() {
         this.connectToSocketSever();
+        console.log('ha ha ');
+        console.log(this.stateOfSocket);
     },
     updated() {
         // if (this.mode !== 'hide') {
@@ -323,11 +327,25 @@ export default {
         //         //this.scrollToMessageInput();
         //     });
         // }
+        stateOfSocket: {
+            function(newItem, oldItem) {
+                if (newItem.isStreaming) {
+                    this.steamingMessage = newItem.streamingMessage;
+                }
+                console.log(newItem);
+            },
+            deep: true
+        }
     }
 };
 </script>
 
 <template>
+    <h1>{{ steamingMessage }}</h1>
+    <!-- ========================================================= -->
+    <h1>Test:</h1>
+    <h4>{{ stateOfSocket.streamingMessage }}</h4>
+    <!-- ========================================================= -->
     <div
         v-if="mode !== 'hide'"
         :class="{
@@ -421,6 +439,7 @@ export default {
                 </div>
             </div>
         </div>
+
         <!-- Suggested interaction buttons -->
         <span v-if="mode === 'big'" class="d-flex justify-content-end">
             <!-- explanation button -->

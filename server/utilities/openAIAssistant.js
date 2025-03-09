@@ -137,7 +137,7 @@ async function createRunStream(threadId, assistantId, userMessage, socket) {
         .on('runStepCreated', (runStep) => { console.log('run created: '); console.log(runStep) })
         .on('textCreated', (text) => process.stdout.write('\nassistant > '))
         .on('messageCreated', (message) => { console.log('created message: '); console.log(message) })
-        .on('textDelta', (textDelta, snapshot) => { process.stdout.write(textDelta.value) })
+        .on('textDelta', (textDelta, snapshot) => { process.stdout.write(textDelta.value); socket.emit('stream-message', textDelta, snapshot) })
         .on('toolCallCreated', (toolCall) => process.stdout.write(`\nassistant > ${toolCall.type}\n\n`))
         .on('toolCallDelta', (toolCallDelta, snapshot) => {
             if (toolCallDelta.type === 'code_interpreter') {
