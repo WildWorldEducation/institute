@@ -588,23 +588,32 @@ export default {
                     v-if="
                         userDetailsStore.role == 'student' && showTutorialTip2
                     "
-                    class="d-flex justify-content-end"
+                    class="tool-tip-base d-flex justify-content-end"
                 >
-                    <div class="info-panel bg-light rounded p-2 mb-2">
-                        <p>
-                            This is where you can take an assessment for this
-                            skill, if it is unlocked.
-                        </p>
-                        <p>
-                            If it's locked, this button will instead take you to
-                            the closest unlocked skill.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(2)"
-                        >
-                            next
-                        </button>
+                    <div
+                        class="explain-tool-tip hovering-info-panel"
+                        :class="
+                            isMobileCheck > 576
+                                ? 'triangle-top-right'
+                                : 'triangle-top-left'
+                        "
+                    >
+                        <div class="tool-tip-text">
+                            <p>
+                                This is where you can take an assessment for
+                                this skill, if it is unlocked.
+                            </p>
+                            <p>
+                                If it's locked, this button will instead take
+                                you to the closest unlocked skill.
+                            </p>
+                            <button
+                                class="btn primary-btn"
+                                @click="progressTutorial(2)"
+                            >
+                                next
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <!-- Description only seen by admins -->
@@ -789,85 +798,95 @@ export default {
                     v-if="
                         userDetailsStore.role == 'student' && showTutorialTip3
                     "
-                    class="mt-2"
+                    class="tool-tip-base"
                 >
                     <div
-                        class="info-panel bg-light rounded p-2 mb-2 narrow-info-panel"
+                        class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel"
                     >
-                        <p>
-                            Suggesting edits to this page or its test can
-                            increase your reputation score.
-                        </p>
-                        <p>
-                            If this skill is marked as locked, you can also
-                            bookmark this skill by marking it as a goal.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(3)"
-                        >
-                            next
-                        </button>
+                        <div class="tool-tip-text">
+                            <p>
+                                Suggesting edits to this page or its test can
+                                increase your reputation score.
+                            </p>
+                            <p>
+                                If this skill is marked as locked, you can also
+                                bookmark this skill by marking it as a goal.
+                            </p>
+                            <button
+                                class="btn primary-btn"
+                                @click="progressTutorial(3)"
+                            >
+                                next
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div
                     v-if="
                         userDetailsStore.role == 'student' && showTutorialTip4
                     "
-                    class="mt-2 d-flex justify-content-end"
+                    class="tool-tip-base d-flex justify-content-end"
                 >
                     <div
-                        class="info-panel bg-light rounded p-2 mb-2 narrow-info-panel"
+                        class="explain-tool-tip triangle-top-right hovering-info-panel narrow-info-panel"
                     >
-                        <p>
-                            Here you can share a link to this skill with a
-                            friend, or flag this page as unhelpful or incorrect.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(4)"
-                        >
-                            next
-                        </button>
+                        <div class="tool-tip-text">
+                            <p>
+                                Here you can share a link to this skill with a
+                                friend, or flag this page as unhelpful or
+                                incorrect.
+                            </p>
+                            <button
+                                class="btn primary-btn"
+                                @click="progressTutorial(4)"
+                            >
+                                next
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <!-- Editor tooltips -->
                 <div
                     v-if="userDetailsStore.role == 'editor' && showTutorialTip2"
-                    class="mt-2"
+                    class="tool-tip-base"
                 >
                     <div
-                        class="info-panel bg-light rounded p-2 mb-2 narrow-info-panel"
+                        class="explain-tool-tip triangle-top-left hovering-info-panel"
                     >
-                        <p>
-                            The "Edit" button allows you to edit this skill page
-                            or its assessment.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(2)"
-                        >
-                            next
-                        </button>
+                        <div class="tool-tip-text">
+                            <p>
+                                The "Edit" button allows you to edit this skill
+                                page or its assessment.
+                            </p>
+                            <button
+                                class="btn primary-btn"
+                                @click="progressTutorial(2)"
+                            >
+                                next
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div
                     v-if="userDetailsStore.role == 'editor' && showTutorialTip3"
-                    class="mt-2 d-flex justify-content-end"
+                    class="tool-tip-base d-flex justify-content-end"
                 >
                     <div
-                        class="info-panel bg-light rounded p-2 mb-2 narrow-info-panel"
+                        class="explain-tool-tip triangle-top-right narrow-info-panel hovering-info-panel"
                     >
-                        <p>
-                            Here you can share a link to this skill with a
-                            friend, or flag this page as unhelpful or incorrect.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(3)"
-                        >
-                            next
-                        </button>
+                        <div class="tool-tip-text">
+                            <p>
+                                Here you can share a link to this skill with a
+                                friend, or flag this page as unhelpful or
+                                incorrect.
+                            </p>
+                            <button
+                                class="btn primary-btn"
+                                @click="progressTutorial(3)"
+                            >
+                                next
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <!-- Instructor tooltips -->
@@ -876,18 +895,22 @@ export default {
                         userDetailsStore.role == 'instructor' &&
                         showTutorialTip2
                     "
-                    class="mt-2"
+                    class="tool-tip-base"
                 >
                     <div
-                        class="info-panel bg-light rounded p-2 mb-2 narrow-info-panel"
+                        class="explain-tool-tip triangle-top-left narrow-info-panel hovering-info-panel"
                     >
-                        <p>Here you can suggest an edit to this skill page.</p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(2)"
-                        >
-                            next
-                        </button>
+                        <div class="tool-tip-text">
+                            <p>
+                                Here you can suggest an edit to this skill page.
+                            </p>
+                            <button
+                                class="btn primary-btn"
+                                @click="progressTutorial(2)"
+                            >
+                                next
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div
@@ -895,21 +918,24 @@ export default {
                         userDetailsStore.role == 'instructor' &&
                         showTutorialTip3
                     "
-                    class="mt-2 d-flex justify-content-end"
+                    class="tool-tip-base d-flex justify-content-end"
                 >
                     <div
-                        class="info-panel bg-light rounded p-2 mb-2 narrow-info-panel"
+                        class="explain-tool-tip triangle-top-right narrow-info-panel hovering-info-panel"
                     >
-                        <p>
-                            Here you can share a link to this skill with a
-                            friend, or flag this page as unhelpful or incorrect.
-                        </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(3)"
-                        >
-                            next
-                        </button>
+                        <div class="tool-tip-text">
+                            <p>
+                                Here you can share a link to this skill with a
+                                friend, or flag this page as unhelpful or
+                                incorrect.
+                            </p>
+                            <button
+                                class="btn primary-btn"
+                                @click="progressTutorial(3)"
+                            >
+                                next
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -1136,7 +1162,7 @@ export default {
                     userDetailsStore.role === 'student' &&
                     skill.type !== 'domain'
                 "
-                :skill="skill"                
+                :skill="skill"
             />
         </div>
 
@@ -1354,11 +1380,15 @@ export default {
 }
 
 /* Tooltips */
-.info-panel {
-    border-color: var(--primary-color);
+.hovering-info-panel {
+    position: absolute;
+    z-index: 100;
+    /* border-color: var(--primary-color);
     border-width: 2px;
-    border-style: solid;
+    border-style: solid; */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     width: fit-content;
+    margin-bottom: 0 !important; /* Remove any margin that might push content */
 }
 
 .narrow-info-panel {
