@@ -134,10 +134,13 @@ async function createRunStream(threadId, assistantId, userMessage, socket) {
     const run = openai.beta.threads.runs.stream(threadId, {
         assistant_id: assistantId
     })
-        .on('runStepCreated', (runStep) => { console.log('run created: '); console.log(runStep) })
-        .on('textCreated', (text) => process.stdout.write('\nassistant > '))
-        .on('messageCreated', (message) => { console.log('created message: '); console.log(message) })
-        .on('textDelta', (textDelta, snapshot) => { process.stdout.write(textDelta.value); socket.emit('stream-message', textDelta, snapshot) })
+        .on('runStepCreated', (runStep) => { console.log('run created: '); })
+
+        .on('messageCreated', (message) => { console.log('created message: ') })
+        .on('textDelta', (textDelta, snapshot) => {
+            socket.emit('stream-message', textDelta, snapshot)
+        })
+        .on('runStepDone', (runStep) => { console.log('Run ended'); socket.emit('run-end') })
         .on('toolCallCreated', (toolCall) => process.stdout.write(`\nassistant > ${toolCall.type}\n\n`))
         .on('toolCallDelta', (toolCallDelta, snapshot) => {
             if (toolCallDelta.type === 'code_interpreter') {

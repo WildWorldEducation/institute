@@ -5,7 +5,7 @@ export const socketState = reactive({
     connected: false,
     assistantData: [],
     testVar: 'ha ha',
-    streamingMessage: 'o o',
+    streamingMessage: '',
     isStreaming: false,
 });
 
@@ -45,8 +45,11 @@ socket.on('assistant-data', (...args) => {
 })
 
 socket.on('stream-message', (...args) => {
-    socketState.isStreaming = false;
+    socketState.isStreaming = true;
     socketState.streamingMessage = socketState.streamingMessage + args[0].value;
-    console.log('streaming message: -------------------')
-    console.log(socketState.streamingMessage)
+
+})
+
+socket.on('run-end', (...args) => {
+    socketState.isStreaming = false
 })
