@@ -435,7 +435,7 @@ export default {
                     </div>
                 </div>
             </div>
-        </div>      
+        </div>
         <!--Tutor types -->
         <span v-if="mode === 'big'" class="d-flex justify-content-between">
             <span>
@@ -585,69 +585,76 @@ export default {
                     <em>{{ message.content[0].text.value }}</em>
                 </div>
                 <!-- AI tutor messages -->
-                <div
+                <span
                     v-else-if="
                         message.role === 'assistant' &&
                         message.content[0].type == 'text'
                     "
-                    class="tutor-conversation"
-                    v-html="
-                        applyMarkDownFormatting(message.content[0].text.value)
-                    "
-                ></div>
-                <span v-if="isAudioGenerating && message.role === 'assistant'"
-                    >generating audio</span
+                    class="d-flex justify-content-between w-100"
                 >
-                <button
-                    v-else-if="
-                        !message.hasAudio &&
-                        !isAudioGenerating &&
-                        message.role === 'assistant'
-                    "
-                    @click="
-                        generateAudio(
-                            message.index,
-                            message.content[0].text.value
-                        )
-                    "
-                    class="btn speechButton"
-                >
-                    generate speech
-                </button>
-                <button
-                    v-else-if="
-                        !isAudioGenerating && message.role === 'assistant'
-                    "
-                    @click="playAudio(message.index)"
-                    class="btn speechButton"
-                >
-                    <svg
-                        v-if="isAudioPlaying == false"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        fill="white"
-                        height="18"
-                        width="18"
+                    <div
+                        class="tutor-conversation"
+                        v-html="
+                            applyMarkDownFormatting(
+                                message.content[0].text.value
+                            )
+                        "
+                    ></div>
+                    <span
+                        v-if="isAudioGenerating && message.role === 'assistant'"
+                        >generating audio</span
                     >
-                        <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                        <path
-                            d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c7.6-4.2 16.8-4.1 24.3 .5l144 88c7.1 4.4 11.5 12.1 11.5 20.5s-4.4 16.1-11.5 20.5l-144 88c-7.4 4.5-16.7 4.7-24.3 .5s-12.3-12.2-12.3-20.9l0-176c0-8.7 4.7-16.7 12.3-20.9z"
-                        />
-                    </svg>
-                    <svg
-                        v-else
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        fill="white"
-                        height="18"
-                        width="18"
+                    <button
+                        v-else-if="
+                            !message.hasAudio &&
+                            !isAudioGenerating &&
+                            message.role === 'assistant'
+                        "
+                        @click="
+                            generateAudio(
+                                message.index,
+                                message.content[0].text.value
+                            )
+                        "
+                        class="btn speechButton"
                     >
-                        <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                        <path
-                            d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
-                        />
-                    </svg>
-                </button>
+                        generate speech
+                    </button>
+                    <button
+                        v-else-if="
+                            !isAudioGenerating && message.role === 'assistant'
+                        "
+                        @click="playAudio(message.index)"
+                        class="btn speechButton"
+                    >
+                        <svg
+                            v-if="isAudioPlaying == false"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            fill="yellow"
+                            height="18"
+                            width="18"
+                        >
+                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c7.6-4.2 16.8-4.1 24.3 .5l144 88c7.1 4.4 11.5 12.1 11.5 20.5s-4.4 16.1-11.5 20.5l-144 88c-7.4 4.5-16.7 4.7-24.3 .5s-12.3-12.2-12.3-20.9l0-176c0-8.7 4.7-16.7 12.3-20.9z"
+                            />
+                        </svg>
+                        <svg
+                            v-else
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            fill="yellow"
+                            height="18"
+                            width="18"
+                        >
+                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
+                            />
+                        </svg>
+                    </button>
+                </span>
             </div>
         </div>
         <!-- User input (mini mode) -->
