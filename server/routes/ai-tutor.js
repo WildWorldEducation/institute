@@ -116,6 +116,7 @@ router.post(
                                 audioClips[j].message_number
                             ) {
                                 messages[i].hasAudio = true;
+                                messages[i].audio = audioClips[j].url;
                             }
                         }
                     }
