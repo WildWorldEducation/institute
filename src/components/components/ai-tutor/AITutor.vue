@@ -1,5 +1,4 @@
 <script>
-import { OutputLocationFilterSensitiveLog } from '@aws-sdk/client-s3';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import { useUserSkillsStore } from '../../../stores/UserSkillsStore.js';
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore.js';
@@ -27,13 +26,18 @@ export default {
             assessingTutorChatHistory: [],
             transcriptForAssessment: [],
             chatHistory: [],
+            mostRecentMessage: '',
             waitForAIresponse: false,
             mode: 'big',
             englishSkillLevel: '',
             learningObjectives: [],
             tutorType: 'socratic',
             // hide / show chat
-            showChat: true
+            showChat: true,
+            isTextToSpeech: true,
+            threadID: '',
+            audio: null,
+            isAudioPlaying: false
         };
     },
     async mounted() {
@@ -43,11 +47,6 @@ export default {
 
         this.englishSkillLevel = this.skill.level.replace('_', ' ');
         await this.getChatHistory();
-    },
-    updated() {
-        // if (this.mode !== 'hide') {
-        //     this.scrollToMessageInput();
-        // }
     },
     methods: {
         // 2 different threads
@@ -86,11 +85,12 @@ export default {
 
                 const response = await fetch(url, requestOptions);
                 const resData = await response.json();
+
                 if (this.tutorType == 'socratic') {
-                    this.socraticTutorChatHistory = resData.messages.data;
+                    this.socraticTutorChatHistory = resData.messages;
                     this.chatHistory = this.socraticTutorChatHistory;
                 } else if (this.tutorType == 'assessing') {
-                    this.assessingTutorChatHistory = resData.messages.data;
+                    this.assessingTutorChatHistory = resData.messages;
                     this.chatHistory = this.assessingTutorChatHistory;
                     if (
                         this.chatHistory.length >=
@@ -100,17 +100,59 @@ export default {
                     }
                 }
 
-                console.log(this.chatHistory);
+                this.threadID = this.chatHistory[0].thread_id;
+
+                this.mostRecentMessage =
+                    this.chatHistory[0].content[0].text.value;
             } catch (error) {
                 console.error(error);
             }
         },
-        async sendMessage() {
-            console.log(this.message);
-            if (this.message == '' || this.message == ' ') {
-                console.log('test');
+        async generateAudio(index, message) {
+            for (let i = 0; i < this.chatHistory.length; i++) {
+                if (this.chatHistory[i].index == index) {
+                    this.chatHistory[i].isAudioGenerating = true;
+                }
             }
 
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: message,
+                    messageNumber: index,
+                    threadID: this.threadID
+                })
+            };
+
+            let url = '';
+            if (this.tutorType == 'socratic')
+                url = `/ai-tutor/socratic/generate-tts`;
+            else url = `/ai-tutor/assessing/generate-tts`;
+
+            const response = await fetch(url, requestOptions);
+            const resData = await response.json();
+
+            for (let i = 0; i < this.chatHistory.length; i++) {
+                if (this.chatHistory[i].index == index) {
+                    this.chatHistory[i].isAudioGenerating = false;
+                    this.chatHistory[i].hasAudio = true;
+                }
+            }
+            this.getChatHistory();
+        },
+        playAudio(index) {
+            if (this.isAudioPlaying == true) {
+                this.isAudioPlaying = false;
+                this.audio.pause();
+            } else {
+                let url = `https://institute-${this.tutorType}-tutor-tts-urls.s3.us-east-1.amazonaws.com/${this.threadID}-${index}.mp3`;
+                this.audio = new Audio(url);
+                this.isAudioPlaying = true;
+                this.audio.play();
+            }
+        },
+        async sendMessage() {
             if (this.waitForAIresponse) {
                 return;
             }
@@ -342,6 +384,7 @@ export default {
                         </svg>
                     </btn>
                     <h2 class="secondary-heading">AI tutor</h2>
+
                     <TooltipBtn
                         v-if="mode === 'big'"
                         class="d-none d-md-block"
@@ -422,6 +465,14 @@ export default {
                 >
                     Assessment Tutor
                 </button>
+                <!-- Text to speech -->
+                <!-- <button
+                    class="btn suggested-interactions ms-1"
+                    @click="isTextToSpeech = !isTextToSpeech"
+                    :class="{ lineThrough: isTextToSpeech == false }"
+                >
+                    Auto Speech
+                </button> -->
             </span>
             <span>
                 <button
@@ -544,16 +595,84 @@ export default {
                     <em>{{ message.content[0].text.value }}</em>
                 </div>
                 <!-- AI tutor messages -->
-                <div
+                <span
                     v-else-if="
                         message.role === 'assistant' &&
                         message.content[0].type == 'text'
                     "
-                    class="tutor-conversation"
-                    v-html="
-                        applyMarkDownFormatting(message.content[0].text.value)
-                    "
-                ></div>
+                    class="d-flex justify-content-between w-100"
+                >
+                    <div
+                        class="tutor-conversation"
+                        v-html="
+                            applyMarkDownFormatting(
+                                message.content[0].text.value
+                            )
+                        "
+                    ></div>
+
+                    <!-- Loading animation -->
+                    <div
+                        v-if="
+                            message.isAudioGenerating &&
+                            message.role === 'assistant'
+                        "
+                        class="d-flex"
+                    >
+                        <span class="loader"></span>
+                    </div>
+                    <button
+                        v-else-if="
+                            !message.hasAudio &&
+                            !message.isAudioGenerating &&
+                            message.role === 'assistant'
+                        "
+                        @click="
+                            generateAudio(
+                                message.index,
+                                message.content[0].text.value
+                            )
+                        "
+                        class="btn speechButton"
+                    >
+                        generate speech
+                    </button>
+                    <button
+                        v-else-if="
+                            !message.isAudioGenerating &&
+                            message.role === 'assistant'
+                        "
+                        @click="playAudio(message.index)"
+                        class="btn speechButton"
+                    >
+                        <svg
+                            v-if="isAudioPlaying == false"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            fill="yellow"
+                            height="18"
+                            width="18"
+                        >
+                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c7.6-4.2 16.8-4.1 24.3 .5l144 88c7.1 4.4 11.5 12.1 11.5 20.5s-4.4 16.1-11.5 20.5l-144 88c-7.4 4.5-16.7 4.7-24.3 .5s-12.3-12.2-12.3-20.9l0-176c0-8.7 4.7-16.7 12.3-20.9z"
+                            />
+                        </svg>
+                        <svg
+                            v-else
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            fill="yellow"
+                            height="18"
+                            width="18"
+                        >
+                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
+                            />
+                        </svg>
+                    </button>
+                </span>
             </div>
         </div>
         <!-- User input (mini mode) -->
@@ -606,6 +725,46 @@ export default {
 </template>
 
 <style scoped>
+/* Loading animation */
+.loading-animation {
+    min-height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.loader {
+    width: 24px;
+    height: 24px;
+    border: 5px solid yellow;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* End of loading animation */
+
+.speechButton {
+    max-height: 44px;
+    color: yellow;
+}
+
+.lineThrough {
+    text-decoration: line-through;
+}
+
 .underline {
     text-decoration: underline;
 }

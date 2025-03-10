@@ -56,7 +56,9 @@ async function createSocraticAssistant(topic, level, learningObjectives) {
             topic +
             `, which consists of the following learning objectives:` +
             learningObjectives +
-            `.`,
+            `.
+            
+            Please keep all messages below 4096 characters.`,
         tools: [],
         model: 'o1'
     });
@@ -120,7 +122,8 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         Ask follow up questions after responding to the message.
         Make sure to have $ delimiters before any science and math strings that can convert to Latex
 
-        If the message content is empty, please ask the user to write something.`
+        If the message content is empty, please ask the user to write something.
+        Please keep all messages below 4096 characters.`
     });
 
     if (run.status === 'completed') {
