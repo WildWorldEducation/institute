@@ -110,16 +110,16 @@ router.post(
 );
 
 /**
- * Get thread from Socratic AI tutor
+ * TTS for Socratic tutor message
  */
-router.post('/tts/latest-message', isAuthenticated, async (req, res, next) => {
+router.post('/message/tts', isAuthenticated, async (req, res, next) => {
     try {
-        const latestMessage = req.body.latestMessage;
         const threadID = req.body.threadID;
-        const messageNumber = 0;
+        const messageNumber = req.body.messageNumber;
+        const message = req.body.message;
 
         let speechClipName = await textToSpeech(
-            latestMessage,
+            message,
             threadID,
             messageNumber
         );

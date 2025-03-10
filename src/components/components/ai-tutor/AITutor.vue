@@ -107,20 +107,19 @@ export default {
                 console.error(error);
             }
         },
-        async textToSpeech(index) {
+        async textToSpeech(index, message) {
             console.log(index);
-
-            return;
 
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    latestMessage: this.mostRecentMessage,
+                    message: message,
+                    messageNumber: index,
                     threadID: this.threadID
                 })
             };
-            const url = `/ai-tutor/tts/latest-message`;
+            const url = `/ai-tutor/message/tts`;
             const response = await fetch(url, requestOptions);
         },
         async sendMessage() {
@@ -437,13 +436,13 @@ export default {
                     Assessment Tutor
                 </button>
                 <!-- Text to speech -->
-                <!-- <button
+                <button
                     class="btn suggested-interactions ms-1"
-                    @click="textToSpeech()"
+                    @click="isTextToSpeech = !isTextToSpeech"
                     :class="{ lineThrough: isTextToSpeech == false }"
                 >
-                    Speech
-                </button> -->
+                    Auto Speech
+                </button>
             </span>
             <span>
                 <button
@@ -577,7 +576,12 @@ export default {
                     "
                 ></div>
                 <button
-                    @click="textToSpeech(message.index)"
+                    @click="
+                        textToSpeech(
+                            message.index,
+                            message.content[0].text.value
+                        )
+                    "
                     class="btn speechButton"
                 >
                     speech
