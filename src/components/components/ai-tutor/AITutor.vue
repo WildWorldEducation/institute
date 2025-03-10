@@ -36,7 +36,6 @@ export default {
             showChat: true,
             isTextToSpeech: true,
             threadID: '',
-            isAudioGenerating: false,
             audio: null,
             isAudioPlaying: false
         };
@@ -111,7 +110,11 @@ export default {
             }
         },
         async generateAudio(index, message) {
-            this.isAudioGenerating = true;
+            for (let i = 0; i < this.chatHistory.length; i++) {
+                if (this.chatHistory[i].index == index) {
+                    this.chatHistory[i].isAudioGenerating = true;
+                }
+            }
 
             const requestOptions = {
                 method: 'POST',
@@ -126,7 +129,11 @@ export default {
             const response = await fetch(url, requestOptions);
             const resData = await response.json();
 
-            this.isAudioGenerating = false;
+            for (let i = 0; i < this.chatHistory.length; i++) {
+                if (this.chatHistory[i].index == index) {
+                    this.chatHistory[i].isAudioGenerating = false;
+                }
+            }
             this.getChatHistory();
             console.log(resData.status);
         },
@@ -600,14 +607,21 @@ export default {
                             )
                         "
                     ></div>
-                    <span
-                        v-if="isAudioGenerating && message.role === 'assistant'"
-                        >generating audio</span
+
+                    <!-- Loading animation -->
+                    <div
+                        v-if="
+                            message.isAudioGenerating &&
+                            message.role === 'assistant'
+                        "
+                        class="d-flex"
                     >
+                        <span class="loader"></span>
+                    </div>
                     <button
                         v-else-if="
                             !message.hasAudio &&
-                            !isAudioGenerating &&
+                            !message.isAudioGenerating &&
                             message.role === 'assistant'
                         "
                         @click="
@@ -707,6 +721,37 @@ export default {
 </template>
 
 <style scoped>
+/* Loading animation */
+.loading-animation {
+    min-height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.loader {
+    width: 24px;
+    height: 24px;
+    border: 5px solid yellow;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* End of loading animation */
+
 .speechButton {
     max-height: 44px;
     color: yellow;
