@@ -1,11 +1,6 @@
 // AWS S3
 // S3 needs access to the .env variables
-const {
-    S3Client,
-    PutObjectCommand,
-    CopyObjectCommand,
-    waitUntilObjectExists
-} = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 require('dotenv').config();
 const socraticTutorTTSURLSBucketName =
     process.env.S3_SOCRATIC_TUTOR_TTS_URLS_BUCKET_NAME;
@@ -33,6 +28,7 @@ async function textToSpeech(latestMessage, threadID, messageNumber) {
     //const speechFile = path.resolve('./speech.mp3');
 
     console.log('generate speech');
+    latestMessage = 'test test ABC';
 
     const mp3 = await openai.audio.speech.create({
         model: 'tts-1-hd',
@@ -40,10 +36,14 @@ async function textToSpeech(latestMessage, threadID, messageNumber) {
         input: latestMessage
     });
 
-    //const buffer = Buffer.from(await mp3.arrayBuffer());
-    const buffer = Buffer.from(await mp3.arrayBuffer(), 'binary').toString(
-        'base64'
-    );
+    const buffer = Buffer.from(await mp3.arrayBuffer());
+    //  await fs.promises.writeFile(speechFile, buffer);
+
+    console.log('buffer generated');
+
+    // const buffer = Buffer.from(await mp3.arrayBuffer(), 'binary').toString(
+    //     'base64'
+    // );
 
     //await fs.promises.writeFile(speechFile, buffer);
     //res.send(buffer);
@@ -59,39 +59,41 @@ async function textToSpeech(latestMessage, threadID, messageNumber) {
  *
  * @return the name of the mp3 that got saved to database Or null if pass no mp3
  */
-const saveMP3ToAWS = async (mp3, threadID, messageNumber) => {
-    if (!mp3) {
+const saveMP3ToAWS = async (buffer, threadID, messageNumber) => {
+    if (!buffer) {
         return null;
     }
-    // Get file from Base64 encoding (client sends as base64)
-    //let fileData = Buffer.from(mp3, 'base64');
 
-    let newFileData = 'data:audio/mp3;base64,' + mp3;
-
-    console.log(newFileData);
-
-    const mp3Name = `${threadID}_${messageNumber}`;
-
+    const mp3Name = `${threadID}-${messageNumber}.mp3`;
     // Save full size mp3.
-    let fullSizeData = {
+    let params = {
         // The name it will be saved as on S3
         Key: mp3Name,
         // The image
-        Body: newFileData,
+        Body: buffer,
         ContentEncoding: 'base64',
-        ContentType: 'audio/mp3',
+        ContentType: 'audio/mpeg',
         // The S3 bucket
         Bucket: socraticTutorTTSURLSBucketName
     };
 
-    console.log(fullSizeData);
+    // Read in the file, convert it to base64, store to S3
+
+    //   var s3 = new AWS.S3();
+    // S3Client.putObject({
+    //     Bucket: socraticTutorTTSURLSBucketName,
+    //     Key: mp3Name,
+    //     Body: buffer
+    // }).done(function (resp) {
+    //     console.log('Successfully uploaded package.');
+    // });
 
     // Send to the bucket.
-    const fullSizeCommand = new PutObjectCommand(fullSizeData);
+    const fullSizeCommand = new PutObjectCommand(params);
     console.log('sending');
-
     await s3.send(fullSizeCommand);
 
+    console.log('sent');
     return mp3Name;
 };
 
