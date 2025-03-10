@@ -85,7 +85,7 @@ export default {
 
                 const response = await fetch(url, requestOptions);
                 const resData = await response.json();
-                console.log(resData);
+
                 if (this.tutorType == 'socratic') {
                     this.socraticTutorChatHistory = resData.messages;
                     this.chatHistory = this.socraticTutorChatHistory;
@@ -101,7 +101,6 @@ export default {
                 }
 
                 this.threadID = this.chatHistory[0].thread_id;
-                console.log(this.chatHistory);
 
                 this.mostRecentMessage =
                     this.chatHistory[0].content[0].text.value;
@@ -125,25 +124,29 @@ export default {
                     threadID: this.threadID
                 })
             };
-            const url = `/ai-tutor/socratic/generate-tts`;
+
+            let url = '';
+            if (this.tutorType == 'socratic')
+                url = `/ai-tutor/socratic/generate-tts`;
+            else url = `/ai-tutor/assessing/generate-tts`;
+
             const response = await fetch(url, requestOptions);
             const resData = await response.json();
 
             for (let i = 0; i < this.chatHistory.length; i++) {
                 if (this.chatHistory[i].index == index) {
                     this.chatHistory[i].isAudioGenerating = false;
+                    this.chatHistory[i].hasAudio = true;
                 }
             }
             this.getChatHistory();
-            console.log(resData.status);
         },
         playAudio(index) {
-            console.log(this.isAudioPlaying);
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;
                 this.audio.pause();
             } else {
-                let url = `https://institute-socratic-tutor-tts-urls.s3.us-east-1.amazonaws.com/${this.threadID}-${index}.mp3`;
+                let url = `https://institute-${this.tutorType}-tutor-tts-urls.s3.us-east-1.amazonaws.com/${this.threadID}-${index}.mp3`;
                 this.audio = new Audio(url);
                 this.isAudioPlaying = true;
                 this.audio.play();
@@ -636,7 +639,8 @@ export default {
                     </button>
                     <button
                         v-else-if="
-                            !isAudioGenerating && message.role === 'assistant'
+                            !message.isAudioGenerating &&
+                            message.role === 'assistant'
                         "
                         @click="playAudio(message.index)"
                         class="btn speechButton"

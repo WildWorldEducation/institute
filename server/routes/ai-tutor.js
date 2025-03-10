@@ -148,14 +148,14 @@ router.post(
             const threadID = req.body.threadID;
             const messageNumber = req.body.messageNumber;
             const message = req.body.message;
+            const tutorType = 'socratic';
 
             let speechClipName = await textToSpeech(
                 message,
                 threadID,
-                messageNumber
+                messageNumber,
+                tutorType
             );
-
-            console.log(speechClipName);
 
             const url =
                 'https://institute-socratic-tutor-tts-urls.s3.us-east-1.amazonaws.com/' +
@@ -251,14 +251,105 @@ router.post(
                 const messages = await getMessagesList(
                     assistantData[0].threadId
                 );
+
                 res.json({ messages: messages });
                 return;
             } else {
-                const messages = await getMessagesList(
+                const messageData = await getMessagesList(
                     assistantData[0].thread_id
                 );
 
+                let messages = messageData.data;
+
+                // Reverse the messages to get the index, for the TTS feature
+                // (as Open AI returns the most recent message at index 0)
+                let reversedMessages = messages.reverse();
+                for (let i = 0; i < reversedMessages.length; i++) {
+                    reversedMessages[i].index = i;
+                }
+                messages = reversedMessages.reverse();
+
+                // Check if TTS audio clip has already been generated or not.
+                let audioClips = [];
+                try {
+                    let queryString = `SELECT * 
+                    FROM ai_assessing_tutor_tts_urls 
+                    WHERE thread_id = ${conn.escape(
+                        assistantData[0].thread_id
+                    )};`;
+
+                    audioClips = await query(queryString);
+
+                    for (let i = 0; i < messages.length; i++) {
+                        messages[i].hasAudio = false;
+                        for (let j = 0; j < audioClips.length; j++) {
+                            if (
+                                messages[i].index ==
+                                audioClips[j].message_number
+                            ) {
+                                messages[i].hasAudio = true;
+                                messages[i].audio = audioClips[j].url;
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error(error);
+                    throw error;
+                }
+
                 res.json({ messages: messages });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
+        }
+    }
+);
+
+/**
+ * TTS for Socratic tutor message
+ */
+router.post(
+    '/assessing/generate-tts',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const threadID = req.body.threadID;
+            const messageNumber = req.body.messageNumber;
+            const message = req.body.message;
+            const tutorType = 'assessing';
+
+            let speechClipName = await textToSpeech(
+                message,
+                threadID,
+                messageNumber,
+                tutorType
+            );
+
+            const url =
+                'https://institute-assessing-tutor-tts-urls.s3.us-east-1.amazonaws.com/' +
+                speechClipName;
+
+            try {
+                let queryString = `INSERT INTO ai_assessing_tutor_tts_urls 
+                                (thread_id, message_number, url)
+                                VALUES (
+                                    ${conn.escape(threadID)},
+                                    ${conn.escape(
+                                        messageNumber
+                                    )},                       
+                                    ${conn.escape(url)}
+                                );`;
+                await query(queryString);
+                res.json({
+                    status: 'complete'
+                });
+            } catch (error) {
+                console.error(error);
+                res.status = 500;
+                res.json({ mess: 'something went wrong' });
+                throw error;
             }
         } catch (error) {
             console.error(error);
@@ -362,8 +453,7 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
 
         let responseJSON = completion.choices[0].message.content;
         // Convert string to object.       ;
-        let result = JSON.parse(responseJSON);
-        // console.log(result);
+        let result = JSON.parse(responseJSON);        
         res.json({
             result: result
         });
