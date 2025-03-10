@@ -97,6 +97,33 @@ router.post(
                 }
                 messages = reversedMessages.reverse();
 
+                let audioClips = [];
+
+                try {
+                    let queryString = `SELECT * 
+                    FROM ai_socratic_tutor_tts_urls 
+                    WHERE thread_id = ${conn.escape(
+                        assistantData[0].thread_id
+                    )};`;
+
+                    audioClips = await query(queryString);
+
+                    for (let i = 0; i < messages.length; i++) {
+                        messages[i].hasAudio = false;
+                        for (let j = 0; j < audioClips.length; j++) {
+                            if (
+                                messages[i].index ==
+                                audioClips[j].message_number
+                            ) {
+                                messages[i].hasAudio = true;
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error(error);
+                    throw error;
+                }
+
                 res.json({
                     messages: messages
                 });

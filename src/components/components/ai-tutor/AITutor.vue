@@ -101,6 +101,8 @@ export default {
                 this.threadID = this.chatHistory[0].thread_id;
                 console.log(this.chatHistory);
 
+
+
                 this.mostRecentMessage =
                     this.chatHistory[0].content[0].text.value;
             } catch (error) {
@@ -121,6 +123,12 @@ export default {
             };
             const url = `/ai-tutor/message/tts`;
             const response = await fetch(url, requestOptions);
+        },
+        playAudio(index) {
+            let url = `https://institute-socratic-tutor-tts-urls.s3.us-east-1.amazonaws.com/thread_Y4pGSUD2UbPbLvcgr7sETaOR-${index}.mp3`;
+            var audio = new Audio(url);
+            console.log(audio);
+            audio.play();
         },
         async sendMessage() {
             if (this.waitForAIresponse) {
@@ -436,13 +444,13 @@ export default {
                     Assessment Tutor
                 </button>
                 <!-- Text to speech -->
-                <button
+                <!-- <button
                     class="btn suggested-interactions ms-1"
                     @click="isTextToSpeech = !isTextToSpeech"
                     :class="{ lineThrough: isTextToSpeech == false }"
                 >
                     Auto Speech
-                </button>
+                </button> -->
             </span>
             <span>
                 <button
@@ -584,7 +592,24 @@ export default {
                     "
                     class="btn speechButton"
                 >
-                    speech
+                    generate speech
+                </button>
+                <button
+                    @click="playAudio(message.index)"
+                    class="btn speechButton"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        fill="white"
+                        height="18"
+                        width="18"
+                    >
+                        <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c7.6-4.2 16.8-4.1 24.3 .5l144 88c7.1 4.4 11.5 12.1 11.5 20.5s-4.4 16.1-11.5 20.5l-144 88c-7.4 4.5-16.7 4.7-24.3 .5s-12.3-12.2-12.3-20.9l0-176c0-8.7 4.7-16.7 12.3-20.9z"
+                        />
+                    </svg>
                 </button>
             </div>
         </div>
