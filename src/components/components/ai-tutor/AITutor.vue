@@ -83,11 +83,12 @@ export default {
 
                 const response = await fetch(url, requestOptions);
                 const resData = await response.json();
+                console.log(resData);
                 if (this.tutorType == 'socratic') {
-                    this.socraticTutorChatHistory = resData.messages.data;
+                    this.socraticTutorChatHistory = resData.messages;
                     this.chatHistory = this.socraticTutorChatHistory;
                 } else if (this.tutorType == 'assessing') {
-                    this.assessingTutorChatHistory = resData.messages.data;
+                    this.assessingTutorChatHistory = resData.messages;
                     this.chatHistory = this.assessingTutorChatHistory;
                     if (
                         this.chatHistory.length >=
@@ -106,29 +107,21 @@ export default {
                 console.error(error);
             }
         },
-        async textToSpeech() {
+        async textToSpeech(index) {
+            console.log(index);
+
+            return;
+
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    //latestMessage: this.mostRecentMessage,
-                    latestMessage: 'testing testing 123',
+                    latestMessage: this.mostRecentMessage,
                     threadID: this.threadID
                 })
             };
             const url = `/ai-tutor/tts/latest-message`;
             const response = await fetch(url, requestOptions);
-
-            // const data = await response.arrayBuffer();
-            // const blob = new Blob([data], { type: 'audio/mp3' });
-            // const blobUrl = URL.createObjectURL(blob);
-            // const audio = new Audio();
-            // audio.src = blobUrl;
-            // audio.controls = true;
-            // document.body.appendChild(audio);
-
-            // // Optionally, if you want to start playing right away:
-            // audio.play();
         },
         async sendMessage() {
             if (this.waitForAIresponse) {
@@ -444,13 +437,13 @@ export default {
                     Assessment Tutor
                 </button>
                 <!-- Text to speech -->
-                <button
+                <!-- <button
                     class="btn suggested-interactions ms-1"
                     @click="textToSpeech()"
                     :class="{ lineThrough: isTextToSpeech == false }"
                 >
                     Speech
-                </button>
+                </button> -->
             </span>
             <span>
                 <button
@@ -583,6 +576,12 @@ export default {
                         applyMarkDownFormatting(message.content[0].text.value)
                     "
                 ></div>
+                <button
+                    @click="textToSpeech(message.index)"
+                    class="btn speechButton"
+                >
+                    speech
+                </button>
             </div>
         </div>
         <!-- User input (mini mode) -->
@@ -635,6 +634,11 @@ export default {
 </template>
 
 <style scoped>
+.speechButton {
+    max-height: 44px;
+    color: yellow;
+}
+
 .lineThrough {
     text-decoration: line-through;
 }

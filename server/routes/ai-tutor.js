@@ -9,6 +9,10 @@ const router = express.Router();
 
 // Database connection
 const conn = require('../config/db');
+const util = require('util');
+// node native promisify
+// convert callback
+const query = util.promisify(conn.query).bind(conn);
 const fs = require('fs');
 // Import OpenAI package.
 const { OpenAI } = require('openai');
@@ -80,9 +84,18 @@ router.post(
                 res.json({ messages: messages });
                 return;
             } else {
-                const messages = await getMessagesList(
+                const messageData = await getMessagesList(
                     assistantData[0].thread_id
                 );
+                let messages = messageData.data;
+
+                // Reverse the messages to get the index, for the TTS feature
+                // (as Open AI returns the most recent message at index 0)
+                let reversedMessages = messages.reverse();
+                for (let i = 0; i < reversedMessages.length; i++) {
+                    reversedMessages[i].index = i;
+                }
+                messages = reversedMessages.reverse();
 
                 res.json({
                     messages: messages
@@ -105,7 +118,33 @@ router.post('/tts/latest-message', isAuthenticated, async (req, res, next) => {
         const threadID = req.body.threadID;
         const messageNumber = 0;
 
-        textToSpeech(latestMessage, threadID, messageNumber);
+        let speechClipName = await textToSpeech(
+            latestMessage,
+            threadID,
+            messageNumber
+        );
+
+        console.log(speechClipName);
+
+        const url =
+            'https://institute-socratic-tutor-tts-urls.s3.us-east-1.amazonaws.com/' +
+            speechClipName;
+
+        try {
+            let queryString = `INSERT INTO ai_socratic_tutor_tts_urls 
+                                (thread_id, message_number, url)
+                                VALUES (
+                                    ${conn.escape(threadID)},
+                                    ${conn.escape(
+                                        messageNumber
+                                    )},                       
+                                    ${conn.escape(url)}
+                                );`;
+            await query(queryString);
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
     } catch (error) {
         console.error(error);
         res.status = 500;
