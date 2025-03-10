@@ -177,18 +177,22 @@ export default {
             <div
                 v-if="showTutorialTip6"
                 ref="tutorialTip7"
-                class="d-flex w-100 justify-content-end"
+                class="tool-tip-base d-flex justify-content-end"
             >
-                <div class="info-panel bg-light rounded p-2 mb-2">
-                    <p>
-                        {{ tutorialTipContent }}
-                    </p>
-                    <button
-                        class="btn primary-btn"
-                        @click="$emit('progressTutorial', 6)"
-                    >
-                        Close
-                    </button>
+                <div
+                    class="explain-tool-tip triangle-top-left hovering-info-panel"
+                >
+                    <div class="tool-tip-text">
+                        <p>
+                            {{ tutorialTipContent }}
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="$emit('progressTutorial', 6)"
+                        >
+                            Close
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -237,12 +241,15 @@ export default {
 
 <style scoped>
 /* Tooltips */
-.info-panel {
-    border-color: var(--primary-color);
-    top: 100%;
+.hovering-info-panel {
+    position: absolute;
+    z-index: 100;
+    /* border-color: var(--primary-color);
     border-width: 2px;
-    border-style: solid;
+    border-style: solid; */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     width: fit-content;
+    margin-bottom: 0 !important; /* Remove any margin that might push content */
 }
 #posts-big-container {
     padding-left: 10px;
