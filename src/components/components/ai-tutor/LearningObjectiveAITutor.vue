@@ -33,6 +33,14 @@ export default {
         await this.getMessages();
     },
     methods: {
+        // Setting this method to allow the user to be able to create a new line with shift+enter
+        handleKeyDown(e) {
+            if (e.shiftKey) {
+                return;
+            }
+            e.preventDefault();
+            this.sendMessage();
+        },
         // load thread
         async getMessages() {
             this.message = '';
@@ -256,6 +264,7 @@ export default {
                 class="chat-input border border-dark rounded"
                 v-model="message"
                 type="text"
+                @keydown.enter="handleKeyDown"
             />
             <button
                 class="btn border border-dark ms-1 message-btn"
