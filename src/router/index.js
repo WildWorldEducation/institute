@@ -303,6 +303,11 @@ const router = createRouter({
                 )
         },
         {
+            path: '/goals',
+            name: 'goals',
+            component: () => import('../components/pages/GoalsPageView.vue')
+        },
+        {
             path: '/edit-student-password/:id',
             name: 'edit-student-password',
             component: () =>

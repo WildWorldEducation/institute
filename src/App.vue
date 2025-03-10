@@ -364,6 +364,15 @@ export default {
                                     </RouterLink>
                                     <RouterLink
                                         v-if="
+                                            userDetailsStore.role === 'student'
+                                        "
+                                        to="/goals"
+                                        class="dropdown-item"
+                                    >
+                                        Goals
+                                    </RouterLink>
+                                    <RouterLink
+                                        v-if="
                                             userDetailsStore.role ==
                                                 'student' ||
                                             userDetailsStore.role ==
@@ -396,6 +405,13 @@ export default {
                                     class="nav-link"
                                 >
                                     News & Notifications
+                                </RouterLink>
+                                <RouterLink
+                                    v-if="userDetailsStore.role === 'student'"
+                                    to="/goals"
+                                    class="nav-link"
+                                >
+                                    Goals
                                 </RouterLink>
                                 <RouterLink to="/reputation" class="nav-link">
                                     Reputation
