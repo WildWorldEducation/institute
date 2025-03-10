@@ -172,7 +172,7 @@ router.post(
                                 );`;
                 await query(queryString);
                 res.json({
-                    status: complete
+                    status: 'complete'
                 });
             } catch (error) {
                 console.error(error);

@@ -35,7 +35,8 @@ export default {
             // hide / show chat
             showChat: true,
             isTextToSpeech: true,
-            threadID: ''
+            threadID: '',
+            isAudioGenerating: false
         };
     },
     async mounted() {
@@ -110,6 +111,8 @@ export default {
         async generateAudio(index, message) {
             console.log(index);
 
+            this.isAudioGenerating = true;
+
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -122,10 +125,13 @@ export default {
             const url = `/ai-tutor/socratic/generate-tts`;
             const response = await fetch(url, requestOptions);
             const resData = await response.json();
+
+            this.isAudioGenerating = false;
+            this.getChatHistory();
             console.log(resData.status);
         },
         playAudio(index) {
-            let url = `https://institute-socratic-tutor-tts-urls.s3.us-east-1.amazonaws.com/thread_Y4pGSUD2UbPbLvcgr7sETaOR-${index}.mp3`;
+            let url = `https://institute-socratic-tutor-tts-urls.s3.us-east-1.amazonaws.com/${this.threadID}-${index}.mp3`;
             var audio = new Audio(url);
             console.log(audio);
             audio.play();
@@ -583,8 +589,15 @@ export default {
                         applyMarkDownFormatting(message.content[0].text.value)
                     "
                 ></div>
+                <span v-if="isAudioGenerating && message.role === 'assistant'"
+                    >generating audio</span
+                >
                 <button
-                    v-if="!message.hasAudio"
+                    v-else-if="
+                        !message.hasAudio &&
+                        !isAudioGenerating &&
+                        message.role === 'assistant'
+                    "
                     @click="
                         generateAudio(
                             message.index,
@@ -596,7 +609,9 @@ export default {
                     generate speech
                 </button>
                 <button
-                    v-else
+                    v-else-if="
+                        !isAudioGenerating && message.role === 'assistant'
+                    "
                     @click="playAudio(message.index)"
                     class="btn speechButton"
                 >
