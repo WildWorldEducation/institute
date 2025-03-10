@@ -97,8 +97,8 @@ router.post(
                 }
                 messages = reversedMessages.reverse();
 
+                // Check if TTS audio clip has already been generated or not.
                 let audioClips = [];
-
                 try {
                     let queryString = `SELECT * 
                     FROM ai_socratic_tutor_tts_urls 
@@ -139,26 +139,29 @@ router.post(
 /**
  * TTS for Socratic tutor message
  */
-router.post('/message/tts', isAuthenticated, async (req, res, next) => {
-    try {
-        const threadID = req.body.threadID;
-        const messageNumber = req.body.messageNumber;
-        const message = req.body.message;
-
-        let speechClipName = await textToSpeech(
-            message,
-            threadID,
-            messageNumber
-        );
-
-        console.log(speechClipName);
-
-        const url =
-            'https://institute-socratic-tutor-tts-urls.s3.us-east-1.amazonaws.com/' +
-            speechClipName;
-
+router.post(
+    '/socratic/generate-tts',
+    isAuthenticated,
+    async (req, res, next) => {
         try {
-            let queryString = `INSERT INTO ai_socratic_tutor_tts_urls 
+            const threadID = req.body.threadID;
+            const messageNumber = req.body.messageNumber;
+            const message = req.body.message;
+
+            let speechClipName = await textToSpeech(
+                message,
+                threadID,
+                messageNumber
+            );
+
+            console.log(speechClipName);
+
+            const url =
+                'https://institute-socratic-tutor-tts-urls.s3.us-east-1.amazonaws.com/' +
+                speechClipName;
+
+            try {
+                let queryString = `INSERT INTO ai_socratic_tutor_tts_urls 
                                 (thread_id, message_number, url)
                                 VALUES (
                                     ${conn.escape(threadID)},
@@ -167,17 +170,23 @@ router.post('/message/tts', isAuthenticated, async (req, res, next) => {
                                     )},                       
                                     ${conn.escape(url)}
                                 );`;
-            await query(queryString);
+                await query(queryString);
+                res.json({
+                    status: complete
+                });
+            } catch (error) {
+                console.error(error);
+                res.status = 500;
+                res.json({ mess: 'something went wrong' });
+                throw error;
+            }
         } catch (error) {
             console.error(error);
-            throw error;
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
         }
-    } catch (error) {
-        console.error(error);
-        res.status = 500;
-        res.json({ mess: 'something went wrong' });
     }
-});
+);
 
 /**
  * Send message to Socratic AI tutor

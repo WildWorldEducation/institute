@@ -101,15 +101,13 @@ export default {
                 this.threadID = this.chatHistory[0].thread_id;
                 console.log(this.chatHistory);
 
-
-
                 this.mostRecentMessage =
                     this.chatHistory[0].content[0].text.value;
             } catch (error) {
                 console.error(error);
             }
         },
-        async textToSpeech(index, message) {
+        async generateAudio(index, message) {
             console.log(index);
 
             const requestOptions = {
@@ -121,8 +119,10 @@ export default {
                     threadID: this.threadID
                 })
             };
-            const url = `/ai-tutor/message/tts`;
+            const url = `/ai-tutor/socratic/generate-tts`;
             const response = await fetch(url, requestOptions);
+            const resData = await response.json();
+            console.log(resData.status);
         },
         playAudio(index) {
             let url = `https://institute-socratic-tutor-tts-urls.s3.us-east-1.amazonaws.com/thread_Y4pGSUD2UbPbLvcgr7sETaOR-${index}.mp3`;
@@ -584,8 +584,9 @@ export default {
                     "
                 ></div>
                 <button
+                    v-if="!message.hasAudio"
                     @click="
-                        textToSpeech(
+                        generateAudio(
                             message.index,
                             message.content[0].text.value
                         )
@@ -595,6 +596,7 @@ export default {
                     generate speech
                 </button>
                 <button
+                    v-else
                     @click="playAudio(message.index)"
                     class="btn speechButton"
                 >
