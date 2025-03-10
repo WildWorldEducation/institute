@@ -51,5 +51,7 @@ socket.on('stream-message', (...args) => {
 })
 
 socket.on('run-end', (...args) => {
-    socketState.isStreaming = false
+    socketState.isStreaming = false;
+    socketState.streamingMessage = ''
 })
+

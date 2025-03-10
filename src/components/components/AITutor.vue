@@ -327,9 +327,22 @@ export default {
         //     });
         // }
         stateOfSocket: {
-            handler(newItem) {
+            handler(newItem, oldItem) {
                 console.log('changed: ');
                 console.log(newItem);
+                if (!newItem.isStreaming && oldItem.isStreaming) {
+                    const userMessage = {
+                        role: 'user',
+                        content: [
+                            {
+                                text: {
+                                    value: this.stateOfSocket.streamingMessage
+                                }
+                            }
+                        ]
+                    };
+                    this.messageList.push(userMessage);
+                }
             },
             deep: true
         }
