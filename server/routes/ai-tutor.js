@@ -77,9 +77,10 @@ router.post(
                     }
                 ];
                 await saveSocraticTutorThread(assistantData[0]);
-                const messages = await getMessagesList(
+                const messageData = await getMessagesList(
                     assistantData[0].threadId
                 );
+                let messages = messageData.data;
 
                 res.json({ messages: messages });
                 return;
@@ -308,7 +309,7 @@ router.post(
 );
 
 /**
- * TTS for Socratic tutor message
+ * TTS for Assessing tutor message
  */
 router.post(
     '/assessing/generate-tts',
@@ -453,7 +454,7 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
 
         let responseJSON = completion.choices[0].message.content;
         // Convert string to object.       ;
-        let result = JSON.parse(responseJSON);        
+        let result = JSON.parse(responseJSON);
         res.json({
             result: result
         });
@@ -503,17 +504,81 @@ router.get(
                 // Save the thread info to the DB for later reference.
                 await saveLearningObjectiveThread(assistantData[0]);
                 // Retrieve the chat history.
-                const messages = await getMessagesList(
+                const messageData = await getMessagesList(
                     assistantData[0].threadId
                 );
+                let messages = messageData.data;
+
                 res.json({ messages: messages });
                 return;
             } else {
                 // Retrieve the chat history.
-                const messages = await getMessagesList(
+                const messageData = await getMessagesList(
                     assistantData[0].thread_id
                 );
+                let messages = messageData.data;
+
+                // Reverse the messages to get the index, for the TTS feature
+                // (as Open AI returns the most recent message at index 0)
+                let reversedMessages = messages.reverse();
+                for (let i = 0; i < reversedMessages.length; i++) {
+                    reversedMessages[i].index = i;
+                }
+                messages = reversedMessages.reverse();
+
                 res.json({ messages: messages });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
+        }
+    }
+);
+
+/**
+ * TTS for Learning objectives tutor message
+ */
+router.post(
+    '/learning-objectives/generate-tts',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const threadID = req.body.threadID;
+            const messageNumber = req.body.messageNumber;
+            const message = req.body.message;
+            const tutorType = 'learning-objectives';
+
+            let speechClipName = await textToSpeech(
+                message,
+                threadID,
+                messageNumber,
+                tutorType
+            );
+
+            const url =
+                'https://institute-assessing-tutor-tts-urls.s3.us-east-1.amazonaws.com/' +
+                speechClipName;
+
+            try {
+                let queryString = `INSERT INTO ai_assessing_tutor_tts_urls 
+                                (thread_id, message_number, url)
+                                VALUES (
+                                    ${conn.escape(threadID)},
+                                    ${conn.escape(
+                                        messageNumber
+                                    )},                       
+                                    ${conn.escape(url)}
+                                );`;
+                await query(queryString);
+                res.json({
+                    status: 'complete'
+                });
+            } catch (error) {
+                console.error(error);
+                res.status = 500;
+                res.json({ mess: 'something went wrong' });
+                throw error;
             }
         } catch (error) {
             console.error(error);
