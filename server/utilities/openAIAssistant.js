@@ -227,8 +227,8 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
         instructions: `The user is at a ${messageData.skillLevel} level and age.
         Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
 
-        If the student has already shown understanding of a learning objective, do not ask a question about it.
-        If the student has not yet shown understanding of a learning objective, do ask a question about it.
+        Ask questions about each learning objective, one after the other. When you get to the end of the array,
+        please start again.
         Only ask one question, not more than one.        
 
         Do not provide feedback to the student after they answer the question.
