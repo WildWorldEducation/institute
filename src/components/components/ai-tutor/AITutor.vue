@@ -26,7 +26,6 @@ export default {
             assessingTutorChatHistory: [],
             transcriptForAssessment: [],
             chatHistory: [],
-            mostRecentMessage: '',
             waitForAIresponse: false,
             mode: 'big',
             englishSkillLevel: '',
@@ -49,6 +48,14 @@ export default {
         await this.getChatHistory();
     },
     methods: {
+        // Setting this method to allow the user to be able to create a new line with shift+enter
+        handleKeyDown(e) {
+            if (e.shiftKey) {
+                return;
+            }
+            e.preventDefault();
+            this.sendMessage();
+        },
         // 2 different threads
         async changeTutorType(type) {
             this.tutorType = type;
@@ -88,6 +95,7 @@ export default {
 
                 if (this.tutorType == 'socratic') {
                     this.socraticTutorChatHistory = resData.messages;
+
                     this.chatHistory = this.socraticTutorChatHistory;
                 } else if (this.tutorType == 'assessing') {
                     this.assessingTutorChatHistory = resData.messages;
@@ -100,10 +108,9 @@ export default {
                     }
                 }
 
-                this.threadID = this.chatHistory[0].thread_id;
-
-                this.mostRecentMessage =
-                    this.chatHistory[0].content[0].text.value;
+                if (this.chatHistory.length > 0) {
+                    this.threadID = this.chatHistory[0].thread_id;
+                }
             } catch (error) {
                 console.error(error);
             }
@@ -153,6 +160,13 @@ export default {
             }
         },
         async sendMessage() {
+            // Trim the message to remove leading and trailing whitespace
+            const trimmedMessage = this.message.trim();
+            // If the message is empty after trimming, don't send it
+            if (trimmedMessage === '') {
+                return;
+            }
+
             if (this.waitForAIresponse) {
                 return;
             }
@@ -163,7 +177,7 @@ export default {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        message: this.message,
+                        message: trimmedMessage,
                         userId: this.userDetailsStore.userId,
                         skillName: this.skill.name,
                         skillUrl: this.skill.url,
@@ -364,7 +378,7 @@ export default {
             <div class="d-flex flex-row w-100 justify-content-between">
                 <div class="d-flex gap-2">
                     <!-- Pin button -->
-                    <btn
+                    <button
                         v-if="mode === 'big'"
                         class="btn"
                         title="Minimize and pin the chat"
@@ -382,13 +396,13 @@ export default {
                                 d="M32 32C32 14.3 46.3 0 64 0L320 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-29.5 0 11.4 148.2c36.7 19.9 65.7 53.2 79.5 94.7l1 3c3.3 9.8 1.6 20.5-4.4 28.8s-15.7 13.3-26 13.3L32 352c-10.3 0-19.9-4.9-26-13.3s-7.7-19.1-4.4-28.8l1-3c13.8-41.5 42.8-74.8 79.5-94.7L93.5 64 64 64C46.3 64 32 49.7 32 32zM160 384l64 0 0 96c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-96z"
                             />
                         </svg>
-                    </btn>
+                    </button>
                     <h2 class="secondary-heading">AI tutor</h2>
 
                     <TooltipBtn
                         v-if="mode === 'big'"
                         class="d-none d-md-block"
-                        toolTipText="Chat with our AI tutor about the subject"
+                        toolTipText="Press the 'generate audio' button to hear the tutor speak with AI generated speech."
                         bubbleWidth="350px"
                         trianglePosition="left"
                         absoluteTop="37px"
@@ -406,7 +420,7 @@ export default {
                 <!-- Expand button -->
                 <div class="d-flex gap-2">
                     <div tile="Expand chat component" b-tooltip.hover>
-                        <btn
+                        <button
                             v-if="mode === 'mini'"
                             class="symbol-btn"
                             @click="mode = 'big'"
@@ -422,10 +436,10 @@ export default {
                                     d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm11.3-395.3l112 112c4.6 4.6 5.9 11.5 3.5 17.4s-8.3 9.9-14.8 9.9l-64 0 0 96c0 17.7-14.3 32-32 32l-32 0c-17.7 0-32-14.3-32-32l0-96-64 0c-6.5 0-12.3-3.9-14.8-9.9s-1.1-12.9 3.5-17.4l112-112c6.2-6.2 16.4-6.2 22.6 0z"
                                 />
                             </svg>
-                        </btn>
+                        </button>
                     </div>
                     <div tile="Hide chat component" b-tooltip.hover>
-                        <btn
+                        <button
                             v-if="mode === 'mini'"
                             class="symbol-btn"
                             @click="mode = 'hide'"
@@ -441,7 +455,7 @@ export default {
                                     d="M256 0a256 256 0 1 0 0 512A256 256 0 1 0 256 0zM244.7 395.3l-112-112c-4.6-4.6-5.9-11.5-3.5-17.4s8.3-9.9 14.8-9.9l64 0 0-96c0-17.7 14.3-32 32-32l32 0c17.7 0 32 14.3 32 32l0 96 64 0c6.5 0 12.3 3.9 14.8 9.9s1.1 12.9-3.5 17.4l-112 112c-6.2 6.2-16.4 6.2-22.6 0z"
                                 />
                             </svg>
-                        </btn>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -524,6 +538,7 @@ export default {
                 class="chat-text-area rounded border border-dark me-1"
                 v-model="message"
                 type="text"
+                @keydown.enter="handleKeyDown"
             >
             </textarea>
             <!-- Send button -->
@@ -619,7 +634,7 @@ export default {
                         "
                         class="d-flex"
                     >
-                        <span class="loader"></span>
+                        <span class="speech-loader"></span>
                     </div>
                     <button
                         v-else-if="
@@ -682,6 +697,7 @@ export default {
                 class="chat-text-area"
                 v-model="message"
                 type="text"
+                @keydown.enter="handleKeyDown"
             >
             </textarea>
             <!-- Send button -->
@@ -725,17 +741,8 @@ export default {
 </template>
 
 <style scoped>
-/* Loading animation */
-.loading-animation {
-    min-height: 100%;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-}
-
-.loader {
+/* Loading animation for generating speech audio*/
+.speech-loader {
     width: 24px;
     height: 24px;
     border: 5px solid yellow;
