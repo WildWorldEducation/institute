@@ -24,11 +24,15 @@ const openai = new OpenAI({
 });
 
 async function textToSpeech(latestMessage, threadID, messageNumber, tutorType) {
+    // Different voice for normal and assessing tutors, to differentiate them
+    let voice = 'fable';
+    if (tutorType == 'assessing') voice = 'nove';
+
     const mp3 = await openai.audio.speech.create({
         // Faster option
         model: 'tts-1',
         // Choice of voice
-        voice: 'fable',
+        voice: voice,
         input: latestMessage
     });
 
