@@ -21,7 +21,6 @@ export default {
     },
     data() {
         return {
-            showWelcomeModal: false, // Modal to ask for tutorial preference.
             searchText: '',
             lastChooseResult: '',
             showResult: false,
@@ -209,7 +208,7 @@ export default {
 
                 // Check for students only
                 if (data === 0 && this.userDetailsStore.role == 'student') {
-                    this.showWelcomeModal = true;
+                    this.startTutorial();
                 } else if (data === 1) {
                     this.isTutorialComplete = true;
                 }
@@ -321,7 +320,6 @@ export default {
             // Show the tutorial tooltips and mark tutorial as not complete
             this.showTutorialTip1 = true;
             this.isTutorialComplete = false;
-            this.showWelcomeModal = false;
             // Reset tutorial fields for the user
             await this.resetTutorialProgress();
         },
@@ -341,8 +339,6 @@ export default {
             }
         },
         async closeTutorial() {
-            // Close the welcome modal
-            this.showWelcomeModal = false;
             // Mark all tutorials as complete
             await this.markAllTutorialsComplete();
         },
@@ -1605,25 +1601,6 @@ export default {
         </div>
     </div>
 
-    <!-- Onboarding tooltip modals -->
-    <div v-if="showWelcomeModal" class="modal">
-        <div class="modal-content">
-            <h1 class="heading h3">Welcome to the Collins Institute</h1>
-            <p>Would you like to go through the tutorial?</p>
-            <p>
-                You can start or restart it anytime by clicking the "i" button
-                on any page.
-            </p>
-            <div class="d-flex justify-content-between">
-                <button class="btn red-btn mx-0" @click="closeTutorial">
-                    No
-                </button>
-                <button class="btn primary-btn mx-0" @click="startTutorial">
-                    Yes
-                </button>
-            </div>
-        </div>
-    </div>
     <!-- Tutorial -->
     <div
         v-if="

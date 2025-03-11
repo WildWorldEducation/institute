@@ -1,7 +1,6 @@
 <script>
 // import components.
 import LastVisitedSkills from '../components/hub-components/LastVisitedSkills.vue';
-import Goals from '../components/hub-components/Goals.vue';
 import RecommendedSkillsGenerator from '../components/hub-components/RecommendedSkillsGenerator.vue';
 // Import store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
@@ -30,7 +29,6 @@ export default {
     },
     components: {
         LastVisitedSkills,
-        Goals,
         RecommendedSkillsGenerator
     },
     computed: {
@@ -46,7 +44,7 @@ export default {
         if (this.sessionDetailsStore.isLoggedIn) this.checkIfTutorialComplete();
     },
     methods: {
-        // Tutorial
+        // Onboardning tutorials
         async checkIfTutorialComplete() {
             try {
                 const result = await fetch(
@@ -55,13 +53,9 @@ export default {
                 );
                 const data = await result.json();
 
-                if (data === 0 && this.userDetailsStore.role != 'student') {
+                // Check for students only
+                if (data === 0 && this.userDetailsStore.role == 'student') {
                     this.showWelcomeModal = true;
-                } else if (
-                    data === 0 &&
-                    this.userDetailsStore.role == 'student'
-                ) {
-                    this.showTutorialTip1 = true;
                 } else if (data === 1) {
                     this.isTutorialComplete = true;
                 }
@@ -78,9 +72,6 @@ export default {
                 this.showTutorialTip3 = true;
             } else if (step == 3) {
                 this.showTutorialTip3 = false;
-                this.showTutorialTip4 = true;
-            } else if (step == 4) {
-                this.showTutorialTip4 = false;
                 this.markTutorialComplete();
             }
         },
@@ -192,11 +183,14 @@ export default {
                     class="tool-tip-base"
                     :style="{ maxWidth: '300px' }"
                 >
-                    <div class="explain-tool-tip triangle-top-left">
+                    <div
+                        class="explain-tool-tip triangle-top-left hovering-info-panel"
+                    >
                         <div class="tool-tip-text">
                             <p>
-                                Type a career or skill here to get
-                                recommendations.
+                                Type a career, subject area, or specific skill
+                                here to receive personalized recommendations for
+                                your learning path.
                             </p>
                             <button
                                 class="btn primary-btn"
@@ -214,6 +208,10 @@ export default {
             <!--  Last Visited Skills / Mark Assessments -->
             <div class="col mb-2">
                 <div class="h-100">
+                    <LastVisitedSkills
+                        v-if="userDetailsStore.role == 'student'"
+                        :userId="userDetailsStore.userId"
+                    />
                     <!-- Tooltip -->
                     <div
                         v-if="
@@ -222,59 +220,25 @@ export default {
                         "
                         class="tool-tip-base mb-3"
                     >
-                        <div class="explain-tool-tip triangle-bottom-left">
+                        <div
+                            class="explain-tool-tip triangle-top-left hovering-info-panel"
+                        >
                             <div class="tool-tip-text">
                                 <p>
-                                    This section shows your the last 5 skill
-                                    pages you visited.
+                                    This section displays your five most
+                                    recently visited skill pages, allowing you
+                                    to quickly resume your learning journey
+                                    where you left off.
                                 </p>
                                 <button
                                     class="btn primary-btn"
                                     @click="progressTutorial(3)"
-                                >
-                                    next
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <LastVisitedSkills
-                        v-if="userDetailsStore.role == 'student'"
-                        :userId="userDetailsStore.userId"
-                    />
-                </div>
-            </div>
-            <!-- Goals / Student Suggested Questions -->
-            <div v-if="userDetailsStore.role == 'xyz'" class="col-md-6 mb-2">
-                <div class="h-100">
-                    <!-- Tooltip -->
-                    <div
-                        v-if="
-                            showTutorialTip4 &&
-                            userDetailsStore.role == 'student'
-                        "
-                        class="tool-tip-base mb-3"
-                    >
-                        <div class="explain-tool-tip triangle-bottom-left">
-                            <div class="tool-tip-text">
-                                <p>
-                                    This section shows any goals you might have
-                                    made.
-                                </p>
-                                <p>
-                                    You can make a goal when there is a skill
-                                    you want to master but it is not unlocked
-                                    yet.
-                                </p>
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(4)"
                                 >
                                     close
                                 </button>
                             </div>
                         </div>
                     </div>
-                    <Goals />
                 </div>
             </div>
         </div>
@@ -310,7 +274,11 @@ export default {
         >
             <!-- Student -->
             <div>
-                <p>This is your hub page.</p>
+                <p>
+                    This is your hub page where you can find recommended skills,
+                    track your learning progress, and access recently visited
+                    content.
+                </p>
                 <button class="btn primary-btn" @click="progressTutorial(1)">
                     next
                 </button>
@@ -320,6 +288,17 @@ export default {
 </template>
 
 <style scoped>
+/* Tooltips */
+.hovering-info-panel {
+    position: absolute;
+    z-index: 100;
+    /* border-color: var(--primary-color);
+    border-width: 2px;
+    border-style: solid; */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: fit-content;
+    margin-bottom: 0 !important; /* Remove any margin that might push content */
+}
 .info-btn {
     position: absolute;
 }

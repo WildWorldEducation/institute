@@ -553,7 +553,7 @@ router.beforeEach(async (to, from, next) => {
         to.name !== 'show-skill' &&
         to.name !== 'hub'
     ) {
-        next({ name: 'skill-tree' });
+        next({ name: 'hub' });
         return;
     }
 
