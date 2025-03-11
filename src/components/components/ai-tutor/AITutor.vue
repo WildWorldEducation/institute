@@ -26,7 +26,6 @@ export default {
             assessingTutorChatHistory: [],
             transcriptForAssessment: [],
             chatHistory: [],
-            mostRecentMessage: '',
             waitForAIresponse: false,
             mode: 'big',
             englishSkillLevel: '',
@@ -96,6 +95,7 @@ export default {
 
                 if (this.tutorType == 'socratic') {
                     this.socraticTutorChatHistory = resData.messages;
+
                     this.chatHistory = this.socraticTutorChatHistory;
                 } else if (this.tutorType == 'assessing') {
                     this.assessingTutorChatHistory = resData.messages;
@@ -108,10 +108,9 @@ export default {
                     }
                 }
 
-                this.threadID = this.chatHistory[0].thread_id;
-
-                this.mostRecentMessage =
-                    this.chatHistory[0].content[0].text.value;
+                if (this.chatHistory.length > 0) {
+                    this.threadID = this.chatHistory[0].thread_id;
+                }
             } catch (error) {
                 console.error(error);
             }
@@ -403,7 +402,7 @@ export default {
                     <TooltipBtn
                         v-if="mode === 'big'"
                         class="d-none d-md-block"
-                        toolTipText="Chat with our AI tutor about the subject"
+                        toolTipText="Press the 'generate audio' button to hear the tutor speak with AI generated speech."
                         bubbleWidth="350px"
                         trianglePosition="left"
                         absoluteTop="37px"
@@ -635,7 +634,7 @@ export default {
                         "
                         class="d-flex"
                     >
-                        <span class="loader"></span>
+                        <span class="speech-loader"></span>
                     </div>
                     <button
                         v-else-if="
@@ -742,17 +741,8 @@ export default {
 </template>
 
 <style scoped>
-/* Loading animation */
-.loading-animation {
-    min-height: 100%;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-}
-
-.loader {
+/* Loading animation for generating speech audio*/
+.speech-loader {
     width: 24px;
     height: 24px;
     border: 5px solid yellow;
