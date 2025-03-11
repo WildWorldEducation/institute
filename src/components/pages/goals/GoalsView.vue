@@ -1,7 +1,7 @@
 <script lang="ts">
-import Goals from './goals/Goals.vue';
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import { useSessionDetailsStore } from '../../stores/SessionDetailsStore';
+import Goals from '../../components/Goals.vue';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import { useSessionDetailsStore } from '../../../stores/SessionDetailsStore';
 
 export default {
     setup() {
@@ -94,9 +94,12 @@ export default {
 <template>
     <div class="container">
         <!-- Header row with title and tutorial button -->
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-start">
             <!-- Goals component -->
-            <Goals />
+            <Goals
+                :showTutorialTip="showTutorialTip1"
+                @progressTutorial="progressTutorial"
+            />
             <button
                 v-if="sessionDetailsStore.isLoggedIn"
                 class="btn"
@@ -115,28 +118,6 @@ export default {
                     />
                 </svg>
             </button>
-        </div>
-
-        <!-- Tooltip -->
-        <div
-            v-if="showTutorialTip1 && userDetailsStore.role == 'student'"
-            class="tool-tip-base"
-        >
-            <div class="explain-tool-tip triangle-top-left">
-                <div class="tool-tip-text">
-                    <p>This section shows any goals you might have made.</p>
-                    <p>
-                        You can make a goal when there is a skill you want to
-                        master but it is not unlocked yet.
-                    </p>
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(1)"
-                    >
-                        close
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
 </template>

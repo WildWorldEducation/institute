@@ -305,7 +305,7 @@ const router = createRouter({
         {
             path: '/goals',
             name: 'goals',
-            component: () => import('../components/pages/GoalsPageView.vue')
+            component: () => import('../components/pages/goals/GoalsView.vue')
         },
         {
             path: '/edit-student-password/:id',
@@ -425,7 +425,8 @@ const router = createRouter({
         {
             path: '/goals/:userId/:skillId',
             name: 'goal',
-            component: () => import('../components/pages/goals/GoalView.vue')
+            component: () =>
+                import('../components/pages/goals/GoalProgressView.vue')
         },
         {
             path: '/student/:studentId/goals',
