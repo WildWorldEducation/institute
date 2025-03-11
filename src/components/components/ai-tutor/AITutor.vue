@@ -1,5 +1,4 @@
 <script>
-import { OutputLocationFilterSensitiveLog } from '@aws-sdk/client-s3';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import { useUserSkillsStore } from '../../../stores/UserSkillsStore.js';
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore.js';
@@ -33,7 +32,11 @@ export default {
             learningObjectives: [],
             tutorType: 'socratic',
             // hide / show chat
-            showChat: true
+            showChat: true,
+            isTextToSpeech: true,
+            threadID: '',
+            audio: null,
+            isAudioPlaying: false
         };
     },
     async mounted() {
@@ -44,12 +47,15 @@ export default {
         this.englishSkillLevel = this.skill.level.replace('_', ' ');
         await this.getChatHistory();
     },
-    updated() {
-        // if (this.mode !== 'hide') {
-        //     this.scrollToMessageInput();
-        // }
-    },
     methods: {
+        // Setting this method to allow the user to be able to create a new line with shift+enter
+        handleKeyDown(e) {
+            if (e.shiftKey) {
+                return;
+            }
+            e.preventDefault();
+            this.sendMessage();
+        },
         // 2 different threads
         async changeTutorType(type) {
             this.tutorType = type;
@@ -86,11 +92,13 @@ export default {
 
                 const response = await fetch(url, requestOptions);
                 const resData = await response.json();
+
                 if (this.tutorType == 'socratic') {
-                    this.socraticTutorChatHistory = resData.messages.data;
+                    this.socraticTutorChatHistory = resData.messages;
+
                     this.chatHistory = this.socraticTutorChatHistory;
                 } else if (this.tutorType == 'assessing') {
-                    this.assessingTutorChatHistory = resData.messages.data;
+                    this.assessingTutorChatHistory = resData.messages;
                     this.chatHistory = this.assessingTutorChatHistory;
                     if (
                         this.chatHistory.length >=
@@ -100,15 +108,63 @@ export default {
                     }
                 }
 
-                console.log(this.chatHistory);
+                if (this.chatHistory.length > 0) {
+                    this.threadID = this.chatHistory[0].thread_id;
+                }
             } catch (error) {
                 console.error(error);
             }
         },
+        async generateAudio(index, message) {
+            for (let i = 0; i < this.chatHistory.length; i++) {
+                if (this.chatHistory[i].index == index) {
+                    this.chatHistory[i].isAudioGenerating = true;
+                }
+            }
+
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: message,
+                    messageNumber: index,
+                    threadID: this.threadID
+                })
+            };
+
+            let url = '';
+            if (this.tutorType == 'socratic')
+                url = `/ai-tutor/socratic/generate-tts`;
+            else url = `/ai-tutor/assessing/generate-tts`;
+
+            const response = await fetch(url, requestOptions);
+            const resData = await response.json();
+
+            for (let i = 0; i < this.chatHistory.length; i++) {
+                if (this.chatHistory[i].index == index) {
+                    this.chatHistory[i].isAudioGenerating = false;
+                    this.chatHistory[i].hasAudio = true;
+                }
+            }
+            this.getChatHistory();
+        },
+        playAudio(index) {
+            if (this.isAudioPlaying == true) {
+                this.isAudioPlaying = false;
+                this.audio.pause();
+            } else {
+                let url = `https://institute-${this.tutorType}-tutor-tts-urls.s3.us-east-1.amazonaws.com/${this.threadID}-${index}.mp3`;
+                this.audio = new Audio(url);
+                this.isAudioPlaying = true;
+                this.audio.play();
+            }
+        },
         async sendMessage() {
-            console.log(this.message);
-            if (this.message == '' || this.message == ' ') {
-                console.log('test');
+            // Trim the message to remove leading and trailing whitespace
+            const trimmedMessage = this.message.trim();
+            // If the message is empty after trimming, don't send it
+            if (trimmedMessage === '') {
+                return;
             }
 
             if (this.waitForAIresponse) {
@@ -121,7 +177,7 @@ export default {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        message: this.message,
+                        message: trimmedMessage,
                         userId: this.userDetailsStore.userId,
                         skillName: this.skill.name,
                         skillUrl: this.skill.url,
@@ -322,7 +378,7 @@ export default {
             <div class="d-flex flex-row w-100 justify-content-between">
                 <div class="d-flex gap-2">
                     <!-- Pin button -->
-                    <btn
+                    <button
                         v-if="mode === 'big'"
                         class="btn"
                         title="Minimize and pin the chat"
@@ -340,12 +396,13 @@ export default {
                                 d="M32 32C32 14.3 46.3 0 64 0L320 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-29.5 0 11.4 148.2c36.7 19.9 65.7 53.2 79.5 94.7l1 3c3.3 9.8 1.6 20.5-4.4 28.8s-15.7 13.3-26 13.3L32 352c-10.3 0-19.9-4.9-26-13.3s-7.7-19.1-4.4-28.8l1-3c13.8-41.5 42.8-74.8 79.5-94.7L93.5 64 64 64C46.3 64 32 49.7 32 32zM160 384l64 0 0 96c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-96z"
                             />
                         </svg>
-                    </btn>
+                    </button>
                     <h2 class="secondary-heading">AI tutor</h2>
+
                     <TooltipBtn
                         v-if="mode === 'big'"
                         class="d-none d-md-block"
-                        toolTipText="Chat with our AI tutor about the subject"
+                        toolTipText="Press the 'generate audio' button to hear the tutor speak with AI generated speech."
                         bubbleWidth="350px"
                         trianglePosition="left"
                         absoluteTop="37px"
@@ -363,7 +420,7 @@ export default {
                 <!-- Expand button -->
                 <div class="d-flex gap-2">
                     <div tile="Expand chat component" b-tooltip.hover>
-                        <btn
+                        <button
                             v-if="mode === 'mini'"
                             class="symbol-btn"
                             @click="mode = 'big'"
@@ -379,10 +436,10 @@ export default {
                                     d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm11.3-395.3l112 112c4.6 4.6 5.9 11.5 3.5 17.4s-8.3 9.9-14.8 9.9l-64 0 0 96c0 17.7-14.3 32-32 32l-32 0c-17.7 0-32-14.3-32-32l0-96-64 0c-6.5 0-12.3-3.9-14.8-9.9s-1.1-12.9 3.5-17.4l112-112c6.2-6.2 16.4-6.2 22.6 0z"
                                 />
                             </svg>
-                        </btn>
+                        </button>
                     </div>
                     <div tile="Hide chat component" b-tooltip.hover>
-                        <btn
+                        <button
                             v-if="mode === 'mini'"
                             class="symbol-btn"
                             @click="mode = 'hide'"
@@ -398,7 +455,7 @@ export default {
                                     d="M256 0a256 256 0 1 0 0 512A256 256 0 1 0 256 0zM244.7 395.3l-112-112c-4.6-4.6-5.9-11.5-3.5-17.4s8.3-9.9 14.8-9.9l64 0 0-96c0-17.7 14.3-32 32-32l32 0c17.7 0 32 14.3 32 32l0 96 64 0c6.5 0 12.3 3.9 14.8 9.9s1.1 12.9-3.5 17.4l-112 112c-6.2 6.2-16.4 6.2-22.6 0z"
                                 />
                             </svg>
-                        </btn>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -422,6 +479,14 @@ export default {
                 >
                     Assessment Tutor
                 </button>
+                <!-- Text to speech -->
+                <!-- <button
+                    class="btn suggested-interactions ms-1"
+                    @click="isTextToSpeech = !isTextToSpeech"
+                    :class="{ lineThrough: isTextToSpeech == false }"
+                >
+                    Auto Speech
+                </button> -->
             </span>
             <span>
                 <button
@@ -473,6 +538,7 @@ export default {
                 class="chat-text-area rounded border border-dark me-1"
                 v-model="message"
                 type="text"
+                @keydown.enter="handleKeyDown"
             >
             </textarea>
             <!-- Send button -->
@@ -544,16 +610,84 @@ export default {
                     <em>{{ message.content[0].text.value }}</em>
                 </div>
                 <!-- AI tutor messages -->
-                <div
+                <span
                     v-else-if="
                         message.role === 'assistant' &&
                         message.content[0].type == 'text'
                     "
-                    class="tutor-conversation"
-                    v-html="
-                        applyMarkDownFormatting(message.content[0].text.value)
-                    "
-                ></div>
+                    class="d-flex justify-content-between w-100"
+                >
+                    <div
+                        class="tutor-conversation"
+                        v-html="
+                            applyMarkDownFormatting(
+                                message.content[0].text.value
+                            )
+                        "
+                    ></div>
+
+                    <!-- Loading animation -->
+                    <div
+                        v-if="
+                            message.isAudioGenerating &&
+                            message.role === 'assistant'
+                        "
+                        class="d-flex"
+                    >
+                        <span class="speech-loader"></span>
+                    </div>
+                    <button
+                        v-else-if="
+                            !message.hasAudio &&
+                            !message.isAudioGenerating &&
+                            message.role === 'assistant'
+                        "
+                        @click="
+                            generateAudio(
+                                message.index,
+                                message.content[0].text.value
+                            )
+                        "
+                        class="btn speechButton"
+                    >
+                        generate speech
+                    </button>
+                    <button
+                        v-else-if="
+                            !message.isAudioGenerating &&
+                            message.role === 'assistant'
+                        "
+                        @click="playAudio(message.index)"
+                        class="btn speechButton"
+                    >
+                        <svg
+                            v-if="isAudioPlaying == false"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            fill="yellow"
+                            height="18"
+                            width="18"
+                        >
+                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c7.6-4.2 16.8-4.1 24.3 .5l144 88c7.1 4.4 11.5 12.1 11.5 20.5s-4.4 16.1-11.5 20.5l-144 88c-7.4 4.5-16.7 4.7-24.3 .5s-12.3-12.2-12.3-20.9l0-176c0-8.7 4.7-16.7 12.3-20.9z"
+                            />
+                        </svg>
+                        <svg
+                            v-else
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            fill="yellow"
+                            height="18"
+                            width="18"
+                        >
+                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
+                            />
+                        </svg>
+                    </button>
+                </span>
             </div>
         </div>
         <!-- User input (mini mode) -->
@@ -563,6 +697,7 @@ export default {
                 class="chat-text-area"
                 v-model="message"
                 type="text"
+                @keydown.enter="handleKeyDown"
             >
             </textarea>
             <!-- Send button -->
@@ -606,6 +741,37 @@ export default {
 </template>
 
 <style scoped>
+/* Loading animation for generating speech audio*/
+.speech-loader {
+    width: 24px;
+    height: 24px;
+    border: 5px solid yellow;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* End of loading animation */
+
+.speechButton {
+    max-height: 44px;
+    color: yellow;
+}
+
+.lineThrough {
+    text-decoration: line-through;
+}
+
 .underline {
     text-decoration: underline;
 }
