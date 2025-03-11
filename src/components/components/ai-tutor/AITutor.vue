@@ -161,6 +161,13 @@ export default {
             }
         },
         async sendMessage() {
+            // Trim the message to remove leading and trailing whitespace
+            const trimmedMessage = this.message.trim();
+            // If the message is empty after trimming, don't send it
+            if (trimmedMessage === '') {
+                return;
+            }
+
             if (this.waitForAIresponse) {
                 return;
             }
