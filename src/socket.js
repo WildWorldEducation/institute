@@ -4,9 +4,10 @@ import { io } from "socket.io-client";
 export const socketState = reactive({
     connected: false,
     assistantData: [],
-    testVar: 'ha ha',
     streamingMessage: '',
     isStreaming: false,
+    isRunJustEnded: false,
+
 });
 
 // "undefined" means the URL will be computed from the `window.location` object ( This is pretty brilliant as we do not have )
@@ -45,6 +46,7 @@ socket.on('assistant-data', (...args) => {
 })
 
 socket.on('stream-message', (...args) => {
+    socketState.isRunJustEnded = false;
     socketState.isStreaming = true;
     socketState.streamingMessage = socketState.streamingMessage + args[0].value;
 
@@ -52,6 +54,9 @@ socket.on('stream-message', (...args) => {
 
 socket.on('run-end', (...args) => {
     socketState.isStreaming = false;
-    socketState.streamingMessage = ''
+    socketState.isRunJustEnded = true;
 })
 
+socket.on('remove-stream-message', () => {
+    socketState.streamingMessage = ''
+})
