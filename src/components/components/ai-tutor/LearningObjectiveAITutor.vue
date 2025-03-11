@@ -271,18 +271,6 @@ export default {
                 class="btn border border-dark"
                 @click="requestTutoring()"
             >
-                <!-- Robot icon -->
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 640 512"
-                    width="18"
-                    height="18"
-                    fill="black"
-                >
-                    <path
-                        d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
-                    />
-                </svg>
                 tutor me on this
             </button>
             <!-- learning objective ask question button -->
@@ -290,19 +278,6 @@ export default {
                 class="btn border border-dark ms-1"
                 @click="requestQuestion()"
             >
-                <!-- Question mark icon -->
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    width="18"
-                    height="18"
-                    fill="black"
-                >
-                    <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                    <path
-                        d="M504 256c0 137-111 248-248 248S8 393 8 256C8 119.1 119 8 256 8s248 111.1 248 248zM262.7 90c-54.5 0-89.3 23-116.5 63.8-3.5 5.3-2.4 12.4 2.7 16.3l34.7 26.3c5.2 3.9 12.6 3 16.7-2.1 17.9-22.7 30.1-35.8 57.3-35.8 20.4 0 45.7 13.1 45.7 33 0 15-12.4 22.7-32.5 34C247.1 238.5 216 254.9 216 296v4c0 6.6 5.4 12 12 12h56c6.6 0 12-5.4 12-12v-1.3c0-28.5 83.2-29.6 83.2-106.7 0-58-60.2-102-116.5-102zM256 338c-25.4 0-46 20.6-46 46 0 25.4 20.6 46 46 46s46-20.6 46-46c0-25.4-20.6-46-46-46z"
-                    />
-                </svg>
                 ask me a question
             </button>
         </span>
@@ -349,90 +324,108 @@ export default {
             Thinking
             <TutorLoadingSymbol />
         </div>
-        <!-- Message thread -->
-        <div
-            class="d-flex my-3 messages w-100"
-            :class="{
-                'justify-content-end': message.role === 'user'
-            }"
-            v-for="message in messageList"
-        >
-            <!-- Student messages -->
+        <div class="d-flex flex-column mx-auto chat-component socratic-chat">
+            <!-- Message thread -->
             <div
-                v-if="message.role === 'user'"
-                class="border border-dark rounded p-2"
+                class="d-flex my-3"
+                :class="{
+                    'justify-content-end': message.role === 'user'
+                }"
+                v-for="message in messageList"
             >
-                {{ message.content[0].text.value }}
-            </div>
-            <!-- AI tutor messages -->
-            <div
-                v-else-if="
-                    message.role === 'assistant' &&
-                    message.content[0].type == 'text'
-                "
-                class="tutor-conversation border border-dark rounded p-2"
-                v-html="applyMarkDownFormatting(message.content[0].text.value)"
-            ></div>
-            <!-- Generate / Play audio -->
-            <!-- Loading animation -->
-            <div
-                v-if="message.isAudioGenerating && message.role === 'assistant'"
-                class="d-flex"
-            >
-                <span class="speech-loader"></span>
-            </div>
-            <button
-                v-else-if="
-                    !message.hasAudio &&
-                    !message.isAudioGenerating &&
-                    message.role === 'assistant'
-                "
-                @click="
-                    generateAudio(message.index, message.content[0].text.value)
-                "
-                class="btn speechButton"
-            >
-                generate speech
-            </button>
-            <button
-                v-else-if="
-                    !message.isAudioGenerating && message.role === 'assistant'
-                "
-                @click="playAudio(message.index)"
-                class="btn speechButton"
-            >
-                <svg
-                    v-if="isAudioPlaying == false"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    fill="blue"
-                    height="18"
-                    width="18"
+                <!-- Student messages -->
+                <div v-if="message.role === 'user'" class="user-conversation">
+                    <em>{{ message.content[0].text.value }}</em>
+                </div>
+                <!-- AI tutor messages -->
+                <div
+                    v-else-if="
+                        message.role === 'assistant' &&
+                        message.content[0].type == 'text'
+                    "
+                    class="tutor-conversation p-2"
+                    v-html="
+                        applyMarkDownFormatting(message.content[0].text.value)
+                    "
+                ></div>
+                <!-- Generate / Play audio -->
+                <!-- Loading animation -->
+                <div
+                    v-if="
+                        message.isAudioGenerating &&
+                        message.role === 'assistant'
+                    "
+                    class="d-flex"
                 >
-                    <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                    <path
-                        d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c7.6-4.2 16.8-4.1 24.3 .5l144 88c7.1 4.4 11.5 12.1 11.5 20.5s-4.4 16.1-11.5 20.5l-144 88c-7.4 4.5-16.7 4.7-24.3 .5s-12.3-12.2-12.3-20.9l0-176c0-8.7 4.7-16.7 12.3-20.9z"
-                    />
-                </svg>
-                <svg
-                    v-else
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    fill="blue"
-                    height="18"
-                    width="18"
+                    <span class="speech-loader"></span>
+                </div>
+                <button
+                    v-else-if="
+                        !message.hasAudio &&
+                        !message.isAudioGenerating &&
+                        message.role === 'assistant'
+                    "
+                    @click="
+                        generateAudio(
+                            message.index,
+                            message.content[0].text.value
+                        )
+                    "
+                    class="btn speechButton"
                 >
-                    <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                    <path
-                        d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
-                    />
-                </svg>
-            </button>
+                    generate speech
+                </button>
+                <button
+                    v-else-if="
+                        !message.isAudioGenerating &&
+                        message.role === 'assistant'
+                    "
+                    @click="playAudio(message.index)"
+                    class="btn speechButton"
+                >
+                    <svg
+                        v-if="isAudioPlaying == false"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        fill="yellow"
+                        height="18"
+                        width="18"
+                    >
+                        <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c7.6-4.2 16.8-4.1 24.3 .5l144 88c7.1 4.4 11.5 12.1 11.5 20.5s-4.4 16.1-11.5 20.5l-144 88c-7.4 4.5-16.7 4.7-24.3 .5s-12.3-12.2-12.3-20.9l0-176c0-8.7 4.7-16.7 12.3-20.9z"
+                        />
+                    </svg>
+                    <svg
+                        v-else
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        fill="yellow"
+                        height="18"
+                        width="18"
+                    >
+                        <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
+                        />
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+/* Chat area */
+.socratic-chat {
+    background-color: #031e27;
+    color: white;
+}
+
+.user-conversation {
+    text-align: end;
+}
+
 /* Generate / Play speech */
 /* Loading animation for generating speech audio*/
 .speech-loader {
@@ -457,8 +450,8 @@ export default {
 /* End of loading animation */
 
 .speechButton {
-    max-height: 44px;
-    color: blue;
+    max-height: fit-content;
+    color: yellow;
 }
 
 /* End of Generate / Play speech */
@@ -468,8 +461,10 @@ export default {
     width: 42px;
 }
 
-.messages {
-    width: fit-content;
+.chat-component {
+    overflow-x: hidden;
+    padding: 5px 10px;
+    border-radius: 15px;
 }
 
 .chat-input {

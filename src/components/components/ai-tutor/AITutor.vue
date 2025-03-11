@@ -768,7 +768,7 @@ export default {
 /* End of loading animation */
 
 .speechButton {
-    max-height: 44px;
+    max-height: fit-content;
     color: yellow;
 }
 
@@ -809,6 +809,7 @@ export default {
     padding: 10px 15px;
     border-radius: 50px;
     color: white;
+    text-align: end;
 }
 
 .socratic-chat {
