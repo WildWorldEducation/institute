@@ -6,6 +6,8 @@ const socraticTutorTTSURLSBucketName =
     process.env.S3_SOCRATIC_TUTOR_TTS_URLS_BUCKET_NAME;
 const assessingTutorTTSURLSBucketName =
     process.env.S3_ASSESSING_TUTOR_TTS_URLS_BUCKET_NAME;
+const learningObjectiveTutorTTSURLSBucketName =
+    process.env.S3_LEARNING_OBJECTIVE_TUTOR_TTS_URLS_BUCKET_NAME;
 const bucketRegion = process.env.S3_BUCKET_REGION;
 const accessKeyId = process.env.S3_ACCESS_KEY_ID;
 const accessSecretKey = process.env.S3_SECRET_ACCESS_KEY;
@@ -26,7 +28,7 @@ const openai = new OpenAI({
 async function textToSpeech(latestMessage, threadID, messageNumber, tutorType) {
     // Different voice for normal and assessing tutors, to differentiate them
     let voice = 'fable';
-    if (tutorType == 'assessing') voice = 'nove';
+    if (tutorType == 'assessing') voice = 'nova';
 
     const mp3 = await openai.audio.speech.create({
         // Faster option
@@ -63,8 +65,10 @@ const saveMP3ToAWS = async (buffer, threadID, messageNumber, tutorType) => {
     let bucketName = '';
     if (tutorType == 'socratic') {
         bucketName = socraticTutorTTSURLSBucketName;
-    } else {
+    } else if (tutorType == 'assessing') {
         bucketName = assessingTutorTTSURLSBucketName;
+    } else {
+        bucketName = learningObjectiveTutorTTSURLSBucketName;
     }
 
     // Save full size mp3.

@@ -77,9 +77,10 @@ router.post(
                     }
                 ];
                 await saveSocraticTutorThread(assistantData[0]);
-                const messages = await getMessagesList(
+                const messageData = await getMessagesList(
                     assistantData[0].threadId
                 );
+                let messages = messageData.data;
 
                 res.json({ messages: messages });
                 return;
@@ -308,7 +309,7 @@ router.post(
 );
 
 /**
- * TTS for Socratic tutor message
+ * TTS for Assessing tutor message
  */
 router.post(
     '/assessing/generate-tts',
@@ -453,7 +454,7 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
 
         let responseJSON = completion.choices[0].message.content;
         // Convert string to object.       ;
-        let result = JSON.parse(responseJSON);        
+        let result = JSON.parse(responseJSON);
         res.json({
             result: result
         });
@@ -470,7 +471,7 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
  * Get thread from learning objective level AI tutor
  */
 router.get(
-    '/learning-objectives/messages-list',
+    '/learning-objective/messages-list',
     isAuthenticated,
     async (req, res, next) => {
         try {
@@ -503,17 +504,107 @@ router.get(
                 // Save the thread info to the DB for later reference.
                 await saveLearningObjectiveThread(assistantData[0]);
                 // Retrieve the chat history.
-                const messages = await getMessagesList(
+                const messageData = await getMessagesList(
                     assistantData[0].threadId
                 );
+                let messages = messageData.data;
+
                 res.json({ messages: messages });
                 return;
             } else {
                 // Retrieve the chat history.
-                const messages = await getMessagesList(
+                const messageData = await getMessagesList(
                     assistantData[0].thread_id
                 );
+                let messages = messageData.data;
+
+                // Reverse the messages to get the index, for the TTS feature
+                // (as Open AI returns the most recent message at index 0)
+                let reversedMessages = messages.reverse();
+                for (let i = 0; i < reversedMessages.length; i++) {
+                    reversedMessages[i].index = i;
+                }
+                messages = reversedMessages.reverse();
+
+                // Check if TTS audio clip has already been generated or not.
+                let audioClips = [];
+                try {
+                    let queryString = `SELECT * 
+                    FROM ai_learning_objective_tutor_tts_urls 
+                    WHERE thread_id = ${conn.escape(assistantData[0].thread_id)};`;
+
+                    audioClips = await query(queryString);
+
+                    for (let i = 0; i < messages.length; i++) {
+                        messages[i].hasAudio = false;
+                        for (let j = 0; j < audioClips.length; j++) {
+                            if (
+                                messages[i].index ==
+                                audioClips[j].message_number
+                            ) {
+                                messages[i].hasAudio = true;
+                                messages[i].audio = audioClips[j].url;
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error(error);
+                    throw error;
+                }
+
                 res.json({ messages: messages });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
+        }
+    }
+);
+
+/**
+ * TTS for Learning objectives tutor message
+ */
+router.post(
+    '/learning-objective/generate-tts',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const threadID = req.body.threadID;
+            const messageNumber = req.body.messageNumber;
+            const message = req.body.message;
+            const tutorType = 'learning-objective';
+
+            let speechClipName = await textToSpeech(
+                message,
+                threadID,
+                messageNumber,
+                tutorType
+            );
+
+            const url =
+                'https://institute-learning-objective-tutor-tts-urls.s3.us-east-1.amazonaws.com/' +
+                speechClipName;
+
+            try {
+                let queryString = `INSERT INTO ai_learning_objective_tutor_tts_urls 
+                                (thread_id, message_number, url)
+                                VALUES (
+                                    ${conn.escape(threadID)},
+                                    ${conn.escape(
+                                        messageNumber
+                                    )},                       
+                                    ${conn.escape(url)}
+                                );`;
+                await query(queryString);
+                res.json({
+                    status: 'complete'
+                });
+            } catch (error) {
+                console.error(error);
+                res.status = 500;
+                res.json({ mess: 'something went wrong' });
+                throw error;
             }
         } catch (error) {
             console.error(error);
@@ -527,7 +618,7 @@ router.get(
  * Send message to learning objective level AI tutor
  */
 router.post(
-    '/learning-objectives/new-message',
+    '/learning-objective/new-message',
     isAuthenticated,
     async (req, res, next) => {
         try {
@@ -555,7 +646,7 @@ router.post(
  * Get the learning objective AI tutor to tutor on that learning objective
  */
 router.post(
-    '/learning-objectives/request-tutoring',
+    '/learning-objective/request-tutoring',
     isAuthenticated,
     async (req, res, next) => {
         try {
@@ -583,7 +674,7 @@ router.post(
  * Get the learning objective AI tutor to ask a question
  */
 router.post(
-    '/learning-objectives/ask-question',
+    '/learning-objective/ask-question',
     isAuthenticated,
     async (req, res, next) => {
         try {

@@ -116,6 +116,7 @@ export default {
             }
         },
         async generateAudio(index, message) {
+            // Loading animation on
             for (let i = 0; i < this.chatHistory.length; i++) {
                 if (this.chatHistory[i].index == index) {
                     this.chatHistory[i].isAudioGenerating = true;
@@ -139,7 +140,9 @@ export default {
 
             const response = await fetch(url, requestOptions);
             const resData = await response.json();
+            console.log(resData.status);
 
+            // Loading animation off
             for (let i = 0; i < this.chatHistory.length; i++) {
                 if (this.chatHistory[i].index == index) {
                     this.chatHistory[i].isAudioGenerating = false;
@@ -626,6 +629,7 @@ export default {
                         "
                     ></div>
 
+                    <!-- Generate / Play audio -->
                     <!-- Loading animation -->
                     <div
                         v-if="
