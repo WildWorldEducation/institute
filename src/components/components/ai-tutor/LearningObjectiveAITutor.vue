@@ -25,7 +25,8 @@ export default {
             waitForAIresponse: false,
             isGotMessages: false,
             englishSkillLevel: '',
-            threadID: ''
+            threadID: '',
+            isAudioPlaying: false
         };
     },
     async mounted() {
@@ -46,7 +47,7 @@ export default {
         async getMessages() {
             this.message = '';
             try {
-                const url = `/ai-tutor/learning-objectives/messages-list?userId=${encodeURIComponent(
+                const url = `/ai-tutor/learning-objective/messages-list?userId=${encodeURIComponent(
                     this.userDetailsStore.userId
                 )}&learningObjectiveId=${encodeURIComponent(
                     this.learningObjectiveId
@@ -58,6 +59,8 @@ export default {
                 const resData = await response.json();
 
                 this.messageList = resData.messages;
+
+                console.log(this.messageList);
 
                 // Close loading animation
                 this.isGotMessages = true;
@@ -88,7 +91,7 @@ export default {
                 })
             };
 
-            let url = `/ai-tutor/learning-objectives/generate-tts`;
+            let url = `/ai-tutor/learning-objective/generate-tts`;
 
             const response = await fetch(url, requestOptions);
             const resData = await response.json();
@@ -103,6 +106,17 @@ export default {
             }
 
             this.getMessages();
+        },
+        playAudio(index) {
+            if (this.isAudioPlaying == true) {
+                this.isAudioPlaying = false;
+                this.audio.pause();
+            } else {
+                let url = `https://institute-learning-objective-tutor-tts-urls.s3.us-east-1.amazonaws.com/${this.threadID}-${index}.mp3`;
+                this.audio = new Audio(url);
+                this.isAudioPlaying = true;
+                this.audio.play();
+            }
         },
         // send Open AI message regarding the learning objective
         async sendMessage() {
@@ -127,7 +141,7 @@ export default {
                     })
                 };
 
-                var url = '/ai-tutor/learning-objectives/new-message';
+                var url = '/ai-tutor/learning-objective/new-message';
                 const res = await fetch(url, requestOptions);
                 if (res.status === 500) {
                     alert('The tutor can`t answer !!');
@@ -162,7 +176,7 @@ export default {
                     })
                 };
 
-                var url = '/ai-tutor/learning-objectives/request-tutoring';
+                var url = '/ai-tutor/learning-objective/request-tutoring';
 
                 const res = await fetch(url, requestOptions);
                 if (res.status === 500) {
@@ -200,7 +214,7 @@ export default {
                     })
                 };
 
-                var url = '/ai-tutor/learning-objectives/ask-question';
+                var url = '/ai-tutor/learning-objective/ask-question';
 
                 const res = await fetch(url, requestOptions);
                 if (res.status === 500) {
@@ -391,7 +405,7 @@ export default {
                     v-if="isAudioPlaying == false"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    fill="yellow"
+                    fill="blue"
                     height="18"
                     width="18"
                 >
@@ -404,7 +418,7 @@ export default {
                     v-else
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    fill="yellow"
+                    fill="blue"
                     height="18"
                     width="18"
                 >

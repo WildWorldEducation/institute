@@ -6,8 +6,8 @@ const socraticTutorTTSURLSBucketName =
     process.env.S3_SOCRATIC_TUTOR_TTS_URLS_BUCKET_NAME;
 const assessingTutorTTSURLSBucketName =
     process.env.S3_ASSESSING_TUTOR_TTS_URLS_BUCKET_NAME;
-const learningObjectivesTTSURLSBucketName =
-    process.env.S3_LEARNING_OBJECTIVES_TUTOR_TTS_URLS_BUCKET_NAME;
+const learningObjectiveTutorTTSURLSBucketName =
+    process.env.S3_LEARNING_OBJECTIVE_TUTOR_TTS_URLS_BUCKET_NAME;
 const bucketRegion = process.env.S3_BUCKET_REGION;
 const accessKeyId = process.env.S3_ACCESS_KEY_ID;
 const accessSecretKey = process.env.S3_SECRET_ACCESS_KEY;
@@ -68,7 +68,7 @@ const saveMP3ToAWS = async (buffer, threadID, messageNumber, tutorType) => {
     } else if (tutorType == 'assessing') {
         bucketName = assessingTutorTTSURLSBucketName;
     } else {
-        bucketName = learningObjectivesTTSURLSBucketName;
+        bucketName = learningObjectiveTutorTTSURLSBucketName;
     }
 
     // Save full size mp3.
