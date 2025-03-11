@@ -180,7 +180,7 @@ export default {
                 class="tool-tip-base d-flex justify-content-end"
             >
                 <div
-                    class="explain-tool-tip triangle-top-left hovering-info-panel"
+                    class="explain-tool-tip triangle-top-right hovering-info-panel"
                 >
                     <div class="tool-tip-text">
                         <p>
