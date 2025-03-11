@@ -557,11 +557,11 @@ router.post(
             );
 
             const url =
-                'https://institute-assessing-tutor-tts-urls.s3.us-east-1.amazonaws.com/' +
+                'https://institute-learning-objectives-tutor-tts-urls.s3.us-east-1.amazonaws.com/' +
                 speechClipName;
 
             try {
-                let queryString = `INSERT INTO ai_assessing_tutor_tts_urls 
+                let queryString = `INSERT INTO ai_learning_objective_tutor_tts_urls 
                                 (thread_id, message_number, url)
                                 VALUES (
                                     ${conn.escape(threadID)},
