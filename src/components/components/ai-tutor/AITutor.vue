@@ -71,6 +71,7 @@ export default {
         },
         // For both tutors
         async getChatHistory() {
+            console.log('getChatHistory');
             try {
                 const requestOptions = {
                     method: 'POST',

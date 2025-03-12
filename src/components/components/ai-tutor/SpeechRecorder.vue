@@ -8,7 +8,7 @@ export default {
             userDetailsStore
         };
     },
-    props: ['tutorType', 'skill'],
+    props: ['tutorType', 'skill', 'skillLevel', 'learningObjectives'],
     data() {
         return {
             constraints: { audio: true },
@@ -72,6 +72,7 @@ export default {
                     reader.readAsDataURL(blob);
                     reader.onloadend = () => {
                         var base64data = reader.result;
+                        // Send base 64 data to server
                         this.sendAudioDataToServer(base64data);
                     };
                 };
@@ -92,9 +93,10 @@ export default {
                         tutorType: this.tutorType
                     })
                 };
-                let url = '/ai-tutor/stt/convert';
 
-                const res = await fetch(url, requestOptions);
+                let url = '/ai-tutor/stt/convert';
+                let res = await fetch(url, requestOptions);
+                console.log('sent');
 
                 this.$parent.getChatHistory();
                 if (res.status === 500) {

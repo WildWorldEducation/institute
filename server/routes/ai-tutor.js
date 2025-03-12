@@ -750,7 +750,7 @@ router.post('/stt/convert', async (req, res, next) => {
     console.log(message);
 
     if (tutorType == 'socratic')
-        sendSpeechToSocraticAI(
+        await sendSpeechToSocraticAI(
             userId,
             skillUrl,
             skillName,
@@ -759,7 +759,7 @@ router.post('/stt/convert', async (req, res, next) => {
             message
         );
     else if (tutorType == 'assessing')
-        sendSpeechToAssessingAI(
+        await sendSpeechToAssessingAI(
             userId,
             skillUrl,
             skillName,
@@ -767,6 +767,10 @@ router.post('/stt/convert', async (req, res, next) => {
             learningObjectives,
             message
         );
+
+    console.log('res.end()');
+
+    res.end();
 });
 
 async function sendSpeechToSocraticAI(
