@@ -706,11 +706,33 @@ router.post(
 router.post('/stt/convert', async (req, res, next) => {
     console.log(req.body.audioData);
     const audioData = req.body.audioData;
+    // Convert Base64 to buffer
     let bufferObj = Buffer.from(
         audioData.replace('data:audio/webm; codecs=opus;base64,', ''),
         'base64'
     );
-    fs.writeFileSync('audio.webm', bufferObj);
+    // Generate unique filename
+    function makeName(length) {
+        let result = '';
+        const characters =
+            'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const charactersLength = characters.length;
+        let counter = 0;
+        while (counter < length) {
+            result += characters.charAt(
+                Math.floor(Math.random() * charactersLength)
+            );
+            counter += 1;
+        }
+        return result;
+    }
+    let uniqueName = makeName(10);
+
+    // Write the file to server's disk
+    fs.writeFileSync(
+        './public/audio/tempSpeechRecordings/' + uniqueName + '.webm',
+        bufferObj
+    );
 });
 
 // Export the router for app to use.
