@@ -52,10 +52,10 @@ export default {
                     });
                     this.chunks = [];
 
-                    // to play the speech in browser. Maybe delete.
-                    const audioURL = URL.createObjectURL(blob);
-                    let audio = document.getElementById('audio');
-                    audio.src = audioURL;
+                    // to play the speech in browser.
+                    // const audioURL = URL.createObjectURL(blob);
+                    // let audio = document.getElementById('audio');
+                    // audio.src = audioURL;
 
                     // Convert to Base64
                     var reader = new FileReader();
@@ -105,10 +105,10 @@ export default {
 </script>
 
 <template>
-    <span class="d-flex justify-content-between">
-        <audio controls id="audio">
+    <span class="d-flex justify-content-end">
+        <!-- <audio controls id="audio">
             Your browser does not support the audio tag.
-        </audio>
+        </audio> -->
         <span>
             <button v-if="!micAllowed" class="btn" @click="allowMic()">
                 allow microphone
@@ -116,7 +116,10 @@ export default {
             <button
                 v-else
                 class="btn"
-                :class="{ recording: recording == true }"
+                :class="{
+                    recording: recording == true,
+                    'loader-background': isLoading == true
+                }"
                 @click="recordSpeech()"
             >
                 <span v-if="!recording && !isLoading">
@@ -135,7 +138,7 @@ export default {
                 </span>
                 <span v-else-if="recording">send</span>
                 <!-- Loading animation -->
-                <div v-else-if="isLoading" class="d-flex">
+                <div class="d-flex" v-else-if="isLoading">
                     <span class="speech-loader"></span>
                 </div>
             </button>
@@ -149,6 +152,9 @@ export default {
 }
 
 /* Loading animation for generating speech audio*/
+.loader-background {
+    background-color: #031e27;
+}
 .speech-loader {
     width: 24px;
     height: 24px;
