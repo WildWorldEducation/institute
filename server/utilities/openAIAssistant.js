@@ -121,7 +121,7 @@ async function skillMessage(threadId, assistantId, messageData) {
 
 
 
-async function createRunStream(threadId, assistantId, userMessage, socket) {
+async function createRunStream(threadId, assistantId, userMessage, socket, assistantInstruction) {
 
     const message = await openai.beta.threads.messages.create(
         threadId,
@@ -132,7 +132,8 @@ async function createRunStream(threadId, assistantId, userMessage, socket) {
     );
 
     const run = openai.beta.threads.runs.stream(threadId, {
-        assistant_id: assistantId
+        assistant_id: assistantId,
+        instructions: assistantInstruction
     })
         .on('runStepCreated', (runStep) => { console.log('run created: '); })
 

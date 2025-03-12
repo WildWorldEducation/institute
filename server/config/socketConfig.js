@@ -37,17 +37,26 @@ const createSocket = (server) => {
     io = new Server(server);
 
     io.on('connection', (socket) => {
-        // create a new run if a socket is connect
-        socket.on('send-message', async (clientData, callback) => {
-            try {
+        try {
+            // create a new run if a socket is connect
+            socket.on('send-message', async (clientData, callback) => {
                 await createRunStream(clientData.threadId, clientData.assistantId, clientData.message, socket);
-            } catch (error) {
-                socket.emit('error', error)
-                console.error(error)
-            }
-        })
+            })
+
+            socket.on('teach-request', async (messageData, callback) => {
+                const assistantInstruction = `The user is at a ${messageData.skillLevel} level and age.
+        Teach them about one of the following learning objectives: ${messageData.learningObjectives}.
+        Do not ask teach about the same learning objective more than once, until you have taught
+        about all the ones in the list.`;
+                await createRunStream(messageData.threadId, messageData.assistantId, 'Teach me', socket, assistantInstruction);
+            });
+        } catch (error) {
+            socket.emit('error', error)
+            console.error(error)
+        }
     });
 }
+
 
 
 
