@@ -491,7 +491,8 @@ export default {
                         v-else-if="
                             userDetailsStore.role == 'student' &&
                             !isMastered &&
-                            skill.type != 'domain'
+                            skill.type != 'domain' &&
+                            skill.id
                         "
                         class="btn me-1 assessment-btn secondary-btn"
                         :to="skill.id + '/assessment'"
