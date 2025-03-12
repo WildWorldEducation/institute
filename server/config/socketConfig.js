@@ -50,6 +50,18 @@ const createSocket = (server) => {
         about all the ones in the list.`;
                 await createRunStream(messageData.threadId, messageData.assistantId, 'Teach me', socket, assistantInstruction);
             });
+
+            socket.on('ask-question-request', async (messageData, callback) => {
+                const assistantInstruction = `The user is at a ${messageData.skillLevel} level and age.
+        Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
+        
+        If the student has already shown understanding of a learning objective, do not ask a question about it.
+        If the student has not yet shown understanding of a learning objective, do ask a question about it.
+        Once the student has shown an understanding of all the learning objectives, let them know they have mastered
+        the subject, and stop asking questions.`;
+                await createRunStream(messageData.threadId, messageData.assistantId, 'Test me', socket, assistantInstruction);
+            });
+
         } catch (error) {
             socket.emit('error', error)
             console.error(error)
