@@ -371,12 +371,6 @@ export default {
 </script>
 
 <template>
-    <SpeechRecorder
-        :tutorType="tutorType"
-        :skill="skill"
-        :skillLevel="englishSkillLevel"
-        :learningObjectives="learningObjectives"
-    />
     <div
         v-if="mode !== 'hide'"
         :class="{
@@ -385,7 +379,9 @@ export default {
         }"
     >
         <!-- Heading, tooltip and minimise/maximise buttons -->
-        <div class="d-flex flex-column flex-md-row gap-2 align-items-baseline">
+        <div
+            class="d-flex flex-column flex-md-row gap-2 align-items-baseline mb-1"
+        >
             <div class="d-flex flex-row w-100 justify-content-between">
                 <div class="d-flex gap-2">
                     <!-- Pin button -->
@@ -471,6 +467,13 @@ export default {
                 </div>
             </div>
         </div>
+        <!-- For speech to text -->
+        <SpeechRecorder
+            :tutorType="tutorType"
+            :skill="skill"
+            :skillLevel="englishSkillLevel"
+            :learningObjectives="learningObjectives"
+        />
         <!--Tutor types -->
         <span v-if="mode === 'big'" class="d-flex justify-content-between">
             <span>
