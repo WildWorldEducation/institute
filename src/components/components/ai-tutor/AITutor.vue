@@ -370,7 +370,12 @@ export default {
 </script>
 
 <template>
-    <SpeechRecorder />
+    <SpeechRecorder
+        :tutorType="tutorType"
+        :skill="skill"
+        :skillLevel="englishSkillLevel"
+        :learningObjectives="learningObjectives"
+    />
     <div
         v-if="mode !== 'hide'"
         :class="{

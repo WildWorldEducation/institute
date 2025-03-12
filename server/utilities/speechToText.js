@@ -21,6 +21,7 @@ async function speechToText(filePath) {
         model: 'whisper-1'
     });
     return transcription;
+    // TODO delete file
 }
 
 module.exports = {

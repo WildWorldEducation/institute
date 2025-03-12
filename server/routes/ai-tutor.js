@@ -706,13 +706,22 @@ router.post(
  */
 router.post('/stt/convert', async (req, res, next) => {
     console.log('base64 received');
+    // prepare variables
+    const userId = req.body.userId;
+    const skillUrl = req.body.skillUrl;
+    const skillName = req.body.skillName;
+    const skillLevel = req.body.skillLevel;
+    const learningObjectives = req.body.learningObjectives;
     const audioData = req.body.audioData;
+    const tutorType = req.body.tutorType;
+
     // Convert Base64 to buffer
     let bufferObj = Buffer.from(
         audioData.replace('data:audio/webm; codecs=opus;base64,', ''),
         'base64'
     );
     console.log('buffer created');
+
     // Generate unique filename
     function makeName(length) {
         let result = '';
@@ -733,12 +742,90 @@ router.post('/stt/convert', async (req, res, next) => {
         './public/audio/tempSpeechRecordings/' + uniqueName + '.webm';
 
     console.log('name and path created');
-
     await writeFile(filePath, bufferObj);
 
     console.log('file written');
-    console.log(await speechToText(filePath));
+    let messageObject = await speechToText(filePath);
+    let message = messageObject.text;
+    console.log(message);
+
+    if (tutorType == 'socratic')
+        sendSpeechToSocraticAI(
+            userId,
+            skillUrl,
+            skillName,
+            skillLevel,
+            learningObjectives,
+            message
+        );
+    else if (tutorType == 'assessing')
+        sendSpeechToAssessingAI(
+            userId,
+            skillUrl,
+            skillName,
+            skillLevel,
+            learningObjectives,
+            message
+        );
 });
+
+async function sendSpeechToSocraticAI(
+    userId,
+    skillUrl,
+    skillName,
+    skillLevel,
+    learningObjectives,
+    message
+) {
+    try {
+        console.log('get thread');
+        const assistantData = await getSocraticTutorThread(userId, skillUrl);
+
+        let messageData = {
+            skillName: skillName,
+            skillLevel: skillLevel,
+            learningObjectives: learningObjectives,
+            message
+        };
+
+        console.log('send message');
+        await socraticTutorMessage(
+            assistantData[0].thread_id,
+            assistantData[0].assistant_id,
+            messageData
+        );
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function sendSpeechToAssessingAI(
+    userId,
+    skillUrl,
+    skillName,
+    skillLevel,
+    learningObjectives,
+    message
+) {
+    try {
+        const assistantData = await getAssessingTutorThread(userId, skillUrl);
+
+        let messageData = {
+            skillName: skillName,
+            skillLevel: skillLevel,
+            learningObjectives: learningObjectives,
+            message
+        };
+
+        await assessingTutorMessage(
+            assistantData[0].thread_id,
+            assistantData[0].assistant_id,
+            messageData
+        );
+    } catch (error) {
+        console.error(error);
+    }
+}
 
 // Export the router for app to use.
 module.exports = router;
