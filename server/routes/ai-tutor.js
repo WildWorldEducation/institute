@@ -39,6 +39,7 @@ const {
     generateLearningObjectiveQuestion
 } = require('../utilities/openAIAssistant');
 const { textToSpeech } = require('../utilities/textToSpeech');
+const { writeFile, speechToText } = require('../utilities/speechToText');
 const isAuthenticated = require('../middlewares/authMiddleware');
 // Include API key.
 const openai = new OpenAI({
@@ -704,13 +705,14 @@ router.post(
  * STT
  */
 router.post('/stt/convert', async (req, res, next) => {
-    console.log(req.body.audioData);
+    console.log('base64 received');
     const audioData = req.body.audioData;
     // Convert Base64 to buffer
     let bufferObj = Buffer.from(
         audioData.replace('data:audio/webm; codecs=opus;base64,', ''),
         'base64'
     );
+    console.log('buffer created');
     // Generate unique filename
     function makeName(length) {
         let result = '';
@@ -727,12 +729,15 @@ router.post('/stt/convert', async (req, res, next) => {
         return result;
     }
     let uniqueName = makeName(10);
+    let filePath =
+        './public/audio/tempSpeechRecordings/' + uniqueName + '.webm';
 
-    // Write the file to server's disk
-    fs.writeFileSync(
-        './public/audio/tempSpeechRecordings/' + uniqueName + '.webm',
-        bufferObj
-    );
+    console.log('name and path created');
+
+    await writeFile(filePath, bufferObj);
+
+    console.log('file written');
+    console.log(await speechToText(filePath));
 });
 
 // Export the router for app to use.
