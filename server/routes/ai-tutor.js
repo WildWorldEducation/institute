@@ -531,7 +531,9 @@ router.get(
                 try {
                     let queryString = `SELECT * 
                     FROM ai_learning_objective_tutor_tts_urls 
-                    WHERE thread_id = ${conn.escape(assistantData[0].thread_id)};`;
+                    WHERE thread_id = ${conn.escape(
+                        assistantData[0].thread_id
+                    )};`;
 
                     audioClips = await query(queryString);
 
@@ -697,6 +699,19 @@ router.post(
         }
     }
 );
+
+/**
+ * STT
+ */
+router.post('/stt/convert', async (req, res, next) => {
+    console.log(req.body.audioData);
+    const audioData = req.body.audioData;
+    let bufferObj = Buffer.from(
+        audioData.replace('data:audio/webm; codecs=opus;base64,', ''),
+        'base64'
+    );
+    fs.writeFileSync('audio.webm', bufferObj);
+});
 
 // Export the router for app to use.
 module.exports = router;

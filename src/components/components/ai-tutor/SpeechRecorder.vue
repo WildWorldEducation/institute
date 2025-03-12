@@ -51,7 +51,7 @@ export default {
                     this.chunks.push(e.data);
                     console.log(this.chunks);
                     const blob = new Blob(this.chunks, {
-                        type: 'audio/wav'
+                        type: 'audio/webm; codecs=opus'
                     });
                     this.chunks = [];
                     const audioURL = URL.createObjectURL(blob);
@@ -59,18 +59,48 @@ export default {
 
                     let audio = document.getElementById('audio');
                     audio.src = audioURL;
+
+                    // Convert to Base64
+                    var reader = new FileReader();
+                    reader.readAsDataURL(blob);
+                    reader.onloadend = () => {
+                        var base64data = reader.result;
+                        console.log(base64data);
+                        this.sendAudioDataToServer(base64data);
+                    };
                 };
             }
         },
-        stopRecording() {
-            const blob = new Blob(this.chunks, {
-                type: 'audio/wav'
-            });
-            this.chunks = [];
-            const audioURL = URL.createObjectURL(blob);
-            audio.src = audioURL;
-            console.log('recorder stopped');
+        async sendAudioDataToServer(base64data) {
+            try {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        audioData: base64data
+                    })
+                };
+                let url = '/ai-tutor/stt/convert';
+
+                const res = await fetch(url, requestOptions);
+                if (res.status === 500) {
+                    alert('The tutor can`t answer !!');
+                    this.waitForAIresponse = false;
+                    return;
+                }
+            } catch (error) {
+                console.error(error);
+            }
         }
+        // stopRecording() {
+        //     const blob = new Blob(this.chunks, {
+        //         type: 'audio/wav'
+        //     });
+        //     this.chunks = [];
+        //     const audioURL = URL.createObjectURL(blob);
+        //     audio.src = audioURL;
+        //     console.log('recorder stopped');
+        // }
     }
 };
 </script>
