@@ -15,16 +15,15 @@ export default {
             chunks: [],
             micAllowed: false,
             mediaRecorder: {},
-            recording: false
+            recording: false,
+            // loading animation
+            isLoading: false
         };
     },
-    created() {},
-    mounted() {},
     methods: {
+        //User must allow mic in browser
         allowMic() {
             if (navigator.mediaDevices) {
-                console.log('getUserMedia supported.');
-
                 navigator.mediaDevices
                     .getUserMedia(this.constraints)
                     .then((stream) => {
@@ -34,27 +33,27 @@ export default {
             }
         },
         recordSpeech() {
+            // Start recording
             if (this.recording == false) {
                 this.mediaRecorder.start();
-                console.log(this.mediaRecorder.state);
-                console.log('recorder started');
                 this.recording = true;
-            } else {
+            }
+            // Stop recording and send
+            else {
                 this.mediaRecorder.stop();
-                console.log(this.mediaRecorder.state);
-                console.log('recorder stopped');
                 this.recording = false;
-                // this.stopRecording();
+                this.isLoading = true;
 
                 this.mediaRecorder.ondataavailable = (e) => {
                     this.chunks.push(e.data);
-                    console.log(this.chunks);
+                    // Create blob
                     const blob = new Blob(this.chunks, {
                         type: 'audio/webm; codecs=opus'
                     });
                     this.chunks = [];
-                    const audioURL = URL.createObjectURL(blob);
 
+                    // to play the speech in browser. Maybe delete.
+                    const audioURL = URL.createObjectURL(blob);
                     let audio = document.getElementById('audio');
                     audio.src = audioURL;
 
@@ -87,7 +86,9 @@ export default {
 
                 let url = '/ai-tutor/stt/convert';
                 let res = await fetch(url, requestOptions);
-                console.log('sent');
+
+                // Loading animation
+                this.isLoading = false;
 
                 this.$parent.getChatHistory();
                 if (res.status === 500) {
@@ -118,8 +119,8 @@ export default {
                 :class="{ recording: recording == true }"
                 @click="recordSpeech()"
             >
-                <span v-if="!recording"
-                    ><svg
+                <span v-if="!recording && !isLoading">
+                    <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 384 512"
                         width="18"
@@ -129,8 +130,14 @@ export default {
                         <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
                         <path
                             d="M192 0C139 0 96 43 96 96l0 160c0 53 43 96 96 96s96-43 96-96l0-160c0-53-43-96-96-96zM64 216c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c0 89.1 66.2 162.7 152 174.4l0 33.6-48 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l72 0 72 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-48 0 0-33.6c85.8-11.7 152-85.3 152-174.4l0-40c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c0 70.7-57.3 128-128 128s-128-57.3-128-128l0-40z"
-                        /></svg></span
-                ><span v-else>stop</span>
+                        />
+                    </svg>
+                </span>
+                <span v-else-if="recording">send</span>
+                <!-- Loading animation -->
+                <div v-else-if="isLoading" class="d-flex">
+                    <span class="speech-loader"></span>
+                </div>
             </button>
         </span>
     </span>
@@ -140,4 +147,26 @@ export default {
 .recording {
     background-color: red;
 }
+
+/* Loading animation for generating speech audio*/
+.speech-loader {
+    width: 24px;
+    height: 24px;
+    border: 5px solid yellow;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* End of loading animation */
 </style>
