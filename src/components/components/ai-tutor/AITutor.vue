@@ -4,6 +4,7 @@ import { useUserSkillsStore } from '../../../stores/UserSkillsStore.js';
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore.js';
 import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
 import TooltipBtn from './../share-components/TooltipBtn.vue';
+import SpeechRecorder from './SpeechRecorder.vue';
 
 export default {
     setup() {
@@ -18,7 +19,7 @@ export default {
         };
     },
     props: ['skill'],
-    components: { TutorLoadingSymbol, TooltipBtn },
+    components: { TutorLoadingSymbol, TooltipBtn, SpeechRecorder },
     data() {
         return {
             message: '',
@@ -369,6 +370,7 @@ export default {
 </script>
 
 <template>
+    <SpeechRecorder />
     <div
         v-if="mode !== 'hide'"
         :class="{
