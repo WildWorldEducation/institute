@@ -20,8 +20,11 @@ async function speechToText(filePath) {
         file: fs.createReadStream(filePath),
         model: 'whisper-1'
     });
+
+    // delete file
+    fs.unlinkSync(filePath);
+
     return transcription;
-    // TODO delete file
 }
 
 module.exports = {
