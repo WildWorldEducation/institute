@@ -37,23 +37,15 @@ const createSocket = (server) => {
     io = new Server(server);
 
     io.on('connection', (socket) => {
-        console.log('a user connected with socket info: ');
-        console.log(socket.id)
         // create a new run if a socket is connect
-
         socket.on('send-message', async (clientData, callback) => {
             try {
-
                 await createRunStream(clientData.threadId, clientData.assistantId, clientData.message, socket);
-
-
             } catch (error) {
                 socket.emit('error', error)
                 console.error(error)
             }
         })
-
-
     });
 }
 

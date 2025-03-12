@@ -7,6 +7,7 @@ import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 import TutorLoadingSymbol from './ai-tutor/tutorLoadingSymbol.vue';
 import TooltipBtn from './share-components/TooltipBtn.vue';
 import { socket, socketState } from '../../socket.js';
+import { nextTick } from 'vue';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
@@ -46,10 +47,10 @@ export default {
         );
 
         this.englishSkillLevel = this.skill.level.replace('_', ' ');
-        await this.getMessagesList();
     },
-    created() {
+    async created() {
         this.connectToSocketSever();
+        await this.getMessagesList();
     },
     updated() {
         // if (this.mode !== 'hide') {
@@ -74,8 +75,6 @@ export default {
                 this.assistantData.assistantId =
                     resData.assistantData.assistantId;
                 this.assistantData.threadId = resData.assistantData.threadId;
-                console.log('assistant data: ');
-                console.log(this.assistantData);
                 // this.$nextTick(this.scrollToMessageInput());
             } catch (error) {
                 console.error(error);
@@ -127,9 +126,7 @@ export default {
                     assistantId: this.assistantData.assistantId,
                     message: this.message
                 };
-                socket.emit('send-message', messageData, (response) => {
-                    console.log('sever replied with: ' + response);
-                });
+                socket.emit('send-message', messageData);
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false;
@@ -238,7 +235,6 @@ export default {
                 }
 
                 const response = await res.json();
-                console.log(response.assessmentResult);
 
                 if (
                     response.assessmentResult == 'yes' ||
@@ -297,11 +293,11 @@ export default {
                 this.skill.name,
                 this.skill.level,
                 this.skill.url,
-                (val) => {
-                    console.log('sever said: ');
-                    console.log(val);
-                }
+                (val) => {}
             );
+        },
+        removeStreamMessage() {
+            socket.emit('remove-stream-message');
         }
     },
     watch: {
@@ -330,10 +326,6 @@ export default {
         // }
         stateOfSocket: {
             async handler(newItem, oldItem) {
-                console.log('changed new: ');
-                console.log(newItem);
-                console.log('change old: ');
-                console.log(oldItem);
                 if (newItem.isStreaming) {
                     this.waitForAIresponse = false;
                 }
@@ -344,12 +336,15 @@ export default {
                             {
                                 text: {
                                     value: this.stateOfSocket.streamingMessage
-                                }
+                                },
+                                type: 'text'
                             }
                         ]
                     };
-                    socket.emit('remove-stream-message');
+
                     this.messageList.unshift(assistantMessage);
+
+                    this.removeStreamMessage();
                 }
             },
             deep: true
@@ -552,6 +547,7 @@ export default {
             >
                 <!-- Currently streaming message -->
                 <div
+                    v-if="stateOfSocket.isStreaming"
                     class="d-flex my-3 tutor-conversation streamed-message"
                     v-html="
                         applyMarkDownFormatting(stateOfSocket.streamingMessage)

@@ -28,23 +28,6 @@ socket.on("disconnect", () => {
 });
 
 
-socket.on('send-message', (...args) => {
-    console.log('user send message')
-    console.log(args)
-})
-
-
-socket.on('response-message', (...args) => {
-    console.log(args[0]);
-    socketState.testVar = args[0];
-});
-
-socket.on('assistant-data', (...args) => {
-    console.log('assistant data: ')
-    console.log(args[0])
-    socketState.testVar = args[0];
-})
-
 socket.on('stream-message', (...args) => {
     socketState.isRunJustEnded = false;
     socketState.isStreaming = true;
@@ -57,6 +40,6 @@ socket.on('run-end', (...args) => {
     socketState.isRunJustEnded = true;
 })
 
-socket.on('remove-stream-message', () => {
-    socketState.streamingMessage = ''
+socket.on('remove-stream-message', (...args) => {
+    socketState.streamingMessage = '';
 })
