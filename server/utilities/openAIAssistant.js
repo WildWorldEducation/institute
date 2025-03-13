@@ -58,7 +58,7 @@ async function createSocraticAssistant(topic, level, learningObjectives) {
             learningObjectives +
             `.
             
-            Please keep all messages below 3000 characters.`,
+            Please keep all messages below 2000 characters.`,
         tools: [],
         model: 'o1'
     });
@@ -123,7 +123,7 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         Make sure to have $ delimiters before any science and math strings that can convert to Latex
 
         If the message content is empty, please ask the user to write something.
-        Please keep all messages below 3000 characters.`
+        Please keep all messages below 2000 characters.`
     });
 
     if (run.status === 'completed') {
@@ -166,7 +166,7 @@ async function createAssessingAssistant(topic, level, learningObjectives) {
             level +
             `.
             Do not provide any assessment, evaluation or feedback to the student. Only ask questions.
-            Please keep all messages below 3000 characters.`,
+            Please keep all messages below 2000 characters.`,
         tools: [],
         model: 'o1'
     });
@@ -236,7 +236,7 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
         Make sure to have $ delimiters before any science and math strings that can convert to Latex.
         
         If the message content is empty, please ask the user to write something.
-        Please keep all messages below 3000 characters.`
+        Please keep all messages below 2000 characters.`
     });
 
     if (run.status === 'completed') {
@@ -307,7 +307,7 @@ async function createLearningObjectiveAssistant(level, learningObjective) {
             `student about the following subject: ` +
             learningObjective +
             `.
-            Please keep all messages below 3000 characters.`,
+            Please keep all messages below 2000 characters.`,
         tools: [],
         model: 'o1'
     });
@@ -375,7 +375,7 @@ async function learningObjectiveMessage(threadId, assistantId, messageData) {
             messageData.skillLevel +
             ` level and age. Ask follow up questions. Make sure to have $ delimiters before any science and math string that can convert to Latex.
             If the message content is empty, please ask the user to write something.
-            Please keep all messages below 3000 characters.`
+            Please keep all messages below 2000 characters.`
     });
 
     if (run.status === 'completed') {
@@ -402,7 +402,7 @@ async function requestLearningObjectiveTutoring(
         assistant_id: assistantId,
         instructions: `The user is at a ${messageData.skillLevel} level and age.
         Provide a lesson on ${messageData.learningObjective}.
-        Please keep the lesson under 3000 characters.`
+        Please keep the lesson under 2000 characters.`
     });
 
     if (run.status === 'completed') {
