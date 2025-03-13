@@ -521,7 +521,7 @@ export default {
                 >
                     Socratic Tutor
                 </button>
-                <!-- Exam Agent: assesses student -->
+                <!-- Assessing Tutor agent -->
                 <button
                     class="btn suggested-interactions ms-1 assessing-btn"
                     :class="{ underline: tutorType === 'assessing' }"
@@ -624,59 +624,56 @@ export default {
             Thinking
             <TutorLoadingSymbol />
         </div>
+        <!-- Suggested Interactions -->
         <span
-            class="d-flex flex-row suggested-interactions-wrapper mt-1"
+            class="d-flex flex-row suggested-interactions-wrapper mt-1 mb-1"
             v-if="tutorType === 'socratic'"
         >
             <button
-                class="btn suggested-interactions ms-1"
+                class="btn suggested-interactions ms-1 socratic-btn-dark"
                 @click="provideOverview()"
             >
                 Tell me something interesting about this subject!
             </button>
             <button
-                class="btn suggested-interactions ms-1"
+                class="btn suggested-interactions ms-1 socratic-btn-dark"
                 @click="provideOverview()"
             >
                 Why does this subject matter?
             </button>
             <button
-                class="btn suggested-interactions ms-1"
+                class="btn suggested-interactions ms-1 socratic-btn-dark"
                 @click="provideOverview()"
             >
                 How might I use knowledge of this topic in everyday life?
             </button>
             <button
-                class="btn suggested-interactions ms-1"
+                class="btn suggested-interactions ms-1 socratic-btn-dark"
                 @click="provideOverview()"
             >
                 What is the most important thing for me to understand about this
                 subject?
             </button>
         </span>
-        <!-- Suggested Interactions -->
-        <span v-if="tutorType === 'assessing'">
+
+        <span
+            v-if="tutorType === 'assessing'"
+            class="d-flex flex-row suggested-interactions-wrapper mt-1 mb-1"
+        >
             <button
-                class="btn suggested-interactions ms-1"
+                class="btn suggested-interactions ms-1 assessing-btn-dark"
                 @click="askQuestion()"
             >
                 test me
-            </button>
-            <button
-                v-if="tutorType === 'socratic'"
-                class="btn suggested-interactions ms-1"
-                @click="provideOverview()"
-            >
-                give me an overview
             </button>
         </span>
         <!-- Message thread -->
         <div
             v-if="showChat"
-            class="d-flex flex-column mx-auto chat-component"
+            class="d-flex flex-column mx-auto chat-history"
             :class="{
-                'chat-component': mode === 'big',
-                'mini-chat-component': mode === 'mini',
+                'chat-history': mode === 'big',
+                'mini-chat-history': mode === 'mini',
                 'socratic-chat': tutorType === 'socratic',
                 'assessing-chat': tutorType === 'assessing'
             }"
@@ -864,9 +861,17 @@ export default {
 }
 
 .suggested-interactions {
-    color: black;
+    color: white;
     border: 1px solid black;
     white-space: nowrap;
+}
+
+.socratic-btn-dark {
+    background-color: #031e27;
+}
+
+.assessing-btn-dark {
+    background-color: #290707;
 }
 
 .tutor-conversation {
@@ -906,13 +911,14 @@ export default {
     color: white;
 }
 
-.chat-component {
+.chat-history {
     overflow-x: hidden;
     padding: 5px 10px;
     border-radius: 15px;
+    min-height: 50px;
 }
 
-.mini-chat-component {
+.mini-chat-history {
     width: 103%;
     height: 80%;
     overflow-y: auto;
@@ -980,14 +986,14 @@ export default {
 /* ************************* */
 /* Tablet Styling */
 @media (min-width: 577px) and (max-width: 1023px) {
-    .chat-component {
+    .chat-history {
         width: 100%;
     }
 }
 
 /* Small devices (portrait phones) */
 @media (max-width: 480px) {
-    .chat-component {
+    .chat-history {
         width: 100%;
     }
 }
