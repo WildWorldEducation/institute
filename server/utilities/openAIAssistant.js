@@ -135,13 +135,10 @@ async function createRunStream(threadId, assistantId, userMessage, socket, assis
         assistant_id: assistantId,
         instructions: assistantInstruction
     })
-        .on('runStepCreated', (runStep) => { console.log('run created: '); })
-
-        .on('messageCreated', (message) => { console.log('created message: ') })
         .on('textDelta', (textDelta, snapshot) => {
             socket.emit('stream-message', textDelta, snapshot)
         })
-        .on('runStepDone', (runStep) => { console.log('Run ended'); socket.emit('run-end') })
+        .on('runStepDone', (runStep) => { socket.emit('run-end') })
         .on('toolCallCreated', (toolCall) => process.stdout.write(`\nassistant > ${toolCall.type}\n\n`))
         .on('toolCallDelta', (toolCallDelta, snapshot) => {
             if (toolCallDelta.type === 'code_interpreter') {
@@ -158,6 +155,26 @@ async function createRunStream(threadId, assistantId, userMessage, socket, assis
                 }
             }
         });
+    return run
+}
+
+async function createAssessmentStream(threadId, assistantId, userMessage, socket, assistantInstruction) {
+    const message = await openai.beta.threads.messages.create(
+        threadId,
+        {
+            role: "user",
+            content: userMessage
+        }
+    );
+
+    const run = openai.beta.threads.runs.stream(threadId, {
+        assistant_id: assistantId,
+        instructions: assistantInstruction
+    })
+        .on('textDelta', (textDelta, snapshot) => {
+            socket.emit('stream-assessment-message', textDelta, snapshot)
+        })
+        .on('runStepDone', (runStep) => { socket.emit('assessment-run-end') })
     return run
 }
 
@@ -179,7 +196,6 @@ async function teach(threadId, assistantId, messageData) {
     if (run.status === 'completed') {
         const messages = await openai.beta.threads.messages.list(threadId);
         const latestMessage = messages.data[0];
-
         return latestMessage;
     } else {
         console.log(run.status);
@@ -351,5 +367,6 @@ module.exports = {
     generateLearningObjectiveQuestion,
     teach,
     assess,
-    createRunStream
+    createRunStream,
+    createAssessmentStream
 };

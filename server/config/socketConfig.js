@@ -1,5 +1,5 @@
 const { Server } = require("socket.io");
-const { getSkillThread, createRunStream, createAssistantAndThread, saveAITutorSkillThread } = require("../utilities/openAIAssistant");
+const { getSkillThread, createRunStream, createAssistantAndThread, saveAITutorSkillThread, createAssessmentStream } = require("../utilities/openAIAssistant");
 
 
 
@@ -38,11 +38,12 @@ const createSocket = (server) => {
 
     io.on('connection', (socket) => {
         try {
-            // create a new run if a socket is connect
+            // user send normal message event
             socket.on('send-message', async (clientData, callback) => {
                 await createRunStream(clientData.threadId, clientData.assistantId, clientData.message, socket);
             })
 
+            // user send teach me message event
             socket.on('teach-request', async (messageData, callback) => {
                 const assistantInstruction = `The user is at a ${messageData.skillLevel} level and age.
         Teach them about one of the following learning objectives: ${messageData.learningObjectives}.
@@ -51,6 +52,7 @@ const createSocket = (server) => {
                 await createRunStream(messageData.threadId, messageData.assistantId, 'Teach me', socket, assistantInstruction);
             });
 
+            // user send test me message event
             socket.on('ask-question-request', async (messageData, callback) => {
                 const assistantInstruction = `The user is at a ${messageData.skillLevel} level and age.
         Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
@@ -61,6 +63,17 @@ const createSocket = (server) => {
         the subject, and stop asking questions.`;
                 await createRunStream(messageData.threadId, messageData.assistantId, 'Test me', socket, assistantInstruction);
             });
+
+            // user send "Have I master this skill" event
+            socket.on('assessment-request', async (messageData) => {
+                const assistantInstruction = `The user is at a ${messageData.skillLevel} level and age.
+        Review this chat stream and determine if they have understood and mastered the 
+        following learning objectives: ${messageData.learningObjectives}.
+        
+        If they have, return only the word "yes" and no other words.
+        If not, or if it is unclear, let them know that they need to answer more questions correctly.`
+                await createAssessmentStream(messageData.threadId, messageData.assistantId, 'Do you think I have mastered this topic?', socket, assistantInstruction)
+            })
 
         } catch (error) {
             socket.emit('error', error)

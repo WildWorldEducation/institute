@@ -192,27 +192,6 @@ export default {
 
             this.waitForAIresponse = true;
             try {
-                // const requestOptions = {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({
-                //         userName: this.userDetailsStore.userName,
-                //         userId: this.userDetailsStore.userId,
-                //         skillName: this.skill.name,
-                //         skillLevel: this.englishSkillLevel,
-                //         skillUrl: this.skill.url,
-                //         learningObjectives: this.learningObjectives
-                //     })
-                // };
-                // var url = '/ai-tutor/ask-question';
-                // const res = await fetch(url, requestOptions);
-                // if (res.status === 500) {
-                //     alert('The tutor can`t answer !!');
-                //     this.waitForAIresponse = false;
-                //     return;
-                // }
-                // this.getMessagesList();
-                // this.waitForAIresponse = false;
                 const messageData = {
                     skillLevel: this.skill.level,
                     learningObjectives: this.learningObjectives,
@@ -240,47 +219,29 @@ export default {
                 return;
             }
             this.waitForAIresponse = true;
+
+            const userMessage = {
+                role: 'user',
+                content: [
+                    {
+                        text: {
+                            value: 'Do you think I have mastered this topic?'
+                        }
+                    }
+                ]
+            };
+
+            this.messageList.unshift(userMessage);
+
             try {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        userName: this.userDetailsStore.userName,
-                        userId: this.userDetailsStore.userId,
-                        skillName: this.skill.name,
-                        skillLevel: this.englishSkillLevel,
-                        skillUrl: this.skill.url,
-                        learningObjectives: this.learningObjectives
-                    })
+                const messageData = {
+                    skillLevel: this.skill.level,
+                    learningObjectives: this.learningObjectives,
+                    threadId: this.assistantData.threadId,
+                    assistantId: this.assistantData.assistantId,
+                    message: this.message
                 };
-
-                var url = '/ai-tutor/assessment';
-
-                const res = await fetch(url, requestOptions);
-                if (res.status === 500) {
-                    alert('The tutor can`t answer !!');
-                    this.waitForAIresponse = false;
-                    return;
-                }
-
-                const response = await res.json();
-
-                if (
-                    response.assessmentResult == 'yes' ||
-                    response.assessmentResult == 'Yes' ||
-                    response.assessmentResult == 'yes.' ||
-                    response.assessmentResult == 'Yes.'
-                ) {
-                    alert('congrats, you have mastered this skill!');
-                    this.makeMastered();
-                } else {
-                    alert(
-                        "You need to answer more questions correctly to master the skill. Press the 'test me' button to begin."
-                    );
-                }
-
-                this.getMessagesList();
-                this.waitForAIresponse = false;
+                socket.emit('assessment-request', messageData);
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false;
@@ -330,29 +291,6 @@ export default {
         }
     },
     watch: {
-        // Update text area height base on message input
-        // message: function (newItem, oldItem) {
-        //     let { messageInput } = this.$refs;
-        //     const lineHeightInPixels = 22;
-        //     // Reset messageInput Height
-        //     messageInput.setAttribute(
-        //         `style`,
-        //         `height:${lineHeightInPixels}px;overflow-y:hidden;`
-        //     );
-        //     // Calculate number of lines (soft and hard)
-        //     const height = messageInput.style.height;
-        //     const scrollHeight = messageInput.scrollHeight;
-        //     messageInput.style.height = height;
-        //     const count = Math.floor(scrollHeight / lineHeightInPixels);
-        //     this.$nextTick(() => {
-        //         messageInput.setAttribute(
-        //             `style`,
-        //             `height:${count * lineHeightInPixels}px;overflow-y:hidden;`
-        //         );
-        //         // Also scroll to bottom of the chat div
-        //         //this.scrollToMessageInput();
-        //     });
-        // }
         stateOfSocket: {
             async handler(newItem, oldItem) {
                 if (newItem.isStreaming) {

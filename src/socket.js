@@ -1,12 +1,15 @@
 import { reactive } from "vue";
 import { io } from "socket.io-client";
 
+
 export const socketState = reactive({
     connected: false,
     assistantData: [],
     streamingMessage: '',
     isStreaming: false,
     isRunJustEnded: false,
+    isStudentMasteredSkill: false,
+
 
 });
 
@@ -43,3 +46,19 @@ socket.on('run-end', (...args) => {
 socket.on('remove-stream-message', (...args) => {
     socketState.streamingMessage = '';
 })
+
+socket.on('stream-assessment-message', (...args) => {
+    socketState.isRunJustEnded = false;
+    socketState.isStreaming = true;
+    socketState.streamingMessage = socketState.streamingMessage + args[0].value;
+})
+
+socket.on('assessment-run-end', (...args) => {
+    if (socketState.streamingMessage === 'yes') {
+        socketState.isStudentMasteredSkill = true;
+    }
+
+    socketState.isStreaming = false;
+    socketState.isRunJustEnded = true;
+})
+
