@@ -1,7 +1,6 @@
 <script>
 // import components.
 import LastVisitedSkills from '../components/hub-components/LastVisitedSkills.vue';
-import Goals from '../components/hub-components/Goals.vue';
 import RecommendedSkillsGenerator from '../components/hub-components/RecommendedSkillsGenerator.vue';
 // Import store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
@@ -24,13 +23,11 @@ export default {
             isTutorialComplete: false,
             showTutorialTip1: false,
             showTutorialTip2: false,
-            showTutorialTip3: false,
-            showTutorialTip4: false
+            showTutorialTip3: false
         };
     },
     components: {
         LastVisitedSkills,
-        Goals,
         RecommendedSkillsGenerator
     },
     computed: {
@@ -78,9 +75,6 @@ export default {
                 this.showTutorialTip3 = true;
             } else if (step == 3) {
                 this.showTutorialTip3 = false;
-                this.showTutorialTip4 = true;
-            } else if (step == 4) {
-                this.showTutorialTip4 = false;
                 this.markTutorialComplete();
             }
         },
@@ -243,40 +237,6 @@ export default {
                     />
                 </div>
             </div>
-            <!-- Goals / Student Suggested Questions -->
-            <div v-if="userDetailsStore.role == 'xyz'" class="col-md-6 mb-2">
-                <div class="h-100">
-                    <!-- Tooltip -->
-                    <div
-                        v-if="
-                            showTutorialTip4 &&
-                            userDetailsStore.role == 'student'
-                        "
-                        class="tool-tip-base mb-3"
-                    >
-                        <div class="explain-tool-tip triangle-bottom-left">
-                            <div class="tool-tip-text">
-                                <p>
-                                    This section shows any goals you might have
-                                    made.
-                                </p>
-                                <p>
-                                    You can make a goal when there is a skill
-                                    you want to master but it is not unlocked
-                                    yet.
-                                </p>
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(4)"
-                                >
-                                    close
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <Goals />
-                </div>
-            </div>
         </div>
     </div>
 
@@ -310,7 +270,7 @@ export default {
         >
             <!-- Student -->
             <div>
-                <p>This is your hub page.</p>
+                <p>This is the search page.</p>
                 <button class="btn primary-btn" @click="progressTutorial(1)">
                     next
                 </button>
