@@ -56,6 +56,13 @@ const router = createRouter({
             meta: { title: 'Register' }
         },
         {
+            path: '/instructor-signup',
+            name: 'instructor-signup',
+            component: () =>
+                import('../components/pages/SignUpInstructorAccountView.vue'),
+            meta: { title: 'Instructor sign up' }
+        },
+        {
             path: '/editor-signup',
             name: 'editor-signup',
             component: () =>
@@ -491,6 +498,7 @@ router.beforeEach(async (to, from, next) => {
     if (
         from.name == 'login' ||
         from.name == 'student-signup' ||
+        from.name == 'instructor-signup' ||
         from.name == 'editor-signup'
     ) {
         // Instructor theme
@@ -557,6 +565,7 @@ router.beforeEach(async (to, from, next) => {
         // For guest access.
         to.name !== 'skill-tree' &&
         to.name !== 'show-skill' &&
+        to.name !== 'instructor-signup' &&
         to.name !== 'hub'
     ) {
         next({ name: 'skill-tree' });
@@ -601,6 +610,7 @@ router.beforeEach(async (to, from, next) => {
         to.name == 'student-skills' ||
         to.name == 'student-signup' ||
         to.name == 'editor-signup' ||
+        to.name == 'instructor-signup' ||
         to.name == 'login'
     ) {
         document.getElementById('app').style.overflow = 'hidden';

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import router from '../../router';
 import CheckPasswordComplexity from '../components/CheckPasswordComplexity.vue';
 export default {
@@ -13,8 +13,7 @@ export default {
                 username: null,
                 email: null,
                 password: null,
-                accountType: 'student',
-                skillTreeGradeLevel: 'phd'
+                accountType: 'instructor'
             },
             // Validate Object flag
             validate: {
@@ -27,12 +26,9 @@ export default {
             },
             passwordVisible: false,
             // For Google sign up absolute API url.
-            isProduction: import.meta.env.PROD,
-            showVideoModal: true,
-            showModalVideo: true
+            isProduction: import.meta.env.PROD
         };
     },
-    async created() {},
     mounted() {
         // Load Google login button.
         let script = document.createElement('script');
@@ -40,10 +36,6 @@ export default {
         script.setAttribute('defer', '');
         script.onload = this.initializeGoogleSignIn;
         document.head.appendChild(script);
-
-        if (window.innerWidth < 800) {
-            this.showModalVideo = false;
-        }
     },
     methods: {
         ValidateForm() {
@@ -84,11 +76,10 @@ export default {
                     last_name: '',
                     email: this.newUser.email,
                     password: this.newUser.password,
-                    account_type: this.newUser.accountType,
-                    grade_filter: this.newUser.skillTreeGradeLevel
+                    account_type: this.newUser.accountType
                 })
             };
-            var url = '/users/new-user/add';
+            var url = '/users/new-instructor/add';
             fetch(url, requestOptions)
                 .then(function (response) {
                     return response.json();
@@ -96,16 +87,13 @@ export default {
                 .then((data) => {
                     if (data.account == 'authorized') {
                         alert('Account created.');
-                        router.push({ name: 'skill-tree' });
+                        router.push({ name: 'students' });
                     } else if (data.account == 'username already taken') {
                         alert(data.account);
                     } else if (data.account == 'email already taken') {
                         alert(data.account);
                     }
                 });
-        },
-        toggleModal() {
-            this.showVideoModal = false;
         },
         initializeGoogleSignIn() {
             const clientId =
@@ -151,42 +139,18 @@ export default {
             document.body.appendChild(form);
 
             form.submit();
-        },
-        selectRole(role) {
-            if (role == 'student') {
-                this.newUser.accountType = 'student';
-                this.showVideoModal = false;
-            } else if (role == 'instructor') {
-                // Redirect to the instructor signup page instead of just changing the account type
-                this.$router.push('/instructor-signup');
-            }
         }
     }
 };
 </script>
 
 <template>
-    <div class="signup-page">
-        <!-- The video -->
-        <div
-            v-if="!showVideoModal"
-            class="embed-responsive embed-responsive-16by9"
-        >
-            <iframe
-                class="intro-video"
-                src="https://www.youtube.com/embed/hu_hjfLLwY0?si=TyvLiAgxcQgmY92q"
-                title="YouTube video player"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen
-            ></iframe>
-        </div>
+    <div class="signup-page instructor-theme">
         <!-- The form -->
         <div class="form-signin mt-3">
             <div>
+                <h1 class="text-center mb-4">Instructor Signup</h1>
                 <div class="mb-3 text-start">
-                    <!-- <label class="form-label">Username</label> -->
                     <input
                         v-model="newUser.username"
                         type="text"
@@ -289,24 +253,6 @@ export default {
                     <CheckPasswordComplexity :formData="newUser" />
                 </div>
 
-                <!-- Grade level -->
-                <div
-                    v-if="newUser.accountType == 'student'"
-                    class="mb-3 text-start"
-                >
-                    <select
-                        class="form-select"
-                        v-model="newUser.skillTreeGradeLevel"
-                    >
-                        <option selected value="phd">Choose your level</option>
-                        <option value="grade_school">Grade School</option>
-                        <option value="middle_school">Middle School</option>
-                        <option value="high_school">High School</option>
-                        <option value="college">College</option>
-                        <option value="phd">PHD</option>
-                    </select>
-                </div>
-
                 <button class="btn btn-dark mb-2" @click="ValidateForm()">
                     Register
                 </button>
@@ -318,107 +264,9 @@ export default {
             </div>
         </div>
     </div>
-
-    <!-- Video Modal -->
-    <div v-if="showVideoModal">
-        <div id="myModal" class="modal">
-            <!-- Modal content -->
-            <div class="modal-content">
-                <!-- The video -->
-                <div
-                    v-if="showModalVideo"
-                    id="modal-iframe"
-                    class="embed-responsive embed-responsive-16by9"
-                >
-                    <iframe
-                        class="intro-video"
-                        src="https://www.youtube.com/embed/hu_hjfLLwY0?si=TyvLiAgxcQgmY92q"
-                        title="YouTube video player"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerpolicy="strict-origin-when-cross-origin"
-                        allowfullscreen
-                    ></iframe>
-                </div>
-                <button
-                    class="btn primary-btn mx-auto mt-2 border border-dark"
-                    @click="selectRole('student')"
-                >
-                    I'm a student
-                </button>
-                <button
-                    class="btn primary-btn mx-auto mt-2 border border-dark"
-                    @click="selectRole('instructor')"
-                >
-                    I'm an instructor
-                </button>
-            </div>
-        </div>
-    </div>
 </template>
 
 <style scoped>
-/* The Warning Modal */
-.modal {
-    display: block;
-    /* Hidden by default */
-    position: fixed;
-    /* Stay in place */
-    z-index: 1;
-    /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%;
-    /* Full width */
-    height: 100%;
-    /* Full height */
-    overflow: hidden;
-    /* Enable scroll if needed */
-    background-color: rgb(0, 0, 0);
-    /* Fallback color */
-    background-color: rgba(0, 0, 0, 0.4);
-    /* Black w/ opacity */
-}
-
-/* Modal Content/Box */
-.modal-content {
-    background-color: #fefefe;
-    margin: 5% auto;
-    /* 5% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 600px;
-    font-size: 18px;
-    /* Could be more or less, depending on screen size */
-}
-
-.intro-video {
-    display: block;
-    border-radius: 5%;
-    aspect-ratio: 16 / 9;
-    margin: auto;
-}
-
-/* Small devices (portrait phones) */
-@media (max-width: 800px) {
-    .intro-video {
-        width: 100%;
-    }
-
-    /* Modal Content/Box */
-    .modal-content {
-        margin: 40% auto;
-        /* 40% from the top and centered */
-        width: 90%;
-    }
-}
-
-/* Bigger devices */
-
-#modal-iframe .intro-video {
-    width: 560px;
-}
-
 .signup-page {
     height: 100%;
     padding: 10px;
@@ -469,6 +317,7 @@ h1 {
 .eye-icon:hover {
     cursor: pointer;
 }
+
 /* Mobile */
 @media (max-width: 480px) {
     .signup-page {
@@ -502,7 +351,6 @@ h1 {
     width: 360px;
     padding: 15px;
     margin: 0 auto;
-    /* border: 1px solid black; */
     border-radius: 25px;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
@@ -522,53 +370,5 @@ h1 {
     font-size: 0.75rem;
     color: red;
     font-weight: 300;
-}
-
-.toggle {
-    border: #7f56d9 solid 1px;
-    width: 100%;
-    height: 40px;
-    border-radius: 10px;
-    margin-bottom: 16px;
-    position: relative;
-    cursor: pointer;
-    overflow: hidden;
-}
-.toggle .cursor {
-    height: 100%;
-    width: 50%;
-    background-color: #7f56d9;
-    position: absolute;
-    top: 0px;
-    transition: all ease 300ms;
-}
-.toggle.left .cursor {
-    left: 0px;
-}
-.toggle.right .cursor {
-    left: 50%;
-}
-.toggle .labels {
-    display: flex;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    left: 0px;
-    top: 0px;
-}
-.label-left,
-.label-right {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 50%;
-    color: #000000;
-}
-.toggle.left .label-left {
-    color: #ffffff;
-}
-.toggle.right .label-right {
-    color: #ffffff;
 }
 </style>
