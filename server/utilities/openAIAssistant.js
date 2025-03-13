@@ -269,12 +269,14 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
 }
 
 // Test the student
-async function askQuestion(threadId, assistantId, messageData) {
-    // Add a message to the thread
-    const message = await openai.beta.threads.messages.create(threadId, {
-        role: 'user',
-        content: 'Test me'
-    });
+async function assessingTutorAskQuestion(threadId, assistantId, messageData) {
+    if (!messageData.isEmptyMessage) {
+        // Add a message to the thread
+        const message = await openai.beta.threads.messages.create(threadId, {
+            role: 'user',
+            content: 'Test me'
+        });
+    }
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
@@ -474,7 +476,7 @@ module.exports = {
     getAssessingTutorThread,
     saveAssessingTutorThread,
     assessingTutorMessage,
-    askQuestion,
+    assessingTutorAskQuestion,
     // Learning objective tutor
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
