@@ -1276,7 +1276,7 @@ export default {
             </div>
             <div v-else-if="showTutorialTip5">
                 <p>
-                    The "Requirements for mastery" section explains everything
+                    The "Requirements for Mastery" and "Learning Objectives" sections explain everything
                     one needs to learn to master the skill.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(5)">

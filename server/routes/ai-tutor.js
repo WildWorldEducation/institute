@@ -39,6 +39,7 @@ const {
     generateLearningObjectiveQuestion
 } = require('../utilities/openAIAssistant');
 const { textToSpeech } = require('../utilities/textToSpeech');
+const { writeFile, speechToText } = require('../utilities/speechToText');
 const isAuthenticated = require('../middlewares/authMiddleware');
 // Include API key.
 const openai = new OpenAI({
@@ -531,7 +532,9 @@ router.get(
                 try {
                     let queryString = `SELECT * 
                     FROM ai_learning_objective_tutor_tts_urls 
-                    WHERE thread_id = ${conn.escape(assistantData[0].thread_id)};`;
+                    WHERE thread_id = ${conn.escape(
+                        assistantData[0].thread_id
+                    )};`;
 
                     audioClips = await query(queryString);
 
@@ -697,6 +700,132 @@ router.post(
         }
     }
 );
+
+/**
+ * STT
+ */
+router.post('/stt/convert', async (req, res, next) => {
+    // prepare variables
+    const userId = req.body.userId;
+    const skillUrl = req.body.skillUrl;
+    const skillName = req.body.skillName;
+    const skillLevel = req.body.skillLevel;
+    const learningObjectives = req.body.learningObjectives;
+    const audioData = req.body.audioData;
+    const tutorType = req.body.tutorType;
+
+    // Convert Base64 to buffer
+    let bufferObj = Buffer.from(
+        audioData.replace('data:audio/webm; codecs=opus;base64,', ''),
+        'base64'
+    );
+
+    // Generate unique filename
+    function makeName(length) {
+        let result = '';
+        const characters =
+            'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const charactersLength = characters.length;
+        let counter = 0;
+        while (counter < length) {
+            result += characters.charAt(
+                Math.floor(Math.random() * charactersLength)
+            );
+            counter += 1;
+        }
+        return result;
+    }
+    let uniqueName = makeName(10);
+    let filePath =
+        './public/audio/tempSpeechRecordings/' + uniqueName + '.webm';
+
+    await writeFile(filePath, bufferObj);
+
+    let messageObject = await speechToText(filePath);
+    let message = messageObject.text;
+    //console.log(message);
+
+    if (tutorType == 'socratic')
+        await sendSpeechToSocraticAI(
+            userId,
+            skillUrl,
+            skillName,
+            skillLevel,
+            learningObjectives,
+            message
+        );
+    else if (tutorType == 'assessing')
+        await sendSpeechToAssessingAI(
+            userId,
+            skillUrl,
+            skillName,
+            skillLevel,
+            learningObjectives,
+            message
+        );
+
+    //console.log('res.end()');
+
+    res.end();
+});
+
+async function sendSpeechToSocraticAI(
+    userId,
+    skillUrl,
+    skillName,
+    skillLevel,
+    learningObjectives,
+    message
+) {
+    try {
+        //console.log('get thread');
+        const assistantData = await getSocraticTutorThread(userId, skillUrl);
+
+        let messageData = {
+            skillName: skillName,
+            skillLevel: skillLevel,
+            learningObjectives: learningObjectives,
+            message
+        };
+
+        //console.log('send message');
+        await socraticTutorMessage(
+            assistantData[0].thread_id,
+            assistantData[0].assistant_id,
+            messageData
+        );
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function sendSpeechToAssessingAI(
+    userId,
+    skillUrl,
+    skillName,
+    skillLevel,
+    learningObjectives,
+    message
+) {
+    try {
+        const assistantData = await getAssessingTutorThread(userId, skillUrl);
+
+        let messageData = {
+            skillName: skillName,
+            skillLevel: skillLevel,
+            learningObjectives: learningObjectives,
+            message
+        };
+
+        await assessingTutorMessage(
+            assistantData[0].thread_id,
+            assistantData[0].assistant_id,
+            messageData
+        );
+    } catch (error) {
+        console.error(error);
+    }
+}
 
 // Export the router for app to use.
 module.exports = router;

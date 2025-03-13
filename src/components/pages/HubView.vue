@@ -270,7 +270,7 @@ export default {
         >
             <!-- Student -->
             <div>
-                <p>This is your hub page.</p>
+                <p>This is the search page.</p>
                 <button class="btn primary-btn" @click="progressTutorial(1)">
                     next
                 </button>

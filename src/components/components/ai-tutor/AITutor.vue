@@ -4,6 +4,7 @@ import { useUserSkillsStore } from '../../../stores/UserSkillsStore.js';
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore.js';
 import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
 import TooltipBtn from './../share-components/TooltipBtn.vue';
+import SpeechRecorder from './SpeechRecorder.vue';
 
 export default {
     setup() {
@@ -18,7 +19,7 @@ export default {
         };
     },
     props: ['skill'],
-    components: { TutorLoadingSymbol, TooltipBtn },
+    components: { TutorLoadingSymbol, TooltipBtn, SpeechRecorder },
     data() {
         return {
             message: '',
@@ -70,6 +71,7 @@ export default {
         },
         // For both tutors
         async getChatHistory() {
+            console.log('getChatHistory');
             try {
                 const requestOptions = {
                     method: 'POST',
@@ -377,7 +379,9 @@ export default {
         }"
     >
         <!-- Heading, tooltip and minimise/maximise buttons -->
-        <div class="d-flex flex-column flex-md-row gap-2 align-items-baseline">
+        <div
+            class="d-flex flex-column flex-md-row gap-2 align-items-baseline mb-1"
+        >
             <div class="d-flex flex-row w-100 justify-content-between">
                 <div class="d-flex gap-2">
                     <!-- Pin button -->
@@ -463,6 +467,14 @@ export default {
                 </div>
             </div>
         </div>
+        <!-- For speech to text -->
+        <SpeechRecorder
+            v-if="mode == 'big'"
+            :tutorType="tutorType"
+            :skill="skill"
+            :skillLevel="englishSkillLevel"
+            :learningObjectives="learningObjectives"
+        />
         <!--Tutor types -->
         <span v-if="mode === 'big'" class="d-flex justify-content-between">
             <span>
