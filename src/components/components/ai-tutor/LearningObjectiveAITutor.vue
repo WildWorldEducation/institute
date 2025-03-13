@@ -1,12 +1,15 @@
 <script>
+import { socket, socketState } from '../../../socket.js';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const stateOfSocket = socketState;
         return {
-            userDetailsStore
+            userDetailsStore,
+            stateOfSocket
         };
     },
     props: [
@@ -24,13 +27,17 @@ export default {
             messageList: [],
             waitForAIresponse: false,
             isGotMessages: false,
-            englishSkillLevel: ''
+            englishSkillLevel: '',
+            assistantData: null
         };
     },
     async mounted() {
         this.englishSkillLevel = this.skillLevel.replace('_', ' ');
         // load thread.
         await this.getMessages();
+    },
+    async created() {
+        this.connectToSocketSever();
     },
     methods: {
         // load thread
@@ -48,7 +55,9 @@ export default {
                 const response = await fetch(url);
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
-
+                this.assistantData = resData.assistantData;
+                console.log('assistant data: ');
+                console.log(this.assistantData);
                 // AI should check for mastery after every 5 interactions from the user.
                 // This assumes the user will interact for every second message.
                 if (this.messageList.length > 9) {
@@ -70,31 +79,40 @@ export default {
             // Turn on loading icon
             this.waitForAIresponse = true;
             try {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        learningObjective: this.learningObjective,
-                        learningObjectiveId: this.learningObjectiveId,
-                        userName: this.userDetailsStore.userName,
-                        userId: this.userDetailsStore.userId,
-                        skillName: this.skillName,
-                        skillLevel: this.englishSkillLevel,
-                        // Whatever the user typed.
-                        message: this.message
-                    })
+                // const requestOptions = {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({
+                //         learningObjective: this.learningObjective,
+                //         learningObjectiveId: this.learningObjectiveId,
+                //         userName: this.userDetailsStore.userName,
+                //         userId: this.userDetailsStore.userId,
+                //         skillName: this.skillName,
+                //         skillLevel: this.englishSkillLevel,
+                //         // Whatever the user typed.
+                //         message: this.message
+                //     })
+                // };
+                // var url = '/ai-tutor/learning-objectives/new-message';
+                // const res = await fetch(url, requestOptions);
+                // if (res.status === 500) {
+                //     alert('The tutor can`t answer !!');
+                //     this.waitForAIresponse = false;
+                //     return;
+                // }
+                // this.getMessages();
+                // this.waitForAIresponse = false;
+                const userMessage = {
+                    role: 'user',
+                    content: [{ text: { value: this.message } }]
                 };
-
-                var url = '/ai-tutor/learning-objectives/new-message';
-                const res = await fetch(url, requestOptions);
-                if (res.status === 500) {
-                    alert('The tutor can`t answer !!');
-                    this.waitForAIresponse = false;
-                    return;
-                }
-
-                this.getMessages();
-                this.waitForAIresponse = false;
+                this.messageList.push(userMessage);
+                const messageData = {
+                    threadId: this.assistantData.threadId,
+                    assistantId: this.assistantData.assistantId,
+                    message: this.message
+                };
+                socket.emit('send-message', messageData);
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false;
@@ -187,6 +205,39 @@ export default {
 
             let formattedMessage = md.render(string);
             return formattedMessage;
+        },
+        connectToSocketSever() {
+            socket.connect();
+        },
+        disconnectToSocketSever() {
+            socket.disconnect();
+        }
+    },
+    watch: {
+        stateOfSocket: {
+            async handler(newItem, oldItem) {
+                if (newItem.isStreaming) {
+                    this.waitForAIresponse = false;
+                }
+                if (!newItem.isStreaming && newItem.isRunJustEnded) {
+                    const assistantMessage = {
+                        role: 'assistant',
+                        content: [
+                            {
+                                text: {
+                                    value: this.stateOfSocket.streamingMessage
+                                },
+                                type: 'text'
+                            }
+                        ]
+                    };
+
+                    this.messageList.push(assistantMessage);
+
+                    this.removeStreamMessage();
+                }
+            },
+            deep: true
         }
     }
 };
@@ -313,6 +364,12 @@ export default {
                 v-html="applyMarkDownFormatting(message.content[0].text.value)"
             ></div>
         </div>
+        <!-- Currently streaming message -->
+        <div
+            v-if="stateOfSocket.isStreaming"
+            class="d-flex my-3 tutor-conversation streamed-message"
+            v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
+        ></div>
     </div>
 </template>
 

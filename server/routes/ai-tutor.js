@@ -214,14 +214,18 @@ router.get(
                 const messages = await getMessagesList(
                     assistantData[0].threadId
                 );
-                res.json({ messages: messages });
+                res.json({ messages: messages, assistantData: assistantData[0] });
                 return;
             } else {
                 // Retrieve the chat history.
                 const messages = await getMessagesList(
                     assistantData[0].thread_id
                 );
-                res.json({ messages: messages });
+                const assistantDataForClient = {
+                    assistantId: assistantData[0].assistant_id,
+                    threadId: assistantData[0].thread_id
+                }
+                res.json({ messages: messages, assistantData: assistantDataForClient });
             }
         } catch (error) {
             console.error(error);
