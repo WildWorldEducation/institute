@@ -61,7 +61,7 @@ export default {
                     var reader = new FileReader();
                     reader.readAsDataURL(blob);
                     reader.onloadend = () => {
-                        var base64data = reader.result;
+                        var base64data = reader.result;                        
                         // Send base 64 data to server
                         this.sendAudioDataToServer(base64data);
                     };

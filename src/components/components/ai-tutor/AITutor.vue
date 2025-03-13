@@ -469,6 +469,7 @@ export default {
         </div>
         <!-- For speech to text -->
         <SpeechRecorder
+            v-if="mode == 'big'"
             :tutorType="tutorType"
             :skill="skill"
             :skillLevel="englishSkillLevel"

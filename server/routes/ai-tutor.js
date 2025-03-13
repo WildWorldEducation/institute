@@ -705,7 +705,6 @@ router.post(
  * STT
  */
 router.post('/stt/convert', async (req, res, next) => {
-    console.log('base64 received');
     // prepare variables
     const userId = req.body.userId;
     const skillUrl = req.body.skillUrl;
@@ -720,7 +719,6 @@ router.post('/stt/convert', async (req, res, next) => {
         audioData.replace('data:audio/webm; codecs=opus;base64,', ''),
         'base64'
     );
-    console.log('buffer created');
 
     // Generate unique filename
     function makeName(length) {
@@ -741,13 +739,11 @@ router.post('/stt/convert', async (req, res, next) => {
     let filePath =
         './public/audio/tempSpeechRecordings/' + uniqueName + '.webm';
 
-    console.log('name and path created');
     await writeFile(filePath, bufferObj);
 
-    console.log('file written');
     let messageObject = await speechToText(filePath);
     let message = messageObject.text;
-    console.log(message);
+    //console.log(message);
 
     if (tutorType == 'socratic')
         await sendSpeechToSocraticAI(
@@ -768,7 +764,7 @@ router.post('/stt/convert', async (req, res, next) => {
             message
         );
 
-    console.log('res.end()');
+    //console.log('res.end()');
 
     res.end();
 });
@@ -782,7 +778,7 @@ async function sendSpeechToSocraticAI(
     message
 ) {
     try {
-        console.log('get thread');
+        //console.log('get thread');
         const assistantData = await getSocraticTutorThread(userId, skillUrl);
 
         let messageData = {
@@ -792,7 +788,7 @@ async function sendSpeechToSocraticAI(
             message
         };
 
-        console.log('send message');
+        //console.log('send message');
         await socraticTutorMessage(
             assistantData[0].thread_id,
             assistantData[0].assistant_id,
