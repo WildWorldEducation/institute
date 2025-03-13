@@ -57,7 +57,6 @@ socket.on('assessment-run-end', (...args) => {
     if (socketState.streamingMessage === 'yes') {
         socketState.isStudentMasteredSkill = true;
     }
-
     socketState.isStreaming = false;
     socketState.isRunJustEnded = true;
 })

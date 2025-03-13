@@ -53,9 +53,9 @@ export default {
         await this.getMessagesList();
     },
     updated() {
-        // if (this.mode !== 'hide') {
-        //     this.scrollToMessageInput();
-        // }
+        if (this.mode !== 'hide') {
+            this.scrollToMessageInput();
+        }
     },
     methods: {
         // Get messages in thread.
@@ -72,6 +72,7 @@ export default {
                 const response = await fetch(url);
                 const resData = await response.json();
                 this.messageList = resData.messages.data;
+                this.messageList = this.messageList.reverse();
                 this.assistantData.assistantId =
                     resData.assistantData.assistantId;
                 this.assistantData.threadId = resData.assistantData.threadId;
@@ -120,7 +121,7 @@ export default {
                     role: 'user',
                     content: [{ text: { value: this.message } }]
                 };
-                this.messageList.unshift(userMessage);
+                this.messageList.push(userMessage);
                 const messageData = {
                     threadId: this.assistantData.threadId,
                     assistantId: this.assistantData.assistantId,
@@ -176,7 +177,7 @@ export default {
                     content: [{ text: { value: 'Teach me' } }]
                 };
 
-                this.messageList.unshift(userMessage);
+                this.messageList.push(userMessage);
 
                 socket.emit('teach-request', messageData);
             } catch (error) {
@@ -205,7 +206,7 @@ export default {
                     content: [{ text: { value: 'Test me' } }]
                 };
 
-                this.messageList.unshift(userMessage);
+                this.messageList.push(userMessage);
 
                 socket.emit('ask-question-request', messageData);
             } catch (error) {
@@ -231,7 +232,7 @@ export default {
                 ]
             };
 
-            this.messageList.unshift(userMessage);
+            this.messageList.push(userMessage);
 
             try {
                 const messageData = {
@@ -309,7 +310,7 @@ export default {
                         ]
                     };
 
-                    this.messageList.unshift(assistantMessage);
+                    this.messageList.push(assistantMessage);
 
                     this.removeStreamMessage();
                 }
@@ -322,6 +323,92 @@ export default {
 
 <template>
     <div>
+        <!-- Heading, tooltip and minimize/maximize buttons -->
+        <div class="d-flex flex-column flex-md-row gap-2 align-items-baseline">
+            <div class="d-flex flex-row w-100 justify-content-between">
+                <div class="d-flex gap-2">
+                    <!-- Pin button -->
+                    <btn
+                        v-if="mode === 'big'"
+                        class="btn"
+                        title="Minimize and pin the chat"
+                        b-tooltip.hover
+                        @click="mode = 'mini'"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            class="primary-icon"
+                            width="17"
+                            height="17"
+                        >
+                            <path
+                                d="M32 32C32 14.3 46.3 0 64 0L320 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-29.5 0 11.4 148.2c36.7 19.9 65.7 53.2 79.5 94.7l1 3c3.3 9.8 1.6 20.5-4.4 28.8s-15.7 13.3-26 13.3L32 352c-10.3 0-19.9-4.9-26-13.3s-7.7-19.1-4.4-28.8l1-3c13.8-41.5 42.8-74.8 79.5-94.7L93.5 64 64 64C46.3 64 32 49.7 32 32zM160 384l64 0 0 96c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-96z"
+                            />
+                        </svg>
+                    </btn>
+                    <h2 class="secondary-heading">AI tutor</h2>
+                    <TooltipBtn
+                        v-if="mode === 'big'"
+                        class="d-none d-md-block"
+                        toolTipText="Chat with our AI tutor about the subject"
+                        bubbleWidth="350px"
+                        trianglePosition="left"
+                        absoluteTop="37px"
+                    />
+                    <!-- Mobile tooltip has smaller width -->
+                    <TooltipBtn
+                        v-if="mode === 'big'"
+                        class="d-md-none"
+                        toolTipText="Chat with ours AI Tutor about the subjects"
+                        bubbleWidth="100px"
+                        trianglePosition="left"
+                        absoluteTop="37px"
+                    />
+                </div>
+                <!-- Expand button -->
+                <div class="d-flex gap-2">
+                    <div tile="Expand chat component" b-tooltip.hover>
+                        <btn
+                            v-if="mode === 'mini'"
+                            class="symbol-btn"
+                            @click="mode = 'big'"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                height="25"
+                                width="25"
+                                fill="#5f31dd"
+                            >
+                                <path
+                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm11.3-395.3l112 112c4.6 4.6 5.9 11.5 3.5 17.4s-8.3 9.9-14.8 9.9l-64 0 0 96c0 17.7-14.3 32-32 32l-32 0c-17.7 0-32-14.3-32-32l0-96-64 0c-6.5 0-12.3-3.9-14.8-9.9s-1.1-12.9 3.5-17.4l112-112c6.2-6.2 16.4-6.2 22.6 0z"
+                                />
+                            </svg>
+                        </btn>
+                    </div>
+                    <div tile="Hide chat component" b-tooltip.hover>
+                        <btn
+                            v-if="mode === 'mini'"
+                            class="symbol-btn"
+                            @click="mode = 'hide'"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                fill="#5f31dd"
+                                height="25"
+                                width="25"
+                            >
+                                <path
+                                    d="M256 0a256 256 0 1 0 0 512A256 256 0 1 0 256 0zM244.7 395.3l-112-112c-4.6-4.6-5.9-11.5-3.5-17.4s8.3-9.9 14.8-9.9l64 0 0-96c0-17.7 14.3-32 32-32l32 0c17.7 0 32 14.3 32 32l0 96 64 0c6.5 0 12.3 3.9 14.8 9.9s1.1 12.9-3.5 17.4l-112 112c-6.2 6.2-16.4 6.2-22.6 0z"
+                                />
+                            </svg>
+                        </btn>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div
             v-if="mode !== 'hide'"
             :class="{
@@ -329,94 +416,68 @@ export default {
                 'minimize-chat-container': mode === 'mini'
             }"
         >
-            <!-- Heading, tooltip and minimize/maximize buttons -->
+            <!-- Message thread -->
             <div
-                class="d-flex flex-column flex-md-row gap-2 align-items-baseline"
+                class="d-flex flex-column mx-auto chat-component"
+                :class="{
+                    'chat-component': mode === 'big',
+                    'mini-chat-component': mode === 'mini'
+                }"
+                ref="messageInputDiv"
             >
-                <div class="d-flex flex-row w-100 justify-content-between">
-                    <div class="d-flex gap-2">
-                        <!-- Pin button -->
-                        <btn
-                            v-if="mode === 'big'"
-                            class="btn"
-                            title="Minimize and pin the chat"
-                            b-tooltip.hover
-                            @click="mode = 'mini'"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 384 512"
-                                class="primary-icon"
-                                width="17"
-                                height="17"
-                            >
-                                <path
-                                    d="M32 32C32 14.3 46.3 0 64 0L320 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-29.5 0 11.4 148.2c36.7 19.9 65.7 53.2 79.5 94.7l1 3c3.3 9.8 1.6 20.5-4.4 28.8s-15.7 13.3-26 13.3L32 352c-10.3 0-19.9-4.9-26-13.3s-7.7-19.1-4.4-28.8l1-3c13.8-41.5 42.8-74.8 79.5-94.7L93.5 64 64 64C46.3 64 32 49.7 32 32zM160 384l64 0 0 96c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-96z"
-                                />
-                            </svg>
-                        </btn>
-                        <h2 class="secondary-heading">AI tutor</h2>
-                        <TooltipBtn
-                            v-if="mode === 'big'"
-                            class="d-none d-md-block"
-                            toolTipText="Chat with our AI tutor about the subject"
-                            bubbleWidth="350px"
-                            trianglePosition="left"
-                            absoluteTop="37px"
-                        />
-                        <!-- Mobile tooltip has smaller width -->
-                        <TooltipBtn
-                            v-if="mode === 'big'"
-                            class="d-md-none"
-                            toolTipText="Chat with ours AI Tutor about the subjects"
-                            bubbleWidth="100px"
-                            trianglePosition="left"
-                            absoluteTop="37px"
-                        />
+                <div
+                    class="d-flex my-3"
+                    :class="{ 'justify-content-end': message.role === 'user' }"
+                    v-for="message in messageList"
+                >
+                    <!-- Student messages -->
+                    <div
+                        v-if="message.role === 'user'"
+                        class="user-conversation"
+                    >
+                        {{ message.content[0].text.value }}
                     </div>
-                    <!-- Expand button -->
-                    <div class="d-flex gap-2">
-                        <div tile="Expand chat component" b-tooltip.hover>
-                            <btn
-                                v-if="mode === 'mini'"
-                                class="symbol-btn"
-                                @click="mode = 'big'"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 512 512"
-                                    height="25"
-                                    width="25"
-                                    fill="#5f31dd"
-                                >
-                                    <path
-                                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm11.3-395.3l112 112c4.6 4.6 5.9 11.5 3.5 17.4s-8.3 9.9-14.8 9.9l-64 0 0 96c0 17.7-14.3 32-32 32l-32 0c-17.7 0-32-14.3-32-32l0-96-64 0c-6.5 0-12.3-3.9-14.8-9.9s-1.1-12.9 3.5-17.4l112-112c6.2-6.2 16.4-6.2 22.6 0z"
-                                    />
-                                </svg>
-                            </btn>
-                        </div>
-                        <div tile="Hide chat component" b-tooltip.hover>
-                            <btn
-                                v-if="mode === 'mini'"
-                                class="symbol-btn"
-                                @click="mode = 'hide'"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 512 512"
-                                    fill="#5f31dd"
-                                    height="25"
-                                    width="25"
-                                >
-                                    <path
-                                        d="M256 0a256 256 0 1 0 0 512A256 256 0 1 0 256 0zM244.7 395.3l-112-112c-4.6-4.6-5.9-11.5-3.5-17.4s8.3-9.9 14.8-9.9l64 0 0-96c0-17.7 14.3-32 32-32l32 0c17.7 0 32 14.3 32 32l0 96 64 0c6.5 0 12.3 3.9 14.8 9.9s1.1 12.9-3.5 17.4l-112 112c-6.2 6.2-16.4 6.2-22.6 0z"
-                                    />
-                                </svg>
-                            </btn>
-                        </div>
-                    </div>
+                    <!-- AI tutor messages -->
+                    <div
+                        v-else-if="
+                            message.role === 'assistant' &&
+                            message.content[0].type == 'text'
+                        "
+                        class="tutor-conversation"
+                        v-html="
+                            applyMarkDownFormatting(
+                                message.content[0].text.value
+                            )
+                        "
+                    ></div>
                 </div>
+                <!-- Currently streaming message -->
+                <div
+                    v-if="stateOfSocket.isStreaming"
+                    class="d-flex my-3 tutor-conversation streamed-message"
+                    v-html="
+                        applyMarkDownFormatting(stateOfSocket.streamingMessage)
+                    "
+                ></div>
             </div>
+            <!-- Tutor loading animation -->
+            <div class="ai-tutor-processing mt-1" v-if="waitForAIresponse">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 640 512"
+                    width="18"
+                    height="18"
+                    fill="black"
+                >
+                    <path
+                        d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
+                    />
+                </svg>
+                Thinking
+                <TutorLoadingSymbol />
+            </div>
+
+            <hr />
 
             <!-- Suggested interaction buttons -->
             <span v-if="mode === 'big'" class="d-flex justify-content-end">
@@ -485,66 +546,6 @@ export default {
                             />
                         </svg>
                     </button>
-                </div>
-            </div>
-            <!-- Tutor loading animation -->
-            <div class="ai-tutor-processing mt-1" v-if="waitForAIresponse">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 640 512"
-                    width="18"
-                    height="18"
-                    fill="black"
-                >
-                    <path
-                        d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
-                    />
-                </svg>
-                Thinking
-                <TutorLoadingSymbol />
-            </div>
-            <!-- Message thread -->
-            <div
-                class="d-flex flex-column mx-auto chat-component"
-                :class="{
-                    'chat-component': mode === 'big',
-                    'mini-chat-component': mode === 'mini'
-                }"
-                ref="messageInputDiv"
-            >
-                <!-- Currently streaming message -->
-                <div
-                    v-if="stateOfSocket.isStreaming"
-                    class="d-flex my-3 tutor-conversation streamed-message"
-                    v-html="
-                        applyMarkDownFormatting(stateOfSocket.streamingMessage)
-                    "
-                ></div>
-                <div
-                    class="d-flex my-3"
-                    :class="{ 'justify-content-end': message.role === 'user' }"
-                    v-for="message in messageList"
-                >
-                    <!-- Student messages -->
-                    <div
-                        v-if="message.role === 'user'"
-                        class="user-conversation"
-                    >
-                        {{ message.content[0].text.value }}
-                    </div>
-                    <!-- AI tutor messages -->
-                    <div
-                        v-else-if="
-                            message.role === 'assistant' &&
-                            message.content[0].type == 'text'
-                        "
-                        class="tutor-conversation"
-                        v-html="
-                            applyMarkDownFormatting(
-                                message.content[0].text.value
-                            )
-                        "
-                    ></div>
                 </div>
             </div>
             <!-- User input (mini mode) -->
