@@ -510,16 +510,8 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- For speech to text -->
-        <SpeechRecorder
-            v-if="mode == 'big'"
-            :tutorType="tutorType"
-            :skill="skill"
-            :skillLevel="englishSkillLevel"
-            :learningObjectives="learningObjectives"
-        />
-        <!--Tutor types -->
         <span v-if="mode === 'big'" class="d-flex justify-content-between">
+            <!--Tutor types -->
             <span>
                 <!-- Socratic Tutor agent -->
                 <button
@@ -537,30 +529,17 @@ export default {
                 >
                     Assessment Tutor
                 </button>
-                <!-- Text to speech -->
-                <!-- <button
-                    class="btn suggested-interactions ms-1"
-                    @click="isTextToSpeech = !isTextToSpeech"
-                    :class="{ lineThrough: isTextToSpeech == false }"
-                >
-                    Auto Speech
-                </button> -->
             </span>
-            <span>
-                <button
-                    v-if="tutorType === 'assessing'"
-                    class="btn suggested-interactions ms-1"
-                    @click="askQuestion()"
-                >
-                    test me
-                </button>
-                <button
-                    v-if="tutorType === 'socratic'"
-                    class="btn suggested-interactions ms-1"
-                    @click="provideOverview()"
-                >
-                    give me an overview
-                </button>
+            <span class="d-flex justify-content-end">
+                <!-- For speech to text -->
+                <SpeechRecorder
+                    v-if="mode == 'big'"
+                    :tutorType="tutorType"
+                    :skill="skill"
+                    :skillLevel="englishSkillLevel"
+                    :learningObjectives="learningObjectives"
+                />
+                <!-- Minimise / Maximise chat history -->
                 <button class="btn plus-btn ms-1" @click="showChat = !showChat">
                     <svg
                         v-if="!showChat"
@@ -645,6 +624,52 @@ export default {
             Thinking
             <TutorLoadingSymbol />
         </div>
+        <span
+            class="d-flex flex-row suggested-interactions-wrapper mt-1"
+            v-if="tutorType === 'socratic'"
+        >
+            <button
+                class="btn suggested-interactions ms-1"
+                @click="provideOverview()"
+            >
+                Tell me something interesting about this subject!
+            </button>
+            <button
+                class="btn suggested-interactions ms-1"
+                @click="provideOverview()"
+            >
+                Why does this subject matter?
+            </button>
+            <button
+                class="btn suggested-interactions ms-1"
+                @click="provideOverview()"
+            >
+                How might I use knowledge of this topic in everyday life?
+            </button>
+            <button
+                class="btn suggested-interactions ms-1"
+                @click="provideOverview()"
+            >
+                What is the most important thing for me to understand about this
+                subject?
+            </button>
+        </span>
+        <!-- Suggested Interactions -->
+        <span v-if="tutorType === 'assessing'">
+            <button
+                class="btn suggested-interactions ms-1"
+                @click="askQuestion()"
+            >
+                test me
+            </button>
+            <button
+                v-if="tutorType === 'socratic'"
+                class="btn suggested-interactions ms-1"
+                @click="provideOverview()"
+            >
+                give me an overview
+            </button>
+        </span>
         <!-- Message thread -->
         <div
             v-if="showChat"
@@ -834,9 +859,14 @@ export default {
     text-decoration: underline;
 }
 
+.suggested-interactions-wrapper {
+    overflow-x: auto;
+}
+
 .suggested-interactions {
     color: black;
     border: 1px solid black;
+    white-space: nowrap;
 }
 
 .tutor-conversation {
