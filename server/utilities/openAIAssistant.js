@@ -114,6 +114,12 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         content: messageData.message
     });
 
+    let responseLength = '';
+    // regualr responses should be short
+    if (messageData.isSuggestedInteraction == false) {
+        responseLength = 'Please keep all responses succint.';
+    }
+
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
         instructions: `Please tutor about the subject: ${messageData.skillName}, 
@@ -122,7 +128,7 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         Ask follow up questions after responding to the message.
         Make sure to have $ delimiters before any science and math strings that can convert to Latex
 
-        Please keep all messages below 2000 characters.`
+        Please keep all messages below 2000 characters. ${responseLength}`
     });
 
     if (run.status === 'completed') {

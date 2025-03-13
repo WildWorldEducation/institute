@@ -37,7 +37,8 @@ export default {
             isTextToSpeech: true,
             threadID: '',
             audio: null,
-            isAudioPlaying: false
+            isAudioPlaying: false,
+            isSuggestedInteraction: false
         };
     },
     async mounted() {
@@ -71,7 +72,6 @@ export default {
         },
         // For both tutors
         async getChatHistory() {
-            console.log('getChatHistory');
             try {
                 const requestOptions = {
                     method: 'POST',
@@ -190,9 +190,13 @@ export default {
                         skillName: this.skill.name,
                         skillUrl: this.skill.url,
                         skillLevel: this.englishSkillLevel,
-                        learningObjectives: this.learningObjectives
+                        learningObjectives: this.learningObjectives,
+                        isSuggestedInteraction: this.isSuggestedInteraction
                     })
                 };
+
+                this.isSuggestedInteraction = false;
+
                 let url = '';
                 if (this.tutorType == 'socratic')
                     url = '/ai-tutor/socratic/new-message';
@@ -256,10 +260,10 @@ export default {
             }
         },
         // Socratic tutor
-        async provideOverview() {
-            this.message = 'Please provide an overview';
-            this.sendMessage();
-        },
+        // async provideOverview() {
+        //     this.message = 'Please provide an overview';
+        //     this.sendMessage();
+        // },
         // assessing tutor
         async askQuestion() {
             if (this.waitForAIresponse) {
@@ -631,25 +635,44 @@ export default {
         >
             <button
                 class="btn suggested-interactions ms-1 socratic-btn-dark"
-                @click="provideOverview()"
+                @click="
+                    this.message =
+                        'Tell me something interesting about this subject!';
+                    this.isSuggestedInteraction = true;
+                    sendMessage();
+                "
             >
                 Tell me something interesting about this subject!
             </button>
             <button
                 class="btn suggested-interactions ms-1 socratic-btn-dark"
-                @click="provideOverview()"
+                @click="
+                    this.message = 'Why does this subject matter?';
+                    this.isSuggestedInteraction = true;
+                    sendMessage();
+                "
             >
                 Why does this subject matter?
             </button>
             <button
                 class="btn suggested-interactions ms-1 socratic-btn-dark"
-                @click="provideOverview()"
+                @click="
+                    this.message =
+                        'How might I use knowledge of this topic in everyday life?';
+                    this.isSuggestedInteraction = true;
+                    sendMessage();
+                "
             >
                 How might I use knowledge of this topic in everyday life?
             </button>
             <button
                 class="btn suggested-interactions ms-1 socratic-btn-dark"
-                @click="provideOverview()"
+                @click="
+                    this.message =
+                        'What is the most important thing for me to understand about this subject?';
+                    this.isSuggestedInteraction = true;
+                    sendMessage();
+                "
             >
                 What is the most important thing for me to understand about this
                 subject?
