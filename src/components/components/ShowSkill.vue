@@ -471,7 +471,7 @@ export default {
                             showAncestorLink
                         "
                         :to="'/skills/' + ancestor"
-                        class="btn assessment-btn secondary-btn me-1"
+                        class="btn assessment-btn me-1"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -494,7 +494,7 @@ export default {
                             skill.type != 'domain' &&
                             skill.id
                         "
-                        class="btn me-1 assessment-btn secondary-btn"
+                        class="btn me-1 assessment-btn"
                         :to="skill.id + '/assessment'"
                     >
                         <!-- Half star icon -->
@@ -531,7 +531,7 @@ export default {
                             skill.type == 'domain'
                         "
                         @click="MakeMastered()"
-                        class="btn me-1 assessment-btn secondary-btn"
+                        class="btn me-1 assessment-btn"
                     >
                         <!-- Half star icon -->
                         <svg
@@ -563,7 +563,7 @@ export default {
                     <!-- If not logged in, go to Login page -->
                     <router-link
                         v-else-if="!sessionDetailsStore.isLoggedIn"
-                        class="btn me-1 assessment-btn secondary-btn"
+                        class="btn me-1 assessment-btn"
                         to="/login"
                     >
                         <!-- Half star icon -->
@@ -1276,8 +1276,9 @@ export default {
             </div>
             <div v-else-if="showTutorialTip5">
                 <p>
-                    The "Requirements for Mastery" and "Learning Objectives" sections explain everything
-                    one needs to learn to master the skill.
+                    The "Requirements for Mastery" and "Learning Objectives"
+                    sections explain everything one needs to learn to master the
+                    skill.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(5)">
                     next
@@ -1410,6 +1411,15 @@ p {
     border: 3px solid var(--secondary-contrast-color);
     font-weight: 500;
     padding: 5px;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+    text-wrap: nowrap;
+    border-style: solid;
+    background-color: #1e7f6e;
+    color: white; /* Matching the text color used by both buttons */
 }
 
 .info-box {
