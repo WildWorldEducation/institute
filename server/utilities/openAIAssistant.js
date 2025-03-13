@@ -122,8 +122,27 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         Ask follow up questions after responding to the message.
         Make sure to have $ delimiters before any science and math strings that can convert to Latex
 
-        If the message content is empty, please ask the user to write something.
         Please keep all messages below 2000 characters.`
+    });
+
+    if (run.status === 'completed') {
+        const messages = await openai.beta.threads.messages.list(threadId);
+        const latestMessage = messages.data[0];
+
+        return latestMessage;
+    } else {
+        console.log(run.status);
+    }
+}
+
+// Test the student
+async function socraticTutorAskQuestion(threadId, assistantId, messageData) {
+    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+        assistant_id: assistantId,
+        instructions: `The user is at a ${messageData.skillLevel} level and age.
+        Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
+        Ask the student a question related to the content.        
+        Make sure to have $ delimiters before any science and math strings that can convert to Latex`
     });
 
     if (run.status === 'completed') {
@@ -449,6 +468,7 @@ module.exports = {
     getSocraticTutorThread,
     saveSocraticTutorThread,
     socraticTutorMessage,
+    socraticTutorAskQuestion,
     // Assessing tutor
     createAssessingAssistantAndThread,
     getAssessingTutorThread,
