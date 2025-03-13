@@ -205,7 +205,8 @@ router.post('/new-instructor/add', (req, res, next) => {
             username: req.body.username,
             email: req.body.email,
             password: hashedPassword,
-            role: 'instructor'
+            role: 'instructor',
+            theme: 'instructor'
         };
 
         // Check if username or email address already exist.
