@@ -230,14 +230,15 @@ export default {
                         skillName: this.skill.name,
                         skillUrl: this.skill.url,
                         skillLevel: this.englishSkillLevel,
-                        learningObjectives: this.learningObjectives
+                        learningObjectives: this.learningObjectives,
+                        isEmptyMessage: true
                     })
                 };
                 let url = '';
                 if (this.tutorType == 'socratic')
                     url = '/ai-tutor/socratic/ask-question';
                 else if (this.tutorType == 'assessing')
-                    url = '/ai-tutor/assessing/empty-message';
+                    url = '/ai-tutor/assessing/ask-question';
 
                 this.message = '';
                 const res = await fetch(url, requestOptions);

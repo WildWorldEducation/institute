@@ -30,7 +30,7 @@ const {
     getAssessingTutorThread,
     saveAssessingTutorThread,
     assessingTutorMessage,
-    askQuestion,
+    assessingTutorAskQuestion,
     // Learning objective tutor
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
@@ -429,7 +429,7 @@ router.post(
                 req.body.skillUrl
             );
 
-            let assessmentResult = await askQuestion(
+            let assessmentResult = await assessingTutorAskQuestion(
                 assistantData[0].thread_id,
                 assistantData[0].assistant_id,
                 req.body
