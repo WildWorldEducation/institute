@@ -37,7 +37,8 @@ export default {
             isTextToSpeech: true,
             threadID: '',
             audio: null,
-            isAudioPlaying: false
+            isAudioPlaying: false,
+            isSuggestedInteraction: false
         };
     },
     async mounted() {
@@ -71,7 +72,6 @@ export default {
         },
         // For both tutors
         async getChatHistory() {
-            console.log('getChatHistory');
             try {
                 const requestOptions = {
                     method: 'POST',
@@ -190,9 +190,13 @@ export default {
                         skillName: this.skill.name,
                         skillUrl: this.skill.url,
                         skillLevel: this.englishSkillLevel,
-                        learningObjectives: this.learningObjectives
+                        learningObjectives: this.learningObjectives,
+                        isSuggestedInteraction: this.isSuggestedInteraction
                     })
                 };
+
+                this.isSuggestedInteraction = false;
+
                 let url = '';
                 if (this.tutorType == 'socratic')
                     url = '/ai-tutor/socratic/new-message';
@@ -257,10 +261,10 @@ export default {
             }
         },
         // Socratic tutor
-        async provideOverview() {
-            this.message = 'Please provide an overview';
-            this.sendMessage();
-        },
+        // async provideOverview() {
+        //     this.message = 'Please provide an overview';
+        //     this.sendMessage();
+        // },
         // assessing tutor
         async askQuestion() {
             if (this.waitForAIresponse) {
@@ -511,16 +515,8 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- For speech to text -->
-        <SpeechRecorder
-            v-if="mode == 'big'"
-            :tutorType="tutorType"
-            :skill="skill"
-            :skillLevel="englishSkillLevel"
-            :learningObjectives="learningObjectives"
-        />
-        <!--Tutor types -->
         <span v-if="mode === 'big'" class="d-flex justify-content-between">
+            <!--Tutor types -->
             <span>
                 <!-- Socratic Tutor agent -->
                 <button
@@ -530,7 +526,7 @@ export default {
                 >
                     Socratic Tutor
                 </button>
-                <!-- Exam Agent: assesses student -->
+                <!-- Assessing Tutor agent -->
                 <button
                     class="btn suggested-interactions ms-1 assessing-btn"
                     :class="{ underline: tutorType === 'assessing' }"
@@ -538,30 +534,17 @@ export default {
                 >
                     Assessment Tutor
                 </button>
-                <!-- Text to speech -->
-                <!-- <button
-                    class="btn suggested-interactions ms-1"
-                    @click="isTextToSpeech = !isTextToSpeech"
-                    :class="{ lineThrough: isTextToSpeech == false }"
-                >
-                    Auto Speech
-                </button> -->
             </span>
-            <span>
-                <button
-                    v-if="tutorType === 'assessing'"
-                    class="btn suggested-interactions ms-1"
-                    @click="askQuestion()"
-                >
-                    test me
-                </button>
-                <button
-                    v-if="tutorType === 'socratic'"
-                    class="btn suggested-interactions ms-1"
-                    @click="provideOverview()"
-                >
-                    give me an overview
-                </button>
+            <span class="d-flex justify-content-end">
+                <!-- For speech to text -->
+                <SpeechRecorder
+                    v-if="mode == 'big'"
+                    :tutorType="tutorType"
+                    :skill="skill"
+                    :skillLevel="englishSkillLevel"
+                    :learningObjectives="learningObjectives"
+                />
+                <!-- Minimise / Maximise chat history -->
                 <button class="btn plus-btn ms-1" @click="showChat = !showChat">
                     <svg
                         v-if="!showChat"
@@ -646,13 +629,75 @@ export default {
             Thinking
             <TutorLoadingSymbol />
         </div>
+        <!-- Suggested Interactions -->
+        <span
+            class="d-flex flex-row suggested-interactions-wrapper mt-1 mb-1"
+            v-if="tutorType === 'socratic'"
+        >
+            <button
+                class="btn suggested-interactions ms-1 socratic-btn-dark"
+                @click="
+                    this.message =
+                        'Tell me something interesting about this subject!';
+                    this.isSuggestedInteraction = true;
+                    sendMessage();
+                "
+            >
+                Tell me something interesting about this subject!
+            </button>
+            <button
+                class="btn suggested-interactions ms-1 socratic-btn-dark"
+                @click="
+                    this.message = 'Why does this subject matter?';
+                    this.isSuggestedInteraction = true;
+                    sendMessage();
+                "
+            >
+                Why does this subject matter?
+            </button>
+            <button
+                class="btn suggested-interactions ms-1 socratic-btn-dark"
+                @click="
+                    this.message =
+                        'How might I use knowledge of this topic in everyday life?';
+                    this.isSuggestedInteraction = true;
+                    sendMessage();
+                "
+            >
+                How might I use knowledge of this topic in everyday life?
+            </button>
+            <button
+                class="btn suggested-interactions ms-1 socratic-btn-dark"
+                @click="
+                    this.message =
+                        'What is the most important thing for me to understand about this subject?';
+                    this.isSuggestedInteraction = true;
+                    sendMessage();
+                "
+            >
+                What is the most important thing for me to understand about this
+                subject?
+            </button>
+        </span>
+
+        <span
+            v-if="tutorType === 'assessing'"
+            class="d-flex flex-row suggested-interactions-wrapper mt-1 mb-1"
+        >
+            <button
+                class="btn suggested-interactions ms-1 assessing-btn-dark"
+                @click="askQuestion()"
+            >
+                test me
+            </button>
+        </span>
         <!-- Message thread -->
         <div
             v-if="showChat"
-            class="d-flex flex-column mx-auto chat-component"
+            class="d-flex flex-column mx-auto chat-history"
             :class="{
-                'chat-component': mode === 'big',
-                'mini-chat-component': mode === 'mini',
+                'chat-history': mode === 'big',
+                'mini-chat-history': mode === 'mini',
                 'socratic-chat': tutorType === 'socratic',
                 'assessing-chat': tutorType === 'assessing'
             }"
@@ -835,9 +880,22 @@ export default {
     text-decoration: underline;
 }
 
+.suggested-interactions-wrapper {
+    overflow-x: auto;
+}
+
 .suggested-interactions {
-    color: black;
+    color: white;
     border: 1px solid black;
+    white-space: nowrap;
+}
+
+.socratic-btn-dark {
+    background-color: #031e27;
+}
+
+.assessing-btn-dark {
+    background-color: #290707;
 }
 
 .tutor-conversation {
@@ -877,13 +935,14 @@ export default {
     color: white;
 }
 
-.chat-component {
+.chat-history {
     overflow-x: hidden;
     padding: 5px 10px;
     border-radius: 15px;
+    min-height: 50px;
 }
 
-.mini-chat-component {
+.mini-chat-history {
     width: 103%;
     height: 80%;
     overflow-y: auto;
@@ -951,14 +1010,14 @@ export default {
 /* ************************* */
 /* Tablet Styling */
 @media (min-width: 577px) and (max-width: 1023px) {
-    .chat-component {
+    .chat-history {
         width: 100%;
     }
 }
 
 /* Small devices (portrait phones) */
 @media (max-width: 480px) {
-    .chat-component {
+    .chat-history {
         width: 100%;
     }
 }
