@@ -165,16 +165,19 @@ export default {
             }
         },
         async sendMessage() {
-            // Trim the message to remove leading and trailing whitespace
-            const trimmedMessage = this.message.trim();
-            // If the message is empty after trimming, don't send it
-            if (trimmedMessage === '') {
-                return;
-            }
-
             if (this.waitForAIresponse) {
                 return;
             }
+
+            // If the message is empty, the AI will ask a question.
+            function isEmptyOrSpaces(message) {
+                return message === null || message.match(/^ *$/) !== null;
+            }
+            if (isEmptyOrSpaces(this.message)) {
+                this.respondToEmptyContent();
+                return;
+            }
+
             this.waitForAIresponse = true;
 
             try {
@@ -182,7 +185,7 @@ export default {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        message: trimmedMessage,
+                        message: this.message,
                         userId: this.userDetailsStore.userId,
                         skillName: this.skill.name,
                         skillUrl: this.skill.url,
@@ -195,6 +198,46 @@ export default {
                     url = '/ai-tutor/socratic/new-message';
                 else if (this.tutorType == 'assessing')
                     url = '/ai-tutor/assessing/new-message';
+
+                this.message = '';
+                const res = await fetch(url, requestOptions);
+                if (res.status === 500) {
+                    alert('The tutor can`t answer !!');
+                    this.waitForAIresponse = false;
+                    return;
+                }
+
+                this.getChatHistory();
+
+                this.waitForAIresponse = false;
+            } catch (error) {
+                console.error(error);
+                this.waitForAIresponse = false;
+            }
+        },
+        async respondToEmptyContent() {
+            if (this.waitForAIresponse) {
+                return;
+            }
+            this.waitForAIresponse = true;
+
+            try {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: this.userDetailsStore.userId,
+                        skillName: this.skill.name,
+                        skillUrl: this.skill.url,
+                        skillLevel: this.englishSkillLevel,
+                        learningObjectives: this.learningObjectives
+                    })
+                };
+                let url = '';
+                if (this.tutorType == 'socratic')
+                    url = '/ai-tutor/socratic/ask-question';
+                else if (this.tutorType == 'assessing')
+                    url = '/ai-tutor/assessing/empty-message';
 
                 this.message = '';
                 const res = await fetch(url, requestOptions);
@@ -568,7 +611,6 @@ export default {
                         'socratic-btn': tutorType === 'socratic',
                         'assessing-btn': tutorType === 'assessing'
                     }"
-                    :disabled="this.message == '' || this.message == ' '"
                     @click="sendMessage()"
                 >
                     <!-- Speech bubble icon -->

@@ -24,6 +24,7 @@ const {
     getSocraticTutorThread,
     saveSocraticTutorThread,
     socraticTutorMessage,
+    socraticTutorAskQuestion,
     // Assessing tutor
     createAssessingAssistantAndThread,
     getAssessingTutorThread,
@@ -205,6 +206,33 @@ router.post(
             );
 
             await socraticTutorMessage(
+                assistantData[0].thread_id,
+                assistantData[0].assistant_id,
+                req.body
+            );
+            res.end();
+        } catch (error) {
+            console.error(error);
+            res.status = 500;
+            res.json({ mess: 'something went wrong' });
+        }
+    }
+);
+
+/**
+ * Socratic AI tutor respond to empty message
+ */
+router.post(
+    '/socratic/ask-question',
+    isAuthenticated,
+    async (req, res, next) => {
+        try {
+            const assistantData = await getSocraticTutorThread(
+                req.body.userId,
+                req.body.skillUrl
+            );
+
+            await socraticTutorAskQuestion(
                 assistantData[0].thread_id,
                 assistantData[0].assistant_id,
                 req.body
