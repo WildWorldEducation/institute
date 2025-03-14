@@ -477,7 +477,7 @@ export default {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 448 512"
                             width="20"
-                            class="primary-icon"
+                            fill="white"
                         >
                             <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                             <path
@@ -502,7 +502,7 @@ export default {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 576 512"
                             width="22"
-                            class="primary-icon"
+                            fill="white"
                         >
                             <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                             <path
@@ -515,7 +515,7 @@ export default {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 576 512"
                             width="22"
-                            class="primary-icon"
+                            fill="white"
                         >
                             <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                             <path
@@ -538,7 +538,7 @@ export default {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 576 512"
                             width="22"
-                            class="primary-icon"
+                            fill="white"
                         >
                             <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                             <path
@@ -551,7 +551,7 @@ export default {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 576 512"
                             width="22"
-                            class="primary-icon"
+                            fill="white"
                         >
                             <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                             <path
@@ -571,7 +571,7 @@ export default {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 576 512"
                             width="22"
-                            class="primary-icon"
+                            fill="white"
                         >
                             <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                             <path
@@ -585,7 +585,7 @@ export default {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 576 512"
                             width="22"
-                            class="primary-icon"
+                            fill="white"
                         >
                             <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                             <path
@@ -1418,7 +1418,7 @@ p {
     max-width: fit-content;
     text-wrap: nowrap;
     border-style: solid;
-    background-color: #1e7f6e;
+    background-color: #7f1e1e;
     color: white; /* Matching the text color used by both buttons */
 }
 
