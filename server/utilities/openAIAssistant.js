@@ -115,7 +115,7 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
     });
 
     let responseLength = '';
-    // regualr responses should be short
+    // regular responses should be short
     if (messageData.isSuggestedInteraction == false) {
         responseLength = 'Please keep all responses succinct.';
     }
@@ -254,13 +254,12 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
 
         Ask questions about each learning objective, one after the other. When you get to the end of the array,
         please start again.
-        Only ask one question, not more than one.        
+        Only ask one question, not more than one.         
+        Preference asking questions on learning objectives that the student does not seem to know well.
 
         Do not provide feedback to the student after they answer the question.
 
         Make sure to have $ delimiters before any science and math strings that can convert to Latex.
-        
-        If the message content is empty, please ask the user to write something.
         Please keep all messages below 2000 characters.`
     });
 
@@ -289,13 +288,15 @@ async function assessingTutorAskQuestion(threadId, assistantId, messageData) {
         instructions: `The user is at a ${messageData.skillLevel} level and age.
         Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
 
-        If the student has already shown understanding of a learning objective, do not ask a question about it.
-        If the student has not yet shown understanding of a learning objective, do ask a question about it.
+        Ask questions about each learning objective, one after the other. When you get to the end of the array,
+        please start again.
         Only ask one question, not more than one.        
+        Preference asking questions on learning objectives that the student does not seem to know well.
 
         Do not provide feedback to the student after they answer the question.
 
-        Make sure to have $ delimiters before any science and math strings that can convert to Latex`
+        Make sure to have $ delimiters before any science and math strings that can convert to Latex.
+        Please keep all messages below 2000 characters.`
     });
 
     if (run.status === 'completed') {
