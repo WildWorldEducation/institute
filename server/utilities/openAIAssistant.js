@@ -114,6 +114,8 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         content: messageData.message
     });
 
+    console.log('socraticTutorMessage');
+
     let responseLength = '';
     // regular responses should be short
     if (messageData.isSuggestedInteraction == false) {
@@ -134,11 +136,158 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
     if (run.status === 'completed') {
         const messages = await openai.beta.threads.messages.list(threadId);
         const latestMessage = messages.data[0];
-
         return latestMessage;
     } else {
         console.log(run.status);
     }
+}
+
+async function createRunStream(
+    threadId,
+    assistantId,
+    userMessage,
+    socket,
+    assistantInstruction,
+    streamType
+) {
+    await openai.beta.threads.messages.create(threadId, {
+        role: 'user',
+        content: userMessage
+    });
+
+    console.log('stream type: ');
+    console.log(streamType);
+
+    const run = openai.beta.threads.runs
+        .stream(threadId, {
+            assistant_id: assistantId,
+            instructions: assistantInstruction
+        })
+        .on('textDelta', (textDelta, snapshot) => {
+            socket.emit('stream-message', textDelta, streamType, snapshot);
+        })
+        .on('runStepDone', (runStep) => {
+            socket.emit('run-end');
+        })
+        .on('toolCallCreated', (toolCall) =>
+            process.stdout.write(`\nassistant > ${toolCall.type}\n\n`)
+        )
+        .on('toolCallDelta', (toolCallDelta, snapshot) => {
+            if (toolCallDelta.type === 'code_interpreter') {
+                if (toolCallDelta.code_interpreter.input) {
+                    process.stdout.write(toolCallDelta.code_interpreter.input);
+                }
+                if (toolCallDelta.code_interpreter.outputs) {
+                    process.stdout.write('\noutput >\n');
+                    toolCallDelta.code_interpreter.outputs.forEach((output) => {
+                        if (output.type === 'logs') {
+                            process.stdout.write(`\n${output.logs}\n`);
+                        }
+                    });
+                }
+            }
+        });
+    return run;
+}
+
+async function createAssessmentStream(
+    threadId,
+    assistantId,
+    userMessage,
+    socket,
+    assistantInstruction
+) {
+    const message = await openai.beta.threads.messages.create(threadId, {
+        role: 'user',
+        content: userMessage
+    });
+
+    const run = openai.beta.threads.runs
+        .stream(threadId, {
+            assistant_id: assistantId,
+            instructions: assistantInstruction
+        })
+        .on('textDelta', (textDelta, snapshot) => {
+            socket.emit('stream-assessment-message', textDelta, snapshot);
+        })
+        .on('runStepDone', (runStep) => {
+            socket.emit('assessment-run-end');
+        });
+    return run;
+}
+
+async function createRunStream(
+    threadId,
+    assistantId,
+    userMessage,
+    socket,
+    assistantInstruction,
+    streamType
+) {
+    await openai.beta.threads.messages.create(threadId, {
+        role: 'user',
+        content: userMessage
+    });
+
+    console.log('stream type: ');
+    console.log(streamType);
+
+    const run = openai.beta.threads.runs
+        .stream(threadId, {
+            assistant_id: assistantId,
+            instructions: assistantInstruction
+        })
+        .on('textDelta', (textDelta, snapshot) => {
+            socket.emit('stream-message', textDelta, streamType, snapshot);
+        })
+        .on('runStepDone', (runStep) => {
+            socket.emit('run-end');
+        })
+        .on('toolCallCreated', (toolCall) =>
+            process.stdout.write(`\nassistant > ${toolCall.type}\n\n`)
+        )
+        .on('toolCallDelta', (toolCallDelta, snapshot) => {
+            if (toolCallDelta.type === 'code_interpreter') {
+                if (toolCallDelta.code_interpreter.input) {
+                    process.stdout.write(toolCallDelta.code_interpreter.input);
+                }
+                if (toolCallDelta.code_interpreter.outputs) {
+                    process.stdout.write('\noutput >\n');
+                    toolCallDelta.code_interpreter.outputs.forEach((output) => {
+                        if (output.type === 'logs') {
+                            process.stdout.write(`\n${output.logs}\n`);
+                        }
+                    });
+                }
+            }
+        });
+    return run;
+}
+
+async function createAssessmentStream(
+    threadId,
+    assistantId,
+    userMessage,
+    socket,
+    assistantInstruction
+) {
+    const message = await openai.beta.threads.messages.create(threadId, {
+        role: 'user',
+        content: userMessage
+    });
+
+    const run = openai.beta.threads.runs
+        .stream(threadId, {
+            assistant_id: assistantId,
+            instructions: assistantInstruction
+        })
+        .on('textDelta', (textDelta, snapshot) => {
+            socket.emit('stream-assessment-message', textDelta, snapshot);
+        })
+        .on('runStepDone', (runStep) => {
+            socket.emit('assessment-run-end');
+        });
+    return run;
 }
 
 // Test the student
@@ -154,7 +303,6 @@ async function socraticTutorAskQuestion(threadId, assistantId, messageData) {
     if (run.status === 'completed') {
         const messages = await openai.beta.threads.messages.list(threadId);
         const latestMessage = messages.data[0];
-
         return latestMessage;
     } else {
         console.log(run.status);
@@ -491,5 +639,7 @@ module.exports = {
     saveLearningObjectiveThread,
     learningObjectiveMessage,
     requestLearningObjectiveTutoring,
-    generateLearningObjectiveQuestion
+    generateLearningObjectiveQuestion,
+    createRunStream,
+    createAssessmentStream
 };

@@ -1,12 +1,15 @@
 <script>
+import { socket, socketState } from '../../../socket.js';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const stateOfSocket = socketState;
         return {
-            userDetailsStore
+            userDetailsStore,
+            stateOfSocket
         };
     },
     props: [
@@ -26,13 +29,17 @@ export default {
             isGotMessages: false,
             englishSkillLevel: '',
             threadID: '',
-            isAudioPlaying: false
+            isAudioPlaying: false,
+            assistantData: null
         };
     },
     async mounted() {
         this.englishSkillLevel = this.skillLevel.replace('_', ' ');
         // load thread.
         await this.getMessages();
+    },
+    async created() {
+        this.connectToSocketSever();
     },
     methods: {
         // Setting this method to allow the user to be able to create a new line with shift+enter
@@ -61,6 +68,11 @@ export default {
                 this.messageList = resData.messages;
 
                 console.log(this.messageList);
+
+                // Fix
+                this.assistantData = resData.assistantData;
+                console.log('assistant data: ');
+                console.log(this.assistantData);
 
                 // Close loading animation
                 this.isGotMessages = true;
@@ -149,6 +161,19 @@ export default {
                     return;
                 }
 
+                // Fix
+                const userMessage = {
+                    role: 'user',
+                    content: [{ text: { value: this.message } }]
+                };
+                this.messageList.unshift(userMessage);
+                const messageData = {
+                    threadId: this.assistantData.threadId,
+                    assistantId: this.assistantData.assistantId,
+                    message: this.message
+                };
+                socket.emit('send-learning-objective-message', messageData);
+
                 this.getMessages();
                 this.waitForAIresponse = false;
             } catch (error) {
@@ -185,7 +210,7 @@ export default {
                     return;
                 }
 
-                this.messageList.push(this.latestMessage);
+                this.messageList.unshift(this.latestMessage);
 
                 this.getMessages();
                 this.waitForAIresponse = false;
@@ -249,6 +274,45 @@ export default {
 
             let formattedMessage = md.render(string);
             return formattedMessage;
+        },
+        connectToSocketSever() {
+            socket.connect();
+        },
+        disconnectToSocketSever() {
+            socket.disconnect();
+        },
+        removeStreamMessage() {
+            socket.emit('remove-stream-message');
+            socket.emit('remove-message');
+        }
+    },
+    watch: {
+        stateOfSocket: {
+            async handler(newItem, oldItem) {
+                if (newItem.streamType !== 'learningObjective') {
+                    return;
+                }
+                if (newItem.isStreaming) {
+                    this.waitForAIresponse = false;
+                }
+                if (!newItem.isStreaming && newItem.isRunJustEnded) {
+                    const assistantMessage = {
+                        role: 'assistant',
+                        content: [
+                            {
+                                text: {
+                                    value: this.stateOfSocket.streamingMessage
+                                },
+                                type: 'text'
+                            }
+                        ]
+                    };
+                    console.log('Run End');
+                    this.messageList.unshift(assistantMessage);
+                    this.removeStreamMessage();
+                }
+            },
+            deep: true
         }
     }
 };
@@ -324,6 +388,12 @@ export default {
             Thinking
             <TutorLoadingSymbol />
         </div>
+        <!-- Currently streaming message -->
+        <div
+            v-if="stateOfSocket.isStreaming"
+            class="d-flex my-3 tutor-conversation streamed-message border border-dark rounded p-2"
+            v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
+        ></div>
         <div class="d-flex flex-column mx-auto chat-component socratic-chat">
             <!-- Message thread -->
             <div
@@ -495,6 +565,11 @@ export default {
     display: inline-block;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
+}
+
+.streamed-message {
+    display: flex;
+    flex-direction: column;
 }
 
 @keyframes rotation {

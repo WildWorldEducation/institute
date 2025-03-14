@@ -79,18 +79,24 @@ router.post(
                     }
                 ];
                 await saveSocraticTutorThread(assistantData[0]);
-                const messageData = await getMessagesList(
+                const messages = await getMessagesList(
                     assistantData[0].threadId
                 );
-                let messages = messageData.data;
-
-                res.json({ messages: messages });
+                res.json({
+                    messages: messages,
+                    assistantData: assistantData[0]
+                });
                 return;
             } else {
                 const messageData = await getMessagesList(
                     assistantData[0].thread_id
                 );
                 let messages = messageData.data;
+
+                const clientAssistantData = {
+                    threadId: assistantData[0].thread_id,
+                    assistantId: assistantData[0].assistant_id
+                };
 
                 // Reverse the messages to get the index, for the TTS feature
                 // (as Open AI returns the most recent message at index 0)
@@ -104,10 +110,8 @@ router.post(
                 let audioClips = [];
                 try {
                     let queryString = `SELECT * 
-                    FROM ai_socratic_tutor_tts_urls 
-                    WHERE thread_id = ${conn.escape(
-                        assistantData[0].thread_id
-                    )};`;
+                FROM ai_socratic_tutor_tts_urls 
+                WHERE thread_id = ${conn.escape(assistantData[0].thread_id)};`;
 
                     audioClips = await query(queryString);
 
@@ -129,7 +133,8 @@ router.post(
                 }
 
                 res.json({
-                    messages: messages
+                    messages: messages,
+                    assistantData: clientAssistantData
                 });
             }
         } catch (error) {
@@ -204,6 +209,8 @@ router.post(
                 req.body.userId,
                 req.body.skillUrl
             );
+
+            console.log('await socraticTutorMessage');
 
             await socraticTutorMessage(
                 assistantData[0].thread_id,
@@ -538,7 +545,10 @@ router.get(
                 );
                 let messages = messageData.data;
 
-                res.json({ messages: messages });
+                res.json({
+                    messages: messages,
+                    assistantData: assistantData[0]
+                });
                 return;
             } else {
                 // Retrieve the chat history.
@@ -583,7 +593,14 @@ router.get(
                     throw error;
                 }
 
-                res.json({ messages: messages });
+                const assistantDataForClient = {
+                    assistantId: assistantData[0].assistant_id,
+                    threadId: assistantData[0].thread_id
+                };
+                res.json({
+                    messages: messages,
+                    assistantData: assistantDataForClient
+                });
             }
         } catch (error) {
             console.error(error);

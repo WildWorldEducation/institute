@@ -5,14 +5,17 @@ import { useSkillTreeStore } from '../../../stores/SkillTreeStore.js';
 import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
 import TooltipBtn from './../share-components/TooltipBtn.vue';
 import SpeechRecorder from './SpeechRecorder.vue';
+import { socket, socketState } from '../../../socket.js';
+import { nextTick } from 'vue';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
         const userSkillsStore = useUserSkillsStore();
         const skillTreeStore = useSkillTreeStore();
-
+        const stateOfSocket = socketState;
         return {
+            stateOfSocket,
             userDetailsStore,
             userSkillsStore,
             skillTreeStore
@@ -38,9 +41,20 @@ export default {
             threadID: '',
             audio: null,
             isAudioPlaying: false,
-            isSuggestedInteraction: false
+            isSuggestedInteraction: false,
+            assistantData: {
+                assistantId: null,
+                threadId: null
+            },
+            steamingMessage: '',
+            isStreamingMessage: false
+            //   messageList: []
         };
     },
+    async created() {
+        this.connectToSocketSever();
+    },
+
     async mounted() {
         this.learningObjectives = this.skill.learningObjectives.map(
             (a) => a.objective
@@ -49,6 +63,11 @@ export default {
         this.englishSkillLevel = this.skill.level.replace('_', ' ');
         await this.getChatHistory();
     },
+    // updated() {
+    //     if (this.mode !== 'hide') {
+    //         this.scrollToMessageInput();
+    //     }
+    // },
     methods: {
         // Setting this method to allow the user to be able to create a new line with shift+enter
         handleKeyDown(e) {
@@ -94,6 +113,10 @@ export default {
 
                 const response = await fetch(url, requestOptions);
                 const resData = await response.json();
+
+                this.assistantData.assistantId =
+                    resData.assistantData.assistantId;
+                this.assistantData.threadId = resData.assistantData.threadId;
 
                 if (this.tutorType == 'socratic') {
                     this.socraticTutorChatHistory = resData.messages;
@@ -181,39 +204,50 @@ export default {
             this.waitForAIresponse = true;
 
             try {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        message: this.message,
-                        userId: this.userDetailsStore.userId,
-                        skillName: this.skill.name,
-                        skillUrl: this.skill.url,
-                        skillLevel: this.englishSkillLevel,
-                        learningObjectives: this.learningObjectives,
-                        isSuggestedInteraction: this.isSuggestedInteraction
-                    })
+                // const requestOptions = {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({
+                //         message: this.message,
+                //         userId: this.userDetailsStore.userId,
+                //         skillName: this.skill.name,
+                //         skillUrl: this.skill.url,
+                //         skillLevel: this.englishSkillLevel,
+                //         learningObjectives: this.learningObjectives,
+                //         isSuggestedInteraction: this.isSuggestedInteraction
+                //     })
+                // };
+
+                // this.isSuggestedInteraction = false;
+
+                // let url = '';
+                // if (this.tutorType == 'socratic')
+                //     url = '/ai-tutor/socratic/new-message';
+                // else if (this.tutorType == 'assessing')
+                //     url = '/ai-tutor/assessing/new-message';
+
+                // const res = await fetch(url, requestOptions);
+                // if (res.status === 500) {
+                //     alert('The tutor can`t answer !!');
+                //     this.waitForAIresponse = false;
+                //     return;
+                // }
+
+                const userMessage = {
+                    role: 'user',
+                    content: [{ text: { value: this.message } }]
                 };
+                this.chatHistory.unshift(userMessage);
 
-                this.isSuggestedInteraction = false;
-
-                let url = '';
-                if (this.tutorType == 'socratic')
-                    url = '/ai-tutor/socratic/new-message';
-                else if (this.tutorType == 'assessing')
-                    url = '/ai-tutor/assessing/new-message';
-
+                const messageData = {
+                    threadId: this.assistantData.threadId,
+                    assistantId: this.assistantData.assistantId,
+                    message: this.message
+                };
+                socket.emit('send-message', messageData);
                 this.message = '';
-                const res = await fetch(url, requestOptions);
-                if (res.status === 500) {
-                    alert('The tutor can`t answer !!');
-                    this.waitForAIresponse = false;
-                    return;
-                }
-
-                this.getChatHistory();
-
-                this.waitForAIresponse = false;
+                //  this.getChatHistory();
+                // this.waitForAIresponse = false;
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false;
@@ -261,10 +295,7 @@ export default {
             }
         },
         // Socratic tutor
-        // async provideOverview() {
-        //     this.message = 'Please provide an overview';
-        //     this.sendMessage();
-        // },
+        
         // assessing tutor
         async askQuestion() {
             if (this.waitForAIresponse) {
@@ -293,6 +324,24 @@ export default {
                     this.waitForAIresponse = false;
                     return;
                 }
+
+                // Fix
+                const messageData = {
+                    skillLevel: this.skill.level,
+                    learningObjectives: this.learningObjectives,
+                    threadId: this.assistantData.threadId,
+                    assistantId: this.assistantData.assistantId,
+                    message: this.message
+                };
+
+                const userMessage = {
+                    role: 'user',
+                    content: [{ text: { value: 'Test me' } }]
+                };
+
+                this.chatHistory.push(userMessage);
+
+                socket.emit('ask-question-request', messageData);
 
                 this.getChatHistory();
                 this.waitForAIresponse = false;
@@ -384,36 +433,63 @@ export default {
             alert('Congratulations, you have mastered this skill!');
             await this.userSkillsStore.MakeMastered(
                 this.userDetailsStore.userId,
-                this.skill
+                this.skill.id,
+                this.skill.name,
+                this.skill.level,
+                this.skill.url,
+                (val) => {}
             );
-            // Reload the skills list for the student.
-            await this.skillTreeStore.getUserSkills();
+        },
+        connectToSocketSever() {
+            socket.connect();
+        },
+        disconnectToSocketSever() {
+            socket.disconnect();
+        },
+        createChatStream() {
+            console.log('create-stream');
+            socket.emit(
+                'create-stream',
+                this.userDetailsStore.userId,
+                this.skill.id,
+                this.skill.name,
+                this.skill.level,
+                this.skill.url,
+                (val) => {}
+            );
+        },
+        removeStreamMessage() {
+            socket.emit('remove-stream-message');
         }
     },
     watch: {
-        // Update text area height base on message input
-        // message: function (newItem, oldItem) {
-        //     let { messageInput } = this.$refs;
-        //     const lineHeightInPixels = 22;
-        //     // Reset messageInput Height
-        //     messageInput.setAttribute(
-        //         `style`,
-        //         `height:${lineHeightInPixels}px;overflow-y:hidden;`
-        //     );
-        //     // Calculate number of lines (soft and hard)
-        //     const height = messageInput.style.height;
-        //     const scrollHeight = messageInput.scrollHeight;
-        //     messageInput.style.height = height;
-        //     const count = Math.floor(scrollHeight / lineHeightInPixels);
-        //     this.$nextTick(() => {
-        //         messageInput.setAttribute(
-        //             `style`,
-        //             `height:${count * lineHeightInPixels}px;overflow-y:hidden;`
-        //         );
-        //         // Also scroll to bottom of the chat div
-        //         //this.scrollToMessageInput();
-        //     });
-        // }
+        stateOfSocket: {
+            async handler(newItem, oldItem) {
+                if (newItem.streamType !== 'aiTutor') {
+                    return;
+                }
+                if (newItem.isStreaming) {
+                    this.waitForAIresponse = false;
+                }
+                if (!newItem.isStreaming && newItem.isRunJustEnded) {
+                    const assistantMessage = {
+                        role: 'assistant',
+                        content: [
+                            {
+                                text: {
+                                    value: this.stateOfSocket.streamingMessage
+                                },
+                                type: 'text'
+                            }
+                        ]
+                    };
+
+                    this.chatHistory.unshift(assistantMessage);
+                    this.removeStreamMessage();
+                }
+            },
+            deep: true
+        }
     }
 };
 </script>
@@ -703,6 +779,15 @@ export default {
             }"
             ref="messageInputDiv"
         >
+            <!-- Currently streaming message -->
+            <div
+                v-if="
+                    stateOfSocket.isStreaming &&
+                    stateOfSocket.streamType === 'aiTutor'
+                "
+                class="d-flex my-3 tutor-conversation streamed-message"
+                v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
+            ></div>
             <div
                 class="d-flex my-3"
                 :class="{ 'justify-content-end': message.role === 'user' }"
@@ -728,7 +813,6 @@ export default {
                             )
                         "
                     ></div>
-
                     <!-- Generate / Play audio -->
                     <!-- Loading animation -->
                     <div
@@ -960,7 +1044,7 @@ export default {
     border-top: #c8cccc 1px solid;
 }
 
-.send-btn {
+.send-message-button {
     height: fit-content;
     width: fit-content;
 }
@@ -1006,6 +1090,11 @@ export default {
     width: fit-content;
     padding: 16px;
     border-radius: 50px;
+}
+
+.streamed-message {
+    display: flex;
+    flex-direction: column;
 }
 /* ************************* */
 /* Tablet Styling */
