@@ -239,12 +239,11 @@ export default {
                 const messageData = {
                     threadId: this.assistantData.threadId,
                     assistantId: this.assistantData.assistantId,
+                    assistantInstruction: null,
                     message: this.message
                 };
-                socket.emit('send-message', messageData);
+                socket.emit('socratic-new-message', messageData);
                 this.message = '';
-                //  this.getChatHistory();
-                // this.waitForAIresponse = false;
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false;
