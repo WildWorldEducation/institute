@@ -41,20 +41,16 @@ let io = null;
 const createSocket = (server) => {
     io = new Server(server);
 
-    console.log('create');
-
     io.on('connection', (socket) => {
         try {
-            console.log('connect');
-
             // user send normal message event
-            socket.on('send-message', async (clientData, callback) => {
+            socket.on('socratic-new-message', async (clientData, callback) => {
                 await createRunStream(
                     clientData.threadId,
                     clientData.assistantId,
                     clientData.message,
                     socket,
-                    null,
+                    clientData.assistantInstruction,
                     'aiTutor'
                 );
             });
