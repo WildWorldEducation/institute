@@ -215,21 +215,44 @@ export default {
                 //     })
                 // };
 
-                // this.isSuggestedInteraction = false;
+                // Define assistant instructions
+                let responseLength = '';
+                // regular responses should be short
+                if (this.isSuggestedInteraction == false) {
+                    responseLength = 'Please keep all responses succinct.';
+                }
+                // reset the variable
+                this.isSuggestedInteraction = false;
 
-                // let url = '';
-                // if (this.tutorType == 'socratic')
-                //     url = '/ai-tutor/socratic/new-message';
-                // else if (this.tutorType == 'assessing')
-                //     url = '/ai-tutor/assessing/new-message';
+                let instructions = '';
+                let socketChannel = 'new-message';
+                if (this.tutorType == 'socratic') {
+                    instructions = `Please tutor about the subject: ${this.skillName},
+                comprising the following learning objectives: ${this.learningObjectives}.
+                Tutor the user as if they are at a ${this.skillLevel} level and age.
+                Ask follow up questions after responding to the message.
+                Make sure to have $ delimiters before any science and math strings that can convert to Latex
+                Please keep all messages below 2000 characters. ${responseLength}`;
 
-                // const res = await fetch(url, requestOptions);
-                // if (res.status === 500) {
-                //     alert('The tutor can`t answer !!');
-                //     this.waitForAIresponse = false;
-                //     return;
-                // }
+                    // socketChannel = 'socratic-new-message';
+                } else if (this.tutorType == 'assessing') {
+                    instructions = `The user is at a ${this.skillLevel} level and age.
+                Please review the chat history and the following learning objectives: ${this.learningObjectives}.
 
+                Ask questions about each learning objective, one after the other. When you get to the end of the array,
+                please start again.
+                Only ask one question, not more than one.
+                Preference asking questions on learning objectives that the student does not seem to know well.
+
+                Do not provide feedback to the student after they answer the question.
+
+                Make sure to have $ delimiters before any science and math strings that can convert to Latex.
+                Please keep all messages below 2000 characters.`;
+
+                    // socketChannel = 'assessing-new-message';
+                }
+
+                // Add the student's message to the chat on screen.
                 const userMessage = {
                     role: 'user',
                     content: [{ text: { value: this.message } }]
@@ -239,10 +262,11 @@ export default {
                 const messageData = {
                     threadId: this.assistantData.threadId,
                     assistantId: this.assistantData.assistantId,
-                    assistantInstruction: null,
+                    assistantInstruction: instructions,
+                    // The message from the student
                     message: this.message
                 };
-                socket.emit('socratic-new-message', messageData);
+                socket.emit(socketChannel, messageData);
                 this.message = '';
             } catch (error) {
                 console.error(error);

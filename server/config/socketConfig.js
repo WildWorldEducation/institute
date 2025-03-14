@@ -44,7 +44,7 @@ const createSocket = (server) => {
     io.on('connection', (socket) => {
         try {
             // user send normal message event
-            socket.on('socratic-new-message', async (clientData, callback) => {
+            socket.on('new-message', async (clientData, callback) => {
                 await createRunStream(
                     clientData.threadId,
                     clientData.assistantId,
