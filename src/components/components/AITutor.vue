@@ -265,6 +265,9 @@ export default {
     watch: {
         stateOfSocket: {
             async handler(newItem, oldItem) {
+                if (newItem.streamType !== 'aiTutor') {
+                    return;
+                }
                 if (newItem.isStreaming) {
                     this.waitForAIresponse = false;
                 }
@@ -282,7 +285,6 @@ export default {
                     };
 
                     this.messageList.push(assistantMessage);
-
                     this.removeStreamMessage();
                 }
             },
@@ -424,7 +426,10 @@ export default {
                 </div>
                 <!-- Currently streaming message -->
                 <div
-                    v-if="stateOfSocket.isStreaming"
+                    v-if="
+                        stateOfSocket.isStreaming &&
+                        stateOfSocket.streamType === 'aiTutor'
+                    "
                     class="d-flex my-3 tutor-conversation streamed-message"
                     v-html="
                         applyMarkDownFormatting(stateOfSocket.streamingMessage)

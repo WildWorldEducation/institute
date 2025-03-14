@@ -9,8 +9,7 @@ export const socketState = reactive({
     isStreaming: false,
     isRunJustEnded: false,
     isStudentMasteredSkill: false,
-
-
+    streamType: 'aiTutor'
 });
 
 // "undefined" means the URL will be computed from the `window.location` object ( This is pretty brilliant as we do not have )
@@ -34,8 +33,10 @@ socket.on("disconnect", () => {
 socket.on('stream-message', (...args) => {
     socketState.isRunJustEnded = false;
     socketState.isStreaming = true;
+    console.log('stream type')
+    console.log(args[1])
     socketState.streamingMessage = socketState.streamingMessage + args[0].value;
-
+    socketState.streamType = args[1];
 })
 
 socket.on('run-end', (...args) => {
@@ -44,6 +45,10 @@ socket.on('run-end', (...args) => {
 })
 
 socket.on('remove-stream-message', (...args) => {
+    socketState.streamingMessage = '';
+})
+
+socket.on('remove-message', () => {
     socketState.streamingMessage = '';
 })
 

@@ -106,13 +106,13 @@ export default {
                     role: 'user',
                     content: [{ text: { value: this.message } }]
                 };
-                this.messageList.push(userMessage);
+                this.messageList.unshift(userMessage);
                 const messageData = {
                     threadId: this.assistantData.threadId,
                     assistantId: this.assistantData.assistantId,
                     message: this.message
                 };
-                socket.emit('send-message', messageData);
+                socket.emit('send-learning-objective-message', messageData);
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false;
@@ -147,7 +147,7 @@ export default {
                     return;
                 }
 
-                this.messageList.push(this.latestMessage);
+                this.messageList.unshift(this.latestMessage);
 
                 this.getMessages();
                 this.waitForAIresponse = false;
@@ -211,11 +211,18 @@ export default {
         },
         disconnectToSocketSever() {
             socket.disconnect();
+        },
+        removeStreamMessage() {
+            socket.emit('remove-stream-message');
+            socket.emit('remove-message');
         }
     },
     watch: {
         stateOfSocket: {
             async handler(newItem, oldItem) {
+                if (newItem.streamType !== 'learningObjective') {
+                    return;
+                }
                 if (newItem.isStreaming) {
                     this.waitForAIresponse = false;
                 }
@@ -231,9 +238,8 @@ export default {
                             }
                         ]
                     };
-
-                    this.messageList.push(assistantMessage);
-
+                    console.log('Run End');
+                    this.messageList.unshift(assistantMessage);
                     this.removeStreamMessage();
                 }
             },
@@ -339,6 +345,12 @@ export default {
             Thinking
             <TutorLoadingSymbol />
         </div>
+        <!-- Currently streaming message -->
+        <div
+            v-if="stateOfSocket.isStreaming"
+            class="d-flex my-3 tutor-conversation streamed-message border border-dark rounded p-2"
+            v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
+        ></div>
         <!-- Message thread -->
         <div
             class="d-flex my-3 messages w-100"
@@ -364,12 +376,6 @@ export default {
                 v-html="applyMarkDownFormatting(message.content[0].text.value)"
             ></div>
         </div>
-        <!-- Currently streaming message -->
-        <div
-            v-if="stateOfSocket.isStreaming"
-            class="d-flex my-3 tutor-conversation streamed-message"
-            v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
-        ></div>
     </div>
 </template>
 
@@ -411,6 +417,11 @@ export default {
     display: inline-block;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
+}
+
+.streamed-message {
+    display: flex;
+    flex-direction: column;
 }
 
 @keyframes rotation {

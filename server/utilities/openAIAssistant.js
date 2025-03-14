@@ -121,9 +121,9 @@ async function skillMessage(threadId, assistantId, messageData) {
 
 
 
-async function createRunStream(threadId, assistantId, userMessage, socket, assistantInstruction) {
+async function createRunStream(threadId, assistantId, userMessage, socket, assistantInstruction, streamType) {
 
-    const message = await openai.beta.threads.messages.create(
+    await openai.beta.threads.messages.create(
         threadId,
         {
             role: "user",
@@ -131,12 +131,15 @@ async function createRunStream(threadId, assistantId, userMessage, socket, assis
         }
     );
 
+    console.log('stream type: ')
+    console.log(streamType)
+
     const run = openai.beta.threads.runs.stream(threadId, {
         assistant_id: assistantId,
         instructions: assistantInstruction
     })
         .on('textDelta', (textDelta, snapshot) => {
-            socket.emit('stream-message', textDelta, snapshot)
+            socket.emit('stream-message', textDelta, streamType, snapshot)
         })
         .on('runStepDone', (runStep) => { socket.emit('run-end') })
         .on('toolCallCreated', (toolCall) => process.stdout.write(`\nassistant > ${toolCall.type}\n\n`))
@@ -157,6 +160,8 @@ async function createRunStream(threadId, assistantId, userMessage, socket, assis
         });
     return run
 }
+
+
 
 async function createAssessmentStream(threadId, assistantId, userMessage, socket, assistantInstruction) {
     const message = await openai.beta.threads.messages.create(
@@ -327,6 +332,8 @@ async function learningObjectiveMessage(threadId, assistantId, messageData) {
         console.log(run.status);
     }
 }
+
+
 
 async function generateLearningObjectiveQuestion(
     threadId,

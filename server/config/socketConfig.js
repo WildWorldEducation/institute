@@ -40,7 +40,7 @@ const createSocket = (server) => {
         try {
             // user send normal message event
             socket.on('send-message', async (clientData, callback) => {
-                await createRunStream(clientData.threadId, clientData.assistantId, clientData.message, socket);
+                await createRunStream(clientData.threadId, clientData.assistantId, clientData.message, socket, null, 'aiTutor');
             })
 
             // user send teach me message event
@@ -49,7 +49,7 @@ const createSocket = (server) => {
         Teach them about one of the following learning objectives: ${messageData.learningObjectives}.
         Do not ask teach about the same learning objective more than once, until you have taught
         about all the ones in the list.`;
-                await createRunStream(messageData.threadId, messageData.assistantId, 'Teach me', socket, assistantInstruction);
+                await createRunStream(messageData.threadId, messageData.assistantId, 'Teach me', socket, assistantInstruction, 'aiTutor');
             });
 
             // user send test me message event
@@ -61,7 +61,7 @@ const createSocket = (server) => {
         If the student has not yet shown understanding of a learning objective, do ask a question about it.
         Once the student has shown an understanding of all the learning objectives, let them know they have mastered
         the subject, and stop asking questions.`;
-                await createRunStream(messageData.threadId, messageData.assistantId, 'Test me', socket, assistantInstruction);
+                await createRunStream(messageData.threadId, messageData.assistantId, 'Test me', socket, assistantInstruction, 'aiTutor');
             });
 
             // user send "Have I master this skill" event
@@ -72,7 +72,17 @@ const createSocket = (server) => {
         
         If they have, return only the word "yes" and no other words.
         If not, or if it is unclear, let them know that they need to answer more questions correctly.`
-                await createAssessmentStream(messageData.threadId, messageData.assistantId, 'Do you think I have mastered this topic?', socket, assistantInstruction)
+                await createAssessmentStream(messageData.threadId, messageData.assistantId, 'Do you think I have mastered this topic?', socket, assistantInstruction, 'aiTutor')
+            });
+
+            // learning objective message
+            socket.on('send-learning-objective-message', async (messageData) => {
+                const assistantInstruction = `Please do not repeat the question. Please tutor about the topic: ` +
+                    messageData.learningObjective +
+                    '. Tutor the user as if they are at a ' +
+                    messageData.skillLevel +
+                    ' level and age. Ask follow up questions. Make sure to have $ delimiters before any science and math string that can convert to Latex`';
+                await createRunStream(messageData.threadId, messageData.assistantId, messageData.message, socket, assistantInstruction, 'learningObjective')
             })
 
         } catch (error) {
