@@ -45,10 +45,7 @@ export default {
             assistantData: {
                 assistantId: null,
                 threadId: null
-            },
-            steamingMessage: '',
-            isStreamingMessage: false
-            //   messageList: []
+            }
         };
     },
     async created() {
@@ -295,7 +292,7 @@ export default {
             }
         },
         // Socratic tutor
-        
+
         // assessing tutor
         async askQuestion() {
             if (this.waitForAIresponse) {
@@ -484,8 +481,8 @@ export default {
                         ]
                     };
 
-                    this.chatHistory.unshift(assistantMessage);
                     this.removeStreamMessage();
+                    this.chatHistory.unshift(assistantMessage);
                 }
             },
             deep: true
