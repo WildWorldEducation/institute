@@ -230,7 +230,8 @@ export default {
                     learningObjectives: this.learningObjectives,
                     responseLength: responseLength,
                     // The message from the student
-                    message: this.message
+                    message: this.message,
+                    isEmptyMessage: this.isEmptyMessage
                 };
                 socket.emit(socketChannel, messageData);
                 this.message = '';
@@ -298,6 +299,7 @@ export default {
                     message: message,
                     isEmptyMessage: this.isEmptyMessage
                 };
+                this.isEmptyMessage = false
 
                 if (!this.isEmptyMessage) {
                     const userMessage = {
@@ -409,6 +411,7 @@ export default {
             socket.connect();
         },
         disconnectToSocketSever() {
+            console.log('disconnect');
             socket.disconnect();
         },
         createChatStream() {
