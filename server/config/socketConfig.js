@@ -95,25 +95,7 @@ const createSocket = (server) => {
                     assistantInstruction,
                     'aiTutor'
                 );
-            });
-
-            // user send "Have I master this skill" event
-            socket.on('assessment-request', async (messageData) => {
-                const assistantInstruction = `The user is at a ${messageData.skillLevel} level and age.
-        Review this chat stream and determine if they have understood and mastered the 
-        following learning objectives: ${messageData.learningObjectives}.
-        
-        If they have, return only the word "yes" and no other words.
-        If not, or if it is unclear, let them know that they need to answer more questions correctly.`;
-                await createAssessmentStream(
-                    messageData.threadId,
-                    messageData.assistantId,
-                    'Do you think I have mastered this topic?',
-                    socket,
-                    assistantInstruction,
-                    'aiTutor'
-                );
-            });
+            });         
 
             // learning objective message
             socket.on(
