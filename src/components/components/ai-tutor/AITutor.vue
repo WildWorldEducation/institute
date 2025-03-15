@@ -51,8 +51,8 @@ export default {
     },
     async created() {
         this.connectToSocketSever();
-        console.log(socket);
-        console.log(socketState);
+        console.log(this.chatHistory.length);
+        console.log(this.socraticTutorChatHistory.length);
     },
 
     async mounted() {
@@ -164,7 +164,6 @@ export default {
 
             const response = await fetch(url, requestOptions);
             const resData = await response.json();
-            console.log(resData.status);
 
             // Loading animation off
             for (let i = 0; i < this.chatHistory.length; i++) {
@@ -219,9 +218,11 @@ export default {
                     role: 'user',
                     content: [{ text: { value: this.message } }]
                 };
-                if (this.chatHistory.length == 0)
+
+                if (typeof this.chatHistory.length == 'undefined') {
+                    this.chatHistory = [];
                     this.chatHistory.push(userMessage);
-                else this.chatHistory.unshift(userMessage);
+                } else this.chatHistory.unshift(userMessage);
 
                 const messageData = {
                     threadId: this.assistantData.threadId,
@@ -283,7 +284,7 @@ export default {
                 this.waitForAIresponse = false;
             }
         },
-        // assessing tutor only
+
         async askQuestion(message) {
             if (this.waitForAIresponse) {
                 return;
@@ -308,7 +309,10 @@ export default {
                         role: 'user',
                         content: [{ text: { value: message } }]
                     };
-                    this.chatHistory.unshift(userMessage);
+                    if (typeof this.chatHistory.length == 'undefined') {
+                        this.chatHistory = [];
+                        this.chatHistory.push(userMessage);
+                    } else this.chatHistory.unshift(userMessage);
                 }
 
                 socket.emit(socketChannel, messageData);
@@ -458,6 +462,7 @@ export default {
 
                     this.removeStreamMessage();
 
+                    console.log(this.chatHistory);
                     if (this.chatHistory.length == 0)
                         this.chatHistory.push(assistantMessage);
                     else this.chatHistory.unshift(assistantMessage);
