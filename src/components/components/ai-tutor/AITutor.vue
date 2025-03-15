@@ -448,6 +448,14 @@ export default {
                         this.chatHistory = [];
                         this.chatHistory.push(assistantMessage);
                     } else this.chatHistory.unshift(assistantMessage);
+
+                    // Reverse the messages to get the index, for the TTS feature
+                    // (as Open AI returns the most recent message at index 0)
+                    let reversedMessages = this.chatHistory.reverse();
+                    for (let i = 0; i < reversedMessages.length; i++) {
+                        reversedMessages[i].index = i;
+                    }
+                    this.chatHistory = reversedMessages.reverse();
                 }
             },
             deep: true
