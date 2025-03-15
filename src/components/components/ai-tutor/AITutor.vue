@@ -45,7 +45,8 @@ export default {
             assistantData: {
                 assistantId: null,
                 threadId: null
-            }
+            },
+            isEmptyMessage: false
         };
     },
     async created() {
@@ -193,27 +194,14 @@ export default {
                 return message === null || message.match(/^ *$/) !== null;
             }
             if (isEmptyOrSpaces(this.message)) {
-                this.respondToEmptyContent();
+                this.isEmptyMessage = true;
+                this.askQuestion('');
                 return;
             }
 
             this.waitForAIresponse = true;
 
             try {
-                // const requestOptions = {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({
-                //         message: this.message,
-                //         userId: this.userDetailsStore.userId,
-                //         skillName: this.skill.name,
-                //         skillUrl: this.skill.url,
-                //         skillLevel: this.englishSkillLevel,
-                //         learningObjectives: this.learningObjectives,
-                //         isSuggestedInteraction: this.isSuggestedInteraction
-                //     })
-                // };
-
                 // Define assistant instructions
                 let responseLength = '';
                 // regular responses should be short
@@ -222,42 +210,25 @@ export default {
                 }
                 // reset the variable
                 this.isSuggestedInteraction = false;
-
-                let instructions = '';
                 let socketChannel = 'new-message';
-                if (this.tutorType == 'socratic') {
-                    instructions = `Please tutor about the subject: ${this.skillName},
-                comprising the following learning objectives: ${this.learningObjectives}.
-                Tutor the user as if they are at a ${this.skillLevel} level and age.
-                Ask follow up questions after responding to the message.
-                Make sure to have $ delimiters before any science and math strings that can convert to Latex
-                Please keep all messages below 2000 characters. ${responseLength}`;
-                } else if (this.tutorType == 'assessing') {
-                    instructions = `The user is at a ${this.skillLevel} level and age.
-                Please review the chat history and the following learning objectives: ${this.learningObjectives}.
-
-                Ask questions about each learning objective, one after the other. When you get to the end of the array,
-                please start again.
-                Only ask one question, not more than one.
-                Preference asking questions on learning objectives that the student does not seem to know well.
-
-                Do not provide feedback to the student after they answer the question.
-
-                Make sure to have $ delimiters before any science and math strings that can convert to Latex.
-                Please keep all messages below 2000 characters.`;
-                }
 
                 // Add the student's message to the chat on screen.
                 const userMessage = {
                     role: 'user',
                     content: [{ text: { value: this.message } }]
                 };
-                this.chatHistory.unshift(userMessage);
+                if (this.chatHistory.length == 0)
+                    this.chatHistory.push(userMessage);
+                else this.chatHistory.unshift(userMessage);
 
                 const messageData = {
                     threadId: this.assistantData.threadId,
                     assistantId: this.assistantData.assistantId,
-                    assistantInstruction: instructions,
+                    tutorType: this.tutorType,
+                    skillName: this.skillName,
+                    skillLevel: this.skillLevel,
+                    learningObjectives: this.learningObjectives,
+                    responseLength: responseLength,
                     // The message from the student
                     message: this.message
                 };
@@ -268,70 +239,73 @@ export default {
                 this.waitForAIresponse = false;
             }
         },
-        async respondToEmptyContent() {
-            if (this.waitForAIresponse) {
-                return;
-            }
-            this.waitForAIresponse = true;
+        // async respondToEmptyContent() {
+        //     if (this.waitForAIresponse) {
+        //         return;
+        //     }
+        //     this.waitForAIresponse = true;
 
-            try {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        userId: this.userDetailsStore.userId,
-                        skillName: this.skill.name,
-                        skillUrl: this.skill.url,
-                        skillLevel: this.englishSkillLevel,
-                        learningObjectives: this.learningObjectives,
-                        isEmptyMessage: true
-                    })
-                };
-                let url = '';
-                if (this.tutorType == 'socratic')
-                    url = '/ai-tutor/socratic/ask-question';
-                else if (this.tutorType == 'assessing')
-                    url = '/ai-tutor/assessing/ask-question';
+        //     try {
+        //         const requestOptions = {
+        //             method: 'POST',
+        //             headers: { 'Content-Type': 'application/json' },
+        //             body: JSON.stringify({
+        //                 userId: this.userDetailsStore.userId,
+        //                 skillName: this.skill.name,
+        //                 skillUrl: this.skill.url,
+        //                 skillLevel: this.englishSkillLevel,
+        //                 learningObjectives: this.learningObjectives,
+        //                 isEmptyMessage: true
+        //             })
+        //         };
+        //         let url = '';
+        //         if (this.tutorType == 'socratic')
+        //             url = '/ai-tutor/socratic/ask-question';
+        //         else if (this.tutorType == 'assessing')
+        //             url = '/ai-tutor/assessing/ask-question';
 
-                this.message = '';
-                const res = await fetch(url, requestOptions);
-                if (res.status === 500) {
-                    alert('The tutor can`t answer !!');
-                    this.waitForAIresponse = false;
-                    return;
-                }
+        //         this.message = '';
+        //         const res = await fetch(url, requestOptions);
+        //         if (res.status === 500) {
+        //             alert('The tutor can`t answer !!');
+        //             this.waitForAIresponse = false;
+        //             return;
+        //         }
 
-                this.getChatHistory();
+        //         this.getChatHistory();
 
-                this.waitForAIresponse = false;
-            } catch (error) {
-                console.error(error);
-                this.waitForAIresponse = false;
-            }
-        },
-        // Socratic tutor
-
-        // assessing tutor
-        async testStudent() {
+        //         this.waitForAIresponse = false;
+        //     } catch (error) {
+        //         console.error(error);
+        //         this.waitForAIresponse = false;
+        //     }
+        // },
+        // assessing tutor only
+        async askQuestion(message) {
             if (this.waitForAIresponse) {
                 return;
             }
             this.waitForAIresponse = true;
             try {
-                let socketChannel = 'test-student';
+                let socketChannel = 'ask-question';
 
                 const messageData = {
+                    tutorType: this.tutorType,
                     skillLevel: this.skill.level,
                     learningObjectives: this.learningObjectives,
                     threadId: this.assistantData.threadId,
-                    assistantId: this.assistantData.assistantId
+                    assistantId: this.assistantData.assistantId,
+                    message: message,
+                    isEmptyMessage: this.isEmptyMessage
                 };
 
-                const userMessage = {
-                    role: 'user',
-                    content: [{ text: { value: 'Test me' } }]
-                };
-                this.chatHistory.unshift(userMessage);
+                if (!this.isEmptyMessage) {
+                    const userMessage = {
+                        role: 'user',
+                        content: [{ text: { value: message } }]
+                    };
+                    this.chatHistory.unshift(userMessage);
+                }
 
                 socket.emit(socketChannel, messageData);
                 this.message = '';
@@ -430,6 +404,7 @@ export default {
                 (val) => {}
             );
         },
+        // Streaming
         connectToSocketSever() {
             socket.connect();
         },
@@ -475,7 +450,9 @@ export default {
                     };
 
                     this.removeStreamMessage();
-                    this.chatHistory.unshift(assistantMessage);
+                    if (this.chatHistory.length == 0)
+                        this.chatHistory.push(assistantMessage);
+                    else this.chatHistory.unshift(assistantMessage);
                 }
             },
             deep: true
@@ -752,7 +729,7 @@ export default {
         >
             <button
                 class="btn suggested-interactions ms-1 assessing-btn-dark"
-                @click="testStudent()"
+                @click="askQuestion('test me')"
             >
                 test me
             </button>

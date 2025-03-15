@@ -1,10 +1,10 @@
 const { Server } = require('socket.io');
 const {
     // getSkillThread,
-    createRunStream,
+    createRunStream
     //  createAssistantAndThread,
     //  saveAITutorSkillThread,
-    createAssessmentStream
+    //createAssessmentStream
 } = require('../utilities/openAIAssistant');
 
 let io = null;
@@ -44,37 +44,72 @@ const createSocket = (server) => {
     io.on('connection', (socket) => {
         try {
             // user send normal message event
-            socket.on('new-message', async (clientData, callback) => {
+            socket.on('new-message', async (messageData, callback) => {
+                // Assistant instructions
+                let instructions = '';
+                if (messageData.tutorType == 'socratic') {
+                    instructions = `Please tutor about the subject: ${messageData.skillName},
+                comprising the following learning objectives: ${messageData.learningObjectives}.
+                Tutor the user as if they are at a ${messageData.skillLevel} level and age.
+                Ask follow up questions after responding to the message.
+                Make sure to have $ delimiters before any science and math strings that can convert to Latex
+                Please keep all messages below 2000 characters. ${messageData.responseLength}`;
+                } else if (messageData.tutorType == 'assessing') {
+                    instructions = `The user is at a ${messageData.skillLevel} level and age.
+                Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
+
+                Ask questions about each learning objective, one after the other. When you get to the end of the array,
+                please start again.
+                Only ask one question, not more than one.
+                Preference asking questions on learning objectives that the student does not seem to know well.
+
+                Do not provide feedback to the student after they answer the question.
+
+                Make sure to have $ delimiters before any science and math strings that can convert to Latex.
+                Please keep all messages below 2000 characters.`;
+                }
+
                 await createRunStream(
-                    clientData.threadId,
-                    clientData.assistantId,
-                    clientData.message,
+                    messageData.threadId,
+                    messageData.assistantId,
+                    messageData.message,
                     socket,
-                    clientData.assistantInstruction,
+                    instructions,
                     'aiTutor'
                 );
             });
 
             // user send test me message event
-            socket.on('test-student', async (messageData, callback) => {
+            socket.on('ask-question', async (messageData, callback) => {
                 // Assistant instructions
-                const instructions = `The user is at a ${messageData.skillLevel} level and age.
-                Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
+                let instructions = '';
+                if (messageData.tutorType == 'socratic') {
+                    instructions = `
+                    The user is at a ${messageData.skillLevel} level and age.
+                    Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
+                    Ask the student a question related to the content.        
+                    Make sure to have $ delimiters before any science and math strings that can convert to Latex
+                    `;
+                } else {
+                    instructions = `The user is at a ${messageData.skillLevel} level and age.
+                    Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
                
-                Ask questions about each learning objective, one after the other. When you get to the end of the array,
-                please start again.
-                Only ask one question, not more than one.        
-                Preference asking questions on learning objectives that the student does not seem to know well.
+                    Ask questions about each learning objective, one after the other. When you get to the end of the array,
+                    please start again.
+                    Only ask one question, not more than one.        
+                    Preference asking questions on learning objectives that the student does not seem to know well.
                
-                Do not provide feedback to the student after they answer the question.
+                    Do not provide feedback to the student after they answer the question.
                
-                Make sure to have $ delimiters before any science and math strings that can convert to Latex.
-                Please keep all messages below 2000 characters.`;
+                    Make sure to have $ delimiters before any science and math strings that can convert to Latex.
+                    Please keep all messages below 2000 characters.`;
+                }
 
                 await createRunStream(
                     messageData.threadId,
                     messageData.assistantId,
-                    'Test me',
+                    messageData.message,
+                    messageData.isEmptyMessage,
                     socket,
                     instructions,
                     'aiTutor'
@@ -95,7 +130,7 @@ const createSocket = (server) => {
                     assistantInstruction,
                     'aiTutor'
                 );
-            });         
+            });
 
             // learning objective message
             socket.on(

@@ -107,40 +107,40 @@ async function saveSocraticTutorThread(data) {
     }
 }
 
-async function socraticTutorMessage(threadId, assistantId, messageData) {
-    // Add a Message to the Thread
-    const message = await openai.beta.threads.messages.create(threadId, {
-        role: 'user',
-        content: messageData.message
-    });
+// async function socraticTutorMessage(threadId, assistantId, messageData) {
+//     // Add a Message to the Thread
+//     const message = await openai.beta.threads.messages.create(threadId, {
+//         role: 'user',
+//         content: messageData.message
+//     });
 
-    console.log('socraticTutorMessage');
+//     console.log('socraticTutorMessage');
 
-    let responseLength = '';
-    // regular responses should be short
-    if (messageData.isSuggestedInteraction == false) {
-        responseLength = 'Please keep all responses succinct.';
-    }
+//     let responseLength = '';
+//     // regular responses should be short
+//     if (messageData.isSuggestedInteraction == false) {
+//         responseLength = 'Please keep all responses succinct.';
+//     }
 
-    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-        assistant_id: assistantId,
-        instructions: `Please tutor about the subject: ${messageData.skillName}, 
-        comprising the following learning objectives: ${messageData.learningObjectives}.
-        Tutor the user as if they are at a ${messageData.skillLevel} level and age.
-        Ask follow up questions after responding to the message.
-        Make sure to have $ delimiters before any science and math strings that can convert to Latex
+//     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+//         assistant_id: assistantId,
+//         instructions: `Please tutor about the subject: ${messageData.skillName},
+//         comprising the following learning objectives: ${messageData.learningObjectives}.
+//         Tutor the user as if they are at a ${messageData.skillLevel} level and age.
+//         Ask follow up questions after responding to the message.
+//         Make sure to have $ delimiters before any science and math strings that can convert to Latex
 
-        Please keep all messages below 2000 characters. ${responseLength}`
-    });
+//         Please keep all messages below 2000 characters. ${responseLength}`
+//     });
 
-    if (run.status === 'completed') {
-        const messages = await openai.beta.threads.messages.list(threadId);
-        const latestMessage = messages.data[0];
-        return latestMessage;
-    } else {
-        console.log(run.status);
-    }
-}
+//     if (run.status === 'completed') {
+//         const messages = await openai.beta.threads.messages.list(threadId);
+//         const latestMessage = messages.data[0];
+//         return latestMessage;
+//     } else {
+//         console.log(run.status);
+//     }
+// }
 
 // Test the student
 async function socraticTutorAskQuestion(threadId, assistantId, messageData) {
@@ -240,74 +240,74 @@ async function saveAssessingTutorThread(data) {
     }
 }
 
-async function assessingTutorMessage(threadId, assistantId, messageData) {
-    // Add a Message to the Thread
-    const message = await openai.beta.threads.messages.create(threadId, {
-        role: 'user',
-        content: messageData.message
-    });
+// async function assessingTutorMessage(threadId, assistantId, messageData) {
+//     // Add a Message to the Thread
+//     const message = await openai.beta.threads.messages.create(threadId, {
+//         role: 'user',
+//         content: messageData.message
+//     });
 
-    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-        assistant_id: assistantId,
-        instructions: `The user is at a ${messageData.skillLevel} level and age.
-        Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
+//     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+//         assistant_id: assistantId,
+//         instructions: `The user is at a ${messageData.skillLevel} level and age.
+//         Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
 
-        Ask questions about each learning objective, one after the other. When you get to the end of the array,
-        please start again.
-        Only ask one question, not more than one.         
-        Preference asking questions on learning objectives that the student does not seem to know well.
+//         Ask questions about each learning objective, one after the other. When you get to the end of the array,
+//         please start again.
+//         Only ask one question, not more than one.
+//         Preference asking questions on learning objectives that the student does not seem to know well.
 
-        Do not provide feedback to the student after they answer the question.
+//         Do not provide feedback to the student after they answer the question.
 
-        Make sure to have $ delimiters before any science and math strings that can convert to Latex.
-        Please keep all messages below 2000 characters.`
-    });
+//         Make sure to have $ delimiters before any science and math strings that can convert to Latex.
+//         Please keep all messages below 2000 characters.`
+//     });
 
-    if (run.status === 'completed') {
-        const messages = await openai.beta.threads.messages.list(threadId);
-        const latestMessage = messages.data[0];
+//     if (run.status === 'completed') {
+//         const messages = await openai.beta.threads.messages.list(threadId);
+//         const latestMessage = messages.data[0];
 
-        return latestMessage;
-    } else {
-        console.log(run.status);
-    }
-}
+//         return latestMessage;
+//     } else {
+//         console.log(run.status);
+//     }
+// }
 
 // Test the student
-async function assessingTutorAskQuestion(threadId, assistantId, messageData) {
-    if (!messageData.isEmptyMessage) {
-        // Add a message to the thread
-        const message = await openai.beta.threads.messages.create(threadId, {
-            role: 'user',
-            content: 'Test me'
-        });
-    }
+// async function assessingTutorAskQuestion(threadId, assistantId, messageData) {
+//     if (!messageData.isEmptyMessage) {
+//         // Add a message to the thread
+//         const message = await openai.beta.threads.messages.create(threadId, {
+//             role: 'user',
+//             content: 'Test me'
+//         });
+//     }
 
-    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-        assistant_id: assistantId,
-        instructions: `The user is at a ${messageData.skillLevel} level and age.
-        Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
+//     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+//         assistant_id: assistantId,
+//         instructions: `The user is at a ${messageData.skillLevel} level and age.
+//         Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
 
-        Ask questions about each learning objective, one after the other. When you get to the end of the array,
-        please start again.
-        Only ask one question, not more than one.        
-        Preference asking questions on learning objectives that the student does not seem to know well.
+//         Ask questions about each learning objective, one after the other. When you get to the end of the array,
+//         please start again.
+//         Only ask one question, not more than one.
+//         Preference asking questions on learning objectives that the student does not seem to know well.
 
-        Do not provide feedback to the student after they answer the question.
+//         Do not provide feedback to the student after they answer the question.
 
-        Make sure to have $ delimiters before any science and math strings that can convert to Latex.
-        Please keep all messages below 2000 characters.`
-    });
+//         Make sure to have $ delimiters before any science and math strings that can convert to Latex.
+//         Please keep all messages below 2000 characters.`
+//     });
 
-    if (run.status === 'completed') {
-        const messages = await openai.beta.threads.messages.list(threadId);
-        const latestMessage = messages.data[0];
+//     if (run.status === 'completed') {
+//         const messages = await openai.beta.threads.messages.list(threadId);
+//         const latestMessage = messages.data[0];
 
-        return latestMessage;
-    } else {
-        console.log(run.status);
-    }
-}
+//         return latestMessage;
+//     } else {
+//         console.log(run.status);
+//     }
+// }
 
 /**
  * Learning objective level tutor functions --------------------
@@ -476,14 +476,17 @@ async function createRunStream(
     threadId,
     assistantId,
     userMessage,
+    isEmptyMessage,
     socket,
     assistantInstruction,
     streamType
 ) {
-    await openai.beta.threads.messages.create(threadId, {
-        role: 'user',
-        content: userMessage
-    });
+    if (!isEmptyMessage) {
+        await openai.beta.threads.messages.create(threadId, {
+            role: 'user',
+            content: userMessage
+        });
+    }
 
     console.log('stream type: ');
     console.log(streamType);
@@ -520,31 +523,31 @@ async function createRunStream(
     return run;
 }
 
-async function createAssessmentStream(
-    threadId,
-    assistantId,
-    userMessage,
-    socket,
-    assistantInstruction
-) {
-    const message = await openai.beta.threads.messages.create(threadId, {
-        role: 'user',
-        content: userMessage
-    });
+// async function createAssessmentStream(
+//     threadId,
+//     assistantId,
+//     userMessage,
+//     socket,
+//     assistantInstruction
+// ) {
+//     const message = await openai.beta.threads.messages.create(threadId, {
+//         role: 'user',
+//         content: userMessage
+//     });
 
-    const run = openai.beta.threads.runs
-        .stream(threadId, {
-            assistant_id: assistantId,
-            instructions: assistantInstruction
-        })
-        .on('textDelta', (textDelta, snapshot) => {
-            socket.emit('stream-assessment-message', textDelta, snapshot);
-        })
-        .on('runStepDone', (runStep) => {
-            socket.emit('assessment-run-end');
-        });
-    return run;
-}
+//     const run = openai.beta.threads.runs
+//         .stream(threadId, {
+//             assistant_id: assistantId,
+//             instructions: assistantInstruction
+//         })
+//         .on('textDelta', (textDelta, snapshot) => {
+//             socket.emit('stream-assessment-message', textDelta, snapshot);
+//         })
+//         .on('runStepDone', (runStep) => {
+//             socket.emit('assessment-run-end');
+//         });
+//     return run;
+// }
 
 module.exports = {
     // Shared
@@ -553,14 +556,14 @@ module.exports = {
     createSocraticAssistantAndThread,
     getSocraticTutorThread,
     saveSocraticTutorThread,
-    socraticTutorMessage,
+    // socraticTutorMessage,
     socraticTutorAskQuestion,
     // Assessing tutor
     createAssessingAssistantAndThread,
     getAssessingTutorThread,
     saveAssessingTutorThread,
-    assessingTutorMessage,
-    assessingTutorAskQuestion,
+    // assessingTutorMessage,
+    // assessingTutorAskQuestion,
     // Learning objective tutor
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
@@ -569,5 +572,5 @@ module.exports = {
     requestLearningObjectiveTutoring,
     generateLearningObjectiveQuestion,
     createRunStream,
-    createAssessmentStream
+   // createAssessmentStream
 };
