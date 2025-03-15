@@ -41,26 +41,24 @@ socket.on('run-end', (...args) => {
     socketState.isRunJustEnded = true;
 });
 
-socket.on('remove-stream-message', (...args) => {
-    console.log('test');
-    socketState.streamingMessage = '';
-});
+// socket.on('remove-stream-message', (...args) => {    
+//     socketState.streamingMessage = '';
+// });
 
-socket.on('remove-message', () => {
-    console.log('test1');
-    socketState.streamingMessage = '';
-});
+// socket.on('remove-message', () => {
+//     socketState.streamingMessage = '';
+// });
 
-socket.on('stream-assessment-message', (...args) => {
-    socketState.isRunJustEnded = false;
-    socketState.isStreaming = true;
-    socketState.streamingMessage = socketState.streamingMessage + args[0].value;
-});
+// socket.on('stream-assessment-message', (...args) => {
+//     socketState.isRunJustEnded = false;
+//     socketState.isStreaming = true;
+//     socketState.streamingMessage = socketState.streamingMessage + args[0].value;
+// });
 
-socket.on('assessment-run-end', (...args) => {
-    if (socketState.streamingMessage === 'yes') {
-        socketState.isStudentMasteredSkill = true;
-    }
-    socketState.isStreaming = false;
-    socketState.isRunJustEnded = true;
-});
+// socket.on('assessment-run-end', (...args) => {
+//     if (socketState.streamingMessage === 'yes') {
+//         socketState.isStudentMasteredSkill = true;
+//     }
+//     socketState.isStreaming = false;
+//     socketState.isRunJustEnded = true;
+// });

@@ -45,6 +45,7 @@ const createSocket = (server) => {
         try {
             // user send normal message event
             socket.on('new-message', async (messageData, callback) => {
+                console.log('new meesage');
                 // Assistant instructions
                 let instructions = '';
                 if (messageData.tutorType == 'socratic') {
@@ -82,6 +83,7 @@ const createSocket = (server) => {
 
             // user send test me message event
             socket.on('ask-question', async (messageData, callback) => {
+                console.log('ask questoin');
                 // Assistant instructions
                 let instructions = '';
                 if (messageData.tutorType == 'socratic') {

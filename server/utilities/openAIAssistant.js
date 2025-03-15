@@ -274,40 +274,40 @@ async function saveAssessingTutorThread(data) {
 // }
 
 // Test the student
-// async function assessingTutorAskQuestion(threadId, assistantId, messageData) {
-//     if (!messageData.isEmptyMessage) {
-//         // Add a message to the thread
-//         const message = await openai.beta.threads.messages.create(threadId, {
-//             role: 'user',
-//             content: 'Test me'
-//         });
-//     }
+async function assessingTutorAskQuestion(threadId, assistantId, messageData) {
+    if (!messageData.isEmptyMessage) {
+        // Add a message to the thread
+        const message = await openai.beta.threads.messages.create(threadId, {
+            role: 'user',
+            content: 'Test me'
+        });
+    }
 
-//     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-//         assistant_id: assistantId,
-//         instructions: `The user is at a ${messageData.skillLevel} level and age.
-//         Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
+    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+        assistant_id: assistantId,
+        instructions: `The user is at a ${messageData.skillLevel} level and age.
+        Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
 
-//         Ask questions about each learning objective, one after the other. When you get to the end of the array,
-//         please start again.
-//         Only ask one question, not more than one.
-//         Preference asking questions on learning objectives that the student does not seem to know well.
+        Ask questions about each learning objective, one after the other. When you get to the end of the array,
+        please start again.
+        Only ask one question, not more than one.
+        Preference asking questions on learning objectives that the student does not seem to know well.
 
-//         Do not provide feedback to the student after they answer the question.
+        Do not provide feedback to the student after they answer the question.
 
-//         Make sure to have $ delimiters before any science and math strings that can convert to Latex.
-//         Please keep all messages below 2000 characters.`
-//     });
+        Make sure to have $ delimiters before any science and math strings that can convert to Latex.
+        Please keep all messages below 2000 characters.`
+    });
 
-//     if (run.status === 'completed') {
-//         const messages = await openai.beta.threads.messages.list(threadId);
-//         const latestMessage = messages.data[0];
+    if (run.status === 'completed') {
+        const messages = await openai.beta.threads.messages.list(threadId);
+        const latestMessage = messages.data[0];
 
-//         return latestMessage;
-//     } else {
-//         console.log(run.status);
-//     }
-// }
+        return latestMessage;
+    } else {
+        console.log(run.status);
+    }
+}
 
 /**
  * Learning objective level tutor functions --------------------
@@ -487,7 +487,8 @@ async function createRunStream(
             content: userMessage
         });
     }
-
+    console.log(userMessage);
+    console.log(assistantInstruction);
     console.log('stream type: ');
     console.log(streamType);
 
@@ -563,7 +564,7 @@ module.exports = {
     getAssessingTutorThread,
     saveAssessingTutorThread,
     // assessingTutorMessage,
-    // assessingTutorAskQuestion,
+    assessingTutorAskQuestion,
     // Learning objective tutor
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
@@ -571,6 +572,6 @@ module.exports = {
     learningObjectiveMessage,
     requestLearningObjectiveTutoring,
     generateLearningObjectiveQuestion,
-    createRunStream,
-   // createAssessmentStream
+    createRunStream
+    // createAssessmentStream
 };

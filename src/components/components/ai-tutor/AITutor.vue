@@ -227,7 +227,7 @@ export default {
                     threadId: this.assistantData.threadId,
                     assistantId: this.assistantData.assistantId,
                     tutorType: this.tutorType,
-                    skillName: this.skillName,
+                    skillName: this.skill.name,
                     skillLevel: this.skillLevel,
                     learningObjectives: this.learningObjectives,
                     responseLength: responseLength,
@@ -242,47 +242,47 @@ export default {
                 this.waitForAIresponse = false;
             }
         },
-        // async respondToEmptyContent() {
-        //     if (this.waitForAIresponse) {
-        //         return;
-        //     }
-        //     this.waitForAIresponse = true;
+        async respondToEmptyContent() {
+            if (this.waitForAIresponse) {
+                return;
+            }
+            this.waitForAIresponse = true;
 
-        //     try {
-        //         const requestOptions = {
-        //             method: 'POST',
-        //             headers: { 'Content-Type': 'application/json' },
-        //             body: JSON.stringify({
-        //                 userId: this.userDetailsStore.userId,
-        //                 skillName: this.skill.name,
-        //                 skillUrl: this.skill.url,
-        //                 skillLevel: this.englishSkillLevel,
-        //                 learningObjectives: this.learningObjectives,
-        //                 isEmptyMessage: true
-        //             })
-        //         };
-        //         let url = '';
-        //         if (this.tutorType == 'socratic')
-        //             url = '/ai-tutor/socratic/ask-question';
-        //         else if (this.tutorType == 'assessing')
-        //             url = '/ai-tutor/assessing/ask-question';
+            try {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: this.userDetailsStore.userId,
+                        skillName: this.skill.name,
+                        skillUrl: this.skill.url,
+                        skillLevel: this.englishSkillLevel,
+                        learningObjectives: this.learningObjectives,
+                        isEmptyMessage: true
+                    })
+                };
+                let url = '';
+                if (this.tutorType == 'socratic')
+                    url = '/ai-tutor/socratic/ask-question';
+                else if (this.tutorType == 'assessing')
+                    url = '/ai-tutor/assessing/ask-question';
 
-        //         this.message = '';
-        //         const res = await fetch(url, requestOptions);
-        //         if (res.status === 500) {
-        //             alert('The tutor can`t answer !!');
-        //             this.waitForAIresponse = false;
-        //             return;
-        //         }
+                this.message = '';
+                const res = await fetch(url, requestOptions);
+                if (res.status === 500) {
+                    alert('The tutor can`t answer !!');
+                    this.waitForAIresponse = false;
+                    return;
+                }
 
-        //         this.getChatHistory();
+                this.getChatHistory();
 
-        //         this.waitForAIresponse = false;
-        //     } catch (error) {
-        //         console.error(error);
-        //         this.waitForAIresponse = false;
-        //     }
-        // },
+                this.waitForAIresponse = false;
+            } catch (error) {
+                console.error(error);
+                this.waitForAIresponse = false;
+            }
+        },
         // assessing tutor only
         async askQuestion(message) {
             if (this.waitForAIresponse) {
@@ -731,7 +731,7 @@ export default {
             </button>
         </span>
 
-        <span
+        <!-- <span
             v-if="tutorType === 'assessing'"
             class="d-flex flex-row suggested-interactions-wrapper mt-1 mb-1"
         >
@@ -741,7 +741,7 @@ export default {
             >
                 test me
             </button>
-        </span>
+        </span> -->
         <!-- Message thread -->
         <div
             v-if="showChat"
