@@ -117,7 +117,6 @@ export default {
 
                 if (this.tutorType == 'socratic') {
                     this.socraticTutorChatHistory = resData.messages;
-
                     this.chatHistory = this.socraticTutorChatHistory;
                 } else if (this.tutorType == 'assessing') {
                     this.assessingTutorChatHistory = resData.messages;
@@ -233,8 +232,6 @@ export default {
                 Ask follow up questions after responding to the message.
                 Make sure to have $ delimiters before any science and math strings that can convert to Latex
                 Please keep all messages below 2000 characters. ${responseLength}`;
-
-                    // socketChannel = 'socratic-new-message';
                 } else if (this.tutorType == 'assessing') {
                     instructions = `The user is at a ${this.skillLevel} level and age.
                 Please review the chat history and the following learning objectives: ${this.learningObjectives}.
@@ -248,8 +245,6 @@ export default {
 
                 Make sure to have $ delimiters before any science and math strings that can convert to Latex.
                 Please keep all messages below 2000 characters.`;
-
-                    // socketChannel = 'assessing-new-message';
                 }
 
                 // Add the student's message to the chat on screen.
