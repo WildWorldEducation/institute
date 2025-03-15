@@ -429,11 +429,9 @@ export default {
             );
         },
         removeStreamMessage() {
-            console.log(socket);
-            console.log(this.socketState);
-
-            console.log('remove-stream-message');
-            socket.emit('remove-stream-message');
+            // We dont want this to be watched and added to the chat history.
+            socketState.streamType = 'pause';
+            socketState.streamingMessage = '';
         }
     },
     watch: {
@@ -459,6 +457,7 @@ export default {
                     };
 
                     this.removeStreamMessage();
+
                     if (this.chatHistory.length == 0)
                         this.chatHistory.push(assistantMessage);
                     else this.chatHistory.unshift(assistantMessage);
