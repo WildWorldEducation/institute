@@ -200,31 +200,31 @@ router.post(
 /**
  * Send message to Socratic AI tutor
  */
-router.post(
-    '/socratic/new-message',
-    isAuthenticated,
-    async (req, res, next) => {
-        try {
-            const assistantData = await getSocraticTutorThread(
-                req.body.userId,
-                req.body.skillUrl
-            );
+// router.post(
+//     '/socratic/new-message',
+//     isAuthenticated,
+//     async (req, res, next) => {
+//         try {
+//             const assistantData = await getSocraticTutorThread(
+//                 req.body.userId,
+//                 req.body.skillUrl
+//             );
 
-            console.log('await socraticTutorMessage');
+//             console.log('await socraticTutorMessage');
 
-            await socraticTutorMessage(
-                assistantData[0].thread_id,
-                assistantData[0].assistant_id,
-                req.body
-            );
-            res.end();
-        } catch (error) {
-            console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
-        }
-    }
-);
+//             await socraticTutorMessage(
+//                 assistantData[0].thread_id,
+//                 assistantData[0].assistant_id,
+//                 req.body
+//             );
+//             res.end();
+//         } catch (error) {
+//             console.error(error);
+//             res.status = 500;
+//             res.json({ mess: 'something went wrong' });
+//         }
+//     }
+// );
 
 /**
  * Socratic AI tutor respond to empty message
@@ -289,7 +289,10 @@ router.post(
                     assistantData[0].threadId
                 );
 
-                res.json({ messages: messages });
+                res.json({
+                    messages: messages,
+                    assistantData: assistantData[0]
+                });
                 return;
             } else {
                 const messageData = await getMessagesList(
@@ -297,6 +300,11 @@ router.post(
                 );
 
                 let messages = messageData.data;
+
+                const clientAssistantData = {
+                    threadId: assistantData[0].thread_id,
+                    assistantId: assistantData[0].assistant_id
+                };
 
                 // Reverse the messages to get the index, for the TTS feature
                 // (as Open AI returns the most recent message at index 0)
@@ -334,7 +342,10 @@ router.post(
                     throw error;
                 }
 
-                res.json({ messages: messages });
+                res.json({
+                    messages: messages,
+                    assistantData: clientAssistantData
+                });
             }
         } catch (error) {
             console.error(error);
@@ -399,29 +410,29 @@ router.post(
 /**
  * Send message to Assessing AI tutor
  */
-router.post(
-    '/assessing/new-message',
-    isAuthenticated,
-    async (req, res, next) => {
-        try {
-            const assistantData = await getAssessingTutorThread(
-                req.body.userId,
-                req.body.skillUrl
-            );
+// router.post(
+//     '/assessing/new-message',
+//     isAuthenticated,
+//     async (req, res, next) => {
+//         try {
+//             const assistantData = await getAssessingTutorThread(
+//                 req.body.userId,
+//                 req.body.skillUrl
+//             );
 
-            await assessingTutorMessage(
-                assistantData[0].thread_id,
-                assistantData[0].assistant_id,
-                req.body
-            );
-            res.end();
-        } catch (error) {
-            console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
-        }
-    }
-);
+//             await assessingTutorMessage(
+//                 assistantData[0].thread_id,
+//                 assistantData[0].assistant_id,
+//                 req.body
+//             );
+//             res.end();
+//         } catch (error) {
+//             console.error(error);
+//             res.status = 500;
+//             res.json({ mess: 'something went wrong' });
+//         }
+//     }
+// );
 
 /**
  * Get the AI tutor to ask a question
