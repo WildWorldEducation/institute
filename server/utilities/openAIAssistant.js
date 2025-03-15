@@ -568,9 +568,7 @@ module.exports = {
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
-    //learningObjectiveMessage,
     requestLearningObjectiveTutoring,
     generateLearningObjectiveQuestion,
     createRunStream
-    // createAssessmentStream
 };

@@ -35,7 +35,6 @@ const {
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
-    //learningObjectiveMessage,
     requestLearningObjectiveTutoring,
     generateLearningObjectiveQuestion
 } = require('../utilities/openAIAssistant');
