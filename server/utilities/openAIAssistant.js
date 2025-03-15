@@ -387,33 +387,33 @@ async function getLearningObjectiveThread(userId, learningObjectiveId) {
     }
 }
 
-async function learningObjectiveMessage(threadId, assistantId, messageData) {
-    // Add a Message to the Thread
-    const message = await openai.beta.threads.messages.create(threadId, {
-        role: 'user',
-        content: messageData.message
-    });
+// async function learningObjectiveMessage(threadId, assistantId, messageData) {
+//     // Add a Message to the Thread
+//     const message = await openai.beta.threads.messages.create(threadId, {
+//         role: 'user',
+//         content: messageData.message
+//     });
 
-    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-        assistant_id: assistantId,
-        instructions:
-            `Please do not repeat the request. Please tutor about the topic: ` +
-            messageData.learningObjective +
-            `. Tutor the user as if they are at a ` +
-            messageData.skillLevel +
-            ` level and age. Ask follow up questions. Make sure to have $ delimiters before any science and math string that can convert to Latex.
-            If the message content is empty, please ask the user to write something.
-            Please keep all messages below 2000 characters.`
-    });
+//     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+//         assistant_id: assistantId,
+//         instructions:
+//             `Please do not repeat the request. Please tutor about the topic: ` +
+//             messageData.learningObjective +
+//             `. Tutor the user as if they are at a ` +
+//             messageData.skillLevel +
+//             ` level and age. Ask follow up questions. Make sure to have $ delimiters before any science and math string that can convert to Latex.
+//             If the message content is empty, please ask the user to write something.
+//             Please keep all messages below 2000 characters.`
+//     });
 
-    if (run.status === 'completed') {
-        const messages = await openai.beta.threads.messages.list(threadId);
-        const latestMessage = messages.data[0];
-        return latestMessage;
-    } else {
-        console.log(run.status);
-    }
-}
+//     if (run.status === 'completed') {
+//         const messages = await openai.beta.threads.messages.list(threadId);
+//         const latestMessage = messages.data[0];
+//         return latestMessage;
+//     } else {
+//         console.log(run.status);
+//     }
+// }
 
 async function requestLearningObjectiveTutoring(
     threadId,
@@ -487,8 +487,7 @@ async function createRunStream(
             content: userMessage
         });
     }
-    console.log(userMessage);
-    console.log(assistantInstruction);
+
     console.log('stream type: ');
     console.log(streamType);
 
@@ -558,18 +557,18 @@ module.exports = {
     getSocraticTutorThread,
     saveSocraticTutorThread,
     // socraticTutorMessage,
-    socraticTutorAskQuestion,
+    //socraticTutorAskQuestion,
     // Assessing tutor
     createAssessingAssistantAndThread,
     getAssessingTutorThread,
     saveAssessingTutorThread,
     // assessingTutorMessage,
-    assessingTutorAskQuestion,
+    //assessingTutorAskQuestion,
     // Learning objective tutor
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
-    learningObjectiveMessage,
+    //learningObjectiveMessage,
     requestLearningObjectiveTutoring,
     generateLearningObjectiveQuestion,
     createRunStream

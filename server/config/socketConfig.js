@@ -136,25 +136,23 @@ const createSocket = (server) => {
             });
 
             // learning objective message
-            socket.on(
-                'send-learning-objective-message',
-                async (messageData) => {
-                    const assistantInstruction =
-                        `Please do not repeat the question. Please tutor about the topic: ` +
-                        messageData.learningObjective +
-                        '. Tutor the user as if they are at a ' +
-                        messageData.skillLevel +
-                        ' level and age. Ask follow up questions. Make sure to have $ delimiters before any science and math string that can convert to Latex`';
-                    await createRunStream(
-                        messageData.threadId,
-                        messageData.assistantId,
-                        messageData.message,
-                        socket,
-                        assistantInstruction,
-                        'learningObjective'
-                    );
-                }
-            );
+            socket.on('new-learning-objective-message', async (messageData) => {
+                const assistantInstruction = `Please do not repeat the request. Please tutor about the topic: 
+                    ${messageData.learningObjective}. Tutor the user as if they are at a ${messageData.skillLevel}
+                    level and age. Ask follow up questions. Make sure to have $ delimiters before any science and math string that can convert to Latex.
+                    If the message content is empty, please ask the user to write something.
+                    Please be succinct, brief and clear.`;
+
+                await createRunStream(
+                    messageData.threadId,
+                    messageData.assistantId,
+                    messageData.message,
+                    false,
+                    socket,
+                    assistantInstruction,
+                    'learningObjective'
+                );
+            });
         } catch (error) {
             socket.emit('error', error);
             console.error(error);

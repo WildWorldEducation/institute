@@ -66,13 +66,7 @@ export default {
                 const resData = await response.json();
 
                 this.messageList = resData.messages;
-
-                console.log(this.messageList);
-
-                // Fix
                 this.assistantData = resData.assistantData;
-                console.log('assistant data: ');
-                console.log(this.assistantData);
 
                 // Close loading animation
                 this.isGotMessages = true;
@@ -138,44 +132,48 @@ export default {
             // Turn on loading icon
             this.waitForAIresponse = true;
             try {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        learningObjective: this.learningObjective,
-                        learningObjectiveId: this.learningObjectiveId,
-                        userName: this.userDetailsStore.userName,
-                        userId: this.userDetailsStore.userId,
-                        skillName: this.skillName,
-                        skillLevel: this.englishSkillLevel,
-                        // Whatever the user typed.
-                        message: this.message
-                    })
-                };
+                // const requestOptions = {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({
+                //         learningObjective: this.learningObjective,
+                //         learningObjectiveId: this.learningObjectiveId,
+                //         userName: this.userDetailsStore.userName,
+                //         userId: this.userDetailsStore.userId,
+                //         skillName: this.skillName,
+                //         skillLevel: this.englishSkillLevel,
+                //         // Whatever the user typed.
+                //         message: this.message
+                //     })
+                // };
 
-                var url = '/ai-tutor/learning-objective/new-message';
-                const res = await fetch(url, requestOptions);
-                if (res.status === 500) {
-                    alert('The tutor can`t answer !!');
-                    this.waitForAIresponse = false;
-                    return;
-                }
+                // var url = '/ai-tutor/learning-objective/new-message';
+                // const res = await fetch(url, requestOptions);
+                // if (res.status === 500) {
+                //     alert('The tutor can`t answer !!');
+                //     this.waitForAIresponse = false;
+                //     return;
+                // }
 
-                // Fix
                 const userMessage = {
                     role: 'user',
                     content: [{ text: { value: this.message } }]
                 };
+
                 this.messageList.unshift(userMessage);
+
                 const messageData = {
                     threadId: this.assistantData.threadId,
                     assistantId: this.assistantData.assistantId,
-                    message: this.message
+                    message: this.message,
+                    learningObjective: this.learningObjective,
+                    userId: this.userDetailsStore.userId,
+                    skillName: this.skillName,
+                    skillLevel: this.englishSkillLevel
                 };
-                socket.emit('send-learning-objective-message', messageData);
 
-                this.getMessages();
-                this.waitForAIresponse = false;
+                socket.emit('new-learning-objective-message', messageData);
+                this.message = '';
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false;
@@ -209,8 +207,6 @@ export default {
                     this.waitForAIresponse = false;
                     return;
                 }
-
-                this.messageList.unshift(this.latestMessage);
 
                 this.getMessages();
                 this.waitForAIresponse = false;
@@ -247,8 +243,6 @@ export default {
                     this.waitForAIresponse = false;
                     return;
                 }
-
-                this.messageList.push(this.latestMessage);
 
                 this.getMessages();
                 this.waitForAIresponse = false;
@@ -307,7 +301,6 @@ export default {
                             }
                         ]
                     };
-                    console.log('Run End');
                     this.messageList.unshift(assistantMessage);
                     this.removeStreamMessage();
                 }
@@ -345,7 +338,7 @@ export default {
                 ask me a question
             </button>
         </span>
-        <!-- Custom interactions text input -->
+        <!-- text input -->
         <span class="d-flex mt-1">
             <textarea
                 class="chat-input border border-dark rounded"
@@ -388,13 +381,13 @@ export default {
             Thinking
             <TutorLoadingSymbol />
         </div>
-        <!-- Currently streaming message -->
-        <div
-            v-if="stateOfSocket.isStreaming"
-            class="d-flex my-3 tutor-conversation streamed-message border border-dark rounded p-2"
-            v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
-        ></div>
         <div class="d-flex flex-column mx-auto chat-component socratic-chat">
+            <!-- Currently streaming message -->
+            <div
+                v-if="stateOfSocket.isStreaming"
+                class="d-flex my-3 tutor-conversation streamed-message p-2"
+                v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
+            ></div>
             <!-- Message thread -->
             <div
                 class="d-flex my-3"

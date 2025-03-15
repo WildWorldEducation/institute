@@ -24,18 +24,18 @@ const {
     getSocraticTutorThread,
     saveSocraticTutorThread,
     //socraticTutorMessage,
-    socraticTutorAskQuestion,
+    //socraticTutorAskQuestion,
     // Assessing tutor
     createAssessingAssistantAndThread,
     getAssessingTutorThread,
     saveAssessingTutorThread,
     //assessingTutorMessage,
-    assessingTutorAskQuestion,
+    //assessingTutorAskQuestion,
     // Learning objective tutor
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
-    learningObjectiveMessage,
+    //learningObjectiveMessage,
     requestLearningObjectiveTutoring,
     generateLearningObjectiveQuestion
 } = require('../utilities/openAIAssistant');
@@ -229,29 +229,29 @@ router.post(
 /**
  * Socratic AI tutor respond to empty message
  */
-router.post(
-    '/socratic/ask-question',
-    isAuthenticated,
-    async (req, res, next) => {
-        try {
-            const assistantData = await getSocraticTutorThread(
-                req.body.userId,
-                req.body.skillUrl
-            );
+// router.post(
+//     '/socratic/ask-question',
+//     isAuthenticated,
+//     async (req, res, next) => {
+//         try {
+//             const assistantData = await getSocraticTutorThread(
+//                 req.body.userId,
+//                 req.body.skillUrl
+//             );
 
-            await socraticTutorAskQuestion(
-                assistantData[0].thread_id,
-                assistantData[0].assistant_id,
-                req.body
-            );
-            res.end();
-        } catch (error) {
-            console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
-        }
-    }
-);
+//             await socraticTutorAskQuestion(
+//                 assistantData[0].thread_id,
+//                 assistantData[0].assistant_id,
+//                 req.body
+//             );
+//             res.end();
+//         } catch (error) {
+//             console.error(error);
+//             res.status = 500;
+//             res.json({ mess: 'something went wrong' });
+//         }
+//     }
+// );
 
 // Assessing tutor ---------------------
 /**
@@ -437,32 +437,32 @@ router.post(
 /**
  * Get the AI tutor to ask a question
  */
-router.post(
-    '/assessing/ask-question',
-    isAuthenticated,
-    async (req, res, next) => {
-        try {
-            const assistantData = await getAssessingTutorThread(
-                req.body.userId,
-                req.body.skillUrl
-            );
+// router.post(
+//     '/assessing/ask-question',
+//     isAuthenticated,
+//     async (req, res, next) => {
+//         try {
+//             const assistantData = await getAssessingTutorThread(
+//                 req.body.userId,
+//                 req.body.skillUrl
+//             );
 
-            let assessmentResult = await assessingTutorAskQuestion(
-                assistantData[0].thread_id,
-                assistantData[0].assistant_id,
-                req.body
-            );
+//             let assessmentResult = await assessingTutorAskQuestion(
+//                 assistantData[0].thread_id,
+//                 assistantData[0].assistant_id,
+//                 req.body
+//             );
 
-            res.json({
-                assessmentResult: assessmentResult.content[0].text.value
-            });
-        } catch (error) {
-            console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
-        }
-    }
-);
+//             res.json({
+//                 assessmentResult: assessmentResult.content[0].text.value
+//             });
+//         } catch (error) {
+//             console.error(error);
+//             res.status = 500;
+//             res.json({ mess: 'something went wrong' });
+//         }
+//     }
+// );
 
 /**
  * AI tutor automatically assess
@@ -676,30 +676,30 @@ router.post(
 /**
  * Send message to learning objective level AI tutor
  */
-router.post(
-    '/learning-objective/new-message',
-    isAuthenticated,
-    async (req, res, next) => {
-        try {
-            const assistantData = await getLearningObjectiveThread(
-                req.body.userId,
-                req.body.learningObjectiveId
-            );
+// router.post(
+//     '/learning-objective/new-message',
+//     isAuthenticated,
+//     async (req, res, next) => {
+//         try {
+//             const assistantData = await getLearningObjectiveThread(
+//                 req.body.userId,
+//                 req.body.learningObjectiveId
+//             );
 
-            await learningObjectiveMessage(
-                assistantData[0].thread_id,
-                assistantData[0].assistant_id,
-                req.body
-            );
+//             await learningObjectiveMessage(
+//                 assistantData[0].thread_id,
+//                 assistantData[0].assistant_id,
+//                 req.body
+//             );
 
-            res.end();
-        } catch (error) {
-            console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
-        }
-    }
-);
+//             res.end();
+//         } catch (error) {
+//             console.error(error);
+//             res.status = 500;
+//             res.json({ mess: 'something went wrong' });
+//         }
+//     }
+// );
 
 /**
  * Get the learning objective AI tutor to tutor on that learning objective
