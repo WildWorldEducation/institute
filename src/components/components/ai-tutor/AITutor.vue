@@ -45,14 +45,11 @@ export default {
             assistantData: {
                 assistantId: null,
                 threadId: null
-            },
-            isEmptyMessage: false
+            }
         };
     },
     async created() {
         this.connectToSocketSever();
-        console.log(this.chatHistory.length);
-        console.log(this.socraticTutorChatHistory.length);
     },
 
     async mounted() {
@@ -195,8 +192,7 @@ export default {
                 return message === null || message.match(/^ *$/) !== null;
             }
             if (isEmptyOrSpaces(this.message)) {
-                this.isEmptyMessage = true;
-                this.askQuestion('');
+                this.askQuestion();
                 return;
             }
 
@@ -233,8 +229,7 @@ export default {
                     learningObjectives: this.learningObjectives,
                     responseLength: responseLength,
                     // The message from the student
-                    message: this.message,
-                    isEmptyMessage: this.isEmptyMessage
+                    message: this.message
                 };
                 this.message = '';
                 socket.emit(socketChannel, messageData);
@@ -243,49 +238,49 @@ export default {
                 this.waitForAIresponse = false;
             }
         },
-        async respondToEmptyContent() {
-            if (this.waitForAIresponse) {
-                return;
-            }
-            this.waitForAIresponse = true;
+        // async respondToEmptyContent() {
+        //     if (this.waitForAIresponse) {
+        //         return;
+        //     }
+        //     this.waitForAIresponse = true;
 
-            try {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        userId: this.userDetailsStore.userId,
-                        skillName: this.skill.name,
-                        skillUrl: this.skill.url,
-                        skillLevel: this.englishSkillLevel,
-                        learningObjectives: this.learningObjectives,
-                        isEmptyMessage: true
-                    })
-                };
-                let url = '';
-                if (this.tutorType == 'socratic')
-                    url = '/ai-tutor/socratic/ask-question';
-                else if (this.tutorType == 'assessing')
-                    url = '/ai-tutor/assessing/ask-question';
+        //     try {
+        //         const requestOptions = {
+        //             method: 'POST',
+        //             headers: { 'Content-Type': 'application/json' },
+        //             body: JSON.stringify({
+        //                 userId: this.userDetailsStore.userId,
+        //                 skillName: this.skill.name,
+        //                 skillUrl: this.skill.url,
+        //                 skillLevel: this.englishSkillLevel,
+        //                 learningObjectives: this.learningObjectives,
+        //                 isEmptyMessage: true
+        //             })
+        //         };
+        //         let url = '';
+        //         if (this.tutorType == 'socratic')
+        //             url = '/ai-tutor/socratic/ask-question';
+        //         else if (this.tutorType == 'assessing')
+        //             url = '/ai-tutor/assessing/ask-question';
 
-                this.message = '';
-                const res = await fetch(url, requestOptions);
-                if (res.status === 500) {
-                    alert('The tutor can`t answer !!');
-                    this.waitForAIresponse = false;
-                    return;
-                }
+        //         this.message = '';
+        //         const res = await fetch(url, requestOptions);
+        //         if (res.status === 500) {
+        //             alert('The tutor can`t answer !!');
+        //             this.waitForAIresponse = false;
+        //             return;
+        //         }
 
-                this.getChatHistory();
+        //         this.getChatHistory();
 
-                this.waitForAIresponse = false;
-            } catch (error) {
-                console.error(error);
-                this.waitForAIresponse = false;
-            }
-        },
+        //         this.waitForAIresponse = false;
+        //     } catch (error) {
+        //         console.error(error);
+        //         this.waitForAIresponse = false;
+        //     }
+        // },
 
-        async askQuestion(message) {
+        async askQuestion() {
             if (this.waitForAIresponse) {
                 return;
             }
@@ -299,21 +294,8 @@ export default {
                     learningObjectives: this.learningObjectives,
                     threadId: this.assistantData.threadId,
                     assistantId: this.assistantData.assistantId,
-                    message: message,
-                    isEmptyMessage: this.isEmptyMessage
+                    message: ''
                 };
-                this.isEmptyMessage = false;
-
-                if (!this.isEmptyMessage) {
-                    const userMessage = {
-                        role: 'user',
-                        content: [{ text: { value: message } }]
-                    };
-                    if (typeof this.chatHistory.length == 'undefined') {
-                        this.chatHistory = [];
-                        this.chatHistory.push(userMessage);
-                    } else this.chatHistory.unshift(userMessage);
-                }
 
                 socket.emit(socketChannel, messageData);
                 this.message = '';
@@ -462,10 +444,10 @@ export default {
 
                     this.removeStreamMessage();
 
-                    console.log(this.chatHistory);
-                    if (this.chatHistory.length == 0)
+                    if (typeof this.chatHistory.length == 'undefined') {
+                        this.chatHistory = [];
                         this.chatHistory.push(assistantMessage);
-                    else this.chatHistory.unshift(assistantMessage);
+                    } else this.chatHistory.unshift(assistantMessage);
                 }
             },
             deep: true

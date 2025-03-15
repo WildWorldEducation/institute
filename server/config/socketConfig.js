@@ -74,7 +74,6 @@ const createSocket = (server) => {
                     messageData.threadId,
                     messageData.assistantId,
                     messageData.message,
-                    messageData.isEmptyMessage,
                     socket,
                     instructions,
                     'aiTutor'
@@ -112,7 +111,6 @@ const createSocket = (server) => {
                     messageData.threadId,
                     messageData.assistantId,
                     messageData.message,
-                    messageData.isEmptyMessage,
                     socket,
                     instructions,
                     'aiTutor'

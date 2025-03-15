@@ -275,14 +275,6 @@ async function saveAssessingTutorThread(data) {
 
 // Test the student
 async function assessingTutorAskQuestion(threadId, assistantId, messageData) {
-    if (!messageData.isEmptyMessage) {
-        // Add a message to the thread
-        const message = await openai.beta.threads.messages.create(threadId, {
-            role: 'user',
-            content: 'Test me'
-        });
-    }
-
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
         instructions: `The user is at a ${messageData.skillLevel} level and age.
@@ -476,18 +468,10 @@ async function createRunStream(
     threadId,
     assistantId,
     userMessage,
-    isEmptyMessage,
     socket,
     assistantInstruction,
     streamType
 ) {
-    if (!isEmptyMessage) {
-        await openai.beta.threads.messages.create(threadId, {
-            role: 'user',
-            content: userMessage
-        });
-    }
-
     console.log('stream type: ');
     console.log(streamType);
 
