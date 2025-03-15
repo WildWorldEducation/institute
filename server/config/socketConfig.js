@@ -55,6 +55,32 @@ const createSocket = (server) => {
                 );
             });
 
+            // user send test me message event
+            socket.on('test-student', async (messageData, callback) => {
+                // Assistant instructions
+                const instructions = `The user is at a ${messageData.skillLevel} level and age.
+                Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
+               
+                Ask questions about each learning objective, one after the other. When you get to the end of the array,
+                please start again.
+                Only ask one question, not more than one.        
+                Preference asking questions on learning objectives that the student does not seem to know well.
+               
+                Do not provide feedback to the student after they answer the question.
+               
+                Make sure to have $ delimiters before any science and math strings that can convert to Latex.
+                Please keep all messages below 2000 characters.`;
+
+                await createRunStream(
+                    messageData.threadId,
+                    messageData.assistantId,
+                    'Test me',
+                    socket,
+                    instructions,
+                    'aiTutor'
+                );
+            });
+
             // user send teach me message event
             socket.on('teach-request', async (messageData, callback) => {
                 const assistantInstruction = `The user is at a ${messageData.skillLevel} level and age.
@@ -65,25 +91,6 @@ const createSocket = (server) => {
                     messageData.threadId,
                     messageData.assistantId,
                     'Teach me',
-                    socket,
-                    assistantInstruction,
-                    'aiTutor'
-                );
-            });
-
-            // user send test me message event
-            socket.on('ask-question-request', async (messageData, callback) => {
-                const assistantInstruction = `The user is at a ${messageData.skillLevel} level and age.
-        Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
-        
-        If the student has already shown understanding of a learning objective, do not ask a question about it.
-        If the student has not yet shown understanding of a learning objective, do ask a question about it.
-        Once the student has shown an understanding of all the learning objectives, let them know they have mastered
-        the subject, and stop asking questions.`;
-                await createRunStream(
-                    messageData.threadId,
-                    messageData.assistantId,
-                    'Test me',
                     socket,
                     assistantInstruction,
                     'aiTutor'
