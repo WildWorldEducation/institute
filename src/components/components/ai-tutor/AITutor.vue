@@ -51,6 +51,8 @@ export default {
     },
     async created() {
         this.connectToSocketSever();
+        console.log(socket);
+        console.log(socketState);
     },
 
     async mounted() {
@@ -233,8 +235,8 @@ export default {
                     message: this.message,
                     isEmptyMessage: this.isEmptyMessage
                 };
-                socket.emit(socketChannel, messageData);
                 this.message = '';
+                socket.emit(socketChannel, messageData);
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false;
@@ -299,7 +301,7 @@ export default {
                     message: message,
                     isEmptyMessage: this.isEmptyMessage
                 };
-                this.isEmptyMessage = false
+                this.isEmptyMessage = false;
 
                 if (!this.isEmptyMessage) {
                     const userMessage = {
@@ -391,10 +393,10 @@ export default {
             let inputMessage = this.$refs.messageInputDiv;
             inputMessage.scrollTop = inputMessage.scrollHeight;
         },
-        smoothScrollToMessageInput() {
-            let inputMessage = this.$refs.messageInputDiv;
-            inputMessage.scrollIntoView({ behavior: 'smooth' });
-        },
+        // smoothScrollToMessageInput() {
+        //     let inputMessage = this.$refs.messageInputDiv;
+        //     inputMessage.scrollIntoView({ behavior: 'smooth' });
+        // },
         async makeMastered() {
             alert('Congratulations, you have mastered this skill!');
             await this.userSkillsStore.MakeMastered(
@@ -427,6 +429,10 @@ export default {
             );
         },
         removeStreamMessage() {
+            console.log(socket);
+            console.log(this.socketState);
+
+            console.log('remove-stream-message');
             socket.emit('remove-stream-message');
         }
     },

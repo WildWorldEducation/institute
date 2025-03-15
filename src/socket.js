@@ -42,10 +42,12 @@ socket.on('run-end', (...args) => {
 });
 
 socket.on('remove-stream-message', (...args) => {
+    console.log('test');
     socketState.streamingMessage = '';
 });
 
 socket.on('remove-message', () => {
+    console.log('test1');
     socketState.streamingMessage = '';
 });
 
