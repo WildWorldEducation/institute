@@ -302,9 +302,19 @@ export default {
                             }
                         ]
                     };
+
+                    // Clear last message
                     this.removeStreamMessage();
 
                     this.messageList.unshift(assistantMessage);
+
+                    // Reverse the messages to get the index, for the TTS feature
+                    // (as Open AI returns the most recent message at index 0)
+                    let reversedMessages = this.messageList.reverse();
+                    for (let i = 0; i < reversedMessages.length; i++) {
+                        reversedMessages[i].index = i;
+                    }
+                    this.messageList = reversedMessages.reverse();
                 }
             },
             deep: true
