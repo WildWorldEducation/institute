@@ -9,35 +9,6 @@ const {
 
 let io = null;
 
-// const getAssistantData = async (
-//     userId,
-//     skillId,
-//     skillName,
-//     skillLevel,
-//     skillUrl
-// ) => {
-//     const assistantData = await getSkillThread(skillId, userId, skillUrl);
-//     if (assistantData.length === 0) {
-//         const newAssistant = await createAssistantAndThread(
-//             skillName,
-//             skillLevel
-//         );
-//         const newAssistantData = {
-//             userId: userId,
-//             skillUrl: skillUrl,
-//             assistantId: newAssistant.assistant.id,
-//             threadId: newAssistant.thread.id
-//         };
-//         await saveAITutorSkillThread(newAssistantData);
-//         return newAssistantData;
-//     } else {
-//         return {
-//             assistantId: assistantData[0].assistant_id,
-//             threadId: assistantData[0].thread_id
-//         };
-//     }
-// };
-
 const createSocket = (server) => {
     io = new Server(server);
 
@@ -45,7 +16,8 @@ const createSocket = (server) => {
         try {
             // user send normal message event
             socket.on('new-message', async (messageData, callback) => {
-                console.log('new meesage');
+                // This has to do with when the user presses "send" with no message.
+                const isEmptyMessage = false;
                 // Assistant instructions
                 let instructions = '';
                 if (messageData.tutorType == 'socratic') {
@@ -74,6 +46,7 @@ const createSocket = (server) => {
                     messageData.threadId,
                     messageData.assistantId,
                     messageData.message,
+                    isEmptyMessage,
                     socket,
                     instructions,
                     'aiTutor'
@@ -82,7 +55,8 @@ const createSocket = (server) => {
 
             // user send test me message event
             socket.on('ask-question', async (messageData, callback) => {
-                console.log('ask questoin');
+                // This has to do with when the user presses "send" with no message.
+                const isEmptyMessage = true;
                 // Assistant instructions
                 let instructions = '';
                 if (messageData.tutorType == 'socratic') {
@@ -111,30 +85,17 @@ const createSocket = (server) => {
                     messageData.threadId,
                     messageData.assistantId,
                     messageData.message,
+                    isEmptyMessage,
                     socket,
                     instructions,
                     'aiTutor'
                 );
             });
 
-            // user send teach me message event
-            socket.on('teach-request', async (messageData, callback) => {
-                const assistantInstruction = `The user is at a ${messageData.skillLevel} level and age.
-        Teach them about one of the following learning objectives: ${messageData.learningObjectives}.
-        Do not ask teach about the same learning objective more than once, until you have taught
-        about all the ones in the list.`;
-                await createRunStream(
-                    messageData.threadId,
-                    messageData.assistantId,
-                    'Teach me',
-                    socket,
-                    assistantInstruction,
-                    'aiTutor'
-                );
-            });
-
             // learning objective message
             socket.on('new-learning-objective-message', async (messageData) => {
+                // This has to do with when the user presses "send" with no message.
+                const isEmptyMessage = false;
                 const assistantInstruction = `Please do not repeat the request. Please tutor about the topic: 
                     ${messageData.learningObjective}. Tutor the user as if they are at a ${messageData.skillLevel}
                     level and age. Ask follow up questions. Make sure to have $ delimiters before any science and math string that can convert to Latex.
@@ -145,7 +106,7 @@ const createSocket = (server) => {
                     messageData.threadId,
                     messageData.assistantId,
                     messageData.message,
-                    false,
+                    isEmptyMessage,
                     socket,
                     assistantInstruction,
                     'learningObjective'

@@ -23,14 +23,12 @@ const {
     createSocraticAssistantAndThread,
     getSocraticTutorThread,
     saveSocraticTutorThread,
-    //socraticTutorMessage,
-    //socraticTutorAskQuestion,
+    socraticTutorMessage,    
     // Assessing tutor
     createAssessingAssistantAndThread,
     getAssessingTutorThread,
     saveAssessingTutorThread,
-    //assessingTutorMessage,
-    //assessingTutorAskQuestion,
+    assessingTutorMessage,    
     // Learning objective tutor
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
@@ -198,6 +196,7 @@ router.post(
 
 /**
  * Send message to Socratic AI tutor
+ * Commented out as this is now done via streaming/socket.io
  */
 // router.post(
 //     '/socratic/new-message',
@@ -227,6 +226,7 @@ router.post(
 
 /**
  * Socratic AI tutor respond to empty message
+ * Commented out as this is now done via streaming/socket.io
  */
 // router.post(
 //     '/socratic/ask-question',
@@ -253,6 +253,7 @@ router.post(
 // );
 
 // Assessing tutor ---------------------
+
 /**
  * Get thread from Assessing AI tutor
  */
@@ -408,6 +409,7 @@ router.post(
 
 /**
  * Send message to Assessing AI tutor
+ * Commented out as this is now done via streaming/socket.io
  */
 // router.post(
 //     '/assessing/new-message',
@@ -435,6 +437,7 @@ router.post(
 
 /**
  * Get the AI tutor to ask a question
+ * Commented out as this is now done via streaming/socket.io
  */
 // router.post(
 //     '/assessing/ask-question',
@@ -674,6 +677,7 @@ router.post(
 
 /**
  * Send message to learning objective level AI tutor
+ * Commented out as this is now done via streaming/socket.io
  */
 // router.post(
 //     '/learning-objective/new-message',
