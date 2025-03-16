@@ -276,8 +276,9 @@ export default {
             socket.disconnect();
         },
         removeStreamMessage() {
-            socket.emit('remove-stream-message');
-            socket.emit('remove-message');
+            // We dont want this to be watched and added to the chat history.
+            socketState.streamType = 'pause';
+            socketState.streamingMessage = '';
         }
     },
     watch: {
@@ -301,8 +302,9 @@ export default {
                             }
                         ]
                     };
-                    this.messageList.unshift(assistantMessage);
                     this.removeStreamMessage();
+
+                    this.messageList.unshift(assistantMessage);
                 }
             },
             deep: true
