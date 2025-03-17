@@ -93,15 +93,21 @@ export default {
             document.getElementsByTagName('body')[0].style =
                 'background-image: none;';
 
-            this.sessionDetailsStore.isLoggedIn = false;
+            // Reset theme classes
+            document.body.classList.remove('editor-theme');
+            document.body.classList.remove('instructor-theme');
 
+            // Reset both stores to their initial state
+            this.userDetailsStore.$reset();
+            this.sessionDetailsStore.$reset();
+
+            // Send logout request
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             };
-            var url = '/logout';
 
-            fetch(url, requestOptions).then(function (response) {
+            fetch('/logout', requestOptions).then(() => {
                 router.push({ name: 'login' });
             });
         }
