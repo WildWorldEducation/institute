@@ -447,6 +447,30 @@ const router = createRouter({
             }
         },
         {
+            path: '/subscription',
+            name: 'subscription',
+            component: () =>
+                import('../components/pages/subscriptions/SubscriptionView.vue')
+        },
+        {
+            path: '/subscription/success',
+            name: 'subscription-success',
+            component: () =>
+                import(
+                    '../components/pages/subscriptions/SubscriptionSuccessView.vue'
+                )
+        },
+        {
+            path: '/subscription/error',
+            name: 'subscription-error',
+            component: () =>
+                import(
+                    '../components/pages/subscriptions/SubscriptionErrorView.vue'
+                )
+        },
+
+        // Subscriptions
+        {
             path: '/:pathMatch(.*)*',
             name: 'not-found',
             component: () => import('../components/pages/PageNotFoundView.vue')
