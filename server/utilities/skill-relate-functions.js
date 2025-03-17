@@ -31,9 +31,39 @@ function findHideChildPath(skillNode, resultsArray, userSkills) {
     }
 }
 
+// function to find the path of inaccessible skill
+function findInaccessiblePath(skillNode, resultsArray, userSkills) {
+    let stopFlag = false;
+    let currentNode = skillNode;
+
+    // loop thought all skill node parent to find the one that get is_accessible flag turn off
+    // we just need to find parent that is inaccessible and turn them on
+    while (!stopFlag) {
+        if (!currentNode.is_accessible) {
+            resultsArray.push(currentNode)
+        }
+        const parentNode = findNode(userSkills, currentNode.parent)
+        // stop condition
+        if (!parentNode) {
+            stopFlag = true
+        }
+        else {
+            currentNode = parentNode
+        }
+    }
+}
+
+
 function findNode(userSkills, skillId) {
     const node = userSkills.find(skill => {
         return skill.id === skillId
+    })
+    return node
+}
+
+function findNodeByName(userSkills, skillName) {
+    const node = userSkills.find(skill => {
+        return skill.skill_name === skillName
     })
     return node
 }
@@ -86,4 +116,4 @@ function convertNodesToArray(nodes) {
 
 
 
-module.exports = { findParentHaveHiddenChild, showHiddenChildFromParent, convertNodesToArray };
+module.exports = { findParentHaveHiddenChild, showHiddenChildFromParent, convertNodesToArray, findNodeByName, findInaccessiblePath, findNode };

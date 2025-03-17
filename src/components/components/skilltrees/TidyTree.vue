@@ -746,9 +746,14 @@ export default {
                 })
             });
             const data = await res.json();
+            // Handle skill is inaccessible case
+            if (data?.mess === 'inaccessible') {
+                await this.drawInaccessibleNodes(data.inaccessiblePath);
+            }
+
+            // Handle skill get hidden case
             if (data?.mess === 'ok') {
                 await this.reloadTree();
-
                 try {
                     const resultNode = this.findNodeWithName(searchString);
                     this.goToLocation(resultNode);
@@ -984,6 +989,93 @@ export default {
             fetch(url).then(() => {
                 this.reloadTree(node, this.truncateLevel, this.subjectFilters);
             });
+        },
+        // Redraw the tree with inaccessible skill path that user search (This is done in client and will not interact with database)
+        async drawInaccessibleNodes(inaccessiblePath) {
+            this.showSkillPanel = false;
+            await this.skillTreeStore.getVerticalTreeUserSkills(
+                this.userDetailsStore.gradeFilter,
+                this.userDetailsStore.subjectFilters,
+                this.userDetailsStore.isUnlockedSkillsOnlyFilter
+            );
+
+            // If the student clicks a button on the grade level key,
+            // this will truncate the tree to that level.
+            let userSkills = [];
+            if (this.userDetailsStore.gradeFilter == 'grade_school') {
+                userSkills =
+                    this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
+            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
+                userSkills =
+                    this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
+            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
+                userSkills =
+                    this.skillTreeStore.highSchoolVerticalTreeUserSkills;
+            } else if (this.userDetailsStore.gradeFilter == 'college') {
+                userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
+            } else {
+                userSkills = this.skillTreeStore.verticalTreeUserSkills;
+            }
+
+            // Create a drawable node from inaccessible path
+            const inaccessibleNodes =
+                this.createPathFromNodes(inaccessiblePath);
+            console.log('H ha ha');
+            console.log(inaccessibleNodes);
+
+            // Add inaccessible path to userSkill
+
+            this.skill = {
+                name: 'SKILLS',
+                sprite: null,
+                children: userSkills
+            };
+
+            this.data = {
+                skill_name: 'My skills',
+                children: this.skill.children
+            };
+
+            // Compute the tree height; this approach will allow the height of the
+            // SVG to scale according to the breadth (width) of the tree layout.
+            this.root = d3.hierarchy(this.data);
+
+            // Node width and height
+            // Height
+            const dx = 24;
+            // Width
+            const dy = 270;
+
+            // Create a tree layout.
+            this.tree = d3.tree().nodeSize([this.nodeWidth, this.nodeHeight]);
+
+            // Sort the tree and apply the layout.
+            this.root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
+            this.tree(this.root);
+
+            this.zoomInD3(this.scale, this.panX, this.panY);
+
+            let translateX = 0;
+            let translateY = 0;
+            if (typeof node !== 'undefined' && node != null) {
+                translateX =
+                    -node.y * this.scale +
+                    (window.innerWidth / (2 * this.scale)) * this.scale;
+                translateY =
+                    -node.x * this.scale +
+                    (window.innerHeight / (2 * this.scale)) * this.scale;
+            }
+
+            d3.select(this.context.canvas)
+                .transition()
+                .duration(1000)
+                .call(
+                    this.d3Zoom.transform,
+                    d3.zoomIdentity
+                        .translate(translateX, translateY)
+                        .scale(this.scale)
+                );
+            this.resetPos();
         },
         async reloadTree(node) {
             this.showSkillPanel = false;
@@ -1698,6 +1790,25 @@ export default {
                 ctx1.strokeText(node.data.skill_name, xPosition, node.x + 2);
                 ctx1.fillText(node.data.skill_name, xPosition, node.x + 2);
             }
+        },
+
+        // Turn array of nodes into a single node that it children only contain the node in the array
+        createPathFromNodes(nodesArray) {
+            let resultNode = null;
+            nodesArray.forEach((element) => {
+                // we only want the node data and not it child for the cleanest path
+                const nodeWithoutChild = { ...element, children: null };
+                // handle the firs element case
+                if (!resultNode) {
+                    resultNode = nodeWithoutChild;
+                } else {
+                    resultNode = {
+                        ...nodeWithoutChild,
+                        children: [resultNode]
+                    };
+                }
+            });
+            return resultNode;
         }
     }
 };
