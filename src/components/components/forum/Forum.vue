@@ -17,7 +17,7 @@ export default {
         };
     },
     emits: ['progressTutorial'],
-    props: ['skillId', 'showTutorialTip6', 'userRole'],
+    props: ['skillId', 'showTutorialTip10', 'userRole'],
     data() {
         return {
             sourcePosts: [],
@@ -319,7 +319,7 @@ export default {
             :posts="posts"
             :user="user"
             :skillId="skillId"
-            :showTutorialTip6="showTutorialTip6"
+            :showTutorialTip10="showTutorialTip10"
             :userRole="userDetailsStore.role"
             @progressTutorial="$emit('progressTutorial', $event)"
         />
