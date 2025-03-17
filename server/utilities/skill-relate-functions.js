@@ -53,7 +53,7 @@ function findInaccessiblePath(skillNode, userSkills) {
             // if node is accessible we will add the node to it children
             const newChildren = currentNode.children.map(
                 node => {
-                    if (node.name === resultNode.name) {
+                    if (node.skill_name === resultNode.skill_name) {
                         return resultNode
                     } else {
                         return node
@@ -63,7 +63,6 @@ function findInaccessiblePath(skillNode, userSkills) {
             resultNode = { ...currentNodeWithOutChild, children: newChildren }
         }
     }
-    console.log(resultNode)
     return resultNode
 }
 

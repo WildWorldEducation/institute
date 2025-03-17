@@ -1006,9 +1006,7 @@ export default {
                 this.userDetailsStore.subjectFilters,
                 this.userDetailsStore.isUnlockedSkillsOnlyFilter
             );
-            //------------------------------------------------------------
-            // TODO MAKE THE LEVEL FILTER EQUAL TO SEARCH NODE LEVEL
-            //------------------------------------------------------------
+
             // If the student clicks a button on the grade level key,
             // this will truncate the tree to that level.
             let userSkills = [];
