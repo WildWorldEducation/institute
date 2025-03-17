@@ -85,6 +85,8 @@ export default {
             else if (type == 'assessing') {
                 this.chatHistory = this.assessingTutorChatHistory;
             }
+
+            console.log(this.chatHistory);
         },
         // For both tutors
         async getChatHistory() {
@@ -456,6 +458,7 @@ export default {
                         reversedMessages[i].index = i;
                     }
                     this.chatHistory = reversedMessages.reverse();
+                    this.getChatHistory();
                 }
             },
             deep: true
