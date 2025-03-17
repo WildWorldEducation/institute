@@ -1031,9 +1031,6 @@ export default {
                 } else return skill;
             });
 
-            console.log('new user skill is: ');
-            console.log(inaccessiblePath);
-
             this.skill = {
                 name: 'SKILLS',
                 sprite: null,

@@ -1433,14 +1433,11 @@ router.post('/find-hidden-skill/:userId', (req, res, next) => {
                     const skillData = findNodeByName(skillList, skillName);
 
                     if (!skillData.is_accessible) {
-
                         const inaccessiblePath = findInaccessiblePath(skillData, skillList)
-
-                        // We also need to find the eldest parent that is accessible so the client can add all the inaccessible child to it and draw the tree
-                        // const accessibleParent = findNode(skillList, resultsArray[resultsArray.length - 1].parent)
-                        // return res.json({ mess: 'inaccessible', inaccessiblePath: resultsArray, accessibleParent: accessibleParent })
                         return res.json({ mess: 'inaccessible', inaccessiblePath: inaccessiblePath, });
                     }
+
+                    // if skill is accessible mean it is hidden
                     const parentPath = findParentHaveHiddenChild(
                         skillList,
                         skillName
