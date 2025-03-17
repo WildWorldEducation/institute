@@ -107,6 +107,7 @@ async function saveSocraticTutorThread(data) {
     }
 }
 
+// Only used for Speech to Text at the moment
 async function socraticTutorMessage(threadId, assistantId, messageData) {
     // Add a Message to the Thread
     const message = await openai.beta.threads.messages.create(threadId, {
@@ -134,6 +135,10 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
     if (run.status === 'completed') {
         const messages = await openai.beta.threads.messages.list(threadId);
         const latestMessage = messages.data[0];
+
+        let tokenCount = run.usage.total_tokens;
+        console.log(tokenCount);
+
         return latestMessage;
     } else {
         console.log(run.status);
@@ -239,6 +244,7 @@ async function saveAssessingTutorThread(data) {
     }
 }
 
+// Only used for Speech to text
 async function assessingTutorMessage(threadId, assistantId, messageData) {
     // Add a Message to the Thread
     const message = await openai.beta.threads.messages.create(threadId, {
@@ -265,6 +271,9 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
     if (run.status === 'completed') {
         const messages = await openai.beta.threads.messages.list(threadId);
         const latestMessage = messages.data[0];
+
+        let tokenCount = run.usage.total_tokens;
+        console.log(tokenCount);
 
         return latestMessage;
     } else {
@@ -429,6 +438,9 @@ async function requestLearningObjectiveTutoring(
         const messages = await openai.beta.threads.messages.list(threadId);
         const latestMessage = messages.data[0];
 
+        let tokenCount = run.usage.total_tokens;
+        console.log(tokenCount);
+
         return latestMessage;
     } else {
         console.log(run.status);
@@ -456,6 +468,9 @@ async function generateLearningObjectiveQuestion(
         const messages = await openai.beta.threads.messages.list(threadId);
         const latestMessage = messages.data[0];
 
+        let tokenCount = run.usage.total_tokens;
+        console.log(tokenCount);
+
         return latestMessage;
     } else {
         console.log(run.status);
@@ -463,7 +478,6 @@ async function generateLearningObjectiveQuestion(
 }
 
 // Chat streaming
-
 async function createRunStream(
     threadId,
     assistantId,
@@ -471,7 +485,8 @@ async function createRunStream(
     isEmptyMessage,
     socket,
     assistantInstruction,
-    streamType
+    streamType,
+    userId
 ) {
     console.log('stream type: ');
     console.log(streamType);
@@ -493,6 +508,8 @@ async function createRunStream(
         })
         .on('runStepDone', (runStep) => {
             socket.emit('run-end');
+            let tokenCount = runStep.usage.total_tokens;
+            saveTokenUsage(userId, tokenCount);
         })
         .on('toolCallCreated', (toolCall) =>
             process.stdout.write(`\nassistant > ${toolCall.type}\n\n`)
@@ -512,7 +529,36 @@ async function createRunStream(
                 }
             }
         });
+
     return run;
+}
+
+/**
+ * Save token usage per user
+ * @param {string} userId
+ * @param {int} tokenCount
+ */
+async function saveTokenUsage(userId, tokenCount) {
+    try {
+        // Get current year
+        let year = new Date().getFullYear();
+        // Get current month
+        let month = new Date().getMonth();
+
+        let queryString = `
+        INSERT INTO user_tokens (user_id, year, month, token_count) 
+        VALUES(${conn.escape(userId)},
+        ${year}, ${month}, ${conn.escape(tokenCount)}) 
+        ON DUPLICATE KEY UPDATE token_count = token_count + ${conn.escape(
+            tokenCount
+        )};
+        `;
+
+        const result = await query(queryString);
+        return result;
+    } catch (error) {
+        throw error;
+    }
 }
 
 module.exports = {

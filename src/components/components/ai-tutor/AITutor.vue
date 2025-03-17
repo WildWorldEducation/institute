@@ -231,7 +231,8 @@ export default {
                     learningObjectives: this.learningObjectives,
                     responseLength: responseLength,
                     // The message from the student
-                    message: this.message
+                    message: this.message,
+                    userId: this.userDetailsStore.userId
                 };
                 this.message = '';
                 socket.emit(socketChannel, messageData);
@@ -239,49 +240,7 @@ export default {
                 console.error(error);
                 this.waitForAIresponse = false;
             }
-        },
-        // async respondToEmptyContent() {
-        //     if (this.waitForAIresponse) {
-        //         return;
-        //     }
-        //     this.waitForAIresponse = true;
-
-        //     try {
-        //         const requestOptions = {
-        //             method: 'POST',
-        //             headers: { 'Content-Type': 'application/json' },
-        //             body: JSON.stringify({
-        //                 userId: this.userDetailsStore.userId,
-        //                 skillName: this.skill.name,
-        //                 skillUrl: this.skill.url,
-        //                 skillLevel: this.englishSkillLevel,
-        //                 learningObjectives: this.learningObjectives,
-        //                 isEmptyMessage: true
-        //             })
-        //         };
-        //         let url = '';
-        //         if (this.tutorType == 'socratic')
-        //             url = '/ai-tutor/socratic/ask-question';
-        //         else if (this.tutorType == 'assessing')
-        //             url = '/ai-tutor/assessing/ask-question';
-
-        //         this.message = '';
-        //         const res = await fetch(url, requestOptions);
-        //         if (res.status === 500) {
-        //             alert('The tutor can`t answer !!');
-        //             this.waitForAIresponse = false;
-        //             return;
-        //         }
-
-        //         this.getChatHistory();
-
-        //         this.waitForAIresponse = false;
-        //     } catch (error) {
-        //         console.error(error);
-        //         this.waitForAIresponse = false;
-        //     }
-        // },
-
+        },        
         async askQuestion() {
             if (this.waitForAIresponse) {
                 return;
@@ -296,7 +255,8 @@ export default {
                     learningObjectives: this.learningObjectives,
                     threadId: this.assistantData.threadId,
                     assistantId: this.assistantData.assistantId,
-                    message: ''
+                    message: '',
+                    userId: this.userDetailsStore.userId
                 };
 
                 socket.emit(socketChannel, messageData);
