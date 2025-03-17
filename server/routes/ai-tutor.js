@@ -23,19 +23,16 @@ const {
     createSocraticAssistantAndThread,
     getSocraticTutorThread,
     saveSocraticTutorThread,
-    socraticTutorMessage,
-    socraticTutorAskQuestion,
+    socraticTutorMessage,    
     // Assessing tutor
     createAssessingAssistantAndThread,
     getAssessingTutorThread,
     saveAssessingTutorThread,
-    assessingTutorMessage,
-    assessingTutorAskQuestion,
+    assessingTutorMessage,    
     // Learning objective tutor
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
-    learningObjectiveMessage,
     requestLearningObjectiveTutoring,
     generateLearningObjectiveQuestion
 } = require('../utilities/openAIAssistant');
@@ -79,18 +76,24 @@ router.post(
                     }
                 ];
                 await saveSocraticTutorThread(assistantData[0]);
-                const messageData = await getMessagesList(
+                const messages = await getMessagesList(
                     assistantData[0].threadId
                 );
-                let messages = messageData.data;
-
-                res.json({ messages: messages });
+                res.json({
+                    messages: messages,
+                    assistantData: assistantData[0]
+                });
                 return;
             } else {
                 const messageData = await getMessagesList(
                     assistantData[0].thread_id
                 );
                 let messages = messageData.data;
+
+                const clientAssistantData = {
+                    threadId: assistantData[0].thread_id,
+                    assistantId: assistantData[0].assistant_id
+                };
 
                 // Reverse the messages to get the index, for the TTS feature
                 // (as Open AI returns the most recent message at index 0)
@@ -104,10 +107,8 @@ router.post(
                 let audioClips = [];
                 try {
                     let queryString = `SELECT * 
-                    FROM ai_socratic_tutor_tts_urls 
-                    WHERE thread_id = ${conn.escape(
-                        assistantData[0].thread_id
-                    )};`;
+                FROM ai_socratic_tutor_tts_urls 
+                WHERE thread_id = ${conn.escape(assistantData[0].thread_id)};`;
 
                     audioClips = await query(queryString);
 
@@ -129,7 +130,8 @@ router.post(
                 }
 
                 res.json({
-                    messages: messages
+                    messages: messages,
+                    assistantData: clientAssistantData
                 });
             }
         } catch (error) {
@@ -194,59 +196,64 @@ router.post(
 
 /**
  * Send message to Socratic AI tutor
+ * Commented out as this is now done via streaming/socket.io
  */
-router.post(
-    '/socratic/new-message',
-    isAuthenticated,
-    async (req, res, next) => {
-        try {
-            const assistantData = await getSocraticTutorThread(
-                req.body.userId,
-                req.body.skillUrl
-            );
+// router.post(
+//     '/socratic/new-message',
+//     isAuthenticated,
+//     async (req, res, next) => {
+//         try {
+//             const assistantData = await getSocraticTutorThread(
+//                 req.body.userId,
+//                 req.body.skillUrl
+//             );
 
-            await socraticTutorMessage(
-                assistantData[0].thread_id,
-                assistantData[0].assistant_id,
-                req.body
-            );
-            res.end();
-        } catch (error) {
-            console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
-        }
-    }
-);
+//             console.log('await socraticTutorMessage');
+
+//             await socraticTutorMessage(
+//                 assistantData[0].thread_id,
+//                 assistantData[0].assistant_id,
+//                 req.body
+//             );
+//             res.end();
+//         } catch (error) {
+//             console.error(error);
+//             res.status = 500;
+//             res.json({ mess: 'something went wrong' });
+//         }
+//     }
+// );
 
 /**
  * Socratic AI tutor respond to empty message
+ * Commented out as this is now done via streaming/socket.io
  */
-router.post(
-    '/socratic/ask-question',
-    isAuthenticated,
-    async (req, res, next) => {
-        try {
-            const assistantData = await getSocraticTutorThread(
-                req.body.userId,
-                req.body.skillUrl
-            );
+// router.post(
+//     '/socratic/ask-question',
+//     isAuthenticated,
+//     async (req, res, next) => {
+//         try {
+//             const assistantData = await getSocraticTutorThread(
+//                 req.body.userId,
+//                 req.body.skillUrl
+//             );
 
-            await socraticTutorAskQuestion(
-                assistantData[0].thread_id,
-                assistantData[0].assistant_id,
-                req.body
-            );
-            res.end();
-        } catch (error) {
-            console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
-        }
-    }
-);
+//             await socraticTutorAskQuestion(
+//                 assistantData[0].thread_id,
+//                 assistantData[0].assistant_id,
+//                 req.body
+//             );
+//             res.end();
+//         } catch (error) {
+//             console.error(error);
+//             res.status = 500;
+//             res.json({ mess: 'something went wrong' });
+//         }
+//     }
+// );
 
 // Assessing tutor ---------------------
+
 /**
  * Get thread from Assessing AI tutor
  */
@@ -282,7 +289,10 @@ router.post(
                     assistantData[0].threadId
                 );
 
-                res.json({ messages: messages });
+                res.json({
+                    messages: messages,
+                    assistantData: assistantData[0]
+                });
                 return;
             } else {
                 const messageData = await getMessagesList(
@@ -290,6 +300,11 @@ router.post(
                 );
 
                 let messages = messageData.data;
+
+                const clientAssistantData = {
+                    threadId: assistantData[0].thread_id,
+                    assistantId: assistantData[0].assistant_id
+                };
 
                 // Reverse the messages to get the index, for the TTS feature
                 // (as Open AI returns the most recent message at index 0)
@@ -327,7 +342,10 @@ router.post(
                     throw error;
                 }
 
-                res.json({ messages: messages });
+                res.json({
+                    messages: messages,
+                    assistantData: clientAssistantData
+                });
             }
         } catch (error) {
             console.error(error);
@@ -391,60 +409,62 @@ router.post(
 
 /**
  * Send message to Assessing AI tutor
+ * Commented out as this is now done via streaming/socket.io
  */
-router.post(
-    '/assessing/new-message',
-    isAuthenticated,
-    async (req, res, next) => {
-        try {
-            const assistantData = await getAssessingTutorThread(
-                req.body.userId,
-                req.body.skillUrl
-            );
+// router.post(
+//     '/assessing/new-message',
+//     isAuthenticated,
+//     async (req, res, next) => {
+//         try {
+//             const assistantData = await getAssessingTutorThread(
+//                 req.body.userId,
+//                 req.body.skillUrl
+//             );
 
-            await assessingTutorMessage(
-                assistantData[0].thread_id,
-                assistantData[0].assistant_id,
-                req.body
-            );
-            res.end();
-        } catch (error) {
-            console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
-        }
-    }
-);
+//             await assessingTutorMessage(
+//                 assistantData[0].thread_id,
+//                 assistantData[0].assistant_id,
+//                 req.body
+//             );
+//             res.end();
+//         } catch (error) {
+//             console.error(error);
+//             res.status = 500;
+//             res.json({ mess: 'something went wrong' });
+//         }
+//     }
+// );
 
 /**
  * Get the AI tutor to ask a question
+ * Commented out as this is now done via streaming/socket.io
  */
-router.post(
-    '/assessing/ask-question',
-    isAuthenticated,
-    async (req, res, next) => {
-        try {
-            const assistantData = await getAssessingTutorThread(
-                req.body.userId,
-                req.body.skillUrl
-            );
+// router.post(
+//     '/assessing/ask-question',
+//     isAuthenticated,
+//     async (req, res, next) => {
+//         try {
+//             const assistantData = await getAssessingTutorThread(
+//                 req.body.userId,
+//                 req.body.skillUrl
+//             );
 
-            let assessmentResult = await assessingTutorAskQuestion(
-                assistantData[0].thread_id,
-                assistantData[0].assistant_id,
-                req.body
-            );
+//             let assessmentResult = await assessingTutorAskQuestion(
+//                 assistantData[0].thread_id,
+//                 assistantData[0].assistant_id,
+//                 req.body
+//             );
 
-            res.json({
-                assessmentResult: assessmentResult.content[0].text.value
-            });
-        } catch (error) {
-            console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
-        }
-    }
-);
+//             res.json({
+//                 assessmentResult: assessmentResult.content[0].text.value
+//             });
+//         } catch (error) {
+//             console.error(error);
+//             res.status = 500;
+//             res.json({ mess: 'something went wrong' });
+//         }
+//     }
+// );
 
 /**
  * AI tutor automatically assess
@@ -538,7 +558,10 @@ router.get(
                 );
                 let messages = messageData.data;
 
-                res.json({ messages: messages });
+                res.json({
+                    messages: messages,
+                    assistantData: assistantData[0]
+                });
                 return;
             } else {
                 // Retrieve the chat history.
@@ -583,7 +606,14 @@ router.get(
                     throw error;
                 }
 
-                res.json({ messages: messages });
+                const assistantDataForClient = {
+                    assistantId: assistantData[0].assistant_id,
+                    threadId: assistantData[0].thread_id
+                };
+                res.json({
+                    messages: messages,
+                    assistantData: assistantDataForClient
+                });
             }
         } catch (error) {
             console.error(error);
@@ -647,31 +677,32 @@ router.post(
 
 /**
  * Send message to learning objective level AI tutor
+ * Commented out as this is now done via streaming/socket.io
  */
-router.post(
-    '/learning-objective/new-message',
-    isAuthenticated,
-    async (req, res, next) => {
-        try {
-            const assistantData = await getLearningObjectiveThread(
-                req.body.userId,
-                req.body.learningObjectiveId
-            );
+// router.post(
+//     '/learning-objective/new-message',
+//     isAuthenticated,
+//     async (req, res, next) => {
+//         try {
+//             const assistantData = await getLearningObjectiveThread(
+//                 req.body.userId,
+//                 req.body.learningObjectiveId
+//             );
 
-            await learningObjectiveMessage(
-                assistantData[0].thread_id,
-                assistantData[0].assistant_id,
-                req.body
-            );
+//             await learningObjectiveMessage(
+//                 assistantData[0].thread_id,
+//                 assistantData[0].assistant_id,
+//                 req.body
+//             );
 
-            res.end();
-        } catch (error) {
-            console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
-        }
-    }
-);
+//             res.end();
+//         } catch (error) {
+//             console.error(error);
+//             res.status = 500;
+//             res.json({ mess: 'something went wrong' });
+//         }
+//     }
+// );
 
 /**
  * Get the learning objective AI tutor to tutor on that learning objective

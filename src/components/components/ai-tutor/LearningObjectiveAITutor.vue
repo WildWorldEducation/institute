@@ -1,12 +1,15 @@
 <script>
+import { socket, socketState } from '../../../socket.js';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const stateOfSocket = socketState;
         return {
-            userDetailsStore
+            userDetailsStore,
+            stateOfSocket
         };
     },
     props: [
@@ -26,13 +29,17 @@ export default {
             isGotMessages: false,
             englishSkillLevel: '',
             threadID: '',
-            isAudioPlaying: false
+            isAudioPlaying: false,
+            assistantData: null
         };
     },
     async mounted() {
         this.englishSkillLevel = this.skillLevel.replace('_', ' ');
         // load thread.
         await this.getMessages();
+    },
+    async created() {
+        this.connectToSocketSever();
     },
     methods: {
         // Setting this method to allow the user to be able to create a new line with shift+enter
@@ -59,8 +66,7 @@ export default {
                 const resData = await response.json();
 
                 this.messageList = resData.messages;
-
-                console.log(this.messageList);
+                this.assistantData = resData.assistantData;
 
                 // Close loading animation
                 this.isGotMessages = true;
@@ -126,31 +132,48 @@ export default {
             // Turn on loading icon
             this.waitForAIresponse = true;
             try {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        learningObjective: this.learningObjective,
-                        learningObjectiveId: this.learningObjectiveId,
-                        userName: this.userDetailsStore.userName,
-                        userId: this.userDetailsStore.userId,
-                        skillName: this.skillName,
-                        skillLevel: this.englishSkillLevel,
-                        // Whatever the user typed.
-                        message: this.message
-                    })
+                // const requestOptions = {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({
+                //         learningObjective: this.learningObjective,
+                //         learningObjectiveId: this.learningObjectiveId,
+                //         userName: this.userDetailsStore.userName,
+                //         userId: this.userDetailsStore.userId,
+                //         skillName: this.skillName,
+                //         skillLevel: this.englishSkillLevel,
+                //         // Whatever the user typed.
+                //         message: this.message
+                //     })
+                // };
+
+                // var url = '/ai-tutor/learning-objective/new-message';
+                // const res = await fetch(url, requestOptions);
+                // if (res.status === 500) {
+                //     alert('The tutor can`t answer !!');
+                //     this.waitForAIresponse = false;
+                //     return;
+                // }
+
+                const userMessage = {
+                    role: 'user',
+                    content: [{ text: { value: this.message } }]
                 };
 
-                var url = '/ai-tutor/learning-objective/new-message';
-                const res = await fetch(url, requestOptions);
-                if (res.status === 500) {
-                    alert('The tutor can`t answer !!');
-                    this.waitForAIresponse = false;
-                    return;
-                }
+                this.messageList.unshift(userMessage);
 
-                this.getMessages();
-                this.waitForAIresponse = false;
+                const messageData = {
+                    threadId: this.assistantData.threadId,
+                    assistantId: this.assistantData.assistantId,
+                    message: this.message,
+                    learningObjective: this.learningObjective,
+                    userId: this.userDetailsStore.userId,
+                    skillName: this.skillName,
+                    skillLevel: this.englishSkillLevel
+                };
+
+                socket.emit('new-learning-objective-message', messageData);
+                this.message = '';
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false;
@@ -184,8 +207,6 @@ export default {
                     this.waitForAIresponse = false;
                     return;
                 }
-
-                this.messageList.push(this.latestMessage);
 
                 this.getMessages();
                 this.waitForAIresponse = false;
@@ -223,8 +244,6 @@ export default {
                     return;
                 }
 
-                this.messageList.push(this.latestMessage);
-
                 this.getMessages();
                 this.waitForAIresponse = false;
             } catch (error) {
@@ -249,6 +268,56 @@ export default {
 
             let formattedMessage = md.render(string);
             return formattedMessage;
+        },
+        connectToSocketSever() {
+            socket.connect();
+        },
+        disconnectToSocketSever() {
+            socket.disconnect();
+        },
+        removeStreamMessage() {
+            // We dont want this to be watched and added to the chat history.
+            socketState.streamType = 'pause';
+            socketState.streamingMessage = '';
+        }
+    },
+    watch: {
+        stateOfSocket: {
+            async handler(newItem, oldItem) {
+                if (newItem.streamType !== 'learningObjective') {
+                    return;
+                }
+                if (newItem.isStreaming) {
+                    this.waitForAIresponse = false;
+                }
+                if (!newItem.isStreaming && newItem.isRunJustEnded) {
+                    const assistantMessage = {
+                        role: 'assistant',
+                        content: [
+                            {
+                                text: {
+                                    value: this.stateOfSocket.streamingMessage
+                                },
+                                type: 'text'
+                            }
+                        ]
+                    };
+
+                    // Clear last message
+                    this.removeStreamMessage();
+
+                    this.messageList.unshift(assistantMessage);
+
+                    // Reverse the messages to get the index, for the TTS feature
+                    // (as Open AI returns the most recent message at index 0)
+                    let reversedMessages = this.messageList.reverse();
+                    for (let i = 0; i < reversedMessages.length; i++) {
+                        reversedMessages[i].index = i;
+                    }
+                    this.messageList = reversedMessages.reverse();
+                }
+            },
+            deep: true
         }
     }
 };
@@ -281,7 +350,7 @@ export default {
                 ask me a question
             </button>
         </span>
-        <!-- Custom interactions text input -->
+        <!-- text input -->
         <span class="d-flex mt-1">
             <textarea
                 class="chat-input border border-dark rounded"
@@ -325,6 +394,12 @@ export default {
             <TutorLoadingSymbol />
         </div>
         <div class="d-flex flex-column mx-auto chat-component socratic-chat">
+            <!-- Currently streaming message -->
+            <div
+                v-if="stateOfSocket.isStreaming"
+                class="d-flex my-3 tutor-conversation streamed-message p-2"
+                v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
+            ></div>
             <!-- Message thread -->
             <div
                 class="d-flex my-3"
@@ -495,6 +570,11 @@ export default {
     display: inline-block;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
+}
+
+.streamed-message {
+    display: flex;
+    flex-direction: column;
 }
 
 @keyframes rotation {
