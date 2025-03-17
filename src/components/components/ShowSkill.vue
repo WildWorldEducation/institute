@@ -535,13 +535,13 @@ export default {
                             showAncestorLink
                         "
                         :to="'/skills/' + ancestor"
-                        class="btn assessment-btn secondary-btn me-1"
+                        class="btn assessment-btn me-1"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 448 512"
                             width="20"
-                            class="primary-icon"
+                            fill="white"
                         >
                             <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                             <path
@@ -558,7 +558,7 @@ export default {
                             skill.type != 'domain' &&
                             skill.id
                         "
-                        class="btn me-1 assessment-btn secondary-btn"
+                        class="btn me-1 assessment-btn"
                         :to="skill.id + '/assessment'"
                     >
                         <!-- Half star icon -->
@@ -566,7 +566,7 @@ export default {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 576 512"
                             width="22"
-                            class="primary-icon"
+                            fill="white"
                         >
                             <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                             <path
@@ -579,7 +579,7 @@ export default {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 576 512"
                             width="22"
-                            class="primary-icon"
+                            fill="white"
                         >
                             <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                             <path
@@ -595,14 +595,14 @@ export default {
                             skill.type == 'domain'
                         "
                         @click="MakeMastered()"
-                        class="btn me-1 assessment-btn secondary-btn"
+                        class="btn me-1 assessment-btn"
                     >
                         <!-- Half star icon -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 576 512"
                             width="22"
-                            class="primary-icon"
+                            fill="white"
                         >
                             <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                             <path
@@ -615,7 +615,7 @@ export default {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 576 512"
                             width="22"
-                            class="primary-icon"
+                            fill="white"
                         >
                             <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                             <path
@@ -627,7 +627,7 @@ export default {
                     <!-- If not logged in, go to Login page -->
                     <router-link
                         v-else-if="!sessionDetailsStore.isLoggedIn"
-                        class="btn me-1 assessment-btn secondary-btn"
+                        class="btn me-1 assessment-btn"
                         to="/login"
                     >
                         <!-- Half star icon -->
@@ -635,7 +635,7 @@ export default {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 576 512"
                             width="22"
-                            class="primary-icon"
+                            fill="white"
                         >
                             <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                             <path
@@ -649,7 +649,7 @@ export default {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 576 512"
                             width="22"
-                            class="primary-icon"
+                            fill="white"
                         >
                             <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                             <path
@@ -1522,6 +1522,15 @@ p {
     border: 3px solid var(--secondary-contrast-color);
     font-weight: 500;
     padding: 5px;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+    text-wrap: nowrap;
+    border-style: solid;
+    background-color: #7f1e1e;
+    color: white; /* Matching the text color used by both buttons */
 }
 
 .info-box {
