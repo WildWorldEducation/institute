@@ -31,26 +31,40 @@ function findHideChildPath(skillNode, resultsArray, userSkills) {
     }
 }
 
-// function to find the path of inaccessible skill
-function findInaccessiblePath(skillNode, resultsArray, userSkills) {
+// function to find the path of inaccessible skill up until the oldest skill of userskills
+function findInaccessiblePath(skillNode, userSkills) {
     let stopFlag = false;
     let currentNode = skillNode;
+    let resultNode = currentNode;
 
-    // loop thought all skill node parent to find the one that get is_accessible flag turn off
-    // we just need to find parent that is inaccessible and turn them on
     while (!stopFlag) {
-        if (!currentNode.is_accessible) {
-            resultsArray.push(currentNode)
-        }
         const parentNode = findNode(userSkills, currentNode.parent)
         // stop condition
         if (!parentNode) {
-            stopFlag = true
+            stopFlag = true;
+            continue
         }
-        else {
-            currentNode = parentNode
+        currentNode = parentNode;
+        const currentNodeWithOutChild = { ...currentNode, children: null }
+        // if node is inaccessible we will only add the node as only child 
+        if (!currentNode.is_accessible) {
+            resultNode = { ...currentNodeWithOutChild, children: [resultNode] }
+        } else {
+            // if node is accessible we will add the node to it children
+            const newChildren = currentNode.children.map(
+                node => {
+                    if (node.name === resultNode.name) {
+                        return resultNode
+                    } else {
+                        return node
+                    }
+                }
+            );
+            resultNode = { ...currentNodeWithOutChild, children: newChildren }
         }
     }
+    console.log(resultNode)
+    return resultNode
 }
 
 

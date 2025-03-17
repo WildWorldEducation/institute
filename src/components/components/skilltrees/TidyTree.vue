@@ -749,6 +749,14 @@ export default {
             // Handle skill is inaccessible case
             if (data?.mess === 'inaccessible') {
                 await this.drawInaccessibleNodes(data.inaccessiblePath);
+                try {
+                    const resultNode = this.findNodeWithName(searchString);
+                    this.goToLocation(resultNode);
+                } catch (error) {
+                    // Skill get filter by user instead of being hidden
+                    // Handle filtered case
+                    this.removeFilterForHiddenSkill(searchString);
+                }
             }
 
             // Handle skill get hidden case
@@ -998,7 +1006,9 @@ export default {
                 this.userDetailsStore.subjectFilters,
                 this.userDetailsStore.isUnlockedSkillsOnlyFilter
             );
-
+            //------------------------------------------------------------
+            // TODO MAKE THE LEVEL FILTER EQUAL TO SEARCH NODE LEVEL
+            //------------------------------------------------------------
             // If the student clicks a button on the grade level key,
             // this will truncate the tree to that level.
             let userSkills = [];
@@ -1016,19 +1026,20 @@ export default {
             } else {
                 userSkills = this.skillTreeStore.verticalTreeUserSkills;
             }
-
-            // Create a drawable node from inaccessible path
-            const inaccessibleNodes =
-                this.createPathFromNodes(inaccessiblePath);
-            console.log('H ha ha');
-            console.log(inaccessibleNodes);
-
             // Add inaccessible path to userSkill
+            const newUserSkills = userSkills.map((skill) => {
+                if (skill.skill_name === inaccessiblePath.skill_name) {
+                    return inaccessiblePath;
+                } else return skill;
+            });
+
+            console.log('new user skill is: ');
+            console.log(inaccessiblePath);
 
             this.skill = {
                 name: 'SKILLS',
                 sprite: null,
-                children: userSkills
+                children: newUserSkills
             };
 
             this.data = {
@@ -1790,25 +1801,6 @@ export default {
                 ctx1.strokeText(node.data.skill_name, xPosition, node.x + 2);
                 ctx1.fillText(node.data.skill_name, xPosition, node.x + 2);
             }
-        },
-
-        // Turn array of nodes into a single node that it children only contain the node in the array
-        createPathFromNodes(nodesArray) {
-            let resultNode = null;
-            nodesArray.forEach((element) => {
-                // we only want the node data and not it child for the cleanest path
-                const nodeWithoutChild = { ...element, children: null };
-                // handle the firs element case
-                if (!resultNode) {
-                    resultNode = nodeWithoutChild;
-                } else {
-                    resultNode = {
-                        ...nodeWithoutChild,
-                        children: [resultNode]
-                    };
-                }
-            });
-            return resultNode;
         }
     }
 };
