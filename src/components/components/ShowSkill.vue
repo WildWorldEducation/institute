@@ -359,7 +359,7 @@ export default {
                 '/' +
                 this.skillId;
             fetch(url, requestOptions).then(() => {
-                alert('A goal for this skill has been added on the Hub page.');
+                alert(`You've created a goal for ${this.skill.name}.`);
                 this.$router.push(
                     `/goals/${this.userDetailsStore.userId}/${this.skillId}`
                 );
