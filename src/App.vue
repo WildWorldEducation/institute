@@ -383,6 +383,12 @@ export default {
                                     >
                                         Reputation
                                     </RouterLink>
+                                    <RouterLink
+                                        to="/subscription"
+                                        class="dropdown-item"
+                                    >
+                                        Subscription
+                                    </RouterLink>
                                     <div class="dropdown-divider"></div>
                                     <a
                                         v-if="sessionDetailsStore.isLoggedIn"
