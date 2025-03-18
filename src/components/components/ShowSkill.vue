@@ -76,6 +76,11 @@ export default {
             showTutorialTip4: false,
             showTutorialTip5: false,
             showTutorialTip6: false,
+            showTutorialTip7: false,
+            showTutorialTip8: false,
+            showTutorialTip9: false,
+            showTutorialTip10: false,
+            showTutorialTip11: false,
             showCategoryCompletedModal: false,
             nextSkillsInBranch: [],
             // Defaults to true. False only for certain skills.
@@ -102,6 +107,14 @@ export default {
         }
 
         if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
+    },
+    mounted() {
+        if (this.showTutorialTip6) {
+            this.scrollToTooltip();
+        }
+        if (this.showTutorialTip7) {
+            this.scrollToTooltip();
+        }
     },
     methods: {
         async getSkill() {
@@ -406,12 +419,27 @@ export default {
                 }
             } else if (step == 6) {
                 this.showTutorialTip6 = false;
+                this.showTutorialTip7 = true;
                 if (
                     this.userDetailsStore.role === 'editor' ||
                     this.userDetailsStore.role === 'instructor'
                 ) {
                     this.showTutorialTip7 = false;
                 }
+            } else if (step == 7) {
+                this.showTutorialTip7 = false;
+                this.showTutorialTip8 = true;
+            } else if (step == 8) {
+                this.showTutorialTip8 = false;
+                this.showTutorialTip9 = true;
+            } else if (step == 9) {
+                this.showTutorialTip9 = false;
+                this.showTutorialTip10 = true;
+            } else if (step == 10) {
+                this.showTutorialTip10 = false;
+                this.showTutorialTip11 = true;
+            } else if (step == 11) {
+                this.showTutorialTip11 = false;
                 this.markTutorialComplete();
             }
         },
@@ -423,6 +451,10 @@ export default {
             this.showTutorialTip5 = false;
             this.showTutorialTip6 = false;
             this.showTutorialTip7 = false;
+            this.showTutorialTip8 = false;
+            this.showTutorialTip9 = false;
+            this.showTutorialTip10 = false;
+            this.showTutorialTip11 = false;
             this.showInstructorEditorTutorialTip = false;
             this.isTutorialComplete = false;
         },
@@ -435,6 +467,24 @@ export default {
                 headers: { 'Content-Type': 'application/json' }
             };
             fetch(url, requestOptions);
+        },
+        scrollToTooltip() {
+            this.$nextTick(() => {
+                if (
+                    this.showTutorialTip6 &&
+                    this.$refs.learningObjectivesSection
+                ) {
+                    this.$refs.learningObjectivesSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                } else if (this.showTutorialTip7 && this.$refs.aiTutorSection) {
+                    this.$refs.aiTutorSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
         }
     },
     /**
@@ -447,6 +497,20 @@ export default {
             this.skillUrl = to.params.skillUrl;
             await this.getSkill();
             await this.getUserSkills();
+        },
+        showTutorialTip6(newVal) {
+            if (newVal) {
+                this.$nextTick(() => {
+                    this.scrollToTooltip();
+                });
+            }
+        },
+        showTutorialTip7(newVal) {
+            if (newVal) {
+                this.$nextTick(() => {
+                    this.scrollToTooltip();
+                });
+            }
         }
     }
 };
@@ -1055,8 +1119,35 @@ export default {
             <div
                 v-if="skill.type != 'domain' && showLearningObjectives"
                 class="mt-4"
+                ref="learningObjectivesSection"
             >
                 <h2 class="h4 secondary-heading">Learning Objectives</h2>
+                <div
+                    v-if="
+                        userDetailsStore.role == 'student' && showTutorialTip6
+                    "
+                    class="tool-tip-base d-flex justify-content-start"
+                >
+                    <div
+                        class="explain-tool-tip hovering-info-panel triangle-top-left"
+                    >
+                        <div class="tool-tip-text">
+                            <p>
+                                Learning Objectives outline the specific skills
+                                and knowledge you need to master this subject.
+                                Click the + button next to any objective to get
+                                personalized help from an AI tutor specifically
+                                focused on that objective.
+                            </p>
+                            <button
+                                class="btn primary-btn"
+                                @click="progressTutorial(6)"
+                            >
+                                next
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 <div class="bg-white rounded p-2">
                     <div
                         v-for="learningObjective in skill.learningObjectives"
@@ -1156,7 +1247,11 @@ export default {
             </div>
         </div>
         <!-- AI Tutor -->
-        <div v-if="sessionDetailsStore.isLoggedIn" class="row mt-3 mb-3">
+        <div
+            v-if="sessionDetailsStore.isLoggedIn"
+            class="row mt-3 mb-3"
+            ref="aiTutorSection"
+        >
             <!-- Only show AI tutor for Student -->
             <!-- Not show AI tutor for domain type of skill-->
             <AITutor
@@ -1166,6 +1261,10 @@ export default {
                     skill.type !== 'domain'
                 "
                 :skill="skill"
+                :showTutorialTip7="showTutorialTip7"
+                :showTutorialTip8="showTutorialTip8"
+                :showTutorialTip9="showTutorialTip9"
+                @progressTutorial="progressTutorial"
             />
         </div>
 
@@ -1175,7 +1274,7 @@ export default {
                 <Forum
                     v-if="isSkillLoaded"
                     :skillId="skill.id"
-                    :showTutorialTip6="showTutorialTip6"
+                    :showTutorialTip10="showTutorialTip10"
                     :userRole="userDetailsStore.role"
                     @progressTutorial="progressTutorial"
                 />
@@ -1261,7 +1360,7 @@ export default {
     <div
         v-if="
             userDetailsStore.role == 'student' &&
-            (showTutorialTip1 || showTutorialTip5)
+            (showTutorialTip1 || showTutorialTip5 || showTutorialTip11)
         "
         class="modal"
     >
@@ -1284,6 +1383,18 @@ export default {
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(5)">
                     next
+                </button>
+            </div>
+            <div v-else-if="showTutorialTip11">
+                <p>
+                    Remember that you can master this skill in two ways: by
+                    taking the formal assessment test at the top of the page, or
+                    by successfully completing an assessment session with the
+                    Assessment Tutor. Choose the method that works best for your
+                    learning style.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(11)">
+                    close
                 </button>
             </div>
         </div>
