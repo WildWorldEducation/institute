@@ -1,10 +1,22 @@
 <script>
+import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+
 export default {
     data() {
-        return {};
+        return {
+            tokenCount: null
+        };
     },
-    async mounted() {},
-    methods: {},
+    async mounted() {
+        getTokenCount();
+    },
+    methods: {
+        async getTokenCount() {
+            const result = await fetch(
+                '/user-tokens/' + this.userDetailsStore.userId
+            );
+        }
+    },
     computed: {}
 };
 </script>
@@ -14,7 +26,7 @@ export default {
         <h1 class="heading">Subscription</h1>
         <h2 class="heading">Monthly usage</h2>
         <ul>
-            <li>Limit: 10,000 tokens</li>
+            <li>Limit: {{ tokenCount }} tokens</li>
             <li>Current usage:</li>
         </ul>
         <button class="btn primary-btn">Buy tokens</button>
