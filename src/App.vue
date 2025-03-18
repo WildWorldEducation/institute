@@ -94,6 +94,11 @@ export default {
                 'background-image: none;';
 
             this.sessionDetailsStore.isLoggedIn = false;
+
+            // Reset both stores to their initial state
+            this.userDetailsStore.$reset();
+            this.sessionDetailsStore.$reset();
+
             // Reset theme classes
             document.body.classList.remove('editor-theme');
             document.body.classList.remove('instructor-theme');
@@ -102,9 +107,8 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             };
-            var url = '/logout';
 
-            fetch(url, requestOptions).then(function (response) {
+            fetch('/logout', requestOptions).then(() => {
                 router.push({ name: 'login' });
             });
         }
