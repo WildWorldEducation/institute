@@ -13,6 +13,7 @@ export const useSettingsStore = defineStore('settings', {
         todoStudentQuestionTableRows: 0,
         todoContentFlagTableRows: 0,
         todoNewSkillTableRows: 0,
+        monthlyTokenLimit: 0
     }),
     actions: {
         async getSettings() {
@@ -24,35 +25,41 @@ export const useSettingsStore = defineStore('settings', {
             this.passMark = data[0].pass_mark;
             this.todoSkillTableRows = data[0].todo_skill_table_rows;
             this.todoMcQuestionTableRows = data[0].todo_mc_question_table_rows;
-            this.todoEssayQuestionTableRows = data[0].todo_essay_question_table_rows;
-            this.todoImageQuestionTableRows = data[0].todo_image_question_table_rows;
-            this.todoContentFlagTableRows = data[0].todo_content_flag_table_rows;
-            this.todoStudentQuestionTableRows = data[0].todo_student_question_table_rows;
+            this.todoEssayQuestionTableRows =
+                data[0].todo_essay_question_table_rows;
+            this.todoImageQuestionTableRows =
+                data[0].todo_image_question_table_rows;
+            this.todoContentFlagTableRows =
+                data[0].todo_content_flag_table_rows;
+            this.todoStudentQuestionTableRows =
+                data[0].todo_student_question_table_rows;
             this.todoNewSkillTableRows = data[0].todo_new_skills_table_rows;
+            this.monthlyTokenLimit = data[0].monthly_token_limit;
         },
 
         async saveSettings() {
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(
-                    {
-                        skill_degradation_days: this.skillDegradationDays,
-                        quiz_max_questions: this.quizMaxQuestions,
-                        is_manual_essay_marking: this.isManualEssayMarking,
-                        pass_mark: this.passMark,
-                        todo_skill_table_rows: this.todoSkillTableRows,
-                        todo_mc_question_table_rows: this.todoMcQuestionTableRows,
-                        todo_essay_question_table_rows: this.todoEssayQuestionTableRows,
-                        todo_image_question_table_rows: this.todoImageQuestionTableRows,
-                        todo_content_flag_table_rows: this.todoContentFlagTableRows,
-                        todo_student_question_table_rows: this.todoStudentQuestionTableRows,
-                        todo_new_skills_table_rows: this.todoNewSkillTableRows
-                    }
-                )
+                body: JSON.stringify({
+                    skill_degradation_days: this.skillDegradationDays,
+                    quiz_max_questions: this.quizMaxQuestions,
+                    is_manual_essay_marking: this.isManualEssayMarking,
+                    pass_mark: this.passMark,
+                    todo_skill_table_rows: this.todoSkillTableRows,
+                    todo_mc_question_table_rows: this.todoMcQuestionTableRows,
+                    todo_essay_question_table_rows:
+                        this.todoEssayQuestionTableRows,
+                    todo_image_question_table_rows:
+                        this.todoImageQuestionTableRows,
+                    todo_content_flag_table_rows: this.todoContentFlagTableRows,
+                    todo_student_question_table_rows:
+                        this.todoStudentQuestionTableRows,
+                    todo_new_skills_table_rows: this.todoNewSkillTableRows
+                })
             };
 
-            await fetch('/settings/edit', requestOptions)
+            await fetch('/settings/edit', requestOptions);
         }
     }
 });
