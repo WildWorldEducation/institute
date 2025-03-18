@@ -1025,11 +1025,15 @@ export default {
                 userSkills = this.skillTreeStore.verticalTreeUserSkills;
             }
             // Add inaccessible path to userSkill
+            let updateOldSkill = false;
             const newUserSkills = userSkills.map((skill) => {
                 if (skill.skill_name === inaccessiblePath.skill_name) {
+                    updateOldSkill = true;
                     return inaccessiblePath;
                 } else return skill;
             });
+
+            if (!updateOldSkill) newUserSkills.push(inaccessiblePath);
 
             this.skill = {
                 name: 'SKILLS',
