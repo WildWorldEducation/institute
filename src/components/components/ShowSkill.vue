@@ -360,7 +360,7 @@ export default {
                 this.skillId;
             fetch(url, requestOptions).then(() => {
                 alert(
-                    `You've created a goal for ${this.skill.name}, you can view your goals within the menu.`
+                    `You've created a goal for ${this.skill.name}, you can view your goals in the drop-down menu.`
                 );
                 this.$router.push(
                     `/goals/${this.userDetailsStore.userId}/${this.skillId}`
