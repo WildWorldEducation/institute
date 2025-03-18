@@ -205,6 +205,12 @@ export default {
             }
         });
 
+        // MOUSE MOVE EVENT LISTENER
+        d3.select('#canvas').on('mousemove', function (event) {
+            // Get mouse positions from the main canvas.
+            console.log(d3.pointer(event));
+        });
+
         // Zoom and pan with mouse
         // We have to construct the d3 zoom function and assign the zoom event
         this.d3Zoom = d3
