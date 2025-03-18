@@ -6,12 +6,29 @@ export default {
     props: ['skill', 'showSkillPanel'],
     data() {
         return {
-            treeType: ''
+            treeType: '',
+            isImageLoading: true,
+            currentSkillId: null
         };
     },
     mounted() {
         const route = useRoute();
         this.treeType = route.name;
+        if (this.skill) {
+            this.currentSkillId = this.skill.id;
+        }
+    },
+    watch: {
+        skill(newSkill) {
+            // When skill changes, mark image as loading and update currentSkillId
+            if (
+                newSkill &&
+                (!this.currentSkillId || newSkill.id !== this.currentSkillId)
+            ) {
+                this.isImageLoading = true;
+                this.currentSkillId = newSkill.id;
+            }
+        }
     },
     computed: {},
     methods: {
@@ -28,6 +45,10 @@ export default {
         },
         imageUrlAlternative(event) {
             event.target.src = '';
+            this.isImageLoading = false;
+        },
+        imageLoaded() {
+            this.isImageLoading = false;
         }
     }
 };
@@ -81,11 +102,22 @@ export default {
                 <h1 class="secondary-heading h3 text-center">
                     {{ skill?.name }}
                 </h1>
-                <img
-                    :src="skill.image_thumbnail_url"
-                    class="rounded img-fluid mx-auto"
-                    @error="imageUrlAlternative"
-                />
+
+                <!-- Image with loading state -->
+                <div class="image-container">
+                    <div v-if="isImageLoading" class="image-placeholder">
+                        <div class="spinner"></div>
+                    </div>
+                    <img
+                        v-show="!isImageLoading"
+                        :src="skill.image_thumbnail_url"
+                        class="rounded img-fluid mx-auto"
+                        @error="imageUrlAlternative"
+                        @load="imageLoaded"
+                        :key="skill.id"
+                    />
+                </div>
+
                 <!-- Introduction -->
                 <div
                     class="skill-introduction text-start mt-1 mb-4"
@@ -165,10 +197,45 @@ export default {
     margin-left: 20px;
 }
 
-img {
+.image-container {
+    position: relative;
     width: 50%;
+    height: 150px;
     margin: auto;
     margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f5fa;
+    border-radius: 5px;
+}
+
+.spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--primary-color, #4a90e2);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .skill-introduction {
