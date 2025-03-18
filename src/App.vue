@@ -186,6 +186,7 @@ export default {
                         <li
                             v-if="
                                 userDetailsStore.role == 'student' ||
+                                userDetailsStore.role == 'instructor' ||
                                 userDetailsStore.role == 'editor'
                             "
                             class="nav-item"
