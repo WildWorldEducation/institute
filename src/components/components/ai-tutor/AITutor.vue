@@ -21,7 +21,13 @@ export default {
             skillTreeStore
         };
     },
-    props: ['skill'],
+    props: [
+        'skill',
+        'showTutorialTip7',
+        'showTutorialTip8',
+        'showTutorialTip9'
+    ],
+    emits: ['progressTutorial'],
     components: { TutorLoadingSymbol, TooltipBtn, SpeechRecorder },
     data() {
         return {
@@ -521,6 +527,7 @@ export default {
                         absoluteTop="37px"
                     />
                 </div>
+
                 <!-- Expand button -->
                 <div class="d-flex gap-2">
                     <div tile="Expand chat component" b-tooltip.hover>
@@ -564,36 +571,133 @@ export default {
                 </div>
             </div>
         </div>
+        <!-- AI Tutor Tooltip -->
+        <div
+            v-if="userDetailsStore.role == 'student' && showTutorialTip7"
+            class="tool-tip-base d-flex justify-content-start"
+        >
+            <div class="explain-tool-tip hovering-info-panel triangle-top-left">
+                <div class="tool-tip-text">
+                    <p>
+                        The AI Tutor is here to help you master this skill
+                        through personalized assistance. You can ask questions,
+                        receive explanations, practice concepts, or get guidance
+                        at any time during your learning journey.
+                    </p>
+                    <button
+                        class="btn primary-btn"
+                        @click="$emit('progressTutorial', 7)"
+                    >
+                        next
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- For speech to text -->
+        <SpeechRecorder
+            v-if="mode == 'big'"
+            :tutorType="tutorType"
+            :skill="skill"
+            :skillLevel="englishSkillLevel"
+            :learningObjectives="learningObjectives"
+        />
+        <!--Tutor types -->
         <span v-if="mode === 'big'" class="d-flex justify-content-between">
             <!--Tutor types -->
             <span>
                 <!-- Socratic Tutor agent -->
-                <button
-                    class="btn suggested-interactions ms-1 socratic-btn"
-                    :class="{ underline: tutorType === 'socratic' }"
-                    @click="changeTutorType('socratic')"
-                >
-                    Socratic Tutor
-                </button>
-                <!-- Assessing Tutor agent -->
-                <button
-                    class="btn suggested-interactions ms-1 assessing-btn"
-                    :class="{ underline: tutorType === 'assessing' }"
-                    @click="changeTutorType('assessing')"
-                >
-                    Assessment Tutor
-                </button>
+                <div class="d-inline-block">
+                    <button
+                        class="btn suggested-interactions ms-1 socratic-btn"
+                        :class="{ underline: tutorType === 'socratic' }"
+                        @click="changeTutorType('socratic')"
+                    >
+                        Socratic Tutor
+                    </button>
+
+                    <!-- Socratic Tutor Tooltip -->
+                    <div
+                        v-if="
+                            userDetailsStore.role == 'student' &&
+                            showTutorialTip8
+                        "
+                    >
+                        <div
+                            class="explain-tool-tip hovering-info-panel triangle-top-left"
+                        >
+                            <div class="tool-tip-text">
+                                <p>
+                                    The Socratic Tutor helps you learn through
+                                    guided questioning. It encourages critical
+                                    thinking by asking you questions that lead
+                                    you to discover answers yourself, helping
+                                    build deeper understanding of concepts.
+                                </p>
+                                <button
+                                    class="btn primary-btn"
+                                    @click="$emit('progressTutorial', 8)"
+                                >
+                                    next
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exam Agent: assesses student -->
+                <div class="d-inline-block">
+                    <button
+                        class="btn suggested-interactions ms-1 assessing-btn"
+                        :class="{ underline: tutorType === 'assessing' }"
+                        @click="changeTutorType('assessing')"
+                    >
+                        Assessment Tutor
+                    </button>
+
+                    <!-- Assessment Tutor Tooltip  -->
+                    <div
+                        v-if="
+                            userDetailsStore.role == 'student' &&
+                            showTutorialTip9
+                        "
+                    >
+                        <div
+                            class="explain-tool-tip hovering-info-panel triangle-top-left"
+                        >
+                            <div class="tool-tip-text">
+                                <p>
+                                    The Assessment Tutor will judge whether or
+                                    not you have mastered this skill.
+                                </p>
+                                <button
+                                    class="btn primary-btn"
+                                    @click="$emit('progressTutorial', 9)"
+                                >
+                                    next
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </span>
-            <span class="d-flex justify-content-end">
-                <!-- For speech to text -->
-                <SpeechRecorder
-                    v-if="mode == 'big'"
-                    :tutorType="tutorType"
-                    :skill="skill"
-                    :skillLevel="englishSkillLevel"
-                    :learningObjectives="learningObjectives"
-                />
-                <!-- Minimise / Maximise chat history -->
+            <span>
+                <!-- Test me button -->
+                <button
+                    v-if="tutorType === 'assessing'"
+                    class="btn suggested-interactions ms-1"
+                    @click="askQuestion()"
+                >
+                    test me
+                </button>
+                <!-- Overview button -->
+                <button
+                    v-if="tutorType === 'socratic'"
+                    class="btn suggested-interactions ms-1"
+                    @click="provideOverview()"
+                >
+                    give me an overview
+                </button>
+                <!-- Toggle chat button -->
                 <button class="btn plus-btn ms-1" @click="showChat = !showChat">
                     <svg
                         v-if="!showChat"
@@ -602,7 +706,7 @@ export default {
                         width="18"
                         height="18"
                     >
-                        <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <!-- SVG path for plus icon -->
                         <path
                             d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
                         />
@@ -614,7 +718,7 @@ export default {
                         width="18"
                         height="18"
                     >
-                        <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <!-- SVG path for minus icon -->
                         <path
                             d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
                         />
@@ -902,6 +1006,19 @@ export default {
 </template>
 
 <style scoped>
+.hovering-info-panel {
+    position: absolute;
+    z-index: 1000; /* Higher than before to ensure it's above other elements */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: fit-content;
+    max-width: 300px; /* Limit tooltip width */
+    margin-bottom: 0 !important;
+    background-color: white; /* Ensure the background is solid */
+    border-radius: 4px;
+    padding: 10px;
+    pointer-events: auto; /* Ensure buttons in tooltip are clickable */
+}
+
 /* Loading animation for generating speech audio*/
 .speech-loader {
     width: 24px;
