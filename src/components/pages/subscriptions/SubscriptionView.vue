@@ -16,9 +16,9 @@ export default {
         };
     },
     async mounted() {
-        this.getTokenCount();
+        // Get current year
         this.year = new Date().getFullYear();
-        // get month
+        // Get current month
         const month = [
             'January',
             'February',
@@ -37,20 +37,7 @@ export default {
         const d = new Date();
         this.month = month[d.getMonth()];
     },
-    methods: {
-        async getTokenCount() {
-            // Get current year
-            let year = new Date().getFullYear();
-            // Get current month
-            let month = new Date().getMonth();
-            const result = await fetch(
-                `/subscriptions/get-token-count/${this.userDetailsStore.userId}/${year}/${month}`
-            );
-            const resData = await result.json();
-            console.log(resData);
-            this.tokenCount = resData.token_count;
-        }
-    },
+    methods: {},
     computed: {}
 };
 </script>
@@ -64,7 +51,7 @@ export default {
 
         <ul>
             <li>Limit: 10,000</li>
-            <li>Current usage: {{ tokenCount }}</li>
+            <li>Current usage: {{ userDetailsStore.tokenCount }}</li>
         </ul>
         <button class="btn primary-btn">Buy tokens</button>
     </div>

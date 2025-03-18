@@ -517,7 +517,9 @@ async function createRunStream(
         .on('runStepDone', (runStep) => {
             socket.emit('run-end');
             // Save the amount of tokens the user is using
+
             let tokenCount = runStep.usage.total_tokens;
+            console.log('streaming: ' + tokenCount);
             saveTokenUsage(userId, tokenCount);
         })
         .on('toolCallCreated', (toolCall) =>
@@ -589,5 +591,7 @@ module.exports = {
     saveLearningObjectiveThread,
     requestLearningObjectiveTutoring,
     generateLearningObjectiveQuestion,
-    createRunStream
+    createRunStream,
+    // To record user's token usage
+    saveTokenUsage
 };

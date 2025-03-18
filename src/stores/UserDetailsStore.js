@@ -23,7 +23,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
             isUnlockedSkillsOnlyFilter: null,
             reputationScore: null,
             cohortId: null,
-            isSkillsLocked: 0
+            isSkillsLocked: 0,
+            tokenCount: 0
         };
     },
     actions: {
@@ -54,6 +55,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.cohortId = data.cohort_id;
                 this.isUnlockedSkillsOnlyFilter =
                     data.is_unlocked_skills_only_filter;
+                this.tokenCount = data.token_count;
 
                 if (this.role == 'student') {
                     await this.getInstructor();

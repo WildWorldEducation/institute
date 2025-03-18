@@ -9,7 +9,9 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 // DB
 const conn = require('../config/db');
-
+// for querying DB
+const util = require('util');
+const query = util.promisify(conn.query).bind(conn);
 //Middlewares
 const isAuthenticated = require('../middlewares/authMiddleware');
 const createUserPermission = require('../middlewares/users/createUserMiddleware');
@@ -818,7 +820,7 @@ router.get('/show/:id', (req, res, next) => {
     AND is_deleted = 0
     LIMIT 1`;
 
-        conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, async (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -840,7 +842,27 @@ router.get('/show/:id', (req, res, next) => {
                 if (results[0].is_dangerous_ideas_filter == 1)
                     results[0].subjectFilters.push('Dangerous Ideas');
 
-                res.json(results[0]);
+                if (results[0].role == 'student') {
+                    // Get current year
+                    let year = new Date().getFullYear();
+                    // Get current month
+                    let month = new Date().getMonth();
+                    let sqlQuery = `SELECT token_count                
+                                   FROM user_tokens        
+                                   WHERE user_id = ${conn.escape(req.params.id)}
+                                   AND year = ${year}
+                                   AND month = ${month};`;
+
+                    const result = await query(sqlQuery);
+                    console.log(result);
+                    const tokenCount = result[0].token_count;
+                    console.log(tokenCount);
+                    results[0].token_count = tokenCount;
+
+                    res.json(results[0]);
+                } else {
+                    res.json(results[0]);
+                }
             } catch (err) {
                 next(err);
             }

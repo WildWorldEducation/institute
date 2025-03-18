@@ -34,7 +34,9 @@ const {
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
     requestLearningObjectiveTutoring,
-    generateLearningObjectiveQuestion
+    generateLearningObjectiveQuestion,
+    // To record user's token usage
+    saveTokenUsage
 } = require('../utilities/openAIAssistant');
 const { textToSpeech } = require('../utilities/textToSpeech');
 const { writeFile, speechToText } = require('../utilities/speechToText');
@@ -471,6 +473,8 @@ router.post(
  */
 router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
     try {
+        const userId = req.session.userId;
+
         let transcriptForAssessment = JSON.stringify(
             req.body.transcriptForAssessment
         );
@@ -500,6 +504,11 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
                 }
             ]
         });
+
+        // Save the user's token usage
+        let tokenCount = completion.usage.total_tokens;
+        console.log('assessment: ' + tokenCount);
+        saveTokenUsage(userId, tokenCount);
 
         let responseJSON = completion.choices[0].message.content;
         // Convert string to object.       ;
