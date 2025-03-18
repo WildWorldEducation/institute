@@ -20,6 +20,31 @@ const conn = require('../config/db');
 Routes
 --------------------------------------------
 --------------------------------------------*/
+/**
+ * Get User Tokens by User
+ */
+router.get('/get-token-count/:userId/:year/:month', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT token_count                
+        FROM user_tokens        
+        WHERE user_id = ${conn.escape(req.params.userId)}
+        AND year = ${conn.escape(req.params.year)}
+        AND month = ${conn.escape(req.params.month)};`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results[0]);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 router.post('/create-checkout-session', async (req, res) => {
     const { donation } = req.body;
     const session = await stripe.checkout.sessions.create({
