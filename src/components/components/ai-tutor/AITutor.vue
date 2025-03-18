@@ -666,12 +666,8 @@ export default {
                         >
                             <div class="tool-tip-text">
                                 <p>
-                                    The Assessment Tutor tests your knowledge of
-                                    the skill and provides targeted feedback. It
-                                    asks questions based on the learning
-                                    objectives and helps identify areas where
-                                    you may need additional practice before
-                                    taking the formal assessment.
+                                    The Assessment Tutor will judge whether or
+                                    not you have mastered this skill.
                                 </p>
                                 <button
                                     class="btn primary-btn"
