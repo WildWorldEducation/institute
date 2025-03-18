@@ -16,15 +16,21 @@ async function writeFile(filePath, bufferObj) {
 }
 
 async function speechToText(filePath) {
-    const transcription = await openai.audio.transcriptions.create({
-        file: fs.createReadStream(filePath),
-        model: 'whisper-1'
-    });
+    try {
+        const transcription = await openai.audio.transcriptions.create({
+            file: fs.createReadStream(filePath),
+            model: 'whisper-1'
+        });
 
-    // delete file
-    fs.unlinkSync(filePath);
+        // delete file
+        fs.unlinkSync(filePath);
 
-    return transcription;
+        return transcription;
+    } catch (err) {
+        // delete file
+        fs.unlinkSync(filePath);
+        console.error('Error occurred while transcribing the audio:', err);
+    }
 }
 
 module.exports = {

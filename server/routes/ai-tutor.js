@@ -23,12 +23,12 @@ const {
     createSocraticAssistantAndThread,
     getSocraticTutorThread,
     saveSocraticTutorThread,
-    socraticTutorMessage,    
+    socraticTutorMessage,
     // Assessing tutor
     createAssessingAssistantAndThread,
     getAssessingTutorThread,
     saveAssessingTutorThread,
-    assessingTutorMessage,    
+    assessingTutorMessage,
     // Learning objective tutor
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
@@ -761,11 +761,11 @@ router.post(
 );
 
 /**
- * STT
+ * STT (Speech to Text) for tutors
  */
 router.post('/stt/convert', async (req, res, next) => {
     // prepare variables
-    const userId = req.body.userId;
+    const userId = req.session.userId;
     const skillUrl = req.body.skillUrl;
     const skillName = req.body.skillName;
     const skillLevel = req.body.skillLevel;
@@ -841,10 +841,11 @@ async function sendSpeechToSocraticAI(
         const assistantData = await getSocraticTutorThread(userId, skillUrl);
 
         let messageData = {
+            userId: userId,
             skillName: skillName,
             skillLevel: skillLevel,
             learningObjectives: learningObjectives,
-            message
+            message: message
         };
 
         //console.log('send message');
@@ -870,6 +871,7 @@ async function sendSpeechToAssessingAI(
         const assistantData = await getAssessingTutorThread(userId, skillUrl);
 
         let messageData = {
+            userId: userId,
             skillName: skillName,
             skillLevel: skillLevel,
             learningObjectives: learningObjectives,

@@ -136,8 +136,10 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         const messages = await openai.beta.threads.messages.list(threadId);
         const latestMessage = messages.data[0];
 
+        // Save the user's token usage
         let tokenCount = run.usage.total_tokens;
         console.log(tokenCount);
+        saveTokenUsage(messageData.userId, tokenCount);
 
         return latestMessage;
     } else {
@@ -272,8 +274,10 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
         const messages = await openai.beta.threads.messages.list(threadId);
         const latestMessage = messages.data[0];
 
+        // Save the user's token usage
         let tokenCount = run.usage.total_tokens;
         console.log(tokenCount);
+        saveTokenUsage(messageData.userId, tokenCount);
 
         return latestMessage;
     } else {
@@ -438,8 +442,10 @@ async function requestLearningObjectiveTutoring(
         const messages = await openai.beta.threads.messages.list(threadId);
         const latestMessage = messages.data[0];
 
+        // Save the user's token usage
         let tokenCount = run.usage.total_tokens;
         console.log(tokenCount);
+        saveTokenUsage(messageData.userId, tokenCount);
 
         return latestMessage;
     } else {
@@ -468,8 +474,10 @@ async function generateLearningObjectiveQuestion(
         const messages = await openai.beta.threads.messages.list(threadId);
         const latestMessage = messages.data[0];
 
+        // Save the user's token usage
         let tokenCount = run.usage.total_tokens;
         console.log(tokenCount);
+        saveTokenUsage(messageData.userId, tokenCount);
 
         return latestMessage;
     } else {
@@ -508,6 +516,7 @@ async function createRunStream(
         })
         .on('runStepDone', (runStep) => {
             socket.emit('run-end');
+            // Save the amount of tokens the user is using
             let tokenCount = runStep.usage.total_tokens;
             saveTokenUsage(userId, tokenCount);
         })
