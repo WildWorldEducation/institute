@@ -64,12 +64,20 @@ export default {
             <p>You have not earned any reputation yet.</p>
         </div>
         <div v-for="reputationEvent in reputationEvents">
-            <div class="text-white bg-success rounded">
-                <span class="badge text-bg-light">+1</span>
+            <div
+                :class="[
+                    'text-white rounded',
+                    reputationEvent.isUpvote ? 'bg-success' : 'bg-danger'
+                ]"
+            >
+                <span class="badge text-bg-light">
+                    {{ reputationEvent.isUpvote ? '+1' : '-1' }}
+                </span>
                 {{ reputationEvent.formattedContentType }}
-                <span v-if="reputationEvent.content_type != 'new_skill'"
-                    >improved</span
-                ><span v-else>added</span> on
+                <span v-if="reputationEvent.content_type != 'new_skill'">
+                    {{ reputationEvent.isUpvote ? 'improved' : 'criticized' }}
+                </span>
+                <span v-else>added</span> on
                 {{ reputationEvent.formattedDate }}
             </div>
         </div>
