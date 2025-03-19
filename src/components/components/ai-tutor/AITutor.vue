@@ -593,14 +593,7 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- For speech to text -->
-        <SpeechRecorder
-            v-if="mode == 'big'"
-            :tutorType="tutorType"
-            :skill="skill"
-            :skillLevel="englishSkillLevel"
-            :learningObjectives="learningObjectives"
-        />
+
         <!--Tutor types -->
         <span v-if="mode === 'big'" class="d-flex justify-content-between">
             <!--Tutor types -->
@@ -680,23 +673,15 @@ export default {
                     </div>
                 </div>
             </span>
-            <span>
-                <!-- Test me button -->
-                <button
-                    v-if="tutorType === 'assessing'"
-                    class="btn suggested-interactions ms-1"
-                    @click="askQuestion()"
-                >
-                    test me
-                </button>
-                <!-- Overview button -->
-                <button
-                    v-if="tutorType === 'socratic'"
-                    class="btn suggested-interactions ms-1"
-                    @click="provideOverview()"
-                >
-                    give me an overview
-                </button>
+            <span class="d-flex">
+                <!-- For speech to text -->
+                <SpeechRecorder
+                    v-if="mode == 'big'"
+                    :tutorType="tutorType"
+                    :skill="skill"
+                    :skillLevel="englishSkillLevel"
+                    :learningObjectives="learningObjectives"
+                />
                 <!-- Toggle chat button -->
                 <button class="btn plus-btn ms-1" @click="showChat = !showChat">
                     <svg
