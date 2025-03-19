@@ -200,7 +200,7 @@ export default {
 .image-container {
     position: relative;
     width: 50%;
-    height: 150px;
+    height: auto;
     margin: auto;
     margin-bottom: 5px;
     display: flex;
