@@ -58,32 +58,53 @@ const updateUserReputation = (resourceId, reputationChange, callback) => {
 const recordReputationAction = (resourceId, voteType) => {
     // Get the resource owner's ID
     const getOwnerQuery = `
-    SELECT user_id FROM resources
-    WHERE id = ${conn.escape(resourceId)}
+        SELECT user_id FROM resources 
+        WHERE id = ${conn.escape(resourceId)};
     `;
 
     conn.query(getOwnerQuery, (err, results) => {
         if (err) {
-            console.error('Error getting resource owner', err);
+            console.error('Error getting resource owner:', err);
             return;
         }
+
         if (results && results.length > 0) {
             const ownerId = results[0].user_id;
 
-            //Record the reputation action
+            // Skip if owner not found or if no valid owner ID
+            if (!ownerId) {
+                console.error(
+                    'No valid owner ID found for resource:',
+                    resourceId
+                );
+                return;
+            }
+
+            // Use 'receive-reputation' for both, but include a comment field
             const actionData = {
                 action: 'receive-reputation',
                 content_id: resourceId,
                 user_id: ownerId,
-                content_type: 'resource'
+                content_type: 'resource', // Make sure this is 'resource'
+                comment: voteType === 1 ? 'upvote' : 'downvote'
             };
+
+            // Debug log
+            console.log('Recording reputation action:', actionData);
 
             const actionQuery = 'INSERT INTO user_actions SET ?';
             conn.query(actionQuery, actionData, (err) => {
                 if (err) {
-                    console.error('Error recording reputation action: ', err);
+                    console.error('Error recording reputation action:', err);
+                } else {
+                    console.log(
+                        'Successfully recorded reputation action for resource',
+                        resourceId
+                    );
                 }
             });
+        } else {
+            console.error('No resource found with ID:', resourceId);
         }
     });
 };
@@ -199,9 +220,14 @@ router.put('/:userId/:resourceId/edit/up', (req, res, next) => {
                 // Update reputation
                 updateUserReputation(req.params.resourceId, 1, (repErr) => {
                     if (repErr) {
+                        console.error('Error updating reputation:', repErr);
                         next(repErr);
                     } else {
                         // Record the reputation action
+                        console.log(
+                            'Recording reputation action for upvote on resource:',
+                            req.params.resourceId
+                        );
                         recordReputationAction(req.params.resourceId, 1);
                         res.end();
                     }

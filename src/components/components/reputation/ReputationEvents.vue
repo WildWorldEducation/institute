@@ -67,15 +67,21 @@ export default {
             <div
                 :class="[
                     'text-white rounded',
-                    reputationEvent.isUpvote ? 'bg-success' : 'bg-danger'
+                    reputationEvent.comment === 'downvote'
+                        ? 'bg-danger'
+                        : 'bg-success'
                 ]"
             >
                 <span class="badge text-bg-light">
-                    {{ reputationEvent.isUpvote ? '+1' : '-1' }}
+                    {{ reputationEvent.comment === 'downvote' ? '-1' : '+1' }}
                 </span>
                 {{ reputationEvent.formattedContentType }}
                 <span v-if="reputationEvent.content_type != 'new_skill'">
-                    {{ reputationEvent.isUpvote ? 'improved' : 'criticized' }}
+                    {{
+                        reputationEvent.comment === 'downvote'
+                            ? 'criticized'
+                            : 'improved'
+                    }}
                 </span>
                 <span v-else>added</span> on
                 {{ reputationEvent.formattedDate }}

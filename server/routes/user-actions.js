@@ -44,77 +44,27 @@ router.post('/', (req, res, next) => {
 router.get('/reputation-events/:userId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT *
+            FROM user_actions
+            WHERE user_id = ${conn.escape(req.params.userId)}
+            AND action = 'receive-reputation'
+            ORDER BY create_date DESC;`;
 
-        // Fetch the reputation events
-        let sqlQuery = `SELECT ua.*
-            FROM user_actions ua
-            WHERE ua.user_id = ${conn.escape(req.params.userId)}
-            AND ua.action = 'receive-reputation'
-            ORDER BY ua.create_date DESC;`;
-
-        conn.query(sqlQuery, (err, reputationEvents) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
 
-                // For each event, check if it was a positive or negative vote
-                const eventPromises = reputationEvents.map((event) => {
-                    return new Promise((resolve) => {
-                        if (event.content_type === 'resource') {
-                            // Check user_votes table
-                            const voteQuery = `
-                                SELECT vote 
-                                FROM user_votes 
-                                WHERE resource_id = ${conn.escape(
-                                    event.content_id
-                                )} 
-                                ORDER BY create_date DESC LIMIT 1`;
+                // Debug log
+                console.log(
+                    'Reputation events for user',
+                    req.params.userId,
+                    ':',
+                    results
+                );
 
-                            conn.query(voteQuery, (err, voteResults) => {
-                                if (
-                                    !err &&
-                                    voteResults &&
-                                    voteResults.length > 0
-                                ) {
-                                    event.isUpvote = voteResults[0].vote > 0;
-                                } else {
-                                    event.isUpvote = true; // Default to upvote if no vote found
-                                }
-                                resolve(event);
-                            });
-                        } else if (event.content_type === 'tutor_post') {
-                            // Check tutor_votes table
-                            const voteQuery = `
-                                SELECT vote 
-                                FROM tutor_votes 
-                                WHERE tutor_post_id = ${conn.escape(
-                                    event.content_id
-                                )} 
-                                ORDER BY create_date DESC LIMIT 1`;
-
-                            conn.query(voteQuery, (err, voteResults) => {
-                                if (
-                                    !err &&
-                                    voteResults &&
-                                    voteResults.length > 0
-                                ) {
-                                    event.isUpvote = voteResults[0].vote > 0;
-                                } else {
-                                    event.isUpvote = true; // Default to upvote if no vote found
-                                }
-                                resolve(event);
-                            });
-                        } else {
-                            event.isUpvote = true; // Default to upvote for other content types
-                            resolve(event);
-                        }
-                    });
-                });
-
-                Promise.all(eventPromises).then((enrichedEvents) => {
-                    res.json(enrichedEvents);
-                });
+                res.json(results);
             } catch (err) {
                 next(err);
             }
