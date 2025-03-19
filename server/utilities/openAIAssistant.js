@@ -554,12 +554,28 @@ async function saveTokenUsage(userId, tokenCount) {
         // Get current year
         let year = new Date().getFullYear();
         // Get current month
-        let month = new Date().getMonth();
+        const monthName = [
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December'
+        ];
+
+        const d = new Date();
+        let month = monthName[d.getMonth()];
 
         let queryString = `
         INSERT INTO user_tokens (user_id, year, month, token_count) 
         VALUES(${conn.escape(userId)},
-        ${year}, ${month}, ${conn.escape(tokenCount)}) 
+        ${year}, '${month}', ${conn.escape(tokenCount)}) 
         ON DUPLICATE KEY UPDATE token_count = token_count + ${conn.escape(
             tokenCount
         )};

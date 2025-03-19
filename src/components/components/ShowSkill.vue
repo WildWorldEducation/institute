@@ -99,18 +99,18 @@ export default {
         LearningObjectiveAITutor
     },
     async created() {
-        // Needed for token limit
-        await this.settingsStore.getSettings();
+        // Needed for token limit        
+        if(this.settingsStore.monthlyTokenLimit == 0 && this.sessionDetailsStore.isLoggedIn)
+        {
+            await this.settingsStore.getSettings();
+        }
         if (
             this.settingsStore.monthlyTokenLimit <=
             this.userDetailsStore.tokenCount
         ) {
             this.isAITokenLimitReached = true;
         }
-
-        console.log(this.settingsStore.monthlyTokenLimit)
-        console.log(this.userDetailsStore.tokenCount)
-
+         
         await this.getSkill();
         this.isSkillLoaded = true;
         if (this.sessionDetailsStore.isLoggedIn) {
@@ -1198,7 +1198,7 @@ export default {
                                     :skillUrl="skill.url"
                                     :skillLevel="skill.level"
                                 />
-                                <p v-else>
+                                <p class="mt-1" v-else>
                                     <em
                                         >You have reached your monthly AI token
                                         limit. Please recharge your subscription

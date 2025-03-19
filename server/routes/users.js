@@ -846,21 +846,34 @@ router.get('/show/:id', (req, res, next) => {
                     // Get current year
                     let year = new Date().getFullYear();
                     // Get current month
-                    let month = new Date().getMonth();
+                    const monthName = [
+                        'January',
+                        'February',
+                        'March',
+                        'April',
+                        'May',
+                        'June',
+                        'July',
+                        'August',
+                        'September',
+                        'October',
+                        'November',
+                        'December'
+                    ];
+
+                    const d = new Date();
+                    let month = monthName[d.getMonth()];
                     let sqlQuery = `SELECT token_count                
                                    FROM user_tokens        
                                    WHERE user_id = ${conn.escape(req.params.id)}
                                    AND year = ${year}
-                                   AND month = ${month};`;
+                                   AND month = '${month}';`;
 
                     const tokenResult = await query(sqlQuery);
-                    console.log(tokenResult);
                     let tokenCount = 0;
-                    if ((tokenResult.length = 0)) {
+                    if (tokenResult.length != 0) {
                         tokenCount = tokenResult[0].token_count;
-                        console.log('test');
                     }
-                    console.log(tokenCount);
 
                     results[0].token_count = tokenCount;
 
