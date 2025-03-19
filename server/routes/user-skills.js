@@ -12,7 +12,10 @@ const conn = require('../config/db');
 const {
     findParentHaveHiddenChild,
     showHiddenChildFromParent,
-    convertNodesToArray
+    convertNodesToArray,
+    findNodeByName,
+    findInaccessiblePath,
+    findNode
 } = require('../utilities/skill-relate-functions');
 
 /*------------------------------------------
@@ -548,10 +551,10 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                                                     ) {
                                                         if (
                                                             results[k].type ==
-                                                                'sub' &&
+                                                            'sub' &&
                                                             results[k]
                                                                 .is_accessible ==
-                                                                1
+                                                            1
                                                         ) {
                                                             results[
                                                                 j
@@ -1109,10 +1112,10 @@ router.get(
                                                             if (
                                                                 results[k]
                                                                     .type ==
-                                                                    'sub' &&
+                                                                'sub' &&
                                                                 results[k]
                                                                     .is_accessible ==
-                                                                    1
+                                                                1
                                                             ) {
                                                                 results[
                                                                     j
@@ -1426,6 +1429,15 @@ router.post('/find-hidden-skill/:userId', (req, res, next) => {
                         }
                     }
                     const skillList = convertNodesToArray(studentSkills);
+                    // Find the skill data to see if it inaccessible or hidden
+                    const skillData = findNodeByName(skillList, skillName);
+
+                    if (!skillData.is_accessible) {
+                        const inaccessiblePath = findInaccessiblePath(skillData, skillList)
+                        return res.json({ mess: 'inaccessible', inaccessiblePath: inaccessiblePath, });
+                    }
+
+                    // if skill is accessible mean it is hidden
                     const parentPath = findParentHaveHiddenChild(
                         skillList,
                         skillName
@@ -1442,6 +1454,8 @@ router.post('/find-hidden-skill/:userId', (req, res, next) => {
         res.redirect('/login');
     }
 });
+
+
 
 /**
  * Make skill unmastered.
@@ -1586,7 +1600,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                         ) {
                                             if (
                                                 childSkills[i].type ==
-                                                    'regular' ||
+                                                'regular' ||
                                                 childSkills[i].type == 'domain'
                                             ) {
                                                 makeAccessible(
@@ -1605,7 +1619,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                                 ) {
                                                     if (
                                                         skills[j].parent ==
-                                                            childSkills[i].id &&
+                                                        childSkills[i].id &&
                                                         skills[j].type == 'sub'
                                                     ) {
                                                         subSkills.push(
@@ -1637,7 +1651,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                         ) {
                                             if (
                                                 skills[i].parent ==
-                                                    skill.parent &&
+                                                skill.parent &&
                                                 skills[i].id != skill.id
                                             ) {
                                                 if (skills[i].type == 'sub') {

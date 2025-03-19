@@ -8,6 +8,7 @@ import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
 import { useShowSkillStore } from '../../stores/ShowSkillStore.js';
+import { useSettingsStore } from '../../stores/SettingsStore.js';
 
 // Import components
 import FlagModals from './FlagModals.vue';
@@ -25,6 +26,7 @@ export default {
         const userSkillsStore = useUserSkillsStore();
         const sessionDetailsStore = useSessionDetailsStore();
         const showSkillStore = useShowSkillStore();
+        const settingsStore = useSettingsStore();
 
         // If method hasn`t been run before.
         if (tagsStore.tagsList.length == 0) {
@@ -40,7 +42,8 @@ export default {
             skillTreeStore,
             userSkillsStore,
             sessionDetailsStore,
-            showSkillStore
+            showSkillStore,
+            settingsStore
         };
     },
     data() {
@@ -85,7 +88,8 @@ export default {
             nextSkillsInBranch: [],
             // Defaults to true. False only for certain skills.
             // This is just to prevent them displaying. They are still loaded, as used by the AI.
-            showLearningObjectives: true
+            showLearningObjectives: true,
+            isAITokenLimitReached: false
         };
     },
     components: {
@@ -95,6 +99,8 @@ export default {
         LearningObjectiveAITutor
     },
     async created() {
+        // Needed for token limit
+        await this.settingsStore.getSettings();
         await this.getSkill();
         this.isSkillLoaded = true;
         if (this.sessionDetailsStore.isLoggedIn) {
@@ -106,7 +112,7 @@ export default {
             this.checkIfTutorialComplete();
         }
 
-        if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
+        if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);        
     },
     mounted() {
         if (this.showTutorialTip6) {
@@ -1173,6 +1179,7 @@ export default {
                             <div v-if="learningObjective.showAI">
                                 <!-- AI tutor for this learning objective -->
                                 <LearningObjectiveAITutor
+                                    v-if="!isAITokenLimitReached"
                                     :learningObjective="
                                         learningObjective.objective
                                     "
@@ -1181,6 +1188,11 @@ export default {
                                     :skillUrl="skill.url"
                                     :skillLevel="skill.level"
                                 />
+                                <p v-else>
+                                    You have reached your monthly AI token
+                                    limit. Please recharge your subscription to
+                                    use more.
+                                </p>
                             </div>
                         </div>
                         <button
@@ -1258,7 +1270,8 @@ export default {
                 v-if="
                     isSkillLoaded &&
                     userDetailsStore.role === 'student' &&
-                    skill.type !== 'domain'
+                    skill.type !== 'domain' &&
+                    !isAITokenLimitReached
                 "
                 :skill="skill"
                 :showTutorialTip7="showTutorialTip7"
@@ -1266,6 +1279,16 @@ export default {
                 :showTutorialTip9="showTutorialTip9"
                 @progressTutorial="progressTutorial"
             />
+            <p
+                v-else-if="
+                    isSkillLoaded &&
+                    userDetailsStore.role === 'student' &&
+                    skill.type !== 'domain'
+                "
+            >
+                You have reached your monthly AI token limit. Please recharge
+                your subscription to use more.
+            </p>
         </div>
 
         <!-- Posts -->
