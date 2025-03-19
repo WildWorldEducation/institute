@@ -59,7 +59,7 @@ export default {
         else {
             await this.skillTreeStore.getStudentSkills(this.studentId);
             this.studentUserSkills = this.skillTreeStore.studentSkills;
-            await this.checkIfStudentSkillsLocked();            
+            await this.checkIfStudentSkillsLocked();
         }
 
         // For the loading animation.
@@ -114,6 +114,7 @@ export default {
             let finish = false;
             // stack contain node that need to check. Initial data is child of root node
             let serveStack = [...initialSkillList];
+
             // stack contain node that we have visited
             let visited = [];
             while (!finish) {
@@ -162,6 +163,7 @@ export default {
                     finish;
                 }
             }
+
             this.findNodeLoading = false;
             return path;
         },

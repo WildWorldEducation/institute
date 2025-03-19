@@ -612,7 +612,7 @@ export default {
         </div>
     </div>
 
-    <SkillsListParent />
+    <SkillsListParent ref="skillList" />
 
     <!-- Tutorials -->
     <!-- Student Introduction modal -->
