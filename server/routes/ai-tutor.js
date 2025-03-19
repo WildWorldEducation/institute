@@ -23,12 +23,12 @@ const {
     createSocraticAssistantAndThread,
     getSocraticTutorThread,
     saveSocraticTutorThread,
-    socraticTutorMessage,    
+    socraticTutorMessage,
     // Assessing tutor
     createAssessingAssistantAndThread,
     getAssessingTutorThread,
     saveAssessingTutorThread,
-    assessingTutorMessage,    
+    assessingTutorMessage,
     // Learning objective tutor
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
@@ -490,7 +490,7 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
                     `;
 
         const completion = await openai.chat.completions.create({
-            model: 'gpt-4o',
+            model: 'gpt-4.5-preview',
             response_format: { type: 'json_object' },
             messages: [
                 { role: 'system', content: 'You are a helpful assistant.' },
