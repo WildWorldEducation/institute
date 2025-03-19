@@ -453,6 +453,14 @@ const router = createRouter({
                 import('../components/pages/subscriptions/SubscriptionView.vue')
         },
         {
+            path: '/subscription/payment',
+            name: 'subscription-payment',
+            component: () =>
+                import(
+                    '../components/pages/subscriptions/SubscriptionPaymentView.vue'
+                )
+        },
+        {
             path: '/subscription/success',
             name: 'subscription-success',
             component: () =>

@@ -49,7 +49,7 @@ export default {
 <template>
     <div class="form-container">
         <form @submit.prevent="handleSubmit">
-            <h2>Make a Donation</h2>
+            <h1 class="heading">Buy Tokens</h1>
             <div class="form-group">
                 <label for="name">Name:</label>
                 <input type="text" id="name" v-model="form.name" required />
@@ -71,7 +71,7 @@ export default {
                     required
                 />
             </div>
-            <button class="submit-button" type="submit">Submit</button>
+            <button class="btn primary-btn" type="submit">Submit</button>
         </form>
         <div v-if="message" class="message">
             <p>{{ message }}</p>

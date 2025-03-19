@@ -45,15 +45,21 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Subscription</h1>
-        <h2 class="secondary-heading h3">
-            Monthly usage: {{ month }}, {{ year }}
+        <h2 class="secondary-heading h4">
+            Monthly AI usage: {{ month }}, {{ year }}
         </h2>
 
         <ul>
-            <li>Limit: 10,000</li>
-            <li>Current usage: {{ userDetailsStore.tokenCount }}</li>
+            <li><p>Free limit: 10,000</p></li>
+            <li><p>Your tokens: 0</p></li>
+            <li>
+                <p>Current usage: {{ userDetailsStore.tokenCount }}</p>
+            </li>
         </ul>
-        <button class="btn primary-btn">Buy tokens</button>
+
+        <router-link to="/subscription/payment" class="btn primary-btn"
+            >Buy tokens
+        </router-link>
     </div>
 </template>
 
