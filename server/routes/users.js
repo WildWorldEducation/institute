@@ -853,10 +853,15 @@ router.get('/show/:id', (req, res, next) => {
                                    AND year = ${year}
                                    AND month = ${month};`;
 
-                    const result = await query(sqlQuery);
-                    console.log(result);
-                    const tokenCount = result[0].token_count;
+                    const tokenResult = await query(sqlQuery);
+                    console.log(tokenResult);
+                    let tokenCount = 0;
+                    if ((tokenResult.length = 0)) {
+                        tokenCount = tokenResult[0].token_count;
+                        console.log('test');
+                    }
                     console.log(tokenCount);
+
                     results[0].token_count = tokenCount;
 
                     res.json(results[0]);

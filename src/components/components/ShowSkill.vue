@@ -101,6 +101,16 @@ export default {
     async created() {
         // Needed for token limit
         await this.settingsStore.getSettings();
+        if (
+            this.settingsStore.monthlyTokenLimit <=
+            this.userDetailsStore.tokenCount
+        ) {
+            this.isAITokenLimitReached = true;
+        }
+
+        console.log(this.settingsStore.monthlyTokenLimit)
+        console.log(this.userDetailsStore.tokenCount)
+
         await this.getSkill();
         this.isSkillLoaded = true;
         if (this.sessionDetailsStore.isLoggedIn) {
@@ -112,7 +122,7 @@ export default {
             this.checkIfTutorialComplete();
         }
 
-        if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);        
+        if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
     },
     mounted() {
         if (this.showTutorialTip6) {
@@ -1189,9 +1199,11 @@ export default {
                                     :skillLevel="skill.level"
                                 />
                                 <p v-else>
-                                    You have reached your monthly AI token
-                                    limit. Please recharge your subscription to
-                                    use more.
+                                    <em
+                                        >You have reached your monthly AI token
+                                        limit. Please recharge your subscription
+                                        to use more.</em
+                                    >
                                 </p>
                             </div>
                         </div>
@@ -1286,8 +1298,11 @@ export default {
                     skill.type !== 'domain'
                 "
             >
-                You have reached your monthly AI token limit. Please recharge
-                your subscription to use more.
+            <h2 class="secondary-heading">AI tutor</h2>
+                <em
+                    >You have reached your monthly AI token limit. Please
+                    recharge your subscription to use more.</em
+                >
             </p>
         </div>
 
