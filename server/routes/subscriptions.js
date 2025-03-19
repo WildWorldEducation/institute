@@ -46,27 +46,26 @@ router.get('/get-token-count/:userId/:year/:month', (req, res, next) => {
 });
 
 router.post('/create-checkout-session', async (req, res) => {
-    const { donation } = req.body;
     const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
         line_items: [
             {
                 price_data: {
                     currency: 'usd',
                     product_data: {
-                        name: 'Donation'
+                        name: 'T-shirt'
                     },
-                    unit_amount: donation * 100
+                    unit_amount: 2000
                 },
                 quantity: 1
             }
         ],
         mode: 'payment',
-        success_url: '<http://localhost:3000/subscriptions/success>',
-        cancel_url: '<http://localhost:3000/subscriptions/error>'
+        ui_mode: 'custom',
+        // The URL of your payment completion page
+        return_url: '{{RETURN_URL}}'
     });
 
-    res.json({ id: session.id });
+    res.json({ checkoutSessionClientSecret: session.client_secret });
 });
 
 // Export the router for app to use.
