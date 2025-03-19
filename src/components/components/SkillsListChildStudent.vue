@@ -19,7 +19,8 @@ export default {
             childrenNotSubskills: [],
             subSkills: [],
             isResult: false,
-            localShowChildren: 0
+            localShowChildren: 0,
+            isLocalUnlocked: 0
         };
     },
     props: [
@@ -75,7 +76,7 @@ export default {
     },
     async created() {
         this.localShowChildren = this.showChildren;
-
+        this.isLocalUnlocked = this.isUnlocked;
         for (let i = 0; i < this.children.length; i++) {
             if (this.children[i].type == 'sub') {
                 this.subSkills.push(this.children[i]);
@@ -102,7 +103,8 @@ export default {
         if (this.depth >= 2) {
             const inPath = this.path.find((node) => node.id === this.id);
             if (inPath) {
-                this.showChildren = true;
+                this.localShowChildren = true;
+                this.isLocalUnlocked = true;
             }
         }
         // if we are the last node to appear when user choose a path we scroll to here
@@ -179,9 +181,11 @@ export default {
     watch: {
         path: {
             handler(newVal) {
-                const inPath = newVal.find((node) => node.id === this.id);
-                if (inPath) {
-                    this.showChildren = true;
+                // Check if this node is in the showing path
+                const isInPath = newVal.find((node) => node.id === this.id);
+                if (isInPath) {
+                    this.localShowChildren = true;
+                    this.isLocalUnlocked = true;
                 }
                 if (newVal.length === 0 && this.isResult === true) {
                     this.isResult = false;
@@ -208,9 +212,11 @@ export default {
         :class="{
             domains: type == 'domain',
             // Colors and background images for top level skills.
-            unlocked: isUnlocked == 1 && userDetailsStore.isSkillsLocked == 0,
-            locked: isUnlocked != 1 && userDetailsStore.isSkillsLocked == 1,
-            unlocked: isUnlocked == 1,
+            unlocked:
+                isLocalUnlocked == 1 && userDetailsStore.isSkillsLocked == 0,
+            locked:
+                isLocalUnlocked != 1 && userDetailsStore.isSkillsLocked == 1,
+            unlocked: isLocalUnlocked == 1,
             mastered: isMastered == 1,
             'sub-skill-button': type == 'sub',
             'grade-school-level': level == 'grade_school',
