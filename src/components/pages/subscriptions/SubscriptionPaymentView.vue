@@ -14,34 +14,36 @@ export default {
             stripe: null
         };
     },
-    async mounted() {
-        const stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx', {
-            betas: ['custom_checkout_beta_6']
-        });
-
-        const fetchClientSecret = () => {
-            return fetch('/subscriptions/create-checkout-session', {
-                method: 'POST'
-            })
-                .then((response) => response.json())
-                .then((json) => json.checkoutSessionClientSecret);
-        };
-        stripe.initCheckout({ fetchClientSecret }).then((checkout) => {
-            const checkoutContainer =
-                document.getElementById('checkout-container');
-            checkoutContainer.append(
-                JSON.stringify(checkout.lineItems, null, 2)
-            );
-            checkoutContainer.append(document.createElement('br'));
-            checkoutContainer.append(
-                `Currency: ${checkout.session().currency}`
-            );
-            checkoutContainer.append(
-                `Total: ${checkout.session().total.total.amount}`
-            );
-        });
-    },
+    async mounted() {},
     methods: {
+        submit() {
+            fetch(
+                'http://localhost:3000/subscriptions/create-checkout-session',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        items: [
+                            { id: 1, quantity: 3 },
+                            { id: 2, quantity: 1 }
+                        ]
+                    })
+                }
+            )
+                .then((res) => {
+                    if (res.ok) return res.json();
+                    return res.json().then((json) => Promise.reject(json));
+                })
+                .then(({ url }) => {
+                    window.location = url;
+                })
+                .catch((e) => {
+                    console.error(e.error);
+                });
+        },
+
         async handleSubmit() {
             try {
                 const response = await fetch(
@@ -71,7 +73,8 @@ export default {
 </script>
 
 <template>
-    <div class="form-container">
+    <button @click="submit()">Checkout</button>
+    <!-- <div class="form-container">
         <form @submit.prevent="handleSubmit">
             <h1 class="heading">Buy Tokens</h1>
             <div class="form-group">
@@ -100,7 +103,7 @@ export default {
         <div v-if="message" class="message">
             <p>{{ message }}</p>
         </div>
-    </div>
+    </div> -->
 </template>
 <style scoped>
 .form-container {

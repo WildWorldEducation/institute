@@ -45,27 +45,38 @@ router.get('/get-token-count/:userId/:year/:month', (req, res, next) => {
     }
 });
 
-router.post('/create-checkout-session', async (req, res) => {
-    const session = await stripe.checkout.sessions.create({
-        line_items: [
-            {
-                price_data: {
-                    currency: 'usd',
-                    product_data: {
-                        name: 'T-shirt'
-                    },
-                    unit_amount: 2000
-                },
-                quantity: 1
-            }
-        ],
-        mode: 'payment',
-        ui_mode: 'custom',
-        // The URL of your payment completion page
-        return_url: '{{RETURN_URL}}'
-    });
+const storeItems = new Map([
+    [1, { priceInCents: 10000, name: 'Learn React Today' }],
+    [2, { priceInCents: 20000, name: 'Learn CSS Today' }]
+]);
 
-    res.json({ checkoutSessionClientSecret: session.client_secret });
+router.post('/create-checkout-session', async (req, res) => {
+    try {
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            mode: 'payment',
+            line_items: req.body.items.map((item) => {
+                const storeItem = storeItems.get(item.id);
+                return {
+                    price_data: {
+                        currency: 'usd',
+                        product_data: {
+                            name: storeItem.name
+                        },
+                        unit_amount: storeItem.priceInCents
+                    },
+                    quantity: item.quantity
+                };
+            }),
+
+            success_url: `${process.env.BASE_URL}/subscription/success`,
+            cancel_url: `${process.env.BASE_URL}/subscription/error`
+        });
+
+        res.json({ url: session.url });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
 });
 
 // Export the router for app to use.
