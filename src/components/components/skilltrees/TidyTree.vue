@@ -86,6 +86,7 @@ export default {
         JoystickControl
     },
     async mounted() {
+        console.log('TEST HA HA');
         // Check if store is empty,
         // or if grade level filter has been changed on the other tree (they need to be the same).
         if (this.skillTreeStore.verticalTreeUserSkills.length == 0) {
@@ -1713,7 +1714,7 @@ export default {
     <!-- Loading animation -->
     <div
         v-if="isLoading == true"
-        class="loading-animation d-flex justify-content-center align-items-center py-4"
+        class="d-flex align-items-center justify-content-center loading-animation py-4"
     >
         <span class="loader"></span>
     </div>
