@@ -6,7 +6,6 @@ import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
 import TooltipBtn from './../share-components/TooltipBtn.vue';
 import SpeechRecorder from './SpeechRecorder.vue';
 import { socket, socketState } from '../../../socket.js';
-import { nextTick } from 'vue';
 
 export default {
     setup() {
