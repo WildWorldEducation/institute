@@ -54,6 +54,92 @@ const updateUserReputation = (resourceId, reputationChange, callback) => {
     });
 };
 
+// Function to record reputation actions
+const recordReputationAction = (resourceId, voteType) => {
+    // Get the resource owner's ID
+    const getOwnerQuery = `
+        SELECT user_id FROM resources 
+        WHERE id = ${conn.escape(resourceId)};
+    `;
+
+    conn.query(getOwnerQuery, (err, results) => {
+        if (err) {
+            console.error('Error getting resource owner:', err);
+            return;
+        }
+
+        if (results && results.length > 0) {
+            const ownerId = results[0].user_id;
+
+            // Skip if owner not found or if no valid owner ID
+            if (!ownerId) {
+                console.error(
+                    'No valid owner ID found for resource:',
+                    resourceId
+                );
+                return;
+            }
+
+            // Use 'receive-reputation' for both, but include a comment field
+            const actionData = {
+                action: 'receive-reputation',
+                content_id: resourceId,
+                user_id: ownerId,
+                content_type: 'resource', // Make sure this is 'resource'
+                comment: voteType === 1 ? 'upvote' : 'downvote'
+            };
+
+            const actionQuery = 'INSERT INTO user_actions SET ?';
+            conn.query(actionQuery, actionData, (err) => {
+                if (err) {
+                    console.error('Error recording reputation action:', err);
+                } else {
+                    console.log(
+                        'Successfully recorded reputation action for resource',
+                        resourceId
+                    );
+                }
+            });
+        } else {
+            console.error('No resource found with ID:', resourceId);
+        }
+    });
+};
+
+// Function to delete reputation actions when votes are canceled
+const deleteReputationAction = (resourceId) => {
+    // Get the resource owner's ID
+    const getOwnerQuery = `
+    SELECT user_id FROM resources
+    WHERE id = ${conn.escape(resourceId)}
+    `;
+
+    conn.query(getOwnerQuery, (err, results) => {
+        if (err) {
+            console.error('Error getting owner: ', err);
+            return;
+        }
+
+        if (results && results.length > 0) {
+            const ownerId = results[0].user_id;
+
+            // Delete reputation actions for this resource
+            const deleteQuery = `
+            DELETE FROM user_actions 
+            WHERE (action = 'receive-reputation' OR action = 'lose-reputation')
+            AND content_id = ${conn.escape(resourceId)}
+            AND user_id = ${conn.escape(ownerId)}
+            AND content_type = 'resource';
+            `;
+
+            conn.query(deleteQuery, (err) => {
+                if (err)
+                    console.error('Error deleting reputation action: ', err);
+            });
+        }
+    });
+};
+
 /**
  * Get current vote value to determine reputation change on cancel
  * @param {string} userId - ID of the user who voted
@@ -122,18 +208,24 @@ router.put('/:userId/:resourceId/edit/up', (req, res, next) => {
         ON DUPLICATE KEY UPDATE vote=1;
         `;
 
-        // First update the vote
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
 
-                // Then update reputation by +1 for upvote
+                // Update reputation
                 updateUserReputation(req.params.resourceId, 1, (repErr) => {
                     if (repErr) {
+                        console.error('Error updating reputation:', repErr);
                         next(repErr);
                     } else {
+                        // Record the reputation action
+                        console.log(
+                            'Recording reputation action for upvote on resource:',
+                            req.params.resourceId
+                        );
+                        recordReputationAction(req.params.resourceId, 1);
                         res.end();
                     }
                 });
@@ -155,18 +247,19 @@ router.put('/:userId/:resourceId/edit/down', (req, res, next) => {
         ON DUPLICATE KEY UPDATE vote=-1;
         `;
 
-        // First update the vote
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
 
-                // Then update reputation by -1 for downvote
+                // Update reputation
                 updateUserReputation(req.params.resourceId, -1, (repErr) => {
                     if (repErr) {
                         next(repErr);
                     } else {
+                        // Record the reputation action
+                        recordReputationAction(req.params.resourceId, -1);
                         res.end();
                     }
                 });
@@ -180,7 +273,6 @@ router.put('/:userId/:resourceId/edit/down', (req, res, next) => {
 // To cancel vote.
 router.put('/:userId/:resourceId/edit/cancel', (req, res, next) => {
     if (req.session.userName) {
-        // First get the existing vote to determine reputation change
         getExistingVoteValue(
             req.params.userId,
             req.params.resourceId,
@@ -190,21 +282,20 @@ router.put('/:userId/:resourceId/edit/cancel', (req, res, next) => {
                 }
 
                 let sqlQuery = `
-            INSERT INTO user_votes (user_id, resource_id, vote) 
-            VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
+                INSERT INTO user_votes (user_id, resource_id, vote) 
+                VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
                     req.params.resourceId
                 )}, 0) 
-            ON DUPLICATE KEY UPDATE vote=0;
-            `;
+                ON DUPLICATE KEY UPDATE vote=0;
+                `;
 
-                // Update the vote
                 conn.query(sqlQuery, (err, results) => {
                     try {
                         if (err) {
                             throw err;
                         }
 
-                        // Then update reputation based on the previous vote value
+                        // Update reputation
                         updateUserReputation(
                             req.params.resourceId,
                             reputationChange,
@@ -212,6 +303,10 @@ router.put('/:userId/:resourceId/edit/cancel', (req, res, next) => {
                                 if (repErr) {
                                     next(repErr);
                                 } else {
+                                    // Delete the reputation action
+                                    deleteReputationAction(
+                                        req.params.resourceId
+                                    );
                                     res.end();
                                 }
                             }

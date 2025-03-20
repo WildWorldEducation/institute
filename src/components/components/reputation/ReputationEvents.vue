@@ -25,7 +25,17 @@ export default {
             );
             this.reputationEvents[i].formattedContentType =
                 this.reputationEvents[i].content_type.replace(/_/g, ' ');
+
+            if (this.reputationEvents[i].formattedContentType == 'resource')
+                this.reputationEvents[i].formattedContentType = 'source';
+
+            this.reputationEvents[i].reason = 'improved';
+            if (this.reputationEvents[i].comment != null) {
+                this.reputationEvents[i].reason = 'vote';
+            }
         }
+
+        this.reputationEvents.reverse();
     },
     methods: {
         formatDate(unformattedDate) {
@@ -64,12 +74,22 @@ export default {
             <p>You have not earned any reputation yet.</p>
         </div>
         <div v-for="reputationEvent in reputationEvents">
-            <div class="text-white bg-success rounded">
-                <span class="badge text-bg-light">+1</span>
+            <div
+                :class="[
+                    'text-white rounded',
+                    reputationEvent.comment === 'downvote'
+                        ? 'bg-danger'
+                        : 'bg-success'
+                ]"
+            >
+                <span class="badge text-bg-light">
+                    {{ reputationEvent.comment === 'downvote' ? '-1' : '+1' }}
+                </span>
                 {{ reputationEvent.formattedContentType }}
-                <span v-if="reputationEvent.content_type != 'new_skill'"
-                    >improved</span
-                ><span v-else>added</span> on
+                <span v-if="reputationEvent.content_type != 'new_skill'">
+                    {{ reputationEvent.reason }}
+                </span>
+                <span v-else>added</span> on
                 {{ reputationEvent.formattedDate }}
             </div>
         </div>

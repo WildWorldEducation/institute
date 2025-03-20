@@ -114,6 +114,76 @@ router.get('/:id', (req, res, next) => {
     }
 });
 
+// Function to record reputation actions
+const recordReputationAction = (tutorPostId, voteType) => {
+    // Get the tutor post owner's ID
+    const getOwnerQuery = `
+    SELECT user_id FROM tutor_posts
+    WHERE id = ${conn.escape(tutorPostId)};
+    `;
+
+    conn.query(getOwnerQuery, (err, results) => {
+        if (err) {
+            console.error('Error getting tutor post owner: ', err);
+            return;
+        }
+
+        if (results & (results.length > 0)) {
+            const ownerId = results[0].user_id;
+
+            // Record the reputation system
+            const actionData = {
+                action: 'receive-reputation',
+                content_id: tutorPostId,
+                user_id: ownerId,
+                content_type: 'resource'
+            };
+
+            const actionQuery = 'INSERT INTO user_actions SET ?';
+            conn.query(actionQuery, actionData, (err) => {
+                if (err) {
+                    console.error('Error recording reputation action: ', err);
+                }
+            });
+        }
+    });
+};
+
+// Function to delete reputation actions when votes are cancled
+const deleteReputationAction = (tutorPostId) => {
+    // Get the tutor post owner's ID
+    const getOwnerQuery = `
+    SELECT user_id FROM tutor_posts
+    WHERE id = ${conn.escape(tutorPostId)}
+    `;
+
+    conn.query(getOwnerQuery, (err, results) => {
+        if (err) {
+            console.error('Error getting tutor post owner: ', err);
+            return;
+        }
+
+        if (results && results.length > 0) {
+            const ownerId = results[0].user_id;
+
+            // Delete reputation actions for this tutor post
+            const deleteQuery = `
+             DELETE FROM user_actions 
+             WHERE (action = 'receive-reputation' OR action = 'lose-reputation')
+             AND content_id = ${conn.escape(tutorPostId)}
+             AND user_id = ${conn.escape(ownerId)}
+             AND content_type = 'resource';
+            `;
+
+            conn.query(deleteQuery, (err) => {
+                if (err) {
+                    console.error('Error deleting reputation action: ', err);
+                }
+            });
+        }
+    });
+};
+
 /**
  * Vote up
  *
@@ -129,18 +199,19 @@ router.put('/:userId/:tutorPostId/edit/up', (req, res, next) => {
         ON DUPLICATE KEY UPDATE vote=1;
         `;
 
-        // First update the vote
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
 
-                // Then update reputation by +1 for upvote
+                // Update reputation
                 updateUserReputation(req.params.tutorPostId, 1, (repErr) => {
                     if (repErr) {
                         next(repErr);
                     } else {
+                        // Record the reputation action
+                        recordReputationAction(req.params.tutorPostId, 1);
                         res.end();
                     }
                 });
@@ -161,18 +232,19 @@ router.put('/:userId/:tutorPostId/edit/down', (req, res, next) => {
         ON DUPLICATE KEY UPDATE vote=-1;
         `;
 
-        // First update the vote
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
 
-                // Then update reputation by -1 for downvote
+                // Update reputation
                 updateUserReputation(req.params.tutorPostId, -1, (repErr) => {
                     if (repErr) {
                         next(repErr);
                     } else {
+                        // Record the reputation action
+                        recordReputationAction(req.params.tutorPostId, -1);
                         res.end();
                     }
                 });
@@ -186,7 +258,6 @@ router.put('/:userId/:tutorPostId/edit/down', (req, res, next) => {
 // To cancel vote.
 router.put('/:userId/:tutorPostId/edit/cancel', (req, res, next) => {
     if (req.session.userName) {
-        // First get the existing vote to determine reputation change
         getExistingVoteValue(
             req.params.userId,
             req.params.tutorPostId,
@@ -196,20 +267,19 @@ router.put('/:userId/:tutorPostId/edit/cancel', (req, res, next) => {
                 }
 
                 let sqlQuery = `
-            INSERT INTO tutor_votes (user_id, tutor_post_id, vote) 
-            VALUES(${conn.escape(req.params.userId)},
-            ${conn.escape(req.params.tutorPostId)}, 0) 
-            ON DUPLICATE KEY UPDATE vote=0;
-            `;
+                INSERT INTO tutor_votes (user_id, tutor_post_id, vote) 
+                VALUES(${conn.escape(req.params.userId)},
+                ${conn.escape(req.params.tutorPostId)}, 0) 
+                ON DUPLICATE KEY UPDATE vote=0;
+                `;
 
-                // Update the vote
                 conn.query(sqlQuery, (err, results) => {
                     try {
                         if (err) {
                             throw err;
                         }
 
-                        // Then update reputation based on the previous vote value
+                        // Update reputation
                         updateUserReputation(
                             req.params.tutorPostId,
                             reputationChange,
@@ -217,6 +287,10 @@ router.put('/:userId/:tutorPostId/edit/cancel', (req, res, next) => {
                                 if (repErr) {
                                     next(repErr);
                                 } else {
+                                    // Delete the reputation action
+                                    deleteReputationAction(
+                                        req.params.tutorPostId
+                                    );
                                     res.end();
                                 }
                             }
