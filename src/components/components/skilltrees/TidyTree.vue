@@ -77,7 +77,12 @@ export default {
             currentNodeY: 0,
             visibleRangeX: 0,
             visibleRangeY: 0,
-            iconDictionary: []
+            iconDictionary: [],
+            tooltipData: {
+                showing: false,
+                xPosition: 0,
+                yPosition: 0
+            }
         };
     },
     components: {
@@ -206,9 +211,21 @@ export default {
         });
 
         // MOUSE MOVE EVENT LISTENER
-        d3.select('#canvas').on('mousemove', function (event) {
+        d3.select('#canvas').on('mousemove', (event) => {
             // Get mouse positions from the main canvas.
-            console.log(d3.pointer(event));
+            const [mouseX, mouseY] = d3.pointer(event);
+
+            const node = this.getMouseOverNode(mouseX, mouseY);
+
+            if (node) {
+                this.tooltipData = {
+                    showing: true,
+                    xPosition: mouseX,
+                    yPosition: mouseY
+                };
+            } else {
+                this.tooltipData.showing = false;
+            }
         });
 
         // Zoom and pan with mouse
@@ -1704,6 +1721,21 @@ export default {
                 ctx1.strokeText(node.data.skill_name, xPosition, node.x + 2);
                 ctx1.fillText(node.data.skill_name, xPosition, node.x + 2);
             }
+        },
+        // check if current mouse position is over any node (return false if not on node)
+        getMouseOverNode(mouseX, mouseY) {
+            // Get the corresponding pixel color on the hidden canvas
+            // and look up the node in our map.
+            const ctx = this.hiddenCanvasContext;
+
+            // This will return that pixel's color
+            const col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
+
+            //Our map uses these rgb strings as keys to nodes.
+            const colString =
+                'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
+            const node = this.colToNode[colString];
+            return node;
         }
     }
 };
@@ -1737,6 +1769,7 @@ export default {
         <ZoomControl ref="ZoomControl" />
         <div id="sidepanel-backdrop"></div>
         <JoystickControl class="d-none" />
+        <div class="debug-background"></div>
     </div>
 </template>
 
