@@ -99,8 +99,6 @@ export default {
         LearningObjectiveAITutor
     },
     async created() {
-        // Needed for token limit
-        await this.settingsStore.getSettings();
         await this.getSkill();
         this.isSkillLoaded = true;
         if (this.sessionDetailsStore.isLoggedIn) {
@@ -112,7 +110,7 @@ export default {
             this.checkIfTutorialComplete();
         }
 
-        if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);        
+        if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
     },
     mounted() {
         if (this.showTutorialTip6) {
