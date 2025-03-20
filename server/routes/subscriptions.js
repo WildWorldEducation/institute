@@ -10,7 +10,9 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 
 const Stripe = require('stripe');
-const stripe = Stripe('sk_test_BQokikJOvBiI2HlWgH4olfQ2');
+const stripe = Stripe(
+    'sk_test_51R4kHlFfW0WtxYZHKmORTnwIv1v2wqlW2B5EXhxLZmHWrPzfg4ws3Ef1y0sDG1VxxJ88IjLpNnVjUhhmn215sO6m00tG7xgxIl'
+);
 
 // DB
 const conn = require('../config/db');
@@ -63,14 +65,25 @@ router.post('/create-checkout-session', async (req, res) => {
                 }
             ],
 
-            success_url: `${process.env.BASE_URL}/subscription/success`,
-            cancel_url: `${process.env.BASE_URL}/subscription/error`
+            success_url: `${process.env.BASE_URL}/subscriptions/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.BASE_URL}/subscriptions/error`
         });
 
         res.json({ url: session.url });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
+});
+
+router.get('/success', async (req, res, next) => {
+    console.log('test');
+    const session = await stripe.checkout.sessions.retrieve(
+        req.query.session_id
+    );
+
+    console.log(session);
+
+    res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
 });
 
 // Export the router for app to use.

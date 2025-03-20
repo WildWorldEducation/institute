@@ -392,7 +392,7 @@ export default {
                                         Reputation
                                     </RouterLink>
                                     <RouterLink
-                                        to="/subscription"
+                                        to="/subscriptions"
                                         class="dropdown-item"
                                     >
                                         Subscription

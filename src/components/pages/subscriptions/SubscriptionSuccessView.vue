@@ -7,7 +7,7 @@ export default {
 <template>
     <div class="success-container">
         <h1>Payment Successful!</h1>
-        <p>Thank you for your donation.</p>
+        <p></p>
     </div>
 </template>
 <style scoped>

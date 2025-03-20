@@ -447,13 +447,13 @@ const router = createRouter({
             }
         },
         {
-            path: '/subscription',
+            path: '/subscriptions',
             name: 'subscription',
             component: () =>
                 import('../components/pages/subscriptions/SubscriptionView.vue')
         },
         {
-            path: '/subscription/payment',
+            path: '/subscriptions/payment',
             name: 'subscription-payment',
             component: () =>
                 import(
@@ -461,7 +461,7 @@ const router = createRouter({
                 )
         },
         {
-            path: '/subscription/success',
+            path: '/subscriptions/success/view',
             name: 'subscription-success',
             component: () =>
                 import(
@@ -469,7 +469,7 @@ const router = createRouter({
                 )
         },
         {
-            path: '/subscription/error',
+            path: '/subscriptions/error',
             name: 'subscription-error',
             component: () =>
                 import(
