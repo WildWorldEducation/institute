@@ -45,29 +45,23 @@ router.get('/get-token-count/:userId/:year/:month', (req, res, next) => {
     }
 });
 
-const storeItems = new Map([
-    [1, { priceInCents: 10000, name: 'Learn React Today' }],
-    [2, { priceInCents: 20000, name: 'Learn CSS Today' }]
-]);
-
 router.post('/create-checkout-session', async (req, res) => {
     try {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             mode: 'payment',
-            line_items: req.body.items.map((item) => {
-                const storeItem = storeItems.get(item.id);
-                return {
+            line_items: [
+                {
                     price_data: {
                         currency: 'usd',
                         product_data: {
-                            name: storeItem.name
+                            name: 'tokens'
                         },
-                        unit_amount: storeItem.priceInCents
+                        unit_amount: req.body.tokens
                     },
-                    quantity: item.quantity
-                };
-            }),
+                    quantity: 1
+                }
+            ],
 
             success_url: `${process.env.BASE_URL}/subscription/success`,
             cancel_url: `${process.env.BASE_URL}/subscription/error`

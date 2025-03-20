@@ -41,18 +41,15 @@ export default {
     methods: {
         checkout() {
             console.log(this.tokensToBuy);
-            fetch(
-                'http://localhost:3000/subscriptions/create-checkout-session',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        token: this.tokenToBuy
-                    })
-                }
-            )
+            fetch('/subscriptions/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    tokens: this.tokensToBuy
+                })
+            })
                 .then((res) => {
                     if (res.ok) return res.json();
                     return res.json().then((json) => Promise.reject(json));
