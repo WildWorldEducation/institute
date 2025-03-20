@@ -64,6 +64,8 @@ export default {
 
         this.englishSkillLevel = this.skill.level.replace('_', ' ');
         await this.getChatHistory();
+
+        this.makeMastered();
     },
     // updated() {
     //     if (this.mode !== 'hide') {
@@ -394,11 +396,7 @@ export default {
             alert('Congratulations, you have mastered this skill!');
             await this.userSkillsStore.MakeMastered(
                 this.userDetailsStore.userId,
-                this.skill.id,
-                this.skill.name,
-                this.skill.level,
-                this.skill.url,
-                (val) => {}
+                this.skill
             );
         },
         // Streaming
