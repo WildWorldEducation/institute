@@ -89,9 +89,6 @@ const recordReputationAction = (resourceId, voteType) => {
                 comment: voteType === 1 ? 'upvote' : 'downvote'
             };
 
-            // Debug log
-            console.log('Recording reputation action:', actionData);
-
             const actionQuery = 'INSERT INTO user_actions SET ?';
             conn.query(actionQuery, actionData, (err) => {
                 if (err) {

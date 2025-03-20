@@ -25,7 +25,17 @@ export default {
             );
             this.reputationEvents[i].formattedContentType =
                 this.reputationEvents[i].content_type.replace(/_/g, ' ');
+
+            if (this.reputationEvents[i].formattedContentType == 'resource')
+                this.reputationEvents[i].formattedContentType = 'source';
+
+            this.reputationEvents[i].reason = 'improved';
+            if (this.reputationEvents[i].comment != null) {
+                this.reputationEvents[i].reason = 'vote';
+            }
         }
+
+        this.reputationEvents.reverse();
     },
     methods: {
         formatDate(unformattedDate) {
@@ -77,11 +87,7 @@ export default {
                 </span>
                 {{ reputationEvent.formattedContentType }}
                 <span v-if="reputationEvent.content_type != 'new_skill'">
-                    {{
-                        reputationEvent.comment === 'downvote'
-                            ? 'criticized'
-                            : 'improved'
-                    }}
+                    {{ reputationEvent.reason }}
                 </span>
                 <span v-else>added</span> on
                 {{ reputationEvent.formattedDate }}
