@@ -73,7 +73,7 @@ export default {
     methods: {
         // Setting this method to allow the user to be able to create a new line with shift+enter
         handleKeyDown(e) {
-            if (e.shiftKey) {
+            if (e.shiftKey || this.$parent.isAITokenLimitReached) {
                 return;
             }
             e.preventDefault();
@@ -139,8 +139,8 @@ export default {
                 if (this.chatHistory.length > 0) {
                     this.threadID = this.chatHistory[0].thread_id;
                 }
-              
-                this.$parent.checkTokenUsage()
+
+                this.$parent.checkTokenUsage();
             } catch (error) {
                 console.error(error);
             }
@@ -561,6 +561,7 @@ export default {
             :skill="skill"
             :skillLevel="englishSkillLevel"
             :learningObjectives="learningObjectives"
+            :isAITokenLimitReached="$parent.isAITokenLimitReached"
         />
         <!--Tutor types -->
         <span v-if="mode === 'big'" class="d-flex justify-content-between">
@@ -642,22 +643,6 @@ export default {
                 </div>
             </span>
             <span>
-                <!-- Test me button -->
-                <button
-                    v-if="tutorType === 'assessing'"
-                    class="btn suggested-interactions ms-1"
-                    @click="askQuestion()"
-                >
-                    test me
-                </button>
-                <!-- Overview button -->
-                <button
-                    v-if="tutorType === 'socratic'"
-                    class="btn suggested-interactions ms-1"
-                    @click="provideOverview()"
-                >
-                    give me an overview
-                </button>
                 <!-- Toggle chat button -->
                 <button class="btn plus-btn ms-1" @click="showChat = !showChat">
                     <svg
@@ -710,6 +695,7 @@ export default {
                         'assessing-btn': tutorType === 'assessing'
                     }"
                     @click="sendMessage()"
+                    :disabled="$parent.isAITokenLimitReached"
                 >
                     <!-- Speech bubble icon -->
                     <svg
@@ -756,6 +742,7 @@ export default {
                     this.isSuggestedInteraction = true;
                     sendMessage();
                 "
+                :disabled="$parent.isAITokenLimitReached"
             >
                 Tell me something interesting about this subject!
             </button>
@@ -766,6 +753,7 @@ export default {
                     this.isSuggestedInteraction = true;
                     sendMessage();
                 "
+                :disabled="$parent.isAITokenLimitReached"
             >
                 Why does this subject matter?
             </button>
@@ -777,6 +765,7 @@ export default {
                     this.isSuggestedInteraction = true;
                     sendMessage();
                 "
+                :disabled="$parent.isAITokenLimitReached"
             >
                 How might I use knowledge of this topic in everyday life?
             </button>
@@ -788,6 +777,7 @@ export default {
                     this.isSuggestedInteraction = true;
                     sendMessage();
                 "
+                :disabled="$parent.isAITokenLimitReached"
             >
                 What is the most important thing for me to understand about this
                 subject?

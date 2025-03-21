@@ -1,7 +1,13 @@
 <script>
 export default {
     setup() {},
-    props: ['tutorType', 'skill', 'skillLevel', 'learningObjectives'],
+    props: [
+        'tutorType',
+        'skill',
+        'skillLevel',
+        'learningObjectives',
+        'isAITokenLimitReached'
+    ],
     data() {
         return {
             constraints: { audio: true },
@@ -108,6 +114,7 @@ export default {
                     'loader-background': isLoading == true
                 }"
                 @click="recordSpeech()"
+                :disabled="isAITokenLimitReached"
             >
                 <span v-if="!recording && !isLoading">
                     <svg

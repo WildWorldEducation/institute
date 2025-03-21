@@ -1193,8 +1193,7 @@ export default {
                             </p>
                             <div v-if="learningObjective.showAI">
                                 <!-- AI tutor for this learning objective -->
-                                <LearningObjectiveAITutor
-                                    v-if="!isAITokenLimitReached"
+                                <LearningObjectiveAITutor                                 
                                     :learningObjective="
                                         learningObjective.objective
                                     "
@@ -1202,14 +1201,7 @@ export default {
                                     :skillName="skill.name"
                                     :skillUrl="skill.url"
                                     :skillLevel="skill.level"
-                                />
-                                <p class="mt-1" v-else>
-                                    <em
-                                        >You have reached your monthly AI token
-                                        limit. Please recharge your subscription
-                                        to use more.</em
-                                    >
-                                </p>
+                                />                               
                             </div>
                         </div>
                         <button
@@ -1287,8 +1279,7 @@ export default {
                 v-if="
                     isSkillLoaded &&
                     userDetailsStore.role === 'student' &&
-                    skill.type !== 'domain' &&
-                    !isAITokenLimitReached
+                    skill.type !== 'domain'
                 "
                 :skill="skill"
                 :showTutorialTip7="showTutorialTip7"

@@ -14,7 +14,7 @@ export default {
     },
     data() {
         return {
-            tokenCount: null,
+            monthlyTokenUsage: null,
             year: 0,
             month: '',
             tokensToBuy: 10000,
@@ -29,7 +29,7 @@ export default {
         // Check if user is over free monthly AI token limit
         if (
             this.settingsStore.freeMonthlyTokens <=
-            this.userDetailsStore.tokenCount
+            this.userDetailsStore.monthlyTokenUsage
         ) {
             this.isAITokenLimitReached = true;
         }
@@ -97,7 +97,7 @@ export default {
             </li>
             <li><p>Your tokens: 0</p></li>
             <li>
-                <p>Current usage: {{ userDetailsStore.tokenCount }}</p>
+                <p>Current usage: {{ userDetailsStore.monthlyTokenUsage }}</p>
             </li>
         </ul>
         <div

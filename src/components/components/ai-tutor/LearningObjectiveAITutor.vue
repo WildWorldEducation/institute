@@ -337,10 +337,17 @@ export default {
         <!-- Suggested interaction buttons -->
         <span class="d-flex justify-content-end mt-2">
             <!-- learning objective explanation button -->
+            <p class="mt-1" v-if="$parent.isAITokenLimitReached">
+                <em
+                    >You have reached your monthly AI token limit. Please
+                    recharge your subscription to use more.</em
+                >
+            </p>
             <button
                 v-if="isGotMessages"
                 class="btn border border-dark"
                 @click="requestTutoring()"
+                :disabled="$parent.isAITokenLimitReached"
             >
                 tutor me on this
             </button>
@@ -348,6 +355,7 @@ export default {
             <button
                 class="btn border border-dark ms-1"
                 @click="requestQuestion()"
+                :disabled="$parent.isAITokenLimitReached"
             >
                 ask me a question
             </button>
