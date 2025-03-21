@@ -100,12 +100,12 @@ export default {
     },
     async created() {
         // Needed for token limit        
-        if(this.settingsStore.monthlyTokenLimit == 0 && this.sessionDetailsStore.isLoggedIn)
+        if(this.settingsStore.freeMonthlyTokens == 0 && this.sessionDetailsStore.isLoggedIn)
         {
             await this.settingsStore.getSettings();
         }
         if (
-            this.settingsStore.monthlyTokenLimit <=
+            this.settingsStore.freeMonthlyTokens <=
             this.userDetailsStore.tokenCount
         ) {
             this.isAITokenLimitReached = true;

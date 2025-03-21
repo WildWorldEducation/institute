@@ -1,11 +1,15 @@
 <script>
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import { useSettingsStore } from '../../stores/SettingsStore.js';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const settingsStore = useSettingsStore();
+
         return {
-            userDetailsStore
+            userDetailsStore,
+            settingsStore
         };
     },
     data() {
@@ -17,6 +21,10 @@ export default {
         };
     },
     async mounted() {
+console.log(this.settingsStore.mon)
+
+
+        // Work out date
         // Get current year
         this.year = new Date().getFullYear();
         // Get current month
@@ -47,7 +55,8 @@ export default {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    tokens: this.tokensToBuy
+                    tokens: this.tokensToBuy,
+                    userId: this.userDetailsStore.userId
                 })
             })
                 .then((res) => {

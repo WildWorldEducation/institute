@@ -16,6 +16,8 @@ const stripe = Stripe(
 
 // DB
 const conn = require('../config/db');
+const util = require('util');
+const query = util.promisify(conn.query).bind(conn);
 
 /*------------------------------------------
 --------------------------------------------
@@ -49,6 +51,8 @@ router.get('/get-token-count/:userId/:year/:month', (req, res, next) => {
 
 router.post('/create-checkout-session', async (req, res) => {
     try {
+        const userId = req.body.userId;
+
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             mode: 'payment',
@@ -65,7 +69,7 @@ router.post('/create-checkout-session', async (req, res) => {
                 }
             ],
 
-            success_url: `${process.env.BASE_URL}/subscriptions/success?session_id={CHECKOUT_SESSION_ID}`,
+            success_url: `${process.env.BASE_URL}/subscriptions/success?user_id=${userId}&session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.BASE_URL}/subscriptions/error`
         });
 
@@ -76,12 +80,24 @@ router.post('/create-checkout-session', async (req, res) => {
 });
 
 router.get('/success', async (req, res, next) => {
-    console.log('test');
+    const userId = req.params.userId;
+
     const session = await stripe.checkout.sessions.retrieve(
         req.query.session_id
     );
 
-    console.log(session);
+    console.log(session.amount_total);
+
+    let queryString = `
+            INSERT INTO user_tokens (user_id, year, month, token_count) 
+            VALUES(${conn.escape(userId)},
+            ${year}, '${month}', ${conn.escape(tokenCount)}) 
+            ON DUPLICATE KEY UPDATE token_count = token_count + ${conn.escape(
+                tokenCount
+            )};
+            `;
+
+    await query(queryString);
 
     res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
 });
