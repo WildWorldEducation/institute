@@ -2050,6 +2050,28 @@ router.get('/reputation-events/:userId', isAuthenticated, (req, res, next) => {
     });
 });
 
+/**
+ * User Tokens
+ */
+router.put('/tokens/:id/update', isAuthenticated, (req, res, next) => {
+    let sqlQuery = `UPDATE users 
+            SET tokens = tokens - ${conn.escape(
+                req.body.tokensNeeded
+            )}             
+            WHERE id = ${conn.escape(req.params.id)};`;
+
+    conn.query(sqlQuery, async (err) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.end();
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
 // router.get('*', (req, res) => {
 //     res.redirect('/');
 // });

@@ -581,6 +581,14 @@ async function saveTokenUsage(userId, tokenCount) {
         `;
 
         const result = await query(queryString);
+
+        // get the monthly token usage
+        // get the user token number
+        // get the montlhy free limit
+
+        // subtract the monthly free limit
+
+
         return result;
     } catch (error) {
         throw error;

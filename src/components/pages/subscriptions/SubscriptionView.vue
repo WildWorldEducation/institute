@@ -26,6 +26,9 @@ export default {
         if (this.settingsStore.freeMonthlyTokens == 0) {
             await this.settingsStore.getSettings();
         }
+
+        await this.userDetailsStore.getUserDetails();
+
         // Check if user is over free monthly AI token limit
         if (
             this.settingsStore.freeMonthlyTokens <=
@@ -95,7 +98,9 @@ export default {
             <li>
                 <p>Free limit: {{ settingsStore.freeMonthlyTokens }}</p>
             </li>
-            <li><p>Your tokens: 0</p></li>
+            <li>
+                <p>Your tokens: {{ userDetailsStore.tokens }}</p>
+            </li>
             <li>
                 <p>Current usage: {{ userDetailsStore.monthlyTokenUsage }}</p>
             </li>

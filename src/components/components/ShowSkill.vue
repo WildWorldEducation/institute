@@ -131,12 +131,23 @@ export default {
     methods: {
         async checkTokenUsage(){           
             await this.userDetailsStore.getUserDetails();            
+            console.log(this.userDetailsStore.tokens)
             if (
                 this.settingsStore.freeMonthlyTokens <=
                 this.userDetailsStore.monthlyTokenUsage
-            ) {
-                this.isAITokenLimitReached = true;              
-            }
+                ) {                
+                    // Find out how many tokens to deduct
+                    let tokensNeeded = this.userDetailsStore.monthlyTokenUsage - this.settingsStore.freeMonthlyTokens
+                    if (this.userDetailsStore.tokens >= tokensNeeded)
+                    {
+                        // Deduct the tokens
+                       await this.userDetailsStore.updateTokens(tokensNeeded)                       
+                    }
+                    else
+                    {
+                        this.isAITokenLimitReached = true;              
+                    }                    
+                }
         },
         async getSkill() {
             // solution for image to be changed when we change it from AWS
