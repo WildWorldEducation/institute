@@ -109,8 +109,9 @@ export default {
             until next month.
         </div>
         <h2 class="secondary-heading h4 mt-5">Buy tokens</h2>
-        <label>Amount of tokens: </label>
+        <label>Amount of tokens:&nbsp; </label>
         <input
+            class=""
             type="number"
             v-model="tokensToBuy"
             min="1000"
