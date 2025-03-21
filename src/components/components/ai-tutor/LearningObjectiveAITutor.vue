@@ -334,15 +334,17 @@ export default {
         <span class="spinning-loader"></span>
     </div>
     <div v-else>
+        <!-- learning objective explanation button -->
+        <div
+            class="alert alert-warning mt-1"
+            role="alert"
+            v-if="$parent.isAITokenLimitReached"
+        >
+            You have reached your monthly AI token limit. Please recharge your
+            subscription to use more.
+        </div>
         <!-- Suggested interaction buttons -->
         <span class="d-flex justify-content-end mt-2">
-            <!-- learning objective explanation button -->
-            <p class="mt-1" v-if="$parent.isAITokenLimitReached">
-                <em
-                    >You have reached your monthly AI token limit. Please
-                    recharge your subscription to use more.</em
-                >
-            </p>
             <button
                 v-if="isGotMessages"
                 class="btn border border-dark"

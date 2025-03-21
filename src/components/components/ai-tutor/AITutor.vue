@@ -464,6 +464,7 @@ export default {
                             />
                         </svg>
                     </button>
+
                     <h2 class="secondary-heading">AI tutor</h2>
 
                     <TooltipBtn
@@ -550,7 +551,15 @@ export default {
                 </div>
             </div>
         </div>
-
+        <!-- learning objective explanation button -->
+        <div
+            class="alert alert-warning mt-1"
+            role="alert"
+            v-if="$parent.isAITokenLimitReached"
+        >
+            You have reached your monthly AI token limit. Please recharge your
+            subscription to use more.
+        </div>
         <!--Tutor types -->
         <span v-if="mode === 'big'" class="d-flex justify-content-between">
             <!--Tutor types -->
