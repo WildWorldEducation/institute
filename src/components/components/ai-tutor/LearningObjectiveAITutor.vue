@@ -74,6 +74,8 @@ export default {
                 if (this.messageList.length > 0) {
                     this.threadID = this.messageList[0].thread_id;
                 }
+
+                this.$parent.checkTokenUsage();
             } catch (error) {
                 console.error(error);
             }
