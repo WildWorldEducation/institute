@@ -60,7 +60,7 @@ async function createSocraticAssistant(topic, level, learningObjectives) {
             
             Please keep all messages below 2000 characters.`,
         tools: [],
-        model: 'o1'
+        model: 'gpt-4.5-preview'
     });
     return assistant;
 }
@@ -199,7 +199,7 @@ async function createAssessingAssistant(topic, level, learningObjectives) {
             Do not provide any assessment, evaluation or feedback to the student. Only ask questions.
             Please keep all messages below 2000 characters.`,
         tools: [],
-        model: 'o1'
+        model: 'gpt-4.5-preview'
     });
     return assistant;
 }
@@ -342,7 +342,7 @@ async function createLearningObjectiveAssistant(level, learningObjective) {
             `.
             Please keep all messages below 2000 characters.`,
         tools: [],
-        model: 'o1'
+        model: 'gpt-4.5-preview'
     });
     return assistant;
 }

@@ -356,11 +356,7 @@ export default {
             alert('Congratulations, you have mastered this skill!');
             await this.userSkillsStore.MakeMastered(
                 this.userDetailsStore.userId,
-                this.skill.id,
-                this.skill.name,
-                this.skill.level,
-                this.skill.url,
-                (val) => {}
+                this.skill
             );
         },
         // Streaming

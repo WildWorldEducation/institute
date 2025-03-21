@@ -41,6 +41,39 @@ router.post('/', (req, res, next) => {
     }
 });
 
+router.get('/reputation-events/:userId', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT *
+            FROM user_actions
+            WHERE user_id = ${conn.escape(req.params.userId)}
+            AND action = 'receive-reputation'
+            ORDER BY create_date DESC;`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                // Debug log
+                console.log(
+                    'Reputation events for user',
+                    req.params.userId,
+                    ':',
+                    results
+                );
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 /**
  * List Actions for a specific user
  *
