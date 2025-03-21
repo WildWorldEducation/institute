@@ -31,7 +31,7 @@ router.get('/get-token-count/:userId/:year/:month', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT token_count                
-        FROM user_tokens        
+        FROM monthly_token_usage        
         WHERE user_id = ${conn.escape(req.params.userId)}
         AND year = ${conn.escape(req.params.year)}
         AND month = ${conn.escape(req.params.month)};`;
@@ -89,7 +89,7 @@ router.get('/success', async (req, res, next) => {
     console.log(session.amount_total);
 
     let queryString = `
-            INSERT INTO user_tokens (user_id, year, month, token_count) 
+            INSERT INTO monthly_token_usage (user_id, year, month, token_count) 
             VALUES(${conn.escape(userId)},
             ${year}, '${month}', ${conn.escape(tokenCount)}) 
             ON DUPLICATE KEY UPDATE token_count = token_count + ${conn.escape(

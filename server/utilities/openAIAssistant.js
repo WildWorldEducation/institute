@@ -573,7 +573,7 @@ async function saveTokenUsage(userId, tokenCount) {
         let month = monthName[d.getMonth()];
 
         let queryString = `
-        INSERT INTO user_tokens (user_id, year, month, token_count) 
+        INSERT INTO monthly_token_usage (user_id, year, month, token_count) 
         VALUES(${conn.escape(userId)},
         ${year}, '${month}', ${conn.escape(tokenCount)}) 
         ON DUPLICATE KEY UPDATE token_count = token_count + ${conn.escape(
