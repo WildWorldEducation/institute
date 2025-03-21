@@ -103,14 +103,10 @@ export default {
         if(this.settingsStore.freeMonthlyTokens == 0 && this.sessionDetailsStore.isLoggedIn)
         {
             await this.settingsStore.getSettings();
-        }
-        if (
-            this.settingsStore.freeMonthlyTokens <=
-            this.userDetailsStore.tokenCount
-        ) {
-            this.isAITokenLimitReached = true;
-        }
+        }       
          
+        await this.checkTokenUsage()
+
         await this.getSkill();
         this.isSkillLoaded = true;
         if (this.sessionDetailsStore.isLoggedIn) {
@@ -133,6 +129,15 @@ export default {
         }
     },
     methods: {
+        async checkTokenUsage(){           
+            await this.userDetailsStore.getUserDetails();            
+            if (
+                this.settingsStore.freeMonthlyTokens <=
+                this.userDetailsStore.monthlyTokenUsage
+            ) {
+                this.isAITokenLimitReached = true;              
+            }
+        },
         async getSkill() {
             // solution for image to be changed when we change it from AWS
             this.randomNum = Math.random();
