@@ -550,15 +550,7 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- For speech to text -->
-        <SpeechRecorder
-            v-if="mode == 'big'"
-            :tutorType="tutorType"
-            :skill="skill"
-            :skillLevel="englishSkillLevel"
-            :learningObjectives="learningObjectives"
-            :isAITokenLimitReached="$parent.isAITokenLimitReached"
-        />
+
         <!--Tutor types -->
         <span v-if="mode === 'big'" class="d-flex justify-content-between">
             <!--Tutor types -->
@@ -638,7 +630,16 @@ export default {
                     </div>
                 </div>
             </span>
-            <span>
+            <span class="d-flex">
+                <!-- For speech to text -->
+                <SpeechRecorder
+                    v-if="mode == 'big'"
+                    :tutorType="tutorType"
+                    :skill="skill"
+                    :skillLevel="englishSkillLevel"
+                    :learningObjectives="learningObjectives"
+                    :isAITokenLimitReached="$parent.isAITokenLimitReached"
+                />
                 <!-- Toggle chat button -->
                 <button class="btn plus-btn ms-1" @click="showChat = !showChat">
                     <svg
