@@ -861,6 +861,7 @@ router.get('/show/:id', (req, res, next) => {
                         'December'
                     ];
 
+                    // Get monthly token usage for the user.
                     const d = new Date();
                     let month = monthName[d.getMonth()];
                     let sqlQuery = `SELECT token_count                

@@ -25,7 +25,7 @@ Routes
 --------------------------------------------
 --------------------------------------------*/
 /**
- * Get User Tokens by User
+ * Get Monthly Token Usage by User
  */
 router.get('/get-token-count/:userId/:year/:month', (req, res, next) => {
     if (req.session.userName) {
@@ -89,12 +89,7 @@ router.get('/success', async (req, res, next) => {
     console.log(session.amount_total);
 
     let queryString = `
-            INSERT INTO monthly_token_usage (user_id, year, month, token_count) 
-            VALUES(${conn.escape(userId)},
-            ${year}, '${month}', ${conn.escape(tokenCount)}) 
-            ON DUPLICATE KEY UPDATE token_count = token_count + ${conn.escape(
-                tokenCount
-            )};
+           
             `;
 
     await query(queryString);

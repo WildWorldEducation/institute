@@ -571,7 +571,6 @@ async function saveTokenUsage(userId, tokenCount) {
 
         const d = new Date();
         let month = monthName[d.getMonth()];
-
         let queryString = `
         INSERT INTO monthly_token_usage (user_id, year, month, token_count) 
         VALUES(${conn.escape(userId)},
