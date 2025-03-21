@@ -1,6 +1,6 @@
 <script>
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
-import { useSettingsStore } from '../../stores/SettingsStore.js';
+import { useSettingsStore } from '../../../stores/SettingsStore.js';
 
 export default {
     setup() {
@@ -17,12 +17,22 @@ export default {
             tokenCount: null,
             year: 0,
             month: '',
-            tokensToBuy: 10000
+            tokensToBuy: 10000,
+            isAITokenLimitReached: false
         };
     },
     async mounted() {
-console.log(this.settingsStore.mon)
-
+        // Get free monthly AI token limit
+        if (this.settingsStore.freeMonthlyTokens == 0) {
+            await this.settingsStore.getSettings();
+        }
+        // Check if user is over free monthly AI token limit
+        if (
+            this.settingsStore.freeMonthlyTokens <=
+            this.userDetailsStore.tokenCount
+        ) {
+            this.isAITokenLimitReached = true;
+        }
 
         // Work out date
         // Get current year
@@ -48,7 +58,6 @@ console.log(this.settingsStore.mon)
     },
     methods: {
         checkout() {
-            console.log(this.tokensToBuy);
             fetch('/subscriptions/create-checkout-session', {
                 method: 'POST',
                 headers: {
@@ -83,12 +92,22 @@ console.log(this.settingsStore.mon)
             Monthly AI usage: {{ month }}, {{ year }}
         </h2>
         <ul>
-            <li><p>Free limit: 10,000</p></li>
+            <li>
+                <p>Free limit: {{ settingsStore.freeMonthlyTokens }}</p>
+            </li>
             <li><p>Your tokens: 0</p></li>
             <li>
                 <p>Current usage: {{ userDetailsStore.tokenCount }}</p>
             </li>
         </ul>
+        <div
+            v-if="isAITokenLimitReached"
+            class="alert alert-warning"
+            role="alert"
+        >
+            You are over the monthly free limit. You can't use the AI features
+            until next month.
+        </div>
         <h2 class="secondary-heading h4 mt-5">Buy tokens</h2>
         <label>Amount of tokens: </label>
         <input
