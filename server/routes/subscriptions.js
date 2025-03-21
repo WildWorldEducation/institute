@@ -50,9 +50,10 @@ Routes
 //     }
 // });
 
+let userId;
 router.post('/create-checkout-session', async (req, res) => {
     try {
-        const userId = req.body.userId;
+        userId = req.body.userId;
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -70,7 +71,7 @@ router.post('/create-checkout-session', async (req, res) => {
                 }
             ],
 
-            success_url: `${process.env.BASE_URL}/subscriptions/success?user_id=${userId}&session_id={CHECKOUT_SESSION_ID}`,
+            success_url: `${process.env.BASE_URL}/subscriptions/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.BASE_URL}/subscriptions/error`
         });
 
@@ -81,18 +82,15 @@ router.post('/create-checkout-session', async (req, res) => {
 });
 
 router.get('/success', async (req, res, next) => {
-    const userId = req.params.userId;
-
     const session = await stripe.checkout.sessions.retrieve(
         req.query.session_id
     );
 
-    console.log(userId);
-    console.log(session.amount_total);
-    return;
-
+    // Save the new tokens to the DB
     let queryString = `
-           
+            UPDATE users
+            SET tokens = ${session.amount_total}
+            WHERE id = '${userId}';
             `;
 
     await query(queryString);
