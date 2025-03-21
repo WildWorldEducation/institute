@@ -139,6 +139,8 @@ export default {
                 if (this.chatHistory.length > 0) {
                     this.threadID = this.chatHistory[0].thread_id;
                 }
+              
+                this.$parent.checkTokenUsage()
             } catch (error) {
                 console.error(error);
             }
@@ -245,7 +247,7 @@ export default {
                 console.error(error);
                 this.waitForAIresponse = false;
             }
-        },        
+        },
         async askQuestion() {
             if (this.waitForAIresponse) {
                 return;
