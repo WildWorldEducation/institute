@@ -865,7 +865,7 @@ router.get('/show/:id', (req, res, next) => {
                     const d = new Date();
                     let month = monthName[d.getMonth()];
                     let sqlQuery = `SELECT token_count                
-                                   FROM monthly_token_usage        
+                                   FROM user_monthly_token_usage        
                                    WHERE user_id = ${conn.escape(req.params.id)}
                                    AND year = ${year}
                                    AND month = '${month}';`;

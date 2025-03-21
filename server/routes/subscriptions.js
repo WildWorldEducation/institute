@@ -32,7 +32,7 @@ Routes
 //     if (req.session.userName) {
 //         res.setHeader('Content-Type', 'application/json');
 //         let sqlQuery = `SELECT token_count
-//         FROM monthly_token_usage
+//         FROM user_monthly_token_usage
 //         WHERE user_id = ${conn.escape(req.params.userId)}
 //         AND year = ${conn.escape(req.params.year)}
 //         AND month = ${conn.escape(req.params.month)};`;
@@ -87,7 +87,9 @@ router.get('/success', async (req, res, next) => {
         req.query.session_id
     );
 
+    console.log(userId);
     console.log(session.amount_total);
+    return;
 
     let queryString = `
            
