@@ -24,30 +24,31 @@ const query = util.promisify(conn.query).bind(conn);
 Routes
 --------------------------------------------
 --------------------------------------------*/
-/**
- * Get Monthly Token Usage by User
- */
-router.get('/get-token-count/:userId/:year/:month', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT token_count                
-        FROM monthly_token_usage        
-        WHERE user_id = ${conn.escape(req.params.userId)}
-        AND year = ${conn.escape(req.params.year)}
-        AND month = ${conn.escape(req.params.month)};`;
+// Route not used: DELETE
+// /**
+//  * Get Monthly Token Usage by User
+//  */
+// router.get('/get-token-count/:userId/:year/:month', (req, res, next) => {
+//     if (req.session.userName) {
+//         res.setHeader('Content-Type', 'application/json');
+//         let sqlQuery = `SELECT token_count
+//         FROM monthly_token_usage
+//         WHERE user_id = ${conn.escape(req.params.userId)}
+//         AND year = ${conn.escape(req.params.year)}
+//         AND month = ${conn.escape(req.params.month)};`;
 
-        conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.json(results[0]);
-            } catch (err) {
-                next(err);
-            }
-        });
-    }
-});
+//         conn.query(sqlQuery, (err, results) => {
+//             try {
+//                 if (err) {
+//                     throw err;
+//                 }
+//                 res.json(results[0]);
+//             } catch (err) {
+//                 next(err);
+//             }
+//         });
+//     }
+// });
 
 router.post('/create-checkout-session', async (req, res) => {
     try {
