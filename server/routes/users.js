@@ -814,7 +814,7 @@ router.get('/show/:id', (req, res, next) => {
         // in case image is changed.
         let sqlQuery = `
     SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, is_deleted, is_google_auth, grade_filter, theme,
-    is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter, reputation_score, is_unlocked_skills_only_filter, cohort_id
+    is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter, reputation_score, is_unlocked_skills_only_filter, cohort_id, tokens
     FROM users        
     WHERE id = ${conn.escape(req.params.id)} 
     AND is_deleted = 0
@@ -871,12 +871,12 @@ router.get('/show/:id', (req, res, next) => {
                                    AND month = '${month}';`;
 
                     const tokenResult = await query(sqlQuery);
-                    let tokenCount = 0;
+                    let monthlyTokenUsage = 0;
                     if (tokenResult.length != 0) {
-                        tokenCount = tokenResult[0].token_count;
+                        monthlyTokenUsage = tokenResult[0].token_count;
                     }
 
-                    results[0].token_count = tokenCount;
+                    results[0].monthly_token_usage = monthlyTokenUsage;
 
                     res.json(results[0]);
                 } else {

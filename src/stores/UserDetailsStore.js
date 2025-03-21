@@ -55,11 +55,12 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.cohortId = data.cohort_id;
                 this.isUnlockedSkillsOnlyFilter =
                     data.is_unlocked_skills_only_filter;
-                this.tokenCount = data.token_count;
+                this.tokens = data.token_count;
+                this.monthlyTokenUsage = data.monthly_token_usage;
 
                 if (this.role == 'student') {
                     await this.getInstructor();
-                }
+                }          
 
                 return this.$state;
             }
