@@ -81,7 +81,10 @@ export default {
             tooltipData: {
                 showing: false,
                 xPosition: 0,
-                yPosition: 0
+                yPosition: 0,
+                skillName: '',
+                skillLevel: '',
+                borderColor: ''
             }
         };
     },
@@ -219,10 +222,17 @@ export default {
             const node = this.getMouseOverNode(mouseX, mouseY);
 
             if (node) {
+                console.log(node.data);
+                const tooltipTopPosition = mouseY + 20;
+                const tooltipLeftPosition = mouseX;
+                const borderColor = this.hexBorderColor(node.data.level);
                 this.tooltipData = {
                     showing: true,
-                    xPosition: mouseX,
-                    yPosition: mouseY
+                    xPosition: `${tooltipTopPosition}px`,
+                    yPosition: `${tooltipLeftPosition}px`,
+                    skillName: node.data.skill_name,
+                    skillLevel: node.data.level,
+                    borderColor: borderColor
                 };
             } else {
                 this.tooltipData.showing = false;
@@ -1737,6 +1747,9 @@ export default {
                 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
             const node = this.colToNode[colString];
             return node;
+        },
+        imageUrlAlternative(event) {
+            event.target.src = '';
         }
     }
 };
@@ -1770,11 +1783,61 @@ export default {
         <ZoomControl ref="ZoomControl" />
         <div id="sidepanel-backdrop"></div>
         <JoystickControl class="d-none" />
-        <div class="debug-background"></div>
+        <!-- WE WILL DELETE THIS LATER IF NEEDED -->
+        <div v-if="tooltipData.showing" class="tool-tip">
+            <div class="tooltip-skill-name-background">
+                <div class="tooltip-skill-name d-flex flex-column">
+                    <h4>
+                        {{ tooltipData.skillName }}
+                    </h4>
+                    <h6>{{ tooltipData.skillLevel }}</h6>
+                </div>
+            </div>
+            <div class="d-flex">
+                <img
+                    :src="skill.image_thumbnail_url"
+                    class="rounded img-fluid mx-auto"
+                    @error="imageUrlAlternative"
+                />
+                <div>
+                    <h5>TOOL TIP TEXT 1</h5>
+                    <h5>TOOL TIP TEXT 2</h5>
+                    <h5>TOOL TIP TEXT 3</h5>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <style scoped>
+.tool-tip {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    top: v-bind('tooltipData.xPosition');
+    left: v-bind('tooltipData.yPosition');
+    background-color: #e4ecf4e6;
+    color: black;
+    border: 5px solid v-bind('tooltipData.borderColor');
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.tooltip-skill-name {
+    color: black;
+    background: url('images/frameBoder.png');
+    background-size: 100% 100%;
+    padding: 30px 40px;
+    margin-bottom: 0px;
+}
+
+.tooltip-skill-name-background {
+    background-color: white;
+    padding: 0px;
+    display: flex;
+}
+
 /* Loading animation */
 .loading-animation {
     min-height: 100%;
