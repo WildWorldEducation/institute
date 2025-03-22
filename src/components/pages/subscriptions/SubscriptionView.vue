@@ -18,7 +18,10 @@ export default {
             year: 0,
             month: '',
             tokensToBuy: 10000,
-            isAITokenLimitReached: false
+            isAITokenLimitReached: false,
+            assistantsModelPrice: { input: 75, output: 150 },
+            ttsModelPrice: 15,
+            sttModelPerMinutePrice: 0.006
         };
     },
     async mounted() {
