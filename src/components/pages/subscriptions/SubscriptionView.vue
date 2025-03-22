@@ -126,6 +126,12 @@ export default {
             min="1000"
             max="500000"
         /><br />
+        <ul class="mt-3">
+            <li>Amount of input tokens:</li>
+            <li>Amount of output tokens:</li>
+            <li>Amount of speech to text seconds:</li>
+            <li>Amount of text to speech tokens:</li>
+        </ul>
         <button @click="checkout()" class="btn primary-btn mt-2">
             Check out
         </button>
