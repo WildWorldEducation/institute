@@ -28,13 +28,14 @@ export default {
         }
 
         await this.userDetailsStore.getUserDetails();
-
         // Check if user is over free monthly AI token limit
-        if (
-            this.settingsStore.freeMonthlyTokens <=
-            this.userDetailsStore.monthlyTokenUsage
-        ) {
-            this.isAITokenLimitReached = true;
+        if (this.userDetailsStore.tokens <= 0) {
+            if (
+                this.settingsStore.freeMonthlyTokens <=
+                this.userDetailsStore.monthlyTokenUsage
+            ) {
+                this.isAITokenLimitReached = true;
+            }
         }
 
         // Work out date
