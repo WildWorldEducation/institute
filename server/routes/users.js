@@ -9,7 +9,9 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 // DB
 const conn = require('../config/db');
-
+// for querying DB
+const util = require('util');
+const query = util.promisify(conn.query).bind(conn);
 //Middlewares
 const isAuthenticated = require('../middlewares/authMiddleware');
 const createUserPermission = require('../middlewares/users/createUserMiddleware');
@@ -812,13 +814,13 @@ router.get('/show/:id', (req, res, next) => {
         // in case image is changed.
         let sqlQuery = `
     SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, is_deleted, is_google_auth, grade_filter, theme,
-    is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter, reputation_score, is_unlocked_skills_only_filter, cohort_id
+    is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter, reputation_score, is_unlocked_skills_only_filter, cohort_id, tokens
     FROM users        
     WHERE id = ${conn.escape(req.params.id)} 
     AND is_deleted = 0
     LIMIT 1`;
 
-        conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, async (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -840,7 +842,46 @@ router.get('/show/:id', (req, res, next) => {
                 if (results[0].is_dangerous_ideas_filter == 1)
                     results[0].subjectFilters.push('Dangerous Ideas');
 
-                res.json(results[0]);
+                if (results[0].role == 'student') {
+                    // Get current year
+                    let year = new Date().getFullYear();
+                    // Get current month
+                    const monthName = [
+                        'January',
+                        'February',
+                        'March',
+                        'April',
+                        'May',
+                        'June',
+                        'July',
+                        'August',
+                        'September',
+                        'October',
+                        'November',
+                        'December'
+                    ];
+
+                    // Get monthly token usage for the user.
+                    const d = new Date();
+                    let month = monthName[d.getMonth()];
+                    let sqlQuery = `SELECT token_count                
+                                   FROM user_monthly_token_usage        
+                                   WHERE user_id = ${conn.escape(req.params.id)}
+                                   AND year = ${year}
+                                   AND month = '${month}';`;
+
+                    const tokenResult = await query(sqlQuery);
+                    let monthlyTokenUsage = 0;
+                    if (tokenResult.length != 0) {
+                        monthlyTokenUsage = tokenResult[0].token_count;
+                    }
+
+                    results[0].monthly_token_usage = monthlyTokenUsage;
+
+                    res.json(results[0]);
+                } else {
+                    res.json(results[0]);
+                }
             } catch (err) {
                 next(err);
             }
@@ -2003,6 +2044,28 @@ router.get('/reputation-events/:userId', isAuthenticated, (req, res, next) => {
                 throw err;
             }
             res.json(results);
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
+/**
+ * User Tokens
+ */
+router.put('/tokens/:id/update', isAuthenticated, (req, res, next) => {
+    let sqlQuery = `UPDATE users 
+            SET tokens = tokens - ${conn.escape(
+                req.body.tokensNeeded
+            )}             
+            WHERE id = ${conn.escape(req.params.id)};`;
+
+    conn.query(sqlQuery, async (err) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.end();
         } catch (err) {
             next(err);
         }

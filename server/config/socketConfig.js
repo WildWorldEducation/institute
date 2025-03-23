@@ -1,11 +1,5 @@
 const { Server } = require('socket.io');
-const {
-    // getSkillThread,
-    createRunStream
-    //  createAssistantAndThread,
-    //  saveAITutorSkillThread,
-    //createAssessmentStream
-} = require('../utilities/openAIAssistant');
+const { createRunStream } = require('../utilities/openAIAssistant');
 
 let io = null;
 
@@ -49,7 +43,8 @@ const createSocket = (server) => {
                     isEmptyMessage,
                     socket,
                     instructions,
-                    'aiTutor'
+                    'aiTutor',
+                    messageData.userId
                 );
             });
 
@@ -88,7 +83,8 @@ const createSocket = (server) => {
                     isEmptyMessage,
                     socket,
                     instructions,
-                    'aiTutor'
+                    'aiTutor',
+                    messageData.userId
                 );
             });
 
@@ -109,7 +105,8 @@ const createSocket = (server) => {
                     isEmptyMessage,
                     socket,
                     assistantInstruction,
-                    'learningObjective'
+                    'learningObjective',
+                    messageData.userId
                 );
             });
         } catch (error) {

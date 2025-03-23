@@ -22,8 +22,8 @@ const xmlbuilder = require('xmlbuilder');
 const http = require('http');
 const server = http.createServer(app);
 
-const { createSocket } = require('./config/socketConfig')
-createSocket(server)
+const { createSocket } = require('./config/socketConfig');
+createSocket(server);
 
 // Allow things to work.
 var cors = require('cors');
@@ -119,6 +119,8 @@ const aiTutor = require('./routes/ai-tutor');
 app.use('/ai-tutor', aiTutor);
 const skillLearningObjectives = require('./routes/skill-learning-objectives');
 app.use('/skill-learning-objectives', skillLearningObjectives);
+const subscriptions = require('./routes/subscriptions');
+app.use('/subscriptions', subscriptions);
 
 app.locals.title = 'Skill Tree';
 
@@ -581,7 +583,7 @@ const environment = process.env.NODE_ENV;
 // Live server.
 process.env.BASE_URL = 'https://parrhesia.io';
 // Dev server.
-// process.env.BASE_URL = "http://localhost:3000";
+ process.env.BASE_URL = "http://localhost:3000";
 
 app.get('/*', async (_req, res) => {
     const data = {
@@ -618,8 +620,6 @@ Server listening
 // app.listen(3000, () => {
 //     console.log('Server started on port 3000...');
 // });
-
-
 
 server.listen(3000, () => {
     console.log('sever listening on *:3000');

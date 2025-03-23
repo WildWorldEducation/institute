@@ -74,6 +74,8 @@ export default {
                 if (this.messageList.length > 0) {
                     this.threadID = this.messageList[0].thread_id;
                 }
+
+                this.$parent.checkTokenUsage();
             } catch (error) {
                 console.error(error);
             }
@@ -332,13 +334,22 @@ export default {
         <span class="spinning-loader"></span>
     </div>
     <div v-else>
+        <!-- learning objective explanation button -->
+        <div
+            class="alert alert-warning mt-1"
+            role="alert"
+            v-if="$parent.isAITokenLimitReached"
+        >
+            You have reached your monthly AI token limit. Please recharge your
+            subscription to use more.
+        </div>
         <!-- Suggested interaction buttons -->
         <span class="d-flex justify-content-end mt-2">
-            <!-- learning objective explanation button -->
             <button
                 v-if="isGotMessages"
                 class="btn border border-dark"
                 @click="requestTutoring()"
+                :disabled="$parent.isAITokenLimitReached"
             >
                 tutor me on this
             </button>
@@ -346,6 +357,7 @@ export default {
             <button
                 class="btn border border-dark ms-1"
                 @click="requestQuestion()"
+                :disabled="$parent.isAITokenLimitReached"
             >
                 ask me a question
             </button>

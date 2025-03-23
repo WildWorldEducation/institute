@@ -99,6 +99,14 @@ export default {
         LearningObjectiveAITutor
     },
     async created() {
+        // Needed for token limit        
+        if(this.settingsStore.freeMonthlyTokens == 0 && this.sessionDetailsStore.isLoggedIn)
+        {
+            await this.settingsStore.getSettings();
+        }       
+         
+        await this.checkTokenUsage()
+
         await this.getSkill();
         this.isSkillLoaded = true;
         if (this.sessionDetailsStore.isLoggedIn) {
@@ -121,6 +129,18 @@ export default {
         }
     },
     methods: {
+        async checkTokenUsage(){           
+            await this.userDetailsStore.getUserDetails();
+            // Check if user is over free monthly AI token limit
+            if (this.userDetailsStore.tokens <= 0) {
+                if (
+                    this.settingsStore.freeMonthlyTokens <=
+                    this.userDetailsStore.monthlyTokenUsage
+                ) {
+                    this.isAITokenLimitReached = true;
+                }
+            }
+        },
         async getSkill() {
             // solution for image to be changed when we change it from AWS
             this.randomNum = Math.random();
@@ -1176,8 +1196,7 @@ export default {
                             </p>
                             <div v-if="learningObjective.showAI">
                                 <!-- AI tutor for this learning objective -->
-                                <LearningObjectiveAITutor
-                                    v-if="!isAITokenLimitReached"
+                                <LearningObjectiveAITutor                                 
                                     :learningObjective="
                                         learningObjective.objective
                                     "
@@ -1185,12 +1204,7 @@ export default {
                                     :skillName="skill.name"
                                     :skillUrl="skill.url"
                                     :skillLevel="skill.level"
-                                />
-                                <p v-else>
-                                    You have reached your monthly AI token
-                                    limit. Please recharge your subscription to
-                                    use more.
-                                </p>
+                                />                               
                             </div>
                         </div>
                         <button
@@ -1268,8 +1282,7 @@ export default {
                 v-if="
                     isSkillLoaded &&
                     userDetailsStore.role === 'student' &&
-                    skill.type !== 'domain' &&
-                    !isAITokenLimitReached
+                    skill.type !== 'domain'
                 "
                 :skill="skill"
                 :showTutorialTip7="showTutorialTip7"
@@ -1284,8 +1297,11 @@ export default {
                     skill.type !== 'domain'
                 "
             >
-                You have reached your monthly AI token limit. Please recharge
-                your subscription to use more.
+            <h2 class="secondary-heading">AI tutor</h2>
+                <em
+                    >You have reached your monthly AI token limit. Please
+                    recharge your subscription to use more.</em
+                >
             </p>
         </div>
 
