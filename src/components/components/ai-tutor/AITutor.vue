@@ -135,7 +135,7 @@ export default {
                         this.assessMastery();
                     }
                 }
-
+                //this.assessMastery();
                 if (this.chatHistory.length > 0) {
                     this.threadID = this.chatHistory[0].thread_id;
                 }
@@ -274,6 +274,7 @@ export default {
             }
         },
         async assessMastery() {
+            console.log('assess');
             for (let i = 0; i < this.assessingTutorChatHistory.length; i++) {
                 let chat = this.assessingTutorChatHistory[i];
                 // AI question
