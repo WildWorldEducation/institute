@@ -105,24 +105,32 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Subscription</h1>
-        <p>
+        <!-- <p>
             <em>
                 In general one token is roughly equivalent to 4 characters
                 (letters)</em
             >
-        </p>
-        <h2 class="secondary-heading h4">
+        </p> -->
+        <h2 class="secondary-heading h4 mb-4">
             Monthly AI usage: {{ month }}, {{ year }}
         </h2>
         <ul>
             <li>
-                <p>Free limit: {{ settingsStore.freeMonthlyTokens }}</p>
+                <p>
+                    <strong>Free limit:</strong>
+                    {{ settingsStore.freeMonthlyTokens }}
+                </p>
             </li>
             <li>
-                <p>Your tokens: {{ userDetailsStore.tokens }}</p>
+                <p>
+                    <strong>Your tokens:</strong> {{ userDetailsStore.tokens }}
+                </p>
             </li>
             <li>
-                <p>Current usage: {{ userDetailsStore.monthlyTokenUsage }}</p>
+                <p>
+                    <strong>Current usage:</strong>
+                    {{ userDetailsStore.monthlyTokenUsage }}
+                </p>
             </li>
         </ul>
         <div
@@ -133,7 +141,7 @@ export default {
             You are over the monthly free limit. You can't use the AI features
             until next month.
         </div>
-        <h2 class="secondary-heading h4 mt-5">Buy tokens</h2>
+        <!-- <h2 class="secondary-heading h4 mt-5">Buy tokens</h2>
         <label>$&nbsp; </label>
         <input
             class=""
@@ -143,24 +151,28 @@ export default {
             max="500"
         /><br />
         <ul class="mt-3">
-            <li>Amount of input tokens: {{ numberOfInputTokens }}</li>
+            <li>
+                <strong>Amount of input tokens:</strong>
+                {{ numberOfInputTokens }}
+            </li>
             or
-            <li>Amount of output tokens: {{ numberOfOutputTokens }}</li>
-            <!-- Not being charged yet -->
-            <!-- <li>Amount of speech to text seconds:</li>
+            <li>
+                <strong>Amount of output tokens:</strong>
+                {{ numberOfOutputTokens }}
+            </li> -->
+        <!-- Not being charged yet -->
+        <!-- <li>Amount of speech to text seconds:</li>
             <li>Amount of text to speech tokens:</li> -->
-        </ul>
+        <!-- </ul>
         <button @click="checkout()" class="btn primary-btn mt-2">
             Check out
-        </button>
-        <hr />
-        <h2>info</h2>
-        <p>Example usage:</p>
+        </button> -->
+        <!-- <h2 class="secondary-heading h4 mt-5">Example usage:</h2>
         <ul>
             <li>AI asking me a question: 329 tokens</li>
             <li>AI explaining something: 673 tokens</li>
             <li>AI assessing if I have mastered a skill:</li>
-        </ul>
+        </ul> -->
     </div>
 </template>
 
