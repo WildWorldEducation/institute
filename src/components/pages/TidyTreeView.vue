@@ -50,7 +50,8 @@ export default {
             showTutorialTip8: false,
             isMobileCheck: window.innerWidth,
             // To enableinstructor to lock the tree for student.
-            isTreeLocked: false
+            isTreeLocked: false,
+            introSearchModal: true
         };
     },
     async created() {
@@ -369,8 +370,8 @@ export default {
 <template>
     <div class="container-fluid position-absolute legend-div">
         <div class="mobile-legend">
+            <!-- Search feature -->
             <div class="search-mobile-row">
-                <!-- Search feature -->
                 <SkillTreeSearchBar
                     :findNode="handleChooseResult"
                     :clearResults="clearResult"
@@ -1717,9 +1718,38 @@ export default {
             </div>
         </div>
     </div>
+
+    <!-- Intro Search Modal -->
+    <div v-if="introSearchModal" class="modal">
+        <div class="search-modal-content rounded">
+            <!-- Image -->
+            <div class="text-center app-logo-wrapper">
+                <img
+                    class="img-fluid"
+                    src="/images/app-logo.jpg"
+                    alt="icon of a skill tree"
+                />
+            </div>
+            <span class="d-flex">
+                <!-- Search Feature -->
+                <SkillTreeSearchBar
+                    class=""
+                    :findNode="handleChooseResult"
+                    :clearResults="clearResult"
+                />
+                <button class="btn primary-btn">Close</button>
+            </span>
+        </div>
+    </div>
 </template>
 
 <style scoped>
+/* Intro search model */
+/* Image */
+.app-logo-wrapper img {
+    max-height: 250px;
+}
+
 /* Tooltips */
 .info-panel {
     border-color: var(--primary-color);
@@ -2021,6 +2051,18 @@ export default {
 .modal-content {
     background-color: #fefefe;
     margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 520px;
+    font-size: 18px;
+    /* Could be more or less, depending on screen size */
+}
+
+/* Modal Content/Box */
+.search-modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
     /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
