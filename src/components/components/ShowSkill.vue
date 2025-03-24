@@ -183,7 +183,7 @@ export default {
             );
             this.skill.learningObjectives = await result.json();
             for (let i = 0; i < this.skill.learningObjectives.length; i++) {
-                this.skill.learningObjectives[i].showAI = false;
+                this.skill.learningObjectives[i].showAI = true;
             }
         },
         recordSkillVisit(skillId) {
@@ -1176,6 +1176,7 @@ export default {
                     <div
                         v-for="learningObjective in skill.learningObjectives"
                         class="d-flex mb-3 justify-content-between"
+                        :class="{ 'mb-4': learningObjective.showAI}"
                     >
                         <div>
                             <svg
