@@ -51,9 +51,11 @@ Routes
 // });
 
 let userId;
+let tokensPerDollar;
 router.post('/create-checkout-session', async (req, res) => {
     try {
         userId = req.body.userId;
+        tokensPerDollar = req.body.tokensPerDollar;
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -63,9 +65,9 @@ router.post('/create-checkout-session', async (req, res) => {
                     price_data: {
                         currency: 'usd',
                         product_data: {
-                            name: 'tokens'
+                            name: req.body.amountOfTokens + ' tokens'
                         },
-                        unit_amount: req.body.tokens
+                        unit_amount: req.body.dollars * 100
                     },
                     quantity: 1
                 }
@@ -86,10 +88,14 @@ router.get('/success', async (req, res, next) => {
         req.query.session_id
     );
 
+    // Convert from cents
+    const amountOfDollars = session.amount_total / 100;
+    const amountOfTokens = amountOfDollars * tokensPerDollar;
+
     // Save the new tokens to the DB
     let queryString = `
             UPDATE users
-            SET tokens = ${session.amount_total}
+            SET tokens = tokens + ${amountOfTokens}
             WHERE id = '${userId}';
             `;
 
