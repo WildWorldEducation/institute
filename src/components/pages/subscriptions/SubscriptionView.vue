@@ -19,7 +19,8 @@ export default {
             month: '',
             dollars: 10,
             isAITokenLimitReached: false,
-            assistantsModelPrice: { input: 75, output: 150 }
+            assistantsModelPrice: { input: 75, output: 150 },
+            amountOfTokens: 0
             // Not being charged yet
             // ttsModelPrice: 15,
             // sttModelPerMinutePrice: 0.006
@@ -66,6 +67,8 @@ export default {
     },
     methods: {
         checkout() {
+            this.amountOfTokens =
+                this.dollars * this.settingsStore.tokensPerDollar;
             fetch('/subscriptions/create-checkout-session', {
                 method: 'POST',
                 headers: {
@@ -73,8 +76,10 @@ export default {
                 },
                 body: JSON.stringify({
                     // convert cents to dollars
-                    dollars: this.dollars * 100,
-                    userId: this.userDetailsStore.userId
+                    dollars: this.dollars,
+                    userId: this.userDetailsStore.userId,
+                    tokensPerDollar: this.settingsStore.tokensPerDollar,
+                    amountOfTokens: this.amountOfTokens
                 })
             })
                 .then((res) => {
@@ -119,18 +124,19 @@ export default {
             <li>
                 <p>
                     <strong>Free limit:</strong>
-                    {{ settingsStore.freeMonthlyTokens }}
+                    {{ settingsStore.freeMonthlyTokens.toLocaleString() }}
                 </p>
             </li>
             <li>
                 <p>
-                    <strong>Your tokens:</strong> {{ userDetailsStore.tokens }}
+                    <strong>Your tokens:</strong>
+                    {{ userDetailsStore.tokens.toLocaleString() }}
                 </p>
             </li>
             <li>
                 <p>
                     <strong>Current usage:</strong>
-                    {{ userDetailsStore.monthlyTokenUsage }}
+                    {{ userDetailsStore.monthlyTokenUsage.toLocaleString() }}
                 </p>
             </li>
         </ul>
@@ -151,8 +157,13 @@ export default {
             min="1"
             max="500"
         /><br />
-        <ul class="mt-3">
-            <li>
+        <p class="mt-3">
+            <strong>Amount of tokens:</strong>
+            {{
+                (dollars * this.settingsStore.tokensPerDollar).toLocaleString()
+            }}
+        </p>
+        <!-- <li>
                 <strong>Amount of input tokens:</strong>
                 {{ numberOfInputTokens }}
             </li>
@@ -160,11 +171,11 @@ export default {
             <li>
                 <strong>Amount of output tokens:</strong>
                 {{ numberOfOutputTokens }}
-            </li>
-            <!-- Not being charged yet -->
-            <!-- <li>Amount of speech to text seconds:</li>
+            </li> -->
+        <!-- Not being charged yet -->
+        <!-- <li>Amount of speech to text seconds:</li>
             <li>Amount of text to speech tokens:</li> -->
-        </ul>
+
         <button @click="checkout()" class="btn primary-btn mt-2">
             Check out
         </button>

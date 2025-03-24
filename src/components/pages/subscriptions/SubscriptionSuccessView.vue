@@ -1,34 +1,20 @@
 <script>
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+
 export default {
-    name: 'Success',
-    computed: {}
+    setup() {
+        const userDetailsStore = useUserDetailsStore();
+
+        return {
+            userDetailsStore
+        };
+    }
 };
 </script>
 <template>
-    <div class="success-container">
-        <h1>Payment Successful!</h1>
-        <p></p>
+    <div class="container">
+        <h1 class="heading">Payment Successful!</h1>
+        <p>You now have {{ userDetailsStore.tokens }} tokens</p>
     </div>
 </template>
-<style scoped>
-.success-container {
-    text-align: center;
-    padding: 20px;
-    max-width: 600px;
-    margin: 0 auto;
-    border: 1px solid #4caf50;
-    border-radius: 8px;
-    background-color: #e8f5e9;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.success-container h1 {
-    color: #4caf50;
-    margin-bottom: 20px;
-}
-
-.success-container p {
-    font-size: 18px;
-    color: #555;
-}
-</style>
+<style scoped></style>
