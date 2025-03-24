@@ -65,7 +65,7 @@ router.post('/create-checkout-session', async (req, res) => {
                         product_data: {
                             name: 'tokens'
                         },
-                        unit_amount: req.body.tokens
+                        unit_amount: req.body.dollars
                     },
                     quantity: 1
                 }

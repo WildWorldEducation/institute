@@ -72,7 +72,8 @@ export default {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    tokens: this.dollars,
+                    // convert cents to dollars
+                    dollars: this.dollars * 100,
                     userId: this.userDetailsStore.userId
                 })
             })
@@ -141,7 +142,7 @@ export default {
             You are over the monthly free limit. You can't use the AI features
             until next month.
         </div>
-        <!-- <h2 class="secondary-heading h4 mt-5">Buy tokens</h2>
+        <h2 class="secondary-heading h4 mt-5">Buy tokens</h2>
         <label>$&nbsp; </label>
         <input
             class=""
@@ -159,14 +160,14 @@ export default {
             <li>
                 <strong>Amount of output tokens:</strong>
                 {{ numberOfOutputTokens }}
-            </li> -->
-        <!-- Not being charged yet -->
-        <!-- <li>Amount of speech to text seconds:</li>
+            </li>
+            <!-- Not being charged yet -->
+            <!-- <li>Amount of speech to text seconds:</li>
             <li>Amount of text to speech tokens:</li> -->
-        <!-- </ul>
+        </ul>
         <button @click="checkout()" class="btn primary-btn mt-2">
             Check out
-        </button> -->
+        </button>
         <!-- <h2 class="secondary-heading h4 mt-5">Example usage:</h2>
         <ul>
             <li>AI asking me a question: 329 tokens</li>
