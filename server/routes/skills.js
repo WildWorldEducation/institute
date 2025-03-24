@@ -1104,8 +1104,8 @@ router.put(
                                             {
                                                 userId: req.session.userId,
                                                 userAction: `${req.body.edit
-                                                        ? 'edit_and_approve'
-                                                        : 'approve'
+                                                    ? 'edit_and_approve'
+                                                    : 'approve'
                                                     }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
@@ -1941,5 +1941,25 @@ router.post('/guest-user/get-recommended-skills', async (req, res, next) => {
         res.end;
     }
 });
+
+// Create a new instance of an existing skill,
+// in order to have the skill show in more than one place in the tree.
+router.get(
+    '/introduction-data',
+    isAuthenticated,
+    async (req, res, next) => {
+        const skillId = req.query.skillId;
+        let sqlQuery = `SELECT skills.introduction FROM skills WHERE skills.id = ${conn.escape(skillId)}`;
+        // sql for instructor and editor account
+        conn.query(sqlQuery, async (err, result) => {
+            if (err) {
+                console.log(result);
+                throw err;
+            }
+
+            res.json(result);
+        });
+    }
+);
 
 module.exports = router;

@@ -8,6 +8,7 @@ import ZoomControl from './ZoomControl.vue';
 import JoystickControl from './JoystickControl.vue';
 
 import * as d3 from 'd3';
+import TidyTreeTooltip from './TidyTreeTooltip.vue';
 
 export default {
     setup() {
@@ -84,17 +85,18 @@ export default {
                 yPosition: 0,
                 skillName: '',
                 skillLevel: '',
-                borderColor: ''
+                borderColor: '',
+                thumbnail: ''
             }
         };
     },
     components: {
         SkillPanel,
         ZoomControl,
-        JoystickControl
+        JoystickControl,
+        TidyTreeTooltip
     },
     async mounted() {
-        console.log('TEST HA HA');
         // Check if store is empty,
         // or if grade level filter has been changed on the other tree (they need to be the same).
         if (this.skillTreeStore.verticalTreeUserSkills.length == 0) {
@@ -222,7 +224,6 @@ export default {
             const node = this.getMouseOverNode(mouseX, mouseY);
 
             if (node) {
-                console.log(node.data);
                 const tooltipTopPosition = mouseY + 20;
                 const tooltipLeftPosition = mouseX;
                 const borderColor = this.hexBorderColor(node.data.level);
@@ -232,7 +233,9 @@ export default {
                     yPosition: `${tooltipLeftPosition}px`,
                     skillName: node.data.skill_name,
                     skillLevel: node.data.level,
-                    borderColor: borderColor
+                    borderColor: borderColor,
+                    thumbnail: node.data.thumbnail,
+                    skillId: node.data.id
                 };
             } else {
                 this.tooltipData.showing = false;
@@ -1750,7 +1753,13 @@ export default {
         },
         imageUrlAlternative(event) {
             event.target.src = '';
-        }
+        },
+        async getTooltipData() {
+            const res = await fetch('/skills/data-for-tooltip');
+            const resJson = await res.json();
+            console.log(resJson);
+        },
+        async getIntroductionData(skillId) {}
     }
 };
 </script>
@@ -1783,61 +1792,11 @@ export default {
         <ZoomControl ref="ZoomControl" />
         <div id="sidepanel-backdrop"></div>
         <JoystickControl class="d-none" />
-        <!-- WE WILL DELETE THIS LATER IF NEEDED -->
-        <div v-if="tooltipData.showing" class="tool-tip">
-            <div class="tooltip-skill-name-background">
-                <div class="tooltip-skill-name d-flex flex-column">
-                    <h4>
-                        {{ tooltipData.skillName }}
-                    </h4>
-                    <h6>{{ tooltipData.skillLevel }}</h6>
-                </div>
-            </div>
-            <div class="d-flex">
-                <img
-                    :src="skill.image_thumbnail_url"
-                    class="rounded img-fluid mx-auto"
-                    @error="imageUrlAlternative"
-                />
-                <div>
-                    <h5>TOOL TIP TEXT 1</h5>
-                    <h5>TOOL TIP TEXT 2</h5>
-                    <h5>TOOL TIP TEXT 3</h5>
-                </div>
-            </div>
-        </div>
+        <TidyTreeTooltip :tooltipData="tooltipData" />
     </div>
 </template>
 
 <style scoped>
-.tool-tip {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    gap: 0px;
-    top: v-bind('tooltipData.xPosition');
-    left: v-bind('tooltipData.yPosition');
-    background-color: #e4ecf4e6;
-    color: black;
-    border: 5px solid v-bind('tooltipData.borderColor');
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
-}
-
-.tooltip-skill-name {
-    color: black;
-    background: url('images/frameBoder.png');
-    background-size: 100% 100%;
-    padding: 30px 40px;
-    margin-bottom: 0px;
-}
-
-.tooltip-skill-name-background {
-    background-color: white;
-    padding: 0px;
-    display: flex;
-}
-
 /* Loading animation */
 .loading-animation {
     min-height: 100%;
