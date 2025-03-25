@@ -17,7 +17,11 @@ export default {
             const el = document.createElement('html');
             el.innerHTML = htmlString;
             ``;
+
             const listOfParagraph = el.getElementsByTagName('p');
+            if (!listOfParagraph || listOfParagraph.length === 0) {
+                return;
+            }
             const firstSentence = listOfParagraph[0].innerText.split(
                 '. ',
                 1
