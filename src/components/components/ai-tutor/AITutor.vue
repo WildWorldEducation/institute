@@ -614,7 +614,7 @@ export default {
                         :class="{ underline: tutorType === 'assessing' }"
                         @click="changeTutorType('assessing')"
                     >
-                        Assessment Tutor
+                        AI Assessor
                     </button>
 
                     <!-- Assessment Tutor Tooltip  -->
@@ -641,6 +641,22 @@ export default {
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Multiple Choice Assessment -->
+                <div class="d-inline-block">
+                    <router-link
+                        v-if="
+                            userDetailsStore.role == 'student' &&
+                            !$parent.isMastered &&
+                            skill.type != 'domain' &&
+                            skill.id
+                        "
+                        class="btn suggested-interactions ms-1 assessing-btn"
+                        :to="skill.id + '/assessment'"
+                    >
+                        Multiple Choice Assessor
+                    </router-link>
                 </div>
             </span>
             <span class="d-flex">
