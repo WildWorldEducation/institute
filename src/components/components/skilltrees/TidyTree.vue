@@ -8,6 +8,7 @@ import ZoomControl from './ZoomControl.vue';
 import JoystickControl from './JoystickControl.vue';
 
 import * as d3 from 'd3';
+import TidyTreeTooltip from './TidyTreeTooltip.vue';
 
 export default {
     setup() {
@@ -77,13 +78,23 @@ export default {
             currentNodeY: 0,
             visibleRangeX: 0,
             visibleRangeY: 0,
-            iconDictionary: []
+            iconDictionary: [],
+            tooltipData: {
+                showing: false,
+                xPosition: 0,
+                yPosition: 0,
+                skillName: '',
+                skillLevel: '',
+                borderColor: '',
+                thumbnail: ''
+            }
         };
     },
     components: {
         SkillPanel,
         ZoomControl,
-        JoystickControl
+        JoystickControl,
+        TidyTreeTooltip
     },
     async mounted() {
         // Check if store is empty,
@@ -202,6 +213,34 @@ export default {
                 this.skill.url = result2.url;
                 this.skill.image_thumbnail_url = result2.image_thumbnail_url;
                 this.showSkillPanel = true;
+            }
+        });
+
+        // MOUSE MOVE EVENT LISTENER
+        d3.select('#canvas').on('mousemove', (event) => {
+            // Get mouse positions from the main canvas.
+            const [mouseX, mouseY] = d3.pointer(event);
+
+            const node = this.getMouseOverNode(mouseX, mouseY);
+
+            if (node) {
+                let tooltipTopPosition = mouseY + 20;
+                let tooltipLeftPosition = mouseX;
+                const borderColor = this.hexBorderColor(node.data.level);
+                // Make sure position alway visible
+                if (tooltipTopPosition)
+                    this.tooltipData = {
+                        showing: true,
+                        xPosition: `${tooltipTopPosition}`,
+                        yPosition: `${tooltipLeftPosition}`,
+                        skillName: node.data.skill_name,
+                        skillLevel: node.data.level,
+                        borderColor: borderColor,
+                        thumbnail: node.data.thumbnail,
+                        skillId: node.data.id
+                    };
+            } else {
+                this.tooltipData.showing = false;
             }
         });
 
@@ -1800,6 +1839,24 @@ export default {
                 ctx1.strokeText(node.data.skill_name, xPosition, node.x + 2);
                 ctx1.fillText(node.data.skill_name, xPosition, node.x + 2);
             }
+        },
+        // check if current mouse position is over any node (return false if not on node)
+        getMouseOverNode(mouseX, mouseY) {
+            // Get the corresponding pixel color on the hidden canvas
+            // and look up the node in our map.
+            const ctx = this.hiddenCanvasContext;
+
+            // This will return that pixel's color
+            const col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
+
+            //Our map uses these rgb strings as keys to nodes.
+            const colString =
+                'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
+            const node = this.colToNode[colString];
+            return node;
+        },
+        imageUrlAlternative(event) {
+            event.target.src = '';
         }
     }
 };
@@ -1809,7 +1866,7 @@ export default {
     <!-- Loading animation -->
     <div
         v-if="isLoading == true"
-        class="loading-animation d-flex justify-content-center align-items-center py-4"
+        class="d-flex align-items-center justify-content-center loading-animation py-4"
     >
         <span class="loader"></span>
     </div>
@@ -1833,6 +1890,7 @@ export default {
         <ZoomControl ref="ZoomControl" />
         <div id="sidepanel-backdrop"></div>
         <JoystickControl class="d-none" />
+        <TidyTreeTooltip :tooltipData="tooltipData" />
     </div>
 </template>
 

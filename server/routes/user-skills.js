@@ -451,7 +451,7 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
 
                 // Check what skills are available for this cohort.
                 let sqlQuery = `
-            SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
+            SELECT skills.id, skills.image_thumbnail_url as thumbnail, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id
@@ -465,7 +465,7 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
             WHERE cohort_id = ${conn.escape(cohortId)})
             
             UNION
-            SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
+            SELECT skills.id, skills.image_thumbnail_url as thumbnail, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
             FROM skills
             WHERE level IN (${levelsToShow})
             AND
@@ -551,10 +551,10 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                                                     ) {
                                                         if (
                                                             results[k].type ==
-                                                                'sub' &&
+                                                            'sub' &&
                                                             results[k]
                                                                 .is_accessible ==
-                                                                1
+                                                            1
                                                         ) {
                                                             results[
                                                                 j
@@ -1112,10 +1112,10 @@ router.get(
                                                             if (
                                                                 results[k]
                                                                     .type ==
-                                                                    'sub' &&
+                                                                'sub' &&
                                                                 results[k]
                                                                     .is_accessible ==
-                                                                    1
+                                                                1
                                                             ) {
                                                                 results[
                                                                     j
@@ -1604,7 +1604,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                         ) {
                                             if (
                                                 childSkills[i].type ==
-                                                    'regular' ||
+                                                'regular' ||
                                                 childSkills[i].type == 'domain'
                                             ) {
                                                 makeAccessible(
@@ -1623,7 +1623,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                                 ) {
                                                     if (
                                                         skills[j].parent ==
-                                                            childSkills[i].id &&
+                                                        childSkills[i].id &&
                                                         skills[j].type == 'sub'
                                                     ) {
                                                         subSkills.push(
@@ -1655,7 +1655,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                         ) {
                                             if (
                                                 skills[i].parent ==
-                                                    skill.parent &&
+                                                skill.parent &&
                                                 skills[i].id != skill.id
                                             ) {
                                                 if (skills[i].type == 'sub') {
