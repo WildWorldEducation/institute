@@ -279,13 +279,13 @@ export default {
                     );
                     this.isMastered = true;
                     await this.getUserSkills();
-                    await this.getNextSkillsInBranch();
 
                     // If a child skill exists, redirect to it
                     if (firstChildSkill) {
                         this.$router.push(`/skills/${firstChildSkill.url}`);
                     } else {
                         // If no child skill, show category completed modal
+                        await this.getNextSkillsInBranch();
                         this.showCategoryCompletedModal = true;
                     }
                 } catch (error) {
