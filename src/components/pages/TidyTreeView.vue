@@ -87,6 +87,14 @@ export default {
         SkillTreeSearchBar
     },
     methods: {
+        closeIntroSearchModal() {
+            this.introSearchModal = false;
+        },
+        closeModalOnOutsideClick(event) {
+            if (event.target.classList.contains('modal')) {
+                this.introSearchModal = false;
+            }
+        },
         resetPos() {
             this.$refs.childComponent.resetPos();
         },
@@ -101,6 +109,9 @@ export default {
             }
             // go to the skill position
             this.$refs.childComponent.goToLocation(node);
+
+            // Close the intro search modal if it's open
+            this.introSearchModal = false;
         },
         GetGoogleLoginResult() {
             fetch('/google-login-result')
@@ -1720,7 +1731,11 @@ export default {
     </div>
 
     <!-- Intro Search Modal -->
-    <div v-if="introSearchModal" class="modal">
+    <div
+        v-if="introSearchModal"
+        class="modal"
+        @click="closeModalOnOutsideClick"
+    >
         <div class="search-modal-content rounded">
             <!-- Image -->
             <div class="text-center app-logo-wrapper">
@@ -1737,7 +1752,9 @@ export default {
                     :findNode="handleChooseResult"
                     :clearResults="clearResult"
                 />
-                <button class="btn primary-btn">Close</button>
+                <button class="btn primary-btn" @click="closeIntroSearchModal">
+                    Close
+                </button>
             </span>
         </div>
     </div>
