@@ -9,6 +9,7 @@ import JoystickControl from './JoystickControl.vue';
 
 // Algorithm.
 import * as d3 from 'd3';
+import TidyTreeTooltip from './TidyTreeTooltip.vue';
 
 export default {
     setup() {
@@ -80,14 +81,24 @@ export default {
                 'data:image/png;base64,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',
             iconDictionary: [],
             nodeWidth: 80,
-            nodeHeight: 800
+            nodeHeight: 800,
+            tooltipData: {
+                showing: false,
+                xPosition: 0,
+                yPosition: 0,
+                skillName: '',
+                skillLevel: '',
+                borderColor: '',
+                thumbnail: ''
+            }
         };
     },
     components: {
         SkillPanel,
         SkillPanel,
         ZoomControl,
-        JoystickControl
+        JoystickControl,
+        TidyTreeTooltip
     },
     async mounted() {
         let subjects = this.majorSubject;
@@ -175,6 +186,35 @@ export default {
                 this.skill.url = result2.url;
                 this.skill.image_thumbnail_url = result2.image_thumbnail_url;
                 this.showSkillPanel = true;
+            }
+        });
+
+        // MOUSE MOVE EVENT LISTENER
+        d3.select('#canvas').on('mousemove', (event) => {
+            // Get mouse positions from the main canvas.
+            const [mouseX, mouseY] = d3.pointer(event);
+
+            const node = this.getMouseOverNode(mouseX, mouseY);
+
+            if (node) {
+                let tooltipTopPosition = mouseY + 20;
+                let tooltipLeftPosition = mouseX;
+                const borderColor = this.hexColor(node.data.level);
+                // Make sure position alway visible
+                console.log(node.data);
+                if (tooltipTopPosition)
+                    this.tooltipData = {
+                        showing: true,
+                        xPosition: `${tooltipTopPosition}`,
+                        yPosition: `${tooltipLeftPosition}`,
+                        skillName: node.data.name,
+                        skillLevel: node.data.level,
+                        borderColor: borderColor,
+                        thumbnail: node.data.image_thumbnail_url,
+                        skillId: node.data.id
+                    };
+            } else {
+                this.tooltipData.showing = false;
             }
         });
 
@@ -1339,6 +1379,21 @@ export default {
                 ctx1.strokeText(node.data.name, xPosition, node.x + 2);
                 ctx1.fillText(node.data.name, xPosition, node.x + 2);
             }
+        },
+        // check if current mouse position is over any node (return false if not on node)
+        getMouseOverNode(mouseX, mouseY) {
+            // Get the corresponding pixel color on the hidden canvas
+            // and look up the node in our map.
+            const ctx = this.hiddenCanvasContext;
+
+            // This will return that pixel's color
+            const col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
+
+            //Our map uses these rgb strings as keys to nodes.
+            const colString =
+                'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
+            const node = this.colToNode[colString];
+            return node;
         }
     }
 };
@@ -1372,6 +1427,7 @@ export default {
         <ZoomControl ref="ZoomControl" />
         <div id="sidepanel-backdrop"></div>
         <JoystickControl class="d-none" />
+        <TidyTreeTooltip :tooltipData="tooltipData" />
     </div>
 </template>
 

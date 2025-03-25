@@ -443,7 +443,7 @@ router.get('/guest-mode/full-vertical-tree', (req, res, next) => {
 
     res.setHeader('Content-Type', 'application/json');
     let sqlQuery = `
-    SELECT id, name, parent, type, level, skills.order as skillorder, display_name, url
+    SELECT id, name, image_thumbnail_url, parent, type, level, skills.order as skillorder, display_name, url
     FROM skills
     WHERE is_filtered = 'available' AND is_deleted = 0
     AND level IN (${levelsToShow})
@@ -1946,7 +1946,6 @@ router.post('/guest-user/get-recommended-skills', async (req, res, next) => {
 // in order to have the skill show in more than one place in the tree.
 router.get(
     '/introduction-data',
-    isAuthenticated,
     async (req, res, next) => {
         const skillId = req.query.skillId;
         let sqlQuery = `SELECT skills.introduction FROM skills WHERE skills.id = ${conn.escape(skillId)}`;
@@ -1956,7 +1955,6 @@ router.get(
                 console.log(result);
                 throw err;
             }
-
             res.json(result);
         });
     }

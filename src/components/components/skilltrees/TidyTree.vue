@@ -1755,12 +1755,7 @@ export default {
         },
         imageUrlAlternative(event) {
             event.target.src = '';
-        },
-        async getTooltipData() {
-            const res = await fetch('/skills/data-for-tooltip');
-            const resJson = await res.json();
-        },
-        async getIntroductionData(skillId) {}
+        }
     }
 };
 </script>
