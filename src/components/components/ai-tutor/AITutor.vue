@@ -128,14 +128,17 @@ export default {
                 } else if (this.tutorType == 'assessing') {
                     this.assessingTutorChatHistory = resData.messages;
                     this.chatHistory = this.assessingTutorChatHistory;
-                    if (
-                        this.chatHistory.length >=
-                        this.learningObjectives.length * 2
-                    ) {
+                    // Assessment
+                    let numTutorQuestions = 0;
+                    for (let i = 0; i < this.chatHistory.length; i++) {
+                        if (this.chatHistory[i].role == 'assistant') {
+                            numTutorQuestions++;
+                        }
+                    }
+                    if (numTutorQuestions > 9 && numTutorQuestions % 10 == 0) {
                         this.assessMastery();
                     }
                 }
-                //this.assessMastery();
                 if (this.chatHistory.length > 0) {
                     this.threadID = this.chatHistory[0].thread_id;
                 }
