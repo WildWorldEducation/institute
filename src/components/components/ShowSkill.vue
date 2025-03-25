@@ -99,26 +99,32 @@ export default {
         LearningObjectiveAITutor
     },
     async created() {
-        // Needed for token limit        
-        if(this.settingsStore.freeMonthlyTokens == 0 && this.sessionDetailsStore.isLoggedIn)
-        {
-            await this.settingsStore.getSettings();
-        }       
-         
-        await this.checkTokenUsage()
+        try {
+            // Needed for token limit
+            if (this.sessionDetailsStore.isLoggedIn) {
+                await this.checkTokenUsage();
+            }
 
-        await this.getSkill();
-        this.isSkillLoaded = true;
-        if (this.sessionDetailsStore.isLoggedIn) {
-            await this.getUserSkills();
+            await this.getSkill();
+            this.isSkillLoaded = true;
+
+            if (this.sessionDetailsStore.isLoggedIn) {
+                await this.getUserSkills();
+            }
+
+            // Turn this on only if user is logged in.
+            if (this.sessionDetailsStore.isLoggedIn) {
+                this.checkIfTutorialComplete();
+            }
+
+            if (!this.isUnlocked) {
+                this.nearestAccessibleAncestor(this.skill);
+            }
+        } catch (error) {
+            console.error('Error in created hook:', error);
+            // Optionally, set some error state or show a user-friendly message
+            this.isSkillLoaded = false;
         }
-
-        // Turn this on only if user is logged in.
-        if (this.sessionDetailsStore.isLoggedIn == true) {
-            this.checkIfTutorialComplete();
-        }
-
-        if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
     },
     mounted() {
         if (this.showTutorialTip6) {
@@ -129,16 +135,46 @@ export default {
         }
     },
     methods: {
-        async checkTokenUsage(){           
-            await this.userDetailsStore.getUserDetails();
-            // Check if user is over free monthly AI token limit
-            if (this.userDetailsStore.tokens <= 0) {
+        async checkTokenUsage() {
+            try {
+                // Ensure user details are loaded first
+                await this.userDetailsStore.getUserDetails();
+
+                // Check if settings store exists and has the method
                 if (
-                    this.settingsStore.freeMonthlyTokens <=
-                    this.userDetailsStore.monthlyTokenUsage
+                    this.settingsStore &&
+                    typeof this.settingsStore.getSettings === 'function'
                 ) {
+                    // Only get settings if free monthly tokens are 0 or not set
+                    if (this.settingsStore.freeMonthlyTokens === 0) {
+                        const settingsLoaded =
+                            await this.settingsStore.getSettings();
+
+                        // If settings failed to load, set a default state
+                        if (!settingsLoaded) {
+                            this.isAITokenLimitReached = true;
+                            return;
+                        }
+                    }
+                } else {
+                    console.error('Settings store is not properly initialized');
                     this.isAITokenLimitReached = true;
+                    return;
                 }
+
+                // Check if user is over free monthly AI token limit
+                if (this.userDetailsStore.tokens <= 0) {
+                    if (
+                        (this.settingsStore.freeMonthlyTokens || 0) <=
+                        (this.userDetailsStore.monthlyTokenUsage || 0)
+                    ) {
+                        this.isAITokenLimitReached = true;
+                    }
+                }
+            } catch (error) {
+                console.error('Error in checkTokenUsage:', error);
+                // Set a default state to prevent complete failure
+                this.isAITokenLimitReached = true;
             }
         },
         async getSkill() {
@@ -228,14 +264,47 @@ export default {
             }
         },
         async MakeMastered() {
-            await this.userSkillsStore.MakeMastered(
-                this.userDetailsStore.userId,
-                this.skill
-            );
-            this.isMastered = true;
-            await this.getUserSkills();
-            await this.getNextSkillsInBranch();
-            this.showCategoryCompletedModal = true;
+            // If it's a domain skill, first find its first child skill
+            if (this.skill.type === 'domain') {
+                try {
+                    const response = await fetch(
+                        `/skills/get-first-child-skill/${this.skill.id}`
+                    );
+                    const firstChildSkill = await response.json();
+
+                    // Mark the domain skill as mastered
+                    await this.userSkillsStore.MakeMastered(
+                        this.userDetailsStore.userId,
+                        this.skill
+                    );
+                    this.isMastered = true;
+                    await this.getUserSkills();
+
+                    // If a child skill exists, redirect to it
+                    if (firstChildSkill) {
+                        this.$router.push(`/skills/${firstChildSkill.url}`);
+                    } else {
+                        // If no child skill, show category completed modal
+                        await this.getNextSkillsInBranch();
+                        this.showCategoryCompletedModal = true;
+                    }
+                } catch (error) {
+                    console.error(
+                        'Error marking domain skill as mastered:',
+                        error
+                    );
+                }
+            } else {
+                // Existing logic for non-domain skills
+                await this.userSkillsStore.MakeMastered(
+                    this.userDetailsStore.userId,
+                    this.skill
+                );
+                this.isMastered = true;
+                await this.getUserSkills();
+                await this.getNextSkillsInBranch();
+                this.showCategoryCompletedModal = true;
+            }
         },
         async getNextSkillsInBranch() {
             const result = await fetch(
@@ -635,7 +704,7 @@ export default {
                                 d="M288 0c-12.2 .1-23.3 7-28.6 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3L288 439.8 288 0zM429.9 512c1.1 .1 2.1 .1 3.2 0l-3.2 0z"
                             />
                         </svg>
-                        Mark complete
+                        Go To Child Skill
                         <!-- Half star icon -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -1176,7 +1245,7 @@ export default {
                     <div
                         v-for="learningObjective in skill.learningObjectives"
                         class="d-flex mb-3 justify-content-between"
-                        :class="{ 'mb-4': learningObjective.showAI}"
+                        :class="{ 'mb-4': learningObjective.showAI }"
                     >
                         <div>
                             <svg
@@ -1197,7 +1266,7 @@ export default {
                             </p>
                             <div v-if="learningObjective.showAI">
                                 <!-- AI tutor for this learning objective -->
-                                <LearningObjectiveAITutor                                 
+                                <LearningObjectiveAITutor
                                     :learningObjective="
                                         learningObjective.objective
                                     "
@@ -1205,7 +1274,7 @@ export default {
                                     :skillName="skill.name"
                                     :skillUrl="skill.url"
                                     :skillLevel="skill.level"
-                                />                               
+                                />
                             </div>
                         </div>
                         <button
@@ -1291,19 +1360,19 @@ export default {
                 :showTutorialTip9="showTutorialTip9"
                 @progressTutorial="progressTutorial"
             />
-            <p
+            <div
                 v-else-if="
                     isSkillLoaded &&
                     userDetailsStore.role === 'student' &&
                     skill.type !== 'domain'
                 "
             >
-            <h2 class="secondary-heading">AI tutor</h2>
+                <h2 class="h2 secondary-heading">AI tutor</h2>
                 <em
                     >You have reached your monthly AI token limit. Please
                     recharge your subscription to use more.</em
                 >
-            </p>
+            </div>
         </div>
 
         <!-- Posts -->
