@@ -1,1 +1,0 @@
-import{_ as o,a,o as r,c,d as e,x as n}from"./main-df79cd0f.js";const i={setup(){return{userDetailsStore:a()}}},u={class:"container"},l=e("h1",{class:"heading"},"Payment Successful!",-1);function _(s,p,d,t,S,f){return r(),c("div",u,[l,e("p",null,"You now have "+n(t.userDetailsStore.tokens)+" tokens",1)])}const m=o(i,[["render",_]]);export{m as default};
