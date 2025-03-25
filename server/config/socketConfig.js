@@ -30,8 +30,6 @@ const createSocket = (server) => {
                 Only ask one question, not more than one.
                 Preference asking questions on learning objectives that the student does not seem to know well.
 
-                Do not provide feedback to the student after they answer the question.
-
                 Make sure to have $ delimiters before any science and math strings that can convert to Latex.
                 Please keep all messages below 2000 characters.`;
                 }
@@ -69,9 +67,7 @@ const createSocket = (server) => {
                     please start again.
                     Only ask one question, not more than one.        
                     Preference asking questions on learning objectives that the student does not seem to know well.
-               
-                    Do not provide feedback to the student after they answer the question.
-               
+                              
                     Make sure to have $ delimiters before any science and math strings that can convert to Latex.
                     Please keep all messages below 2000 characters.`;
                 }
