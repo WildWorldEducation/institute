@@ -201,7 +201,6 @@ export default {
                 let tooltipLeftPosition = mouseX;
                 const borderColor = this.hexColor(node.data.level);
                 // Make sure position alway visible
-                console.log(node.data);
                 if (tooltipTopPosition)
                     this.tooltipData = {
                         showing: true,
