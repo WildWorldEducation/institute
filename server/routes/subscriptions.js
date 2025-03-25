@@ -10,9 +10,7 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 
 const Stripe = require('stripe');
-const stripe = Stripe(
-    'sk_test_51R4kHlFfW0WtxYZHKmORTnwIv1v2wqlW2B5EXhxLZmHWrPzfg4ws3Ef1y0sDG1VxxJ88IjLpNnVjUhhmn215sO6m00tG7xgxIl'
-);
+const stripe = Stripe(process.env.STRIPE_API_KEY);
 
 // DB
 const conn = require('../config/db');
