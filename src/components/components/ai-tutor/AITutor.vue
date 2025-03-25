@@ -859,14 +859,16 @@ export default {
                     "
                     class="d-flex justify-content-between w-100"
                 >
-                    <div
-                        class="tutor-conversation"
-                        v-html="
-                            applyMarkDownFormatting(
-                                message.content[0].text.value
-                            )
-                        "
-                    ></div>
+                    <div class="tutor-conversation">
+                        <div
+                            v-html="
+                                applyMarkDownFormatting(
+                                    message.content[0].text.value
+                                )
+                            "
+                        ></div>
+                        <hr class="my-3" />
+                    </div>
                     <!-- Generate / Play audio -->
                     <!-- Loading animation -->
                     <div
