@@ -571,6 +571,15 @@ export default {
                     });
                 }
             });
+        },
+        scrollToAITutor() {
+            if (this.$refs.aiTutorSection) {
+                // Scroll to the AITutor section
+                this.$refs.aiTutorSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
         }
     },
     /**
@@ -639,15 +648,15 @@ export default {
                         &nbsp; Go to Nearest Unlocked Skill
                     </router-link>
                     <!-- Assessment -->
-                    <router-link
-                        v-else-if="
+                    <button
+                        v-if="
                             userDetailsStore.role == 'student' &&
                             !isMastered &&
                             skill.type != 'domain' &&
                             skill.id
                         "
                         class="btn me-1 assessment-btn"
-                        :to="skill.id + '/assessment'"
+                        @click="scrollToAITutor()"
                     >
                         <!-- Half star icon -->
                         <svg
@@ -675,7 +684,7 @@ export default {
                                 id="path17"
                             />
                         </svg>
-                    </router-link>
+                    </button>
                     <button
                         v-else-if="
                             userDetailsStore.role == 'student' &&
