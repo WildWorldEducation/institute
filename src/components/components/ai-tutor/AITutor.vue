@@ -567,7 +567,7 @@ export default {
         <!--Tutor types -->
         <span v-if="mode === 'big'" class="d-flex justify-content-between">
             <!--Tutor types -->
-            <span>
+            <span class="d-md-flex">
                 <!-- Socratic Tutor agent -->
                 <div class="d-inline-block">
                     <button
