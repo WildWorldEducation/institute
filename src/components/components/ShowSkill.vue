@@ -147,14 +147,7 @@ export default {
                 ) {
                     // Only get settings if free monthly tokens are 0 or not set
                     if (this.settingsStore.freeMonthlyTokens === 0) {
-                        const settingsLoaded =
-                            await this.settingsStore.getSettings();
-
-                        // If settings failed to load, set a default state
-                        if (!settingsLoaded) {
-                            this.isAITokenLimitReached = true;
-                            return;
-                        }
+                        await this.settingsStore.getSettings();
                     }
                 } else {
                     console.error('Settings store is not properly initialized');
