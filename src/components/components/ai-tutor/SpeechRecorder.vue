@@ -1,14 +1,13 @@
 <script>
-import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
-
 export default {
-    setup() {
-        const userDetailsStore = useUserDetailsStore();
-        return {
-            userDetailsStore
-        };
-    },
-    props: ['tutorType', 'skill', 'skillLevel', 'learningObjectives'],
+    setup() {},
+    props: [
+        'tutorType',
+        'skill',
+        'skillLevel',
+        'learningObjectives',
+        'isAITokenLimitReached'
+    ],
     data() {
         return {
             constraints: { audio: true },
@@ -52,16 +51,11 @@ export default {
                     });
                     this.chunks = [];
 
-                    // to play the speech in browser.
-                    // const audioURL = URL.createObjectURL(blob);
-                    // let audio = document.getElementById('audio');
-                    // audio.src = audioURL;
-
                     // Convert to Base64
                     var reader = new FileReader();
                     reader.readAsDataURL(blob);
                     reader.onloadend = () => {
-                        var base64data = reader.result;                        
+                        var base64data = reader.result;
                         // Send base 64 data to server
                         this.sendAudioDataToServer(base64data);
                     };
@@ -74,7 +68,6 @@ export default {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        userId: this.userDetailsStore.userId,
                         skillUrl: this.skill.url,
                         skillName: this.skill.name,
                         skillLevel: this.englishSkillLevel,
@@ -121,6 +114,7 @@ export default {
                     'loader-background': isLoading == true
                 }"
                 @click="recordSpeech()"
+                :disabled="isAITokenLimitReached"
             >
                 <span v-if="!recording && !isLoading">
                     <svg

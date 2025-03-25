@@ -126,8 +126,8 @@ export default {
                     $route.name == 'skill-tree' ||
                     $route.name == 'pathways' ||
                     $route.name == 'radial-tree' ||
-                    $route.name == 'student-vertical-tree' ||
-                    $route.name == 'learning-tracks'
+                    $route.name == 'student-vertical-tree'
+                // $route.name == 'learning-tracks'
             }"
         >
             <div class="container-fluid">
@@ -217,7 +217,7 @@ export default {
                             </RouterLink>
                         </li>
 
-                        <li
+                        <!-- <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
@@ -226,7 +226,7 @@ export default {
                                 class="nav-link close-on-click"
                                 >Learning Tracks</RouterLink
                             >
-                        </li>
+                        </li> -->
                         <li
                             v-if="!sessionDetailsStore.isLoggedIn"
                             class="nav-item"
@@ -390,6 +390,12 @@ export default {
                                         class="dropdown-item"
                                     >
                                         Reputation
+                                    </RouterLink>
+                                    <RouterLink
+                                        to="/subscriptions"
+                                        class="dropdown-item"
+                                    >
+                                        Subscription
                                     </RouterLink>
                                     <div class="dropdown-divider"></div>
                                     <a

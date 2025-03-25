@@ -6,7 +6,6 @@ import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
 import TooltipBtn from './../share-components/TooltipBtn.vue';
 import SpeechRecorder from './SpeechRecorder.vue';
 import { socket, socketState } from '../../../socket.js';
-import { nextTick } from 'vue';
 
 export default {
     setup() {
@@ -74,7 +73,7 @@ export default {
     methods: {
         // Setting this method to allow the user to be able to create a new line with shift+enter
         handleKeyDown(e) {
-            if (e.shiftKey) {
+            if (e.shiftKey || this.$parent.isAITokenLimitReached) {
                 return;
             }
             e.preventDefault();
@@ -129,17 +128,22 @@ export default {
                 } else if (this.tutorType == 'assessing') {
                     this.assessingTutorChatHistory = resData.messages;
                     this.chatHistory = this.assessingTutorChatHistory;
-                    if (
-                        this.chatHistory.length >=
-                        this.learningObjectives.length * 2
-                    ) {
+                    // Assessment
+                    let numTutorQuestions = 0;
+                    for (let i = 0; i < this.chatHistory.length; i++) {
+                        if (this.chatHistory[i].role == 'assistant') {
+                            numTutorQuestions++;
+                        }
+                    }
+                    if (numTutorQuestions > 9 && numTutorQuestions % 10 == 0) {
                         this.assessMastery();
                     }
                 }
-
                 if (this.chatHistory.length > 0) {
                     this.threadID = this.chatHistory[0].thread_id;
                 }
+
+                this.$parent.checkTokenUsage();
             } catch (error) {
                 console.error(error);
             }
@@ -237,7 +241,8 @@ export default {
                     learningObjectives: this.learningObjectives,
                     responseLength: responseLength,
                     // The message from the student
-                    message: this.message
+                    message: this.message,
+                    userId: this.userDetailsStore.userId
                 };
                 this.message = '';
                 socket.emit(socketChannel, messageData);
@@ -246,48 +251,6 @@ export default {
                 this.waitForAIresponse = false;
             }
         },
-        // async respondToEmptyContent() {
-        //     if (this.waitForAIresponse) {
-        //         return;
-        //     }
-        //     this.waitForAIresponse = true;
-
-        //     try {
-        //         const requestOptions = {
-        //             method: 'POST',
-        //             headers: { 'Content-Type': 'application/json' },
-        //             body: JSON.stringify({
-        //                 userId: this.userDetailsStore.userId,
-        //                 skillName: this.skill.name,
-        //                 skillUrl: this.skill.url,
-        //                 skillLevel: this.englishSkillLevel,
-        //                 learningObjectives: this.learningObjectives,
-        //                 isEmptyMessage: true
-        //             })
-        //         };
-        //         let url = '';
-        //         if (this.tutorType == 'socratic')
-        //             url = '/ai-tutor/socratic/ask-question';
-        //         else if (this.tutorType == 'assessing')
-        //             url = '/ai-tutor/assessing/ask-question';
-
-        //         this.message = '';
-        //         const res = await fetch(url, requestOptions);
-        //         if (res.status === 500) {
-        //             alert('The tutor can`t answer !!');
-        //             this.waitForAIresponse = false;
-        //             return;
-        //         }
-
-        //         this.getChatHistory();
-
-        //         this.waitForAIresponse = false;
-        //     } catch (error) {
-        //         console.error(error);
-        //         this.waitForAIresponse = false;
-        //     }
-        // },
-
         async askQuestion() {
             if (this.waitForAIresponse) {
                 return;
@@ -302,7 +265,8 @@ export default {
                     learningObjectives: this.learningObjectives,
                     threadId: this.assistantData.threadId,
                     assistantId: this.assistantData.assistantId,
-                    message: ''
+                    message: '',
+                    userId: this.userDetailsStore.userId
                 };
 
                 socket.emit(socketChannel, messageData);
@@ -313,6 +277,7 @@ export default {
             }
         },
         async assessMastery() {
+            console.log('assess');
             for (let i = 0; i < this.assessingTutorChatHistory.length; i++) {
                 let chat = this.assessingTutorChatHistory[i];
                 // AI question
@@ -395,11 +360,7 @@ export default {
             alert('Congratulations, you have mastered this skill!');
             await this.userSkillsStore.MakeMastered(
                 this.userDetailsStore.userId,
-                this.skill.id,
-                this.skill.name,
-                this.skill.level,
-                this.skill.url,
-                (val) => {}
+                this.skill
             );
         },
         // Streaming
@@ -507,6 +468,7 @@ export default {
                             />
                         </svg>
                     </button>
+
                     <h2 class="secondary-heading">AI tutor</h2>
 
                     <TooltipBtn
@@ -593,14 +555,15 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- For speech to text -->
-        <SpeechRecorder
-            v-if="mode == 'big'"
-            :tutorType="tutorType"
-            :skill="skill"
-            :skillLevel="englishSkillLevel"
-            :learningObjectives="learningObjectives"
-        />
+        <!-- learning objective explanation button -->
+        <div
+            class="alert alert-warning mt-1"
+            role="alert"
+            v-if="$parent.isAITokenLimitReached"
+        >
+            You have reached your monthly AI token limit. Please recharge your
+            subscription to use more.
+        </div>
         <!--Tutor types -->
         <span v-if="mode === 'big'" class="d-flex justify-content-between">
             <!--Tutor types -->
@@ -680,23 +643,16 @@ export default {
                     </div>
                 </div>
             </span>
-            <span>
-                <!-- Test me button -->
-                <button
-                    v-if="tutorType === 'assessing'"
-                    class="btn suggested-interactions ms-1"
-                    @click="askQuestion()"
-                >
-                    test me
-                </button>
-                <!-- Overview button -->
-                <button
-                    v-if="tutorType === 'socratic'"
-                    class="btn suggested-interactions ms-1"
-                    @click="provideOverview()"
-                >
-                    give me an overview
-                </button>
+            <span class="d-flex">
+                <!-- For speech to text -->
+                <SpeechRecorder
+                    v-if="mode == 'big'"
+                    :tutorType="tutorType"
+                    :skill="skill"
+                    :skillLevel="englishSkillLevel"
+                    :learningObjectives="learningObjectives"
+                    :isAITokenLimitReached="$parent.isAITokenLimitReached"
+                />
                 <!-- Toggle chat button -->
                 <button class="btn plus-btn ms-1" @click="showChat = !showChat">
                     <svg
@@ -749,6 +705,7 @@ export default {
                         'assessing-btn': tutorType === 'assessing'
                     }"
                     @click="sendMessage()"
+                    :disabled="$parent.isAITokenLimitReached"
                 >
                     <!-- Speech bubble icon -->
                     <svg
@@ -795,6 +752,7 @@ export default {
                     this.isSuggestedInteraction = true;
                     sendMessage();
                 "
+                :disabled="$parent.isAITokenLimitReached"
             >
                 Tell me something interesting about this subject!
             </button>
@@ -805,6 +763,7 @@ export default {
                     this.isSuggestedInteraction = true;
                     sendMessage();
                 "
+                :disabled="$parent.isAITokenLimitReached"
             >
                 Why does this subject matter?
             </button>
@@ -816,6 +775,7 @@ export default {
                     this.isSuggestedInteraction = true;
                     sendMessage();
                 "
+                :disabled="$parent.isAITokenLimitReached"
             >
                 How might I use knowledge of this topic in everyday life?
             </button>
@@ -827,6 +787,7 @@ export default {
                     this.isSuggestedInteraction = true;
                     sendMessage();
                 "
+                :disabled="$parent.isAITokenLimitReached"
             >
                 What is the most important thing for me to understand about this
                 subject?
@@ -1105,7 +1066,7 @@ export default {
 }
 
 .assessing-chat {
-    background-color: #290707;
+    background-color: #571515;
     color: white;
 }
 

@@ -12,7 +12,10 @@ const conn = require('../config/db');
 const {
     findParentHaveHiddenChild,
     showHiddenChildFromParent,
-    convertNodesToArray
+    convertNodesToArray,
+    findNodeByName,
+    findInaccessiblePath,
+    findNode
 } = require('../utilities/skill-relate-functions');
 
 /*------------------------------------------
@@ -1426,6 +1429,21 @@ router.post('/find-hidden-skill/:userId', (req, res, next) => {
                         }
                     }
                     const skillList = convertNodesToArray(studentSkills);
+                    // Find the skill data to see if it inaccessible or hidden
+                    const skillData = findNodeByName(skillList, skillName);
+
+                    if (!skillData.is_accessible) {
+                        const inaccessiblePath = findInaccessiblePath(
+                            skillData,
+                            skillList
+                        );
+                        return res.json({
+                            mess: 'inaccessible',
+                            inaccessiblePath: inaccessiblePath
+                        });
+                    }
+
+                    // if skill is accessible mean it is hidden
                     const parentPath = findParentHaveHiddenChild(
                         skillList,
                         skillName
@@ -1498,10 +1516,10 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                 // Check if the skill that is getting mastered has any copies in the tree,
                 // that also need to be made mastered now.
                 let allSkillsToBeMadeMastered = [];
-
                 for (let i = 0; i < skills.length; i++) {
                     if (
-                        skills[i].is_copy_of_skill_id == skillId ||
+                        (skills[i].is_copy_of_skill_id == skillId &&
+                            typeof skillId != 'undefined') ||
                         skills[i].id == skillId
                     ) {
                         allSkillsToBeMadeMastered.push(skills[i]);

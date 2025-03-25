@@ -23,18 +23,20 @@ const {
     createSocraticAssistantAndThread,
     getSocraticTutorThread,
     saveSocraticTutorThread,
-    socraticTutorMessage,    
+    socraticTutorMessage,
     // Assessing tutor
     createAssessingAssistantAndThread,
     getAssessingTutorThread,
     saveAssessingTutorThread,
-    assessingTutorMessage,    
+    assessingTutorMessage,
     // Learning objective tutor
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
     requestLearningObjectiveTutoring,
-    generateLearningObjectiveQuestion
+    generateLearningObjectiveQuestion,
+    // To record user's token usage
+    saveTokenUsage
 } = require('../utilities/openAIAssistant');
 const { textToSpeech } = require('../utilities/textToSpeech');
 const { writeFile, speechToText } = require('../utilities/speechToText');
@@ -471,6 +473,8 @@ router.post(
  */
 router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
     try {
+        const userId = req.session.userId;
+
         let transcriptForAssessment = JSON.stringify(
             req.body.transcriptForAssessment
         );
@@ -490,7 +494,7 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
                     `;
 
         const completion = await openai.chat.completions.create({
-            model: 'gpt-4o',
+            model: 'gpt-4.5-preview',
             response_format: { type: 'json_object' },
             messages: [
                 { role: 'system', content: 'You are a helpful assistant.' },
@@ -500,6 +504,11 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
                 }
             ]
         });
+
+        // Save the user's token usage
+        let tokenCount = completion.usage.total_tokens;
+        console.log('assessment: ' + tokenCount);
+        saveTokenUsage(userId, tokenCount);
 
         let responseJSON = completion.choices[0].message.content;
         // Convert string to object.       ;
@@ -761,11 +770,11 @@ router.post(
 );
 
 /**
- * STT
+ * STT (Speech to Text) for tutors
  */
 router.post('/stt/convert', async (req, res, next) => {
     // prepare variables
-    const userId = req.body.userId;
+    const userId = req.session.userId;
     const skillUrl = req.body.skillUrl;
     const skillName = req.body.skillName;
     const skillLevel = req.body.skillLevel;
@@ -841,10 +850,11 @@ async function sendSpeechToSocraticAI(
         const assistantData = await getSocraticTutorThread(userId, skillUrl);
 
         let messageData = {
+            userId: userId,
             skillName: skillName,
             skillLevel: skillLevel,
             learningObjectives: learningObjectives,
-            message
+            message: message
         };
 
         //console.log('send message');
@@ -870,6 +880,7 @@ async function sendSpeechToAssessingAI(
         const assistantData = await getAssessingTutorThread(userId, skillUrl);
 
         let messageData = {
+            userId: userId,
             skillName: skillName,
             skillLevel: skillLevel,
             learningObjectives: learningObjectives,

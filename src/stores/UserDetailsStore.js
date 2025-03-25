@@ -23,7 +23,9 @@ export const useUserDetailsStore = defineStore('userDetails', {
             isUnlockedSkillsOnlyFilter: null,
             reputationScore: null,
             cohortId: null,
-            isSkillsLocked: 0
+            isSkillsLocked: 0,
+            tokens: 0,
+            monthlyTokenUsage: 0
         };
     },
     actions: {
@@ -54,6 +56,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.cohortId = data.cohort_id;
                 this.isUnlockedSkillsOnlyFilter =
                     data.is_unlocked_skills_only_filter;
+                this.tokens = data.tokens;
+                this.monthlyTokenUsage = data.monthly_token_usage;
 
                 if (this.role == 'student') {
                     await this.getInstructor();
@@ -127,6 +131,19 @@ export const useUserDetailsStore = defineStore('userDetails', {
             };
 
             var url = '/users/theme/' + this.userId + '/edit';
+            fetch(url, requestOptions);
+        },
+        async updateTokens(tokensNeeded) {
+            // API call
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tokensNeeded: tokensNeeded
+                })
+            };
+
+            var url = '/users/tokens/' + this.userId + '/update';
             fetch(url, requestOptions);
         }
     }

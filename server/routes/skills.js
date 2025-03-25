@@ -787,6 +787,39 @@ router.get('/last-visited', (req, res, next) => {
     }
 });
 
+router.get('/get-first-child-skill/:id', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        // Get the first child skill for the given domain skill
+        const sqlQuery = `
+        SELECT id, name, url 
+        FROM skills 
+        WHERE parent = ${conn.escape(req.params.id)} 
+        AND is_deleted = 0 
+        ORDER BY skills.order 
+        LIMIT 1;
+    `;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                // If no child skills found, return null
+                if (results.length === 0) {
+                    res.json(null);
+                } else {
+                    res.json(results[0]);
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * Edit Skill
  */
@@ -1104,8 +1137,8 @@ router.put(
                                             {
                                                 userId: req.session.userId,
                                                 userAction: `${req.body.edit
-                                                    ? 'edit_and_approve'
-                                                    : 'approve'
+                                                        ? 'edit_and_approve'
+                                                        : 'approve'
                                                     }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
