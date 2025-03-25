@@ -570,7 +570,7 @@ export default {
             class="d-flex flex-lg-row flex-column justify-content-between"
         >
             <!--Tutor types -->
-            <div class="d-md -inline-block d-flex flex-wrap flex-md-nowrap">
+            <div class="d-md-inline-block d-flex flex-wrap flex-md-nowrap">
                 <!-- Socratic Tutor agent -->
                 <div class="d-inline-block">
                     <button
