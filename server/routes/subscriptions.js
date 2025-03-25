@@ -10,7 +10,7 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 
 const Stripe = require('stripe');
-const stripe = Stripe(process.env.STRIPE_API_KEY);
+//const stripe = Stripe(process.env.STRIPE_API_KEY);
 
 // DB
 const conn = require('../config/db');
@@ -50,57 +50,57 @@ Routes
 
 let userId;
 let tokensPerDollar;
-router.post('/create-checkout-session', async (req, res) => {
-    try {
-        userId = req.body.userId;
-        tokensPerDollar = req.body.tokensPerDollar;
+// router.post('/create-checkout-session', async (req, res) => {
+//     try {
+//         userId = req.body.userId;
+//         tokensPerDollar = req.body.tokensPerDollar;
 
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            mode: 'payment',
-            line_items: [
-                {
-                    price_data: {
-                        currency: 'usd',
-                        product_data: {
-                            name: req.body.amountOfTokens + ' tokens'
-                        },
-                        unit_amount: req.body.dollars * 100
-                    },
-                    quantity: 1
-                }
-            ],
+//         const session = await stripe.checkout.sessions.create({
+//             payment_method_types: ['card'],
+//             mode: 'payment',
+//             line_items: [
+//                 {
+//                     price_data: {
+//                         currency: 'usd',
+//                         product_data: {
+//                             name: req.body.amountOfTokens + ' tokens'
+//                         },
+//                         unit_amount: req.body.dollars * 100
+//                     },
+//                     quantity: 1
+//                 }
+//             ],
 
-            success_url: `${process.env.BASE_URL}/subscriptions/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.BASE_URL}/subscriptions/error`
-        });
+//             success_url: `${process.env.BASE_URL}/subscriptions/success?session_id={CHECKOUT_SESSION_ID}`,
+//             cancel_url: `${process.env.BASE_URL}/subscriptions/error`
+//         });
 
-        res.json({ url: session.url });
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
-});
+//         res.json({ url: session.url });
+//     } catch (e) {
+//         res.status(500).json({ error: e.message });
+//     }
+// });
 
-router.get('/success', async (req, res, next) => {
-    const session = await stripe.checkout.sessions.retrieve(
-        req.query.session_id
-    );
+// router.get('/success', async (req, res, next) => {
+//     const session = await stripe.checkout.sessions.retrieve(
+//         req.query.session_id
+//     );
 
-    // Convert from cents
-    const amountOfDollars = session.amount_total / 100;
-    const amountOfTokens = amountOfDollars * tokensPerDollar;
+//     // Convert from cents
+//     const amountOfDollars = session.amount_total / 100;
+//     const amountOfTokens = amountOfDollars * tokensPerDollar;
 
-    // Save the new tokens to the DB
-    let queryString = `
-            UPDATE users
-            SET tokens = tokens + ${amountOfTokens}
-            WHERE id = '${userId}';
-            `;
+//     // Save the new tokens to the DB
+//     let queryString = `
+//             UPDATE users
+//             SET tokens = tokens + ${amountOfTokens}
+//             WHERE id = '${userId}';
+//             `;
 
-    await query(queryString);
+//     await query(queryString);
 
-    res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
-});
+//     res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
+// });
 
 // Export the router for app to use.
 module.exports = router;

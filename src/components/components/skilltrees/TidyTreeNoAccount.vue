@@ -276,7 +276,9 @@ export default {
             canvas.height = this.height;
             this.context = canvas.getContext('2d');
             let hiddenCanvas = document.getElementById('hidden-canvas');
-            this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
+            this.hiddenCanvasContext = hiddenCanvas.getContext('2d', {
+                willReadFrequently: true
+            });
 
             this.drawTree(d3.zoomIdentity);
         },
@@ -1383,6 +1385,7 @@ export default {
         getMouseOverNode(mouseX, mouseY) {
             // Get the corresponding pixel color on the hidden canvas
             // and look up the node in our map.
+
             const ctx = this.hiddenCanvasContext;
 
             // This will return that pixel's color
