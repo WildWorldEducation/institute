@@ -1063,7 +1063,7 @@ export default {
 }
 
 .assessing-chat {
-    background-color: #290707;
+    background-color: #571515;
     color: white;
 }
 
