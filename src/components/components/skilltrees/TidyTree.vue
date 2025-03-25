@@ -224,19 +224,21 @@ export default {
             const node = this.getMouseOverNode(mouseX, mouseY);
 
             if (node) {
-                const tooltipTopPosition = mouseY + 20;
-                const tooltipLeftPosition = mouseX;
+                let tooltipTopPosition = mouseY + 20;
+                let tooltipLeftPosition = mouseX;
                 const borderColor = this.hexBorderColor(node.data.level);
-                this.tooltipData = {
-                    showing: true,
-                    xPosition: `${tooltipTopPosition}px`,
-                    yPosition: `${tooltipLeftPosition}px`,
-                    skillName: node.data.skill_name,
-                    skillLevel: node.data.level,
-                    borderColor: borderColor,
-                    thumbnail: node.data.thumbnail,
-                    skillId: node.data.id
-                };
+                // Make sure position alway visible
+                if (tooltipTopPosition)
+                    this.tooltipData = {
+                        showing: true,
+                        xPosition: `${tooltipTopPosition}`,
+                        yPosition: `${tooltipLeftPosition}`,
+                        skillName: node.data.skill_name,
+                        skillLevel: node.data.level,
+                        borderColor: borderColor,
+                        thumbnail: node.data.thumbnail,
+                        skillId: node.data.id
+                    };
             } else {
                 this.tooltipData.showing = false;
             }
@@ -1757,7 +1759,6 @@ export default {
         async getTooltipData() {
             const res = await fetch('/skills/data-for-tooltip');
             const resJson = await res.json();
-            console.log(resJson);
         },
         async getIntroductionData(skillId) {}
     }

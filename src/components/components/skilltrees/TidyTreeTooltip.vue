@@ -4,7 +4,9 @@ export default {
     props: ['tooltipData'],
     data() {
         return {
-            introduction: ''
+            introduction: '',
+            topPosition: 0,
+            leftPosition: 0
         };
     },
     computed: {},
@@ -16,33 +18,70 @@ export default {
             el.innerHTML = htmlString;
             ``;
             const listOfParagraph = el.getElementsByTagName('p');
-
-            return listOfParagraph[0].innerText;
+            const firstSentence = listOfParagraph[0].innerText.split(
+                '. ',
+                1
+            )[0];
+            return firstSentence + '...';
+        },
+        getTooltipData(skillId) {
+            fetch(`/skills/introduction-data?skillId=${skillId}`)
+                .then((res) => {
+                    return res.json();
+                })
+                .then((result) => {
+                    const fullIntroduction = result[0].introduction;
+                    this.introduction =
+                        this.getFirstParagraph(fullIntroduction);
+                });
         },
         snakeToTile(string) {
             const result = string.replace(/^_*(.)|_+(.)/g, (s, c, d) =>
                 c ? c.toUpperCase() : ' ' + d.toUpperCase()
             );
             return result;
+        },
+        adjustTooltipPosition(probTopPosition, probLeftPosition) {
+            if (!this.$refs.tooltipElement) {
+                return;
+            }
+            const windowHeight = window.innerHeight;
+            const windowWidth = window.innerWidth;
+            const tooltipHeight = this.$refs.tooltipElement.clientHeight;
+            const tooltipWidth = this.$refs.tooltipElement.clientWidth;
+            // plus 'px' for css to read
+            this.topPosition = probTopPosition + 10 + 'px';
+            this.leftPosition = probLeftPosition + 10 + 'px';
+
+            // combine height and width to determine if tooltip is overflow
+            const combineHeight =
+                parseInt(probTopPosition) + parseInt(tooltipHeight);
+            const combineWidth =
+                parseInt(probLeftPosition) + parseInt(tooltipWidth);
+
+            if (combineHeight > windowHeight) {
+                const inViewTopPosition = windowHeight - tooltipHeight - 80;
+                this.topPosition = inViewTopPosition + 'px';
+            }
+            if (combineWidth > windowWidth) {
+                const inViewLeftPosition = windowWidth - tooltipWidth;
+                this.leftPosition = inViewLeftPosition + 'px';
+            }
         }
     },
     watch: {
         tooltipData: {
             deep: true,
             handler(newItem, oldItem) {
-                if (newItem.skillId === oldItem.skillId) {
-                    return;
+                // only get tooltip data when skill id change
+                if (newItem.skillId != oldItem.skillId) {
+                    this.getTooltipData(newItem.skillId);
                 }
-                console.log('getting call');
-                fetch(`/skills/introduction-data?skillId=${newItem.skillId}`)
-                    .then((res) => {
-                        return res.json();
-                    })
-                    .then((result) => {
-                        const fullIntroduction = result[0].introduction;
-                        this.introduction =
-                            this.getFirstParagraph(fullIntroduction);
-                    });
+                // adjust position to always show full height and width
+                this.adjustTooltipPosition(
+                    parseInt(newItem.xPosition),
+                    parseInt(newItem.yPosition)
+                );
             }
         }
     }
@@ -50,7 +89,7 @@ export default {
 </script>
 
 <template>
-    <div v-if="tooltipData.showing" class="tool-tip">
+    <div ref="tooltipElement" v-if="tooltipData.showing" class="tool-tip">
         <div class="tooltip-skill-name-background">
             <div class="d-flex tooltip-header">
                 <img
@@ -84,8 +123,8 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 0px;
-    top: v-bind('tooltipData.xPosition');
-    left: v-bind('tooltipData.yPosition');
+    top: v-bind('topPosition');
+    left: v-bind('leftPosition');
     color: black;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
