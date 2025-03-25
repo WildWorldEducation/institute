@@ -565,9 +565,12 @@ export default {
             subscription to use more.
         </div>
         <!--Tutor types -->
-        <span v-if="mode === 'big'" class="d-flex justify-content-between">
+        <div
+            v-if="mode === 'big'"
+            class="d-flex flex-lg-row flex-column justify-content-between"
+        >
             <!--Tutor types -->
-            <span class="d-md-flex">
+            <div class="d-md -inline-block d-flex flex-wrap flex-md-nowrap">
                 <!-- Socratic Tutor agent -->
                 <div class="d-inline-block">
                     <button
@@ -658,8 +661,8 @@ export default {
                         Multiple Choice Assessor
                     </router-link>
                 </div>
-            </span>
-            <span class="d-flex">
+            </div>
+            <div class="d-flex justify-content-between">
                 <!-- For speech to text -->
                 <SpeechRecorder
                     v-if="mode == 'big'"
@@ -696,8 +699,8 @@ export default {
                         />
                     </svg>
                 </button>
-            </span>
-        </span>
+            </div>
+        </div>
         <!-- User input (big mode) -->
         <div class="d-flex mt-1" v-if="mode === 'big'">
             <textarea
