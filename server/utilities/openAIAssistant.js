@@ -12,6 +12,9 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
+// For uploading files to vector store, for file search feature
+const fs = require('fs');
+
 /**
  * Shared function
  *
@@ -28,44 +31,43 @@ async function getMessagesList(threadId) {
     }
 }
 
+id: 'vs_67e3e28d36308191847139461e9f60e9'
+
+//uploadAndPollVectorStores();
 /**
- * File search test - Socratic tutor --------------------------------------
+ * File search test -
  */
-async function createFileSearchSocraticAssistantAndThread(
-    topic,
-    level,
-    learningObjectives
-) {
-    const assistant = await createFileSearchSocraticAssistant(
-        topic,
-        level,
-        learningObjectives
-    );
-    const thread = await createFileSearchSocraticAssistantThread();
-    const result = { assistant: assistant, thread: thread };
-    return result;
-}
+async function uploadAndPollVectorStores() {
+    let stats = fs.statSync('./public/data/uploads/the-martyrdom-of-man.pdf');
 
-async function createFileSearchSocraticAssistant(
-    topic,
-    level,
-    learningObjectives
-) {
-    const assistant = await openai.beta.assistants.create({
-        name: 'File Search Test Socratic Tutor',
-        instructions: `You are a personal tutor teaching a ${level} student about the following subject: 
-            ${topic}, which consists of the following learning objectives: ${learningObjectives}.
-            Use you knowledge base to teach this subject.
-            Please keep all messages below 2000 characters. `,
-        tools: [{ type: 'file_search' }],
-        model: 'gpt-4.5-preview'
+    // Use isFile() method to log the result to screen
+    console.log('is file ? ' + stats.isFile());
+
+    const fileStreams = [
+        './public/data/uploads/the-martyrdom-of-man.pdf',
+        './public/data/uploads/the-pragmatist_s-guide-to-life.docx',
+        './public/data/uploads/the-pragmatist_s-guide-to-sexuality.docx',
+        './public/data/uploads/the-pragmatist_s-guide-to-crafting-religion.docx',
+        './public/data/uploads/the-pragmatist_s-guide-to-governance.docx',
+        './public/data/uploads/the-pragmatist_s-guide-to-relationships.docx'
+    ].map((path) => fs.createReadStream(path));
+
+    // console.log(fileStreams);
+
+    //Create a vector store including our file.
+    let vectorStore = await openai.beta.vectorStores.create({
+        name: 'Collins Institute Skills Extra Documentation'
     });
-    return assistant;
-}
 
-async function createFileSearchSocraticAssistantThread() {
-    const thread = await openai.beta.threads.create();
-    return thread;
+    await openai.beta.vectorStores.fileBatches.uploadAndPoll(vectorStore.id, {
+        files: fileStreams
+    });
+
+    console.log(vectorStore);
+
+    // await openai.beta.assistants.update(assistant.id, {
+    //     tool_resources: { file_search: { vector_store_ids: [vectorStore.id] } }
+    // });
 }
 
 /**
@@ -99,7 +101,7 @@ async function createSocraticAssistant(topic, level, learningObjectives) {
             `.
             
             Please keep all messages below 2000 characters.`,
-        tools: [],
+        tools: [{ type: 'file_search' }],
         model: 'gpt-4.5-preview'
     });
     return assistant;
