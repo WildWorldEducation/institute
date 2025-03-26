@@ -29,6 +29,46 @@ async function getMessagesList(threadId) {
 }
 
 /**
+ * File search test - Socratic tutor --------------------------------------
+ */
+async function createFileSearchSocraticAssistantAndThread(
+    topic,
+    level,
+    learningObjectives
+) {
+    const assistant = await createFileSearchSocraticAssistant(
+        topic,
+        level,
+        learningObjectives
+    );
+    const thread = await createFileSearchSocraticAssistantThread();
+    const result = { assistant: assistant, thread: thread };
+    return result;
+}
+
+async function createFileSearchSocraticAssistant(
+    topic,
+    level,
+    learningObjectives
+) {
+    const assistant = await openai.beta.assistants.create({
+        name: 'File Search Test Socratic Tutor',
+        instructions: `You are a personal tutor teaching a ${level} student about the following subject: 
+            ${topic}, which consists of the following learning objectives: ${learningObjectives}.
+            Use you knowledge base to teach this subject.
+            Please keep all messages below 2000 characters. `,
+        tools: [{ type: 'file_search' }],
+        model: 'gpt-4.5-preview'
+    });
+    return assistant;
+}
+
+async function createFileSearchSocraticAssistantThread() {
+    const thread = await openai.beta.threads.create();
+    return thread;
+}
+
+/**
  * Socratic tutor functions --------------------------------------
  */
 async function createSocraticAssistantAndThread(
