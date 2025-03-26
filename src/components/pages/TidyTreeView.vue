@@ -1733,29 +1733,49 @@ export default {
     <!-- Intro Search Modal -->
     <div
         v-if="introSearchModal"
-        class="modal"
+        class="modal fade show"
+        tabindex="-1"
+        style="display: block; background-color: rgba(0, 0, 0, 0.5)"
         @click="closeModalOnOutsideClick"
     >
-        <div class="search-modal-content rounded">
-            <!-- Image -->
-            <div class="text-center app-logo-wrapper">
-                <img
-                    class="img-fluid"
-                    src="/images/app-logo.jpg"
-                    alt="icon of a skill tree"
-                />
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content rounded-3 border-0 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <button
+                        type="button"
+                        class="btn-close position-absolute top-0 end-0 m-3"
+                        @click="closeIntroSearchModal"
+                        aria-label="Close"
+                    ></button>
+                </div>
+
+                <div class="modal-body text-center pt-0">
+                    <div class="app-logo-wrapper mb-4">
+                        <img
+                            class="img-fluid mb-4"
+                            src="/images/app-logo.jpg"
+                            alt="icon of a skill tree"
+                        />
+                    </div>
+
+                    <div
+                        class="d-flex flex-column flex-sm-row align-items-center justify-content-center gap-2 px-3"
+                    >
+                        <SkillTreeSearchBar
+                            class="skill-tree-input-search w-100"
+                            :findNode="handleChooseResult"
+                            :clearResults="clearResult"
+                        />
+                        <button
+                            v-if="isMobileCheck > 576"
+                            class="btn primary-btn flex-shrink-0 w-sm-auto"
+                            @click="closeIntroSearchModal"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
             </div>
-            <span class="d-flex">
-                <!-- Search Feature -->
-                <SkillTreeSearchBar
-                    class=""
-                    :findNode="handleChooseResult"
-                    :clearResults="clearResult"
-                />
-                <button class="btn primary-btn" @click="closeIntroSearchModal">
-                    Close
-                </button>
-            </span>
         </div>
     </div>
 </template>
