@@ -56,7 +56,7 @@ async function createSocraticAssistant(topic, level, learningObjectives) {
             topic +
             `, which consists of the following learning objectives:` +
             learningObjectives +
-            `.
+            `. Use the Socratic method to teach students.
             
             Please keep all messages below 2000 characters.`,
         tools: [],
@@ -126,7 +126,7 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         instructions: `Please tutor about the subject: ${messageData.skillName},
         comprising the following learning objectives: ${messageData.learningObjectives}.
         Tutor the user as if they are at a ${messageData.skillLevel} level and age.
-        Ask follow up questions after responding to the message.
+        Use the Socratic method of teaching.        
         Make sure to have $ delimiters before any science and math strings that can convert to Latex
 
         Please keep all messages below 2000 characters. ${responseLength}`
