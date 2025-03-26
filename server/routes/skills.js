@@ -1137,8 +1137,8 @@ router.put(
                                             {
                                                 userId: req.session.userId,
                                                 userAction: `${req.body.edit
-                                                        ? 'edit_and_approve'
-                                                        : 'approve'
+                                                    ? 'edit_and_approve'
+                                                    : 'approve'
                                                     }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
