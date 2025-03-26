@@ -79,7 +79,16 @@ function findGuestHiddenSkillData(skillName, availableSkills) {
         return null
     }
     // Find the oldest parent of searching node
-    findOldestParent(searchSkill, availableSkills)
+    const oldestParent = findOldestParent(searchSkill, availableSkills);
+    // Handle error case
+    if (!oldestParent) {
+        throw ('can`t find oldest parent')
+    }
+    // For guest mode we will show entire branch and level filter
+    return {
+        level: searchSkill.level,
+        filterSkill: oldestParent.name
+    }
 }
 
 
