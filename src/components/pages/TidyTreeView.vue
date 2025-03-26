@@ -50,7 +50,8 @@ export default {
             showTutorialTip8: false,
             isMobileCheck: window.innerWidth,
             // To enableinstructor to lock the tree for student.
-            isTreeLocked: false
+            isTreeLocked: false,
+            introSearchModal: true
         };
     },
     async created() {
@@ -86,6 +87,14 @@ export default {
         SkillTreeSearchBar
     },
     methods: {
+        closeIntroSearchModal() {
+            this.introSearchModal = false;
+        },
+        closeModalOnOutsideClick(event) {
+            if (event.target.classList.contains('modal')) {
+                this.introSearchModal = false;
+            }
+        },
         resetPos() {
             this.$refs.childComponent.resetPos();
         },
@@ -100,6 +109,9 @@ export default {
             }
             // go to the skill position
             this.$refs.childComponent.goToLocation(node);
+
+            // Close the intro search modal if it's open
+            this.introSearchModal = false;
         },
         GetGoogleLoginResult() {
             fetch('/google-login-result')
@@ -369,8 +381,8 @@ export default {
 <template>
     <div class="container-fluid position-absolute legend-div">
         <div class="mobile-legend">
+            <!-- Search feature -->
             <div class="search-mobile-row">
-                <!-- Search feature -->
                 <SkillTreeSearchBar
                     :findNode="handleChooseResult"
                     :clearResults="clearResult"
@@ -1717,9 +1729,64 @@ export default {
             </div>
         </div>
     </div>
+
+    <!-- Intro Search Modal -->
+    <div
+        v-if="introSearchModal"
+        class="modal fade show"
+        tabindex="-1"
+        style="display: block; background-color: rgba(0, 0, 0, 0.5)"
+        @click="closeModalOnOutsideClick"
+    >
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content rounded-3 border-0 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <button
+                        type="button"
+                        class="btn-close position-absolute top-0 end-0 m-3"
+                        @click="closeIntroSearchModal"
+                        aria-label="Close"
+                    ></button>
+                </div>
+
+                <div class="modal-body text-center pt-0">
+                    <div class="app-logo-wrapper mb-4">
+                        <img
+                            class="img-fluid mb-4"
+                            src="/images/app-logo.jpg"
+                            alt="icon of a skill tree"
+                        />
+                    </div>
+
+                    <div
+                        class="d-flex flex-column flex-sm-row align-items-center justify-content-center gap-2 px-3"
+                    >
+                        <SkillTreeSearchBar
+                            class="skill-tree-input-search w-100"
+                            :findNode="handleChooseResult"
+                            :clearResults="clearResult"
+                        />
+                        <button
+                            v-if="isMobileCheck > 576"
+                            class="btn primary-btn flex-shrink-0 w-sm-auto"
+                            @click="closeIntroSearchModal"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
+/* Intro search model */
+/* Image */
+.app-logo-wrapper img {
+    max-height: 250px;
+}
+
 /* Tooltips */
 .info-panel {
     border-color: var(--primary-color);
@@ -2021,6 +2088,18 @@ export default {
 .modal-content {
     background-color: #fefefe;
     margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 520px;
+    font-size: 18px;
+    /* Could be more or less, depending on screen size */
+}
+
+/* Modal Content/Box */
+.search-modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
     /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
