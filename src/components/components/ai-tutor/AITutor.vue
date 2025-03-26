@@ -845,31 +845,41 @@ export default {
                 class="d-flex my-3 tutor-conversation streamed-message"
                 v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
             ></div>
-            <div
-                class="d-flex my-3"
-                :class="{ 'justify-content-end': message.role === 'user' }"
-                v-for="message in chatHistory"
-            >
+
+            <!-- Process messages with appropriate border styling -->
+            <template v-for="(message, index) in chatHistory">
                 <!-- Student messages -->
-                <div v-if="message.role === 'user'" class="user-conversation">
-                    <em>{{ message.content[0].text.value }}</em>
+                <div
+                    v-if="message.role === 'user'"
+                    class="d-flex my-3 justify-content-end"
+                >
+                    <div class="user-conversation">
+                        <em>{{ message.content[0].text.value }}</em>
+                    </div>
                 </div>
-                <!-- AI tutor messages -->
-                <span
+
+                <!-- AI tutor messages with conditional border styling -->
+                <div
                     v-else-if="
                         message.role === 'assistant' &&
                         message.content[0].type == 'text'
                     "
-                    class="d-flex justify-content-between w-100"
+                    class="d-flex justify-content-between w-100 my-3"
+                    :class="{
+                        'message-divider': index !== 0,
+                        'first-message': index === 0,
+                        'last-message': index === chatHistory.length - 1
+                    }"
                 >
-                    <div
-                        class="tutor-conversation"
-                        v-html="
-                            applyMarkDownFormatting(
-                                message.content[0].text.value
-                            )
-                        "
-                    ></div>
+                    <div class="tutor-conversation">
+                        <div
+                            v-html="
+                                applyMarkDownFormatting(
+                                    message.content[0].text.value
+                                )
+                            "
+                        ></div>
+                    </div>
                     <!-- Generate / Play audio -->
                     <!-- Loading animation -->
                     <div
@@ -881,6 +891,7 @@ export default {
                     >
                         <span class="speech-loader"></span>
                     </div>
+                    <!-- Generate speech button -->
                     <button
                         v-else-if="
                             !message.hasAudio &&
@@ -897,6 +908,7 @@ export default {
                     >
                         generate speech
                     </button>
+                    <!-- Play/pause button -->
                     <button
                         v-else-if="
                             !message.isAudioGenerating &&
@@ -913,7 +925,6 @@ export default {
                             height="18"
                             width="18"
                         >
-                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
                             <path
                                 d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c7.6-4.2 16.8-4.1 24.3 .5l144 88c7.1 4.4 11.5 12.1 11.5 20.5s-4.4 16.1-11.5 20.5l-144 88c-7.4 4.5-16.7 4.7-24.3 .5s-12.3-12.2-12.3-20.9l0-176c0-8.7 4.7-16.7 12.3-20.9z"
                             />
@@ -926,15 +937,15 @@ export default {
                             height="18"
                             width="18"
                         >
-                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
                             <path
                                 d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
                             />
                         </svg>
                     </button>
-                </span>
-            </div>
+                </div>
+            </template>
         </div>
+
         <!-- User input (mini mode) -->
         <div :class="'mini-user-chat-div'" v-if="mode === 'mini'">
             <textarea
@@ -986,6 +997,23 @@ export default {
 </template>
 
 <style scoped>
+.message-divider {
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 20px 0;
+    margin: 20px 0;
+}
+.first-message {
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.last-message {
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
 .hovering-info-panel {
     position: absolute;
     z-index: 1000; /* Higher than before to ensure it's above other elements */
