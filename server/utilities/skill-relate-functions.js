@@ -66,6 +66,22 @@ function findInaccessiblePath(skillNode, userSkills) {
     return resultNode
 }
 
+function findGuestHiddenSkillData(skillName, availableSkills) {
+    let searchSkill = null
+    for (let index = 0; index < availableSkills.length; index++) {
+        const currentSkill = availableSkills[index];
+        if (currentSkill.name === skillName) {
+            searchSkill = currentSkill;
+            break
+        }
+    }
+    if (!searchSkill) {
+        return null
+    }
+    // Find the oldest parent of searching node
+    findOldestParent(searchSkill, availableSkills)
+}
+
 
 function findNode(userSkills, skillId) {
     const node = userSkills.find(skill => {
@@ -79,6 +95,21 @@ function findNodeByName(userSkills, skillName) {
         return skill.skill_name === skillName
     })
     return node
+}
+
+function findOldestParent(skill, skillList) {
+    let stopFlag = false;
+    let resultNode = null;
+    let parentId = skill.id;
+    while (!stopFlag) {
+        let parentNode = findNode(skillList, parentId);
+        parentId = parentNode.parent;
+        if (parentId === 0) {
+            stopFlag = true;
+            resultNode = parentNode;
+        }
+    }
+    return resultNode;
 }
 
 function showChildren(userId, skillId) {
@@ -129,4 +160,4 @@ function convertNodesToArray(nodes) {
 
 
 
-module.exports = { findParentHaveHiddenChild, showHiddenChildFromParent, convertNodesToArray, findNodeByName, findInaccessiblePath, findNode };
+module.exports = { findParentHaveHiddenChild, showHiddenChildFromParent, convertNodesToArray, findNodeByName, findInaccessiblePath, findNode, findGuestHiddenSkillData };
