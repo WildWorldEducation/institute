@@ -498,6 +498,27 @@ router.get('/guest-mode/full-vertical-tree', (req, res, next) => {
     });
 });
 
+// handle find and showing filtered
+router.post('/guest-mode/find-filtered-skill', (req, res, next) => {
+    const skillName = req.body.skillName;
+    let sqlQuery = `SELECT id, name, image_thumbnail_url, parent, type, level, skills.order as skillorder, display_name, url
+                    FROM skills
+                    WHERE is_filtered = 'available' AND is_deleted = 0
+                    ORDER BY skillorder;`
+    try {
+        conn.query(sqlQuery, (err, result) => {
+            if (err) {
+                throw err
+            }
+            const availableSkills = result;
+            findGuestHiddenSkillData(skillName, availableSkills)
+        })
+    } catch (error) {
+        console.error(error)
+    }
+
+})
+
 // Filtered Nested List - for "Instructor" and "Editor" roles - Collapsable Tree.
 router.get('/filtered-nested-list', (req, res, next) => {
     if (req.session.userName) {
@@ -577,6 +598,9 @@ router.get('/filtered-nested-list', (req, res, next) => {
         });
     }
 });
+
+
+
 
 /**
  * Get Single Item
@@ -1137,8 +1161,8 @@ router.put(
                                             {
                                                 userId: req.session.userId,
                                                 userAction: `${req.body.edit
-                                                        ? 'edit_and_approve'
-                                                        : 'approve'
+                                                    ? 'edit_and_approve'
+                                                    : 'approve'
                                                     }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
@@ -1759,6 +1783,7 @@ router.get('/name-list-old', (req, res, next) => {
 // Import OpenAI package.
 const { OpenAI } = require('openai');
 const { path } = require('pdfkit');
+const { findInaccessiblePath, findGuestHiddenSkillData } = require('../utilities/skill-relate-functions');
 // To access the .env file.
 require('dotenv').config();
 // Include API key.

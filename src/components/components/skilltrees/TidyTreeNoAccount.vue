@@ -997,6 +997,18 @@ export default {
         },
         async findHiddenSkill(searchString) {
             // Find the filtered parent of this skill
+            console.log('search string: ' + searchString);
+            var url = '/skills/guest-mode/find-filtered-skill';
+
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    skillName: searchString
+                })
+            });
+
+            const resData = await res.json();
         },
 
         updateParentSubjectFilter() {
