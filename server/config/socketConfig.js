@@ -18,7 +18,7 @@ const createSocket = (server) => {
                     instructions = `Please tutor about the subject: ${messageData.skillName},
                 comprising the following learning objectives: ${messageData.learningObjectives}.
                 Tutor the user as if they are at a ${messageData.skillLevel} level and age.
-                Ask follow up questions after responding to the message.
+                Use the Socratic method of teaching.                
                 Make sure to have $ delimiters before any science and math strings that can convert to Latex
                 Please keep all messages below 2000 characters. ${messageData.responseLength}`;
                 } else if (messageData.tutorType == 'assessing') {
@@ -56,6 +56,7 @@ const createSocket = (server) => {
                     instructions = `
                     The user is at a ${messageData.skillLevel} level and age.
                     Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
+                    Use the Socratic method of teaching.
                     Ask the student a question related to the content.        
                     Make sure to have $ delimiters before any science and math strings that can convert to Latex
                     `;
