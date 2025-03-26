@@ -31,11 +31,9 @@ async function getMessagesList(threadId) {
     }
 }
 
-id: 'vs_67e3e28d36308191847139461e9f60e9'
-
 //uploadAndPollVectorStores();
 /**
- * File search test -
+ * File search feature - upload the files
  */
 async function uploadAndPollVectorStores() {
     let stats = fs.statSync('./public/data/uploads/the-martyrdom-of-man.pdf');
@@ -83,6 +81,14 @@ async function createSocraticAssistantAndThread(
         level,
         learningObjectives
     );
+
+    // Give it access to certain documents
+    await openai.beta.assistants.update(assistant.id, {
+        tool_resources: {
+            file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] }
+        }
+    });
+
     const thread = await createSocraticAssistantThread();
     const result = { assistant: assistant, thread: thread };
     return result;
@@ -222,6 +228,14 @@ async function createAssessingAssistantAndThread(
         level,
         learningObjectives
     );
+
+    // Give it access to certain documents
+    await openai.beta.assistants.update(assistant.id, {
+        tool_resources: {
+            file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] }
+        }
+    });
+
     const thread = await createAssessingAssistantThread();
     const result = { assistant: assistant, thread: thread };
     return result;
@@ -366,6 +380,14 @@ async function createLearningObjectiveAssistantAndThread(
         level,
         learningObjective
     );
+
+    // Give it access to certain documents
+    await openai.beta.assistants.update(assistant.id, {
+        tool_resources: {
+            file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] }
+        }
+    });
+
     const thread = await createLearningObjectiveAssistantThread();
     const result = { assistant: assistant, thread: thread };
     return result;
