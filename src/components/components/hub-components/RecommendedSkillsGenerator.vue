@@ -273,13 +273,13 @@ export default {
             </div>
         </div>
         <!-- Create learning track button -->
-        <button
+        <!-- <button
             v-if="sessionDetailsStore.isLoggedIn"
             class="btn primary-btn mt-3"
             @click="createLearningTrack"
         >
             Create learning track
-        </button>
+        </button> -->
     </div>
 </template>
 
