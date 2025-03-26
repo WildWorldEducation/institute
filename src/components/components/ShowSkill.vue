@@ -211,8 +211,10 @@ export default {
                 '/skill-learning-objectives/' + this.skillId + '/list'
             );
             this.skill.learningObjectives = await result.json();
-            for (let i = 0; i < this.skill.learningObjectives.length; i++) {
-                this.skill.learningObjectives[i].showAI = true;
+            if (this.sessionDetailsStore.isLoggedIn) {
+                for (let i = 0; i < this.skill.learningObjectives.length; i++) {
+                    this.skill.learningObjectives[i].showAI = true;
+                }
             }
         },
         recordSkillVisit(skillId) {
