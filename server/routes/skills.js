@@ -199,7 +199,7 @@ router.post(
                                     skillData
                                 );
                                 insertSkillsVectorIntoDataBase(vectorData);
-                                console.log('successful vectorize');
+
                                 // Add skill revision history (this is the first revision.)
                                 let revisionHistoryQuery = `INSERT INTO skill_history
                             (id, version_number, user_id, name, description,
@@ -511,10 +511,13 @@ router.post('/guest-mode/find-filtered-skill', (req, res, next) => {
                 throw err
             }
             const availableSkills = result;
-            findGuestHiddenSkillData(skillName, availableSkills)
+            const data = findGuestHiddenSkillData(skillName, availableSkills)
+            res.json(data)
         })
     } catch (error) {
         console.error(error)
+        res.status = 500;
+        res.json(null)
     }
 
 })
@@ -2010,7 +2013,6 @@ router.get(
         // sql for instructor and editor account
         conn.query(sqlQuery, async (err, result) => {
             if (err) {
-                console.log(result);
                 throw err;
             }
             res.json(result);
