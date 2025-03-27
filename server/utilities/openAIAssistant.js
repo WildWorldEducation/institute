@@ -81,8 +81,8 @@ async function getSocraticTutorThread(userId, skillUrl) {
         let queryString = `SELECT * 
                            FROM ai_socratic_tutor_threads 
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND skill_url = ${conn.escape(skillUrl)}`;
+            userId
+        )} AND skill_url = ${conn.escape(skillUrl)}`;
 
         const result = await query(queryString);
         return result;
@@ -220,8 +220,8 @@ async function getAssessingTutorThread(userId, skillUrl) {
         let queryString = `SELECT * 
                            FROM ai_assessing_tutor_threads 
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND skill_url = ${conn.escape(skillUrl)}`;
+            userId
+        )} AND skill_url = ${conn.escape(skillUrl)}`;
 
         const result = await query(queryString);
         return result;
@@ -377,8 +377,8 @@ async function getLearningObjectiveThread(userId, learningObjectiveId) {
         let queryString = `SELECT * 
                            FROM ai_tutor_learning_objective_threads
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND learning_objective_id = ${conn.escape(
+            userId
+        )} AND learning_objective_id = ${conn.escape(
             learningObjectiveId
         )}`;
 
@@ -510,7 +510,7 @@ async function createRunStream(
             instructions: assistantInstruction
         })
         .on('textDelta', (textDelta, snapshot) => {
-            socket.emit('stream-message', textDelta, streamType, snapshot);
+            socket.emit('stream-message', textDelta, streamType, snapshot, threadId);
         })
         .on('runStepDone', (runStep) => {
             socket.emit('run-end');

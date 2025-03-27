@@ -136,6 +136,10 @@ export default {
     },
     methods: {
         async checkTokenUsage() {
+            // ************************* WARNING WARNING **********************************
+            // YOU HAVE TO DELETE THIS BEFORE MERGE TO MAIN
+            this.isAITokenLimitReached = false;
+            return;
             try {
                 // Ensure user details are loaded first
                 await this.userDetailsStore.getUserDetails();

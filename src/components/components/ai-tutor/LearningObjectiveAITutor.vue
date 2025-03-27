@@ -292,6 +292,7 @@ export default {
                 if (newItem.isStreaming) {
                     this.waitForAIresponse = false;
                 }
+                // Handle run just end case
                 if (!newItem.isStreaming && newItem.isRunJustEnded) {
                     const assistantMessage = {
                         role: 'assistant',
@@ -326,6 +327,7 @@ export default {
 </script>
 
 <template>
+    <div>{{ $parent.isAITokenLimitReached }}</div>
     <!-- Thread loading animation -->
     <div
         v-if="isGotMessages == false"
@@ -405,12 +407,16 @@ export default {
             Thinking
             <TutorLoadingSymbol />
         </div>
+        <!-- WILL BE DELETE LATER -->
+        <h4>{{ assistantData.threadId }}</h4>
+        <h4>{{ stateOfSocket.currentStreamThread }}</h4>
         <div class="d-flex flex-column mx-auto chat-component socratic-chat">
             <!-- Currently streaming message -->
             <div
                 v-if="
                     stateOfSocket.isStreaming &&
-                    stateOfSocket.streamType === 'learningObjective'
+                    stateOfSocket.streamType === 'learningObjective' &&
+                    stateOfSocket.currentStreamThread == assistantData.threadId
                 "
                 class="d-flex my-3 tutor-conversation streamed-message p-2"
                 v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"

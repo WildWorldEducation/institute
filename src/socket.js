@@ -8,7 +8,9 @@ export const socketState = reactive({
     isStreaming: false,
     isRunJustEnded: false,
     isStudentMasteredSkill: false,
-    streamType: 'aiTutor'
+    streamType: 'aiTutor',
+    // This store what stream is currently streaming and the front end can correctly showing
+    currentStreamThread: '',
 });
 
 // "undefined" means the URL will be computed from the `window.location` object ( This is pretty brilliant as we do not have )
@@ -34,6 +36,7 @@ socket.on('stream-message', (...args) => {
     // console.log(args[1])
     socketState.streamingMessage = socketState.streamingMessage + args[0].value;
     socketState.streamType = args[1];
+    socketState.currentStreamThread = args[3]
 });
 
 socket.on('run-end', (...args) => {
@@ -41,7 +44,13 @@ socket.on('run-end', (...args) => {
     socketState.isRunJustEnded = true;
 });
 
-// socket.on('remove-stream-message', (...args) => {    
+socket.on('new-learning-objective-message', (...args) => {
+    console.log('new message ')
+    console.log(args[0])
+    socketState.currentStreamThread = args[0].threadId
+})
+
+// socket.on('remove-stream-message', (...args) => {
 //     socketState.streamingMessage = '';
 // });
 
