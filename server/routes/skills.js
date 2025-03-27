@@ -199,7 +199,7 @@ router.post(
                                     skillData
                                 );
                                 insertSkillsVectorIntoDataBase(vectorData);
-                                console.log('successful vectorize');
+
                                 // Add skill revision history (this is the first revision.)
                                 let revisionHistoryQuery = `INSERT INTO skill_history
                             (id, version_number, user_id, name, description,
@@ -498,6 +498,30 @@ router.get('/guest-mode/full-vertical-tree', (req, res, next) => {
     });
 });
 
+// handle find and showing filtered
+router.post('/guest-mode/find-filtered-skill', (req, res, next) => {
+    const skillName = req.body.skillName;
+    let sqlQuery = `SELECT id, name, image_thumbnail_url, parent, type, level, skills.order as skillorder, display_name, url
+                    FROM skills
+                    WHERE is_filtered = 'available' AND is_deleted = 0
+                    ORDER BY skillorder;`
+    try {
+        conn.query(sqlQuery, (err, result) => {
+            if (err) {
+                throw err
+            }
+            const availableSkills = result;
+            const data = findGuestHiddenSkillData(skillName, availableSkills)
+            res.json(data)
+        })
+    } catch (error) {
+        console.error(error)
+        res.status = 500;
+        res.json(null)
+    }
+
+})
+
 // Filtered Nested List - for "Instructor" and "Editor" roles - Collapsable Tree.
 router.get('/filtered-nested-list', (req, res, next) => {
     if (req.session.userName) {
@@ -577,6 +601,9 @@ router.get('/filtered-nested-list', (req, res, next) => {
         });
     }
 });
+
+
+
 
 /**
  * Get Single Item
@@ -1137,8 +1164,8 @@ router.put(
                                             {
                                                 userId: req.session.userId,
                                                 userAction: `${req.body.edit
-                                                        ? 'edit_and_approve'
-                                                        : 'approve'
+                                                    ? 'edit_and_approve'
+                                                    : 'approve'
                                                     }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
@@ -1759,6 +1786,7 @@ router.get('/name-list-old', (req, res, next) => {
 // Import OpenAI package.
 const { OpenAI } = require('openai');
 const { path } = require('pdfkit');
+const { findInaccessiblePath, findGuestHiddenSkillData } = require('../utilities/skill-relate-functions');
 // To access the .env file.
 require('dotenv').config();
 // Include API key.
@@ -1985,7 +2013,6 @@ router.get(
         // sql for instructor and editor account
         conn.query(sqlQuery, async (err, result) => {
             if (err) {
-                console.log(result);
                 throw err;
             }
             res.json(result);
