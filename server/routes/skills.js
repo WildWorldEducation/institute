@@ -511,10 +511,13 @@ router.post('/guest-mode/find-filtered-skill', (req, res, next) => {
                 throw err
             }
             const availableSkills = result;
-            findGuestHiddenSkillData(skillName, availableSkills)
+            const data = findGuestHiddenSkillData(skillName, availableSkills)
+            res.json(data)
         })
     } catch (error) {
         console.error(error)
+        res.status = 500;
+        res.json(null)
     }
 
 })

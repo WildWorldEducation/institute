@@ -664,7 +664,7 @@ export default {
                 -node.y * fixedScale + skillTreeWidth / centerXOffset;
             const translateY =
                 -node.x * fixedScale + skillTreeHeight / centerYOffset;
-
+            console.log(node);
             d3.select(this.context.canvas)
                 .transition()
                 .duration(2000)
@@ -1009,6 +1009,19 @@ export default {
             });
 
             const resData = await res.json();
+            if (!resData) {
+                alert('error happen');
+                return;
+            }
+            const oldSubjectsFilter = this.$parent.subjectFilters;
+            const newSubjectFilter = [
+                ...oldSubjectsFilter,
+                resData.filterSkill
+            ];
+            await this.reloadTree(resData.level, newSubjectFilter);
+            const searchNode = this.findNodeWithName(searchString);
+            console.log(searchNode);
+            this.goToLocation(searchNode);
         },
 
         updateParentSubjectFilter() {
