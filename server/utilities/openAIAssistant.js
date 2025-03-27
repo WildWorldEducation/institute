@@ -115,12 +115,6 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         content: messageData.message
     });
 
-    let responseLength = '';
-    // regular responses should be short
-    if (messageData.isSuggestedInteraction == false) {
-        responseLength = 'Please keep all responses succinct.';
-    }
-
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
         instructions: `Please tutor about the subject: ${messageData.skillName},
@@ -143,7 +137,7 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         3. If the answer shows partial understanding, guide the student towards a more complete understanding
 
         Make sure to have $ delimiters before any science and math strings that can convert to Latex
-        Please keep all messages below 2000 characters. ${responseLength}`
+        Please keep all messages below 2000 characters, and succinct.`
     });
 
     if (run.status === 'completed') {
@@ -152,7 +146,7 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
 
         // Save the user's token usage
         let tokenCount = run.usage.total_tokens;
-        console.log(tokenCount);
+        // console.log(tokenCount);
         saveTokenUsage(messageData.userId, tokenCount);
 
         return latestMessage;
@@ -280,8 +274,7 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
               - What parts of the answer are correct
               - What parts of the answer are incorrect
               - Why those parts are correct or incorrect
-           c) Give a detailed explanation that helps the student understand
-           d) Ask a follow-up question that probes deeper into their understanding
+           c) Give a detailed explanation that helps the student understand           
 
         2. Assessment Strategy:
            - Ask questions about each learning objective, one after the other
@@ -295,7 +288,7 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
            - Aim to guide the student towards a more comprehensive understanding
 
         Make sure to have $ delimiters before any science and math strings that can convert to Latex.
-        Please keep all messages below 2000 characters.`
+        Please keep all messages below 2000 characters, and succinct.`
     });
 
     if (run.status === 'completed') {

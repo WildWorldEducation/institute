@@ -18,20 +18,50 @@ const createSocket = (server) => {
                     instructions = `Please tutor about the subject: ${messageData.skillName},
                 comprising the following learning objectives: ${messageData.learningObjectives}.
                 Tutor the user as if they are at a ${messageData.skillLevel} level and age.
-                Use the Socratic method of teaching.                
+                Use the Socratic method of teaching.
+        
+                IMPORTANT TEACHING GUIDELINES:
+                1. After the student answers a question, you MUST:
+                   a) Evaluate the correctness of their answer
+                   b) Provide clear feedback explaining why the answer is correct or incorrect
+                   c) If the answer is incorrect, provide a detailed explanation 
+                   d) Ask a follow-up question to help the student understand better
+        
+                2. When giving feedback:
+                   - Be constructive and encouraging
+                   - Explain the reasoning behind correct and incorrect parts of the answer
+                   - Use language appropriate for a ${messageData.skillLevel} level student
+        
+                3. If the answer shows partial understanding, guide the student towards a more complete understanding
+        
                 Make sure to have $ delimiters before any science and math strings that can convert to Latex
-                Please keep all messages below 2000 characters. ${messageData.responseLength}`;
+                Please keep all messages below 2000 characters, and succinct.`;
                 } else if (messageData.tutorType == 'assessing') {
                     instructions = `The user is at a ${messageData.skillLevel} level and age.
-                Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
+        Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
 
-                Ask questions about each learning objective, one after the other. When you get to the end of the array,
-                please start again.
-                Only ask one question, not more than one.
-                Preference asking questions on learning objectives that the student does not seem to know well.
+        ASSESSMENT AND FEEDBACK GUIDELINES:
+        1. After the student answers a question, you MUST:
+           a) Carefully evaluate the correctness of their answer
+           b) Provide clear, constructive feedback explaining:
+              - What parts of the answer are correct
+              - What parts of the answer are incorrect
+              - Why those parts are correct or incorrect
+           c) Give a detailed explanation that helps the student understand           
 
-                Make sure to have $ delimiters before any science and math strings that can convert to Latex.
-                Please keep all messages below 2000 characters.`;
+        2. Assessment Strategy:
+           - Ask questions about each learning objective, one after the other
+           - When you get to the end of the array, start again
+           - Only ask one question at a time
+           - Prioritize asking questions on learning objectives that the student does not seem to know well
+
+        3. Feedback Principles:
+           - Be specific about what is correct or incorrect
+           - Use language appropriate for a ${messageData.skillLevel} level student
+           - Aim to guide the student towards a more comprehensive understanding
+
+        Make sure to have $ delimiters before any science and math strings that can convert to Latex.
+        Please keep all messages below 2000 characters.`;
                 }
 
                 await createRunStream(
@@ -55,19 +85,28 @@ const createSocket = (server) => {
                 if (messageData.tutorType == 'socratic') {
                     instructions = `
                     The user is at a ${messageData.skillLevel} level and age.
-                    Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
-                    Use the Socratic method of teaching.
-                    Ask the student a question related to the content.        
+                    Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.                    
+
+                    Strategy:
+                     - Use the Socratic method of teaching
+                     - Ask questions on the content                     
+                     - Only ask one question at a time
+                     - If needed, ask a follow-up questions to help the student understand better
+                     - If the answer shows partial understanding, guide the student towards a more complete understanding
+                     - Prioritize asking questions on learning objectives that the student does not seem to know well
+                     - Aim to guide the student towards a more comprehensive understanding
+                                        
                     Make sure to have $ delimiters before any science and math strings that can convert to Latex
                     `;
                 } else {
                     instructions = `The user is at a ${messageData.skillLevel} level and age.
                     Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
-               
-                    Ask questions about each learning objective, one after the other. When you get to the end of the array,
-                    please start again.
-                    Only ask one question, not more than one.        
-                    Preference asking questions on learning objectives that the student does not seem to know well.
+                                   
+                    Strategy:
+                     - Ask questions about each learning objective, one after the other
+                     - When you get to the end of the array, start again
+                     - Only ask one question at a time
+                     - Prioritize asking questions on learning objectives that the student does not seem to know well
                               
                     Make sure to have $ delimiters before any science and math strings that can convert to Latex.
                     Please keep all messages below 2000 characters.`;
@@ -89,11 +128,21 @@ const createSocket = (server) => {
             socket.on('new-learning-objective-message', async (messageData) => {
                 // This has to do with when the user presses "send" with no message.
                 const isEmptyMessage = false;
-                const assistantInstruction = `Please do not repeat the request. Please tutor about the topic: 
-                    ${messageData.learningObjective}. Tutor the user as if they are at a ${messageData.skillLevel}
-                    level and age. Ask follow up questions. Make sure to have $ delimiters before any science and math string that can convert to Latex.
-                    If the message content is empty, please ask the user to write something.
-                    Please be succinct, brief and clear.`;
+                const assistantInstruction = (instructions = `
+                    The user is at a ${messageData.skillLevel} level and age.
+                    Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.                    
+
+                    Strategy:
+                     - Use the Socratic method of teaching
+                     - Ask questions on the content                     
+                     - Only ask one question at a time
+                     - If needed, ask a follow-up questions to help the student understand better
+                     - If the answer shows partial understanding, guide the student towards a more complete understanding
+                     - Prioritize asking questions on learning objectives that the student does not seem to know well
+                     - Aim to guide the student towards a more comprehensive understanding
+                                        
+                    Make sure to have $ delimiters before any science and math strings that can convert to Latex
+                    `);
 
                 await createRunStream(
                     messageData.threadId,
