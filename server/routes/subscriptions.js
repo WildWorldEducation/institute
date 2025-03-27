@@ -51,7 +51,6 @@ Routes
 let userId;
 let tokensPerDollar;
 router.post('/create-checkout-session', async (req, res) => {
-    console.log('test');
     try {
         userId = req.body.userId;
         tokensPerDollar = req.body.tokensPerDollar;
