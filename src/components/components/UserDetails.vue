@@ -23,6 +23,7 @@ export default {
     data() {
         return {
             showModal: false,
+            showRemoveStudentModal: false,
             localIsSkillsLocked: null,
             mode: 'big'
         };
@@ -38,6 +39,15 @@ export default {
     methods: {
         updateSkillsLock() {
             this.$parent.updateSkillsLock();
+        },
+        removeStudentFromInstructor(){
+            this.usersStore.removeStudentFromInstructor(this.userId, this.userDetailsStore.userId);
+            this.showRemoveStudentModal = false;
+            this.$parent.showDetails = false;
+            this.$parent.students = this.$parent.students.filter((u) => {
+                return u.id !== this.userId;
+            });
+            this.$parent.initializeSelectedUser();
         }
     }
 };
@@ -330,7 +340,7 @@ export default {
                 </div>
                 <div
                     v-if="userDetailsStore.role == 'instructor'"
-                    class="d-flex justify-content-end mt-3"
+                    class="d-flex flex-column align-items-end mt-3"
                 >
                     <router-link
                         :to="'/edit-student-password/' + this.$parent.user.id"
@@ -338,6 +348,10 @@ export default {
                     >
                         Change password
                     </router-link>
+                    <div 
+                        class="btn btn-danger d-inline-block mt-2"
+                        @click="showRemoveStudentModal = true"
+                    >Remove Student</div>
                 </div>
             </div>
         </div>
@@ -365,6 +379,30 @@ export default {
                         type="button"
                         class="btn btn-dark"
                         @click="showModal = false"
+                    >
+                        No
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div v-if="showRemoveStudentModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <p>Are you sure you want to remove this student?</p>
+                <div style="display: flex; gap: 10px">
+                    <button
+                        type="button"
+                        class="btn btn-danger"
+                        @click="removeStudentFromInstructor()"
+                    >
+                        Yes
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-dark"
+                        @click="showRemoveStudentModal = false"
                     >
                         No
                     </button>

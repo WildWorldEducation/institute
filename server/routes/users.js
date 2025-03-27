@@ -1185,6 +1185,28 @@ router.put(
     }
 );
 
+// Remove student from instructor
+router.put(
+    '/:id/remove/instructor',
+    isAuthenticated,
+    addInstructorPermission,
+    (req, res, next) => {
+        let sqlQuery = `
+            DELETE FROM instructor_students WHERE instructor_id = ${conn.escape(req.session.userId)} AND student_id = ${conn.escape(req.params.id)}`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    res.end();
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+);
+
 // User update their details from profile page
 router.put(
     '/profile/:id/edit',
