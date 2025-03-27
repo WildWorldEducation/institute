@@ -56,6 +56,25 @@ export const useUsersStore = defineStore('users', {
             if (result.error) {
                 console.log(result.error);
             }
+        },
+        async removeStudentFromInstructor(studentId, instructorId){
+            this.studentsOfInstructor = this.studentsOfInstructor.filter((u) => {
+                return u.id !== studentId;
+            });
+            const result = await fetch(`/users/${studentId}/remove/instructor`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    instructor_id: instructorId
+                })
+            });
+            if (result.error) {
+                console.log(result.error);
+            }else{
+                this.studentsOfInstructor = this.studentsOfInstructor.filter((u) => {
+                    return u.id !== studentId;
+                });
+            }
         }
     }
 });
