@@ -293,7 +293,11 @@ export default {
                     this.waitForAIresponse = false;
                 }
                 // Handle run just end case
-                if (!newItem.isStreaming && newItem.isRunJustEnded) {
+                if (
+                    !newItem.isStreaming &&
+                    newItem.isRunJustEnded &&
+                    this.assistantData.threadId == newItem.currentStreamThread
+                ) {
                     const assistantMessage = {
                         role: 'assistant',
                         content: [
@@ -407,9 +411,6 @@ export default {
             Thinking
             <TutorLoadingSymbol />
         </div>
-        <!-- WILL BE DELETE LATER -->
-        <h4>{{ assistantData.threadId }}</h4>
-        <h4>{{ stateOfSocket.currentStreamThread }}</h4>
         <div class="d-flex flex-column mx-auto chat-component socratic-chat">
             <!-- Currently streaming message -->
             <div
