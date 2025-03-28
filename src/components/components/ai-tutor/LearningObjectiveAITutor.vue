@@ -340,14 +340,14 @@ export default {
     </div>
     <div v-else>
         <!-- learning objective explanation button -->
-        <div
+        <!-- <div
             class="alert alert-warning mt-1"
             role="alert"
             v-if="$parent.isAITokenLimitReached"
         >
             You have reached your monthly AI token limit. Please recharge your
             subscription to use more.
-        </div>
+        </div> -->
         <!-- Suggested interaction buttons -->
         <span class="d-flex justify-content-end mt-2">
             <button
