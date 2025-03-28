@@ -36,7 +36,7 @@ export default {
             transcriptForAssessment: [],
             chatHistory: [],
             waitForAIresponse: false,
-            mode: 'big',
+            mode: 'docked',
             englishSkillLevel: '',
             learningObjectives: [],
             tutorType: 'socratic',
@@ -431,7 +431,7 @@ export default {
     <div
         v-if="mode !== 'hide'"
         :class="{
-            'container mt-3': mode === 'big',
+            'container mt-3': mode === 'docked',
             'minimize-chat-container': mode === 'modal'
         }"
     >
@@ -444,7 +444,7 @@ export default {
                     <span class="d-flex gap-2">
                         <h2 class="secondary-heading">AI tutor</h2>
                         <TooltipBtn
-                            v-if="mode === 'big'"
+                            v-if="mode === 'docked'"
                             class="d-none d-md-block"
                             toolTipText="Press the 'generate audio' button to hear the tutor speak with AI generated speech."
                             bubbleWidth="350px"
@@ -453,7 +453,7 @@ export default {
                         />
                         <!-- Mobile tooltip has smaller width -->
                         <TooltipBtn
-                            v-if="mode === 'big'"
+                            v-if="mode === 'docked'"
                             class="d-md-none"
                             toolTipText="Chat with ours AI Tutor about the subjects"
                             bubbleWidth="100px"
@@ -507,7 +507,7 @@ export default {
                         <button
                             v-if="mode === 'modal'"
                             class="primary-btn btn close-btn"
-                            @click="mode = 'big'"
+                            @click="mode = 'docked'"
                             aria-label="Close"
                         >
                             <svg
@@ -559,7 +559,7 @@ export default {
         </div>
         <!--Tutor types -->
         <div
-            v-if="mode === 'big'"
+            v-if="mode === 'docked'"
             class="d-flex flex-lg-row flex-column justify-content-between"
         >
             <!--Tutor types -->
@@ -658,7 +658,7 @@ export default {
             <div class="d-flex justify-content-between">
                 <!-- For speech to text -->
                 <SpeechRecorder
-                    v-if="mode == 'big'"
+                    v-if="mode == 'docked'"
                     :tutorType="tutorType"
                     :skill="skill"
                     :skillLevel="englishSkillLevel"
@@ -694,8 +694,8 @@ export default {
                 </button>
             </div>
         </div>
-        <!-- User input (big mode) -->
-        <div class="d-flex mt-1" v-if="mode === 'big'">
+        <!-- User input (docked mode) -->
+        <div class="d-flex mt-1" v-if="mode === 'docked'">
             <textarea
                 ref="messageInput"
                 class="chat-text-area rounded border border-dark me-1"
@@ -737,7 +737,7 @@ export default {
         </div>
         <!-- Tutor loading animation -->
         <div
-            v-if="mode === 'big' && waitForAIresponse"
+            v-if="mode === 'docked' && waitForAIresponse"
             class="ai-tutor-processing mt-1"
         >
             <svg
@@ -759,7 +759,7 @@ export default {
             v-if="showChat"
             class="d-flex flex-column mx-auto chat-history"
             :class="{
-                'chat-history': mode === 'big',
+                'chat-history': mode === 'docked',
                 'modal-chat-history': mode === 'modal',
                 'socratic-chat': tutorType === 'socratic',
                 'assessing-chat': tutorType === 'assessing'
