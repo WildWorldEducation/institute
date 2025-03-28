@@ -276,7 +276,9 @@ export default {
             canvas.height = this.height;
             this.context = canvas.getContext('2d');
             let hiddenCanvas = document.getElementById('hidden-canvas');
-            this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
+            this.hiddenCanvasContext = hiddenCanvas.getContext('2d', {
+                willReadFrequently: true
+            });
 
             this.drawTree(d3.zoomIdentity);
         },
@@ -995,6 +997,29 @@ export default {
         },
         async findHiddenSkill(searchString) {
             // Find the filtered parent of this skill
+            var url = '/skills/guest-mode/find-filtered-skill';
+
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    skillName: searchString
+                })
+            });
+
+            const resData = await res.json();
+            if (!resData) {
+                alert('error happen');
+                return;
+            }
+            const oldSubjectsFilter = this.$parent.subjectFilters;
+            const newSubjectFilter = [
+                ...oldSubjectsFilter,
+                resData.filterSkill
+            ];
+            await this.reloadTree(resData.level, newSubjectFilter);
+            const searchNode = this.findNodeWithName(searchString);
+            this.goToLocation(searchNode);
         },
 
         updateParentSubjectFilter() {
@@ -1133,7 +1158,6 @@ export default {
         // draw skill name based on it length
         drawSkillName(node, ctx, isSearched) {
             if (!node.data.name) {
-                console.log(node.data);
                 return;
             }
             if (node.data.name.length < 19) {
@@ -1383,6 +1407,7 @@ export default {
         getMouseOverNode(mouseX, mouseY) {
             // Get the corresponding pixel color on the hidden canvas
             // and look up the node in our map.
+
             const ctx = this.hiddenCanvasContext;
 
             // This will return that pixel's color

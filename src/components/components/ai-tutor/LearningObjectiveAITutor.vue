@@ -408,7 +408,10 @@ export default {
         <div class="d-flex flex-column mx-auto chat-component socratic-chat">
             <!-- Currently streaming message -->
             <div
-                v-if="stateOfSocket.isStreaming"
+                v-if="
+                    stateOfSocket.isStreaming &&
+                    stateOfSocket.streamType === 'learningObjective'
+                "
                 class="d-flex my-3 tutor-conversation streamed-message p-2"
                 v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
             ></div>

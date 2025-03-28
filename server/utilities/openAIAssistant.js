@@ -104,7 +104,7 @@ async function createSocraticAssistant(topic, level, learningObjectives) {
             topic +
             `, which consists of the following learning objectives:` +
             learningObjectives +
-            `.
+            `. Use the Socratic method to teach students.
             
             Please keep all messages below 2000 characters.`,
         tools: [{ type: 'file_search' }],
@@ -163,21 +163,29 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         content: messageData.message
     });
 
-    let responseLength = '';
-    // regular responses should be short
-    if (messageData.isSuggestedInteraction == false) {
-        responseLength = 'Please keep all responses succinct.';
-    }
-
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
         instructions: `Please tutor about the subject: ${messageData.skillName},
         comprising the following learning objectives: ${messageData.learningObjectives}.
         Tutor the user as if they are at a ${messageData.skillLevel} level and age.
-        Ask follow up questions after responding to the message.
-        Make sure to have $ delimiters before any science and math strings that can convert to Latex
+        Use the Socratic method of teaching.
 
-        Please keep all messages below 2000 characters. ${responseLength}`
+        IMPORTANT TEACHING GUIDELINES:
+        1. After the student answers a question, you MUST:
+           a) Evaluate the correctness of their answer
+           b) Provide clear feedback explaining why the answer is correct or incorrect
+           c) If the answer is incorrect, provide a detailed explanation 
+           d) Ask a follow-up question to help the student understand better
+
+        2. When giving feedback:
+           - Be constructive and encouraging
+           - Explain the reasoning behind correct and incorrect parts of the answer
+           - Use language appropriate for a ${messageData.skillLevel} level student
+
+        3. If the answer shows partial understanding, guide the student towards a more complete understanding
+
+        Make sure to have $ delimiters before any science and math strings that can convert to Latex
+        Please keep all messages below 2000 characters, and succinct.`
     });
 
     if (run.status === 'completed') {
@@ -186,7 +194,7 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
 
         // Save the user's token usage
         let tokenCount = run.usage.total_tokens;
-        console.log(tokenCount);
+        // console.log(tokenCount);
         saveTokenUsage(messageData.userId, tokenCount);
 
         return latestMessage;
@@ -315,13 +323,28 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
         instructions: `The user is at a ${messageData.skillLevel} level and age.
         Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
 
-        Ask questions about each learning objective, one after the other. When you get to the end of the array,
-        please start again.
-        Only ask one question, not more than one.
-        Preference asking questions on learning objectives that the student does not seem to know well.
+        ASSESSMENT AND FEEDBACK GUIDELINES:
+        1. After the student answers a question, you MUST:
+           a) Carefully evaluate the correctness of their answer
+           b) Provide clear, constructive feedback explaining:
+              - What parts of the answer are correct
+              - What parts of the answer are incorrect
+              - Why those parts are correct or incorrect
+           c) Give a detailed explanation that helps the student understand           
+
+        2. Assessment Strategy:
+           - Ask questions about each learning objective, one after the other
+           - When you get to the end of the array, start again
+           - Only ask one question at a time
+           - Prioritize asking questions on learning objectives that the student does not seem to know well
+
+        3. Feedback Principles:
+           - Be specific about what is correct or incorrect
+           - Use language appropriate for a ${messageData.skillLevel} level student
+           - Aim to guide the student towards a more comprehensive understanding
 
         Make sure to have $ delimiters before any science and math strings that can convert to Latex.
-        Please keep all messages below 2000 characters.`
+        Please keep all messages below 2000 characters, and succinct.`
     });
 
     if (run.status === 'completed') {

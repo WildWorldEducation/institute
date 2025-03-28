@@ -79,7 +79,7 @@ function findGuestHiddenSkillData(skillName, availableSkills) {
         return null
     }
     // Find the oldest parent of searching node
-    const oldestParent = findOldestParent(searchSkill, availableSkills)
+    const oldestParent = findOldestParent(searchSkill, availableSkills);
     // Handle error case
     if (!oldestParent) {
         throw ('can`t find oldest parent')
@@ -89,7 +89,6 @@ function findGuestHiddenSkillData(skillName, availableSkills) {
         level: searchSkill.level,
         filterSkill: oldestParent.name
     }
-
 }
 
 

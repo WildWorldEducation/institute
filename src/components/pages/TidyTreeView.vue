@@ -50,7 +50,8 @@ export default {
             showTutorialTip8: false,
             isMobileCheck: window.innerWidth,
             // To enableinstructor to lock the tree for student.
-            isTreeLocked: false
+            isTreeLocked: false,
+            introSearchModal: true
         };
     },
     async created() {
@@ -86,6 +87,14 @@ export default {
         SkillTreeSearchBar
     },
     methods: {
+        closeIntroSearchModal() {
+            this.introSearchModal = false;
+        },
+        closeModalOnOutsideClick(event) {
+            if (event.target.classList.contains('modal')) {
+                this.introSearchModal = false;
+            }
+        },
         resetPos() {
             this.$refs.childComponent.resetPos();
         },
@@ -100,6 +109,9 @@ export default {
             }
             // go to the skill position
             this.$refs.childComponent.goToLocation(node);
+
+            // Close the intro search modal if it's open
+            this.introSearchModal = false;
         },
         GetGoogleLoginResult() {
             fetch('/google-login-result')
@@ -369,8 +381,8 @@ export default {
 <template>
     <div class="container-fluid position-absolute legend-div">
         <div class="mobile-legend">
+            <!-- Search feature -->
             <div class="search-mobile-row">
-                <!-- Search feature -->
                 <SkillTreeSearchBar
                     :findNode="handleChooseResult"
                     :clearResults="clearResult"
@@ -1717,9 +1729,73 @@ export default {
             </div>
         </div>
     </div>
+
+    <!-- Intro Search Modal -->
+    <div
+        v-if="introSearchModal"
+        class="modal fade show"
+        tabindex="-1"
+        style="display: block; background-color: rgba(0, 0, 0, 0.5)"
+        @click="closeModalOnOutsideClick"
+    >
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content rounded-3 border-0 shadow-lg p-0">
+                <div class="modal-header border-0 pb-0">
+                    <button
+                        type="button"
+                        class="primary-btn btn position-absolute top-0 end-0 m-3 close-btn"
+                        @click="closeIntroSearchModal"
+                        aria-label="Close"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            fill="white"
+                            width="18"
+                        >
+                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+                            />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="modal-body text-center pt-0">
+                    <div class="app-logo-wrapper">
+                        <img
+                            class="img-fluid"
+                            src="/images/app-logo.jpg"
+                            alt="icon of a skill tree"
+                        />
+                    </div>
+
+                    <div
+                        class="d-flex flex-column flex-sm-row align-items-center justify-content-center"
+                    >
+                        <SkillTreeSearchBar
+                            class="skill-tree-input-search w-100"
+                            :findNode="handleChooseResult"
+                            :clearResults="clearResult"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
+/* Intro search model */ /* Modal Content/Box */
+.close-btn {
+    z-index: 1000;
+}
+
+/* Image */
+.app-logo-wrapper img {
+    max-height: 250px;
+}
+
 /* Tooltips */
 .info-panel {
     border-color: var(--primary-color);
