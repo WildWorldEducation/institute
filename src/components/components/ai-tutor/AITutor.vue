@@ -781,10 +781,10 @@ export default {
                 <!-- Student messages -->
                 <div
                     v-if="message.role === 'user'"
-                    class="d-flex my-3 justify-content-end"
+                    class="d-flex justify-content-end message-divider"
                 >
                     <div class="user-conversation">
-                        <em>{{ message.content[0].text.value }}test</em>
+                        <em>{{ message.content[0].text.value }}</em>
                     </div>
                 </div>
 
@@ -797,8 +797,8 @@ export default {
                     class="d-flex justify-content-between w-100"
                     :class="{
                         'message-divider': index !== 0,
-                        'first-message': index === 0,
-                        'last-message': index === chatHistory.length - 1
+                        'first-message': index === 0
+                        // 'last-message': index === chatHistory.length - 1
                     }"
                 >
                     <div class="tutor-conversation">
@@ -929,14 +929,16 @@ export default {
 <style scoped>
 .message-divider {
     border-top: 1px solid #e0e0e0;
-    border-bottom: 1px solid #e0e0e0;
-    padding: 20px 0;
-    /* margin: 20px 0; */
+    padding-top: 25px;
+    padding-bottom: 20px;
+    /* border-bottom: 1px solid #e0e0e0;    
+     margin: 20px 0; */
 }
 .first-message {
-    border-bottom: 1px solid #e0e0e0;
+    padding: 20px 0;
+    /* border-bottom: 1px solid #e0e0e0;
     padding-bottom: 20px;
-    /* margin-bottom: 20px; */
+     margin-bottom: 20px; */
 }
 
 .last-message {
