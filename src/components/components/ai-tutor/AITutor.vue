@@ -143,8 +143,6 @@ export default {
                     this.threadID = this.chatHistory[0].thread_id;
                 }
 
-                console.log(this.chatHistory);
-
                 this.$parent.checkTokenUsage();
             } catch (error) {
                 console.error(error);
@@ -428,6 +426,8 @@ export default {
 </script>
 
 <template>
+    <!-- Modal for 'modal mode'-->
+    <div v-if="mode === 'modal'" class="modal"></div>
     <div
         v-if="mode !== 'hide'"
         :class="{
