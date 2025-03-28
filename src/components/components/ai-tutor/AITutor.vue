@@ -794,7 +794,7 @@ export default {
                         message.role === 'assistant' &&
                         message.content[0].type == 'text'
                     "
-                    class="d-flex justify-content-between w-100 my-3"
+                    class="d-flex justify-content-between w-100"
                     :class="{
                         'message-divider': index !== 0,
                         'first-message': index === 0,
