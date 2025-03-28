@@ -292,7 +292,12 @@ export default {
                 if (newItem.isStreaming) {
                     this.waitForAIresponse = false;
                 }
-                if (!newItem.isStreaming && newItem.isRunJustEnded) {
+                // Handle run just end case
+                if (
+                    !newItem.isStreaming &&
+                    newItem.isRunJustEnded &&
+                    this.assistantData.threadId == newItem.currentStreamThread
+                ) {
                     const assistantMessage = {
                         role: 'assistant',
                         content: [
@@ -410,7 +415,8 @@ export default {
             <div
                 v-if="
                     stateOfSocket.isStreaming &&
-                    stateOfSocket.streamType === 'learningObjective'
+                    stateOfSocket.streamType === 'learningObjective' &&
+                    stateOfSocket.currentStreamThread == assistantData.threadId
                 "
                 class="d-flex my-3 tutor-conversation streamed-message p-2"
                 v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
