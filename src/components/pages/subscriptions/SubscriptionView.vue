@@ -148,7 +148,7 @@ export default {
             You are over the monthly free limit. You can't use the AI features
             until next month.
         </div>
-        <!-- <h2 class="secondary-heading h4 mt-5">Buy tokens</h2>
+        <h2 class="secondary-heading h4 mt-5">Buy tokens</h2>
         <label>$&nbsp; </label>
         <input
             class=""
@@ -165,7 +165,7 @@ export default {
         </p>
         <button @click="checkout()" class="btn primary-btn mt-2">
             Check out
-        </button> -->
+        </button>
 
         <!-- <li>
                 <strong>Amount of input tokens:</strong>

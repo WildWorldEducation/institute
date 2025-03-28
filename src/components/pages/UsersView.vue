@@ -128,16 +128,25 @@ export default {
                     this.usersStore.users.length > 0
                 ) {
                     this.updateUserDetails(this.usersStore.users[0], true);
+                    if(this.$refs.usersListRef){
+                        this.$refs.usersListRef.selectedItemId = this.usersStore.users[0].id;
+                    }
                 } else if (
                     this.userDetailsStore.role === 'instructor' &&
                     this.students.length > 0
                 ) {
                     this.updateUserDetails(this.students[0], true);
+                    if(this.$refs.usersListRef){
+                        this.$refs.usersListRef.selectedItemId = this.students[0].id;
+                    }
                 } else if (
                     this.userDetailsStore.role === 'editor' &&
                     this.usersStore.editors.length > 0
                 ) {
                     this.updateUserDetails(this.usersStore.editors[0], true);
+                    if(this.$refs.usersListRef){
+                        this.$refs.usersListRef.selectedItemId = this.usersStore.editors[0].id;   
+                    }
                 }
             }
         },
@@ -371,7 +380,7 @@ export default {
     <div v-else id="user-container" class="container-fluid">
         <div class="row position-relative">
             <div class="col-lg-4 col-md-5">
-                <UsersList />
+                <UsersList ref="usersListRef" />
             </div>
             <!-- User detail view for PC and Tablet View -->
             <div class="col-lg-8 col-md-7 d-none d-md-block">

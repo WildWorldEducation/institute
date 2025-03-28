@@ -997,7 +997,6 @@ export default {
         },
         async findHiddenSkill(searchString) {
             // Find the filtered parent of this skill
-            console.log('search string: ' + searchString);
             var url = '/skills/guest-mode/find-filtered-skill';
 
             const res = await fetch(url, {
@@ -1009,6 +1008,18 @@ export default {
             });
 
             const resData = await res.json();
+            if (!resData) {
+                alert('error happen');
+                return;
+            }
+            const oldSubjectsFilter = this.$parent.subjectFilters;
+            const newSubjectFilter = [
+                ...oldSubjectsFilter,
+                resData.filterSkill
+            ];
+            await this.reloadTree(resData.level, newSubjectFilter);
+            const searchNode = this.findNodeWithName(searchString);
+            this.goToLocation(searchNode);
         },
 
         updateParentSubjectFilter() {
@@ -1147,7 +1158,6 @@ export default {
         // draw skill name based on it length
         drawSkillName(node, ctx, isSearched) {
             if (!node.data.name) {
-                console.log(node.data);
                 return;
             }
             if (node.data.name.length < 19) {
