@@ -90,8 +90,10 @@ export default {
                 this.chatHistory = this.assessingTutorChatHistory;
             }
 
-            this.mode = 'modal';
-            this.askQuestion();
+            if (!this.$parent.isAITokenLimitReached) {
+                this.mode = 'modal';
+                this.askQuestion();
+            }
         },
         // For both tutors
         async getChatHistory() {
@@ -891,6 +893,7 @@ export default {
                 b-tooltip.hover
                 tile="send message"
                 class="d-flex flex-row-reverse"
+                :disabled="$parent.isAITokenLimitReached"
             >
                 <button class="btn primary-btn send-btn" @click="sendMessage()">
                     <!-- Speech bubble icon -->
@@ -1015,7 +1018,7 @@ export default {
     border-radius: 25px;
     border: 1px solid #acacac;
     padding: 5px 10px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .chat-text-area {
