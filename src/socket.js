@@ -21,12 +21,12 @@ export const socket = io(URL);
 
 socket.on('connect', () => {
     socketState.connected = true;
-    console.log('Connect to server');
+
 });
 
 socket.on('disconnect', () => {
     socketState.connected = false;
-    console.log('Disconnect from server');
+
 });
 
 socket.on('stream-message', (...args) => {

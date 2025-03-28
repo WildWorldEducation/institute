@@ -331,7 +331,6 @@ export default {
 </script>
 
 <template>
-    <div>{{ $parent.isAITokenLimitReached }}</div>
     <!-- Thread loading animation -->
     <div
         v-if="isGotMessages == false"
