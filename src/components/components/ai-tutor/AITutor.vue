@@ -131,13 +131,14 @@ export default {
                     this.assessingTutorChatHistory = resData.messages;
                     this.chatHistory = this.assessingTutorChatHistory;
                     // Assessment
-                    let numTutorQuestions = 0;
+                    let numAnswers = 0;
                     for (let i = 0; i < this.chatHistory.length; i++) {
-                        if (this.chatHistory[i].role == 'assistant') {
-                            numTutorQuestions++;
+                        if (this.chatHistory[i].role == 'user') {
+                            numAnswers++;
                         }
                     }
-                    if (numTutorQuestions > 9 && numTutorQuestions % 10 == 0) {
+                    console.log(numAnswers);
+                    if (numAnswers > 9 && numAnswers % 10 == 0) {
                         this.assessMastery();
                     }
                 }
