@@ -272,7 +272,7 @@ export default {
                         this.userDetailsStore.userId,
                         this.skill
                     );
-                    this.isMastered = true;
+                    // this.isMastered = true;
                     await this.getUserSkills();
 
                     // If a child skill exists, redirect to it

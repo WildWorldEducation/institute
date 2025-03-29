@@ -36,7 +36,7 @@ export default {
             transcriptForAssessment: [],
             chatHistory: [],
             waitForAIresponse: false,
-            mode: 'big',
+            mode: 'hide',
             englishSkillLevel: '',
             learningObjectives: [],
             tutorType: 'socratic',
@@ -46,7 +46,6 @@ export default {
             threadID: '',
             audio: null,
             isAudioPlaying: false,
-            isSuggestedInteraction: false,
             assistantData: {
                 assistantId: null,
                 threadId: null
@@ -80,7 +79,7 @@ export default {
             this.sendMessage();
         },
         // 2 different threads
-        async changeTutorType(type) {
+        async showTutorModal(type) {
             this.tutorType = type;
 
             await this.getChatHistory();
@@ -91,7 +90,12 @@ export default {
                 this.chatHistory = this.assessingTutorChatHistory;
             }
 
-            console.log(this.chatHistory);
+            if (!this.$parent.isAITokenLimitReached) {
+                this.mode = 'modal';
+                this.askQuestion();
+            } else {
+                this.mode = 'docked';
+            }
         },
         // For both tutors
         async getChatHistory() {
@@ -128,14 +132,14 @@ export default {
                 } else if (this.tutorType == 'assessing') {
                     this.assessingTutorChatHistory = resData.messages;
                     this.chatHistory = this.assessingTutorChatHistory;
-                    // Assessment
-                    let numTutorQuestions = 0;
+                    // Assessment (every 10 answers)
+                    let numAnswers = 0;
                     for (let i = 0; i < this.chatHistory.length; i++) {
-                        if (this.chatHistory[i].role == 'assistant') {
-                            numTutorQuestions++;
+                        if (this.chatHistory[i].role == 'user') {
+                            numAnswers++;
                         }
                     }
-                    if (numTutorQuestions > 9 && numTutorQuestions % 10 == 0) {
+                    if (numAnswers > 9 && numAnswers % 10 == 0) {
                         this.assessMastery();
                     }
                 }
@@ -211,14 +215,6 @@ export default {
             this.waitForAIresponse = true;
 
             try {
-                // Define assistant instructions
-                let responseLength = '';
-                // regular responses should be short
-                if (this.isSuggestedInteraction == false) {
-                    responseLength = 'Please keep all responses succinct.';
-                }
-                // reset the variable
-                this.isSuggestedInteraction = false;
                 let socketChannel = 'new-message';
 
                 // Add the student's message to the chat on screen.
@@ -239,7 +235,6 @@ export default {
                     skillName: this.skill.name,
                     skillLevel: this.skillLevel,
                     learningObjectives: this.learningObjectives,
-                    responseLength: responseLength,
                     // The message from the student
                     message: this.message,
                     userId: this.userDetailsStore.userId
@@ -435,11 +430,13 @@ export default {
 </script>
 
 <template>
+    <!-- Modal for 'modal mode'-->
+    <div v-if="mode === 'modal'" class="modal"></div>
+    <!-- Tutor UI -->
     <div
-        v-if="mode !== 'hide'"
         :class="{
-            'container mt-3': mode === 'big',
-            'minimize-chat-container': mode === 'mini'
+            'container mt-3': mode === 'docked',
+            'modal-mode-container': mode === 'modal'
         }"
     >
         <!-- Heading, tooltip and minimise/maximise buttons -->
@@ -448,84 +445,73 @@ export default {
         >
             <div class="d-flex flex-row w-100 justify-content-between">
                 <div class="d-flex gap-2">
-                    <!-- Pin button -->
-                    <button
-                        v-if="mode === 'big'"
-                        class="btn"
-                        title="Minimize and pin the chat"
-                        b-tooltip.hover
-                        @click="mode = 'mini'"
+                    <span class="d-flex gap-2">
+                        <h2 class="secondary-heading">AI tutor</h2>
+                        <TooltipBtn
+                            v-if="mode === 'docked'"
+                            class="d-none d-md-block"
+                            toolTipText="Press the 'generate audio' button to hear the tutor speak with AI generated speech."
+                            bubbleWidth="350px"
+                            trianglePosition="left"
+                            absoluteTop="37px"
+                        />
+                        <!-- Mobile tooltip has smaller width -->
+                        <TooltipBtn
+                            v-if="mode === 'docked'"
+                            class="d-md-none"
+                            toolTipText="Chat with ours AI Tutor about the subjects"
+                            bubbleWidth="100px"
+                            trianglePosition="left"
+                            absoluteTop="37px"
+                        />
+                    </span>
+                    <!-- Tutor loading animation (modal mode) -->
+                    <div
+                        v-if="mode === 'modal' && waitForAIresponse"
+                        class="ai-tutor-processing mt-1"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 384 512"
-                            class="primary-icon"
-                            width="17"
-                            height="17"
+                            viewBox="0 0 640 512"
+                            width="18"
+                            height="18"
+                            fill="black"
                         >
                             <path
-                                d="M32 32C32 14.3 46.3 0 64 0L320 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-29.5 0 11.4 148.2c36.7 19.9 65.7 53.2 79.5 94.7l1 3c3.3 9.8 1.6 20.5-4.4 28.8s-15.7 13.3-26 13.3L32 352c-10.3 0-19.9-4.9-26-13.3s-7.7-19.1-4.4-28.8l1-3c13.8-41.5 42.8-74.8 79.5-94.7L93.5 64 64 64C46.3 64 32 49.7 32 32zM160 384l64 0 0 96c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-96z"
+                                d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
                             />
                         </svg>
-                    </button>
-
-                    <h2 class="secondary-heading">AI tutor</h2>
-
-                    <TooltipBtn
-                        v-if="mode === 'big'"
-                        class="d-none d-md-block"
-                        toolTipText="Press the 'generate audio' button to hear the tutor speak with AI generated speech."
-                        bubbleWidth="350px"
-                        trianglePosition="left"
-                        absoluteTop="37px"
-                    />
-                    <!-- Mobile tooltip has smaller width -->
-                    <TooltipBtn
-                        v-if="mode === 'big'"
-                        class="d-md-none"
-                        toolTipText="Chat with ours AI Tutor about the subjects"
-                        bubbleWidth="100px"
-                        trianglePosition="left"
-                        absoluteTop="37px"
-                    />
+                        Thinking
+                        <TutorLoadingSymbol />
+                    </div>
                 </div>
 
-                <!-- Expand button -->
-                <div class="d-flex gap-2">
-                    <div tile="Expand chat component" b-tooltip.hover>
+                <div class="d-flex">
+                    <!-- For speech to text -->
+                    <SpeechRecorder
+                        :tutorType="tutorType"
+                        :skill="skill"
+                        :skillLevel="englishSkillLevel"
+                        :learningObjectives="learningObjectives"
+                        :isAITokenLimitReached="$parent.isAITokenLimitReached"
+                    />
+                    <!-- Dock button -->
+                    <div title="Dock AI tutor" b-tooltip.hover>
                         <button
-                            v-if="mode === 'mini'"
-                            class="symbol-btn"
-                            @click="mode = 'big'"
+                            v-if="mode === 'modal'"
+                            class="primary-btn btn close-btn ms-2"
+                            @click="mode = 'docked'"
+                            aria-label="Close"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                height="25"
-                                width="25"
-                                fill="#5f31dd"
+                                viewBox="0 0 384 512"
+                                fill="white"
+                                width="16"
                             >
+                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
                                 <path
-                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm11.3-395.3l112 112c4.6 4.6 5.9 11.5 3.5 17.4s-8.3 9.9-14.8 9.9l-64 0 0 96c0 17.7-14.3 32-32 32l-32 0c-17.7 0-32-14.3-32-32l0-96-64 0c-6.5 0-12.3-3.9-14.8-9.9s-1.1-12.9 3.5-17.4l112-112c6.2-6.2 16.4-6.2 22.6 0z"
-                                />
-                            </svg>
-                        </button>
-                    </div>
-                    <div tile="Hide chat component" b-tooltip.hover>
-                        <button
-                            v-if="mode === 'mini'"
-                            class="symbol-btn"
-                            @click="mode = 'hide'"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                fill="#5f31dd"
-                                height="25"
-                                width="25"
-                            >
-                                <path
-                                    d="M256 0a256 256 0 1 0 0 512A256 256 0 1 0 256 0zM244.7 395.3l-112-112c-4.6-4.6-5.9-11.5-3.5-17.4s8.3-9.9 14.8-9.9l64 0 0-96c0-17.7 14.3-32 32-32l32 0c17.7 0 32 14.3 32 32l0 96 64 0c6.5 0 12.3 3.9 14.8 9.9s1.1 12.9-3.5 17.4l-112 112c-6.2 6.2-16.4 6.2-22.6 0z"
+                                    d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
                                 />
                             </svg>
                         </button>
@@ -555,7 +541,7 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- learning objective explanation button -->
+        <!-- notification -->
         <div
             class="alert alert-warning mt-1"
             role="alert"
@@ -564,9 +550,9 @@ export default {
             You have reached your monthly AI token limit. Please recharge your
             subscription to use more.
         </div>
-        <!--Tutor types -->
+        <!--Tutor types and STT-->
         <div
-            v-if="mode === 'big'"
+            v-if="mode === 'docked' || mode === 'hide'"
             class="d-flex flex-lg-row flex-column justify-content-between"
         >
             <!--Tutor types -->
@@ -574,13 +560,12 @@ export default {
                 <!-- Socratic Tutor agent -->
                 <div class="d-inline-block">
                     <button
-                        class="btn suggested-interactions ms-1 socratic-btn"
+                        class="btn ms-1 socratic-btn"
                         :class="{ underline: tutorType === 'socratic' }"
-                        @click="changeTutorType('socratic')"
+                        @click="showTutorModal('socratic')"
                     >
                         Socratic Tutor
                     </button>
-
                     <!-- Socratic Tutor Tooltip -->
                     <div
                         v-if="
@@ -609,13 +594,12 @@ export default {
                         </div>
                     </div>
                 </div>
-
                 <!-- Exam Agent: assesses student -->
                 <div class="d-inline-block">
                     <button
-                        class="btn suggested-interactions ms-1 assessing-btn"
+                        class="btn ms-1 assessing-btn"
                         :class="{ underline: tutorType === 'assessing' }"
-                        @click="changeTutorType('assessing')"
+                        @click="showTutorModal('assessing')"
                     >
                         AI Assessor
                     </button>
@@ -645,7 +629,6 @@ export default {
                         </div>
                     </div>
                 </div>
-
                 <!-- Multiple Choice Assessment -->
                 <div class="d-inline-block">
                     <router-link
@@ -655,23 +638,14 @@ export default {
                             skill.type != 'domain' &&
                             skill.id
                         "
-                        class="btn suggested-interactions ms-1 assessing-btn"
+                        class="btn ms-1 assessing-btn"
                         :to="skill.id + '/assessment'"
                     >
                         Multiple Choice Assessor
                     </router-link>
                 </div>
             </div>
-            <div class="d-flex justify-content-between">
-                <!-- For speech to text -->
-                <SpeechRecorder
-                    v-if="mode == 'big'"
-                    :tutorType="tutorType"
-                    :skill="skill"
-                    :skillLevel="englishSkillLevel"
-                    :learningObjectives="learningObjectives"
-                    :isAITokenLimitReached="$parent.isAITokenLimitReached"
-                />
+            <div v-if="mode != 'hide'" class="d-flex justify-content-between">
                 <!-- Toggle chat button -->
                 <button class="btn plus-btn ms-1" @click="showChat = !showChat">
                     <svg
@@ -701,8 +675,8 @@ export default {
                 </button>
             </div>
         </div>
-        <!-- User input (big mode) -->
-        <div class="d-flex mt-1" v-if="mode === 'big'">
+        <!-- User input (docked mode) -->
+        <div class="d-flex mt-1" v-if="mode === 'docked'">
             <textarea
                 ref="messageInput"
                 class="chat-text-area rounded border border-dark me-1"
@@ -742,8 +716,11 @@ export default {
                 </button>
             </div>
         </div>
-        <!-- Tutor loading animation -->
-        <div class="ai-tutor-processing mt-1" v-if="waitForAIresponse">
+        <!-- Tutor loading animation (docked mode) -->
+        <div
+            v-if="mode === 'docked' && waitForAIresponse"
+            class="ai-tutor-processing mt-1"
+        >
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 640 512"
@@ -758,79 +735,13 @@ export default {
             Thinking
             <TutorLoadingSymbol />
         </div>
-        <!-- Suggested Interactions -->
-        <span
-            class="d-flex flex-row suggested-interactions-wrapper mt-1 mb-1"
-            v-if="tutorType === 'socratic'"
-        >
-            <button
-                class="btn suggested-interactions ms-1 socratic-btn-dark"
-                @click="
-                    this.message =
-                        'Tell me something interesting about this subject!';
-                    this.isSuggestedInteraction = true;
-                    sendMessage();
-                "
-                :disabled="$parent.isAITokenLimitReached"
-            >
-                Tell me something interesting about this subject!
-            </button>
-            <button
-                class="btn suggested-interactions ms-1 socratic-btn-dark"
-                @click="
-                    this.message = 'Why does this subject matter?';
-                    this.isSuggestedInteraction = true;
-                    sendMessage();
-                "
-                :disabled="$parent.isAITokenLimitReached"
-            >
-                Why does this subject matter?
-            </button>
-            <button
-                class="btn suggested-interactions ms-1 socratic-btn-dark"
-                @click="
-                    this.message =
-                        'How might I use knowledge of this topic in everyday life?';
-                    this.isSuggestedInteraction = true;
-                    sendMessage();
-                "
-                :disabled="$parent.isAITokenLimitReached"
-            >
-                How might I use knowledge of this topic in everyday life?
-            </button>
-            <button
-                class="btn suggested-interactions ms-1 socratic-btn-dark"
-                @click="
-                    this.message =
-                        'What is the most important thing for me to understand about this subject?';
-                    this.isSuggestedInteraction = true;
-                    sendMessage();
-                "
-                :disabled="$parent.isAITokenLimitReached"
-            >
-                What is the most important thing for me to understand about this
-                subject?
-            </button>
-        </span>
-
-        <!-- <span
-            v-if="tutorType === 'assessing'"
-            class="d-flex flex-row suggested-interactions-wrapper mt-1 mb-1"
-        >
-            <button
-                class="btn suggested-interactions ms-1 assessing-btn-dark"
-                @click="askQuestion('test me')"
-            >
-                test me
-            </button>
-        </span> -->
         <!-- Message thread -->
         <div
-            v-if="showChat"
+            v-if="showChat && mode != 'hide'"
             class="d-flex flex-column mx-auto chat-history"
             :class="{
-                'chat-history': mode === 'big',
-                'mini-chat-history': mode === 'mini',
+                'chat-history': mode === 'docked',
+                'modal-chat-history': mode === 'modal',
                 'socratic-chat': tutorType === 'socratic',
                 'assessing-chat': tutorType === 'assessing'
             }"
@@ -851,7 +762,7 @@ export default {
                 <!-- Student messages -->
                 <div
                     v-if="message.role === 'user'"
-                    class="d-flex my-3 justify-content-end"
+                    class="d-flex justify-content-end message-divider"
                 >
                     <div class="user-conversation">
                         <em>{{ message.content[0].text.value }}</em>
@@ -864,11 +775,11 @@ export default {
                         message.role === 'assistant' &&
                         message.content[0].type == 'text'
                     "
-                    class="d-flex justify-content-between w-100 my-3"
+                    class="d-flex justify-content-between w-100"
                     :class="{
                         'message-divider': index !== 0,
-                        'first-message': index === 0,
-                        'last-message': index === chatHistory.length - 1
+                        'first-message': index === 0
+                        // 'last-message': index === chatHistory.length - 1
                     }"
                 >
                     <div class="tutor-conversation">
@@ -946,11 +857,11 @@ export default {
             </template>
         </div>
 
-        <!-- User input (mini mode) -->
-        <div :class="'mini-user-chat-div'" v-if="mode === 'mini'">
+        <!-- User input (modal mode) -->
+        <div :class="'modal-user-chat-div'" v-if="mode === 'modal'">
             <textarea
                 ref="messageInput"
-                class="chat-text-area"
+                class="chat-text-area rounded border border-dark me-1"
                 v-model="message"
                 type="text"
                 @keydown.enter="handleKeyDown"
@@ -961,6 +872,7 @@ export default {
                 b-tooltip.hover
                 tile="send message"
                 class="d-flex flex-row-reverse"
+                :disabled="$parent.isAITokenLimitReached"
             >
                 <button class="btn primary-btn send-btn" @click="sendMessage()">
                     <!-- Speech bubble icon -->
@@ -980,39 +892,27 @@ export default {
             </div>
         </div>
     </div>
-    <!-- Maximise button -->
-    <div class="hidden-chat-symbol" v-else @click="mode = 'mini'">
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 512 512"
-            fill="white"
-            width="26"
-            height="26"
-        >
-            <path
-                d="M256 448c141.4 0 256-93.1 256-208S397.4 32 256 32S0 125.1 0 240c0 45.1 17.7 86.8 47.7 120.9c-1.9 24.5-11.4 46.3-21.4 62.9c-5.5 9.2-11.1 16.6-15.2 21.6c-2.1 2.5-3.7 4.4-4.9 5.7c-.6 .6-1 1.1-1.3 1.4l-.3 .3c0 0 0 0 0 0c0 0 0 0 0 0s0 0 0 0s0 0 0 0c-4.6 4.6-5.9 11.4-3.4 17.4c2.5 6 8.3 9.9 14.8 9.9c28.7 0 57.6-8.9 81.6-19.3c22.9-10 42.4-21.9 54.3-30.6c31.8 11.5 67 17.9 104.1 17.9zM128 208a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm128 0a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm96 32a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
-            />
-        </svg>
-    </div>
 </template>
 
 <style scoped>
 .message-divider {
     border-top: 1px solid #e0e0e0;
-    border-bottom: 1px solid #e0e0e0;
-    padding: 20px 0;
-    margin: 20px 0;
+    padding-top: 25px;
+    padding-bottom: 20px;
+    /* border-bottom: 1px solid #e0e0e0;    
+     margin: 20px 0; */
 }
 .first-message {
-    border-bottom: 1px solid #e0e0e0;
+    padding: 20px 0;
+    /* border-bottom: 1px solid #e0e0e0;
     padding-bottom: 20px;
-    margin-bottom: 20px;
+     margin-bottom: 20px; */
 }
 
 .last-message {
     border-bottom: 1px solid #e0e0e0;
     padding-bottom: 20px;
-    margin-bottom: 20px;
+    /* margin-bottom: 20px; */
 }
 .hovering-info-panel {
     position: absolute;
@@ -1062,16 +962,6 @@ export default {
     text-decoration: underline;
 }
 
-.suggested-interactions-wrapper {
-    overflow-x: auto;
-}
-
-.suggested-interactions {
-    color: white;
-    border: 1px solid black;
-    white-space: nowrap;
-}
-
 .socratic-btn-dark {
     background-color: #031e27;
 }
@@ -1093,7 +983,7 @@ export default {
     border-radius: 25px;
     border: 1px solid #acacac;
     padding: 5px 10px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .chat-text-area {
@@ -1124,22 +1014,16 @@ export default {
     min-height: 50px;
 }
 
-.mini-chat-history {
-    width: 103%;
+.modal-chat-history {
     height: 80%;
     overflow-y: auto;
 }
 
-.mini-user-chat-div {
-    position: fixed;
-    width: 360px;
-    bottom: 15px;
+.modal-user-chat-div {
+    width: 100%;
     display: flex;
-    flex-direction: row;
     background-color: white;
-    margin-top: 20px;
-    padding: 10px 15px;
-    border-top: #c8cccc 1px solid;
+    margin-top: 10px;
 }
 
 .send-message-button {
@@ -1157,22 +1041,20 @@ export default {
     color: white;
 }
 
-.minimize-chat-container {
+.modal-mode-container {
     position: fixed;
     z-index: 10000;
-    bottom: 10px;
-    right: 40px;
-    width: 380px;
-    height: 600px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    height: 90%;
     background-color: white !important;
     border-radius: 15px;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
         rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
     padding-top: 15px;
-}
-
-.symbol-btn {
-    cursor: pointer;
+    padding-bottom: 10px;
 }
 
 .hidden-chat-symbol {
