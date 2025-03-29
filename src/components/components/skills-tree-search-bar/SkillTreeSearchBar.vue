@@ -188,6 +188,7 @@ export default {
             this.waitForSever = true;
             await this.findNode(result.name);
             this.waitForSever = false;
+            this.$parent.closeIntroSearchModal();
         },
         checkTextForAi(searchText) {
             // only context search if user end a word
