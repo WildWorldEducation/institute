@@ -93,6 +93,8 @@ export default {
             if (!this.$parent.isAITokenLimitReached) {
                 this.mode = 'modal';
                 this.askQuestion();
+            } else {
+                this.mode = 'docked';
             }
         },
         // For both tutors
@@ -434,7 +436,7 @@ export default {
     <div
         :class="{
             'container mt-3': mode === 'docked',
-            'minimize-chat-container': mode === 'modal'
+            'modal-mode-container': mode === 'modal'
         }"
     >
         <!-- Heading, tooltip and minimise/maximise buttons -->
@@ -463,7 +465,7 @@ export default {
                             absoluteTop="37px"
                         />
                     </span>
-                    <!-- Tutor loading animation -->
+                    <!-- Tutor loading animation (modal mode) -->
                     <div
                         v-if="mode === 'modal' && waitForAIresponse"
                         class="ai-tutor-processing mt-1"
@@ -484,12 +486,20 @@ export default {
                     </div>
                 </div>
 
-                <div class="d-flex gap-2">
+                <div class="d-flex">
+                    <!-- For speech to text -->
+                    <SpeechRecorder
+                        :tutorType="tutorType"
+                        :skill="skill"
+                        :skillLevel="englishSkillLevel"
+                        :learningObjectives="learningObjectives"
+                        :isAITokenLimitReached="$parent.isAITokenLimitReached"
+                    />
                     <!-- Dock button -->
                     <div title="Dock AI tutor" b-tooltip.hover>
                         <button
                             v-if="mode === 'modal'"
-                            class="primary-btn btn close-btn"
+                            class="primary-btn btn close-btn ms-2"
                             @click="mode = 'docked'"
                             aria-label="Close"
                         >
@@ -540,7 +550,7 @@ export default {
             You have reached your monthly AI token limit. Please recharge your
             subscription to use more.
         </div>
-        <!--Tutor types -->
+        <!--Tutor types and STT-->
         <div
             v-if="mode === 'docked' || mode === 'hide'"
             class="d-flex flex-lg-row flex-column justify-content-between"
@@ -636,15 +646,6 @@ export default {
                 </div>
             </div>
             <div v-if="mode != 'hide'" class="d-flex justify-content-between">
-                <!-- For speech to text -->
-                <SpeechRecorder
-                    v-if="mode == 'docked'"
-                    :tutorType="tutorType"
-                    :skill="skill"
-                    :skillLevel="englishSkillLevel"
-                    :learningObjectives="learningObjectives"
-                    :isAITokenLimitReached="$parent.isAITokenLimitReached"
-                />
                 <!-- Toggle chat button -->
                 <button class="btn plus-btn ms-1" @click="showChat = !showChat">
                     <svg
@@ -715,7 +716,7 @@ export default {
                 </button>
             </div>
         </div>
-        <!-- Tutor loading animation -->
+        <!-- Tutor loading animation (docked mode) -->
         <div
             v-if="mode === 'docked' && waitForAIresponse"
             class="ai-tutor-processing mt-1"
@@ -1040,7 +1041,7 @@ export default {
     color: white;
 }
 
-.minimize-chat-container {
+.modal-mode-container {
     position: fixed;
     z-index: 10000;
     left: 50%;
