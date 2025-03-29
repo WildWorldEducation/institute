@@ -12,6 +12,9 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
+// For uploading files to vector store, for file search feature
+const fs = require('fs');
+
 /**
  * Shared function
  *
@@ -28,6 +31,43 @@ async function getMessagesList(threadId) {
     }
 }
 
+//uploadAndPollVectorStores();
+/**
+ * File search feature - upload the files
+ */
+async function uploadAndPollVectorStores() {
+    let stats = fs.statSync('./public/data/uploads/the-martyrdom-of-man.pdf');
+
+    // Use isFile() method to log the result to screen
+    console.log('is file ? ' + stats.isFile());
+
+    const fileStreams = [
+        './public/data/uploads/the-martyrdom-of-man.pdf',
+        './public/data/uploads/the-pragmatist_s-guide-to-life.docx',
+        './public/data/uploads/the-pragmatist_s-guide-to-sexuality.docx',
+        './public/data/uploads/the-pragmatist_s-guide-to-crafting-religion.docx',
+        './public/data/uploads/the-pragmatist_s-guide-to-governance.docx',
+        './public/data/uploads/the-pragmatist_s-guide-to-relationships.docx'
+    ].map((path) => fs.createReadStream(path));
+
+    // console.log(fileStreams);
+
+    //Create a vector store including our file.
+    let vectorStore = await openai.beta.vectorStores.create({
+        name: 'Collins Institute Skills Extra Documentation'
+    });
+
+    await openai.beta.vectorStores.fileBatches.uploadAndPoll(vectorStore.id, {
+        files: fileStreams
+    });
+
+    console.log(vectorStore);
+
+    // await openai.beta.assistants.update(assistant.id, {
+    //     tool_resources: { file_search: { vector_store_ids: [vectorStore.id] } }
+    // });
+}
+
 /**
  * Socratic tutor functions --------------------------------------
  */
@@ -41,6 +81,14 @@ async function createSocraticAssistantAndThread(
         level,
         learningObjectives
     );
+
+    // Give it access to certain documents
+    await openai.beta.assistants.update(assistant.id, {
+        tool_resources: {
+            file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] }
+        }
+    });
+
     const thread = await createSocraticAssistantThread();
     const result = { assistant: assistant, thread: thread };
     return result;
@@ -59,7 +107,7 @@ async function createSocraticAssistant(topic, level, learningObjectives) {
             `. Use the Socratic method to teach students.
             
             Please keep all messages below 2000 characters.`,
-        tools: [],
+        tools: [{ type: 'file_search' }],
         model: 'gpt-4.5-preview'
     });
     return assistant;
@@ -188,6 +236,14 @@ async function createAssessingAssistantAndThread(
         level,
         learningObjectives
     );
+
+    // Give it access to certain documents
+    await openai.beta.assistants.update(assistant.id, {
+        tool_resources: {
+            file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] }
+        }
+    });
+
     const thread = await createAssessingAssistantThread();
     const result = { assistant: assistant, thread: thread };
     return result;
@@ -347,6 +403,14 @@ async function createLearningObjectiveAssistantAndThread(
         level,
         learningObjective
     );
+
+    // Give it access to certain documents
+    await openai.beta.assistants.update(assistant.id, {
+        tool_resources: {
+            file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] }
+        }
+    });
+
     const thread = await createLearningObjectiveAssistantThread();
     const result = { assistant: assistant, thread: thread };
     return result;
