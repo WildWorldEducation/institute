@@ -36,7 +36,7 @@ export default {
             transcriptForAssessment: [],
             chatHistory: [],
             waitForAIresponse: false,
-            mode: 'docked',
+            mode: 'hide',
             englishSkillLevel: '',
             learningObjectives: [],
             tutorType: 'socratic',
@@ -130,14 +130,13 @@ export default {
                 } else if (this.tutorType == 'assessing') {
                     this.assessingTutorChatHistory = resData.messages;
                     this.chatHistory = this.assessingTutorChatHistory;
-                    // Assessment
+                    // Assessment (every 10 answers)
                     let numAnswers = 0;
                     for (let i = 0; i < this.chatHistory.length; i++) {
                         if (this.chatHistory[i].role == 'user') {
                             numAnswers++;
                         }
                     }
-                    console.log(numAnswers);
                     if (numAnswers > 9 && numAnswers % 10 == 0) {
                         this.assessMastery();
                     }
@@ -431,8 +430,8 @@ export default {
 <template>
     <!-- Modal for 'modal mode'-->
     <div v-if="mode === 'modal'" class="modal"></div>
+    <!-- Tutor UI -->
     <div
-        v-if="mode !== 'hide'"
         :class="{
             'container mt-3': mode === 'docked',
             'minimize-chat-container': mode === 'modal'
@@ -485,27 +484,8 @@ export default {
                     </div>
                 </div>
 
-                <!-- Expand button -->
                 <div class="d-flex gap-2">
-                    <div title="Hide AI tutor" b-tooltip.hover>
-                        <button
-                            v-if="mode === 'modal'"
-                            class="btn primary-btn"
-                            @click="mode = 'hide'"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
-                                fill="white"
-                                width="18"
-                            >
-                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                                <path
-                                    d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                                />
-                            </svg>
-                        </button>
-                    </div>
+                    <!-- Dock button -->
                     <div title="Dock AI tutor" b-tooltip.hover>
                         <button
                             v-if="mode === 'modal'"
@@ -551,7 +531,7 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- learning objective explanation button -->
+        <!-- notification -->
         <div
             class="alert alert-warning mt-1"
             role="alert"
@@ -562,7 +542,7 @@ export default {
         </div>
         <!--Tutor types -->
         <div
-            v-if="mode === 'docked'"
+            v-if="mode === 'docked' || mode === 'hide'"
             class="d-flex flex-lg-row flex-column justify-content-between"
         >
             <!--Tutor types -->
@@ -576,7 +556,6 @@ export default {
                     >
                         Socratic Tutor
                     </button>
-
                     <!-- Socratic Tutor Tooltip -->
                     <div
                         v-if="
@@ -605,7 +584,6 @@ export default {
                         </div>
                     </div>
                 </div>
-
                 <!-- Exam Agent: assesses student -->
                 <div class="d-inline-block">
                     <button
@@ -641,7 +619,6 @@ export default {
                         </div>
                     </div>
                 </div>
-
                 <!-- Multiple Choice Assessment -->
                 <div class="d-inline-block">
                     <router-link
@@ -658,7 +635,7 @@ export default {
                     </router-link>
                 </div>
             </div>
-            <div class="d-flex justify-content-between">
+            <div v-if="mode != 'hide'" class="d-flex justify-content-between">
                 <!-- For speech to text -->
                 <SpeechRecorder
                     v-if="mode == 'docked'"
@@ -759,7 +736,7 @@ export default {
         </div>
         <!-- Message thread -->
         <div
-            v-if="showChat"
+            v-if="showChat && mode != 'hide'"
             class="d-flex flex-column mx-auto chat-history"
             :class="{
                 'chat-history': mode === 'docked',
@@ -913,20 +890,6 @@ export default {
                 </button>
             </div>
         </div>
-    </div>
-    <!-- Maximise button -->
-    <div class="hidden-chat-symbol" v-else @click="mode = 'modal'">
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 512 512"
-            fill="white"
-            width="26"
-            height="26"
-        >
-            <path
-                d="M256 448c141.4 0 256-93.1 256-208S397.4 32 256 32S0 125.1 0 240c0 45.1 17.7 86.8 47.7 120.9c-1.9 24.5-11.4 46.3-21.4 62.9c-5.5 9.2-11.1 16.6-15.2 21.6c-2.1 2.5-3.7 4.4-4.9 5.7c-.6 .6-1 1.1-1.3 1.4l-.3 .3c0 0 0 0 0 0c0 0 0 0 0 0s0 0 0 0s0 0 0 0c-4.6 4.6-5.9 11.4-3.4 17.4c2.5 6 8.3 9.9 14.8 9.9c28.7 0 57.6-8.9 81.6-19.3c22.9-10 42.4-21.9 54.3-30.6c31.8 11.5 67 17.9 104.1 17.9zM128 208a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm128 0a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm96 32a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
-            />
-        </svg>
     </div>
 </template>
 
