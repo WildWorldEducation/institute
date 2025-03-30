@@ -582,12 +582,6 @@ export default {
                     block: 'start'
                 });
             }
-        },
-        // ================== WILL GET DELETE ====================
-        async createVectorStore() {
-            const res = await fetch('/ai-tutor/new-vector-store');
-            const jsonData = await res.json();
-            console.log(jsonData);
         }
     },
     /**
@@ -621,13 +615,6 @@ export default {
 
 <template>
     <div class="container">
-        <button
-            @click="createVectorStore"
-            type="button"
-            class="btn primary-btn"
-        >
-            Create new Vector Store
-        </button>
         <div
             id="skill-info-container"
             :class="{ domain: skill.type == 'domain' }"
