@@ -602,7 +602,7 @@ async function createRunStream(
             instructions: assistantInstruction
         })
         .on('textDelta', (textDelta, snapshot) => {
-            socket.emit('stream-message', textDelta, streamType, snapshot);
+            socket.emit('stream-message', textDelta, streamType, snapshot, threadId);
         })
         .on('runStepDone', (runStep) => {
             socket.emit('run-end');

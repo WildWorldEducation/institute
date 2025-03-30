@@ -292,7 +292,12 @@ export default {
                 if (newItem.isStreaming) {
                     this.waitForAIresponse = false;
                 }
-                if (!newItem.isStreaming && newItem.isRunJustEnded) {
+                // Handle run just end case
+                if (
+                    !newItem.isStreaming &&
+                    newItem.isRunJustEnded &&
+                    this.assistantData.threadId == newItem.currentStreamThread
+                ) {
                     const assistantMessage = {
                         role: 'assistant',
                         content: [
@@ -335,14 +340,14 @@ export default {
     </div>
     <div v-else>
         <!-- learning objective explanation button -->
-        <div
+        <!-- <div
             class="alert alert-warning mt-1"
             role="alert"
             v-if="$parent.isAITokenLimitReached"
         >
             You have reached your monthly AI token limit. Please recharge your
             subscription to use more.
-        </div>
+        </div> -->
         <!-- Suggested interaction buttons -->
         <span class="d-flex justify-content-end mt-2">
             <button
@@ -410,7 +415,8 @@ export default {
             <div
                 v-if="
                     stateOfSocket.isStreaming &&
-                    stateOfSocket.streamType === 'learningObjective'
+                    stateOfSocket.streamType === 'learningObjective' &&
+                    stateOfSocket.currentStreamThread == assistantData.threadId
                 "
                 class="d-flex my-3 tutor-conversation streamed-message p-2"
                 v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
