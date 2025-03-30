@@ -36,7 +36,12 @@ const {
     requestLearningObjectiveTutoring,
     generateLearningObjectiveQuestion,
     // To record user's token usage
-    saveTokenUsage
+    saveTokenUsage,
+    getSkillDataByObjectiveId,
+    checkIfSkillNeedFileSearch,
+    uploadAndPollVectorStores,
+    checkAssistantHaveVectorStore,
+    injectVectorStoreToAssistant
 } = require('../utilities/openAIAssistant');
 const { textToSpeech } = require('../utilities/textToSpeech');
 const { writeFile, speechToText } = require('../utilities/speechToText');
@@ -174,8 +179,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                                        messageNumber
-                                    )},                       
+                    messageNumber
+                )},                       
                                     ${conn.escape(url)}
                                 );`;
                 await query(queryString);
@@ -387,8 +392,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                                        messageNumber
-                                    )},                       
+                    messageNumber
+                )},                       
                                     ${conn.escape(url)}
                                 );`;
                 await query(queryString);
@@ -543,13 +548,17 @@ router.get(
                 learningObjectiveId
             );
 
+            let skillData = await getSkillDataByObjectiveId(learningObjectiveId);
+            const isFileSearchSkill = checkIfSkillNeedFileSearch(skillData.name);
+
             // If Open AI assistant has not yet been created for this user + learning objective
             if (assistantData.length === 0) {
                 // Create new Open AI assistant.
                 const newAssistant =
                     await createLearningObjectiveAssistantAndThread(
                         learningObjective,
-                        skillLevel
+                        skillLevel,
+                        isFileSearchSkill
                     );
                 assistantData = [
                     {
@@ -573,10 +582,25 @@ router.get(
                 });
                 return;
             } else {
+
                 // Retrieve the chat history.
                 const messageData = await getMessagesList(
                     assistantData[0].thread_id
                 );
+
+                const myAssistant = await openai.beta.assistants.retrieve(
+                    assistantData[0].assistant_id
+                );
+
+                if (isFileSearchSkill) {
+                    // check if assistant have required file search data
+                    const isAssistantHaveVectorStore = checkAssistantHaveVectorStore(myAssistant)
+                    // if assistant does not have vector store we update it
+                    if (!isAssistantHaveVectorStore) {
+                        await injectVectorStoreToAssistant(assistantData[0].assistant_id);
+                    }
+                }
+
                 let messages = messageData.data;
 
                 // Reverse the messages to get the index, for the TTS feature
@@ -662,8 +686,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                                        messageNumber
-                                    )},                       
+                    messageNumber
+                )},                       
                                     ${conn.escape(url)}
                                 );`;
                 await query(queryString);
@@ -837,6 +861,13 @@ router.post('/stt/convert', async (req, res, next) => {
     res.end();
 });
 
+
+// crete new vector store (NEED TO CHANGE FROM GET TO POST LATER)
+router.get('/new-vector-store', async (req, res, next) => {
+    const vectorStore = await uploadAndPollVectorStores()
+    res.json(vectorStore);
+})
+
 async function sendSpeechToSocraticAI(
     userId,
     skillUrl,
@@ -896,6 +927,8 @@ async function sendSpeechToAssessingAI(
         console.error(error);
     }
 }
+
+
 
 // Export the router for app to use.
 module.exports = router;

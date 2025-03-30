@@ -53,16 +53,15 @@ async function uploadAndPollVectorStores() {
     // console.log(fileStreams);
 
     //Create a vector store including our file.
-    let vectorStore = await openai.beta.vectorStores.create({
+    let vectorStore = await openai.vectorStores.create({
         name: 'Collins Institute Skills Extra Documentation'
     });
 
-    await openai.beta.vectorStores.fileBatches.uploadAndPoll(vectorStore.id, {
+    await openai.vectorStores.fileBatches.uploadAndPoll(vectorStore.id, {
         files: fileStreams
     });
 
-    console.log(vectorStore);
-
+    return vectorStore
     // await openai.beta.assistants.update(assistant.id, {
     //     tool_resources: { file_search: { vector_store_ids: [vectorStore.id] } }
     // });
@@ -129,8 +128,8 @@ async function getSocraticTutorThread(userId, skillUrl) {
         let queryString = `SELECT * 
                            FROM ai_socratic_tutor_threads 
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND skill_url = ${conn.escape(skillUrl)}`;
+            userId
+        )} AND skill_url = ${conn.escape(skillUrl)}`;
 
         const result = await query(queryString);
         return result;
@@ -162,6 +161,8 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         role: 'user',
         content: messageData.message
     });
+
+
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
@@ -284,8 +285,8 @@ async function getAssessingTutorThread(userId, skillUrl) {
         let queryString = `SELECT * 
                            FROM ai_assessing_tutor_threads 
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND skill_url = ${conn.escape(skillUrl)}`;
+            userId
+        )} AND skill_url = ${conn.escape(skillUrl)}`;
 
         const result = await query(queryString);
         return result;
@@ -397,19 +398,23 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
 
 async function createLearningObjectiveAssistantAndThread(
     learningObjective,
-    level
+    level,
+    neededFileSearch
 ) {
     const assistant = await createLearningObjectiveAssistant(
         level,
         learningObjective
     );
 
-    // Give it access to certain documents
-    await openai.beta.assistants.update(assistant.id, {
-        tool_resources: {
-            file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] }
-        }
-    });
+    // only update the assistant with file search if it is in the list
+    if (neededFileSearch) {
+        // Give it access to certain documents
+        await openai.beta.assistants.update(assistant.id, {
+            tool_resources: {
+                file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] }
+            }
+        });
+    }
 
     const thread = await createLearningObjectiveAssistantThread();
     const result = { assistant: assistant, thread: thread };
@@ -464,8 +469,8 @@ async function getLearningObjectiveThread(userId, learningObjectiveId) {
         let queryString = `SELECT * 
                            FROM ai_tutor_learning_objective_threads
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND learning_objective_id = ${conn.escape(
+            userId
+        )} AND learning_objective_id = ${conn.escape(
             learningObjectiveId
         )}`;
 
@@ -713,6 +718,65 @@ async function saveTokenUsage(userId, tokenCount) {
     }
 }
 
+
+// Get skill data based on thread id
+async function getSkillDataByObjectiveId(objectiveId) {
+    let queryString = `SELECT * FROM skills JOIN skill_learning_objectives on skills.id = skill_learning_objectives.skill_id WHERE skill_learning_objectives.id = ${objectiveId}`
+    const skillData = await query(queryString)
+    return skillData[0];
+}
+
+// Check if skill is needed to add file search feature into it assistant
+function checkIfSkillNeedFileSearch(skillName) {
+    // HARD CODE IS BAD BUT I DON`T THINK ADD THIS TO ENV IS A BETTER IDEA
+    const skillsRequiredFileSearch = [
+        'The Martyrdom of Man',
+        'Life Optimization(Intro)',
+        'Objective Functions',
+        'Choosing an Objective Function',
+        'Choosing How to Determine What is True',
+        'Define Your Internal Character',
+        'Choosing How You Want Others to See You',
+        'Choose a Culture',
+        'Types of Friends',
+        'Dating Marketplaces',
+        'Types of Lures',
+        'Relationship Structures',
+        'Marriage Contracts',
+        'Avoiding Bad Relationships',
+        'Human Sexuality',
+        'The Evolution of Sexuality',
+        'Mate Guarding & Slut Shaming',
+        'Why did Sex Evolve',
+        'Sexual Selection, Gender Transitions, and Sneaky Copulation',
+        'The Evolution of Kinks',
+        'Memetics',
+        'Cultural Evolution',
+        'The Memetic Supervirus'
+    ];
+    const skillInList = skillsRequiredFileSearch.find((name) => skillName === name);
+
+    return skillInList;
+}
+
+// Check if assistant have vector store in their file search tool
+function checkAssistantHaveVectorStore(assistantData) {
+    if (!assistantData.tool_resources || !assistantData.tool_resources.file_search) {
+        // assistant doesn`t use file search
+        return false
+    }
+    const vectorStoreIdArray = assistantData.tool_resources.file_search.vector_store_ids
+
+    const isVectorInArray = vectorStoreIdArray.includes(process.env.VECTOR_STORE_ID);
+    return isVectorInArray;
+}
+
+async function injectVectorStoreToAssistant(assistantId) {
+    await openai.beta.assistants.update(assistantId, {
+        tool_resources: { file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] } },
+    });
+}
+
 module.exports = {
     // Shared
     getMessagesList,
@@ -734,5 +798,10 @@ module.exports = {
     generateLearningObjectiveQuestion,
     createRunStream,
     // To record user's token usage
-    saveTokenUsage
+    saveTokenUsage,
+    getSkillDataByObjectiveId,
+    checkIfSkillNeedFileSearch,
+    uploadAndPollVectorStores,
+    checkAssistantHaveVectorStore,
+    injectVectorStoreToAssistant
 };

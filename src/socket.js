@@ -41,7 +41,7 @@ socket.on('run-end', (...args) => {
     socketState.isRunJustEnded = true;
 });
 
-// socket.on('remove-stream-message', (...args) => {    
+// socket.on('remove-stream-message', (...args) => {
 //     socketState.streamingMessage = '';
 // });
 
