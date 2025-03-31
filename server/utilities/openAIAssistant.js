@@ -559,7 +559,6 @@ async function createRunStream(
             console.log('streaming: ' + tokenCount);
             saveTokenUsage(userId, tokenCount);
         })
-        .on('textCreated', () => console.log('assistant >'))
         .on('toolCallCreated', (event) =>
             console.log('assistant ' + event.type)
         )
