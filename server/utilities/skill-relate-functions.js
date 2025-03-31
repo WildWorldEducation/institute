@@ -1,6 +1,9 @@
 // Database connection
 const conn = require('../config/db');
-
+const util = require('util');
+// node native promisify
+// convert callback
+const query = util.promisify(conn.query).bind(conn);
 function findParentHaveHiddenChild(userSkills, childName) {
 
     const hiddenChild = userSkills.find(skill => {
@@ -106,6 +109,12 @@ function findNodeByName(userSkills, skillName) {
     return node
 }
 
+async function findSkillByUrl(skillUrl) {
+    let queryString = `SELECT * FROM skills WHERE skills.url = ${conn.escape(skillUrl)}`
+    const results = await query(queryString)
+    return results[0]
+}
+
 function findOldestParent(skill, skillList) {
     let stopFlag = false;
     let resultNode = null;
@@ -169,4 +178,4 @@ function convertNodesToArray(nodes) {
 
 
 
-module.exports = { findParentHaveHiddenChild, showHiddenChildFromParent, convertNodesToArray, findNodeByName, findInaccessiblePath, findNode, findGuestHiddenSkillData };
+module.exports = { findParentHaveHiddenChild, showHiddenChildFromParent, convertNodesToArray, findNodeByName, findInaccessiblePath, findNode, findGuestHiddenSkillData, findSkillByUrl };

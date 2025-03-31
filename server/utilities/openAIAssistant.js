@@ -73,7 +73,8 @@ async function uploadAndPollVectorStores() {
 async function createSocraticAssistantAndThread(
     topic,
     level,
-    learningObjectives
+    learningObjectives,
+    isFileSearchSkill
 ) {
     const assistant = await createSocraticAssistant(
         topic,
@@ -81,12 +82,14 @@ async function createSocraticAssistantAndThread(
         learningObjectives
     );
 
-    // Give it access to certain documents
-    await openai.beta.assistants.update(assistant.id, {
-        tool_resources: {
-            file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] }
-        }
-    });
+    if (isFileSearchSkill) {
+        // Give it access to certain documents if this skill need file search feature
+        await openai.beta.assistants.update(assistant.id, {
+            tool_resources: {
+                file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] }
+            }
+        });
+    }
 
     const thread = await createSocraticAssistantThread();
     const result = { assistant: assistant, thread: thread };
@@ -230,7 +233,8 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
 async function createAssessingAssistantAndThread(
     topic,
     level,
-    learningObjectives
+    learningObjectives,
+    isFileSearchSkill
 ) {
     const assistant = await createAssessingAssistant(
         topic,
@@ -239,11 +243,13 @@ async function createAssessingAssistantAndThread(
     );
 
     // Give it access to certain documents
-    await openai.beta.assistants.update(assistant.id, {
-        tool_resources: {
-            file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] }
-        }
-    });
+    if (isFileSearchSkill) {
+        await openai.beta.assistants.update(assistant.id, {
+            tool_resources: {
+                file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] }
+            }
+        });
+    }
 
     const thread = await createAssessingAssistantThread();
     const result = { assistant: assistant, thread: thread };
@@ -725,6 +731,7 @@ async function getSkillDataByObjectiveId(objectiveId) {
     const skillData = await query(queryString)
     return skillData[0];
 }
+
 
 // Check if skill is needed to add file search feature into it assistant
 function checkIfSkillNeedFileSearch(skillName) {

@@ -46,6 +46,7 @@ const {
 const { textToSpeech } = require('../utilities/textToSpeech');
 const { writeFile, speechToText } = require('../utilities/speechToText');
 const isAuthenticated = require('../middlewares/authMiddleware');
+const { findSkillByUrl } = require('../utilities/skill-relate-functions');
 // Include API key.
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
@@ -67,12 +68,16 @@ router.post(
             const learningObjectives = req.body.learningObjectives;
 
             let assistantData = await getSocraticTutorThread(userId, skillUrl);
+
+            const isFileSearchSkill = checkIfSkillNeedFileSearch(skillName);
+
             // Create assistant
             if (assistantData.length === 0) {
                 const newAssistant = await createSocraticAssistantAndThread(
                     skillName,
                     skillLevel,
-                    learningObjectives
+                    learningObjectives,
+                    isFileSearchSkill
                 );
                 assistantData = [
                     {
@@ -109,6 +114,19 @@ router.post(
                     reversedMessages[i].index = i;
                 }
                 messages = reversedMessages.reverse();
+
+                // Skill that require file search feature
+                if (isFileSearchSkill) {
+                    const myAssistant = await openai.beta.assistants.retrieve(
+                        assistantData[0].assistant_id
+                    );
+                    // check if assistant have required file search data
+                    const isAssistantHaveVectorStore = checkAssistantHaveVectorStore(myAssistant)
+                    // if assistant does not have vector store we update it
+                    if (!isAssistantHaveVectorStore) {
+                        await injectVectorStoreToAssistant(assistantData[0].assistant_id);
+                    }
+                }
 
                 // Check if TTS audio clip has already been generated or not.
                 let audioClips = [];
@@ -276,12 +294,15 @@ router.post(
             const learningObjectives = req.body.learningObjectives;
 
             let assistantData = await getAssessingTutorThread(userId, skillUrl);
+
+            const isFileSearchSkill = checkIfSkillNeedFileSearch(skillName);
             // Create assistant
             if (assistantData.length === 0) {
                 const newAssistant = await createAssessingAssistantAndThread(
                     skillName,
                     skillLevel,
-                    learningObjectives
+                    learningObjectives,
+                    isFileSearchSkill
                 );
                 assistantData = [
                     {
@@ -312,6 +333,18 @@ router.post(
                     threadId: assistantData[0].thread_id,
                     assistantId: assistantData[0].assistant_id
                 };
+
+                if (isFileSearchSkill) {
+                    const myAssistant = await openai.beta.assistants.retrieve(
+                        assistantData[0].assistant_id
+                    );
+                    // check if assistant have required file search data
+                    const isAssistantHaveVectorStore = checkAssistantHaveVectorStore(myAssistant)
+                    // if assistant does not have vector store we update it
+                    if (!isAssistantHaveVectorStore) {
+                        await injectVectorStoreToAssistant(assistantData[0].assistant_id);
+                    }
+                }
 
                 // Reverse the messages to get the index, for the TTS feature
                 // (as Open AI returns the most recent message at index 0)
@@ -588,11 +621,11 @@ router.get(
                     assistantData[0].thread_id
                 );
 
-                const myAssistant = await openai.beta.assistants.retrieve(
-                    assistantData[0].assistant_id
-                );
 
                 if (isFileSearchSkill) {
+                    const myAssistant = await openai.beta.assistants.retrieve(
+                        assistantData[0].assistant_id
+                    );
                     // check if assistant have required file search data
                     const isAssistantHaveVectorStore = checkAssistantHaveVectorStore(myAssistant)
                     // if assistant does not have vector store we update it
