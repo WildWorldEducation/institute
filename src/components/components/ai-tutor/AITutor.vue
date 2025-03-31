@@ -49,7 +49,8 @@ export default {
             assistantData: {
                 assistantId: null,
                 threadId: null
-            }
+            },
+            waitForGenerateAudio: false
         };
     },
     async created() {
@@ -153,13 +154,7 @@ export default {
             }
         },
         async generateAudio(index, message) {
-            // Loading animation on
-            for (let i = 0; i < this.chatHistory.length; i++) {
-                if (this.chatHistory[i].index == index) {
-                    this.chatHistory[i].isAudioGenerating = true;
-                }
-            }
-
+            this.waitForAIresponse = true;
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -176,17 +171,44 @@ export default {
             else url = `/ai-tutor/assessing/generate-tts`;
 
             const response = await fetch(url, requestOptions);
-            const resData = await response.json();
-
-            // Loading animation off
-            for (let i = 0; i < this.chatHistory.length; i++) {
-                if (this.chatHistory[i].index == index) {
-                    this.chatHistory[i].isAudioGenerating = false;
-                    this.chatHistory[i].hasAudio = true;
-                }
-            }
-            this.getChatHistory();
+            console.log(response);
+            this.playNewMessageAudio(response.speechUrl);
         },
+        // async generateAudio(index, message) {
+        //     // Loading animation on
+        //     for (let i = 0; i < this.chatHistory.length; i++) {
+        //         if (this.chatHistory[i].index == index) {
+        //             this.chatHistory[i].isAudioGenerating = true;
+        //         }
+        //     }
+
+        //     const requestOptions = {
+        //         method: 'POST',
+        //         headers: { 'Content-Type': 'application/json' },
+        //         body: JSON.stringify({
+        //             message: message,
+        //             messageNumber: index,
+        //             threadID: this.threadID
+        //         })
+        //     };
+
+        //     let url = '';
+        //     if (this.tutorType == 'socratic')
+        //         url = `/ai-tutor/socratic/generate-tts`;
+        //     else url = `/ai-tutor/assessing/generate-tts`;
+
+        //     const response = await fetch(url, requestOptions);
+        //     const resData = await response.json();
+
+        //     // Loading animation off
+        //     for (let i = 0; i < this.chatHistory.length; i++) {
+        //         if (this.chatHistory[i].index == index) {
+        //             this.chatHistory[i].isAudioGenerating = false;
+        //             this.chatHistory[i].hasAudio = true;
+        //         }
+        //     }
+        //     this.getChatHistory();
+        // },
         playAudio(index) {
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;
@@ -197,6 +219,11 @@ export default {
                 this.isAudioPlaying = true;
                 this.audio.play();
             }
+        },
+        playNewMessageAudio(ulr) {
+            this.audio = new Audio(url);
+            this.isAudioPlaying = true;
+            this.audio.play();
         },
         async sendMessage() {
             if (this.waitForAIresponse) {
@@ -421,6 +448,11 @@ export default {
                     }
                     this.chatHistory = reversedMessages.reverse();
                     this.getChatHistory();
+
+                    // Staring convert the newly done message to speech
+                    const newMessageIndex =
+                        parseInt(reversedMessages.length) - 1;
+                    this.generateAudio(newMessageIndex, assistantMessage);
                 }
             },
             deep: true
