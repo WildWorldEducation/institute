@@ -36,10 +36,6 @@ async function getMessagesList(threadId) {
  * File search feature - upload the files
  */
 async function uploadAndPollVectorStores() {
-    let stats = fs.statSync('./public/data/uploads/the-martyrdom-of-man.pdf');
-
-    // Use isFile() method to log the result to screen
-    console.log('is file ? ' + stats.isFile());
 
     const fileStreams = [
         './public/data/uploads/the-martyrdom-of-man.pdf',
@@ -49,8 +45,6 @@ async function uploadAndPollVectorStores() {
         './public/data/uploads/the-pragmatist_s-guide-to-governance.docx',
         './public/data/uploads/the-pragmatist_s-guide-to-relationships.docx'
     ].map((path) => fs.createReadStream(path));
-
-    // console.log(fileStreams);
 
     //Create a vector store including our file.
     let vectorStore = await openai.vectorStores.create({
