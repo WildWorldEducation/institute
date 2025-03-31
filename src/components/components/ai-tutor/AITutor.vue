@@ -62,7 +62,6 @@ export default {
         );
 
         this.englishSkillLevel = this.skill.level.replace('_', ' ');
-        await this.getChatHistory();
     },
     // updated() {
     //     if (this.mode !== 'hide') {

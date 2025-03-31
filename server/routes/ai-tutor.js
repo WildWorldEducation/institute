@@ -68,7 +68,6 @@ router.post(
             const learningObjectives = req.body.learningObjectives;
 
             let assistantData = await getSocraticTutorThread(userId, skillUrl);
-
             const isFileSearchSkill = checkIfSkillNeedFileSearch(skillName);
 
             // Create assistant
@@ -120,11 +119,19 @@ router.post(
                     const myAssistant = await openai.beta.assistants.retrieve(
                         assistantData[0].assistant_id
                     );
+                    // console.log('myAssistant');
+                    // console.log('tools');
+                    // console.log(myAssistant.tools);
+                    // console.log('tool resources');
+                    // console.log(myAssistant.tool_resources);
                     // check if assistant have required file search data
-                    const isAssistantHaveVectorStore = checkAssistantHaveVectorStore(myAssistant)
+                    const isAssistantHaveVectorStore =
+                        checkAssistantHaveVectorStore(myAssistant);
                     // if assistant does not have vector store we update it
                     if (!isAssistantHaveVectorStore) {
-                        await injectVectorStoreToAssistant(assistantData[0].assistant_id);
+                        await injectVectorStoreToAssistant(
+                            assistantData[0].assistant_id
+                        );
                     }
                 }
 
@@ -197,8 +204,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                    messageNumber
-                )},                       
+                                        messageNumber
+                                    )},                       
                                     ${conn.escape(url)}
                                 );`;
                 await query(queryString);
@@ -218,66 +225,6 @@ router.post(
         }
     }
 );
-
-/**
- * Send message to Socratic AI tutor
- * Commented out as this is now done via streaming/socket.io
- */
-// router.post(
-//     '/socratic/new-message',
-//     isAuthenticated,
-//     async (req, res, next) => {
-//         try {
-//             const assistantData = await getSocraticTutorThread(
-//                 req.body.userId,
-//                 req.body.skillUrl
-//             );
-
-//             console.log('await socraticTutorMessage');
-
-//             await socraticTutorMessage(
-//                 assistantData[0].thread_id,
-//                 assistantData[0].assistant_id,
-//                 req.body
-//             );
-//             res.end();
-//         } catch (error) {
-//             console.error(error);
-//             res.status = 500;
-//             res.json({ mess: 'something went wrong' });
-//         }
-//     }
-// );
-
-/**
- * Socratic AI tutor respond to empty message
- * Commented out as this is now done via streaming/socket.io
- */
-// router.post(
-//     '/socratic/ask-question',
-//     isAuthenticated,
-//     async (req, res, next) => {
-//         try {
-//             const assistantData = await getSocraticTutorThread(
-//                 req.body.userId,
-//                 req.body.skillUrl
-//             );
-
-//             await socraticTutorAskQuestion(
-//                 assistantData[0].thread_id,
-//                 assistantData[0].assistant_id,
-//                 req.body
-//             );
-//             res.end();
-//         } catch (error) {
-//             console.error(error);
-//             res.status = 500;
-//             res.json({ mess: 'something went wrong' });
-//         }
-//     }
-// );
-
-// Assessing tutor ---------------------
 
 /**
  * Get thread from Assessing AI tutor
@@ -339,10 +286,13 @@ router.post(
                         assistantData[0].assistant_id
                     );
                     // check if assistant have required file search data
-                    const isAssistantHaveVectorStore = checkAssistantHaveVectorStore(myAssistant)
+                    const isAssistantHaveVectorStore =
+                        checkAssistantHaveVectorStore(myAssistant);
                     // if assistant does not have vector store we update it
                     if (!isAssistantHaveVectorStore) {
-                        await injectVectorStoreToAssistant(assistantData[0].assistant_id);
+                        await injectVectorStoreToAssistant(
+                            assistantData[0].assistant_id
+                        );
                     }
                 }
 
@@ -425,8 +375,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                    messageNumber
-                )},                       
+                                        messageNumber
+                                    )},                       
                                     ${conn.escape(url)}
                                 );`;
                 await query(queryString);
@@ -446,65 +396,6 @@ router.post(
         }
     }
 );
-
-/**
- * Send message to Assessing AI tutor
- * Commented out as this is now done via streaming/socket.io
- */
-// router.post(
-//     '/assessing/new-message',
-//     isAuthenticated,
-//     async (req, res, next) => {
-//         try {
-//             const assistantData = await getAssessingTutorThread(
-//                 req.body.userId,
-//                 req.body.skillUrl
-//             );
-
-//             await assessingTutorMessage(
-//                 assistantData[0].thread_id,
-//                 assistantData[0].assistant_id,
-//                 req.body
-//             );
-//             res.end();
-//         } catch (error) {
-//             console.error(error);
-//             res.status = 500;
-//             res.json({ mess: 'something went wrong' });
-//         }
-//     }
-// );
-
-/**
- * Get the AI tutor to ask a question
- * Commented out as this is now done via streaming/socket.io
- */
-// router.post(
-//     '/assessing/ask-question',
-//     isAuthenticated,
-//     async (req, res, next) => {
-//         try {
-//             const assistantData = await getAssessingTutorThread(
-//                 req.body.userId,
-//                 req.body.skillUrl
-//             );
-
-//             let assessmentResult = await assessingTutorAskQuestion(
-//                 assistantData[0].thread_id,
-//                 assistantData[0].assistant_id,
-//                 req.body
-//             );
-
-//             res.json({
-//                 assessmentResult: assessmentResult.content[0].text.value
-//             });
-//         } catch (error) {
-//             console.error(error);
-//             res.status = 500;
-//             res.json({ mess: 'something went wrong' });
-//         }
-//     }
-// );
 
 /**
  * AI tutor automatically assess
@@ -545,7 +436,6 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
 
         // Save the user's token usage
         let tokenCount = completion.usage.total_tokens;
-        console.log('assessment: ' + tokenCount);
         saveTokenUsage(userId, tokenCount);
 
         let responseJSON = completion.choices[0].message.content;
@@ -581,8 +471,12 @@ router.get(
                 learningObjectiveId
             );
 
-            let skillData = await getSkillDataByObjectiveId(learningObjectiveId);
-            const isFileSearchSkill = checkIfSkillNeedFileSearch(skillData.name);
+            let skillData = await getSkillDataByObjectiveId(
+                learningObjectiveId
+            );
+            const isFileSearchSkill = checkIfSkillNeedFileSearch(
+                skillData.name
+            );
 
             // If Open AI assistant has not yet been created for this user + learning objective
             if (assistantData.length === 0) {
@@ -615,22 +509,23 @@ router.get(
                 });
                 return;
             } else {
-
                 // Retrieve the chat history.
                 const messageData = await getMessagesList(
                     assistantData[0].thread_id
                 );
-
 
                 if (isFileSearchSkill) {
                     const myAssistant = await openai.beta.assistants.retrieve(
                         assistantData[0].assistant_id
                     );
                     // check if assistant have required file search data
-                    const isAssistantHaveVectorStore = checkAssistantHaveVectorStore(myAssistant)
+                    const isAssistantHaveVectorStore =
+                        checkAssistantHaveVectorStore(myAssistant);
                     // if assistant does not have vector store we update it
                     if (!isAssistantHaveVectorStore) {
-                        await injectVectorStoreToAssistant(assistantData[0].assistant_id);
+                        await injectVectorStoreToAssistant(
+                            assistantData[0].assistant_id
+                        );
                     }
                 }
 
@@ -719,8 +614,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                    messageNumber
-                )},                       
+                                        messageNumber
+                                    )},                       
                                     ${conn.escape(url)}
                                 );`;
                 await query(queryString);
@@ -740,35 +635,6 @@ router.post(
         }
     }
 );
-
-/**
- * Send message to learning objective level AI tutor
- * Commented out as this is now done via streaming/socket.io
- */
-// router.post(
-//     '/learning-objective/new-message',
-//     isAuthenticated,
-//     async (req, res, next) => {
-//         try {
-//             const assistantData = await getLearningObjectiveThread(
-//                 req.body.userId,
-//                 req.body.learningObjectiveId
-//             );
-
-//             await learningObjectiveMessage(
-//                 assistantData[0].thread_id,
-//                 assistantData[0].assistant_id,
-//                 req.body
-//             );
-
-//             res.end();
-//         } catch (error) {
-//             console.error(error);
-//             res.status = 500;
-//             res.json({ mess: 'something went wrong' });
-//         }
-//     }
-// );
 
 /**
  * Get the learning objective AI tutor to tutor on that learning objective
@@ -894,12 +760,11 @@ router.post('/stt/convert', async (req, res, next) => {
     res.end();
 });
 
-
 // crete new vector store (NEED TO CHANGE FROM GET TO POST LATER)
 router.get('/new-vector-store', async (req, res, next) => {
-    const vectorStore = await uploadAndPollVectorStores()
+    const vectorStore = await uploadAndPollVectorStores();
     res.json(vectorStore);
-})
+});
 
 async function sendSpeechToSocraticAI(
     userId,
@@ -960,8 +825,6 @@ async function sendSpeechToAssessingAI(
         console.error(error);
     }
 }
-
-
 
 // Export the router for app to use.
 module.exports = router;

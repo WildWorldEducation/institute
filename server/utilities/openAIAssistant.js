@@ -36,7 +36,6 @@ async function getMessagesList(threadId) {
  * File search feature - upload the files
  */
 async function uploadAndPollVectorStores() {
-
     const fileStreams = [
         './public/data/uploads/the-martyrdom-of-man.pdf',
         './public/data/uploads/the-pragmatist_s-guide-to-life.docx',
@@ -55,7 +54,7 @@ async function uploadAndPollVectorStores() {
         files: fileStreams
     });
 
-    return vectorStore
+    return vectorStore;
     // await openai.beta.assistants.update(assistant.id, {
     //     tool_resources: { file_search: { vector_store_ids: [vectorStore.id] } }
     // });
@@ -125,8 +124,8 @@ async function getSocraticTutorThread(userId, skillUrl) {
         let queryString = `SELECT * 
                            FROM ai_socratic_tutor_threads 
                            WHERE user_id = ${conn.escape(
-            userId
-        )} AND skill_url = ${conn.escape(skillUrl)}`;
+                               userId
+                           )} AND skill_url = ${conn.escape(skillUrl)}`;
 
         const result = await query(queryString);
         return result;
@@ -158,8 +157,6 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         role: 'user',
         content: messageData.message
     });
-
-
 
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
@@ -285,8 +282,8 @@ async function getAssessingTutorThread(userId, skillUrl) {
         let queryString = `SELECT * 
                            FROM ai_assessing_tutor_threads 
                            WHERE user_id = ${conn.escape(
-            userId
-        )} AND skill_url = ${conn.escape(skillUrl)}`;
+                               userId
+                           )} AND skill_url = ${conn.escape(skillUrl)}`;
 
         const result = await query(queryString);
         return result;
@@ -362,35 +359,6 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
         console.log(run.status);
     }
 }
-
-// Test the student
-// Commented out as this is now done via streaming/socket.io
-// async function assessingTutorAskQuestion(threadId, assistantId, messageData) {
-//     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-//         assistant_id: assistantId,
-//         instructions: `The user is at a ${messageData.skillLevel} level and age.
-//         Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
-
-//         Ask questions about each learning objective, one after the other. When you get to the end of the array,
-//         please start again.
-//         Only ask one question, not more than one.
-//         Preference asking questions on learning objectives that the student does not seem to know well.
-
-//         Do not provide feedback to the student after they answer the question.
-
-//         Make sure to have $ delimiters before any science and math strings that can convert to Latex.
-//         Please keep all messages below 2000 characters.`
-//     });
-
-//     if (run.status === 'completed') {
-//         const messages = await openai.beta.threads.messages.list(threadId);
-//         const latestMessage = messages.data[0];
-
-//         return latestMessage;
-//     } else {
-//         console.log(run.status);
-//     }
-// }
 
 /**
  * Learning objective level tutor functions --------------------
@@ -469,8 +437,8 @@ async function getLearningObjectiveThread(userId, learningObjectiveId) {
         let queryString = `SELECT * 
                            FROM ai_tutor_learning_objective_threads
                            WHERE user_id = ${conn.escape(
-            userId
-        )} AND learning_objective_id = ${conn.escape(
+                               userId
+                           )} AND learning_objective_id = ${conn.escape(
             learningObjectiveId
         )}`;
 
@@ -481,34 +449,6 @@ async function getLearningObjectiveThread(userId, learningObjectiveId) {
         throw error;
     }
 }
-
-// async function learningObjectiveMessage(threadId, assistantId, messageData) {
-//     // Add a Message to the Thread
-//     const message = await openai.beta.threads.messages.create(threadId, {
-//         role: 'user',
-//         content: messageData.message
-//     });
-
-//     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-//         assistant_id: assistantId,
-//         instructions:
-//             `Please do not repeat the request. Please tutor about the topic: ` +
-//             messageData.learningObjective +
-//             `. Tutor the user as if they are at a ` +
-//             messageData.skillLevel +
-//             ` level and age. Ask follow up questions. Make sure to have $ delimiters before any science and math string that can convert to Latex.
-//             If the message content is empty, please ask the user to write something.
-//             Please keep all messages below 2000 characters.`
-//     });
-
-//     if (run.status === 'completed') {
-//         const messages = await openai.beta.threads.messages.list(threadId);
-//         const latestMessage = messages.data[0];
-//         return latestMessage;
-//     } else {
-//         console.log(run.status);
-//     }
-// }
 
 async function requestLearningObjectiveTutoring(
     threadId,
@@ -586,8 +526,8 @@ async function createRunStream(
     streamType,
     userId
 ) {
-    console.log('stream type: ');
-    console.log(streamType);
+    // console.log('stream type: ');
+    // console.log(streamType);
 
     if (!isEmptyMessage) {
         await openai.beta.threads.messages.create(threadId, {
@@ -602,18 +542,26 @@ async function createRunStream(
             instructions: assistantInstruction
         })
         .on('textDelta', (textDelta, snapshot) => {
-            socket.emit('stream-message', textDelta, streamType, snapshot, threadId);
+            socket.emit(
+                'stream-message',
+                textDelta,
+                streamType,
+                snapshot,
+                threadId
+            );
         })
         .on('runStepDone', (runStep) => {
             socket.emit('run-end');
             // Save the amount of tokens the user is using
+            //console.log(runStep);
 
             let tokenCount = runStep.usage.total_tokens;
             console.log('streaming: ' + tokenCount);
             saveTokenUsage(userId, tokenCount);
         })
-        .on('toolCallCreated', (toolCall) =>
-            process.stdout.write(`\nassistant > ${toolCall.type}\n\n`)
+        .on('textCreated', () => console.log('assistant >'))
+        .on('toolCallCreated', (event) =>
+            console.log('assistant ' + event.type)
         )
         .on('toolCallDelta', (toolCallDelta, snapshot) => {
             if (toolCallDelta.type === 'code_interpreter') {
@@ -629,8 +577,34 @@ async function createRunStream(
                     });
                 }
             }
-        });
+        })
+        .on('messageDone', async (event) => {
+            if (event.content[0].type === 'text') {
+                const { text } = event.content[0];
+                const { annotations } = text;
+                const citations = [];
 
+                let index = 0;
+                for (let annotation of annotations) {
+                    text.value = text.value.replace(
+                        annotation.text,
+                        '[' + index + ']'
+                    );
+                    const { file_citation } = annotation;
+                    if (file_citation) {
+                        const citedFile = await openai.files.retrieve(
+                            file_citation.file_id
+                        );
+                        citations.push('[' + index + ']' + citedFile.filename);
+                    }
+                    index++;
+                }
+                // console.log(text);
+                // console.log(text.value);
+                // Checking if it is using file search feature
+                console.log(citations.join('\n'));
+            }
+        });
     return run;
 }
 
@@ -718,14 +692,12 @@ async function saveTokenUsage(userId, tokenCount) {
     }
 }
 
-
 // Get skill data based on thread id
 async function getSkillDataByObjectiveId(objectiveId) {
-    let queryString = `SELECT * FROM skills JOIN skill_learning_objectives on skills.id = skill_learning_objectives.skill_id WHERE skill_learning_objectives.id = ${objectiveId}`
-    const skillData = await query(queryString)
+    let queryString = `SELECT * FROM skills JOIN skill_learning_objectives on skills.id = skill_learning_objectives.skill_id WHERE skill_learning_objectives.id = ${objectiveId}`;
+    const skillData = await query(queryString);
     return skillData[0];
 }
-
 
 // Check if skill is needed to add file search feature into it assistant
 function checkIfSkillNeedFileSearch(skillName) {
@@ -755,26 +727,36 @@ function checkIfSkillNeedFileSearch(skillName) {
         'Cultural Evolution',
         'The Memetic Supervirus'
     ];
-    const skillInList = skillsRequiredFileSearch.find((name) => skillName === name);
+    const skillInList = skillsRequiredFileSearch.find(
+        (name) => skillName === name
+    );
 
     return skillInList;
 }
 
 // Check if assistant have vector store in their file search tool
 function checkAssistantHaveVectorStore(assistantData) {
-    if (!assistantData.tool_resources || !assistantData.tool_resources.file_search) {
+    if (
+        !assistantData.tool_resources ||
+        !assistantData.tool_resources.file_search
+    ) {
         // assistant doesn`t use file search
-        return false
+        return false;
     }
-    const vectorStoreIdArray = assistantData.tool_resources.file_search.vector_store_ids
+    const vectorStoreIdArray =
+        assistantData.tool_resources.file_search.vector_store_ids;
 
-    const isVectorInArray = vectorStoreIdArray.includes(process.env.VECTOR_STORE_ID);
+    const isVectorInArray = vectorStoreIdArray.includes(
+        process.env.VECTOR_STORE_ID
+    );
     return isVectorInArray;
 }
 
 async function injectVectorStoreToAssistant(assistantId) {
     await openai.beta.assistants.update(assistantId, {
-        tool_resources: { file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] } },
+        tool_resources: {
+            file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] }
+        }
     });
 }
 
