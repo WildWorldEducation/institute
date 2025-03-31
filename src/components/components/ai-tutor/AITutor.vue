@@ -146,6 +146,10 @@ export default {
                     this.threadID = this.chatHistory[0].thread_id;
                 }
 
+                if (this.mode == 'modal') {
+                    this.chatHistory = this.chatHistory.reverse();
+                }
+
                 this.$parent.checkTokenUsage();
             } catch (error) {
                 console.error(error);
@@ -746,11 +750,12 @@ export default {
             }"
             ref="messageInputDiv"
         >
-            <!-- Currently streaming message -->
+            <!-- Currently streaming message (docked mode - at the top) -->
             <div
                 v-if="
                     stateOfSocket.isStreaming &&
-                    stateOfSocket.streamType === 'aiTutor'
+                    stateOfSocket.streamType === 'aiTutor' &&
+                    mode == 'docked'
                 "
                 class="d-flex my-3 tutor-conversation streamed-message"
                 v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
@@ -854,6 +859,17 @@ export default {
                     </button>
                 </div>
             </template>
+
+            <!-- Currently streaming message (modal mode - at the bottom) -->
+            <div
+                v-if="
+                    stateOfSocket.isStreaming &&
+                    stateOfSocket.streamType === 'aiTutor' &&
+                    mode == 'modal'
+                "
+                class="d-flex my-3 tutor-conversation streamed-message"
+                v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
+            ></div>
         </div>
 
         <!-- User input (modal mode) -->
