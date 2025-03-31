@@ -130,7 +130,7 @@ const createSocket = (server) => {
                 const isEmptyMessage = false;
                 const assistantInstruction = (instructions = `
                     The user is at a ${messageData.skillLevel} level and age.
-                    Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.                    
+                    Please review the chat history and the following learning objective: ${messageData.learningObjective}.                    
 
                     Strategy:
                      - Use the Socratic method of teaching
