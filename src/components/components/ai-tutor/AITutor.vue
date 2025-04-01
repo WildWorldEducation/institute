@@ -563,14 +563,16 @@ export default {
         <!--Tutor types and STT-->
         <div
             v-if="mode === 'docked' || mode === 'hide'"
-            class="d-flex flex-lg-row flex-column justify-content-between"
+            class="d-flex flex-column justify-content-between h-100"
         >
             <!--Tutor types -->
-            <div class="d-md-inline-block d-flex flex-wrap flex-md-nowrap">
+            <div
+                class="d-flex flex-column flex-md-row align-items-stretch gap-2"
+            >
                 <!-- Socratic Tutor agent -->
-                <div class="d-inline-block">
+                <div class="w-100">
                     <button
-                        class="btn ms-1 socratic-btn fs-2 fw-bold py-1"
+                        class="btn socratic-btn ms-1 fs-2 w-100 w-md-auto py-2 fw-bold h-100"
                         :class="{ underline: tutorType === 'socratic' }"
                         @click="handleTutorClick('socratic')"
                     >
@@ -605,9 +607,9 @@ export default {
                     </div>
                 </div>
                 <!-- Exam Agent: assesses student -->
-                <div class="d-inline-block mt-1">
+                <div class="w-100">
                     <button
-                        class="btn ms-1 assessing-btn fs-2 fw-bold py-1"
+                        class="btn ms-1 assessing-btn ms-1 fs-2 w-100 w-md-auto py-2 fw-bold h-100"
                         :class="{ underline: tutorType === 'assessing' }"
                         @click="handleTutorClick('assessing')"
                     >
@@ -640,23 +642,21 @@ export default {
                     </div>
                 </div>
                 <!-- Multiple Choice Assessment -->
-                <div class="d-inline-block pt-md-0 mt-1">
-                    <router-link
-                        v-if="
-                            !$parent.isMastered &&
-                            skill.type != 'domain' &&
-                            skill.id
-                        "
-                        class="btn ms-1 assessing-btn fw-bold py-1 fs-2"
-                        :to="
-                            userDetailsStore.userId
-                                ? skill.id + '/assessment'
-                                : '/login'
-                        "
-                    >
-                        Multiple-Choice Test
-                    </router-link>
-                </div>
+                <router-link
+                    v-if="
+                        !$parent.isMastered &&
+                        skill.type != 'domain' &&
+                        skill.id
+                    "
+                    class="btn ms-1 assessing-btn ms-1 fs-2 w-100 w-md-auto py-2 fw-bold h-100"
+                    :to="
+                        userDetailsStore.userId
+                            ? skill.id + '/assessment'
+                            : '/login'
+                    "
+                >
+                    Multiple-Choice Test
+                </router-link>
             </div>
             <div v-if="mode != 'hide'" class="d-flex justify-content-between">
                 <!-- Toggle chat button -->
