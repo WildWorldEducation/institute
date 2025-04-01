@@ -908,6 +908,25 @@ export default {
      margin-bottom: 20px; */
 }
 
+/* Increase text size for the popup modal mode */
+.modal-mode-container .tutor-conversation {
+    font-size: 1.1rem; /* Increase from default */
+    line-height: 1.5;
+}
+
+.modal-mode-container .user-conversation {
+    font-size: 1.1rem; /* Increase from default */
+}
+
+/* Increase the headings for better hierarchy */
+.modal-mode-container .secondary-heading {
+    font-size: 1.75rem;
+}
+
+/* Make sure the chat text area has larger text too for consistency */
+.modal-mode-container .chat-text-area {
+    font-size: 1.1rem;
+}
 .last-message {
     border-bottom: 1px solid #e0e0e0;
     padding-bottom: 20px;
