@@ -345,7 +345,10 @@ export default {
             <LoginWarningToolTip v-if="showAiToolTip" />
         </div>
         <div class="position-relative">
-            <AiSearchSuggestToolTip v-if="showSuggestAiSearchToolTip" />
+            <AiSearchSuggestToolTip
+                :isLogin="isLogin"
+                v-if="showSuggestAiSearchToolTip"
+            />
         </div>
         <div class="position-relative">
             <div v-if="resultsSkills.length" class="search-results">
