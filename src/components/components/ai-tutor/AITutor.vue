@@ -558,7 +558,7 @@ export default {
                 <!-- Socratic Tutor agent -->
                 <div class="d-inline-block">
                     <button
-                        class="btn ms-1 socratic-btn fs-5 fw-bold py-1"
+                        class="btn ms-1 socratic-btn fs-2 fw-bold py-1"
                         :class="{ underline: tutorType === 'socratic' }"
                         @click="showTutorModal('socratic')"
                     >
@@ -593,9 +593,9 @@ export default {
                     </div>
                 </div>
                 <!-- Exam Agent: assesses student -->
-                <div class="d-inline-block">
+                <div class="d-inline-block mt-1">
                     <button
-                        class="btn ms-1 assessing-btn fs-5 fw-bold py-1"
+                        class="btn ms-1 assessing-btn fs-2 fw-bold py-1"
                         :class="{ underline: tutorType === 'assessing' }"
                         @click="showTutorModal('assessing')"
                     >
@@ -628,7 +628,7 @@ export default {
                     </div>
                 </div>
                 <!-- Multiple Choice Assessment -->
-                <div class="d-inline-block pt-md-0 pt-1">
+                <div class="d-inline-block pt-md-0 mt-1">
                     <router-link
                         v-if="
                             userDetailsStore.role == 'student' &&
@@ -636,7 +636,7 @@ export default {
                             skill.type != 'domain' &&
                             skill.id
                         "
-                        class="btn ms-1 assessing-btn fs-5 fw-bold py-1"
+                        class="btn ms-1 assessing-btn fw-bold py-1 fs-2"
                         :to="skill.id + '/assessment'"
                     >
                         Multiple Choice Assessor
