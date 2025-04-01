@@ -1,7 +1,6 @@
 <script>
-
 export default {
-    props: ['showAiToolTip'],
+    props: ['showAiToolTip', 'isLogin'],
     data: () => {
         return {};
     },
@@ -16,7 +15,7 @@ export default {
             <div class="tool-tip-text">
                 <div>There are no skills that match your keyword.</div>
 
-                <div>
+                <div v-if="isLogin">
                     Click
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -33,6 +32,7 @@ export default {
 
                     to search by subject instead.
                 </div>
+                <div v-else>Please login to search by subject instead.</div>
             </div>
         </div>
     </div>
