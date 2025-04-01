@@ -124,8 +124,8 @@ async function getSocraticTutorThread(userId, skillUrl) {
         let queryString = `SELECT * 
                            FROM ai_socratic_tutor_threads 
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND skill_url = ${conn.escape(skillUrl)}`;
+            userId
+        )} AND skill_url = ${conn.escape(skillUrl)}`;
 
         const result = await query(queryString);
         return result;
@@ -282,8 +282,8 @@ async function getAssessingTutorThread(userId, skillUrl) {
         let queryString = `SELECT * 
                            FROM ai_assessing_tutor_threads 
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND skill_url = ${conn.escape(skillUrl)}`;
+            userId
+        )} AND skill_url = ${conn.escape(skillUrl)}`;
 
         const result = await query(queryString);
         return result;
@@ -371,7 +371,8 @@ async function createLearningObjectiveAssistantAndThread(
 ) {
     const assistant = await createLearningObjectiveAssistant(
         level,
-        learningObjective
+        learningObjective,
+        neededFileSearch
     );
 
     // only update the assistant with file search if it is in the list
@@ -389,7 +390,13 @@ async function createLearningObjectiveAssistantAndThread(
     return result;
 }
 
-async function createLearningObjectiveAssistant(level, learningObjective) {
+async function createLearningObjectiveAssistant(level, learningObjective, needFileSearchSkill) {
+    let additionalInstruction = ''
+    if (needFileSearchSkill) {
+        // make sure the assistant will use the file to search 
+        additionalInstruction = 'priority using the file store data for yours answer'
+    }
+    console.log(additionalInstruction)
     const assistant = await openai.beta.assistants.create({
         name: 'Learning Objective Tutor',
         instructions:
@@ -398,10 +405,14 @@ async function createLearningObjectiveAssistant(level, learningObjective) {
             `student about the following subject: ` +
             learningObjective +
             `.
-            Please keep all messages below 2000 characters.`,
+            Please keep all messages below 2000 characters.
+            ${additionalInstruction}
+            `,
         tools: [],
         model: 'gpt-4.5-preview'
     });
+    console.log('New Assistant: ')
+    console.log(assistant)
     return assistant;
 }
 
@@ -437,8 +448,8 @@ async function getLearningObjectiveThread(userId, learningObjectiveId) {
         let queryString = `SELECT * 
                            FROM ai_tutor_learning_objective_threads
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND learning_objective_id = ${conn.escape(
+            userId
+        )} AND learning_objective_id = ${conn.escape(
             learningObjectiveId
         )}`;
 
