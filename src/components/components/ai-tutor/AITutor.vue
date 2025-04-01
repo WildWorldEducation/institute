@@ -381,6 +381,18 @@ export default {
             // We dont want this to be watched and added to the chat history.
             socketState.streamType = 'pause';
             socketState.streamingMessage = '';
+        },
+        handleTutorClick(type) {
+            if (!this.userDetailsStore.userId) {
+                this.$router.push('/login');
+            } else {
+                this.showTutorModal(type);
+            }
+        },
+        handleMultipleChoiceClick() {
+            if (!this.userDetailsStore.userId) {
+                this.$router.push('/login');
+            }
         }
     },
     watch: {
@@ -561,7 +573,7 @@ export default {
                     <button
                         class="btn ms-1 socratic-btn"
                         :class="{ underline: tutorType === 'socratic' }"
-                        @click="showTutorModal('socratic')"
+                        @click="handleTutorClick('socratic')"
                     >
                         Socratic Tutor
                     </button>
@@ -598,7 +610,7 @@ export default {
                     <button
                         class="btn ms-1 assessing-btn"
                         :class="{ underline: tutorType === 'assessing' }"
-                        @click="showTutorModal('assessing')"
+                        @click="handleTutorClick('assessing')"
                     >
                         AI Assessor
                     </button>
@@ -632,13 +644,16 @@ export default {
                 <div class="d-inline-block">
                     <router-link
                         v-if="
-                            userDetailsStore.role == 'student' &&
                             !$parent.isMastered &&
                             skill.type != 'domain' &&
                             skill.id
                         "
                         class="btn ms-1 assessing-btn"
-                        :to="skill.id + '/assessment'"
+                        :to="
+                            userDetailsStore.userId
+                                ? skill.id + '/assessment'
+                                : '/login'
+                        "
                     >
                         Multiple Choice Assessor
                     </router-link>
