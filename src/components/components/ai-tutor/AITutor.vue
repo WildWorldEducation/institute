@@ -430,7 +430,11 @@ export default {
                     if (typeof this.chatHistory.length == 'undefined') {
                         this.chatHistory = [];
                         this.chatHistory.push(assistantMessage);
-                    } else this.chatHistory.unshift(assistantMessage);
+                    } else if (this.mode == 'docked') {
+                        this.chatHistory.unshift(assistantMessage);
+                    } else if (this.mode == 'modal') {
+                        this.chatHistory.push(assistantMessage);
+                    }
 
                     // Reverse the messages to get the index, for the TTS feature
                     // (as Open AI returns the most recent message at index 0)
