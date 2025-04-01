@@ -600,10 +600,10 @@ export default {
                         :class="{ underline: tutorType === 'assessing' }"
                         @click="showTutorModal('assessing')"
                     >
-                        AI Assessor
+                        Conversational Test
                     </button>
 
-                    <!-- Assessment Tutor Tooltip  -->
+                    <!-- Conversational Test Tooltip  -->
                     <div
                         v-if="
                             userDetailsStore.role == 'student' &&
@@ -615,8 +615,8 @@ export default {
                         >
                             <div class="tool-tip-text">
                                 <p>
-                                    The Assessment Tutor will judge whether or
-                                    not you have mastered this skill.
+                                    The Conversational Test will judge whether
+                                    or not you have mastered this skill.
                                 </p>
                                 <button
                                     class="btn primary-btn"
@@ -628,7 +628,7 @@ export default {
                         </div>
                     </div>
                 </div>
-                <!-- Multiple Choice Assessment -->
+                <!-- Multiple-Choice Test Assessment -->
                 <div class="d-inline-block">
                     <router-link
                         v-if="
@@ -640,7 +640,7 @@ export default {
                         class="btn ms-1 assessing-btn"
                         :to="skill.id + '/assessment'"
                     >
-                        Multiple Choice Assessor
+                        Multiple-Choice Test
                     </router-link>
                 </div>
             </div>
