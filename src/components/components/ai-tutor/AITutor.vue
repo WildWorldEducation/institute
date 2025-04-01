@@ -445,7 +445,6 @@ export default {
             <div class="d-flex flex-row w-100 justify-content-between">
                 <div class="d-flex gap-2">
                     <span class="d-flex gap-2">
-                        <h2 class="secondary-heading">AI tutor</h2>
                         <TooltipBtn
                             v-if="mode === 'docked'"
                             class="d-none d-md-block"
@@ -559,7 +558,7 @@ export default {
                 <!-- Socratic Tutor agent -->
                 <div class="d-inline-block">
                     <button
-                        class="btn ms-1 socratic-btn"
+                        class="btn ms-1 socratic-btn fs-5 fw-bold py-1"
                         :class="{ underline: tutorType === 'socratic' }"
                         @click="showTutorModal('socratic')"
                     >
@@ -596,7 +595,7 @@ export default {
                 <!-- Exam Agent: assesses student -->
                 <div class="d-inline-block">
                     <button
-                        class="btn ms-1 assessing-btn"
+                        class="btn ms-1 assessing-btn fs-5 fw-bold py-1"
                         :class="{ underline: tutorType === 'assessing' }"
                         @click="showTutorModal('assessing')"
                     >
@@ -629,7 +628,7 @@ export default {
                     </div>
                 </div>
                 <!-- Multiple Choice Assessment -->
-                <div class="d-inline-block">
+                <div class="d-inline-block pt-md-0 pt-1">
                     <router-link
                         v-if="
                             userDetailsStore.role == 'student' &&
@@ -637,7 +636,7 @@ export default {
                             skill.type != 'domain' &&
                             skill.id
                         "
-                        class="btn ms-1 assessing-btn"
+                        class="btn ms-1 assessing-btn fs-5 fw-bold py-1"
                         :to="skill.id + '/assessment'"
                     >
                         Multiple Choice Assessor
