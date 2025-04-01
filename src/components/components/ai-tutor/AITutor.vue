@@ -457,7 +457,6 @@ export default {
             <div class="d-flex flex-row w-100 justify-content-between">
                 <div class="d-flex gap-2">
                     <span class="d-flex gap-2">
-                        <h2 class="secondary-heading">AI tutor</h2>
                         <TooltipBtn
                             v-if="mode === 'docked'"
                             class="d-none d-md-block"
@@ -571,7 +570,7 @@ export default {
                 <!-- Socratic Tutor agent -->
                 <div class="d-inline-block">
                     <button
-                        class="btn ms-1 socratic-btn"
+                        class="btn ms-1 socratic-btn fs-2 fw-bold py-1"
                         :class="{ underline: tutorType === 'socratic' }"
                         @click="handleTutorClick('socratic')"
                     >
@@ -606,9 +605,9 @@ export default {
                     </div>
                 </div>
                 <!-- Exam Agent: assesses student -->
-                <div class="d-inline-block">
+                <div class="d-inline-block mt-1">
                     <button
-                        class="btn ms-1 assessing-btn"
+                        class="btn ms-1 assessing-btn fs-2 fw-bold py-1"
                         :class="{ underline: tutorType === 'assessing' }"
                         @click="handleTutorClick('assessing')"
                     >
@@ -640,15 +639,15 @@ export default {
                         </div>
                     </div>
                 </div>
-                <!-- Multiple-Choice Test Assessment -->
-                <div class="d-inline-block">
+                <!-- Multiple Choice Assessment -->
+                <div class="d-inline-block pt-md-0 mt-1">
                     <router-link
                         v-if="
                             !$parent.isMastered &&
                             skill.type != 'domain' &&
                             skill.id
                         "
-                        class="btn ms-1 assessing-btn"
+                        class="btn ms-1 assessing-btn fw-bold py-1 fs-2"
                         :to="
                             userDetailsStore.userId
                                 ? skill.id + '/assessment'
