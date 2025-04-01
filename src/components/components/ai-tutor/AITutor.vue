@@ -460,7 +460,7 @@ export default {
                         <TooltipBtn
                             v-if="mode === 'docked'"
                             class="d-none d-md-block"
-                            toolTipText="Press the 'generate audio' button to hear the tutor speak with AI generated speech."
+                            toolTipText="Press the 'generate speech' button to hear the tutor speak with AI generated speech."
                             bubbleWidth="350px"
                             trianglePosition="left"
                             absoluteTop="37px"
@@ -469,7 +469,7 @@ export default {
                         <TooltipBtn
                             v-if="mode === 'docked'"
                             class="d-md-none"
-                            toolTipText="Chat with ours AI Tutor about the subjects"
+                            toolTipText="Chat with our AI Tutor about the subjects"
                             bubbleWidth="100px"
                             trianglePosition="left"
                             absoluteTop="37px"
@@ -626,8 +626,9 @@ export default {
                         >
                             <div class="tool-tip-text">
                                 <p>
-                                    The Conversational Test will judge whether
-                                    or not you have mastered this skill.
+                                    Your dialog with the Conversational Test
+                                    will continue indefinitely until 70% of your
+                                    answers are deemed to be correct.
                                 </p>
                                 <button
                                     class="btn primary-btn"
