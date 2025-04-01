@@ -63,11 +63,11 @@ export default {
 
         this.englishSkillLevel = this.skill.level.replace('_', ' ');
     },
-    // updated() {
-    //     if (this.mode !== 'hide') {
-    //         this.scrollToMessageInput();
-    //     }
-    // },
+    updated() {
+        if (this.mode !== 'hide') {
+            this.scrollToMessageInput();
+        }
+    },
     methods: {
         // Setting this method to allow the user to be able to create a new line with shift+enter
         handleKeyDown(e) {
@@ -229,7 +229,11 @@ export default {
                 if (typeof this.chatHistory.length == 'undefined') {
                     this.chatHistory = [];
                     this.chatHistory.push(userMessage);
-                } else this.chatHistory.unshift(userMessage);
+                } else if (this.mode == 'docked') {
+                    this.chatHistory.unshift(userMessage);
+                } else if (this.mode == 'modal') {
+                    this.chatHistory.push(userMessage);
+                }
 
                 const messageData = {
                     threadId: this.assistantData.threadId,
@@ -385,6 +389,18 @@ export default {
             // We dont want this to be watched and added to the chat history.
             socketState.streamType = 'pause';
             socketState.streamingMessage = '';
+        },
+        handleTutorClick(type) {
+            if (!this.userDetailsStore.userId) {
+                this.$router.push('/login');
+            } else {
+                this.showTutorModal(type);
+            }
+        },
+        handleMultipleChoiceClick() {
+            if (!this.userDetailsStore.userId) {
+                this.$router.push('/login');
+            }
         }
     },
     watch: {
@@ -449,11 +465,10 @@ export default {
             <div class="d-flex flex-row w-100 justify-content-between">
                 <div class="d-flex gap-2">
                     <span class="d-flex gap-2">
-                        <h2 class="secondary-heading">AI tutor</h2>
                         <TooltipBtn
                             v-if="mode === 'docked'"
                             class="d-none d-md-block"
-                            toolTipText="Press the 'generate audio' button to hear the tutor speak with AI generated speech."
+                            toolTipText="Press the 'generate speech' button to hear the tutor speak with AI generated speech."
                             bubbleWidth="350px"
                             trianglePosition="left"
                             absoluteTop="37px"
@@ -462,7 +477,7 @@ export default {
                         <TooltipBtn
                             v-if="mode === 'docked'"
                             class="d-md-none"
-                            toolTipText="Chat with ours AI Tutor about the subjects"
+                            toolTipText="Chat with our AI Tutor about the subjects"
                             bubbleWidth="100px"
                             trianglePosition="left"
                             absoluteTop="37px"
@@ -563,9 +578,9 @@ export default {
                 <!-- Socratic Tutor agent -->
                 <div class="d-inline-block">
                     <button
-                        class="btn ms-1 socratic-btn"
+                        class="btn ms-1 socratic-btn fs-2 fw-bold py-1"
                         :class="{ underline: tutorType === 'socratic' }"
-                        @click="showTutorModal('socratic')"
+                        @click="handleTutorClick('socratic')"
                     >
                         Socratic Tutor
                     </button>
@@ -598,16 +613,16 @@ export default {
                     </div>
                 </div>
                 <!-- Exam Agent: assesses student -->
-                <div class="d-inline-block">
+                <div class="d-inline-block mt-1">
                     <button
-                        class="btn ms-1 assessing-btn"
+                        class="btn ms-1 assessing-btn fs-2 fw-bold py-1"
                         :class="{ underline: tutorType === 'assessing' }"
-                        @click="showTutorModal('assessing')"
+                        @click="handleTutorClick('assessing')"
                     >
-                        AI Assessor
+                        Conversational Test
                     </button>
 
-                    <!-- Assessment Tutor Tooltip  -->
+                    <!-- Conversational Test Tooltip  -->
                     <div
                         v-if="
                             userDetailsStore.role == 'student' &&
@@ -619,8 +634,9 @@ export default {
                         >
                             <div class="tool-tip-text">
                                 <p>
-                                    The Assessment Tutor will judge whether or
-                                    not you have mastered this skill.
+                                    Your dialog with the Conversational Test
+                                    will continue indefinitely until 70% of your
+                                    answers are deemed to be correct.
                                 </p>
                                 <button
                                     class="btn primary-btn"
@@ -633,18 +649,21 @@ export default {
                     </div>
                 </div>
                 <!-- Multiple Choice Assessment -->
-                <div class="d-inline-block">
+                <div class="d-inline-block pt-md-0 mt-1">
                     <router-link
                         v-if="
-                            userDetailsStore.role == 'student' &&
                             !$parent.isMastered &&
                             skill.type != 'domain' &&
                             skill.id
                         "
-                        class="btn ms-1 assessing-btn"
-                        :to="skill.id + '/assessment'"
+                        class="btn ms-1 assessing-btn fw-bold py-1 fs-2"
+                        :to="
+                            userDetailsStore.userId
+                                ? skill.id + '/assessment'
+                                : '/login'
+                        "
                     >
-                        Multiple Choice Assessor
+                        Multiple-Choice Test
                     </router-link>
                 </div>
             </div>
@@ -750,7 +769,7 @@ export default {
             }"
             ref="messageInputDiv"
         >
-            <!-- Currently streaming message (docked mode - at the top) -->
+            <!-- Currently streaming message (docked mode) -->
             <div
                 v-if="
                     stateOfSocket.isStreaming &&
@@ -761,7 +780,7 @@ export default {
                 v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
             ></div>
 
-            <!-- Process messages with appropriate border styling -->
+            <!-- Chat history -->
             <template v-for="(message, index) in chatHistory">
                 <!-- Student messages -->
                 <div
@@ -860,7 +879,7 @@ export default {
                 </div>
             </template>
 
-            <!-- Currently streaming message (modal mode - at the bottom) -->
+            <!-- Currently streaming message (modal mode) -->
             <div
                 v-if="
                     stateOfSocket.isStreaming &&
@@ -924,6 +943,25 @@ export default {
      margin-bottom: 20px; */
 }
 
+/* Increase text size for the popup modal mode */
+.modal-mode-container .tutor-conversation {
+    font-size: 1.1rem; /* Increase from default */
+    line-height: 1.5;
+}
+
+.modal-mode-container .user-conversation {
+    font-size: 1.1rem; /* Increase from default */
+}
+
+/* Increase the headings for better hierarchy */
+.modal-mode-container .secondary-heading {
+    font-size: 1.75rem;
+}
+
+/* Make sure the chat text area has larger text too for consistency */
+.modal-mode-container .chat-text-area {
+    font-size: 1.1rem;
+}
 .last-message {
     border-bottom: 1px solid #e0e0e0;
     padding-bottom: 20px;
