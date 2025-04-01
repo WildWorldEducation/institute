@@ -152,8 +152,8 @@ export default {
                 console.error(error);
             }
         },
-        async generateAudio(index, message) {
-            this.waitForAIresponse = true;
+        async newGenerateAudio(index, message) {
+            this.waitForGenerateAudio = true;
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -171,43 +171,45 @@ export default {
 
             const response = await fetch(url, requestOptions);
             console.log(response);
+            this.waitForGenerateAudio = false;
             this.playNewMessageAudio(response.speechUrl);
         },
-        // async generateAudio(index, message) {
-        //     // Loading animation on
-        //     for (let i = 0; i < this.chatHistory.length; i++) {
-        //         if (this.chatHistory[i].index == index) {
-        //             this.chatHistory[i].isAudioGenerating = true;
-        //         }
-        //     }
+        async generateAudio(index, message) {
+            // Loading animation on
+            for (let i = 0; i < this.chatHistory.length; i++) {
+                if (this.chatHistory[i].index == index) {
+                    this.chatHistory[i].isAudioGenerating = true;
+                }
+            }
 
-        //     const requestOptions = {
-        //         method: 'POST',
-        //         headers: { 'Content-Type': 'application/json' },
-        //         body: JSON.stringify({
-        //             message: message,
-        //             messageNumber: index,
-        //             threadID: this.threadID
-        //         })
-        //     };
+            console.log(message);
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: message,
+                    messageNumber: index,
+                    threadID: this.threadID
+                })
+            };
 
-        //     let url = '';
-        //     if (this.tutorType == 'socratic')
-        //         url = `/ai-tutor/socratic/generate-tts`;
-        //     else url = `/ai-tutor/assessing/generate-tts`;
+            let url = '';
+            if (this.tutorType == 'socratic')
+                url = `/ai-tutor/socratic/generate-tts`;
+            else url = `/ai-tutor/assessing/generate-tts`;
 
-        //     const response = await fetch(url, requestOptions);
-        //     const resData = await response.json();
+            const response = await fetch(url, requestOptions);
+            const resData = await response.json();
 
-        //     // Loading animation off
-        //     for (let i = 0; i < this.chatHistory.length; i++) {
-        //         if (this.chatHistory[i].index == index) {
-        //             this.chatHistory[i].isAudioGenerating = false;
-        //             this.chatHistory[i].hasAudio = true;
-        //         }
-        //     }
-        //     this.getChatHistory();
-        // },
+            // Loading animation off
+            for (let i = 0; i < this.chatHistory.length; i++) {
+                if (this.chatHistory[i].index == index) {
+                    this.chatHistory[i].isAudioGenerating = false;
+                    this.chatHistory[i].hasAudio = true;
+                }
+            }
+            this.getChatHistory();
+        },
         playAudio(index) {
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;
@@ -219,7 +221,9 @@ export default {
                 this.audio.play();
             }
         },
-        playNewMessageAudio(ulr) {
+        playNewMessageAudio(url) {
+            console.log('audio url');
+            console.log(url);
             this.audio = new Audio(url);
             this.isAudioPlaying = true;
             this.audio.play();
@@ -451,7 +455,14 @@ export default {
                     // Staring convert the newly done message to speech
                     const newMessageIndex =
                         parseInt(reversedMessages.length) - 1;
-                    this.generateAudio(newMessageIndex, assistantMessage);
+                    console.log(
+                        'assistant message: ' +
+                            assistantMessage.content[0].text.value
+                    );
+                    this.newGenerateAudio(
+                        newMessageIndex,
+                        assistantMessage.content[0].text.value
+                    );
                 }
             },
             deep: true
@@ -766,6 +777,8 @@ export default {
             Thinking
             <TutorLoadingSymbol />
         </div>
+        <!-- MIGHT NEEDED UPDATE LATER  -->
+        <div v-if="waitForGenerateAudio">Generating Voice For You ...</div>
         <!-- Message thread -->
         <div
             v-if="showChat && mode != 'hide'"
