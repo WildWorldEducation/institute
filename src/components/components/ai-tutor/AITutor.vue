@@ -170,9 +170,10 @@ export default {
             else url = `/ai-tutor/assessing/generate-tts`;
 
             const response = await fetch(url, requestOptions);
-            console.log(response);
+            const responseData = await response.json();
+            console.log(responseData);
             this.waitForGenerateAudio = false;
-            this.playNewMessageAudio(response.speechUrl);
+            this.playNewMessageAudio(responseData.speechUrl);
         },
         async generateAudio(index, message) {
             // Loading animation on
