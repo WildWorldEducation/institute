@@ -134,29 +134,6 @@ export default {
             // Turn on loading icon
             this.waitForAIresponse = true;
             try {
-                // const requestOptions = {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({
-                //         learningObjective: this.learningObjective,
-                //         learningObjectiveId: this.learningObjectiveId,
-                //         userName: this.userDetailsStore.userName,
-                //         userId: this.userDetailsStore.userId,
-                //         skillName: this.skillName,
-                //         skillLevel: this.englishSkillLevel,
-                //         // Whatever the user typed.
-                //         message: this.message
-                //     })
-                // };
-
-                // var url = '/ai-tutor/learning-objective/new-message';
-                // const res = await fetch(url, requestOptions);
-                // if (res.status === 500) {
-                //     alert('The tutor can`t answer !!');
-                //     this.waitForAIresponse = false;
-                //     return;
-                // }
-
                 const userMessage = {
                     role: 'user',
                     content: [{ text: { value: this.message } }]
