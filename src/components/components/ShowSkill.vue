@@ -556,6 +556,21 @@ export default {
             };
             fetch(url, requestOptions);
         },
+        skipTutorial() {
+            this.showTutorialTip1 = false;
+            this.showTutorialTip2 = false;
+            this.showTutorialTip3 = false;
+            this.showTutorialTip4 = false;
+            this.showTutorialTip5 = false;
+            this.showTutorialTip6 = false;
+            this.showTutorialTip7 = false;
+            this.showTutorialTip8 = false;
+            this.showTutorialTip9 = false;
+            this.showTutorialTip10 = false;
+            this.showTutorialTip11 = false;
+            this.markTutorialComplete();
+            this.isTutorialComplete = true;
+        },
         scrollToTooltip() {
             this.$nextTick(() => {
                 if (
@@ -1482,9 +1497,17 @@ export default {
                     for mastering it, and take a test to demonstrate your
                     mastery.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(1)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button class="btn red-btn" @click="skipTutorial">
+                        close
+                    </button>
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        next
+                    </button>
+                </div>
             </div>
             <div v-else-if="showTutorialTip5">
                 <p>
