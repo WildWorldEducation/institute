@@ -55,7 +55,6 @@ export default {
     async created() {
         this.connectToSocketSever();
     },
-
     async mounted() {
         this.learningObjectives = this.skill.learningObjectives.map(
             (a) => a.objective
@@ -95,6 +94,18 @@ export default {
             } else {
                 this.mode = 'docked';
             }
+        },
+        async hideTutorModal(type) {
+            this.tutorType = type;
+
+            await this.getChatHistory();
+            if (type == 'socratic')
+                this.chatHistory = this.socraticTutorChatHistory;
+            else if (type == 'assessing') {
+                this.chatHistory = this.assessingTutorChatHistory;
+            }
+
+            this.mode = 'docked';
         },
         // For both tutors
         async getChatHistory() {
@@ -522,7 +533,7 @@ export default {
                         <button
                             v-if="mode === 'modal'"
                             class="primary-btn btn close-btn ms-2"
-                            @click="mode = 'docked'"
+                            @click="hideTutorModal(tutorType)"
                             aria-label="Close"
                         >
                             <svg
