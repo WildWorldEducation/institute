@@ -589,98 +589,108 @@ export default {
             class="d-flex flex-column justify-content-between h-100"
         >
             <!--Tutor types -->
-            <div
-                class="d-flex flex-column flex-md-row align-items-stretch gap-2"
-            >
-                <!-- Socratic Tutor agent -->
-                <div class="w-100">
-                    <button
-                        class="btn socratic-btn ms-1 fs-2 w-100 w-md-auto py-2 fw-bold h-100"
-                        :class="{ underline: tutorType === 'socratic' }"
-                        @click="handleTutorClick('socratic')"
-                    >
-                        Socratic Tutor
-                    </button>
-                    <!-- Socratic Tutor Tooltip -->
-                    <div
-                        v-if="
-                            userDetailsStore.role == 'student' &&
-                            showTutorialTip8
-                        "
-                    >
-                        <div
-                            class="explain-tool-tip hovering-info-panel triangle-top-left"
+            <div class="container-fluid p-0">
+                <div class="row mb-2 mb-md-3 g-2">
+                    <!-- Socratic Tutor -->
+                    <div class="col-12 col-md-6">
+                        <button
+                            class="btn socratic-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap"
+                            :class="{
+                                'text-decoration-underline':
+                                    tutorType === 'socratic'
+                            }"
+                            @click="handleTutorClick('socratic')"
                         >
-                            <div class="tool-tip-text">
-                                <p>
-                                    The Socratic Tutor helps you learn through
-                                    guided questioning. It encourages critical
-                                    thinking by asking you questions that lead
-                                    you to discover answers yourself, helping
-                                    build deeper understanding of concepts.
-                                </p>
-                                <button
-                                    class="btn primary-btn"
-                                    @click="$emit('progressTutorial', 8)"
-                                >
-                                    next
-                                </button>
+                            Socratic Tutor
+                        </button>
+                        <!-- Socratic Tutor Tooltip -->
+                        <div
+                            v-if="
+                                userDetailsStore.role == 'student' &&
+                                showTutorialTip8
+                            "
+                        >
+                            <div
+                                class="explain-tool-tip hovering-info-panel triangle-top-left"
+                            >
+                                <div class="tool-tip-text">
+                                    <p>
+                                        The Socratic Tutor helps you learn
+                                        through guided questioning. It
+                                        encourages critical thinking by asking
+                                        you questions that lead you to discover
+                                        answers yourself, helping build deeper
+                                        understanding of concepts.
+                                    </p>
+                                    <button
+                                        class="btn primary-btn"
+                                        @click="$emit('progressTutorial', 8)"
+                                    >
+                                        next
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Conversational Test -->
+                    <div class="col-12 col-md-6">
+                        <button
+                            class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap"
+                            :class="{
+                                'text-decoration-underline':
+                                    tutorType === 'assessing'
+                            }"
+                            @click="handleTutorClick('assessing')"
+                        >
+                            Conversational Test
+                        </button>
+                        <!-- Conversational Test Tooltip -->
+                        <div
+                            v-if="
+                                userDetailsStore.role == 'student' &&
+                                showTutorialTip9
+                            "
+                        >
+                            <div
+                                class="explain-tool-tip hovering-info-panel triangle-top-left"
+                            >
+                                <div class="tool-tip-text">
+                                    <p>
+                                        Your dialog with the Conversational Test
+                                        will continue indefinitely until 70% of
+                                        your answers are deemed to be correct.
+                                    </p>
+                                    <button
+                                        class="btn primary-btn"
+                                        @click="$emit('progressTutorial', 9)"
+                                    >
+                                        next
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- Exam Agent: assesses student -->
-                <div class="w-100">
-                    <button
-                        class="btn ms-1 assessing-btn ms-1 fs-2 w-100 w-md-auto py-2 fw-bold h-100"
-                        :class="{ underline: tutorType === 'assessing' }"
-                        @click="handleTutorClick('assessing')"
-                    >
-                        Conversational Test
-                    </button>
-
-                    <!-- Conversational Test Tooltip  -->
-                    <div
-                        v-if="
-                            userDetailsStore.role == 'student' &&
-                            showTutorialTip9
-                        "
-                    >
-                        <div
-                            class="explain-tool-tip hovering-info-panel triangle-top-left"
+                <div class="row g-2">
+                    <div class="col-12 col-md-6 offset-md-6">
+                        <!-- Multiple Choice Assessment -->
+                        <router-link
+                            v-if="
+                                !$parent.isMastered &&
+                                skill.type != 'domain' &&
+                                skill.id
+                            "
+                            class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 d-block text-nowrap"
+                            :to="
+                                userDetailsStore.userId
+                                    ? skill.id + '/assessment'
+                                    : '/login'
+                            "
                         >
-                            <div class="tool-tip-text">
-                                <p>
-                                    Your dialog with the Conversational Test
-                                    will continue indefinitely until 70% of your
-                                    answers are deemed to be correct.
-                                </p>
-                                <button
-                                    class="btn primary-btn"
-                                    @click="$emit('progressTutorial', 9)"
-                                >
-                                    next
-                                </button>
-                            </div>
-                        </div>
+                            Multiple-Choice Test
+                        </router-link>
                     </div>
                 </div>
-                <!-- Multiple Choice Assessment -->
-                <router-link
-                    v-if="
-                        !$parent.isMastered &&
-                        skill.type != 'domain' &&
-                        skill.id
-                    "
-                    class="btn ms-1 assessing-btn ms-1 fs-2 w-100 w-md-auto py-2 fw-bold h-100"
-                    :to="
-                        userDetailsStore.userId
-                            ? skill.id + '/assessment'
-                            : '/login'
-                    "
-                >
-                    Multiple-Choice Test
-                </router-link>
             </div>
             <div v-if="mode != 'hide'" class="d-flex justify-content-between">
                 <!-- Toggle chat button -->
