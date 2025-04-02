@@ -637,9 +637,9 @@ export default {
                     </div>
                 </div>
                 <!-- Exam Agent: assesses student -->
-                <div class="d-inline-block mt-1">
+                <div class="d-inline-block mt-1" v-if="!$parent.isMastered">
                     <button
-                        class="btn ms-1 assessing-btn fs-2 fw-bold py-1"
+                        class="btn ms-1 assessing-btn fs-2 fw-bold py-1 text-nowrap"
                         :class="{ underline: tutorType === 'assessing' }"
                         @click="handleTutorClick('assessing')"
                     >
@@ -673,14 +673,16 @@ export default {
                     </div>
                 </div>
                 <!-- Multiple Choice Assessment -->
-                <div class="d-inline-block pt-md-0 mt-1">
+                <div
+                    class="d-inline-block pt-md-0 mt-1"
+                    v-if="
+                        !$parent.isMastered &&
+                        skill.type != 'domain' &&
+                        skill.id
+                    "
+                >
                     <router-link
-                        v-if="
-                            !$parent.isMastered &&
-                            skill.type != 'domain' &&
-                            skill.id
-                        "
-                        class="btn ms-1 assessing-btn fw-bold py-1 fs-2"
+                        class="btn ms-1 assessing-btn fw-bold py-1 fs-2 text-nowrap"
                         :to="
                             userDetailsStore.userId
                                 ? skill.id + '/assessment'
