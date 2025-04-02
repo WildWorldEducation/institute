@@ -1495,14 +1495,14 @@ export default {
                     mastery.
                 </p>
                 <div class="d-flex justify-content-between">
-                    <button class="btn red-btn" @click="skipTutorial">
-                        close
-                    </button>
                     <button
                         class="btn primary-btn"
                         @click="progressTutorial(1)"
                     >
                         next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
                     </button>
                 </div>
             </div>

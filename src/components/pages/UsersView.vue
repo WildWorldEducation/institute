@@ -43,6 +43,7 @@ export default {
             // Tutorial tooltips
             showTutorialTip1: false,
             showTutorialTip2: false,
+            isTutorialComplete: false,
             // Flag to prevent initial selection from triggering updates
             isInitializing: true
         };
@@ -128,24 +129,27 @@ export default {
                     this.usersStore.users.length > 0
                 ) {
                     this.updateUserDetails(this.usersStore.users[0], true);
-                    if(this.$refs.usersListRef){
-                        this.$refs.usersListRef.selectedItemId = this.usersStore.users[0].id;
+                    if (this.$refs.usersListRef) {
+                        this.$refs.usersListRef.selectedItemId =
+                            this.usersStore.users[0].id;
                     }
                 } else if (
                     this.userDetailsStore.role === 'instructor' &&
                     this.students.length > 0
                 ) {
                     this.updateUserDetails(this.students[0], true);
-                    if(this.$refs.usersListRef){
-                        this.$refs.usersListRef.selectedItemId = this.students[0].id;
+                    if (this.$refs.usersListRef) {
+                        this.$refs.usersListRef.selectedItemId =
+                            this.students[0].id;
                     }
                 } else if (
                     this.userDetailsStore.role === 'editor' &&
                     this.usersStore.editors.length > 0
                 ) {
                     this.updateUserDetails(this.usersStore.editors[0], true);
-                    if(this.$refs.usersListRef){
-                        this.$refs.usersListRef.selectedItemId = this.usersStore.editors[0].id;   
+                    if (this.$refs.usersListRef) {
+                        this.$refs.usersListRef.selectedItemId =
+                            this.usersStore.editors[0].id;
                     }
                 }
             }
@@ -305,6 +309,12 @@ export default {
                     '/update-locked-skills',
                 requestOptions
             ).then(() => this.getStudents());
+        },
+        skipTutorial() {
+            this.showTutorialTip1 = false;
+            this.showTutorialTip2 = false;
+            this.isTutorialComplete = true;
+            this.markTutorialComplete();
         }
     },
     // Only watch for changes after initial setup
@@ -441,10 +451,17 @@ export default {
             <div v-if="showTutorialTip1">
                 <p>This page shows a list of your students.</p>
                 <p>Click on the student's name to see their details.</p>
-
-                <button class="btn primary-btn" @click="progressTutorial(1)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-if="showTutorialTip2">
                 <p>Under the heading "Progress" you will find 3 buttons:</p>
@@ -482,9 +499,18 @@ export default {
                 <p>This page shows a list of all the other editors.</p>
                 <p>Click on an editor's name to see their details.</p>
 
-                <button class="btn primary-btn" @click="progressTutorial(1)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        next
+                    </button>
+
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-if="showTutorialTip2">
                 <p>

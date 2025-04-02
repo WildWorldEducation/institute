@@ -137,6 +137,13 @@ export default {
             } catch (error) {
                 console.error('API request failed:', error);
             }
+        },
+        skipTutorial() {
+            this.showTutorialTip1 = false;
+            this.showTutorialTip2 = false;
+            this.showTutorialTip3 = false;
+            this.isTutorialComplete = true;
+            this.markTutorialComplete();
         }
     }
 };
@@ -192,12 +199,20 @@ export default {
                                 Type a career or skill here to get
                                 recommendations.
                             </p>
-                            <button
-                                class="btn primary-btn"
-                                @click="progressTutorial(2)"
-                            >
-                                next
-                            </button>
+                            <div class="d-flex justify-content-between">
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(2)"
+                                >
+                                    next
+                                </button>
+                                <button
+                                    class="btn red-btn"
+                                    @click="skipTutorial"
+                                >
+                                    exit tutorial
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -226,7 +241,7 @@ export default {
                                     class="btn primary-btn"
                                     @click="progressTutorial(3)"
                                 >
-                                    next
+                                    close
                                 </button>
                             </div>
                         </div>
@@ -271,9 +286,17 @@ export default {
             <!-- Student -->
             <div>
                 <p>This is the search page.</p>
-                <button class="btn primary-btn" @click="progressTutorial(1)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
         </div>
     </div>

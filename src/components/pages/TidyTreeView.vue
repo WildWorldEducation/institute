@@ -373,6 +373,23 @@ export default {
         },
         restartTutorial() {
             this.startTutorial();
+        },
+        skipTutorial() {
+            this.showTutorialTip1 = false;
+            this.showTutorialTip2 = false;
+            this.showTutorialTip3 = false;
+            this.showTutorialTip4 = false;
+            this.showMobileTutorialTip4 = false;
+            this.showTutorialTip5 = false;
+            this.showMobileTutorialTip5 = false;
+            this.showMobileTutorialTip5_1 = false;
+            this.showTutorialTip6 = false;
+            this.showMobileTutorialTip6 = false;
+            this.showTutorialTip7 = false;
+            this.showTutorialTip7_1 = false;
+            this.showTutorialTip8 = false;
+            this.isTutorialComplete = true;
+            this.markTutorialComplete();
         }
     }
 };
@@ -481,12 +498,18 @@ export default {
                         <p>
                             Use the search field to search for specific skills.
                         </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(6)"
-                        >
-                            next
-                        </button>
+                        <div class="d-flex justify-content-between">
+                            <button
+                                class="btn primary-btn"
+                                @click="progressTutorial(6)"
+                            >
+                                next
+                            </button>
+
+                            <button class="btn red-btn" @click="skipTutorial">
+                                exit tutorial
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -500,12 +523,17 @@ export default {
                             Use the center button to center the skill tree,<br />
                             and the print button to print a PDF.
                         </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(7)"
-                        >
-                            next
-                        </button>
+                        <div class="d-flex justify-content-between">
+                            <button
+                                class="btn primary-btn"
+                                @click="progressTutorial(7)"
+                            >
+                                next
+                            </button>
+                            <button class="btn red-btn" @click="skipTutorial">
+                                exit tutorial
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -536,9 +564,17 @@ export default {
             <div class="explain-tool-tip triangle-bottom-left">
                 <div class="tool-tip-text"></div>
                 <p>Use the buttons below to filter the skills by level.</p>
-                <button class="btn primary-btn" @click="progressTutorial(5)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(5)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
         </div>
         <!-- Grade buttons -->
@@ -1117,14 +1153,21 @@ export default {
         <div v-if="showTutorialTip4" class="tool-tip-base bg-light rounded p-2">
             <div class="explain-tool-tip triangle-top-left">
                 <div class="tool-tip-text">
-                    Use the buttons on the left to filter the skills by
-                    subject.<br />
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(4)"
-                    >
-                        next
-                    </button>
+                    <p>
+                        Use the buttons on the left to filter the skills by
+                        subject.
+                    </p>
+                    <div class="d-flex justify-content-between">
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(4)"
+                        >
+                            next
+                        </button>
+                        <button class="btn red-btn" @click="skipTutorial">
+                            exit tutorial
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1656,9 +1699,17 @@ export default {
                     This page provides a look at all the skills one can study
                     here.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(1)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-else-if="showTutorialTip2">
                 <strong v-if="isMobileCheck > 576">Navigation</strong>
@@ -1666,9 +1717,17 @@ export default {
                     If you know how to use Google Maps, you should know how to
                     navigate here.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(2)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(2)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-else-if="showTutorialTip3">
                 <p>On a computer, use the mouse to navigate around.</p>
@@ -1684,9 +1743,17 @@ export default {
                     For computers and tablets, there are also zoom buttons at
                     the bottom right.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(3)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(3)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-else-if="showTutorialTip8">
                 <p>
@@ -1699,18 +1766,34 @@ export default {
             </div>
             <div v-else-if="showMobileTutorialTip4">
                 <p>Use the search field to search for specific skills.</p>
-                <button class="btn primary-btn" @click="progressTutorial(4)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(4)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-else-if="showMobileTutorialTip5">
                 <p>
                     The filter button will show ways to filter the skill tree by
                     both subjects and levels.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(5)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(5)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-if="showMobileTutorialTip5_1">
                 <p>
@@ -1982,12 +2065,6 @@ export default {
     width: 100%;
     z-index: 2;
     top: 80px;
-}
-
-/* Modal filters */
-.modal .btn {
-    width: 200px;
-    margin: auto;
 }
 
 .have-results {
