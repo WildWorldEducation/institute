@@ -456,20 +456,43 @@ export default {
         >
             <div class="d-flex flex-row w-100 justify-content-between">
                 <div class="d-flex gap-2">
+                    <!-- Info button -->
                     <span class="d-flex gap-2">
                         <TooltipBtn
-                            v-if="mode === 'docked'"
+                            v-if="mode === 'docked' && tutorType == 'socratic'"
                             class="d-none d-md-block"
-                            toolTipText="Press the 'generate audio' button to hear the tutor speak with AI generated speech."
+                            toolTipText="Press the 'generate speech' button to hear the tutor speak with AI generated speech."
+                            bubbleWidth="350px"
+                            trianglePosition="left"
+                            absoluteTop="37px"
+                        />
+                        <TooltipBtn
+                            v-else-if="
+                                mode === 'docked' && tutorType == 'assessing'
+                            "
+                            class="d-none d-md-block"
+                            toolTipText="Your dialog with the Conversational Test will continue indefinitely until 70% of your
+                                    answers are deemed to be correct."
                             bubbleWidth="350px"
                             trianglePosition="left"
                             absoluteTop="37px"
                         />
                         <!-- Mobile tooltip has smaller width -->
                         <TooltipBtn
-                            v-if="mode === 'docked'"
+                            v-if="mode === 'docked' && tutorType == 'socratic'"
                             class="d-md-none"
-                            toolTipText="Chat with ours AI Tutor about the subjects"
+                            toolTipText="Press the 'generate speech' button to hear the tutor speak with AI generated speech."
+                            bubbleWidth="100px"
+                            trianglePosition="left"
+                            absoluteTop="37px"
+                        />
+                        <TooltipBtn
+                            v-else-if="
+                                mode === 'docked' && tutorType == 'assessing'
+                            "
+                            class="d-md-none"
+                            toolTipText="Your dialog with the Conversational Test will continue indefinitely until 70% of your
+                                    answers are deemed to be correct."
                             bubbleWidth="100px"
                             trianglePosition="left"
                             absoluteTop="37px"
@@ -626,8 +649,9 @@ export default {
                         >
                             <div class="tool-tip-text">
                                 <p>
-                                    The Conversational Test will judge whether
-                                    or not you have mastered this skill.
+                                    Your dialog with the Conversational Test
+                                    will continue indefinitely until 70% of your
+                                    answers are deemed to be correct.
                                 </p>
                                 <button
                                     class="btn primary-btn"
