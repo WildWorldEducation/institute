@@ -568,8 +568,8 @@ export default {
             this.showTutorialTip9 = false;
             this.showTutorialTip10 = false;
             this.showTutorialTip11 = false;
-            this.markTutorialComplete();
             this.isTutorialComplete = true;
+            this.markTutorialComplete();
         },
         scrollToTooltip() {
             this.$nextTick(() => {
@@ -797,12 +797,20 @@ export default {
                                 If it's locked, this button will instead take
                                 you to the closest unlocked skill.
                             </p>
-                            <button
-                                class="btn primary-btn"
-                                @click="progressTutorial(2)"
-                            >
-                                next
-                            </button>
+                            <div class="d-flex justify-content-between">
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(2)"
+                                >
+                                    next
+                                </button>
+                                <button
+                                    class="btn red-btn"
+                                    @click="skipTutorial"
+                                >
+                                    exit tutorial
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1002,12 +1010,20 @@ export default {
                                 If this skill is marked as locked, you can also
                                 bookmark this skill by marking it as a goal.
                             </p>
-                            <button
-                                class="btn primary-btn"
-                                @click="progressTutorial(3)"
-                            >
-                                next
-                            </button>
+                            <div class="d-flex justify-content-between">
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(3)"
+                                >
+                                    next
+                                </button>
+                                <button
+                                    class="btn red-btn"
+                                    @click="skipTutorial"
+                                >
+                                    exit tutorial
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1026,12 +1042,20 @@ export default {
                                 friend, or flag this page as unhelpful or
                                 incorrect.
                             </p>
-                            <button
-                                class="btn primary-btn"
-                                @click="progressTutorial(4)"
-                            >
-                                next
-                            </button>
+                            <div class="d-flex justify-content-between">
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(4)"
+                                >
+                                    next
+                                </button>
+                                <button
+                                    class="btn red-btn"
+                                    @click="skipTutorial"
+                                >
+                                    exit tutorial
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1251,12 +1275,20 @@ export default {
                                 personalized help from an AI tutor specifically
                                 focused on that objective.
                             </p>
-                            <button
-                                class="btn primary-btn"
-                                @click="progressTutorial(6)"
-                            >
-                                next
-                            </button>
+                            <div class="d-flex justify-content-between">
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(6)"
+                                >
+                                    next
+                                </button>
+                                <button
+                                    class="btn red-btn"
+                                    @click="skipTutorial"
+                                >
+                                    exit tutorial
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1374,6 +1406,7 @@ export default {
                 :showTutorialTip7="showTutorialTip7"
                 :showTutorialTip8="showTutorialTip8"
                 :showTutorialTip9="showTutorialTip9"
+                @skipTutorial="skipTutorial"
                 @progressTutorial="progressTutorial"
             />
             <div
@@ -1399,6 +1432,7 @@ export default {
                     :skillId="skill.id"
                     :showTutorialTip10="showTutorialTip10"
                     :userRole="userDetailsStore.role"
+                    @skipTutorial="skipTutorial"
                     @progressTutorial="progressTutorial"
                 />
             </div>
@@ -1512,9 +1546,17 @@ export default {
                     sections explain everything one needs to learn to master the
                     skill.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(5)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(5)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-else-if="showTutorialTip11">
                 <p>

@@ -12,7 +12,7 @@ export default {
             sessionDetailsStore
         };
     },
-    emits: ['progressTutorial'],
+    emits: ['progressTutorial', 'skipTutorial'],
     props: [`posts`, 'user', 'skillId', 'showTutorialTip10', 'userRole'],
     data() {
         return {
@@ -186,12 +186,21 @@ export default {
                         <p>
                             {{ tutorialTipContent }}
                         </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="$emit('progressTutorial', 10)"
-                        >
-                            Next
-                        </button>
+                        <div class="d-flex justify-content-between">
+                            <button
+                                class="btn primary-btn"
+                                @click="$emit('progressTutorial', 10)"
+                            >
+                                Next
+                            </button>
+
+                            <button
+                                class="btn red-btn"
+                                @click="$emit('skipTutorial')"
+                            >
+                                exit tutorial
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
