@@ -6,7 +6,7 @@ import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
 import TooltipBtn from './../share-components/TooltipBtn.vue';
 import SpeechRecorder from './SpeechRecorder.vue';
 import { socket, socketState } from '../../../socket.js';
-import AudioGenerateLoadingSymbol from './AudioGenerateLoadingSymbol.vue';
+import PlayingAudioAnimation from './playingAudioAnimation.vue';
 
 export default {
     setup() {
@@ -32,7 +32,7 @@ export default {
         TutorLoadingSymbol,
         TooltipBtn,
         SpeechRecorder,
-        AudioGenerateLoadingSymbol
+        PlayingAudioAnimation
     },
     data() {
         return {
@@ -70,14 +70,6 @@ export default {
         );
 
         this.englishSkillLevel = this.skill.level.replace('_', ' ');
-
-        this.audio = new Audio();
-
-        this.audio.addEventListener('ended', () => {
-            this.isAudioPlaying = false;
-            this.currentIndexAudioPlaying = null;
-            console.log('audio ended');
-        });
     },
     // updated() {
     //     if (this.mode !== 'hide') {
@@ -233,7 +225,7 @@ export default {
         //     }
         //     this.getChatHistory();
         // },
-        playAudio(index) {
+        playAudio(index, frontendIndex) {
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;
                 this.audio.pause();
@@ -241,17 +233,27 @@ export default {
                 let url = `https://institute-${this.tutorType}-tutor-tts-urls.s3.us-east-1.amazonaws.com/${this.threadID}-${index}.mp3`;
                 this.audio = new Audio(url);
                 this.isAudioPlaying = true;
-                this.currentIndexAudioPlaying = index;
+                this.currentIndexAudioPlaying = frontendIndex;
                 // Handling when audio end playing
-
+                this.audio.addEventListener('ended', () => {
+                    this.isAudioPlaying = false;
+                    this.currentIndexAudioPlaying = null;
+                    console.log('audio ended');
+                });
                 this.audio.play();
             }
         },
         playNewMessageAudio(url) {
             console.log('audio url');
             console.log(url);
-            this.audio.url = url;
+            this.audio = new Audio(url);
+            this.audio.addEventListener('ended', () => {
+                this.isAudioPlaying = false;
+                this.currentIndexAudioPlaying = null;
+                console.log('audio ended');
+            });
             this.isAudioPlaying = true;
+            this.currentIndexAudioPlaying = 0;
             this.audio.play();
         },
         async sendMessage() {
@@ -873,6 +875,16 @@ export default {
                         class="d-flex"
                     >
                         <span class="speech-loader"></span>
+                        <div
+                            v-if="
+                                waitForGenerateAudio &&
+                                message.role === 'assistant' &&
+                                index == 0
+                            "
+                            class="d-flex ms-1 warn-text"
+                        >
+                            <div>generating tutor speech. Please wait</div>
+                        </div>
                     </div>
 
                     <!-- Play/pause button -->
@@ -882,7 +894,7 @@ export default {
                             !message.isAudioGenerating &&
                             message.role === 'assistant'
                         "
-                        @click="playAudio(message.index)"
+                        @click="playAudio(message.index, index)"
                         class="btn speechButton"
                     >
                         <svg
@@ -897,30 +909,24 @@ export default {
                                 d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c7.6-4.2 16.8-4.1 24.3 .5l144 88c7.1 4.4 11.5 12.1 11.5 20.5s-4.4 16.1-11.5 20.5l-144 88c-7.4 4.5-16.7 4.7-24.3 .5s-12.3-12.2-12.3-20.9l0-176c0-8.7 4.7-16.7 12.3-20.9z"
                             />
                         </svg>
-                        <svg
-                            v-else
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            fill="yellow"
-                            height="18"
-                            width="18"
-                        >
-                            <path
-                                d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
-                            />
-                        </svg>
+                        <div v-else class="d-flex gap-1 align-items-center">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                fill="yellow"
+                                height="18"
+                                width="18"
+                            >
+                                <path
+                                    d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
+                                />
+                            </svg>
+                            <div v-if="index === currentIndexAudioPlaying">
+                                <PlayingAudioAnimation />
+                            </div>
+                        </div>
                     </button>
                     <!-- Generate speech button -->
-                    <div
-                        v-if="
-                            waitForGenerateAudio &&
-                            message.role === 'assistant' &&
-                            index == 0
-                        "
-                        class="d-flex speechButton"
-                    >
-                        <div>generating tutor speech. Please wait</div>
-                    </div>
                 </div>
             </template>
         </div>
@@ -1143,6 +1149,10 @@ export default {
 .streamed-message {
     display: flex;
     flex-direction: column;
+}
+
+.warn-text {
+    color: yellow;
 }
 /* ************************* */
 /* Tablet Styling */
