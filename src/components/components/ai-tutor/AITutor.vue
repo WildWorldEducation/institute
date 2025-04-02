@@ -161,10 +161,6 @@ export default {
         },
         async newGenerateAudio(index, message) {
             this.waitForGenerateAudio = true;
-
-            console.log('NEWLY ADDED MESSAGE: ');
-            console.log(this.chatHistory[0]);
-
             this.chatHistory[0].isAudioGenerating = true;
 
             const requestOptions = {
@@ -184,7 +180,6 @@ export default {
 
             const response = await fetch(url, requestOptions);
             const responseData = await response.json();
-            console.log(responseData);
             this.waitForGenerateAudio = false;
             this.chatHistory[0].isAudioGenerating = false;
             this.playNewMessageAudio(responseData.speechUrl);
@@ -238,19 +233,15 @@ export default {
                 this.audio.addEventListener('ended', () => {
                     this.isAudioPlaying = false;
                     this.currentIndexAudioPlaying = null;
-                    console.log('audio ended');
                 });
                 this.audio.play();
             }
         },
         playNewMessageAudio(url) {
-            console.log('audio url');
-            console.log(url);
             this.audio = new Audio(url);
             this.audio.addEventListener('ended', () => {
                 this.isAudioPlaying = false;
                 this.currentIndexAudioPlaying = null;
-                console.log('audio ended');
             });
             this.isAudioPlaying = true;
             this.currentIndexAudioPlaying = 0;
@@ -330,7 +321,6 @@ export default {
             }
         },
         async assessMastery() {
-            console.log('assess');
             for (let i = 0; i < this.assessingTutorChatHistory.length; i++) {
                 let chat = this.assessingTutorChatHistory[i];
                 // AI question
@@ -482,12 +472,6 @@ export default {
                     // Staring convert the newly done message to speech
                     const newMessageIndex =
                         parseInt(this.chatHistory.length) - 1;
-                    console.log(
-                        'assistant message: ' +
-                            assistantMessage.content[0].text.value
-                    );
-                    console.log('new message index');
-                    console.log(newMessageIndex);
 
                     this.newGenerateAudio(
                         newMessageIndex,
