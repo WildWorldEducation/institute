@@ -159,7 +159,7 @@ export default {
                 console.error(error);
             }
         },
-        async newGenerateAudio(index, message) {
+        async generateAudio(index, message) {
             this.waitForGenerateAudio = true;
             this.chatHistory[0].isAudioGenerating = true;
 
@@ -184,42 +184,7 @@ export default {
             this.chatHistory[0].isAudioGenerating = false;
             this.playNewMessageAudio(responseData.speechUrl);
         },
-        // async generateAudio(index, message) {
-        //     // Loading animation on
-        //     for (let i = 0; i < this.chatHistory.length; i++) {
-        //         if (this.chatHistory[i].index == index) {
-        //             this.chatHistory[i].isAudioGenerating = true;
-        //         }
-        //     }
 
-        //     console.log(message);
-        //     const requestOptions = {
-        //         method: 'POST',
-        //         headers: { 'Content-Type': 'application/json' },
-        //         body: JSON.stringify({
-        //             message: message,
-        //             messageNumber: index,
-        //             threadID: this.threadID
-        //         })
-        //     };
-
-        //     let url = '';
-        //     if (this.tutorType == 'socratic')
-        //         url = `/ai-tutor/socratic/generate-tts`;
-        //     else url = `/ai-tutor/assessing/generate-tts`;
-
-        //     const response = await fetch(url, requestOptions);
-        //     const resData = await response.json();
-
-        //     // Loading animation off
-        //     for (let i = 0; i < this.chatHistory.length; i++) {
-        //         if (this.chatHistory[i].index == index) {
-        //             this.chatHistory[i].isAudioGenerating = false;
-        //             this.chatHistory[i].hasAudio = true;
-        //         }
-        //     }
-        //     this.getChatHistory();
-        // },
         playAudio(index, frontendIndex) {
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;
@@ -473,7 +438,7 @@ export default {
                     const newMessageIndex =
                         parseInt(this.chatHistory.length) - 1;
 
-                    this.newGenerateAudio(
+                    this.generateAudio(
                         newMessageIndex,
                         assistantMessage.content[0].text.value
                     );
@@ -791,8 +756,6 @@ export default {
             Thinking
             <TutorLoadingSymbol />
         </div>
-        <!-- MIGHT NEEDED UPDATE LATER  -->
-        <div v-if="waitForGenerateAudio">Generating Voice For You ...</div>
         <!-- Message thread -->
         <div
             v-if="showChat && mode != 'hide'"

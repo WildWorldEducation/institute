@@ -622,7 +622,8 @@ router.post(
                                 );`;
                 await query(queryString);
                 res.json({
-                    status: 'complete'
+                    status: 'complete',
+                    speechUrl: url
                 });
             } catch (error) {
                 console.error(error);
