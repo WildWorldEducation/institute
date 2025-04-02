@@ -6,6 +6,7 @@ import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
 import TooltipBtn from './../share-components/TooltipBtn.vue';
 import SpeechRecorder from './SpeechRecorder.vue';
 import { socket, socketState } from '../../../socket.js';
+import AudioGenerateLoadingSymbol from './AudioGenerateLoadingSymbol.vue';
 
 export default {
     setup() {
@@ -27,7 +28,12 @@ export default {
         'showTutorialTip9'
     ],
     emits: ['progressTutorial'],
-    components: { TutorLoadingSymbol, TooltipBtn, SpeechRecorder },
+    components: {
+        TutorLoadingSymbol,
+        TooltipBtn,
+        SpeechRecorder,
+        AudioGenerateLoadingSymbol
+    },
     data() {
         return {
             message: '',
@@ -50,7 +56,8 @@ export default {
                 assistantId: null,
                 threadId: null
             },
-            waitForGenerateAudio: false
+            waitForGenerateAudio: false,
+            currentIndexAudioPlaying: null
         };
     },
     async created() {
@@ -63,6 +70,14 @@ export default {
         );
 
         this.englishSkillLevel = this.skill.level.replace('_', ' ');
+
+        this.audio = new Audio();
+
+        this.audio.addEventListener('ended', () => {
+            this.isAudioPlaying = false;
+            this.currentIndexAudioPlaying = null;
+            console.log('audio ended');
+        });
     },
     // updated() {
     //     if (this.mode !== 'hide') {
@@ -154,6 +169,12 @@ export default {
         },
         async newGenerateAudio(index, message) {
             this.waitForGenerateAudio = true;
+
+            console.log('NEWLY ADDED MESSAGE: ');
+            console.log(this.chatHistory[0]);
+
+            this.chatHistory[0].isAudioGenerating = true;
+
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -173,44 +194,45 @@ export default {
             const responseData = await response.json();
             console.log(responseData);
             this.waitForGenerateAudio = false;
+            this.chatHistory[0].isAudioGenerating = false;
             this.playNewMessageAudio(responseData.speechUrl);
         },
-        async generateAudio(index, message) {
-            // Loading animation on
-            for (let i = 0; i < this.chatHistory.length; i++) {
-                if (this.chatHistory[i].index == index) {
-                    this.chatHistory[i].isAudioGenerating = true;
-                }
-            }
+        // async generateAudio(index, message) {
+        //     // Loading animation on
+        //     for (let i = 0; i < this.chatHistory.length; i++) {
+        //         if (this.chatHistory[i].index == index) {
+        //             this.chatHistory[i].isAudioGenerating = true;
+        //         }
+        //     }
 
-            console.log(message);
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: message,
-                    messageNumber: index,
-                    threadID: this.threadID
-                })
-            };
+        //     console.log(message);
+        //     const requestOptions = {
+        //         method: 'POST',
+        //         headers: { 'Content-Type': 'application/json' },
+        //         body: JSON.stringify({
+        //             message: message,
+        //             messageNumber: index,
+        //             threadID: this.threadID
+        //         })
+        //     };
 
-            let url = '';
-            if (this.tutorType == 'socratic')
-                url = `/ai-tutor/socratic/generate-tts`;
-            else url = `/ai-tutor/assessing/generate-tts`;
+        //     let url = '';
+        //     if (this.tutorType == 'socratic')
+        //         url = `/ai-tutor/socratic/generate-tts`;
+        //     else url = `/ai-tutor/assessing/generate-tts`;
 
-            const response = await fetch(url, requestOptions);
-            const resData = await response.json();
+        //     const response = await fetch(url, requestOptions);
+        //     const resData = await response.json();
 
-            // Loading animation off
-            for (let i = 0; i < this.chatHistory.length; i++) {
-                if (this.chatHistory[i].index == index) {
-                    this.chatHistory[i].isAudioGenerating = false;
-                    this.chatHistory[i].hasAudio = true;
-                }
-            }
-            this.getChatHistory();
-        },
+        //     // Loading animation off
+        //     for (let i = 0; i < this.chatHistory.length; i++) {
+        //         if (this.chatHistory[i].index == index) {
+        //             this.chatHistory[i].isAudioGenerating = false;
+        //             this.chatHistory[i].hasAudio = true;
+        //         }
+        //     }
+        //     this.getChatHistory();
+        // },
         playAudio(index) {
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;
@@ -219,13 +241,16 @@ export default {
                 let url = `https://institute-${this.tutorType}-tutor-tts-urls.s3.us-east-1.amazonaws.com/${this.threadID}-${index}.mp3`;
                 this.audio = new Audio(url);
                 this.isAudioPlaying = true;
+                this.currentIndexAudioPlaying = index;
+                // Handling when audio end playing
+
                 this.audio.play();
             }
         },
         playNewMessageAudio(url) {
             console.log('audio url');
             console.log(url);
-            this.audio = new Audio(url);
+            this.audio.url = url;
             this.isAudioPlaying = true;
             this.audio.play();
         },
@@ -451,15 +476,17 @@ export default {
                         reversedMessages[i].index = i;
                     }
                     this.chatHistory = reversedMessages.reverse();
-                    this.getChatHistory();
 
                     // Staring convert the newly done message to speech
                     const newMessageIndex =
-                        parseInt(reversedMessages.length) - 1;
+                        parseInt(this.chatHistory.length) - 1;
                     console.log(
                         'assistant message: ' +
                             assistantMessage.content[0].text.value
                     );
+                    console.log('new message index');
+                    console.log(newMessageIndex);
+
                     this.newGenerateAudio(
                         newMessageIndex,
                         assistantMessage.content[0].text.value
@@ -847,26 +874,11 @@ export default {
                     >
                         <span class="speech-loader"></span>
                     </div>
-                    <!-- Generate speech button -->
-                    <button
-                        v-else-if="
-                            !message.hasAudio &&
-                            !message.isAudioGenerating &&
-                            message.role === 'assistant'
-                        "
-                        @click="
-                            generateAudio(
-                                message.index,
-                                message.content[0].text.value
-                            )
-                        "
-                        class="btn speechButton"
-                    >
-                        generate speech
-                    </button>
+
                     <!-- Play/pause button -->
                     <button
                         v-else-if="
+                            !waitForGenerateAudio &&
                             !message.isAudioGenerating &&
                             message.role === 'assistant'
                         "
@@ -898,6 +910,17 @@ export default {
                             />
                         </svg>
                     </button>
+                    <!-- Generate speech button -->
+                    <div
+                        v-if="
+                            waitForGenerateAudio &&
+                            message.role === 'assistant' &&
+                            index == 0
+                        "
+                        class="d-flex speechButton"
+                    >
+                        <div>generating tutor speech. Please wait</div>
+                    </div>
                 </div>
             </template>
         </div>
