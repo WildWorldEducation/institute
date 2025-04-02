@@ -517,6 +517,15 @@ export default {
                         Thinking
                         <TutorLoadingSymbol />
                     </div>
+                    <TooltipBtn
+                        v-else-if="mode === 'modal' && tutorType == 'assessing'"
+                        class="d-none d-md-block"
+                        toolTipText="Your dialog with the Conversational Test will continue indefinitely until 70% of your
+                                    answers are deemed to be correct."
+                        bubbleWidth="350px"
+                        trianglePosition="left"
+                        absoluteTop="37px"
+                    />
                 </div>
 
                 <div class="d-flex">
