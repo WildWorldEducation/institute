@@ -49,7 +49,9 @@ export default {
             assistantData: {
                 assistantId: null,
                 threadId: null
-            }
+            },
+            // Used for conditional class for streaming chat (margin top)
+            isNewChat: true
         };
     },
     async created() {
@@ -155,6 +157,7 @@ export default {
                 }
                 if (this.chatHistory.length > 0) {
                     this.threadID = this.chatHistory[0].thread_id;
+                    this.isNewChat = false;
                 }
 
                 if (this.mode == 'modal') {
@@ -902,6 +905,7 @@ export default {
                     mode == 'modal'
                 "
                 class="d-flex my-3 tutor-conversation streamed-message"
+                :class="{ 'mt-auto': isNewChat }"
                 v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
             ></div>
         </div>
@@ -948,14 +952,10 @@ export default {
     border-top: 1px solid #e0e0e0;
     padding-top: 25px;
     padding-bottom: 20px;
-    /* border-bottom: 1px solid #e0e0e0;    
-     margin: 20px 0; */
 }
 .first-message {
     padding: 20px 0;
-    /* border-bottom: 1px solid #e0e0e0;
-    padding-bottom: 20px;
-     margin-bottom: 20px; */
+    margin-top: auto;
 }
 
 /* Increase text size for the popup modal mode */
