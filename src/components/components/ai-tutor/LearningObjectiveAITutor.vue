@@ -346,7 +346,6 @@ export default {
                         newMessageIndex,
                         assistantMessage.content[0].text.value
                     );
-                    this.getMessages();
                 }
             },
             deep: true

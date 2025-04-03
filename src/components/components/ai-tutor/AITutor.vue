@@ -151,6 +151,8 @@ export default {
                         this.assessMastery();
                     }
                 }
+                console.log('chat history is: ');
+                console.log(this.chatHistory);
                 if (this.chatHistory.length > 0) {
                     this.threadID = this.chatHistory[0].thread_id;
                 }
