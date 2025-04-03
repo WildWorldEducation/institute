@@ -461,6 +461,26 @@ export default {
                 }
             },
             deep: true
+        },
+        mode: {
+            handler(newItem, oldItem) {
+                console.log('old mode: ' + oldItem);
+                console.log('new mode: ' + newItem);
+                if (
+                    newItem === 'modal' &&
+                    (oldItem === 'hide' || oldItem === 'docked')
+                ) {
+                    // reverse the chat history
+                    this.chatHistory.reverse();
+                }
+                if (
+                    oldItem === 'modal' &&
+                    (newItem === 'hide' || newItem === 'docked')
+                ) {
+                    // reverse the chat history
+                    this.chatHistory.reverse();
+                }
+            }
         }
     }
 };
