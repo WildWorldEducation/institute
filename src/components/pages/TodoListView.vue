@@ -105,6 +105,14 @@ export default {
                 headers: { 'Content-Type': 'application/json' }
             };
             fetch(url, requestOptions);
+        },
+        skipTutorial() {
+            this.showTutorialTip1 = false;
+            this.showTutorialTip2 = false;
+            this.showTutorialTip3 = false;
+            this.showTutorialTip4 = false;
+            this.isTutorialComplete = true;
+            this.markTutorialComplete();
         }
     }
 };
@@ -163,9 +171,17 @@ export default {
                 <p>This is the Todo List page.</p>
                 <p>There are 3 tabs on the left.</p>
 
-                <button class="btn primary-btn" @click="progressTutorial(1)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-if="showTutorialTip2">
                 <p>
@@ -173,9 +189,17 @@ export default {
                     and quiz questions, made by students or instructors, that
                     need to be approved, edited, or dismissed.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(2)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(2)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-if="showTutorialTip3">
                 <p>
@@ -183,9 +207,17 @@ export default {
                     that students or instructors have submitted, that need to be
                     approved, edited, or dismissed.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(3)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(3)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-if="showTutorialTip4">
                 <p>

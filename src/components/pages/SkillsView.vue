@@ -231,6 +231,51 @@ export default {
                 headers: { 'Content-Type': 'application/json' }
             };
             fetch(url, requestOptions);
+        },
+        skipTutorial() {
+            if (this.userDetailsStore.role == 'student') {
+                this.showTutorialTip1 = false;
+                this.showTutorialTip1_1 = false;
+                this.showMobileTutorialTip1_1 = false;
+                this.showTutorialTip2 = false;
+                this.showTutorialTip3 = false;
+                this.showTutorialTip4 = false;
+                this.showTutorialTip5 = false;
+                this.showMobileTutorialTip2 = false;
+                this.showMobileTutorialTip3 = false;
+                this.showMobileTutorialTip4 = false;
+                this.showMobileTutorialTip5 = false;
+                this.isTutorialComplete = true;
+                this.markTutorialComplete();
+            }
+            if (this.userDetailsStore.role == 'instructor') {
+                this.showTutorialTip1 = false;
+                this.showTutorialTip2 = false;
+                this.showTutorialTip3 = false;
+                this.showTutorialTip4 = false;
+                this.showTutorialTip5 = false;
+                this.showMobileTutorialTip2 = false;
+                this.showMobileTutorialTip3 = false;
+                this.showMobileTutorialTip4 = false;
+                this.showMobileTutorialTip5 = false;
+                this.showInstructorModeTutorialTip1 = false;
+                this.showInstructorModeTutorialTip2 = false;
+                this.isInstructorModeTutorialComplete = true;
+                this.markInstructorModeTutorialComplete();
+            }
+            if (this.userDetailsStore.role == 'editor') {
+                this.showTutorialTip1 = false;
+                this.showTutorialTip1_1 = false;
+                this.showMobileTutorialTip1_1 = false;
+                this.showTutorialTip2 = false;
+                this.showMobileTutorialTip2 = false;
+                this.showTutorialTip3 = false;
+                this.showMobileTutorialTip3 = false;
+                this.showTutorialTip4 = false;
+                this.showMobileTutorialTip4 = false;
+                this.isTutorialComplete = true;
+                this.markTutorialComplete();
+            }
         }
     }
 };
@@ -387,12 +432,20 @@ export default {
                                 <p>
                                     Every mastered skill has a happy face icon.
                                 </p>
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(2)"
-                                >
-                                    next
-                                </button>
+                                <div class="d-flex justify-content-between">
+                                    <button
+                                        class="btn primary-btn"
+                                        @click="progressTutorial(2)"
+                                    >
+                                        next
+                                    </button>
+                                    <button
+                                        class="btn red-btn"
+                                        @click="skipTutorial"
+                                    >
+                                        exit tutorial
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -406,12 +459,20 @@ export default {
                                     you can take an assessment to prove mastery
                                     of that larger skill.
                                 </p>
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(3)"
-                                >
-                                    next
-                                </button>
+                                <div class="d-flex justify-content-between">
+                                    <button
+                                        class="btn primary-btn"
+                                        @click="progressTutorial(3)"
+                                    >
+                                        next
+                                    </button>
+                                    <button
+                                        class="btn red-btn"
+                                        @click="skipTutorial"
+                                    >
+                                        exit tutorial
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -428,12 +489,20 @@ export default {
                                     —just make sure you run a thorough search
                                     before making your suggestion.
                                 </p>
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(4)"
-                                >
-                                    next
-                                </button>
+                                <div class="d-flex justify-content-between">
+                                    <button
+                                        class="btn primary-btn"
+                                        @click="progressTutorial(4)"
+                                    >
+                                        next
+                                    </button>
+                                    <button
+                                        class="btn red-btn"
+                                        @click="skipTutorial"
+                                    >
+                                        exit tutorial
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -473,12 +542,20 @@ export default {
                                     grade level, and search for a specific
                                     skill.
                                 </p>
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(2)"
-                                >
-                                    next
-                                </button>
+                                <div class="d-flex justify-content-between">
+                                    <button
+                                        class="btn primary-btn"
+                                        @click="progressTutorial(2)"
+                                    >
+                                        next
+                                    </button>
+                                    <button
+                                        class="btn red-btn"
+                                        @click="skipTutorial"
+                                    >
+                                        exit tutorial
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -492,12 +569,20 @@ export default {
                                     you can take an assessment to prove mastery
                                     of that larger skill.
                                 </p>
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(3)"
-                                >
-                                    next
-                                </button>
+                                <div class="d-flex justify-content-between">
+                                    <button
+                                        class="btn primary-btn"
+                                        @click="progressTutorial(3)"
+                                    >
+                                        next
+                                    </button>
+                                    <button
+                                        class="btn red-btn"
+                                        @click="skipTutorial"
+                                    >
+                                        exit tutorial
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -514,12 +599,20 @@ export default {
                                     —just make sure you run a thorough search
                                     before making your suggestion.
                                 </p>
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(4)"
-                                >
-                                    next
-                                </button>
+                                <div class="d-flex justify-content-between">
+                                    <button
+                                        class="btn primary-btn"
+                                        @click="progressTutorial(4)"
+                                    >
+                                        next
+                                    </button>
+                                    <button
+                                        class="btn red-btn"
+                                        @click="skipTutorial"
+                                    >
+                                        exit tutorial
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -559,12 +652,20 @@ export default {
                                     grade level, and search for a specific
                                     skill.
                                 </p>
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(2)"
-                                >
-                                    next
-                                </button>
+                                <div class="d-flex justify-content-between">
+                                    <button
+                                        class="btn primary-btn"
+                                        @click="progressTutorial(2)"
+                                    >
+                                        next
+                                    </button>
+                                    <button
+                                        class="btn red-btn"
+                                        @click="skipTutorial"
+                                    >
+                                        exit tutorial
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -581,12 +682,20 @@ export default {
                                     —just make sure you run a thorough search
                                     before making your suggestion.
                                 </p>
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(3)"
-                                >
-                                    next
-                                </button>
+                                <div class="d-flex justify-content-between">
+                                    <button
+                                        class="btn primary-btn"
+                                        @click="progressTutorial(3)"
+                                    >
+                                        next
+                                    </button>
+                                    <button
+                                        class="btn red-btn"
+                                        @click="skipTutorial"
+                                    >
+                                        exit tutorial
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -636,10 +745,17 @@ export default {
                     Click on the down arrows to expand a subject and access its
                     descendant skills.
                 </p>
-
-                <button class="btn primary-btn" @click="progressTutorial(1)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-else-if="showMobileTutorialTip1_1">
                 <p>
@@ -657,10 +773,17 @@ export default {
                     mastered.
                 </p>
                 <p>Every mastered skill has a happy face icon.</p>
-
-                <button class="btn primary-btn" @click="progressTutorial(2)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(2)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-else-if="showMobileTutorialTip3">
                 <p>Some nodes feature a plus or minus sign.</p>
@@ -669,10 +792,17 @@ export default {
                     to be mastered before you can take an assessment to prove
                     mastery of that larger skill.
                 </p>
-
-                <button class="btn primary-btn" @click="progressTutorial(3)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(3)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-else-if="showMobileTutorialTip4">
                 <p>
@@ -684,9 +814,17 @@ export default {
                     —just make sure you run a thorough search before making your
                     suggestion.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(4)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(4)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-else-if="showMobileTutorialTip5">
                 <p>Click on a skill node to go to the page for that skill.</p>
@@ -719,19 +857,34 @@ export default {
                     Click on the down arrows to expand a subject and access its
                     descendant skills.
                 </p>
-
-                <button class="btn primary-btn" @click="progressTutorial(1)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-if="showMobileTutorialTip2">
                 <p>
                     At the top, one can filter the skills by grade level, and
                     search for a specific skill.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(2)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(2)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-if="showMobileTutorialTip3">
                 <p>Some nodes feature a plus or minus sign.</p>
@@ -740,9 +893,17 @@ export default {
                     to be mastered before you can take an assessment to prove
                     mastery of that larger skill.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(3)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(3)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-if="showMobileTutorialTip4">
                 <p>
@@ -754,9 +915,17 @@ export default {
                     —just make sure you run a thorough search before making your
                     suggestion.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(4)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(4)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-if="showMobileTutorialTip5">
                 <p>
@@ -820,19 +989,34 @@ export default {
                     Click on the down arrows to expand a subject and access its
                     descendant skills.
                 </p>
-
-                <button class="btn primary-btn" @click="progressTutorial(1)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-if="showMobileTutorialTip2">
                 <p>
                     At the top, one can filter the skills by grade level, and
                     search for a specific skill.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(2)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(2)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-else-if="showMobileTutorialTip3">
                 <p>
@@ -844,9 +1028,17 @@ export default {
                     —just make sure you run a thorough search before making your
                     suggestion.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(3)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(3)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-if="showMobileTutorialTip4">
                 <p>Some nodes feature a plus or minus sign.</p>

@@ -16,7 +16,7 @@ export default {
             userDetailsStore
         };
     },
-    emits: ['progressTutorial'],
+    emits: ['progressTutorial', 'skipTutorial'],
     props: ['skillId', 'showTutorialTip10', 'userRole'],
     data() {
         return {
@@ -322,6 +322,7 @@ export default {
             :showTutorialTip10="showTutorialTip10"
             :userRole="userDetailsStore.role"
             @progressTutorial="$emit('progressTutorial', $event)"
+            @skipTutorial="$emit('skipTutorial', $event)"
         />
     </div>
     <!-- Flagging Component -->
