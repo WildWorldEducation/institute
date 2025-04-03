@@ -651,6 +651,10 @@ p {
     text-decoration: underline;
     color: var(--primary-color);
 }
+.primary-btn.router-link-active {
+    text-decoration: underline;
+    color: var(--primary-contrast-color) !important;
+}
 
 .red-btn {
     background-color: #e24d4d;
