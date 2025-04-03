@@ -26,7 +26,7 @@ export default {
         'showTutorialTip8',
         'showTutorialTip9'
     ],
-    emits: ['progressTutorial'],
+    emits: ['progressTutorial', 'skipTutorial'],
     components: { TutorLoadingSymbol, TooltipBtn, SpeechRecorder },
     data() {
         return {
@@ -574,12 +574,20 @@ export default {
                         receive explanations, practice concepts, or get guidance
                         at any time during your learning journey.
                     </p>
-                    <button
-                        class="btn primary-btn"
-                        @click="$emit('progressTutorial', 7)"
-                    >
-                        next
-                    </button>
+                    <div class="d-flex justify-content-between">
+                        <button
+                            class="btn primary-btn"
+                            @click="$emit('progressTutorial', 7)"
+                        >
+                            next
+                        </button>
+                        <button
+                            class="btn red-btn"
+                            @click="$emit('skipTutorial')"
+                        >
+                            exit tutorial
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -631,13 +639,21 @@ export default {
                                         answers yourself, helping build deeper
                                         understanding of concepts.
                                     </p>
+                                    <div class="d-flex justify-content-between">
                                     <button
-                                        class="btn primary-btn"
-                                        @click="$emit('progressTutorial', 8)"
+                                            class="btn primary-btn"
+                                            @click="$emit('progressTutorial', 8)"
+                                        >
+                                            next
+                                        </button>
+                                        <button
+                                        class="btn red-btn"
+                                        @click="$emit('skipTutorial')"
                                     >
-                                        next
+                                        exit tutorial
                                     </button>
                                 </div>
+                            </div>
                             </div>
                         </div>
                     </div>
@@ -669,13 +685,21 @@ export default {
                                         will continue indefinitely until 70% of
                                         your answers are deemed to be correct.
                                     </p>
+                                    <div class="d-flex justify-content-between">
                                     <button
-                                        class="btn primary-btn"
-                                        @click="$emit('progressTutorial', 9)"
+                                            class="btn primary-btn"
+                                            @click="$emit('progressTutorial', 9)"
+                                        >
+                                            next
+                                        </button>
+                                        <button
+                                        class="btn red-btn"
+                                        @click="$emit('skipTutorial')"
                                     >
-                                        next
+                                        exit tutorial
                                     </button>
                                 </div>
+                            </div>
                             </div>
                         </div>
                     </div>
