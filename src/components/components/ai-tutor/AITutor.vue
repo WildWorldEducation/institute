@@ -160,8 +160,15 @@ export default {
             }
         },
         async generateAudio(index, message) {
+            let newMessageIndex = 0;
+            if (this.mode !== 'modal') {
+                newMessageIndex = parseInt(this.chatHistory.length);
+            }
             this.waitForGenerateAudio = true;
-            this.chatHistory[0].isAudioGenerating = true;
+            this.chatHistory[newMessageIndex].isAudioGenerating = true;
+
+            console.log('threadId: ' + this.threadID);
+            console.log('more thread Id: ' + this.assistantData.threadId);
 
             const requestOptions = {
                 method: 'POST',
@@ -181,7 +188,7 @@ export default {
             const response = await fetch(url, requestOptions);
             const responseData = await response.json();
             this.waitForGenerateAudio = false;
-            this.chatHistory[0].isAudioGenerating = false;
+            this.chatHistory[newMessageIndex].isAudioGenerating = false;
             this.playNewMessageAudio(responseData.speechUrl);
         },
 
@@ -203,13 +210,17 @@ export default {
             }
         },
         playNewMessageAudio(url) {
+            let newMessageIndex = 0;
+            if (this.mode !== 'modal') {
+                newMessageIndex = parseInt(this.chatHistory.length) - 1;
+            }
             this.audio = new Audio(url);
             this.audio.addEventListener('ended', () => {
                 this.isAudioPlaying = false;
                 this.currentIndexAudioPlaying = null;
             });
             this.isAudioPlaying = true;
-            this.currentIndexAudioPlaying = 0;
+            this.currentIndexAudioPlaying = newMessageIndex;
             this.audio.play();
         },
         async sendMessage() {
@@ -457,6 +468,30 @@ export default {
                 }
             },
             deep: true
+        },
+        mode: {
+            handler(newItem, oldItem) {
+                console.log('old mode: ' + oldItem);
+                console.log('new mode: ' + newItem);
+                return;
+                if (!this.chatHistory || this.chatHistory.length === 0) {
+                    return;
+                }
+                if (
+                    newItem === 'modal' &&
+                    (oldItem === 'hide' || oldItem === 'docked')
+                ) {
+                    // reverse the chat history
+                    this.chatHistory.reverse();
+                }
+                if (
+                    oldItem === 'modal' &&
+                    (newItem === 'hide' || newItem === 'docked')
+                ) {
+                    // reverse the chat history
+                    this.chatHistory.reverse();
+                }
+            }
         }
     }
 };
