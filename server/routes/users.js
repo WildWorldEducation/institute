@@ -57,7 +57,7 @@ router.post('/new-user/add', (req, res, next) => {
     // Hash the password.
     bcrypt.hash(req.body.password, saltRounds, function (err, hashedPassword) {
         if (err) {
-            console.log(err);
+            return next(err);
         }
 
         let data = {
@@ -68,117 +68,95 @@ router.post('/new-user/add', (req, res, next) => {
             grade_filter: req.body.grade_filter
         };
 
-        // Check if username or email address already exist.
-        let sqlQuery1 = `SELECT * 
-        FROM users 
-        WHERE username = ${conn.escape(req.body.username)} 
-        AND NOT(email = ${conn.escape(req.body.email)} 
-        AND is_deleted = 1);`;
+        // OPTIMIZATION 1: Combine username and email check into one query
+        let checkQuery = `
+            SELECT id, username, email, is_deleted 
+            FROM users 
+            WHERE username = ${conn.escape(req.body.username)} 
+                OR email = ${conn.escape(req.body.email)}`;
 
-        conn.query(sqlQuery1, (err, results) => {
+        conn.query(checkQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-                if (results.length > 0) {
-                    res.json({ account: 'username already taken' });
-                } else {
-                    let sqlQuery2 = `SELECT * 
-                    FROM users 
-                    WHERE email = ${conn.escape(req.body.email)};`;
+                // Check if username exists (and not deleted)
+                const usernameExists = results.some(
+                    (user) =>
+                        user.username === req.body.username &&
+                        (user.email !== req.body.email || user.is_deleted !== 1)
+                );
 
-                    conn.query(sqlQuery2, data, (err, results) => {
-                        try {
+                if (usernameExists) {
+                    return res.json({ account: 'username already taken' });
+                }
+
+                // Check if email exists
+                const emailUser = results.find(
+                    (user) => user.email === req.body.email
+                );
+
+                if (emailUser) {
+                    if (emailUser.is_deleted) {
+                        // Restore deleted user account
+                        let restoreSql = `UPDATE users SET ? , is_deleted = 0 WHERE email = ?`;
+
+                        conn.query(restoreSql, [data, data.email], (err) => {
                             if (err) {
-                                throw err;
-                            } else {
-                                if (results.length > 0) {
-                                    if (results[0].is_deleted) {
-                                        let restoreSql = `UPDATE users SET ? , is_deleted = 0 WHERE email = ?`;
-
-                                        conn.query(
-                                            restoreSql,
-                                            [data, data.email],
-                                            (err) => {
-                                                if (err) {
-                                                    throw err;
-                                                } else {
-                                                    req.session.userId =
-                                                        results[0].id;
-                                                    req.session.userName =
-                                                        req.body.username;
-                                                    req.session.role =
-                                                        'student';
-                                                    // Unlock skills here
-                                                    unlockInitialSkills(
-                                                        req.session.userId
-                                                    );
-                                                    res.json({
-                                                        account: 'authorized',
-                                                        role: 'student'
-                                                    });
-                                                }
-                                            }
-                                        );
-                                    } else {
-                                        res.json({
-                                            account: 'email already taken'
-                                        });
-                                    }
-                                } else {
-                                    // Remove the backslash from username.
-                                    // Using '?', so dont need to escape it.
-                                    data.username = data.username.replace(
-                                        /\\/g,
-                                        ''
-                                    );
-                                    // Set the primary key.
-                                    data.id = uuidv7();
-
-                                    // If not, add to database.
-                                    let sqlQuery3 = 'INSERT INTO users SET ?';
-                                    conn.query(
-                                        sqlQuery3,
-                                        data,
-                                        async (err, results) => {
-                                            try {
-                                                if (err) {
-                                                    throw err;
-                                                } else {
-                                                    // Upload avatar to AWS
-                                                    await saveUserAvatarToAWS(
-                                                        data.id,
-                                                        req.body.avatar
-                                                    );
-                                                    let newStudentId = data.id;
-                                                    // Create session to log the user in.
-                                                    req.session.userId =
-                                                        newStudentId;
-                                                    req.session.userName =
-                                                        data.username;
-                                                    req.session.role =
-                                                        'student';
-
-                                                    // Unlock skills here
-                                                    unlockInitialSkills(
-                                                        newStudentId
-                                                    );
-
-                                                    res.json({
-                                                        account: 'authorized',
-                                                        role: 'student'
-                                                    });
-                                                }
-                                            } catch (err) {
-                                                next(err);
-                                            }
-                                        }
-                                    );
-                                }
+                                return next(err);
                             }
-                        } catch (err) {
-                            next(err);
+
+                            // Set up session
+                            req.session.userId = emailUser.id;
+                            req.session.userName = req.body.username;
+                            req.session.role = 'student';
+
+                            // OPTIMIZATION 2: Send the response immediately, run unlockInitialSkills afterward
+                            res.json({
+                                account: 'authorized',
+                                role: 'student'
+                            });
+
+                            // Run this after sending the response
+                            unlockInitialSkills(req.session.userId).catch(
+                                (err) =>
+                                    console.error(
+                                        'Error unlocking initial skills:',
+                                        err
+                                    )
+                            );
+                        });
+                    } else {
+                        return res.json({ account: 'email already taken' });
+                    }
+                } else {
+                    // Clean username
+                    data.username = data.username.replace(/\\/g, '');
+                    // Set the primary key
+                    data.id = uuidv7();
+
+                    // Insert new user
+                    let sqlQuery3 = 'INSERT INTO users SET ?';
+                    conn.query(sqlQuery3, data, (err) => {
+                        if (err) {
+                            return next(err);
                         }
+
+                        // Set up session
+                        req.session.userId = data.id;
+                        req.session.userName = data.username;
+                        req.session.role = 'student';
+
+                        // OPTIMIZATION 3: Send the response before doing AWS upload and skill unlocking
+                        res.json({ account: 'authorized', role: 'student' });
+
+                        // Run these operations after sending the response
+                        Promise.all([
+                            saveUserAvatarToAWS(data.id, req.body.avatar),
+                            unlockInitialSkills(data.id)
+                        ]).catch((err) =>
+                            console.error('Error in background tasks:', err)
+                        );
                     });
                 }
             } catch (err) {
@@ -201,127 +179,111 @@ router.post('/new-instructor/add', (req, res, next) => {
     // Hash the password.
     bcrypt.hash(req.body.password, saltRounds, function (err, hashedPassword) {
         if (err) {
-            console.log(err);
+            return next(err);
         }
+
         let data = {
             username: req.body.username,
             email: req.body.email,
             password: hashedPassword,
             role: 'instructor',
-            theme: 'instructor'
+            theme: 'instructor',
+            tokens: 0 // Add default tokens value
         };
 
-        // Check if username or email address already exist.
-        let sqlQuery1 = `SELECT * 
-       FROM users 
-       WHERE username = ${conn.escape(req.body.username)} 
-       AND NOT(email = ${conn.escape(req.body.email)} 
-       AND is_deleted = 1);`;
+        // OPTIMIZATION 1: Combine username and email check into one query
+        let checkQuery = `
+        SELECT id, username, email, is_deleted 
+        FROM users 
+        WHERE username = ${conn.escape(req.body.username)} 
+            OR email = ${conn.escape(req.body.email)}`;
 
-        conn.query(sqlQuery1, (err, results) => {
+        conn.query(checkQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-                if (results.length > 0) {
-                    res.json({ account: 'username already taken' });
-                } else {
-                    let sqlQuery2 = `SELECT * 
-                    FROM users 
-                    WHERE email = ${conn.escape(req.body.email)};`;
 
-                    conn.query(sqlQuery2, data, (err, results) => {
-                        try {
+                // Check if username exists (and not deleted)
+                const usernameExists = results.some(
+                    (user) =>
+                        user.username === req.body.username &&
+                        (user.email !== req.body.email || user.is_deleted !== 1)
+                );
+
+                if (usernameExists) {
+                    return res.json({ account: 'username already taken' });
+                }
+
+                // Check if email exists
+                const emailUser = results.find(
+                    (user) => user.email === req.body.email
+                );
+
+                if (emailUser) {
+                    if (emailUser.is_deleted) {
+                        // Restore deleted user account
+                        let restoreSql = `UPDATE users SET ? , is_deleted = 0, theme = 'instructor' WHERE email = ?`;
+
+                        conn.query(restoreSql, [data, data.email], (err) => {
                             if (err) {
-                                throw err;
-                            } else {
-                                if (results.length > 0) {
-                                    if (results[0].is_deleted) {
-                                        let restoreSql = `UPDATE users SET ? , is_deleted = 0, theme = 'instructor' WHERE email = ?`;
-
-                                        conn.query(
-                                            restoreSql,
-                                            [data, data.email],
-                                            (err) => {
-                                                if (err) {
-                                                    throw err;
-                                                } else {
-                                                    req.session.userId =
-                                                        results[0].id;
-                                                    req.session.userName =
-                                                        req.body.username;
-                                                    req.session.role =
-                                                        req.body.role;
-                                                    // Unlock skills here
-                                                    unlockInitialSkills(
-                                                        req.session.userId
-                                                    );
-                                                    res.json({
-                                                        account: 'authorized',
-                                                        role: req.session.role
-                                                    });
-                                                }
-                                            }
-                                        );
-                                    } else {
-                                        res.json({
-                                            account: 'email already taken'
-                                        });
-                                    }
-                                } else {
-                                    // Remove the backslash from username.
-                                    // Using '?', so dont need to escape it.
-                                    data.username = data.username.replace(
-                                        /\\/g,
-                                        ''
-                                    );
-                                    // Set the primary key.
-                                    data.id = uuidv7();
-                                    // If not, add to database.
-                                    let sqlQuery3 = 'INSERT INTO users SET ?';
-                                    conn.query(
-                                        sqlQuery3,
-                                        data,
-                                        async (err, results) => {
-                                            try {
-                                                if (err) {
-                                                    throw err;
-                                                } else {
-                                                    // Upload avatar to AWS (would be handled separately)
-                                                    await saveUserAvatarToAWS(
-                                                        data.id,
-                                                        req.body.avatar
-                                                    );
-                                                    let newInstructorId =
-                                                        data.id;
-                                                    // Create session to log the user in.
-                                                    req.session.userId =
-                                                        newInstructorId;
-                                                    req.session.userName =
-                                                        req.body.username;
-                                                    req.session.role =
-                                                        'instructor';
-
-                                                    // Unlock skills here
-                                                    unlockInitialSkills(
-                                                        req.session.userId
-                                                    );
-
-                                                    res.json({
-                                                        account: 'authorized',
-                                                        role: req.session.role
-                                                    });
-                                                }
-                                            } catch (err) {
-                                                next(err);
-                                            }
-                                        }
-                                    );
-                                }
+                                return next(err);
                             }
-                        } catch (err) {
-                            next(err);
+
+                            // Set up session
+                            req.session.userId = emailUser.id;
+                            req.session.userName = req.body.username;
+                            req.session.role = 'instructor';
+
+                            // OPTIMIZATION 2: Send response before unlocking skills
+                            res.json({
+                                account: 'authorized',
+                                role: req.session.role
+                            });
+
+                            // Do this after sending the response
+                            unlockInitialSkills(req.session.userId).catch(
+                                (err) =>
+                                    console.error(
+                                        'Error unlocking skills:',
+                                        err
+                                    )
+                            );
+                        });
+                    } else {
+                        return res.json({ account: 'email already taken' });
+                    }
+                } else {
+                    // Clean username
+                    data.username = data.username.replace(/\\/g, '');
+                    // Set the primary key
+                    data.id = uuidv7();
+
+                    // Insert new user
+                    let sqlQuery3 = 'INSERT INTO users SET ?';
+                    conn.query(sqlQuery3, data, (err) => {
+                        if (err) {
+                            return next(err);
                         }
+
+                        // Set up session
+                        req.session.userId = data.id;
+                        req.session.userName = data.username;
+                        req.session.role = 'instructor';
+
+                        // OPTIMIZATION 3: Send response before AWS upload and skill unlocking
+                        res.json({
+                            account: 'authorized',
+                            role: 'instructor'
+                        });
+
+                        // Run these operations after sending the response
+                        Promise.all([
+                            saveUserAvatarToAWS(data.id, req.body.avatar),
+                            unlockInitialSkills(data.id)
+                        ]).catch((err) =>
+                            console.error('Error in background tasks:', err)
+                        );
                     });
                 }
             } catch (err) {
@@ -1192,7 +1154,9 @@ router.put(
     addInstructorPermission,
     (req, res, next) => {
         let sqlQuery = `
-            DELETE FROM instructor_students WHERE instructor_id = ${conn.escape(req.session.userId)} AND student_id = ${conn.escape(req.params.id)}`;
+            DELETE FROM instructor_students WHERE instructor_id = ${conn.escape(
+                req.session.userId
+            )} AND student_id = ${conn.escape(req.params.id)}`;
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {

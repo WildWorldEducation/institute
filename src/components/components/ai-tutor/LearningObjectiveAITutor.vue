@@ -346,6 +346,7 @@ export default {
                         newMessageIndex,
                         assistantMessage.content[0].text.value
                     );
+                    this.getMessages();
                 }
             },
             deep: true
@@ -496,7 +497,7 @@ export default {
                     "
                     class="d-flex w-100 justify-content-end"
                 >
-                    <span class="speech-loader"></span>                   
+                    <span class="speech-loader"></span>
                 </div>
                 <button
                     v-else-if="
