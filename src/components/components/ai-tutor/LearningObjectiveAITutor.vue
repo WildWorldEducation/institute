@@ -99,12 +99,6 @@ export default {
                 })
             };
 
-            console.log(message);
-            console.log(index);
-            console.log(this.threadID);
-
-            return;
-
             let url = `/ai-tutor/learning-objective/generate-tts`;
 
             const response = await fetch(url, requestOptions);
