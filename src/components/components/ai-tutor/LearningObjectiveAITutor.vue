@@ -496,17 +496,7 @@ export default {
                     "
                     class="d-flex w-100 justify-content-end"
                 >
-                    <span class="speech-loader"></span>
-                    <div
-                        v-if="
-                            waitForGenerateAudio &&
-                            message.role === 'assistant' &&
-                            index == 0
-                        "
-                        class="d-flex ms-1 warn-text"
-                    >
-                        <div>generating tutor speech. Please wait</div>
-                    </div>
+                    <span class="speech-loader"></span>                   
                 </div>
                 <button
                     v-else-if="
