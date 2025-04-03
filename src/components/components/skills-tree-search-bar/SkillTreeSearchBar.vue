@@ -219,9 +219,11 @@ export default {
                 return;
             }
             // If user are focus on input text we switch mode
-            this.aiMode = !this.aiMode;
-            if (this.aiMode) {
-                this.checkTextForAi(this.searchText);
+            if (this.isLogin) {
+                this.aiMode = !this.aiMode;
+                if (this.aiMode) {
+                    this.checkTextForAi(this.searchText);
+                }
             }
         },
         handleKeyDownPress() {
@@ -338,10 +340,15 @@ export default {
         <div v-if="isLogin" class="position-relative">
             <TurnOnAiModeToolTip v-if="showAiToolTip && !aiMode" />
             <TurnOffAiModeToolTip v-if="showAiToolTip && aiMode" />
-            <AiSearchSuggestToolTip v-if="showSuggestAiSearchToolTip" />
         </div>
         <div v-else class="position-relative">
             <LoginWarningToolTip v-if="showAiToolTip" />
+        </div>
+        <div class="position-relative">
+            <AiSearchSuggestToolTip
+                :isLogin="isLogin"
+                v-if="showSuggestAiSearchToolTip"
+            />
         </div>
         <div class="position-relative">
             <div v-if="resultsSkills.length" class="search-results">
