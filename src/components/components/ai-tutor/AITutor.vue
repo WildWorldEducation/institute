@@ -642,7 +642,7 @@ export default {
                         </div>
                     </div>
                     <!-- Conversational Test -->
-                    <div class="col-12 col-md-6">
+                    <div class="col-12 col-md-6" v-if="!$parent.isMastered">
                         <button
                             class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap"
                             :class="{
@@ -681,14 +681,16 @@ export default {
                     </div>
                 </div>
                 <div class="row g-2">
-                    <div class="col-12 col-md-6 offset-md-6">
+                    <div
+                        class="col-12 col-md-6 offset-md-6"
+                        v-if="
+                            !$parent.isMastered &&
+                            skill.type != 'domain' &&
+                            skill.id
+                        "
+                    >
                         <!-- Multiple Choice Assessment -->
                         <router-link
-                            v-if="
-                                !$parent.isMastered &&
-                                skill.type != 'domain' &&
-                                skill.id
-                            "
                             class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 d-block text-nowrap"
                             :to="
                                 userDetailsStore.userId
