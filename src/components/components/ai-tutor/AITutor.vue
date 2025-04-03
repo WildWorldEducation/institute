@@ -464,8 +464,6 @@ export default {
         },
         mode: {
             handler(newItem, oldItem) {
-                console.log('old mode: ' + oldItem);
-                console.log('new mode: ' + newItem);
                 if (
                     newItem === 'modal' &&
                     (oldItem === 'hide' || oldItem === 'docked')
