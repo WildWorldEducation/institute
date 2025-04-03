@@ -507,8 +507,12 @@ export default {
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
-                if (!this.isMastered) this.showTutorialTip2 = true;
-                else this.showTutorialTip3 = true;
+                if (!this.isMastered) {
+                    this.showTutorialTip2 = true;
+                } else {
+                    // If skill is already mastered, skip step 2 (assessment button tooltip)
+                    this.showTutorialTip3 = true;
+                }
             } else if (step == 2) {
                 this.showTutorialTip2 = false;
                 this.showTutorialTip3 = true;
@@ -521,24 +525,25 @@ export default {
             } else if (step == 5) {
                 this.showTutorialTip5 = false;
                 this.showTutorialTip6 = true;
+                // Skip straight to AI tutor tooltip for editors/instructors
                 if (
                     this.userDetailsStore.role === 'editor' ||
                     this.userDetailsStore.role === 'instructor'
                 ) {
+                    this.showTutorialTip6 = false;
                     this.showTutorialTip7 = true;
                 }
             } else if (step == 6) {
                 this.showTutorialTip6 = false;
                 this.showTutorialTip7 = true;
-                if (
-                    this.userDetailsStore.role === 'editor' ||
-                    this.userDetailsStore.role === 'instructor'
-                ) {
-                    this.showTutorialTip7 = false;
-                }
             } else if (step == 7) {
                 this.showTutorialTip7 = false;
-                this.showTutorialTip8 = true;
+                // If skill is mastered, skip AI Tutor assessment tooltips
+                if (this.isMastered) {
+                    this.showTutorialTip10 = true;
+                } else {
+                    this.showTutorialTip8 = true;
+                }
             } else if (step == 8) {
                 this.showTutorialTip8 = false;
                 this.showTutorialTip9 = true;
