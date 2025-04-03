@@ -119,11 +119,7 @@ router.post(
                     const myAssistant = await openai.beta.assistants.retrieve(
                         assistantData[0].assistant_id
                     );
-                    // console.log('myAssistant');
-                    // console.log('tools');
-                    // console.log(myAssistant.tools);
-                    // console.log('tool resources');
-                    // console.log(myAssistant.tool_resources);
+
                     // check if assistant have required file search data
                     const isAssistantHaveVectorStore =
                         checkAssistantHaveVectorStore(myAssistant);
