@@ -243,16 +243,32 @@ export default {
             );
             const data = await res.json();
             this.userSkills = data;
+            // Reset these flags before processing
+            this.isMastered = false;
+            this.isUnlocked = false;
+            this.isGoal = false;
+
             for (let i = 0; i < this.userSkills.length; i++) {
                 if (this.userSkills[i].id == this.skill.id) {
-                    if (this.userSkills[i].is_mastered == 1) {
-                        this.isMastered = true;
+                    // For domain skills, we always want to keep the button visible
+                    if (this.skill.type === 'domain') {
+                        // Only update isUnlocked status for domain skills
+                        if (this.userSkills[i].is_accessible == 1)
+                            this.isUnlocked = true;
+                        if (this.userSkills[i].is_goal == 1) this.isGoal = true;
+                        // Deliberately NOT setting isMastered for domain skills
+                    } else {
+                        // For non-domain skills, proceed as normal
+                        if (this.userSkills[i].is_mastered == 1) {
+                            this.isMastered = true;
+                        }
+                        if (this.userSkills[i].is_accessible == 1)
+                            this.isUnlocked = true;
+                        if (this.userSkills[i].is_goal == 1) this.isGoal = true;
                     }
-                    if (this.userSkills[i].is_accessible == 1)
-                        this.isUnlocked = true;
-                    if (this.userSkills[i].is_goal == 1) this.isGoal = true;
                 }
-                // also get the accessible skill list of this user for the find nearest accessible ancestor method
+
+                // Also get the accessible skill list of this user for the find nearest accessible ancestor method
                 if (this.userSkills[i].is_accessible == 1) {
                     this.accessibleSkills.push(this.userSkills[i]);
                 }
@@ -262,21 +278,27 @@ export default {
             // If it's a domain skill, first find its first child skill
             if (this.skill.type === 'domain') {
                 try {
+                    // First get the first child skill
                     const response = await fetch(
                         `/skills/get-first-child-skill/${this.skill.id}`
                     );
                     const firstChildSkill = await response.json();
 
-                    // Mark the domain skill as mastered
+                    // Mark the domain skill as mastered but don't change the UI state for domain skills
+                    // This allows the button to remain visible when we return to this page
                     await this.userSkillsStore.MakeMastered(
                         this.userDetailsStore.userId,
                         this.skill
                     );
-                    // this.isMastered = true;
+
+                    // Update user skills to reflect changes in the store, but keep button visible
                     await this.getUserSkills();
 
+                    // For domain skills, we want to keep the button visible even after mastering
+                    this.isMastered = false;
+
                     // If a child skill exists, redirect to it
-                    if (firstChildSkill) {
+                    if (firstChildSkill && firstChildSkill.url) {
                         this.$router.push(`/skills/${firstChildSkill.url}`);
                     } else {
                         // If no child skill, show category completed modal
@@ -485,8 +507,12 @@ export default {
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
-                if (!this.isMastered) this.showTutorialTip2 = true;
-                else this.showTutorialTip3 = true;
+                if (!this.isMastered) {
+                    this.showTutorialTip2 = true;
+                } else {
+                    // If skill is already mastered, skip step 2 (assessment button tooltip)
+                    this.showTutorialTip3 = true;
+                }
             } else if (step == 2) {
                 this.showTutorialTip2 = false;
                 this.showTutorialTip3 = true;
@@ -499,24 +525,25 @@ export default {
             } else if (step == 5) {
                 this.showTutorialTip5 = false;
                 this.showTutorialTip6 = true;
+                // Skip straight to AI tutor tooltip for editors/instructors
                 if (
                     this.userDetailsStore.role === 'editor' ||
                     this.userDetailsStore.role === 'instructor'
                 ) {
+                    this.showTutorialTip6 = false;
                     this.showTutorialTip7 = true;
                 }
             } else if (step == 6) {
                 this.showTutorialTip6 = false;
                 this.showTutorialTip7 = true;
-                if (
-                    this.userDetailsStore.role === 'editor' ||
-                    this.userDetailsStore.role === 'instructor'
-                ) {
-                    this.showTutorialTip7 = false;
-                }
             } else if (step == 7) {
                 this.showTutorialTip7 = false;
-                this.showTutorialTip8 = true;
+                // If skill is mastered, skip AI Tutor assessment tooltips
+                if (this.isMastered) {
+                    this.showTutorialTip10 = true;
+                } else {
+                    this.showTutorialTip8 = true;
+                }
             } else if (step == 8) {
                 this.showTutorialTip8 = false;
                 this.showTutorialTip9 = true;
@@ -688,9 +715,8 @@ export default {
                         </svg>
                     </button>
                     <button
-                        v-else-if="
+                        v-if="
                             userDetailsStore.role == 'student' &&
-                            !isMastered &&
                             skill.type == 'domain'
                         "
                         @click="MakeMastered()"
