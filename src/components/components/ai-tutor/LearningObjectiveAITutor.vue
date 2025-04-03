@@ -299,6 +299,7 @@ export default {
                         reversedMessages[i].index = i;
                     }
                     this.messageList = reversedMessages.reverse();
+                    this.getMessages();
                 }
             },
             deep: true
