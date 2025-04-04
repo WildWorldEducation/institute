@@ -6,6 +6,7 @@ import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
 import TooltipBtn from './../share-components/TooltipBtn.vue';
 import SpeechRecorder from './SpeechRecorder.vue';
 import { socket, socketState } from '../../../socket.js';
+import PlayingAudioAnimation from './playingAudioAnimation.vue';
 
 export default {
     setup() {
@@ -27,7 +28,13 @@ export default {
         'showTutorialTip9'
     ],
     emits: ['progressTutorial', 'skipTutorial'],
-    components: { TutorLoadingSymbol, TooltipBtn, SpeechRecorder },
+    components: {
+        TutorLoadingSymbol,
+        TooltipBtn,
+        SpeechRecorder,
+        PlayingAudioAnimation
+    },
+    emits: ['progressTutorial'],
     data() {
         return {
             message: '',
@@ -52,7 +59,9 @@ export default {
             },
             // Used for conditional class for streaming chat (margin top)
             isNewSocraticChat: true,
-            isNewAssessingChat: true
+            isNewAssessingChat: true,
+            waitForGenerateAudio: false,
+            currentIndexAudioPlaying: null
         };
     },
     async created() {
@@ -156,6 +165,8 @@ export default {
                         this.assessMastery();
                     }
                 }
+                // console.log('chat history is: ');
+                // console.log(this.chatHistory);
                 if (this.chatHistory.length > 0) {
                     this.threadID = this.chatHistory[0].thread_id;
                     if (this.tutorType == 'socratic')
@@ -174,12 +185,15 @@ export default {
             }
         },
         async generateAudio(index, message) {
-            // Loading animation on
-            for (let i = 0; i < this.chatHistory.length; i++) {
-                if (this.chatHistory[i].index == index) {
-                    this.chatHistory[i].isAudioGenerating = true;
-                }
+            // let newMessageIndex = 0;
+            if (this.mode !== 'modal') {
+                newMessageIndex = parseInt(this.chatHistory.length);
             }
+            this.waitForGenerateAudio = true;
+            this.chatHistory[index].isAudioGenerating = true;
+
+            console.log('threadId: ' + this.threadID);
+            console.log('more thread Id: ' + this.assistantData.threadId);
 
             const requestOptions = {
                 method: 'POST',
@@ -187,7 +201,7 @@ export default {
                 body: JSON.stringify({
                     message: message,
                     messageNumber: index,
-                    threadID: this.threadID
+                    threadID: this.assistantData.threadId
                 })
             };
 
@@ -197,27 +211,49 @@ export default {
             else url = `/ai-tutor/assessing/generate-tts`;
 
             const response = await fetch(url, requestOptions);
-            const resData = await response.json();
-
-            // Loading animation off
-            for (let i = 0; i < this.chatHistory.length; i++) {
-                if (this.chatHistory[i].index == index) {
-                    this.chatHistory[i].isAudioGenerating = false;
-                    this.chatHistory[i].hasAudio = true;
-                }
-            }
-            this.getChatHistory();
+            const responseData = await response.json();
+            this.waitForGenerateAudio = false;
+            this.chatHistory[index].isAudioGenerating = false;
+            this.playNewMessageAudio(index, responseData.speechUrl);
         },
+
         playAudio(index) {
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;
                 this.audio.pause();
             } else {
-                let url = `https://institute-${this.tutorType}-tutor-tts-urls.s3.us-east-1.amazonaws.com/${this.threadID}-${index}.mp3`;
+                let url = '';
+                for (let i = 0; i < this.chatHistory.length; i++) {
+                    if (this.chatHistory[i].index == index) {
+                        url = this.chatHistory[i].audio;
+                    }
+                }
+                //let url = `https://institute-${this.tutorType}-tutor-tts-urls.s3.us-east-1.amazonaws.com/${this.threadID}-${index}.mp3`;
                 this.audio = new Audio(url);
                 this.isAudioPlaying = true;
+                this.currentIndexAudioPlaying = index;
+                // Handling when audio end playing
+                this.audio.addEventListener('ended', () => {
+                    this.isAudioPlaying = false;
+                    this.currentIndexAudioPlaying = null;
+                });
                 this.audio.play();
             }
+        },
+        playNewMessageAudio(index, url) {
+            let newMessageIndex = 0;
+            if (this.mode !== 'modal') {
+                newMessageIndex = parseInt(this.chatHistory.length) - 1;
+            }
+            this.audio = new Audio(url);
+            this.audio.addEventListener('ended', () => {
+                this.isAudioPlaying = false;
+                this.currentIndexAudioPlaying = null;
+            });
+            this.isAudioPlaying = true;
+            this.currentIndexAudioPlaying = index;
+            this.audio.play();
+            this.getChatHistory();
         },
         async sendMessage() {
             if (this.waitForAIresponse) {
@@ -297,7 +333,6 @@ export default {
             }
         },
         async assessMastery() {
-            console.log('assess');
             for (let i = 0; i < this.assessingTutorChatHistory.length; i++) {
                 let chat = this.assessingTutorChatHistory[i];
                 // AI question
@@ -461,7 +496,15 @@ export default {
                         reversedMessages[i].index = i;
                     }
                     this.chatHistory = reversedMessages.reverse();
-                    this.getChatHistory();
+
+                    // Staring convert the newly done message to speech
+                    const newMessageIndex =
+                        parseInt(this.chatHistory.length) - 1;
+
+                    this.generateAudio(
+                        newMessageIndex,
+                        assistantMessage.content[0].text.value
+                    );
                 }
             },
             deep: true
@@ -655,7 +698,7 @@ export default {
         <!--Tutor types and STT-->
         <div
             v-if="mode === 'docked' || mode === 'hide'"
-            class="d-flex flex-column justify-content-between h-100"
+            class="d-flex flex-column justify-content-between"
         >
             <!--Tutor types -->
             <div class="container-fluid p-0">
@@ -692,20 +735,22 @@ export default {
                                         understanding of concepts.
                                     </p>
                                     <div class="d-flex justify-content-between">
-                                    <button
+                                        <button
                                             class="btn primary-btn"
-                                            @click="$emit('progressTutorial', 8)"
+                                            @click="
+                                                $emit('progressTutorial', 8)
+                                            "
                                         >
                                             next
                                         </button>
                                         <button
-                                        class="btn red-btn"
-                                        @click="$emit('skipTutorial')"
-                                    >
-                                        exit tutorial
-                                    </button>
+                                            class="btn red-btn"
+                                            @click="$emit('skipTutorial')"
+                                        >
+                                            exit tutorial
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
                             </div>
                         </div>
                     </div>
@@ -738,20 +783,22 @@ export default {
                                         your answers are deemed to be correct.
                                     </p>
                                     <div class="d-flex justify-content-between">
-                                    <button
+                                        <button
                                             class="btn primary-btn"
-                                            @click="$emit('progressTutorial', 9)"
+                                            @click="
+                                                $emit('progressTutorial', 9)
+                                            "
                                         >
                                             next
                                         </button>
                                         <button
-                                        class="btn red-btn"
-                                        @click="$emit('skipTutorial')"
-                                    >
-                                        exit tutorial
-                                    </button>
+                                            class="btn red-btn"
+                                            @click="$emit('skipTutorial')"
+                                        >
+                                            exit tutorial
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
                             </div>
                         </div>
                     </div>
@@ -937,26 +984,11 @@ export default {
                     >
                         <span class="speech-loader"></span>
                     </div>
-                    <!-- Generate speech button -->
+
+                    <!-- Play/pause button, playing animation -->
                     <button
                         v-else-if="
-                            !message.hasAudio &&
-                            !message.isAudioGenerating &&
-                            message.role === 'assistant'
-                        "
-                        @click="
-                            generateAudio(
-                                message.index,
-                                message.content[0].text.value
-                            )
-                        "
-                        class="btn speechButton"
-                    >
-                        generate speech
-                    </button>
-                    <!-- Play/pause button -->
-                    <button
-                        v-else-if="
+                            !waitForGenerateAudio &&
                             !message.isAudioGenerating &&
                             message.role === 'assistant'
                         "
@@ -975,19 +1007,28 @@ export default {
                                 d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c7.6-4.2 16.8-4.1 24.3 .5l144 88c7.1 4.4 11.5 12.1 11.5 20.5s-4.4 16.1-11.5 20.5l-144 88c-7.4 4.5-16.7 4.7-24.3 .5s-12.3-12.2-12.3-20.9l0-176c0-8.7 4.7-16.7 12.3-20.9z"
                             />
                         </svg>
-                        <svg
-                            v-else
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            fill="yellow"
-                            height="18"
-                            width="18"
+                        <div
+                            v-else-if="
+                                isAudioPlaying == true &&
+                                message.index === currentIndexAudioPlaying
+                            "
+                            class="d-flex gap-1 align-items-center"
                         >
-                            <path
-                                d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
-                            />
-                        </svg>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                fill="yellow"
+                                height="18"
+                                width="18"
+                            >
+                                <path
+                                    d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
+                                />
+                            </svg>
+                            <PlayingAudioAnimation />
+                        </div>
                     </button>
+                    <!-- Generate speech button -->
                 </div>
             </template>
 
@@ -1241,6 +1282,10 @@ export default {
 .streamed-message {
     display: flex;
     flex-direction: column;
+}
+
+.warn-text {
+    color: yellow;
 }
 /* ************************* */
 /* Tablet Styling */

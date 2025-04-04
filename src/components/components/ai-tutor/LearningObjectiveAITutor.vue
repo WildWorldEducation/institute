@@ -1,6 +1,7 @@
 <script>
 import { socket, socketState } from '../../../socket.js';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
+import PlayingAudioAnimation from './playingAudioAnimation.vue';
 import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
 
 export default {
@@ -19,7 +20,7 @@ export default {
         'learningObjective',
         'learningObjectiveId'
     ],
-    components: { TutorLoadingSymbol },
+    components: { TutorLoadingSymbol, PlayingAudioAnimation },
     data() {
         return {
             message: '',
@@ -30,7 +31,9 @@ export default {
             englishSkillLevel: '',
             threadID: '',
             isAudioPlaying: false,
-            assistantData: null
+            assistantData: null,
+            waitForGenerateAudio: false,
+            currentIndexAudioPlaying: null
         };
     },
     async mounted() {
@@ -81,14 +84,43 @@ export default {
             }
         },
 
-        async generateAudio(index, message) {
-            // Loading animation on
-            for (let i = 0; i < this.messageList.length; i++) {
-                if (this.messageList[i].index == index) {
-                    this.messageList[i].isAudioGenerating = true;
-                }
-            }
+        // async generateAudio(index, message) {
+        //     // Loading animation on
+        //     for (let i = 0; i < this.messageList.length; i++) {
+        //         if (this.messageList[i].index == index) {
+        //             this.messageList[i].isAudioGenerating = true;
+        //         }
+        //     }
 
+        //     const requestOptions = {
+        //         method: 'POST',
+        //         headers: { 'Content-Type': 'application/json' },
+        //         body: JSON.stringify({
+        //             message: message,
+        //             messageNumber: index,
+        //             threadID: this.threadID
+        //         })
+        //     };
+
+        //     let url = `/ai-tutor/learning-objective/generate-tts`;
+
+        //     const response = await fetch(url, requestOptions);
+        //     const resData = await response.json();
+        //     console.log(resData.status);
+
+        //     // Loading animation off
+        //     for (let i = 0; i < this.messageList.length; i++) {
+        //         if (this.messageList[i].index == index) {
+        //             this.messageList[i].isAudioGenerating = false;
+        //             this.messageList[i].hasAudio = true;
+        //         }
+        //     }
+
+        //     this.getMessages();
+        // },
+        async generateAudio(index, message) {
+            this.waitForGenerateAudio = true;
+            this.messageList[0].isAudioGenerating = true;
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -102,20 +134,14 @@ export default {
             let url = `/ai-tutor/learning-objective/generate-tts`;
 
             const response = await fetch(url, requestOptions);
-            const resData = await response.json();
-            console.log(resData.status);
 
-            // Loading animation off
-            for (let i = 0; i < this.messageList.length; i++) {
-                if (this.messageList[i].index == index) {
-                    this.messageList[i].isAudioGenerating = false;
-                    this.messageList[i].hasAudio = true;
-                }
-            }
+            const responseData = await response.json();
+            this.waitForGenerateAudio = false;
+            this.messageList[0].isAudioGenerating = false;
 
-            this.getMessages();
+            this.playNewMessageAudio(responseData.speechUrl);
         },
-        playAudio(index) {
+        playAudio(index, frontendIndex) {
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;
                 this.audio.pause();
@@ -123,9 +149,21 @@ export default {
                 let url = `https://institute-learning-objective-tutor-tts-urls.s3.us-east-1.amazonaws.com/${this.threadID}-${index}.mp3`;
                 this.audio = new Audio(url);
                 this.isAudioPlaying = true;
+                this.currentIndexAudioPlaying = frontendIndex;
                 this.audio.play();
             }
         },
+        playNewMessageAudio(url) {
+            this.audio = new Audio(url);
+            this.audio.addEventListener('ended', () => {
+                this.isAudioPlaying = false;
+                this.currentIndexAudioPlaying = null;
+            });
+            this.isAudioPlaying = true;
+            this.currentIndexAudioPlaying = 0;
+            this.audio.play();
+        },
+
         // send Open AI message regarding the learning objective
         async sendMessage() {
             if (this.waitForAIresponse) {
@@ -187,8 +225,15 @@ export default {
                     return;
                 }
 
-                this.getMessages();
+                await this.getMessages();
                 this.waitForAIresponse = false;
+                // Staring convert the newly done message to speech
+                const newMessageIndex = parseInt(this.messageList.length) - 1;
+
+                this.generateAudio(
+                    newMessageIndex,
+                    this.messageList[0].content[0].text.value
+                );
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false;
@@ -223,8 +268,15 @@ export default {
                     return;
                 }
 
-                this.getMessages();
+                await this.getMessages();
                 this.waitForAIresponse = false;
+                // Staring convert the newly done message to speech
+                const newMessageIndex = parseInt(this.messageList.length) - 1;
+
+                this.generateAudio(
+                    newMessageIndex,
+                    this.messageList[0].content[0].text.value
+                );
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false;
@@ -299,7 +351,15 @@ export default {
                         reversedMessages[i].index = i;
                     }
                     this.messageList = reversedMessages.reverse();
-                    this.getMessages();
+
+                    // Staring convert the newly done message to speech
+                    const newMessageIndex =
+                        parseInt(this.messageList.length) - 1;
+
+                    this.generateAudio(
+                        newMessageIndex,
+                        assistantMessage.content[0].text.value
+                    );
                 }
             },
             deep: true
@@ -405,7 +465,7 @@ export default {
                 :class="{
                     'justify-content-end': message.role === 'user'
                 }"
-                v-for="message in messageList"
+                v-for="(message, index) in messageList"
             >
                 <!-- Student messages -->
                 <div v-if="message.role === 'user'" class="user-conversation">
@@ -424,16 +484,8 @@ export default {
                 ></div>
                 <!-- Generate / Play audio -->
                 <!-- Loading animation -->
-                <div
-                    v-if="
-                        message.isAudioGenerating &&
-                        message.role === 'assistant'
-                    "
-                    class="d-flex"
-                >
-                    <span class="speech-loader"></span>
-                </div>
-                <button
+
+                <!-- <button
                     v-else-if="
                         !message.hasAudio &&
                         !message.isAudioGenerating &&
@@ -448,13 +500,25 @@ export default {
                     class="btn speechButton"
                 >
                     generate speech
-                </button>
+                </button> -->
+                <!-- Generate / Play audio -->
+                <!-- Loading animation -->
+                <div
+                    v-if="
+                        message.isAudioGenerating &&
+                        message.role === 'assistant'
+                    "
+                    class="d-flex w-100 justify-content-end"
+                >
+                    <span class="speech-loader"></span>
+                </div>
                 <button
                     v-else-if="
+                        !waitForGenerateAudio &&
                         !message.isAudioGenerating &&
                         message.role === 'assistant'
                     "
-                    @click="playAudio(message.index)"
+                    @click="playAudio(message.index, index)"
                     class="btn speechButton"
                 >
                     <svg
@@ -470,19 +534,23 @@ export default {
                             d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c7.6-4.2 16.8-4.1 24.3 .5l144 88c7.1 4.4 11.5 12.1 11.5 20.5s-4.4 16.1-11.5 20.5l-144 88c-7.4 4.5-16.7 4.7-24.3 .5s-12.3-12.2-12.3-20.9l0-176c0-8.7 4.7-16.7 12.3-20.9z"
                         />
                     </svg>
-                    <svg
-                        v-else
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        fill="yellow"
-                        height="18"
-                        width="18"
-                    >
-                        <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                        <path
-                            d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
-                        />
-                    </svg>
+                    <div v-else class="d-flex gap-1 align-items-center">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            fill="yellow"
+                            height="18"
+                            width="18"
+                        >
+                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
+                            />
+                        </svg>
+                        <div v-if="index === currentIndexAudioPlaying">
+                            <PlayingAudioAnimation />
+                        </div>
+                    </div>
                 </button>
             </div>
         </div>
@@ -507,7 +575,7 @@ export default {
     height: 24px;
     border: 5px solid yellow;
     border-bottom-color: transparent;
-    border-radius: 50%;
+    border-radius: 100px;
     display: inline-block;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
@@ -574,6 +642,10 @@ export default {
 .streamed-message {
     display: flex;
     flex-direction: column;
+}
+
+.warn-text {
+    color: yellow;
 }
 
 @keyframes rotation {
