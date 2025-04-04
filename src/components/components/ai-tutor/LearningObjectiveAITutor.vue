@@ -127,7 +127,7 @@ export default {
                 body: JSON.stringify({
                     message: message,
                     messageNumber: index,
-                    threadID: this.threadID
+                    threadID: this.assistantData.threadId
                 })
             };
 
@@ -356,10 +356,10 @@ export default {
                     const newMessageIndex =
                         parseInt(this.messageList.length) - 1;
 
-                    // this.generateAudio(
-                    //     newMessageIndex,
-                    //     assistantMessage.content[0].text.value
-                    // );
+                    this.generateAudio(
+                        newMessageIndex,
+                        assistantMessage.content[0].text.value
+                    );
                 }
             },
             deep: true
