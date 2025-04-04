@@ -214,7 +214,7 @@ export default {
             const responseData = await response.json();
             this.waitForGenerateAudio = false;
             this.chatHistory[index].isAudioGenerating = false;
-            this.playNewMessageAudio(responseData.speechUrl);
+            this.playNewMessageAudio(index, responseData.speechUrl);
         },
 
         playAudio(index) {
@@ -242,7 +242,7 @@ export default {
                 this.audio.play();
             }
         },
-        playNewMessageAudio(url) {
+        playNewMessageAudio(index, url) {
             let newMessageIndex = 0;
             if (this.mode !== 'modal') {
                 newMessageIndex = parseInt(this.chatHistory.length) - 1;
@@ -253,7 +253,7 @@ export default {
                 this.currentIndexAudioPlaying = null;
             });
             this.isAudioPlaying = true;
-            this.currentIndexAudioPlaying = newMessageIndex;
+            this.currentIndexAudioPlaying = index;
             this.audio.play();
             this.getChatHistory();
         },
