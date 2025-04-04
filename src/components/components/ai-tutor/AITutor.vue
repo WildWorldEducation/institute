@@ -217,15 +217,22 @@ export default {
             this.playNewMessageAudio(responseData.speechUrl);
         },
 
-        playAudio(index, frontendIndex) {
+        playAudio(index) {
+            console.log(this.chatHistory);
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;
                 this.audio.pause();
             } else {
-                let url = `https://institute-${this.tutorType}-tutor-tts-urls.s3.us-east-1.amazonaws.com/${this.threadID}-${index}.mp3`;
+                let url = '';
+                for (let i = 0; i < this.chatHistory.length; i++) {
+                    if (this.chatHistory[i].index == index) {
+                        url = this.chatHistory[i].audio;
+                    }
+                }
+                //let url = `https://institute-${this.tutorType}-tutor-tts-urls.s3.us-east-1.amazonaws.com/${this.threadID}-${index}.mp3`;
                 this.audio = new Audio(url);
                 this.isAudioPlaying = true;
-                this.currentIndexAudioPlaying = frontendIndex;
+                this.currentIndexAudioPlaying = index;
                 // Handling when audio end playing
                 this.audio.addEventListener('ended', () => {
                     this.isAudioPlaying = false;
@@ -985,7 +992,7 @@ export default {
                             !message.isAudioGenerating &&
                             message.role === 'assistant'
                         "
-                        @click="playAudio(message.index, index)"
+                        @click="playAudio(message.index)"
                         class="btn speechButton"
                     >
                         <svg
