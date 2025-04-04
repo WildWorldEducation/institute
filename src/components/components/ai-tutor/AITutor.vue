@@ -474,9 +474,6 @@ export default {
         },
         mode: {
             handler(newItem, oldItem) {
-                console.log('old mode: ' + oldItem);
-                console.log('new mode: ' + newItem);
-                return;
                 if (!this.chatHistory || this.chatHistory.length === 0) {
                     return;
                 }
