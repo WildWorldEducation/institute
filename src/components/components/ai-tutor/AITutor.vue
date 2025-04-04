@@ -474,22 +474,23 @@ export default {
         },
         mode: {
             handler(newItem, oldItem) {
-                if (!this.chatHistory || this.chatHistory.length === 0) {
-                    return;
-                }
                 if (
                     newItem === 'modal' &&
                     (oldItem === 'hide' || oldItem === 'docked')
                 ) {
-                    // reverse the chat history
-                    this.chatHistory.reverse();
+                    if (this.chatHistory.length > 0) {
+                        // reverse the chat history
+                        this.chatHistory.reverse();
+                    }
                 }
                 if (
                     oldItem === 'modal' &&
                     (newItem === 'hide' || newItem === 'docked')
                 ) {
-                    // reverse the chat history
-                    this.chatHistory.reverse();
+                    if (this.chatHistory.length > 0) {
+                        // reverse the chat history
+                        this.chatHistory.reverse();
+                    }
                 }
             }
         }
