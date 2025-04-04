@@ -127,7 +127,7 @@ export default {
                 body: JSON.stringify({
                     message: message,
                     messageNumber: index,
-                    threadID: this.threadID
+                    threadID: this.assistantData.threadId
                 })
             };
 
@@ -139,29 +139,35 @@ export default {
             this.waitForGenerateAudio = false;
             this.messageList[0].isAudioGenerating = false;
 
-            this.playNewMessageAudio(responseData.speechUrl);
+            this.playNewMessageAudio(index, responseData.speechUrl);
         },
-        playAudio(index, frontendIndex) {
+        playAudio(index) {
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;
                 this.audio.pause();
             } else {
-                let url = `https://institute-learning-objective-tutor-tts-urls.s3.us-east-1.amazonaws.com/${this.threadID}-${index}.mp3`;
+                let url = '';
+                for (let i = 0; i < this.messageList.length; i++) {
+                    if (this.messageList[i].index == index) {
+                        url = this.messageList[i].audio;
+                    }
+                }
                 this.audio = new Audio(url);
                 this.isAudioPlaying = true;
-                this.currentIndexAudioPlaying = frontendIndex;
+                this.currentIndexAudioPlaying = index;
                 this.audio.play();
             }
         },
-        playNewMessageAudio(url) {
+        playNewMessageAudio(index, url) {
             this.audio = new Audio(url);
             this.audio.addEventListener('ended', () => {
                 this.isAudioPlaying = false;
                 this.currentIndexAudioPlaying = null;
             });
             this.isAudioPlaying = true;
-            this.currentIndexAudioPlaying = 0;
+            this.currentIndexAudioPlaying = index;
             this.audio.play();
+            this.getMessages();
         },
 
         // send Open AI message regarding the learning objective
@@ -356,10 +362,10 @@ export default {
                     const newMessageIndex =
                         parseInt(this.messageList.length) - 1;
 
-                    // this.generateAudio(
-                    //     newMessageIndex,
-                    //     assistantMessage.content[0].text.value
-                    // );
+                    this.generateAudio(
+                        newMessageIndex,
+                        assistantMessage.content[0].text.value
+                    );
                 }
             },
             deep: true
@@ -518,7 +524,7 @@ export default {
                         !message.isAudioGenerating &&
                         message.role === 'assistant'
                     "
-                    @click="playAudio(message.index, index)"
+                    @click="playAudio(message.index)"
                     class="btn speechButton"
                 >
                     <svg
@@ -534,7 +540,13 @@ export default {
                             d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c7.6-4.2 16.8-4.1 24.3 .5l144 88c7.1 4.4 11.5 12.1 11.5 20.5s-4.4 16.1-11.5 20.5l-144 88c-7.4 4.5-16.7 4.7-24.3 .5s-12.3-12.2-12.3-20.9l0-176c0-8.7 4.7-16.7 12.3-20.9z"
                         />
                     </svg>
-                    <div v-else class="d-flex gap-1 align-items-center">
+                    <div
+                        v-else-if="
+                            isAudioPlaying == true &&
+                            message.index === currentIndexAudioPlaying
+                        "
+                        class="d-flex gap-1 align-items-center"
+                    >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
@@ -547,9 +559,7 @@ export default {
                                 d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
                             />
                         </svg>
-                        <div v-if="index === currentIndexAudioPlaying">
-                            <PlayingAudioAnimation />
-                        </div>
+                        <PlayingAudioAnimation />
                     </div>
                 </button>
             </div>
