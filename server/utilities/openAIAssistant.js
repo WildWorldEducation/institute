@@ -101,6 +101,13 @@ async function createSocraticAssistant(topic, level, learningObjectives) {
             learningObjectives +
             `. Use the Socratic method to teach students.
             
+            IMPORTANT GUIDELINES:
+            - Always ask ONLY ONE QUESTION per message
+            - Make your question clear, focused, and specific
+            - Never ask multiple questions in the same message, even if they are related
+            - Wait for the student's response before asking another question
+            - Focus on depth rather than breadth in your questions
+            
             Please keep all messages below 2000 characters.`,
         tools: [{ type: 'file_search' }],
         model: 'gpt-4.5-preview'
@@ -178,6 +185,11 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
            - Use language appropriate for a ${messageData.skillLevel} level student
 
         3. If the answer shows partial understanding, guide the student towards a more complete understanding
+
+        4. CRITICAL: ALWAYS ASK ONLY ONE QUESTION PER MESSAGE
+           - Never ask multiple questions in a single message
+           - Make your question clear, specific, and focused
+           - Wait for the student to respond before asking another question
 
         Make sure to have $ delimiters before any science and math strings that can convert to Latex
         Please keep all messages below 2000 characters, and succinct.`
@@ -258,6 +270,13 @@ async function createAssessingAssistant(topic, level, learningObjectives) {
             `, at the following level:` +
             level +
             `.
+
+            IMPORTANT ASSESSMENT GUIDELINES:
+            - Always ask ONLY ONE QUESTION at a time
+            - Never combine multiple questions in a single message
+            - Make your questions clear, specific, and focused
+            - After receiving an answer, provide feedback before asking the next question
+            - Assess one concept or objective at a time
        
             Please keep all messages below 2000 characters.`,
         tools: [],
@@ -333,7 +352,9 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
         2. Assessment Strategy:
            - Ask questions about each learning objective, one after the other
            - When you get to the end of the array, start again
-           - Only ask one question at a time
+           - ALWAYS ASK ONLY ONE QUESTION PER MESSAGE
+           - Never combine multiple questions in a single message
+           - Make your question clear, specific, and focused
            - Prioritize asking questions on learning objectives that the student does not seem to know well
 
         3. Feedback Principles:
@@ -398,6 +419,14 @@ async function createLearningObjectiveAssistant(level, learningObjective) {
             `student about the following subject: ` +
             learningObjective +
             `.
+            
+            IMPORTANT GUIDELINES:
+            - Always ask ONLY ONE QUESTION per message
+            - Make your question clear, specific, and focused
+            - Never combine multiple questions in a single message, even if they are related
+            - Wait for the student's response before asking a new question
+            - Build questions that help the student reach a deeper understanding
+            
             Please keep all messages below 2000 characters.`,
         tools: [],
         model: 'gpt-4.5-preview'
@@ -465,6 +494,12 @@ async function requestLearningObjectiveTutoring(
         assistant_id: assistantId,
         instructions: `The user is at a ${messageData.skillLevel} level and age.
         Provide a lesson on ${messageData.learningObjective}.
+        
+        IMPORTANT GUIDELINES:
+        - Structure your response as a clear lesson
+        - If you include questions, ONLY ASK ONE QUESTION at the end of your message
+        - Never ask multiple questions in a single message
+        
         Please keep the lesson under 2000 characters.`
     });
 
@@ -497,7 +532,12 @@ async function generateLearningObjectiveQuestion(
     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
         assistant_id: assistantId,
         instructions: `The user is at a ${messageData.skillLevel} level and age.
-        Ask them a question about: ${messageData.learningObjective}.`
+        Ask them ONE question about: ${messageData.learningObjective}.
+        
+        IMPORTANT:
+        - Ask ONLY ONE clear, focused question
+        - Never ask multiple questions in a single message
+        - Make your question specific and targeted to assess understanding`
     });
 
     if (run.status === 'completed') {
@@ -576,34 +616,34 @@ async function createRunStream(
                     });
                 }
             }
-        })
-        .on('messageDone', async (event) => {
-            if (event.content[0].type === 'text') {
-                const { text } = event.content[0];
-                const { annotations } = text;
-                const citations = [];
-
-                let index = 0;
-                for (let annotation of annotations) {
-                    text.value = text.value.replace(
-                        annotation.text,
-                        '[' + index + ']'
-                    );
-                    const { file_citation } = annotation;
-                    if (file_citation) {
-                        const citedFile = await openai.files.retrieve(
-                            file_citation.file_id
-                        );
-                        citations.push('[' + index + ']' + citedFile.filename);
-                    }
-                    index++;
-                }
-                // console.log(text);
-                // console.log(text.value);
-                // Checking if it is using file search feature
-                console.log(citations.join('\n'));
-            }
         });
+    // .on('messageDone', async (event) => {
+    //     if (event.content[0].type === 'text') {
+    //         const { text } = event.content[0];
+    //         const { annotations } = text;
+    //         const citations = [];
+
+    //         let index = 0;
+    //         for (let annotation of annotations) {
+    //             text.value = text.value.replace(
+    //                 annotation.text,
+    //                 '[' + index + ']'
+    //             );
+    //             const { file_citation } = annotation;
+    //             if (file_citation) {
+    //                 const citedFile = await openai.files.retrieve(
+    //                     file_citation.file_id
+    //                 );
+    //                 citations.push('[' + index + ']' + citedFile.filename);
+    //             }
+    //             index++;
+    //         }
+    //         // console.log(text);
+    //         // console.log(text.value);
+    //         // Checking if it is using file search feature
+    //         console.log(citations.join('\n'));
+    //     }
+    // });
     return run;
 }
 
