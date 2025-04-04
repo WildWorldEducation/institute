@@ -268,8 +268,15 @@ export default {
                     return;
                 }
 
-                this.getMessages();
+                await this.getMessages();
                 this.waitForAIresponse = false;
+                // Staring convert the newly done message to speech
+                const newMessageIndex = parseInt(this.messageList.length) - 1;
+
+                this.generateAudio(
+                    newMessageIndex,
+                    this.messageList[0].content[0].text.value
+                );
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false;

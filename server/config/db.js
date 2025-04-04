@@ -12,9 +12,8 @@ const connection = mysql.createConnection({
     user: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
-    connectionTimeout: 50000,
-    requestTimeout: 50000,
-    timezone: 'utc'
+    timezone: 'utc',
+
 });
 
 /*------------------------------------------
@@ -22,6 +21,7 @@ const connection = mysql.createConnection({
 Shows Mysql Connect
 --------------------------------------------
 --------------------------------------------*/
+console.log('try to connect')
 connection.connect((err) => {
     if (err) {
         console.error('Error connecting to MariaDB:', err.stack);

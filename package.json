@@ -32,6 +32,7 @@
     "htmldiff-js": "^1.0.5",
     "jsonwebtoken": "^9.0.0",
     "mysql": "^2.18.1",
+    "mysql2": "^3.14.0",
     "nipplejs": "^0.10.2",
     "nodemailer": "^6.9.15",
     "openai": "^4.85.3",
