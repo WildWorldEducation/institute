@@ -229,7 +229,7 @@ export default {
                 this.waitForAIresponse = false;
                 // Staring convert the newly done message to speech
                 const newMessageIndex = parseInt(this.messageList.length) - 1;
-                console.log(this.messageList);
+
                 this.generateAudio(
                     newMessageIndex,
                     this.messageList[0].content[0].text.value
