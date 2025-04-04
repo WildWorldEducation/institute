@@ -51,7 +51,8 @@ export default {
                 threadId: null
             },
             // Used for conditional class for streaming chat (margin top)
-            isNewChat: true
+            isNewSocraticChat: true,
+            isNewAssessingChat: true
         };
     },
     async created() {
@@ -157,7 +158,10 @@ export default {
                 }
                 if (this.chatHistory.length > 0) {
                     this.threadID = this.chatHistory[0].thread_id;
-                    this.isNewChat = false;
+                    if (this.tutorType == 'socratic')
+                        this.isNewSocraticChat = false;
+                    else if (this.tutorType == 'assessing')
+                        this.isNewAssessingChat = false;
                 }
 
                 if (this.mode == 'modal') {
@@ -959,7 +963,11 @@ export default {
                     mode == 'modal'
                 "
                 class="d-flex my-3 tutor-conversation streamed-message"
-                :class="{ 'mt-auto': isNewChat }"
+                :class="{
+                    'mt-auto':
+                        (isNewSocraticChat && tutorType == 'socratic') ||
+                        (isNewAssessingChat && tutorType == 'assessing')
+                }"
                 v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
             ></div>
         </div>
