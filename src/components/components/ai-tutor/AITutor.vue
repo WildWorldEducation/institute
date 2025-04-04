@@ -57,6 +57,9 @@ export default {
                 assistantId: null,
                 threadId: null
             },
+            // Used for conditional class for streaming chat (margin top)
+            isNewSocraticChat: true,
+            isNewAssessingChat: true,
             waitForGenerateAudio: false,
             currentIndexAudioPlaying: null
         };
@@ -64,7 +67,6 @@ export default {
     async created() {
         this.connectToSocketSever();
     },
-
     async mounted() {
         this.learningObjectives = this.skill.learningObjectives.map(
             (a) => a.objective
@@ -72,11 +74,11 @@ export default {
 
         this.englishSkillLevel = this.skill.level.replace('_', ' ');
     },
-    // updated() {
-    //     if (this.mode !== 'hide') {
-    //         this.scrollToMessageInput();
-    //     }
-    // },
+    updated() {
+        if (this.mode !== 'hide') {
+            this.scrollToMessageInput();
+        }
+    },
     methods: {
         // Setting this method to allow the user to be able to create a new line with shift+enter
         handleKeyDown(e) {
@@ -104,6 +106,18 @@ export default {
             } else {
                 this.mode = 'docked';
             }
+        },
+        async hideTutorModal(type) {
+            this.tutorType = type;
+
+            await this.getChatHistory();
+            if (type == 'socratic')
+                this.chatHistory = this.socraticTutorChatHistory;
+            else if (type == 'assessing') {
+                this.chatHistory = this.assessingTutorChatHistory;
+            }
+
+            this.mode = 'docked';
         },
         // For both tutors
         async getChatHistory() {
@@ -155,6 +169,14 @@ export default {
                 console.log(this.chatHistory);
                 if (this.chatHistory.length > 0) {
                     this.threadID = this.chatHistory[0].thread_id;
+                    if (this.tutorType == 'socratic')
+                        this.isNewSocraticChat = false;
+                    else if (this.tutorType == 'assessing')
+                        this.isNewAssessingChat = false;
+                }
+
+                if (this.mode == 'modal') {
+                    this.chatHistory = this.chatHistory.reverse();
                 }
 
                 this.$parent.checkTokenUsage();
@@ -254,7 +276,11 @@ export default {
                 if (typeof this.chatHistory.length == 'undefined') {
                     this.chatHistory = [];
                     this.chatHistory.push(userMessage);
-                } else this.chatHistory.unshift(userMessage);
+                } else if (this.mode == 'docked') {
+                    this.chatHistory.unshift(userMessage);
+                } else if (this.mode == 'modal') {
+                    this.chatHistory.push(userMessage);
+                }
 
                 const messageData = {
                     threadId: this.assistantData.threadId,
@@ -450,7 +476,11 @@ export default {
                     if (typeof this.chatHistory.length == 'undefined') {
                         this.chatHistory = [];
                         this.chatHistory.push(assistantMessage);
-                    } else this.chatHistory.unshift(assistantMessage);
+                    } else if (this.mode == 'docked') {
+                        this.chatHistory.unshift(assistantMessage);
+                    } else if (this.mode == 'modal') {
+                        this.chatHistory.push(assistantMessage);
+                    }
 
                     // Reverse the messages to get the index, for the TTS feature
                     // (as Open AI returns the most recent message at index 0)
@@ -600,7 +630,7 @@ export default {
                         <button
                             v-if="mode === 'modal'"
                             class="primary-btn btn close-btn ms-2"
-                            @click="mode = 'docked'"
+                            @click="hideTutorModal(tutorType)"
                             aria-label="Close"
                         >
                             <svg
@@ -891,17 +921,18 @@ export default {
             }"
             ref="messageInputDiv"
         >
-            <!-- Currently streaming message -->
+            <!-- Currently streaming message (docked mode) -->
             <div
                 v-if="
                     stateOfSocket.isStreaming &&
-                    stateOfSocket.streamType === 'aiTutor'
+                    stateOfSocket.streamType === 'aiTutor' &&
+                    mode == 'docked'
                 "
                 class="d-flex my-3 tutor-conversation streamed-message"
                 v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
             ></div>
 
-            <!-- Process messages with appropriate border styling -->
+            <!-- Chat history -->
             <template v-for="(message, index) in chatHistory">
                 <!-- Student messages -->
                 <div
@@ -989,6 +1020,22 @@ export default {
                     <!-- Generate speech button -->
                 </div>
             </template>
+
+            <!-- Currently streaming message (modal mode) -->
+            <div
+                v-if="
+                    stateOfSocket.isStreaming &&
+                    stateOfSocket.streamType === 'aiTutor' &&
+                    mode == 'modal'
+                "
+                class="d-flex my-3 tutor-conversation streamed-message"
+                :class="{
+                    'mt-auto':
+                        (isNewSocraticChat && tutorType == 'socratic') ||
+                        (isNewAssessingChat && tutorType == 'assessing')
+                }"
+                v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
+            ></div>
         </div>
 
         <!-- User input (modal mode) -->
@@ -1033,14 +1080,10 @@ export default {
     border-top: 1px solid #e0e0e0;
     padding-top: 25px;
     padding-bottom: 20px;
-    /* border-bottom: 1px solid #e0e0e0;    
-     margin: 20px 0; */
 }
 .first-message {
     padding: 20px 0;
-    /* border-bottom: 1px solid #e0e0e0;
-    padding-bottom: 20px;
-     margin-bottom: 20px; */
+    margin-top: auto;
 }
 
 /* Increase text size for the popup modal mode */

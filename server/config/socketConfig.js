@@ -33,6 +33,9 @@ const createSocket = (server) => {
                            - Use language appropriate for a ${messageData.skillLevel} level student
 
                         3. If the answer shows partial understanding, guide the student towards a more complete understanding
+                        
+                        4. IMPORTANT: Ask ONLY ONE QUESTION per message. Never ask multiple questions in the same message.
+                           Even if covering multiple related concepts, focus on one clear question at a time.
 
                         Make sure to have $ delimiters before any science and math strings that can convert to Latex
                         Please keep all messages below 2000 characters, and succinct.`;
@@ -52,7 +55,8 @@ const createSocket = (server) => {
                 2. Assessment Strategy:
                    - Ask questions about each learning objective, one after the other
                    - When you get to the end of the array, start again
-                   - Only ask one question at a time
+                   - ONLY ASK ONE QUESTION AT A TIME - this is absolutely critical
+                   - Never combine multiple questions in a single message
                    - Prioritize asking questions on learning objectives that the student does not seem to know well
 
                 3. Feedback Principles:
@@ -89,9 +93,10 @@ const createSocket = (server) => {
 
                     Strategy:
                      - Use the Socratic method of teaching
-                     - Ask questions on the content                     
-                     - Only ask one question at a time
-                     - If needed, ask a follow-up questions to help the student understand better
+                     - Ask questions on the content
+                     - ALWAYS ASK ONLY ONE QUESTION AT A TIME
+                     - Never combine multiple questions in a single message, even if they are related
+                     - If needed, ask a follow-up question to help the student understand better after they respond
                      - If the answer shows partial understanding, guide the student towards a more complete understanding
                      - Prioritize asking questions on learning objectives that the student does not seem to know well
                      - Aim to guide the student towards a more comprehensive understanding
@@ -105,7 +110,9 @@ const createSocket = (server) => {
                     Strategy:
                      - Ask questions about each learning objective, one after the other
                      - When you get to the end of the array, start again
-                     - Only ask one question at a time
+                     - ALWAYS ASK ONLY ONE QUESTION PER MESSAGE
+                     - Make your question clear, focused, and specific
+                     - Never combine multiple questions in a single message
                      - Prioritize asking questions on learning objectives that the student does not seem to know well
                               
                     Make sure to have $ delimiters before any science and math strings that can convert to Latex.
@@ -134,9 +141,10 @@ const createSocket = (server) => {
 
                     Strategy:
                      - Use the Socratic method of teaching
-                     - Ask questions on the content                     
-                     - Only ask one question at a time
-                     - If needed, ask a follow-up questions to help the student understand better
+                     - Ask questions on the content
+                     - ALWAYS ASK ONLY ONE QUESTION PER MESSAGE
+                     - Never combine multiple questions, even if they are closely related
+                     - If needed, ask a follow-up question to help the student understand better
                      - If the answer shows partial understanding, guide the student towards a more complete understanding
                      - Prioritize asking questions on learning objectives that the student does not seem to know well
                      - Aim to guide the student towards a more comprehensive understanding
