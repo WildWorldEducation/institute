@@ -165,8 +165,8 @@ export default {
                         this.assessMastery();
                     }
                 }
-                console.log('chat history is: ');
-                console.log(this.chatHistory);
+                // console.log('chat history is: ');
+                // console.log(this.chatHistory);
                 if (this.chatHistory.length > 0) {
                     this.threadID = this.chatHistory[0].thread_id;
                     if (this.tutorType == 'socratic')
@@ -218,8 +218,6 @@ export default {
         },
 
         playAudio(index) {
-            console.log(this.chatHistory);
-            console.log(index);
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;
                 this.audio.pause();
@@ -1009,7 +1007,13 @@ export default {
                                 d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c7.6-4.2 16.8-4.1 24.3 .5l144 88c7.1 4.4 11.5 12.1 11.5 20.5s-4.4 16.1-11.5 20.5l-144 88c-7.4 4.5-16.7 4.7-24.3 .5s-12.3-12.2-12.3-20.9l0-176c0-8.7 4.7-16.7 12.3-20.9z"
                             />
                         </svg>
-                        <div v-else class="d-flex gap-1 align-items-center">
+                        <div
+                            v-else-if="
+                                isAudioPlaying == true &&
+                                message.index === currentIndexAudioPlaying
+                            "
+                            class="d-flex gap-1 align-items-center"
+                        >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 512 512"
@@ -1021,13 +1025,7 @@ export default {
                                     d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
                                 />
                             </svg>
-                            <div
-                                v-if="
-                                    message.index === currentIndexAudioPlaying
-                                "
-                            >
-                                <PlayingAudioAnimation />
-                            </div>
+                            <PlayingAudioAnimation />
                         </div>
                     </button>
                     <!-- Generate speech button -->
