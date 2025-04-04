@@ -141,15 +141,21 @@ export default {
 
             this.playNewMessageAudio(responseData.speechUrl);
         },
-        playAudio(index, frontendIndex) {
+        playAudio(index) {
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;
                 this.audio.pause();
             } else {
-                let url = `https://institute-learning-objective-tutor-tts-urls.s3.us-east-1.amazonaws.com/${this.threadID}-${index}.mp3`;
+                let url = '';
+                for (let i = 0; i < this.messageList.length; i++) {
+                    if (this.messageList[i].index == index) {
+                        url = this.messageList[i].audio;
+                    }
+                }
+                //  let url = `https://institute-learning-objective-tutor-tts-urls.s3.us-east-1.amazonaws.com/${this.threadID}-${index}.mp3`;
                 this.audio = new Audio(url);
                 this.isAudioPlaying = true;
-                this.currentIndexAudioPlaying = frontendIndex;
+                this.currentIndexAudioPlaying = index;
                 this.audio.play();
             }
         },
@@ -518,7 +524,7 @@ export default {
                         !message.isAudioGenerating &&
                         message.role === 'assistant'
                     "
-                    @click="playAudio(message.index, index)"
+                    @click="playAudio(message.index)"
                     class="btn speechButton"
                 >
                     <svg

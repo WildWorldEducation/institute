@@ -228,7 +228,6 @@ export default {
                         url = this.chatHistory[i].audio;
                     }
                 }
-                //let url = `https://institute-${this.tutorType}-tutor-tts-urls.s3.us-east-1.amazonaws.com/${this.threadID}-${index}.mp3`;
                 this.audio = new Audio(url);
                 this.isAudioPlaying = true;
                 this.currentIndexAudioPlaying = index;
