@@ -201,7 +201,7 @@ export default {
                 body: JSON.stringify({
                     message: message,
                     messageNumber: index,
-                    threadID: this.threadID
+                    threadID: this.assistantData.threadId
                 })
             };
 
