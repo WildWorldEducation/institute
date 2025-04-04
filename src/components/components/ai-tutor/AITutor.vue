@@ -185,12 +185,12 @@ export default {
             }
         },
         async generateAudio(index, message) {
-            let newMessageIndex = 0;
+            // let newMessageIndex = 0;
             if (this.mode !== 'modal') {
                 newMessageIndex = parseInt(this.chatHistory.length);
             }
             this.waitForGenerateAudio = true;
-            this.chatHistory[newMessageIndex].isAudioGenerating = true;
+            this.chatHistory[index].isAudioGenerating = true;
 
             console.log('threadId: ' + this.threadID);
             console.log('more thread Id: ' + this.assistantData.threadId);
@@ -213,7 +213,7 @@ export default {
             const response = await fetch(url, requestOptions);
             const responseData = await response.json();
             this.waitForGenerateAudio = false;
-            this.chatHistory[newMessageIndex].isAudioGenerating = false;
+            this.chatHistory[index].isAudioGenerating = false;
             this.playNewMessageAudio(responseData.speechUrl);
         },
 
@@ -978,7 +978,7 @@ export default {
                         <span class="speech-loader"></span>
                     </div>
 
-                    <!-- Play/pause button -->
+                    <!-- Play/pause button, playing animation -->
                     <button
                         v-else-if="
                             !waitForGenerateAudio &&
@@ -1012,7 +1012,11 @@ export default {
                                     d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
                                 />
                             </svg>
-                            <div v-if="index === currentIndexAudioPlaying">
+                            <div
+                                v-if="
+                                    message.index === currentIndexAudioPlaying
+                                "
+                            >
                                 <PlayingAudioAnimation />
                             </div>
                         </div>
