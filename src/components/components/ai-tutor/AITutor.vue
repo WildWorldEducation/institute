@@ -468,15 +468,19 @@ export default {
                     newItem === 'modal' &&
                     (oldItem === 'hide' || oldItem === 'docked')
                 ) {
-                    // reverse the chat history
-                    this.chatHistory.reverse();
+                    if (this.chatHistory.length > 0) {
+                        // reverse the chat history
+                        this.chatHistory.reverse();
+                    }
                 }
                 if (
                     oldItem === 'modal' &&
                     (newItem === 'hide' || newItem === 'docked')
                 ) {
-                    // reverse the chat history
-                    this.chatHistory.reverse();
+                    if (this.chatHistory.length > 0) {
+                        // reverse the chat history
+                        this.chatHistory.reverse();
+                    }
                 }
             }
         }
