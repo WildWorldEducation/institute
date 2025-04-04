@@ -139,7 +139,7 @@ export default {
             this.waitForGenerateAudio = false;
             this.messageList[0].isAudioGenerating = false;
 
-            this.playNewMessageAudio(responseData.speechUrl);
+            this.playNewMessageAudio(index, responseData.speechUrl);
         },
         playAudio(index) {
             if (this.isAudioPlaying == true) {
@@ -158,14 +158,14 @@ export default {
                 this.audio.play();
             }
         },
-        playNewMessageAudio(url) {
+        playNewMessageAudio(index, url) {
             this.audio = new Audio(url);
             this.audio.addEventListener('ended', () => {
                 this.isAudioPlaying = false;
                 this.currentIndexAudioPlaying = null;
             });
             this.isAudioPlaying = true;
-            this.currentIndexAudioPlaying = 0;
+            this.currentIndexAudioPlaying = index;
             this.audio.play();
             this.getMessages();
         },
