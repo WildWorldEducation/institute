@@ -219,6 +219,7 @@ export default {
 
         playAudio(index) {
             console.log(this.chatHistory);
+            console.log(index);
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;
                 this.audio.pause();
@@ -254,6 +255,7 @@ export default {
             this.isAudioPlaying = true;
             this.currentIndexAudioPlaying = newMessageIndex;
             this.audio.play();
+            this.getChatHistory();
         },
         async sendMessage() {
             if (this.waitForAIresponse) {
