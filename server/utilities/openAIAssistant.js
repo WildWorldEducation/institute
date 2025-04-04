@@ -616,34 +616,34 @@ async function createRunStream(
                     });
                 }
             }
-        })
-        .on('messageDone', async (event) => {
-            if (event.content[0].type === 'text') {
-                const { text } = event.content[0];
-                const { annotations } = text;
-                const citations = [];
-
-                let index = 0;
-                for (let annotation of annotations) {
-                    text.value = text.value.replace(
-                        annotation.text,
-                        '[' + index + ']'
-                    );
-                    const { file_citation } = annotation;
-                    if (file_citation) {
-                        const citedFile = await openai.files.retrieve(
-                            file_citation.file_id
-                        );
-                        citations.push('[' + index + ']' + citedFile.filename);
-                    }
-                    index++;
-                }
-                // console.log(text);
-                // console.log(text.value);
-                // Checking if it is using file search feature
-                console.log(citations.join('\n'));
-            }
         });
+    // .on('messageDone', async (event) => {
+    //     if (event.content[0].type === 'text') {
+    //         const { text } = event.content[0];
+    //         const { annotations } = text;
+    //         const citations = [];
+
+    //         let index = 0;
+    //         for (let annotation of annotations) {
+    //             text.value = text.value.replace(
+    //                 annotation.text,
+    //                 '[' + index + ']'
+    //             );
+    //             const { file_citation } = annotation;
+    //             if (file_citation) {
+    //                 const citedFile = await openai.files.retrieve(
+    //                     file_citation.file_id
+    //                 );
+    //                 citations.push('[' + index + ']' + citedFile.filename);
+    //             }
+    //             index++;
+    //         }
+    //         // console.log(text);
+    //         // console.log(text.value);
+    //         // Checking if it is using file search feature
+    //         console.log(citations.join('\n'));
+    //     }
+    // });
     return run;
 }
 
