@@ -698,7 +698,7 @@ export default {
         <!--Tutor types and STT-->
         <div
             v-if="mode === 'docked' || mode === 'hide'"
-            class="d-flex flex-column justify-content-between h-100"
+            class="d-flex flex-column justify-content-between"
         >
             <!--Tutor types -->
             <div class="container-fluid p-0">
