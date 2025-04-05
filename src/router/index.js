@@ -568,16 +568,6 @@ router.beforeEach(async (to, from, next) => {
         );
     }
 
-    // // To prevent the background image (from certain themes) from flashing when switching between skill tree pages.
-    // if (
-    //     (to.name == 'skill-tree' && from.name == 'radial-tree') ||
-    //     (from.name == 'skill-tree' && to.name == 'radial-tree')
-    // ) {
-    //     document.body.classList.add('skill-tree-transition');
-    // } else if (from.name == 'radial-tree' || from.name == 'skill-tree') {
-    //     document.body.classList.remove('skill-tree-transition');
-    // }
-
     // Check if initial data has been loaded and user is not logged in, redirect to login
     if (
         !sessionDetailsStore.isLoggedIn &&
