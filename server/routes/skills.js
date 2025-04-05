@@ -2110,7 +2110,7 @@ async function getIntroduction(index, skillsLength) {
         let sentence = completion.choices[0].message.content;
         console.log(sentence);
 
-        let sqlQuery = `UPDATE skills SET intro_sentence = "${sentence}" WHERE id = ${id};`;
+        let sqlQuery = `UPDATE skills SET intro_sentence = "${conn.escape(sentence)}" WHERE id = ${id};`;
 
         conn.query(sqlQuery, (err) => {
             try {
