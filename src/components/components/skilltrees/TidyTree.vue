@@ -87,7 +87,8 @@ export default {
                 skillLevel: '',
                 borderColor: '',
                 thumbnail: ''
-            }
+            },
+            isMobileCheck: window.innerWidth
         };
     },
     components: {
@@ -216,33 +217,35 @@ export default {
             }
         });
 
-        // MOUSE MOVE EVENT LISTENER
-        d3.select('#canvas').on('mousemove', (event) => {
-            // Get mouse positions from the main canvas.
-            const [mouseX, mouseY] = d3.pointer(event);
+        if (this.isMobileCheck > 576) {
+            // MOUSE MOVE EVENT LISTENER
+            d3.select('#canvas').on('mousemove', (event) => {
+                // Get mouse positions from the main canvas.
+                const [mouseX, mouseY] = d3.pointer(event);
 
-            const node = this.getMouseOverNode(mouseX, mouseY);
+                const node = this.getMouseOverNode(mouseX, mouseY);
 
-            if (node) {
-                let tooltipTopPosition = mouseY + 20;
-                let tooltipLeftPosition = mouseX;
-                const borderColor = this.hexBorderColor(node.data.level);
-                // Make sure position alway visible
-                if (tooltipTopPosition)
-                    this.tooltipData = {
-                        showing: true,
-                        xPosition: `${tooltipTopPosition}`,
-                        yPosition: `${tooltipLeftPosition}`,
-                        skillName: node.data.skill_name,
-                        skillLevel: node.data.level,
-                        borderColor: borderColor,
-                        thumbnail: node.data.thumbnail,
-                        skillId: node.data.id
-                    };
-            } else {
-                this.tooltipData.showing = false;
-            }
-        });
+                if (node) {
+                    let tooltipTopPosition = mouseY + 20;
+                    let tooltipLeftPosition = mouseX;
+                    const borderColor = this.hexBorderColor(node.data.level);
+                    // Make sure position alway visible
+                    if (tooltipTopPosition)
+                        this.tooltipData = {
+                            showing: true,
+                            xPosition: `${tooltipTopPosition}`,
+                            yPosition: `${tooltipLeftPosition}`,
+                            skillName: node.data.skill_name,
+                            skillLevel: node.data.level,
+                            borderColor: borderColor,
+                            thumbnail: node.data.thumbnail,
+                            skillId: node.data.id
+                        };
+                } else {
+                    this.tooltipData.showing = false;
+                }
+            });
+        }
 
         // Zoom and pan with mouse
         // We have to construct the d3 zoom function and assign the zoom event
