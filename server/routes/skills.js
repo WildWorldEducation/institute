@@ -209,11 +209,11 @@ router.post(
                             1,
                             ${conn.escape(req.session.userId)},
                             ${conn.escape(
-                                    req.body.name
-                                )},                           
+                                req.body.name
+                            )},                           
                             ${conn.escape(
-                                    req.body.description
-                                )},                                                      
+                                req.body.description
+                            )},                                                      
                             ${conn.escape(req.body.mastery_requirements)},
                             ${conn.escape(req.body.level)});`;
 
@@ -277,8 +277,8 @@ router.post(
         const sqlQuery = `SELECT *
                           FROM skills
                           WHERE skills.id = ${conn.escape(
-            req.body.skillToBeCopied.id
-        )} AND skills.is_deleted = 0;`;
+                              req.body.skillToBeCopied.id
+                          )} AND skills.is_deleted = 0;`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -504,23 +504,22 @@ router.post('/guest-mode/find-filtered-skill', (req, res, next) => {
     let sqlQuery = `SELECT id, name, image_thumbnail_url, parent, type, level, skills.order as skillorder, display_name, url
                     FROM skills
                     WHERE is_filtered = 'available' AND is_deleted = 0
-                    ORDER BY skillorder;`
+                    ORDER BY skillorder;`;
     try {
         conn.query(sqlQuery, (err, result) => {
             if (err) {
-                throw err
+                throw err;
             }
             const availableSkills = result;
-            const data = findGuestHiddenSkillData(skillName, availableSkills)
-            res.json(data)
-        })
+            const data = findGuestHiddenSkillData(skillName, availableSkills);
+            res.json(data);
+        });
     } catch (error) {
-        console.error(error)
+        console.error(error);
         res.status = 500;
-        res.json(null)
+        res.json(null);
     }
-
-})
+});
 
 // Filtered Nested List - for "Instructor" and "Editor" roles - Collapsable Tree.
 router.get('/filtered-nested-list', (req, res, next) => {
@@ -602,9 +601,6 @@ router.get('/filtered-nested-list', (req, res, next) => {
     }
 });
 
-
-
-
 /**
  * Get Single Item
  */
@@ -670,8 +666,8 @@ router.get('/url/:skillUrl', (req, res, next) => {
                     LEFT JOIN 
                         skills AS parent_skill ON s.parent = parent_skill.id
                     WHERE s.url = ${conn.escape(
-        req.params.skillUrl
-    )} AND s.is_deleted = 0`;
+                        req.params.skillUrl
+                    )} AND s.is_deleted = 0`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -714,7 +710,7 @@ router.get('/url/:skillUrl', (req, res, next) => {
     });
 });
 
-// For sending the mastery requirements data separately to the skill tree skill panels.
+// For sending the intro data separately to the skill tree skill panels.
 // We send it separately because otherwise, if we send it with the other data, it slows
 // down the page load of the skill trees.
 router.get('/introduction-and-url/:id', (req, res, next) => {
@@ -907,8 +903,8 @@ router.put(
                     ${conn.escape(imageUrl)},
                     ${conn.escape(iconUrl)},
                     ${conn.escape(
-                req.body.mastery_requirements
-            )},                    
+                        req.body.mastery_requirements
+                    )},                    
                     ${conn.escape(req.body.level)},                    
                     ${conn.escape(req.body.order)},
                     ${conn.escape(req.body.comment)},
@@ -926,18 +922,18 @@ router.put(
                         url = ${conn.escape(req.body.url)},
                         parent = ${conn.escape(req.body.parent)},
                         description = ${conn.escape(
-                        req.body.description
-                    )},                         
+                            req.body.description
+                        )},                         
                         mastery_requirements = ${conn.escape(
-                        req.body.mastery_requirements
-                    )}, 
+                            req.body.mastery_requirements
+                        )}, 
                         type = ${conn.escape(req.body.type)}, 
                         level = ${conn.escape(req.body.level)},
                         introduction = ${conn.escape(req.body.introduction)},
                         skills.order = ${conn.escape(req.body.order)}, 
                         version_number = ${conn.escape(
-                        versionNumber
-                    )},                        
+                            versionNumber
+                        )},                        
                         icon = ${conn.escape(scaledDownIcon)},             
                         image_url = ${conn.escape(imageUrl)},
                         image_thumbnail_url = ${conn.escape(imageThumbnailUrl)},
@@ -1001,8 +997,8 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
          
          ON DUPLICATE KEY
          UPDATE mastery_requirements = ${conn.escape(
-            req.body.mastery_requirements
-        )}, 
+             req.body.mastery_requirements
+         )}, 
          date = CURRENT_TIMESTAMP(), 
          image = ${conn.escape(req.body.image)},          
          icon = ${conn.escape(req.body.icon)},     
@@ -1163,10 +1159,11 @@ router.put(
                                         recordUserAction(
                                             {
                                                 userId: req.session.userId,
-                                                userAction: `${req.body.edit
-                                                    ? 'edit_and_approve'
-                                                    : 'approve'
-                                                    }`,
+                                                userAction: `${
+                                                    req.body.edit
+                                                        ? 'edit_and_approve'
+                                                        : 'approve'
+                                                }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
                                             },
@@ -1786,7 +1783,10 @@ router.get('/name-list-old', (req, res, next) => {
 // Import OpenAI package.
 const { OpenAI } = require('openai');
 const { path } = require('pdfkit');
-const { findInaccessiblePath, findGuestHiddenSkillData } = require('../utilities/skill-relate-functions');
+const {
+    findInaccessiblePath,
+    findGuestHiddenSkillData
+} = require('../utilities/skill-relate-functions');
 // To access the .env file.
 require('dotenv').config();
 // Include API key.
@@ -2005,19 +2005,132 @@ router.post('/guest-user/get-recommended-skills', async (req, res, next) => {
 
 // Create a new instance of an existing skill,
 // in order to have the skill show in more than one place in the tree.
-router.get(
-    '/introduction-data',
-    async (req, res, next) => {
-        const skillId = req.query.skillId;
-        let sqlQuery = `SELECT skills.introduction FROM skills WHERE skills.id = ${conn.escape(skillId)}`;
-        // sql for instructor and editor account
-        conn.query(sqlQuery, async (err, result) => {
+router.get('/introduction-data', async (req, res, next) => {
+    const skillId = req.query.skillId;
+    let sqlQuery = `SELECT skills.introduction FROM skills WHERE skills.id = ${conn.escape(
+        skillId
+    )}`;
+    // sql for instructor and editor account
+    conn.query(sqlQuery, async (err, result) => {
+        if (err) {
+            throw err;
+        }
+        res.json(result);
+    });
+});
+
+/**
+ To generate text for the "Introduction" field
+ */
+// Import OpenAI package.
+// Include API key.
+// To access the .env file.
+
+let skills;
+let skillsLength;
+async function generateIntroductionText() {
+    let sqlQuery = `SELECT id, level, name, introduction, mastery_requirements FROM skills
+        WHERE is_deleted = 0
+        AND id BETWEEN 0 AND 4500`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
             if (err) {
                 throw err;
             }
-            res.json(result);
-        });
+
+            skills = results;
+            skillsLength = results.length;
+
+            // For going through all skills.
+            let index = 0;
+
+            // We go through all skills sequencially, one at a time.
+            getIntroduction(index, skillsLength);
+        } catch (err) {
+            console.log(err);
+        }
+    });
+}
+
+// Get source from ChatGPT.
+async function getIntroduction(index, skillsLength) {
+    // Get the skill data.-----
+    let id = skills[index].id;
+    // Replace underscore with space.
+    let level = skills[index].level.replace(/_/g, ' ');
+    let name = skills[index].name;
+    // Remove HTML formatting from mastery requirements.
+    let masteryRequirements;
+    if (skills[index].mastery_requirements) {
+        masteryRequirements = skills[index].mastery_requirements.replace(
+            /<[^>]*>?/gm,
+            ''
+        );
     }
-);
+
+    // Remove HTML formatting from intro.
+    let introduction;
+    if (skills[index].introduction) {
+        introduction = skills[index].introduction.replace(/<[^>]*>?/gm, '');
+    }
+
+    // Create prompt for ChatGPT.
+    let prompt = `        
+        Please provide a single sentence that briefly explains why the subject ${name} is useful.
+        Do not start the sentence with something like "this subject is useful because...".
+        Simply explain its usefulness.
+
+        For example, the following is incorrect "Language is useful because it is the primary way we communicate, allowing us to share ideas, express emotions, and connect with people globally.",
+        while this is correct: "Language is the primary way we communicate, allowing us to share ideas, express emotions, and connect with people globally."
+
+        If the subject is not clear, please read these texts: "${masteryRequirements}" and "${introduction}" to get greater context on what it is about.
+    `;
+
+    //console.log(prompt);
+    index++;
+
+    // Attempting to prevent the app from crashing if anything goes wrong with the API call.
+    // ie, error handling.
+    try {
+        console.log('Get intro for: ' + name);
+
+        let content = `You are talking to a ${level} level student.`;
+        const completion = await openai.chat.completions.create({
+            messages: [
+                { role: 'system', content: content },
+                {
+                    role: 'user',
+                    content: prompt
+                }
+            ],
+            model: 'gpt-4o'
+        });
+
+        let sentence = completion.choices[0].message.content;
+        console.log(sentence);
+
+        let sqlQuery = `UPDATE skills SET intro_sentence = "${sentence}" WHERE id = ${id};`;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    if (index < skillsLength)
+                        getIntroduction(index, skillsLength);
+                    else console.log('batch completed');
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        });
+    } catch (err) {
+        console.log('Error with ChatGPT API call: ' + err);
+        return;
+    }
+}
+
+generateIntroductionText();
 
 module.exports = router;
