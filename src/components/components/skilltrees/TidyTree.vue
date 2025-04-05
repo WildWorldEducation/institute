@@ -194,7 +194,7 @@ export default {
                 this.skill.x = node.x;
                 this.skill.y = node.y;
 
-                // Get the mastery requirements data separately.
+                // Get the intro data separately.
                 // Because this is so much data, we do not send it with the rest of the skill tree,
                 // or it will slow the load down too much.
                 const result = await fetch(

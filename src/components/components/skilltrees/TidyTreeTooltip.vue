@@ -39,7 +39,7 @@ export default {
                         this.getFirstParagraph(fullIntroduction);
                 });
         },
-        snakeToTile(string) {
+        snakeCaseToTitleCase(string) {
             const result = string.replace(/^_*(.)|_+(.)/g, (s, c, d) =>
                 c ? c.toUpperCase() : ' ' + d.toUpperCase()
             );
@@ -108,7 +108,7 @@ export default {
                         {{ tooltipData.skillName }}
                     </div>
                     <div class="skill-level">
-                        {{ snakeToTile(tooltipData.skillLevel) }}
+                        {{ snakeCaseToTitleCase(tooltipData.skillLevel) }}
                     </div>
                 </div>
             </div>
