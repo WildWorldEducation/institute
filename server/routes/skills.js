@@ -2031,7 +2031,7 @@ let skillsLength;
 async function generateIntroductionText() {
     let sqlQuery = `SELECT id, level, name, introduction, mastery_requirements FROM skills
         WHERE is_deleted = 0
-        AND id BETWEEN 0 AND 4500`;
+        AND id BETWEEN 3001 AND 3500`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -2110,7 +2110,9 @@ async function getIntroduction(index, skillsLength) {
         let sentence = completion.choices[0].message.content;
         console.log(sentence);
 
-        let sqlQuery = `UPDATE skills SET intro_sentence = ${conn.escape(sentence)} WHERE id = ${id};`;
+        let sqlQuery = `UPDATE skills SET intro_sentence = ${conn.escape(
+            sentence
+        )} WHERE id = ${id};`;
 
         conn.query(sqlQuery, (err) => {
             try {
