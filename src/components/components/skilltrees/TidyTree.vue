@@ -256,7 +256,11 @@ export default {
 
         // Open
         canvas.addEventListener('dblclick', () => {
-            console.log("test")
+            console.log('test');
+            const routeData = this.$router.resolve({
+                path: '/skills/Adjectives'
+            });
+            window.open(routeData.href, '_blank');
         });
 
         // Zoom and pan with mouse
