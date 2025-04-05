@@ -213,7 +213,7 @@ export default {
             this.skill.learningObjectives = await result.json();
             if (this.sessionDetailsStore.isLoggedIn) {
                 for (let i = 0; i < this.skill.learningObjectives.length; i++) {
-                    this.skill.learningObjectives[i].showAI = true;
+                    this.skill.learningObjectives[i].showAI = false;
                 }
             }
         },
