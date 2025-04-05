@@ -254,6 +254,11 @@ export default {
             });
         }
 
+        // Open
+        canvas.addEventListener('dblclick', () => {
+            console.log("test")
+        });
+
         // Zoom and pan with mouse
         // We have to construct the d3 zoom function and assign the zoom event
         this.d3Zoom = d3
