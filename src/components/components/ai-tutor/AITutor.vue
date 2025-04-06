@@ -192,8 +192,8 @@ export default {
             this.waitForGenerateAudio = true;
             this.chatHistory[index].isAudioGenerating = true;
 
-            console.log('threadId: ' + this.threadID);
-            console.log('more thread Id: ' + this.assistantData.threadId);
+            // console.log('threadId: ' + this.threadID);
+            // console.log('more thread Id: ' + this.assistantData.threadId);
 
             const requestOptions = {
                 method: 'POST',
