@@ -249,16 +249,7 @@ export default {
             }
         });
 
-        // Open
-        canvas.addEventListener('dblclick', () => {
-            console.log('test');
-            const routeData = this.$router.resolve({
-                path: '/skills/Adjectives'
-            });
-            window.open(routeData.href, '_blank');
-        });
-
-        // Open
+        // Open skill page
         canvas.addEventListener('dblclick', () => {
             console.log('test');
             const routeData = this.$router.resolve({
