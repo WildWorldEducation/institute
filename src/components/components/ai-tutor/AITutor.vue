@@ -25,7 +25,8 @@ export default {
         'skill',
         'showTutorialTip7',
         'showTutorialTip8',
-        'showTutorialTip9'
+        'showTutorialTip9',
+        'areAllSubskillsMastered'
     ],
     emits: ['progressTutorial', 'skipTutorial'],
     components: {
@@ -34,7 +35,6 @@ export default {
         SpeechRecorder,
         PlayingAudioAnimation
     },
-    emits: ['progressTutorial'],
     data() {
         return {
             message: '',
@@ -759,12 +759,40 @@ export default {
                             class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap"
                             :class="{
                                 'text-decoration-underline':
-                                    tutorType === 'assessing'
+                                    tutorType === 'assessing',
+                                disabled:
+                                    skill.type === 'super' &&
+                                    !areAllSubskillsMastered
                             }"
-                            @click="handleTutorClick('assessing')"
+                            @click="
+                                skill.type === 'super' &&
+                                !areAllSubskillsMastered
+                                    ? null
+                                    : handleTutorClick('assessing')
+                            "
+                            :disabled="
+                                skill.type === 'super' &&
+                                !areAllSubskillsMastered
+                            "
+                            :title="
+                                skill.type === 'super' &&
+                                !areAllSubskillsMastered
+                                    ? 'Master all subskills first to unlock this assessment'
+                                    : ''
+                            "
                         >
                             Conversational Test
                         </button>
+                        <!-- Explanation message for disabled button -->
+                        <div
+                            v-if="
+                                skill.type === 'super' &&
+                                !areAllSubskillsMastered
+                            "
+                            class="text-white text-center mt-1 small"
+                        >
+                            <em>Master all subskills first</em>
+                        </div>
                         <!-- Conversational Test Tooltip -->
                         <div
                             v-if="

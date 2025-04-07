@@ -89,7 +89,10 @@ export default {
             // Defaults to true. False only for certain skills.
             // This is just to prevent them displaying. They are still loaded, as used by the AI.
             showLearningObjectives: true,
-            isAITokenLimitReached: false
+            isAITokenLimitReached: false,
+            areAllSubskillsMastered: false,
+            unmasteredSubskills: [],
+            showUnmasteredModal: false
         };
     },
     components: {
@@ -110,6 +113,12 @@ export default {
 
             if (this.sessionDetailsStore.isLoggedIn) {
                 await this.getUserSkills();
+                // Check for subskill mastery directly here
+                if (this.skill.type === 'super') {
+                    await this.checkSubskillMastery();
+                } else {
+                    this.areAllSubskillsMastered = true;
+                }
             }
 
             // Turn this on only if user is logged in.
@@ -272,6 +281,41 @@ export default {
                 if (this.userSkills[i].is_accessible == 1) {
                     this.accessibleSkills.push(this.userSkills[i]);
                 }
+            }
+            // Add this check right here, after processing userSkills
+            if (this.skill.type === 'super') {
+                try {
+                    // Get all subskills for this super skill
+                    const response = await fetch(
+                        `/skills/sub-skills/${this.skill.id}`
+                    );
+                    const subskills = await response.json();
+
+                    // If no subskills, consider all mastered
+                    if (!subskills || subskills.length === 0) {
+                        this.areAllSubskillsMastered = true;
+                    } else {
+                        // Check if all subskills are mastered by the user
+                        let allMastered = true;
+                        for (const subskill of subskills) {
+                            const found = this.userSkills.find(
+                                (us) => us.id === subskill.id
+                            );
+                            if (!found || found.is_mastered !== 1) {
+                                allMastered = false;
+                                break;
+                            }
+                        }
+
+                        this.areAllSubskillsMastered = allMastered;
+                    }
+                } catch (error) {
+                    console.error('Error checking subskill mastery:', error);
+                    this.areAllSubskillsMastered = false;
+                }
+            } else {
+                // Not a super skill, so this check doesn't apply
+                this.areAllSubskillsMastered = true;
             }
         },
         async MakeMastered() {
@@ -624,6 +668,111 @@ export default {
                     block: 'start'
                 });
             }
+        },
+        async checkSubskillMastery() {
+            try {
+                // Get all subskills for this super skill
+                const response = await fetch(
+                    `/skills/sub-skills/${this.skill.id}`
+                );
+                const subskills = await response.json();
+
+                // If no subskills, consider all mastered
+                if (!subskills || subskills.length === 0) {
+                    this.areAllSubskillsMastered = true;
+                    return;
+                }
+
+                // Check if all subskills are mastered by the user
+                let allMastered = true;
+                this.unmasteredSubskills = []; // Reset this array
+
+                for (const subskill of subskills) {
+                    const found = this.userSkills.find(
+                        (us) => us.id === subskill.id
+                    );
+                    if (!found || found.is_mastered !== 1) {
+                        allMastered = false;
+                        this.unmasteredSubskills.push(subskill);
+                    }
+                }
+
+                this.areAllSubskillsMastered = allMastered;
+            } catch (error) {
+                console.error('Error checking subskill mastery:', error);
+                this.areAllSubskillsMastered = false;
+            }
+        },
+
+        async checkIfAllSubskillsMastered() {
+            if (this.skill.type !== 'super') {
+                // Not a super skill, so this check doesn't apply
+                this.areAllSubskillsMastered = true;
+                return;
+            }
+
+            try {
+                // Get all subskills for this super skill
+                const response = await fetch(
+                    `/skills/sub-skills/${this.skill.id}`
+                );
+                const subskills = await response.json();
+
+                // If no subskills, consider all mastered
+                if (!subskills || subskills.length === 0) {
+                    this.areAllSubskillsMastered = true;
+                    return;
+                }
+
+                // Check if all subskills are mastered by the user
+                let allMastered = true;
+                for (const subskill of subskills) {
+                    const found = this.userSkills.find(
+                        (us) => us.id === subskill.id
+                    );
+                    if (!found || found.is_mastered !== 1) {
+                        allMastered = false;
+                        break;
+                    }
+                }
+
+                this.areAllSubskillsMastered = allMastered;
+            } catch (error) {
+                console.error('Error checking subskill mastery:', error);
+                this.areAllSubskillsMastered = false;
+            }
+        },
+
+        async getUnmasteredSubskills() {
+            if (this.skill.type !== 'super' || this.areAllSubskillsMastered) {
+                return [];
+            }
+
+            try {
+                const response = await fetch(
+                    `/skills/sub-skills/${this.skill.id}`
+                );
+                const subskills = await response.json();
+
+                const unmasteredSubskills = [];
+                for (const subskill of subskills) {
+                    const found = this.userSkills.find(
+                        (us) => us.id === subskill.id
+                    );
+                    if (!found || found.is_mastered !== 1) {
+                        unmasteredSubskills.push(subskill);
+                    }
+                }
+
+                return unmasteredSubskills;
+            } catch (error) {
+                console.error('Error getting unmastered subskills:', error);
+                return [];
+            }
+        },
+
+        showUnmasteredSubskillsModal() {
+            this.showUnmasteredModal = true;
         }
     },
     /**
@@ -697,7 +846,8 @@ export default {
                             userDetailsStore.role == 'student' &&
                             !isMastered &&
                             skill.type != 'domain' &&
-                            skill.id
+                            skill.id &&
+                            (skill.type !== 'super' || areAllSubskillsMastered)
                         "
                         class="btn me-1 assessment-btn"
                         @click="scrollToAITutor()"
@@ -715,6 +865,82 @@ export default {
                             />
                         </svg>
                         Take the Test
+                        <!-- Half star icon -->
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 576 512"
+                            width="22"
+                            fill="white"
+                        >
+                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                            <path
+                                d="m 169.24356,0 c 12.2,0.1 23.3,7 28.6,18 l 64.4,132.3 143.6,21.2 c 12,1.8 22,10.2 25.7,21.7 3.7,11.5 0.7,24.2 -7.9,32.7 l -104.2,103.1 24.6,145.7 c 2,12 -3,24.2 -12.9,31.3 -9.9,7.1 -23,8 -33.8,2.3 l -128.1,-68.5 z M 27.343555,512 c -1.1,0.1 -2.1,0.1 -3.2,0 z"
+                                id="path17"
+                            />
+                        </svg>
+                    </button>
+                    <!-- Unmastered Subskills Modal -->
+                    <div
+                        v-if="showUnmasteredModal"
+                        class="modal"
+                        @click.self="showUnmasteredModal = false"
+                    >
+                        <div class="modal-content">
+                            <h1 class="heading h5">
+                                Complete these subskills first:
+                            </h1>
+                            <div v-for="subskill in unmasteredSubskills">
+                                <router-link
+                                    :class="{
+                                        'grade-school':
+                                            subskill.level == 'grade_school',
+                                        'middle-school':
+                                            subskill.level == 'middle_school',
+                                        'high-school':
+                                            subskill.level == 'high_school',
+                                        college: subskill.level == 'college',
+                                        phd: subskill.level == 'phd'
+                                    }"
+                                    class="skill-link btn mb-1"
+                                    :to="`/skills/${subskill.url}`"
+                                    @click="showUnmasteredModal = false"
+                                >
+                                    {{ subskill.name }}
+                                </router-link>
+                            </div>
+                            <button
+                                class="btn primary-btn ms-auto me-0"
+                                @click="showUnmasteredModal = false"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                    <button
+                        v-if="
+                            userDetailsStore.role == 'student' &&
+                            !isMastered &&
+                            skill.type === 'super' &&
+                            !areAllSubskillsMastered
+                        "
+                        class="btn me-1 assessment-btn"
+                        style="opacity: 0.7"
+                        @click="showUnmasteredSubskillsModal"
+                        title="Click to see which subskills need to be mastered"
+                    >
+                        <!-- Half star icon -->
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 576 512"
+                            width="22"
+                            fill="white"
+                        >
+                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                            <path
+                                d="M288 0c-12.2 .1-23.3 7-28.6 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3L288 439.8 288 0zM429.9 512c1.1 .1 2.1 .1 3.2 0l-3.2 0z"
+                            />
+                        </svg>
+                        Master Subskills First
                         <!-- Half star icon -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -1432,6 +1658,7 @@ export default {
                 :showTutorialTip7="showTutorialTip7"
                 :showTutorialTip8="showTutorialTip8"
                 :showTutorialTip9="showTutorialTip9"
+                :areAllSubskillsMastered="areAllSubskillsMastered"
                 @skipTutorial="skipTutorial"
                 @progressTutorial="progressTutorial"
             />
