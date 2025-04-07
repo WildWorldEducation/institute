@@ -171,7 +171,7 @@ export default {
                 // Because this is so much data, we do not send it with the rest of the skill tree,
                 // or it will slow the load down too much.
                 const result = await fetch(
-                    '/skills/introduction-and-url/' + this.skill.id
+                    '/skills/intro-sentence-and-url/' + this.skill.id
                 );
                 const result2 = await result.json();
                 if (this.skill.type == 'super') {
