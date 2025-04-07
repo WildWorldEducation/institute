@@ -87,8 +87,7 @@ export default {
                 skillLevel: '',
                 borderColor: '',
                 thumbnail: ''
-            },
-            isMobileCheck: window.innerWidth
+            }
         };
     },
     components: {
@@ -147,112 +146,104 @@ export default {
         });
 
         // Skill panel
-        if (this.isMobileCheck < 576) {
-            // Listen for clicks on the main canvas
-            canvas.addEventListener('click', async (e) => {
-                //Figure out where the mouse click occurred.
-                var mouseX = e.layerX;
-                var mouseY = e.layerY;
+        // Listen for clicks on the main canvas
+        canvas.addEventListener('click', async (e) => {
+            //Figure out where the mouse click occurred.
+            var mouseX = e.layerX;
+            var mouseY = e.layerY;
 
-                this.xPos = mouseX;
-                this.yPos = mouseY;
-                this.showAnimation = true;
-                // Hide animation after 0.5 seconds (adjust as needed)
-                setTimeout(() => {
-                    this.showAnimation = false;
-                }, 500);
+            this.xPos = mouseX;
+            this.yPos = mouseY;
+            this.showAnimation = true;
+            // Hide animation after 0.5 seconds (adjust as needed)
+            setTimeout(() => {
+                this.showAnimation = false;
+            }, 500);
 
-                // Get the corresponding pixel color on the hidden canvas
-                // and look up the node in our map.
-                var ctx = this.hiddenCanvasContext;
+            // Get the corresponding pixel color on the hidden canvas
+            // and look up the node in our map.
+            var ctx = this.hiddenCanvasContext;
 
-                // This will return that pixel's color
-                var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
+            // This will return that pixel's color
+            var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
 
-                //Our map uses these rgb strings as keys to nodes.
-                var colString =
-                    'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
-                var node = this.colToNode[colString];
+            //Our map uses these rgb strings as keys to nodes.
+            var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
+            var node = this.colToNode[colString];
 
-                if (node && node.data.id) {
-                    // We clicked on something, lets set the color of the node
-                    // we also have access to the data associated with it, which in
-                    // this case is just its original index in the data array.
-                    node.renderCol = node.__pickColor;
-                    this.currentNodeX = node.x;
-                    this.currentNodeY = node.y;
+            if (node && node.data.id) {
+                // We clicked on something, lets set the color of the node
+                // we also have access to the data associated with it, which in
+                // this case is just its original index in the data array.
+                node.renderCol = node.__pickColor;
+                this.currentNodeX = node.x;
+                this.currentNodeY = node.y;
 
-                    //Update the display with some data
-                    this.skill.name = node.data.skill_name;
-                    this.skill.id = node.data.id;
-                    this.skill.type = node.data.type;
-                    // For the collapsing nodes
-                    //   this.skill.show_children = node.data.show_children;
-                    this.skill.hasChildren = false;
-                    if (
-                        node.data.children.length > 0 ||
-                        (this.skill.show_children &&
-                            this.skill.show_children == 0)
-                    ) {
-                        this.skill.hasChildren = true;
-                    }
-                    this.skill.x = node.x;
-                    this.skill.y = node.y;
-
-                    // Get the intro data separately.
-                    // Because this is so much data, we do not send it with the rest of the skill tree,
-                    // or it will slow the load down too much.
-                    const result = await fetch(
-                        '/skills/introduction-and-url/' + this.skill.id
-                    );
-                    const result2 = await result.json();
-                    if (this.skill.type == 'super') {
-                        // Get urls of subskills, if a super skill
-                        const subSkillsResult = await fetch(
-                            '/skills/sub-skills/' + this.skill.id
-                        );
-                        const subSkillsResultJson =
-                            await subSkillsResult.json();
-                        this.skill.subskills = subSkillsResultJson;
-                    }
-                    this.skill.introduction = result2.introduction;
-                    this.skill.url = result2.url;
-                    this.skill.image_thumbnail_url =
-                        result2.image_thumbnail_url;
-                    this.showSkillPanel = true;
+                //Update the display with some data
+                this.skill.name = node.data.skill_name;
+                this.skill.id = node.data.id;
+                this.skill.type = node.data.type;
+                // For the collapsing nodes
+                //   this.skill.show_children = node.data.show_children;
+                this.skill.hasChildren = false;
+                if (
+                    node.data.children.length > 0 ||
+                    (this.skill.show_children && this.skill.show_children == 0)
+                ) {
+                    this.skill.hasChildren = true;
                 }
-            });
-        }
+                this.skill.x = node.x;
+                this.skill.y = node.y;
+
+                // Get the intro data separately.
+                // Because this is so much data, we do not send it with the rest of the skill tree,
+                // or it will slow the load down too much.
+                const result = await fetch(
+                    '/skills/introduction-and-url/' + this.skill.id
+                );
+                const result2 = await result.json();
+                if (this.skill.type == 'super') {
+                    // Get urls of subskills, if a super skill
+                    const subSkillsResult = await fetch(
+                        '/skills/sub-skills/' + this.skill.id
+                    );
+                    const subSkillsResultJson = await subSkillsResult.json();
+                    this.skill.subskills = subSkillsResultJson;
+                }
+                this.skill.introduction = result2.introduction;
+                this.skill.url = result2.url;
+                this.skill.image_thumbnail_url = result2.image_thumbnail_url;
+                this.showSkillPanel = true;
+            }
+        });
 
         // Tool tip
-        if (this.isMobileCheck >= 576) {
-            // MOUSE MOVE EVENT LISTENER
-            d3.select('#canvas').on('mousemove', (event) => {
-                // Get mouse positions from the main canvas.
-                const [mouseX, mouseY] = d3.pointer(event);
-                const node = this.getMouseOverNode(mouseX, mouseY);
+        // MOUSE MOVE EVENT LISTENER
+        d3.select('#canvas').on('mousemove', (event) => {
+            // Get mouse positions from the main canvas.
+            const [mouseX, mouseY] = d3.pointer(event);
+            const node = this.getMouseOverNode(mouseX, mouseY);
 
-                if (node) {
-                    let tooltipTopPosition = mouseY + 20;
-                    let tooltipLeftPosition = mouseX;
-                    const borderColor = this.hexBorderColor(node.data.level);
-                    // Make sure position alway visible
-                    if (tooltipTopPosition)
-                        this.tooltipData = {
-                            showing: true,
-                            xPosition: `${tooltipTopPosition}`,
-                            yPosition: `${tooltipLeftPosition}`,
-                            skillName: node.data.skill_name,
-                            skillLevel: node.data.level,
-                            borderColor: borderColor,
-                            thumbnail: node.data.thumbnail,
-                            skillId: node.data.id
-                        };
-                } else {
-                    this.tooltipData.showing = false;
-                }
-            });
-        }
+            if (node) {
+                let tooltipTopPosition = mouseY + 20;
+                let tooltipLeftPosition = mouseX;
+                const borderColor = this.hexBorderColor(node.data.level);
+                // Make sure position alway visible
+                if (tooltipTopPosition)
+                    this.tooltipData = {
+                        showing: true,
+                        xPosition: `${tooltipTopPosition}`,
+                        yPosition: `${tooltipLeftPosition}`,
+                        skillName: node.data.skill_name,
+                        skillLevel: node.data.level,
+                        borderColor: borderColor,
+                        thumbnail: node.data.thumbnail,
+                        skillId: node.data.id
+                    };
+            } else {
+                this.tooltipData.showing = false;
+            }
+        });
 
         // Open
         canvas.addEventListener('dblclick', () => {
