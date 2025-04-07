@@ -145,7 +145,7 @@ export default {
             willReadFrequently: true
         });
 
-        // Skill panel
+        // Skill panel - touch screen devices only
         // Listen for clicks on the main canvas
         canvas.addEventListener('click', async (e) => {
             //Figure out where the mouse click occurred.
@@ -217,7 +217,7 @@ export default {
             }
         });
 
-        // Tool tip
+        // Tool tip - laptop/desktop only
         // MOUSE MOVE EVENT LISTENER
         d3.select('#canvas').on('mousemove', (event) => {
             // Prevent this from showing on touch device
