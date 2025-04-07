@@ -135,6 +135,15 @@ export default {
         }
     },
     methods: {
+        learningObjectiveLoaded(objectiveId) {
+            // Find the learning objective and ensure it stays visible
+            const objective = this.skill.learningObjectives.find(
+                (obj) => obj.id === objectiveId
+            );
+            if (objective) {
+                objective.showAI = true;
+            }
+        },
         async checkTokenUsage() {
             try {
                 // Ensure user details are loaded first
@@ -1341,7 +1350,7 @@ export default {
                             <p class="mb-0">
                                 {{ learningObjective.objective }}
                             </p>
-                            <div v-if="learningObjective.showAI">
+                            <div v-if="learningObjective.showAI" class="mb-3">
                                 <!-- AI tutor for this learning objective -->
                                 <LearningObjectiveAITutor
                                     :learningObjective="
@@ -1351,6 +1360,7 @@ export default {
                                     :skillName="skill.name"
                                     :skillUrl="skill.url"
                                     :skillLevel="skill.level"
+                                    @tutor-loaded="learningObjectiveLoaded"
                                 />
                             </div>
                         </div>

@@ -73,6 +73,7 @@ export default {
 
                 // Close loading animation
                 this.isGotMessages = true;
+                this.$emit('tutor-loaded', this.learningObjectiveId);
 
                 if (this.messageList.length > 0) {
                     this.threadID = this.messageList[0].thread_id;
