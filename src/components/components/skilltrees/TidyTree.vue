@@ -220,29 +220,42 @@ export default {
         // Tool tip
         // MOUSE MOVE EVENT LISTENER
         d3.select('#canvas').on('mousemove', (event) => {
-            // Get mouse positions from the main canvas.
-            const [mouseX, mouseY] = d3.pointer(event);
-            const node = this.getMouseOverNode(mouseX, mouseY);
+            // Prevent this from showing on touch device
+            if (event.sourceCapabilities.firesTouchEvents == false) {
+                // Get mouse positions from the main canvas.
+                const [mouseX, mouseY] = d3.pointer(event);
 
-            if (node) {
-                let tooltipTopPosition = mouseY + 20;
-                let tooltipLeftPosition = mouseX;
-                const borderColor = this.hexBorderColor(node.data.level);
-                // Make sure position alway visible
-                if (tooltipTopPosition)
-                    this.tooltipData = {
-                        showing: true,
-                        xPosition: `${tooltipTopPosition}`,
-                        yPosition: `${tooltipLeftPosition}`,
-                        skillName: node.data.skill_name,
-                        skillLevel: node.data.level,
-                        borderColor: borderColor,
-                        thumbnail: node.data.thumbnail,
-                        skillId: node.data.id
-                    };
-            } else {
-                this.tooltipData.showing = false;
+                const node = this.getMouseOverNode(mouseX, mouseY);
+
+                if (node) {
+                    let tooltipTopPosition = mouseY + 20;
+                    let tooltipLeftPosition = mouseX;
+                    const borderColor = this.hexBorderColor(node.data.level);
+                    // Make sure position alway visible
+                    if (tooltipTopPosition)
+                        this.tooltipData = {
+                            showing: true,
+                            xPosition: `${tooltipTopPosition}`,
+                            yPosition: `${tooltipLeftPosition}`,
+                            skillName: node.data.skill_name,
+                            skillLevel: node.data.level,
+                            borderColor: borderColor,
+                            thumbnail: node.data.thumbnail,
+                            skillId: node.data.id
+                        };
+                } else {
+                    this.tooltipData.showing = false;
+                }
             }
+        });
+
+        // Open
+        canvas.addEventListener('dblclick', () => {
+            console.log('test');
+            const routeData = this.$router.resolve({
+                path: '/skills/Adjectives'
+            });
+            window.open(routeData.href, '_blank');
         });
 
         // Open

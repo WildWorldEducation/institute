@@ -174,7 +174,7 @@ export default {
         >
             <iframe
                 class="intro-video"
-                src="https://www.youtube.com/embed/hu_hjfLLwY0?si=TyvLiAgxcQgmY92q"
+                src="https://www.youtube.com/embed/VRQ47XRBApg?si=CfPv1r0gKRuFpGMM"
                 title="YouTube video player"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -332,7 +332,7 @@ export default {
                 >
                     <iframe
                         class="intro-video"
-                        src="https://www.youtube.com/embed/hu_hjfLLwY0?si=TyvLiAgxcQgmY92q"
+                        src="https://www.youtube.com/embed/VRQ47XRBApg?si=CfPv1r0gKRuFpGMM"
                         title="YouTube video player"
                         frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
