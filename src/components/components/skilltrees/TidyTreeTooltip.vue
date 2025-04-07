@@ -4,7 +4,7 @@ export default {
     props: ['tooltipData'],
     data() {
         return {
-            introduction: '',
+            introSentence: '',
             topPosition: 0,
             leftPosition: 0
         };
@@ -12,34 +12,32 @@ export default {
     computed: {},
     async mounted() {},
     methods: {
-        // getting first paragraph from html string
-        getFirstParagraph(htmlString) {
-            const el = document.createElement('html');
-            el.innerHTML = htmlString;
-            ``;
+        // getting first paragraph from html string (no longer used: DELETE)
+        // getFirstParagraph(htmlString) {
+        //     const el = document.createElement('html');
+        //     el.innerHTML = htmlString;
+        //     ``;
 
-            const listOfParagraph = el.getElementsByTagName('p');
-            if (!listOfParagraph || listOfParagraph.length === 0) {
-                return;
-            }
-            const firstSentence = listOfParagraph[0].innerText.split(
-                '. ',
-                1
-            )[0];
-            return firstSentence + '...';
-        },
+        //     const listOfParagraph = el.getElementsByTagName('p');
+        //     if (!listOfParagraph || listOfParagraph.length === 0) {
+        //         return;
+        //     }
+        //     const firstSentence = listOfParagraph[0].innerText.split(
+        //         '. ',
+        //         1
+        //     )[0];
+        //     return firstSentence + '...';
+        // },
         getTooltipData(skillId) {
-            fetch(`/skills/introduction-data?skillId=${skillId}`)
+            fetch(`/skills/intro-sentence?skillId=${skillId}`)
                 .then((res) => {
                     return res.json();
                 })
                 .then((result) => {
-                    const fullIntroduction = result[0].introduction;
-                    this.introduction =
-                        this.getFirstParagraph(fullIntroduction);
+                    this.introSentence = result[0].intro_sentence;
                 });
         },
-        snakeToTile(string) {
+        snakeCaseToTitleCase(string) {
             const result = string.replace(/^_*(.)|_+(.)/g, (s, c, d) =>
                 c ? c.toUpperCase() : ' ' + d.toUpperCase()
             );
@@ -108,13 +106,13 @@ export default {
                         {{ tooltipData.skillName }}
                     </div>
                     <div class="skill-level">
-                        {{ snakeToTile(tooltipData.skillLevel) }}
+                        {{ snakeCaseToTitleCase(tooltipData.skillLevel) }}
                     </div>
                 </div>
             </div>
         </div>
         <div class="d-flex tooltip-skill-introduction">
-            <div>{{ introduction }}</div>
+            <div>{{ introSentence }}</div>
         </div>
     </div>
 </template>

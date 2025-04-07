@@ -145,6 +145,7 @@ export default {
             willReadFrequently: true
         });
 
+        // Skill panel - touch screen devices only
         // Listen for clicks on the main canvas
         canvas.addEventListener('click', async (e) => {
             //Figure out where the mouse click occurred.
@@ -194,7 +195,7 @@ export default {
                 this.skill.x = node.x;
                 this.skill.y = node.y;
 
-                // Get the mastery requirements data separately.
+                // Get the intro data separately.
                 // Because this is so much data, we do not send it with the rest of the skill tree,
                 // or it will slow the load down too much.
                 const result = await fetch(
@@ -216,7 +217,7 @@ export default {
             }
         });
 
-        // Tool tip
+        // Tool tip - laptop/desktop only
         // MOUSE MOVE EVENT LISTENER
         d3.select('#canvas').on('mousemove', (event) => {
             // Prevent this from showing on touch device
@@ -247,6 +248,15 @@ export default {
                 }
             }
         });
+
+        // Open skill page
+        // canvas.addEventListener('dblclick', () => {
+        //     console.log('test');
+        //     const routeData = this.$router.resolve({
+        //         path: '/skills/Adjectives'
+        //     });
+        //     window.open(routeData.href, '_blank');
+        // });
 
         // Zoom and pan with mouse
         // We have to construct the d3 zoom function and assign the zoom event
