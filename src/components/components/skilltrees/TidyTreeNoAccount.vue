@@ -128,6 +128,7 @@ export default {
         });
         hiddenCanvas.style.display = 'none';
 
+        // Skill panel - touch screen devices only
         // Listen for clicks on the main canvas
         canvas.addEventListener('click', async (e) => {
             // We actually only need to draw the hidden canvas when
@@ -167,25 +168,40 @@ export default {
                 this.skill.name = node.data.name;
                 this.skill.id = node.data.id;
                 this.skill.type = node.data.type;
-                // Get the mastery requirements data separately.
-                // Because this is so much data, we do not send it with the rest of the skill tree,
-                // or it will slow the load down too much.
-                const result = await fetch(
-                    '/skills/intro-sentence-and-url/' + this.skill.id
-                );
-                const result2 = await result.json();
-                if (this.skill.type == 'super') {
-                    // Get urls of subskills, if a super skill
-                    const subSkillsResult = await fetch(
-                        '/skills/sub-skills/' + this.skill.id
+
+                // only open on touch screen devices
+                if (e.sourceCapabilities.firesTouchEvents == true) {
+                    // Get the intro sentence data separately.
+                    // Because this is so much data, we do not send it with the rest of the skill tree,
+                    // or it will slow the load down too much.
+                    const result = await fetch(
+                        '/skills/intro-sentence-and-url/' + this.skill.id
                     );
-                    const subSkillsResultJson = await subSkillsResult.json();
-                    this.skill.subskills = subSkillsResultJson;
+                    const result2 = await result.json();
+                    if (this.skill.type == 'super') {
+                        // Get urls of subskills, if a super skill
+                        const subSkillsResult = await fetch(
+                            '/skills/sub-skills/' + this.skill.id
+                        );
+                        const subSkillsResultJson =
+                            await subSkillsResult.json();
+                        this.skill.subskills = subSkillsResultJson;
+                    }
+                    this.skill.introduction = result2.intro_sentence;
+                    this.skill.url = result2.url;
+                    this.skill.image_thumbnail_url =
+                        result2.image_thumbnail_url;
+                    this.showSkillPanel = true;
+                } else {
+                    const result = await fetch(
+                        '/skills/url-only/' + this.skill.id
+                    );
+                    const resultData = await result.json();
+                    const routeData = this.$router.resolve({
+                        path: '/skills/' + resultData.url
+                    });
+                    window.open(routeData.href, '_blank');
                 }
-                this.skill.introduction = result2.introduction;
-                this.skill.url = result2.url;
-                this.skill.image_thumbnail_url = result2.image_thumbnail_url;
-                this.showSkillPanel = true;
             }
         });
 
