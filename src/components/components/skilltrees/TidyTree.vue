@@ -250,13 +250,13 @@ export default {
         });
 
         // Open skill page
-        canvas.addEventListener('dblclick', () => {
-            console.log('test');
-            const routeData = this.$router.resolve({
-                path: '/skills/Adjectives'
-            });
-            window.open(routeData.href, '_blank');
-        });
+        // canvas.addEventListener('dblclick', () => {
+        //     console.log('test');
+        //     const routeData = this.$router.resolve({
+        //         path: '/skills/Adjectives'
+        //     });
+        //     window.open(routeData.href, '_blank');
+        // });
 
         // Zoom and pan with mouse
         // We have to construct the d3 zoom function and assign the zoom event
