@@ -233,6 +233,7 @@ export default {
 
                 if (res.status === 504) {
                     console.log('Server timeout');
+                    this.requestTutoring();
                 } else {
                     await this.getMessages();
                     this.waitForAIresponse = false;

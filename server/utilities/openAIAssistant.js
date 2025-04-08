@@ -500,7 +500,7 @@ async function requestLearningObjectiveTutoring(
         - If you include questions, ONLY ASK ONE QUESTION at the end of your message
         - Never ask multiple questions in a single message
         
-        Please keep the lesson under 1500 characters.`
+        Please keep the lesson under 1000 characters.`
     });
 
     if (run.status === 'completed') {
