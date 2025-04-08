@@ -233,19 +233,18 @@ export default {
 
                 if (res.status === 504) {
                     console.log('Server timeout');
+                } else {
+                    await this.getMessages();
                     this.waitForAIresponse = false;
-                    return;
+                    // Staring convert the newly done message to speech
+                    const newMessageIndex =
+                        parseInt(this.messageList.length) - 1;
+
+                    this.generateAudio(
+                        newMessageIndex,
+                        this.messageList[0].content[0].text.value
+                    );
                 }
-
-                await this.getMessages();
-                this.waitForAIresponse = false;
-                // Staring convert the newly done message to speech
-                const newMessageIndex = parseInt(this.messageList.length) - 1;
-
-                this.generateAudio(
-                    newMessageIndex,
-                    this.messageList[0].content[0].text.value
-                );
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false;
