@@ -61,7 +61,8 @@ export default {
             isNewSocraticChat: true,
             isNewAssessingChat: true,
             waitForGenerateAudio: false,
-            currentIndexAudioPlaying: null
+            currentIndexAudioPlaying: null,
+            isMobileCheck: window.innerWidth
         };
     },
     async created() {
@@ -770,10 +771,6 @@ export default {
                                     ? null
                                     : handleTutorClick('assessing')
                             "
-                            :disabled="
-                                skill.type === 'super' &&
-                                !areAllSubskillsMastered
-                            "
                             :title="
                                 skill.type === 'super' &&
                                 !areAllSubskillsMastered
@@ -783,16 +780,6 @@ export default {
                         >
                             Conversational Test
                         </button>
-                        <!-- Explanation message for disabled button -->
-                        <div
-                            v-if="
-                                skill.type === 'super' &&
-                                !areAllSubskillsMastered
-                            "
-                            class="text-white text-center mt-1 small"
-                        >
-                            <em>Master all subskills first</em>
-                        </div>
                         <!-- Conversational Test Tooltip -->
                         <div
                             v-if="
@@ -842,6 +829,11 @@ export default {
                         <!-- Multiple Choice Assessment -->
                         <router-link
                             class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 d-block text-nowrap"
+                            :class="{
+                                disabled:
+                                    skill.type === 'super' &&
+                                    !areAllSubskillsMastered
+                            }"
                             :to="
                                 userDetailsStore.userId
                                     ? skill.id + '/assessment'
@@ -850,6 +842,19 @@ export default {
                         >
                             Multiple-Choice Test
                         </router-link>
+                    </div>
+                    <!-- Explanation message for disabled button -->
+                    <div
+                        v-if="
+                            skill.type === 'super' && !areAllSubskillsMastered
+                        "
+                        class="text-end small"
+                        :class="{ 'text-center': isMobileCheck < 576 }"
+                    >
+                        <em
+                            >To unlock the tests, first master all the cluster
+                            skills</em
+                        >
                     </div>
                 </div>
             </div>

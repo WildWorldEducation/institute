@@ -230,7 +230,6 @@ export default {
             fetch('/skills/record-visit/' + skillId);
         },
         async getSkillFilters() {
-            // Run the GET request.
             if (this.skillTagsStore.skillTagsList.length == 0)
                 await this.skillTagsStore.getSkillTagsList();
 
@@ -289,7 +288,7 @@ export default {
                     const response = await fetch(
                         `/skills/sub-skills/${this.skill.id}`
                     );
-                    const subskills = await response.json();
+                    const subskills = await response.json();               
 
                     // If no subskills, consider all mastered
                     if (!subskills || subskills.length === 0) {
@@ -887,7 +886,7 @@ export default {
                     >
                         <div class="modal-content">
                             <h1 class="heading h5">
-                                Complete these subskills first:
+                                Complete these cluster skills first:
                             </h1>
                             <div v-for="subskill in unmasteredSubskills">
                                 <router-link
