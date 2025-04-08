@@ -1,0 +1,1 @@
+import{_ as o,e as a,o as r,c,a as e,t as n}from"./main-182248fb.js";const i={setup(){return{userDetailsStore:a()}}},u={class:"container"},l=e("h1",{class:"heading"},"Payment Successful!",-1);function _(s,p,d,t,S,f){return r(),c("div",u,[l,e("p",null,"You now have "+n(t.userDetailsStore.tokens)+" tokens",1)])}const m=o(i,[["render",_]]);export{m as default};
