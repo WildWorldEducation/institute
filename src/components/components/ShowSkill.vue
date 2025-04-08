@@ -230,7 +230,6 @@ export default {
             fetch('/skills/record-visit/' + skillId);
         },
         async getSkillFilters() {
-            // Run the GET request.
             if (this.skillTagsStore.skillTagsList.length == 0)
                 await this.skillTagsStore.getSkillTagsList();
 
