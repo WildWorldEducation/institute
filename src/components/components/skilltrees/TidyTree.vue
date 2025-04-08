@@ -195,25 +195,39 @@ export default {
                 this.skill.x = node.x;
                 this.skill.y = node.y;
 
-                // Get the intro data separately.
-                // Because this is so much data, we do not send it with the rest of the skill tree,
-                // or it will slow the load down too much.
-                const result = await fetch(
-                    '/skills/introduction-and-url/' + this.skill.id
-                );
-                const result2 = await result.json();
-                if (this.skill.type == 'super') {
-                    // Get urls of subskills, if a super skill
-                    const subSkillsResult = await fetch(
-                        '/skills/sub-skills/' + this.skill.id
+                // only open on touch screen devices
+                if (e.sourceCapabilities.firesTouchEvents == true) {
+                    // Get the intro data separately.
+                    // Because this is so much data, we do not send it with the rest of the skill tree,
+                    // or it will slow the load down too much.
+                    const result = await fetch(
+                        '/skills/intro-sentence-and-url/' + this.skill.id
                     );
-                    const subSkillsResultJson = await subSkillsResult.json();
-                    this.skill.subskills = subSkillsResultJson;
+                    const result2 = await result.json();
+                    if (this.skill.type == 'super') {
+                        // Get urls of subskills, if a super skill
+                        const subSkillsResult = await fetch(
+                            '/skills/sub-skills/' + this.skill.id
+                        );
+                        const subSkillsResultJson =
+                            await subSkillsResult.json();
+                        this.skill.subskills = subSkillsResultJson;
+                    }
+                    this.skill.introduction = result2.intro_sentence;
+                    this.skill.url = result2.url;
+                    this.skill.image_thumbnail_url =
+                        result2.image_thumbnail_url;
+                    this.showSkillPanel = true;
+                } else {
+                    const result = await fetch(
+                        '/skills/url-only/' + this.skill.id
+                    );
+                    const resultData = await result.json();
+                    const routeData = this.$router.resolve({
+                        path: '/skills/' + resultData.url
+                    });
+                    window.open(routeData.href, '_blank');
                 }
-                this.skill.introduction = result2.introduction;
-                this.skill.url = result2.url;
-                this.skill.image_thumbnail_url = result2.image_thumbnail_url;
-                this.showSkillPanel = true;
             }
         });
 
@@ -250,13 +264,39 @@ export default {
         });
 
         // Open skill page
-        // canvas.addEventListener('dblclick', () => {
-        //     console.log('test');
-        //     const routeData = this.$router.resolve({
-        //         path: '/skills/Adjectives'
-        //     });
-        //     window.open(routeData.href, '_blank');
-        // });
+        canvas.addEventListener('dblclick', async (e) => {
+            //Figure out where the mouse click occurred.
+            var mouseX = e.layerX;
+            var mouseY = e.layerY;
+
+            // Get the corresponding pixel color on the hidden canvas
+            // and look up the node in our map.
+            var ctx = this.hiddenCanvasContext;
+
+            // This will return that pixel's color
+            var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
+
+            //Our map uses these rgb strings as keys to nodes.
+            var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
+            var node = this.colToNode[colString];
+
+            if (node && node.data.id) {
+                // We clicked on something, lets set the color of the node
+                // we also have access to the data associated with it, which in
+                // this case is just its original index in the data array.
+                node.renderCol = node.__pickColor;
+                this.currentNodeX = node.x;
+                this.currentNodeY = node.y;
+                this.skill.id = node.data.id;
+            }
+
+            const result = await fetch('/skills/url-only/' + this.skill.id);
+            const resultData = await result.json();
+            const routeData = this.$router.resolve({
+                path: '/skills/' + resultData.url
+            });
+            window.open(routeData.href, '_blank');
+        });
 
         // Zoom and pan with mouse
         // We have to construct the d3 zoom function and assign the zoom event
