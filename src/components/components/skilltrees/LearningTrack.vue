@@ -87,7 +87,7 @@ export default {
     },
     async mounted() {
         await this.getIconData();
-        canvas.addEventListener('click',this.clickCallBack);
+        canvas.addEventListener('click', this.clickCallBack);
     },
     methods: {
         async loadTree() {
@@ -123,7 +123,7 @@ export default {
             d3.select(this.context.canvas).call(this.d3Zoom);
 
             // Set initial zoom value.
-            if(this.isFirstLoad){
+            if (this.isFirstLoad) {
                 this.resetPos();
                 this.isFirstLoad = false;
             }
@@ -131,79 +131,83 @@ export default {
             // For the loading animation.
             this.isLoading = false;
         },
-        async clickCallBack(e){
-                // We actually only need to draw the hidden canvas when
-                // there is an interaction. This sketch can draw it on
-                // each loop, but that is only for demonstration.
+        async clickCallBack(e) {
+            // We actually only need to draw the hidden canvas when
+            // there is an interaction. This sketch can draw it on
+            // each loop, but that is only for demonstration.
 
-                //Figure out where the mouse click occurred.
-                var mouseX = e.layerX;
-                var mouseY = e.layerY;
+            //Figure out where the mouse click occurred.
+            var mouseX = e.layerX;
+            var mouseY = e.layerY;
 
-                this.xPos = mouseX;
-                this.yPos = mouseY;
-                this.showAnimation = true;
-                // Hide animation after 0.5 seconds (adjust as needed)
-                setTimeout(() => {
-                    this.showAnimation = false;
-                }, 500);
+            this.xPos = mouseX;
+            this.yPos = mouseY;
+            this.showAnimation = true;
+            // Hide animation after 0.5 seconds (adjust as needed)
+            setTimeout(() => {
+                this.showAnimation = false;
+            }, 500);
 
-                // Get the corresponding pixel color on the hidden canvas
-                // and look up the node in our map.
-                var ctx = this.hiddenCanvasContext;
+            // Get the corresponding pixel color on the hidden canvas
+            // and look up the node in our map.
+            var ctx = this.hiddenCanvasContext;
 
-                // This will return that pixel's color
-                var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
-                var col2 = ctx.getImageData(mouseX + 28 * this.scale, mouseY, 1, 1 ).data;
+            // This will return that pixel's color
+            var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
+            var col2 = ctx.getImageData(
+                mouseX + 28 * this.scale,
+                mouseY,
+                1,
+                1
+            ).data;
 
-                //Our map uses these rgb strings as keys to nodes.
-                var colString =
-                    'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
-                var colString2 =
-                    'rgb(' + col2[0] + ',' + col2[1] + ',' + col2[2] + ')';
+            //Our map uses these rgb strings as keys to nodes.
+            var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
+            var colString2 =
+                'rgb(' + col2[0] + ',' + col2[1] + ',' + col2[2] + ')';
 
-                var node = this.colToNode[colString];
+            var node = this.colToNode[colString];
 
-                if (node && node.data.id) {
-                    // We clicked on something, lets set the color of the node
-                    // we also have access to the data associated with it, which in
-                    // this case is just its original index in the data array.
-                    node.renderCol = node.__pickColor;
+            if (node && node.data.id) {
+                // We clicked on something, lets set the color of the node
+                // we also have access to the data associated with it, which in
+                // this case is just its original index in the data array.
+                node.renderCol = node.__pickColor;
 
-                    //Update the display with some data
-                    this.skill.name = node.data.name;
-                    this.skill.id = node.data.id;
-                    this.skill.type = node.data.type;
-                    // For the collapsing nodes
-                    this.skill.show_children = node.data.show_children;
-                    this.skill.has_children = node.data.has_children;
-                    this.skill.x = node.x;
-                    this.skill.y = node.y;
+                //Update the display with some data
+                this.skill.name = node.data.name;
+                this.skill.id = node.data.id;
+                this.skill.type = node.data.type;
+                // For the collapsing nodes
+                this.skill.show_children = node.data.show_children;
+                this.skill.has_children = node.data.has_children;
+                this.skill.x = node.x;
+                this.skill.y = node.y;
 
-                    // Get the mastery requirements data separately.
-                    // Because this is so much data, we do not send it with the rest of the skill tree,
-                    // or it will slow the load down too much.
-                    const result = await fetch(
-                        '/skills/introduction-and-url/' + this.skill.id
-                    );
-                    const result2 = await result.json();
-                    this.skill.introduction = result2.introduction;
-                    this.skill.url = result2.url;
-                    if (colString !== colString2) {
-                        if (this.skill.has_children) {
-                            if (this.skill.show_children == 0) {
-                                this.toggleShowChildren(this.skill);
-                            } else {
-                                this.toggleHideChildren(this.skill);
-                            }
+                // Get the mastery requirements data separately.
+                // Because this is so much data, we do not send it with the rest of the skill tree,
+                // or it will slow the load down too much.
+                const result = await fetch(
+                    '/skills/intro-sentence-and-url/' + this.skill.id
+                );
+                const result2 = await result.json();
+                this.skill.introduction = result2.intro_sentence;
+                this.skill.url = result2.url;
+                if (colString !== colString2) {
+                    if (this.skill.has_children) {
+                        if (this.skill.show_children == 0) {
+                            this.toggleShowChildren(this.skill);
                         } else {
-                            this.showSkillPanel = true;
+                            this.toggleHideChildren(this.skill);
                         }
                     } else {
                         this.showSkillPanel = true;
                     }
+                } else {
+                    this.showSkillPanel = true;
                 }
-            },
+            }
+        },
         getAlgorithm() {
             // Create a tree layout.
             this.data = {
@@ -975,7 +979,7 @@ export default {
             );
         },
         // zoom and pan to a node
-        goToLocation(node, shift=0) {
+        goToLocation(node, shift = 0) {
             const skillTreeHeight = this.$refs.wrapper.clientHeight;
             const skillTreeWidth = this.$refs.wrapper.clientWidth;
             const centerYOffset = skillTreeWidth > 480 ? 2.5 : 2.8;

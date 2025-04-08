@@ -8,7 +8,8 @@ export default {
         return {
             treeType: '',
             isImageLoading: true,
-            currentSkillId: null
+            currentSkillId: null,
+            isMobileCheck: window.innerWidth
         };
     },
     mounted() {
@@ -64,7 +65,7 @@ export default {
         >
             <div>
                 <!-- Top row -->
-                <div class="d-flex justify-content-between p-2">
+                <div class="d-flex justify-content-between p-2 mb-3">
                     <div class="d-flex">
                         <router-link
                             class="btn primary-btn"
@@ -95,7 +96,6 @@ export default {
                         </svg>
                     </button>
                 </div>
-                <hr />
 
                 <!-- Skill name -->
                 <h1 class="secondary-heading h3 text-center">
@@ -119,7 +119,10 @@ export default {
 
                 <!-- Introduction -->
                 <div
-                    class="skill-introduction text-start mt-1 mb-4"
+                    class="skill-introduction bg-white rounded p-2 text-start mt-2 mb-4"
+                    :class="{
+                        'skill-introduction-mobile': isMobileCheck < 576
+                    }"
                     v-html="skill.introduction"
                 ></div>
 
@@ -198,7 +201,6 @@ export default {
 
 .image-container {
     position: relative;
-    width: 50%;
     height: auto;
     margin: auto;
     margin-bottom: 5px;
@@ -241,6 +243,13 @@ img {
     margin-left: 20px;
     margin-right: 5px;
 }
+
+.skill-introduction-mobile {
+    margin-left: 20px;
+    margin-right: 20px;
+    text-align: center !important;
+}
+
 .list-container {
     list-style: none;
     padding: 0;
