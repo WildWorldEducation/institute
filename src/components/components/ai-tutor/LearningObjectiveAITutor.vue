@@ -270,8 +270,10 @@ export default {
                 var url = '/ai-tutor/learning-objective/ask-question';
 
                 const res = await fetch(url, requestOptions);
-                if (res.status === 500) {
-                    alert('The tutor can`t answer !!');
+                if (res.status === 500 || res.status === 504) {
+                    alert(
+                        'The tutor can`t answer right now, please try again soon'
+                    );
                     this.waitForAIresponse = false;
                     return;
                 }
