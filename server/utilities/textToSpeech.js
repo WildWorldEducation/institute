@@ -25,6 +25,24 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
+/**
+ * Calculate token usage for TTS
+ * @param {string} text - Text to convert to speech
+ * @returns {number} - Estimated token count
+ */
+function calculateTTSTokens(text) {
+    // Estimation based on character count (approximately 1 token per 4 characters)
+    return Math.ceil(text.length / 4);
+}
+
+/**
+ * Convert text to speech and calculate token usage
+ * @param {string} latestMessage - Text to convert to speech
+ * @param {string} threadID - Thread ID
+ * @param {number} messageNumber - Message number
+ * @param {string} tutorType - Type of tutor (socratic, assessing, learning-objective)
+ * @returns {object} - Contains filename and token count
+ */
 async function textToSpeech(latestMessage, threadID, messageNumber, tutorType) {
     // Different voice for normal and assessing tutors, to differentiate them
     let voice = 'fable';
@@ -40,19 +58,32 @@ async function textToSpeech(latestMessage, threadID, messageNumber, tutorType) {
 
     // Buffer is created (binary)
     const buffer = Buffer.from(await mp3.arrayBuffer());
-    //console.log('buffer generated');
 
-    return await saveMP3ToAWS(buffer, threadID, messageNumber, tutorType);
+    // Calculate token usage for billing
+    const tokensUsed = calculateTTSTokens(latestMessage);
+
+    // Save to S3
+    const mp3Name = await saveMP3ToAWS(
+        buffer,
+        threadID,
+        messageNumber,
+        tutorType
+    );
+
+    // Return both the filename and token count
+    return {
+        filename: mp3Name,
+        tokens: tokensUsed
+    };
 }
 
 /**
- *  Save the MP3 to AWS S3
- *
- * @param {*} buffer binary data of audio
- * @param {*} threadID unique thread id
- * @param {*} messageNumber message number within the thread
- *
- * @return the name of the mp3 that got saved to database Or null if pass no mp3
+ * Save the MP3 to AWS S3
+ * @param {Buffer} buffer - binary data of audio
+ * @param {string} threadID - unique thread id
+ * @param {number} messageNumber - message number within the thread
+ * @param {string} tutorType - Type of tutor
+ * @return {string} the name of the mp3 that got saved to database or null if pass no mp3
  */
 const saveMP3ToAWS = async (buffer, threadID, messageNumber, tutorType) => {
     if (!buffer) {
@@ -84,12 +115,11 @@ const saveMP3ToAWS = async (buffer, threadID, messageNumber, tutorType) => {
 
     // Send to the bucket.
     const fullSizeCommand = new PutObjectCommand(params);
-    //console.log('sending');
     await s3.send(fullSizeCommand);
-    //console.log('sent');
     return mp3Name;
 };
 
 module.exports = {
-    textToSpeech
+    textToSpeech,
+    calculateTTSTokens
 };

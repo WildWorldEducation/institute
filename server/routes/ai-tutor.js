@@ -182,13 +182,21 @@ router.post(
             const messageNumber = req.body.messageNumber;
             const message = req.body.message;
             const tutorType = 'socratic';
+            const userId = req.session.userId;
 
-            let speechClipName = await textToSpeech(
+            // Get both filename and token usage
+            const speechResult = await textToSpeech(
                 message,
                 threadID,
                 messageNumber,
                 tutorType
             );
+
+            const speechClipName = speechResult.filename;
+            const tokensUsed = speechResult.tokens;
+
+            // Save token usage with source 'tts'
+            await saveTokenUsage(userId, tokensUsed, 'tts');
 
             const url =
                 'https://institute-socratic-tutor-tts-urls.s3.us-east-1.amazonaws.com/' +
@@ -200,8 +208,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                    messageNumber
-                )},                       
+                                        messageNumber
+                                    )},                       
                                     ${conn.escape(url)}
                                 );`;
                 await query(queryString);
@@ -372,14 +380,14 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                    messageNumber
-                )},                       
+                                        messageNumber
+                                    )},                       
                                     ${conn.escape(url)}
                                 );`;
                 await query(queryString);
                 res.json({
                     status: 'complete',
-                    speechUrl: url,
+                    speechUrl: url
                 });
             } catch (error) {
                 console.error(error);
@@ -612,8 +620,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                    messageNumber
-                )},                       
+                                        messageNumber
+                                    )},                       
                                     ${conn.escape(url)}
                                 );`;
                 await query(queryString);
@@ -695,7 +703,6 @@ router.post(
  * STT (Speech to Text) for tutors
  */
 router.post('/stt/convert', async (req, res, next) => {
-    // prepare variables
     const userId = req.session.userId;
     const skillUrl = req.body.skillUrl;
     const skillName = req.body.skillName;
@@ -729,34 +736,43 @@ router.post('/stt/convert', async (req, res, next) => {
     let filePath =
         './public/audio/tempSpeechRecordings/' + uniqueName + '.webm';
 
-    await writeFile(filePath, bufferObj);
+    try {
+        await writeFile(filePath, bufferObj);
 
-    let messageObject = await speechToText(filePath);
-    let message = messageObject.text;
-    //console.log(message);
+        // Get both transcription and token count
+        const messageObject = await speechToText(filePath);
+        const message = messageObject.text;
+        const tokensUsed = messageObject.tokens;
 
-    if (tutorType == 'socratic')
-        await sendSpeechToSocraticAI(
-            userId,
-            skillUrl,
-            skillName,
-            skillLevel,
-            learningObjectives,
-            message
-        );
-    else if (tutorType == 'assessing')
-        await sendSpeechToAssessingAI(
-            userId,
-            skillUrl,
-            skillName,
-            skillLevel,
-            learningObjectives,
-            message
-        );
+        // Track token usage with source 'sst'
+        if (userId) {
+            await saveTokenUsage(userId, tokensUsed, 'sst');
+        }
 
-    //console.log('res.end()');
+        if (tutorType == 'socratic')
+            await sendSpeechToSocraticAI(
+                userId,
+                skillUrl,
+                skillName,
+                skillLevel,
+                learningObjectives,
+                message
+            );
+        else if (tutorType == 'assessing')
+            await sendSpeechToAssessingAI(
+                userId,
+                skillUrl,
+                skillName,
+                skillLevel,
+                learningObjectives,
+                message
+            );
 
-    res.end();
+        res.end();
+    } catch (error) {
+        console.error('Error in STT conversion:', error);
+        res.status(500).json({ message: 'Error processing speech to text' });
+    }
 });
 
 // crete new vector store (NEED TO CHANGE FROM GET TO POST LATER)

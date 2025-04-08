@@ -649,11 +649,17 @@ async function createRunStream(
 
 /**
  * Save token usage per user
- * @param {string} userId
- * @param {int} tokenCount
+ * @param {string} userId - User ID
+ * @param {number} tokenCount - Number of tokens used
+ * @param {string} source - Source of token usage (assistant, completion, tts, sst)
  */
-async function saveTokenUsage(userId, tokenCount) {
+async function saveTokenUsage(userId, tokenCount, source = 'assistant') {
     try {
+        if (!userId || !tokenCount) return;
+
+        // Default source if not provided
+        source = source || 'assistant';
+
         // Update Monthly Usage
         // Get current year
         let year = new Date().getFullYear();
@@ -675,6 +681,19 @@ async function saveTokenUsage(userId, tokenCount) {
 
         const d = new Date();
         let month = monthName[d.getMonth()];
+
+        // Track token usage source (optional enhancement)
+        try {
+            let trackSourceQuery = `
+            INSERT INTO token_usage_sources (user_id, source, tokens, created_at) 
+            VALUES(${conn.escape(userId)}, ${conn.escape(source)}, 
+                  ${conn.escape(tokenCount)}, NOW())`;
+            await query(trackSourceQuery);
+        } catch (error) {
+            // If table doesn't exist, just continue (non-critical)
+            console.log('Could not log token source - continuing');
+        }
+
         let queryString1 = `
         INSERT INTO user_monthly_token_usage (user_id, year, month, token_count) 
         VALUES(${conn.escape(userId)},
@@ -706,7 +725,7 @@ async function saveTokenUsage(userId, tokenCount) {
         const userMonthlyTokenUsage =
             userMonthlyTokenUsageResult[0].token_count;
 
-        // Get the amount of tokens the user has used for the month so far
+        // Get the amount of tokens the user has
         let queryString4 = `
         SELECT tokens
         FROM users
@@ -715,19 +734,20 @@ async function saveTokenUsage(userId, tokenCount) {
         const userTokensResult = await query(queryString4);
         let userTokens = userTokensResult[0].tokens;
 
-        // Update the user's tokens
+        // Update the user's tokens if they've exceeded the free monthly limit
         if (userMonthlyTokenUsage >= monthlyFreeLimit) {
             userTokens = userTokens - tokenCount;
             let queryString5 = `
                 UPDATE users
                 SET tokens = ${userTokens}
                 WHERE id = '${userId}';
-        `;
+            `;
 
             await query(queryString5);
         }
+        console.log(`Saved ${tokenCount} ${source} tokens for user ${userId}`);
     } catch (error) {
-        throw error;
+        console.error('Error saving token usage:', error);
     }
 }
 
