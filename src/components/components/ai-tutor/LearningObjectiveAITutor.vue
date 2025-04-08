@@ -231,6 +231,12 @@ export default {
                     return;
                 }
 
+                if (res.status === 504) {
+                    console.log('Server timeout');
+                    this.waitForAIresponse = false;
+                    return;
+                }
+
                 await this.getMessages();
                 this.waitForAIresponse = false;
                 // Staring convert the newly done message to speech
