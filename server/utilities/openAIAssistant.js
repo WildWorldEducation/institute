@@ -108,7 +108,7 @@ async function createSocraticAssistant(topic, level, learningObjectives) {
             - Wait for the student's response before asking another question
             - Focus on depth rather than breadth in your questions
             
-            Please keep all messages below 2000 characters.`,
+            Please keep all messages below 1000 characters.`,
         tools: [{ type: 'file_search' }],
         model: 'gpt-4.5-preview'
     });
@@ -192,7 +192,7 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
            - Wait for the student to respond before asking another question
 
         Make sure to have $ delimiters before any science and math strings that can convert to Latex
-        Please keep all messages below 2000 characters, and succinct.`
+        Please keep all messages below 1000 characters, and succinct.`
     });
 
     if (run.status === 'completed') {
@@ -278,7 +278,7 @@ async function createAssessingAssistant(topic, level, learningObjectives) {
             - After receiving an answer, provide feedback before asking the next question
             - Assess one concept or objective at a time
        
-            Please keep all messages below 2000 characters.`,
+            Please keep all messages below 1000 characters.`,
         tools: [],
         model: 'gpt-4.5-preview'
     });
@@ -363,7 +363,7 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
            - Aim to guide the student towards a more comprehensive understanding
 
         Make sure to have $ delimiters before any science and math strings that can convert to Latex.
-        Please keep all messages below 2000 characters, and succinct.`
+        Please keep all messages below 1000 characters, and succinct.`
     });
 
     if (run.status === 'completed') {
@@ -500,7 +500,7 @@ async function requestLearningObjectiveTutoring(
         - If you include questions, ONLY ASK ONE QUESTION at the end of your message
         - Never ask multiple questions in a single message
         
-        Please keep the lesson under 1000 characters.`
+        Please keep the lesson under 1500 characters.`
     });
 
     if (run.status === 'completed') {
