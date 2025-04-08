@@ -751,7 +751,6 @@ router.get('/url-only/:id', (req, res, next) => {
                 throw err;
             }
 
-            console.log(results[0]);
             res.json(results[0]);
         } catch (err) {
             next(err);
