@@ -204,91 +204,13 @@ export default {
         },
         // ask Open AI to ask a question about the learning objective
         async requestTutoring() {
-            if (this.waitForAIresponse) {
-                return;
-            }
-            this.waitForAIresponse = true;
-            try {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        learningObjective: this.learningObjective,
-                        learningObjectiveId: this.learningObjectiveId,
-                        userName: this.userDetailsStore.userName,
-                        userId: this.userDetailsStore.userId,
-                        skillName: this.skillName,
-                        skillLevel: this.englishSkillLevel
-                    })
-                };
-
-                var url = '/ai-tutor/learning-objective/request-tutoring';
-
-                const res = await fetch(url, requestOptions);
-                if (res.status === 500 || res.status === 504) {
-                    alert(
-                        'The tutor can`t answer right now, please try again soon'
-                    );
-                    this.waitForAIresponse = false;
-                    return;
-                }
-
-                await this.getMessages();
-                this.waitForAIresponse = false;
-                // Staring convert the newly done message to speech
-                const newMessageIndex = parseInt(this.messageList.length) - 1;
-
-                this.generateAudio(
-                    newMessageIndex,
-                    this.messageList[0].content[0].text.value
-                );
-            } catch (error) {
-                console.error(error);
-                this.waitForAIresponse = false;
-            }
+            this.message = 'tutor me on this';
+            this.sendMessage();
         },
         // ask Open AI to ask a question about the learning objective
         async requestQuestion() {
-            if (this.waitForAIresponse) {
-                return;
-            }
-            this.waitForAIresponse = true;
-            try {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        learningObjective: this.learningObjective,
-                        learningObjectiveId: this.learningObjectiveId,
-                        userName: this.userDetailsStore.userName,
-                        userId: this.userDetailsStore.userId,
-                        skillName: this.skillName,
-                        skillLevel: this.englishSkillLevel
-                    })
-                };
-
-                var url = '/ai-tutor/learning-objective/ask-question';
-
-                const res = await fetch(url, requestOptions);
-                if (res.status === 500) {
-                    alert('The tutor can`t answer !!');
-                    this.waitForAIresponse = false;
-                    return;
-                }
-
-                await this.getMessages();
-                this.waitForAIresponse = false;
-                // Staring convert the newly done message to speech
-                const newMessageIndex = parseInt(this.messageList.length) - 1;
-
-                this.generateAudio(
-                    newMessageIndex,
-                    this.messageList[0].content[0].text.value
-                );
-            } catch (error) {
-                console.error(error);
-                this.waitForAIresponse = false;
-            }
+            this.message = 'ask me a question';
+            this.sendMessage();
         },
         // Format the response.
         applyMarkDownFormatting(string) {

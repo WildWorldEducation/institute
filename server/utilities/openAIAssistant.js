@@ -479,83 +479,84 @@ async function getLearningObjectiveThread(userId, learningObjectiveId) {
     }
 }
 
-async function requestLearningObjectiveTutoring(
-    threadId,
-    assistantId,
-    messageData
-) {
-    // Add a message to the thread
-    const message = await openai.beta.threads.messages.create(threadId, {
-        role: 'user',
-        content: 'tutor me on this'
-    });
+// async function requestLearningObjectiveTutoring(
+//     threadId,
+//     assistantId,
+//     messageData
+// ) {
+//     // Add a message to the thread
+//     const message = await openai.beta.threads.messages.create(threadId, {
+//         role: 'user',
+//         content: 'tutor me on this'
+//     });
 
-    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-        assistant_id: assistantId,
-        instructions: `The user is at a ${messageData.skillLevel} level and age.
-        Provide a lesson on ${messageData.learningObjective}.
-        
-        IMPORTANT GUIDELINES:
-        - Structure your response as a clear lesson
-        - If you include questions, ONLY ASK ONE QUESTION at the end of your message
-        - Never ask multiple questions in a single message
-        
-        Please keep the lesson under 1000 characters.`
-    });
+//     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+//         assistant_id: assistantId,
+//         instructions: `The user is at a ${messageData.skillLevel} level and age.
+//         Provide a lesson on ${messageData.learningObjective}.
 
-    if (run.status === 'completed') {
-        const messages = await openai.beta.threads.messages.list(threadId);
-        const latestMessage = messages.data[0];
+//         IMPORTANT GUIDELINES:
+//         - Structure your response as a clear lesson
+//         - If you include questions, ONLY ASK ONE QUESTION at the end of your message
+//         - Never ask multiple questions in a single message
 
-        // Save the user's token usage
-        let tokenCount = run.usage.total_tokens;
-        console.log(tokenCount);
-        saveTokenUsage(messageData.userId, tokenCount);
+//         Please keep the lesson under 1000 characters.`
+//     });
 
-        return latestMessage;
-    } else {
-        console.log(run.status);
-    }
-}
+//     if (run.status === 'completed') {
+//         const messages = await openai.beta.threads.messages.list(threadId);
+//         const latestMessage = messages.data[0];
 
-async function generateLearningObjectiveQuestion(
-    threadId,
-    assistantId,
-    messageData
-) {
-    // Add a message to the thread
-    const message = await openai.beta.threads.messages.create(threadId, {
-        role: 'user',
-        content: 'ask me a question'
-    });
+//         // Save the user's token usage
+//         let tokenCount = run.usage.total_tokens;
+//         console.log(tokenCount);
+//         saveTokenUsage(messageData.userId, tokenCount);
 
-    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-        assistant_id: assistantId,
-        instructions: `The user is at a ${messageData.skillLevel} level and age.
-        Ask them ONE question about: ${messageData.learningObjective}.
-        
-        IMPORTANT:
-        - Ask ONLY ONE clear, focused question
-        - Never ask multiple questions in a single message
-        - Make your question specific and targeted to assess understanding`
-    });
+//         return latestMessage;
+//     } else {
+//         console.log(run.status);
+//     }
+// }
 
-    if (run.status === 'completed') {
-        const messages = await openai.beta.threads.messages.list(threadId);
-        const latestMessage = messages.data[0];
+// async function generateLearningObjectiveQuestion(
+//     threadId,
+//     assistantId,
+//     messageData
+// ) {
+//     // Add a message to the thread
+//     const message = await openai.beta.threads.messages.create(threadId, {
+//         role: 'user',
+//         content: 'ask me a question'
+//     });
 
-        // Save the user's token usage
-        let tokenCount = run.usage.total_tokens;
-        console.log(tokenCount);
-        saveTokenUsage(messageData.userId, tokenCount);
+//     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+//         assistant_id: assistantId,
+//         instructions: `The user is at a ${messageData.skillLevel} level and age.
+//         Ask them ONE question about: ${messageData.learningObjective}.
 
-        return latestMessage;
-    } else {
-        console.log(run.status);
-    }
-}
+//         IMPORTANT:
+//         - Ask ONLY ONE clear, focused question
+//         - Never ask multiple questions in a single message
+//         - Make your question specific and targeted to assess understanding`
+//     });
+
+//     if (run.status === 'completed') {
+//         const messages = await openai.beta.threads.messages.list(threadId);
+//         const latestMessage = messages.data[0];
+
+//         // Save the user's token usage
+//         let tokenCount = run.usage.total_tokens;
+//         console.log(tokenCount);
+//         saveTokenUsage(messageData.userId, tokenCount);
+
+//         return latestMessage;
+//     } else {
+//         console.log(run.status);
+//     }
+// }
 
 // Chat streaming
+
 async function createRunStream(
     threadId,
     assistantId,
@@ -816,8 +817,8 @@ module.exports = {
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
-    requestLearningObjectiveTutoring,
-    generateLearningObjectiveQuestion,
+    //requestLearningObjectiveTutoring,
+    //generateLearningObjectiveQuestion,
     createRunStream,
     // To record user's token usage
     saveTokenUsage,

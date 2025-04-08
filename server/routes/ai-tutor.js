@@ -33,8 +33,8 @@ const {
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
-    requestLearningObjectiveTutoring,
-    generateLearningObjectiveQuestion,
+    // requestLearningObjectiveTutoring,
+    // generateLearningObjectiveQuestion,
     // To record user's token usage
     saveTokenUsage,
     getSkillDataByObjectiveId,
@@ -638,58 +638,58 @@ router.post(
 /**
  * Get the learning objective AI tutor to tutor on that learning objective
  */
-router.post(
-    '/learning-objective/request-tutoring',
-    isAuthenticated,
-    async (req, res, next) => {
-        try {
-            const assistantData = await getLearningObjectiveThread(
-                req.body.userId,
-                req.body.learningObjectiveId
-            );
+// router.post(
+//     '/learning-objective/request-tutoring',
+//     isAuthenticated,
+//     async (req, res, next) => {
+//         try {
+//             const assistantData = await getLearningObjectiveThread(
+//                 req.body.userId,
+//                 req.body.learningObjectiveId
+//             );
 
-            await requestLearningObjectiveTutoring(
-                assistantData[0].thread_id,
-                assistantData[0].assistant_id,
-                req.body
-            );
+//             await requestLearningObjectiveTutoring(
+//                 assistantData[0].thread_id,
+//                 assistantData[0].assistant_id,
+//                 req.body
+//             );
 
-            res.end();
-        } catch (error) {
-            console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
-        }
-    }
-);
+//             res.end();
+//         } catch (error) {
+//             console.error(error);
+//             res.status = 500;
+//             res.json({ mess: 'something went wrong' });
+//         }
+//     }
+// );
 
 /**
  * Get the learning objective AI tutor to ask a question
  */
-router.post(
-    '/learning-objective/ask-question',
-    isAuthenticated,
-    async (req, res, next) => {
-        try {
-            const assistantData = await getLearningObjectiveThread(
-                req.body.userId,
-                req.body.learningObjectiveId
-            );
+// router.post(
+//     '/learning-objective/ask-question',
+//     isAuthenticated,
+//     async (req, res, next) => {
+//         try {
+//             const assistantData = await getLearningObjectiveThread(
+//                 req.body.userId,
+//                 req.body.learningObjectiveId
+//             );
 
-            await generateLearningObjectiveQuestion(
-                assistantData[0].thread_id,
-                assistantData[0].assistant_id,
-                req.body
-            );
+//             await generateLearningObjectiveQuestion(
+//                 assistantData[0].thread_id,
+//                 assistantData[0].assistant_id,
+//                 req.body
+//             );
 
-            res.end();
-        } catch (error) {
-            console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
-        }
-    }
-);
+//             res.end();
+//         } catch (error) {
+//             console.error(error);
+//             res.status = 500;
+//             res.json({ mess: 'something went wrong' });
+//         }
+//     }
+// );
 
 /**
  * STT (Speech to Text) for tutors
