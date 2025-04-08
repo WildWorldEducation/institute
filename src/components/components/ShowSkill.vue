@@ -288,7 +288,7 @@ export default {
                     const response = await fetch(
                         `/skills/sub-skills/${this.skill.id}`
                     );
-                    const subskills = await response.json();               
+                    const subskills = await response.json();
 
                     // If no subskills, consider all mastered
                     if (!subskills || subskills.length === 0) {
@@ -669,6 +669,12 @@ export default {
             }
         },
         async checkSubskillMastery() {
+            if (this.skill.type !== 'super') {
+                // Not a super skill, so this check doesn't apply
+                this.areAllSubskillsMastered = true;
+                return;
+            }
+
             try {
                 // Get all subskills for this super skill
                 const response = await fetch(
@@ -679,6 +685,7 @@ export default {
                 // If no subskills, consider all mastered
                 if (!subskills || subskills.length === 0) {
                     this.areAllSubskillsMastered = true;
+                    this.unmasteredSubskills = [];
                     return;
                 }
 
@@ -700,73 +707,7 @@ export default {
             } catch (error) {
                 console.error('Error checking subskill mastery:', error);
                 this.areAllSubskillsMastered = false;
-            }
-        },
-
-        async checkIfAllSubskillsMastered() {
-            if (this.skill.type !== 'super') {
-                // Not a super skill, so this check doesn't apply
-                this.areAllSubskillsMastered = true;
-                return;
-            }
-
-            try {
-                // Get all subskills for this super skill
-                const response = await fetch(
-                    `/skills/sub-skills/${this.skill.id}`
-                );
-                const subskills = await response.json();
-
-                // If no subskills, consider all mastered
-                if (!subskills || subskills.length === 0) {
-                    this.areAllSubskillsMastered = true;
-                    return;
-                }
-
-                // Check if all subskills are mastered by the user
-                let allMastered = true;
-                for (const subskill of subskills) {
-                    const found = this.userSkills.find(
-                        (us) => us.id === subskill.id
-                    );
-                    if (!found || found.is_mastered !== 1) {
-                        allMastered = false;
-                        break;
-                    }
-                }
-
-                this.areAllSubskillsMastered = allMastered;
-            } catch (error) {
-                console.error('Error checking subskill mastery:', error);
-                this.areAllSubskillsMastered = false;
-            }
-        },
-
-        async getUnmasteredSubskills() {
-            if (this.skill.type !== 'super' || this.areAllSubskillsMastered) {
-                return [];
-            }
-
-            try {
-                const response = await fetch(
-                    `/skills/sub-skills/${this.skill.id}`
-                );
-                const subskills = await response.json();
-
-                const unmasteredSubskills = [];
-                for (const subskill of subskills) {
-                    const found = this.userSkills.find(
-                        (us) => us.id === subskill.id
-                    );
-                    if (!found || found.is_mastered !== 1) {
-                        unmasteredSubskills.push(subskill);
-                    }
-                }
-
-                return unmasteredSubskills;
-            } catch (error) {
-                console.error('Error getting unmastered subskills:', error);
-                return [];
+                this.unmasteredSubskills = [];
             }
         },
 
@@ -892,15 +833,15 @@ export default {
                                 <router-link
                                     :class="{
                                         'grade-school':
-                                            subskill.level == 'grade_school',
+                                            skill.level == 'grade_school',
                                         'middle-school':
-                                            subskill.level == 'middle_school',
+                                            skill.level == 'middle_school',
                                         'high-school':
-                                            subskill.level == 'high_school',
-                                        college: subskill.level == 'college',
-                                        phd: subskill.level == 'phd'
+                                            skill.level == 'high_school',
+                                        college: skill.level == 'college',
+                                        phd: skill.level == 'phd'
                                     }"
-                                    class="skill-link btn mb-1"
+                                    class="skill-link btn mb-1 text-start"
                                     :to="`/skills/${subskill.url}`"
                                     @click="showUnmasteredModal = false"
                                 >
