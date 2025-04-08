@@ -27,6 +27,7 @@ export default {
             // All messages in thread
             messageList: [],
             waitForAIresponse: false,
+            isOpenAITimeout: false,
             isGotMessages: false,
             englishSkillLevel: '',
             threadID: '',
@@ -204,7 +205,7 @@ export default {
         },
         // ask Open AI to ask a question about the learning objective
         async requestTutoring() {
-            if (this.waitForAIresponse) {
+            if (this.waitForAIresponse && !this.isOpenAITimeout) {
                 return;
             }
             this.waitForAIresponse = true;
@@ -233,10 +234,12 @@ export default {
 
                 if (res.status === 504) {
                     console.log('Server timeout');
+                    this.isOpenAITimeout = true;
                     this.requestTutoring();
                 } else {
                     await this.getMessages();
                     this.waitForAIresponse = false;
+                    this.isOpenAITimeout = false;
                     // Staring convert the newly done message to speech
                     const newMessageIndex =
                         parseInt(this.messageList.length) - 1;
