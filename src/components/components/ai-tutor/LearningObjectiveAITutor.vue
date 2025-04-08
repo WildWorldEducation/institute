@@ -479,10 +479,7 @@ export default {
                 </div>
                 <!-- AI tutor messages -->
                 <div
-                    v-else-if="
-                        message.role === 'assistant' &&
-                        message.content[0].type == 'text'
-                    "
+                    v-else-if="message.role === 'assistant'"
                     class="tutor-conversation p-2"
                     v-html="
                         applyMarkDownFormatting(message.content[0].text.value)
