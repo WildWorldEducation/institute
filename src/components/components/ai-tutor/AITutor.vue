@@ -61,7 +61,8 @@ export default {
             isNewSocraticChat: true,
             isNewAssessingChat: true,
             waitForGenerateAudio: false,
-            currentIndexAudioPlaying: null
+            currentIndexAudioPlaying: null,
+            isMobileCheck: window.innerWidth
         };
     },
     async created() {
@@ -848,6 +849,7 @@ export default {
                             skill.type === 'super' && !areAllSubskillsMastered
                         "
                         class="text-end small"
+                        :class="{ 'text-center': isMobileCheck < 576 }"
                     >
                         <em
                             >To unlock the tests, first master all the cluster
