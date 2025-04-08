@@ -852,13 +852,15 @@ export default {
             </div>
             <!-- Buttons -->
             <div class="row mb-2">
-                <div class="col d-flex justify-content-between">
-                    <div
-                        class="d-flex"
-                        :class="{
-                            'justify-content-center': isMobileCheck < 576
-                        }"
-                    >
+                <div
+                    class="col d-flex"
+                    :class="{
+                        'flex-row justify-content-between':
+                            isMobileCheck >= 576,
+                        'flex-column': isMobileCheck < 576
+                    }"
+                >
+                    <div class="d-flex">
                         <!-- Edit skill btn-->
                         <router-link
                             v-if="sessionDetailsStore.isLoggedIn"
@@ -961,7 +963,7 @@ export default {
                             </div>
                         </div>
                     </div>
-                    <div class="d-flex justify-content-end">
+                    <div class="d-flex mt-2 mt-md-0">
                         <!-- Sharable URL -->
                         <button
                             @click="copyShareableURLToClipBoard"
