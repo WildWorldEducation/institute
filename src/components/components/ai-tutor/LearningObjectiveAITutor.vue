@@ -27,7 +27,6 @@ export default {
             // All messages in thread
             messageList: [],
             waitForAIresponse: false,
-            isOpenAITimeout: false,
             isGotMessages: false,
             englishSkillLevel: '',
             threadID: '',
@@ -205,7 +204,7 @@ export default {
         },
         // ask Open AI to ask a question about the learning objective
         async requestTutoring() {
-            if (this.waitForAIresponse && !this.isOpenAITimeout) {
+            if (this.waitForAIresponse) {
                 return;
             }
             this.waitForAIresponse = true;
@@ -226,29 +225,23 @@ export default {
                 var url = '/ai-tutor/learning-objective/request-tutoring';
 
                 const res = await fetch(url, requestOptions);
-                if (res.status === 500) {
-                    alert('The tutor can`t answer !!');
+                if (res.status === 500 || res.status === 504) {
+                    alert(
+                        'The tutor can`t answer right now, please try again soon'
+                    );
                     this.waitForAIresponse = false;
                     return;
                 }
 
-                if (res.status === 504) {
-                    console.log('Server timeout');
-                    this.isOpenAITimeout = true;
-                    this.requestTutoring();
-                } else {
-                    await this.getMessages();
-                    this.waitForAIresponse = false;
-                    this.isOpenAITimeout = false;
-                    // Staring convert the newly done message to speech
-                    const newMessageIndex =
-                        parseInt(this.messageList.length) - 1;
+                await this.getMessages();
+                this.waitForAIresponse = false;
+                // Staring convert the newly done message to speech
+                const newMessageIndex = parseInt(this.messageList.length) - 1;
 
-                    this.generateAudio(
-                        newMessageIndex,
-                        this.messageList[0].content[0].text.value
-                    );
-                }
+                this.generateAudio(
+                    newMessageIndex,
+                    this.messageList[0].content[0].text.value
+                );
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false;
@@ -488,10 +481,7 @@ export default {
                 </div>
                 <!-- AI tutor messages -->
                 <div
-                    v-else-if="
-                        message.role === 'assistant' &&
-                        typeof message.content[0].text !== 'undefined'
-                    "
+                    v-else-if="message.role === 'assistant'"
                     class="tutor-conversation p-2"
                     v-html="
                         applyMarkDownFormatting(message.content[0].text.value)
