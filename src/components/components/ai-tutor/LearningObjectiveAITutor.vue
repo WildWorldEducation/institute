@@ -481,7 +481,7 @@ export default {
                 <div
                     v-else-if="
                         message.role === 'assistant' &&
-                        typeof message.content[0].text.value !== 'undefined'
+                        typeof message.content[0].text !== 'undefined'
                     "
                     class="tutor-conversation p-2"
                     v-html="
