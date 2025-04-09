@@ -20,6 +20,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
             theme: 'original',
             gradeFilter: null,
             subjectFilters: [],
+            subSubjectsFilters: [], // additional filter for child nodes 
             isUnlockedSkillsOnlyFilter: null,
             reputationScore: null,
             cohortId: null,
@@ -145,6 +146,33 @@ export const useUserDetailsStore = defineStore('userDetails', {
 
             var url = '/users/tokens/' + this.userId + '/update';
             fetch(url, requestOptions);
-        }
+        },
+        // Using array to store showing skill PATH 
+        updateSubSubjectFilter(filterObject) {
+            // initial the filter data if there are none
+            if (this.subSubjectsFilters.length === 0) {
+                this.subSubjectsFilters.push(filterObject)
+                return
+            }
+            let filterSubjectChildren = this.subSubjectsFilters;
+            while (filterSubjectChildren.length > 0) {
+                const currentNode = filterSubjectChildren.pop();
+                filterSubjectChildren.push(currentNode.children);
+                if (currentNode.skillName === filterObject.skillName) {
+                    if (!currentNode.children || currentNode.children.length === 0) {
+                        currentNode.children = filterObject.child
+                    } else {
+                        // find out if the skill is already in showing list
+                        const skillShowing = currentNode.children.find(skill => skill.skillName === filterObject[0].skillName);
+                        if (skillShowing) {
+                            currentNode.children.filter(skill => { skill.skillName = filterObject[0].skillName });
+                        } else {
+                            currentNode.children.push(filterObject[0].skillName)
+                        }
+                    }
+                }
+            }
+        },
+
     }
 });

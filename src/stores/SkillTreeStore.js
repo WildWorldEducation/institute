@@ -39,13 +39,13 @@ export const useSkillTreeStore = defineStore('skillTree', {
 
             const result = await fetch(
                 '/user-skills/filter-by-cohort/full-vertical-tree/' +
-                    userDetailsStore.userId +
-                    '?level=' +
-                    level +
-                    '&subjects=' +
-                    subjects +
-                    '&isUnlockedOnly=' +
-                    isUnlockedOnly
+                userDetailsStore.userId +
+                '?level=' +
+                level +
+                '&subjects=' +
+                subjects +
+                '&isUnlockedOnly=' +
+                isUnlockedOnly
             );
 
             // If the student clicks a button on the grade level key,
@@ -67,7 +67,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
             const userDetailsStore = useUserDetailsStore();
             const result = await fetch(
                 '/user-skills/filter-by-cohort/custom-learning-track-skills/' +
-                    userDetailsStore.userId
+                userDetailsStore.userId
             );
             return await result.json();
         },
@@ -82,11 +82,11 @@ export const useSkillTreeStore = defineStore('skillTree', {
 
             const result = await fetch(
                 '/user-skills/separate-subskills/filter-by-cohort/' +
-                    userDetailsStore.userId +
-                    '?level=' +
-                    level +
-                    '&subjects=' +
-                    subjects
+                userDetailsStore.userId +
+                '?level=' +
+                level +
+                '&subjects=' +
+                subjects
             );
             this.userSkillsSubSkillsSeparate = await result.json();
         },
@@ -103,13 +103,13 @@ export const useSkillTreeStore = defineStore('skillTree', {
             // API call for skill tree.
             const result = await fetch(
                 '/user-skills/filter-by-cohort/instructor-student-vertical-tree/' +
-                    studentId +
-                    '?level=' +
-                    level +
-                    '&subjects=' +
-                    subjects +
-                    '&isUnlockedOnly=' +
-                    isUnlockedOnly
+                studentId +
+                '?level=' +
+                level +
+                '&subjects=' +
+                subjects +
+                '&isUnlockedOnly=' +
+                isUnlockedOnly
             );
 
             this.studentSkillTree = await result.json();
@@ -144,6 +144,110 @@ export const useSkillTreeStore = defineStore('skillTree', {
                 }
             }
             return results;
+        },
+        findSkillBaseOnName(skillName, treeObject) {
+            let childSkill = treeObject.map(e => e);
+            let stopFlag = false;
+            let result = null;
+
+            while (childSkill.length > 0 || !stopFlag) {
+                let currentNode = childSkill.pop();
+                if (currentNode.skill_name === skillName) {
+                    result = currentNode;
+                    stopFlag = true
+                };
+                childSkill = childSkill.concat(currentNode.children)
+            }
+            return result
+        },
+
+        findSkillBaseOnId(id, treeObject) {
+            let childSkill = treeObject.map(e => e);
+            let stopFlag = false;
+            let result = null;
+            while (childSkill.length > 0 || !stopFlag) {
+                let currentNode = childSkill.pop();
+                if (currentNode.id == id) {
+                    result = currentNode;
+                    stopFlag = true
+                };
+                childSkill = childSkill.concat(currentNode.children)
+            }
+            return result
+        },
+
+        findSkillDataOfFilterObject(filterObject, userSkills) {
+            const baseSkillLists = userSkills;
+            let newUserSkill = filterObject;
+            let childNodes = newUserSkill;
+            let stopFlag = false;
+            const resultsArray = [];
+            if (childNodes.length === 0) {
+                return
+            }
+            while (!stopFlag) {
+                let currentNode = childNodes.pop();
+                if (currentNode.children) {
+                    childNodes = childNodes.concat(currentNode.children)
+                }
+                const nodeData = this.findSkillBaseOnName(currentNode.skillName, baseSkillLists);
+                const resultObject = {
+                    node: nodeData,
+                    // Leaf is the deepest node in a tree mean it will have no children
+                    isLeaf: !currentNode.children
+                }
+                resultsArray.push(resultObject);
+                if (!childNodes.length) {
+                    stopFlag = true
+                }
+            }
+            return resultsArray;
+        },
+        FindChildrenOfParent(nodeArrays, parentId) {
+            const resultArray = nodeArrays.filter(node => {
+                console.log('====')
+                console.log(node.node.parent === parentId)
+                console.log(typeof (node.node.parent))
+                console.log(typeof (parentId))
+                return node.node.parent === parentId
+            })
+            return resultArray
+        },
+
+        // BUILD A NEW USER SKILL BASED ON FILTER PATHS
+        buildUserSkillTreeBaseOnFilterObject(filterObject, userSkills) {
+            let nodesNeededToBuildTree = this.findSkillDataOfFilterObject(filterObject, userSkills)
+            if (!nodesNeededToBuildTree?.length) {
+                return
+            }
+
+            const leafNodes = nodesNeededToBuildTree.filter(node => node.isLeaf);
+            let resultObject = null;
+            // CONTINUE TO IMPLEMENT THIS
+            let stopFlag = false
+            while (!stopFlag) {
+                const leafNode = leafNodes.pop();
+                // also remove the node from array of node
+                nodesNeededToBuildTree = nodesNeededToBuildTree.filter(node => node.node.id !== leafNode.node.id);
+                const leafNodeSiblings = this.FindChildrenOfParent(nodesNeededToBuildTree, leafNode.node.parent)
+                console.log('leaf node sibling: ')
+                console.log(leafNodeSiblings);
+                const parentNode = this.findSkillBaseOnId(leafNode.node.parent, userSkills);
+                // CONTINUE DEVELOPMENT HERE
+                if (!parentNode) {
+                    stopFlag = true
+                } else {
+                    const childOfParent = [...leafNodeSiblings, leafNode.node]
+                    resultObject = { ...parentNode, children: childOfParent }
+                }
+                if (!leafNodes.length) {
+                    stopFlag = true
+                }
+            }
+            console.log('Final result: ');
+            console.log(resultObject);
+            return [resultObject]
         }
+
     }
 });
