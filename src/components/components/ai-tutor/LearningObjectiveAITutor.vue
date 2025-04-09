@@ -181,7 +181,7 @@ export default {
                 return message === null || message.match(/^ *$/) !== null;
             }
             if (isEmptyOrSpaces(this.message)) {
-                this.requestQuestion();
+                this.requestTutoring();
                 return;
             }
 
