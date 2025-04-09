@@ -34,7 +34,7 @@ export const useSettingsStore = defineStore('settings', {
             this.todoStudentQuestionTableRows =
                 data[0].todo_student_question_table_rows;
             this.todoNewSkillTableRows = data[0].todo_new_skills_table_rows;
-            this.freeMonthlyTokens = data[0].monthly_token_limit;
+            this.freeMonthlyTokens = data[0].monthly_free_token_limit;
         },
 
         async saveSettings() {
