@@ -25,16 +25,16 @@ export default {
         'skill',
         'showTutorialTip7',
         'showTutorialTip8',
-        'showTutorialTip9'
+        'showTutorialTip9',
+        'areAllSubskillsMastered'
     ],
-    emits: ['progressTutorial', 'skipTutorial'],
+    emits: ['progressTutorial', 'skipTutorial', 'skillMastered'],
     components: {
         TutorLoadingSymbol,
         TooltipBtn,
         SpeechRecorder,
         PlayingAudioAnimation
     },
-    emits: ['progressTutorial'],
     data() {
         return {
             message: '',
@@ -61,7 +61,8 @@ export default {
             isNewSocraticChat: true,
             isNewAssessingChat: true,
             waitForGenerateAudio: false,
-            currentIndexAudioPlaying: null
+            currentIndexAudioPlaying: null,
+            isMobileCheck: window.innerWidth
         };
     },
     async created() {
@@ -411,11 +412,19 @@ export default {
         //     inputMessage.scrollIntoView({ behavior: 'smooth' });
         // },
         async makeMastered() {
-            alert('Congratulations, you have mastered this skill!');
+            // Don't use alert, instead emit an event to the parent component
             await this.userSkillsStore.MakeMastered(
                 this.userDetailsStore.userId,
                 this.skill
             );
+
+            // Emit an event to notify the parent that mastery was achieved
+            this.$emit('skillMastered');
+
+            // Close the tutor modal if it's open
+            if (this.mode === 'modal') {
+                this.mode = 'docked';
+            }
         },
         // Streaming
         connectToSocketSever() {
@@ -759,9 +768,23 @@ export default {
                             class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap"
                             :class="{
                                 'text-decoration-underline':
-                                    tutorType === 'assessing'
+                                    tutorType === 'assessing',
+                                disabled:
+                                    skill.type === 'super' &&
+                                    !areAllSubskillsMastered
                             }"
-                            @click="handleTutorClick('assessing')"
+                            @click="
+                                skill.type === 'super' &&
+                                !areAllSubskillsMastered
+                                    ? null
+                                    : handleTutorClick('assessing')
+                            "
+                            :title="
+                                skill.type === 'super' &&
+                                !areAllSubskillsMastered
+                                    ? 'Master all subskills first to unlock this assessment'
+                                    : ''
+                            "
                         >
                             Conversational Test
                         </button>
@@ -814,6 +837,11 @@ export default {
                         <!-- Multiple Choice Assessment -->
                         <router-link
                             class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 d-block text-nowrap"
+                            :class="{
+                                disabled:
+                                    skill.type === 'super' &&
+                                    !areAllSubskillsMastered
+                            }"
                             :to="
                                 userDetailsStore.userId
                                     ? skill.id + '/assessment'
@@ -822,6 +850,19 @@ export default {
                         >
                             Multiple-Choice Test
                         </router-link>
+                    </div>
+                    <!-- Explanation message for disabled button -->
+                    <div
+                        v-if="
+                            skill.type === 'super' && !areAllSubskillsMastered
+                        "
+                        class="text-end small"
+                        :class="{ 'text-center': isMobileCheck < 576 }"
+                    >
+                        <em
+                            >To unlock the tests, first master all the cluster
+                            skills</em
+                        >
                     </div>
                 </div>
             </div>
