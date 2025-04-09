@@ -1615,6 +1615,19 @@ export default {
                 @progressTutorial="progressTutorial"
                 @skillMastered="handleSkillMastered"
             />
+
+            <div
+                v-else-if="
+                    isSkillLoaded &&
+                    userDetailsStore.role === 'student' &&
+                    skill.type !== 'domain'
+                "
+            >
+                <em
+                    >You have reached your monthly AI token limit. Please
+                    recharge your subscription to use more.</em
+                >
+            </div>
             <!-- Skill Mastered Modal -->
             <div v-if="showMasteryModal" class="modal">
                 <div class="modal-content mastery-modal">
@@ -1652,20 +1665,6 @@ export default {
                         </button>
                     </div>
                 </div>
-            </div>
-
-            <div
-                v-else-if="
-                    isSkillLoaded &&
-                    userDetailsStore.role === 'student' &&
-                    skill.type !== 'domain'
-                "
-            >
-                <h2 class="h2 secondary-heading">AI tutor</h2>
-                <em
-                    >You have reached your monthly AI token limit. Please
-                    recharge your subscription to use more.</em
-                >
             </div>
         </div>
 
