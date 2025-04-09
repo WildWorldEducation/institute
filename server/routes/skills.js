@@ -762,7 +762,7 @@ router.get('/sub-skills/:id', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     // Get skill.
-    const getSubSkillsSqlQuery = `SELECT name, url
+    const getSubSkillsSqlQuery = `SELECT id, name, url
     FROM skills
     WHERE skills.parent = ${conn.escape(req.params.id)}
      AND skills.is_deleted = 0

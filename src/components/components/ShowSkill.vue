@@ -697,7 +697,7 @@ export default {
                     const found = this.userSkills.find(
                         (us) => us.id === subskill.id
                     );
-                    if (!found || found.is_mastered !== 1) {
+                    if (!found || found.is_mastered !== '1') {
                         allMastered = false;
                         this.unmasteredSubskills.push(subskill);
                     }
