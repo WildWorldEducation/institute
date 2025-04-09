@@ -175,6 +175,16 @@ export default {
             if (this.waitForAIresponse) {
                 return;
             }
+
+            // If the message is empty, call requestQuestion instead
+            function isEmptyOrSpaces(message) {
+                return message === null || message.match(/^ *$/) !== null;
+            }
+            if (isEmptyOrSpaces(this.message)) {
+                this.requestTutoring();
+                return;
+            }
+
             // Turn on loading icon
             this.waitForAIresponse = true;
             try {
@@ -346,7 +356,6 @@ export default {
             <button
                 class="btn border border-dark ms-1 message-btn"
                 @click="sendMessage()"
-                :disabled="this.message == '' || this.message == ' '"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
