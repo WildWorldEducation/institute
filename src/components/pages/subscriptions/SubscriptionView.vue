@@ -17,10 +17,7 @@ export default {
             monthlyTokenUsage: null,
             year: 0,
             month: '',
-            dollars: 10,
-            isAITokenLimitReached: false,
-            assistantsModelPrice: { input: 75, output: 150 },
-            amountOfTokens: 0
+            isAITokenLimitReached: false
             // Not being charged yet
             // ttsModelPrice: 15,
             // sttModelPerMinutePrice: 0.006
@@ -66,9 +63,7 @@ export default {
         this.month = month[d.getMonth()];
     },
     methods: {
-        checkout() {
-            this.amountOfTokens =
-                this.dollars * this.settingsStore.tokensPerDollar;
+        checkout(planType) {
             fetch('/subscriptions/create-checkout-session', {
                 method: 'POST',
                 headers: {
@@ -76,10 +71,8 @@ export default {
                 },
                 body: JSON.stringify({
                     // convert cents to dollars
-                    dollars: this.dollars,
                     userId: this.userDetailsStore.userId,
-                    tokensPerDollar: this.settingsStore.tokensPerDollar,
-                    amountOfTokens: this.amountOfTokens
+                    planType: planType
                 })
             })
                 .then((res) => {
@@ -94,16 +87,6 @@ export default {
                     console.error(e.error);
                 });
         }
-    },
-    computed: {
-        numberOfInputTokens() {
-            let tokensPerDollar = 1000000 / this.assistantsModelPrice.input;
-            return Math.trunc(this.dollars * tokensPerDollar);
-        },
-        numberOfOutputTokens() {
-            let tokensPerDollar = 1000000 / this.assistantsModelPrice.output;
-            return Math.trunc(this.dollars * tokensPerDollar);
-        }
     }
 };
 </script>
@@ -111,12 +94,7 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Subscription</h1>
-        <!-- <p>
-            <em>
-                In general one token is roughly equivalent to 4 characters
-                (letters)</em
-            >
-        </p> -->
+        <!-- Token usage stats -->
         <h2 class="secondary-heading h4 mb-4">
             Monthly AI usage: {{ month }}, {{ year }}
         </h2>
@@ -148,44 +126,32 @@ export default {
             You are over the monthly free limit. You can't use the AI features
             until next month.
         </div>
-        <h2 class="secondary-heading h4 mt-5">Buy tokens</h2>
-        <label>$&nbsp; </label>
-        <input
-            class=""
-            type="number"
-            v-model="dollars"
-            min="1"
-            max="500"
-        /><br />
-        <p class="mt-3">
-            <strong>Amount of tokens:</strong>
-            {{
-                (dollars * this.settingsStore.tokensPerDollar).toLocaleString()
-            }}
-        </p>
-        <button @click="checkout()" class="btn primary-btn mt-2">
-            Check out
-        </button>
-
-        <!-- <li>
-                <strong>Amount of input tokens:</strong>
-                {{ numberOfInputTokens }}
-            </li>
-            or
-            <li>
-                <strong>Amount of output tokens:</strong>
-                {{ numberOfOutputTokens }}
-            </li> -->
-        <!-- Not being charged yet -->
-        <!-- <li>Amount of speech to text seconds:</li>
-            <li>Amount of text to speech tokens:</li> -->
-
-        <!-- <h2 class="secondary-heading h4 mt-5">Example usage:</h2>
-        <ul>
-            <li>AI asking me a question: 329 tokens</li>
-            <li>AI explaining something: 673 tokens</li>
-            <li>AI assessing if I have mastered a skill:</li>
-        </ul> -->
+        <hr />
+        <!-- Buy subscription -->
+        <div class="row mt-4">
+            <div class="col">
+                <h2 class="secondary-heading h4">Capped plan</h2>
+                <p>Ideal for moderate use</p>
+                <p>$30 / month</p>
+                <button
+                    @click="checkout('capped')"
+                    class="btn primary-btn mt-2"
+                >
+                    buy
+                </button>
+            </div>
+            <div class="col">
+                <h2 class="secondary-heading h4">Infinite plan</h2>
+                <p>Ideal for daily use</p>
+                <p>$300 / month</p>
+                <button
+                    @click="checkout('infinite')"
+                    class="btn primary-btn mt-2"
+                >
+                    buy
+                </button>
+            </div>
+        </div>
     </div>
 </template>
 
