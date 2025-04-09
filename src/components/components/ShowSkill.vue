@@ -1533,7 +1533,10 @@ export default {
                             </div>
                         </div>
                         <button
-                            v-if="sessionDetailsStore.isLoggedIn"
+                            v-if="
+                                sessionDetailsStore.isLoggedIn &&
+                                userDetailsStore.role == 'student'
+                            "
                             class="btn plus-btn"
                             @click="
                                 learningObjective.showAI =
