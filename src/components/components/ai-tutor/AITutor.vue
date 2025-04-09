@@ -28,7 +28,7 @@ export default {
         'showTutorialTip9',
         'areAllSubskillsMastered'
     ],
-    emits: ['progressTutorial', 'skipTutorial'],
+    emits: ['progressTutorial', 'skipTutorial', 'skillMastered'],
     components: {
         TutorLoadingSymbol,
         TooltipBtn,
@@ -412,11 +412,19 @@ export default {
         //     inputMessage.scrollIntoView({ behavior: 'smooth' });
         // },
         async makeMastered() {
-            alert('Congratulations, you have mastered this skill!');
+            // Don't use alert, instead emit an event to the parent component
             await this.userSkillsStore.MakeMastered(
                 this.userDetailsStore.userId,
                 this.skill
             );
+
+            // Emit an event to notify the parent that mastery was achieved
+            this.$emit('skillMastered');
+
+            // Close the tutor modal if it's open
+            if (this.mode === 'modal') {
+                this.mode = 'docked';
+            }
         },
         // Streaming
         connectToSocketSever() {
