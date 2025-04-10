@@ -19,13 +19,13 @@ export default {
     methods: {
         updateSubjectFilter(skillName) {
             const subSubjectFilterObject = {
-                skillName: this.parentSkill.data.skill_name,
-                children: [{ skillName: skillName }]
+                skillName: skillName,
+                parent: this.parentSkill.data.skill_name
             };
-            console.log(subSubjectFilterObject);
             // update the sub-subject filter array in userDetailsStore
             this.userDetailsStore.updateSubSubjectFilter(
-                subSubjectFilterObject
+                subSubjectFilterObject,
+                this.$parent.subSubjectsFilters
             );
 
             this.$parent.filterSkillTree();

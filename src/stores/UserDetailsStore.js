@@ -147,31 +147,40 @@ export const useUserDetailsStore = defineStore('userDetails', {
             var url = '/users/tokens/' + this.userId + '/update';
             fetch(url, requestOptions);
         },
-        // Using array to store showing skill PATH 
-        updateSubSubjectFilter(filterObject) {
+        // Using array to store what node is showing
+        updateSubSubjectFilter(filterObject, subjectsFilters) {
+            console.log('call update filter: ')
+
             // initial the filter data if there are none
-            if (this.subSubjectsFilters.length === 0) {
-                this.subSubjectsFilters.push(filterObject)
+
+            const obj = { skillName: filterObject.skillName, isLeaf: true }
+            console.log('before pushing: ')
+            console.log(JSON.stringify(subjectsFilters));
+            const isInFilterArray = subjectsFilters.find(node => node.skillName === filterObject.skillName)
+            if (isInFilterArray) {
+                subjectsFilters = subjectsFilters.filter(node => node.skillName !== filterObject.skillName);
+                console.log(JSON.stringify(subjectsFilters));
+                console.log('removed length is: ' + subjectsFilters.length)
+                console.log('===============')
                 return
+            } else {
+                subjectsFilters.push(obj);
             }
-            let filterSubjectChildren = this.subSubjectsFilters;
-            while (filterSubjectChildren.length > 0) {
-                const currentNode = filterSubjectChildren.pop();
-                filterSubjectChildren.push(currentNode.children);
-                if (currentNode.skillName === filterObject.skillName) {
-                    if (!currentNode.children || currentNode.children.length === 0) {
-                        currentNode.children = filterObject.child
-                    } else {
-                        // find out if the skill is already in showing list
-                        const skillShowing = currentNode.children.find(skill => skill.skillName === filterObject[0].skillName);
-                        if (skillShowing) {
-                            currentNode.children.filter(skill => { skill.skillName = filterObject[0].skillName });
-                        } else {
-                            currentNode.children.push(filterObject[0].skillName)
-                        }
-                    }
-                }
+            let haveChildNodeIndex = -1;
+            // find if the node in subSubject
+            if (filterObject.parent !== 0) {
+                haveChildNodeIndex = subjectsFilters.findIndex(node => node.skillName !== filterObject.parent)
+            } else {
+                haveChildNodeIndex = 0
             }
+
+            if (haveChildNodeIndex >= 0) {
+                subjectsFilters[haveChildNodeIndex].isLeaf = false;
+            }
+
+            console.log(JSON.stringify(subjectsFilters));
+            console.log('length is: ' + subjectsFilters.length)
+            console.log('===============')
         },
 
     }

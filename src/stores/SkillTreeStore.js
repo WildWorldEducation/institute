@@ -216,7 +216,10 @@ export const useSkillTreeStore = defineStore('skillTree', {
 
         // BUILD A NEW USER SKILL BASED ON FILTER PATHS
         buildUserSkillTreeBaseOnFilterObject(filterObject, userSkills) {
+            console.log(filterObject)
             let nodesNeededToBuildTree = this.findSkillDataOfFilterObject(filterObject, userSkills)
+
+            return
             if (!nodesNeededToBuildTree?.length) {
                 return
             }

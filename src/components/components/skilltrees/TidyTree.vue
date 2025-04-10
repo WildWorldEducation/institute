@@ -1164,24 +1164,18 @@ export default {
             };
 
             // ADDITIONAL FILTER FOR SUB-SKILL
-            // if (this.userDetailsStore.subSubjectsFilters.length > 0) {
-            //     // finding which skill needed to show
-            //     let currentNode = data;
-            //     let;
-            // }
-            console.log('tidy tree: ');
-            console.log(userSkills);
+
             const newUserSkill =
                 this.skillTreeStore.buildUserSkillTreeBaseOnFilterObject(
                     this.userDetailsStore.subSubjectsFilters,
                     userSkills
                 );
-            if (newUserSkill.length) {
-                this.data = {
-                    skill_name: 'My skills',
-                    children: newUserSkill
-                };
-            }
+            // if (newUserSkill.length) {
+            //     this.data = {
+            //         skill_name: 'My skills',
+            //         children: newUserSkill
+            //     };
+            // }
 
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.

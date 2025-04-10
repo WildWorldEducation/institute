@@ -54,7 +54,9 @@ export default {
             isTreeLocked: false,
             introSearchModal: true,
             activeFilteredSubject: null,
-            openSubFilterMenu: false
+            openSubFilterMenu: false,
+            // Additional filter that contains nodes need to showing
+            subSubjectsFilters: []
         };
     },
     async created() {
@@ -410,7 +412,13 @@ export default {
         },
         handleFilterButtonClick(skillName) {
             this.updateSubjectFilters(skillName);
-            console.log(this.subjectFilters);
+            this.userDetailsStore.updateSubSubjectFilter(
+                {
+                    skillName: skillName,
+                    parent: 0
+                },
+                this.subSubjectsFilters
+            );
             this.$refs.childComponent.filter(
                 this.gradeFilter,
                 this.subjectFilters
