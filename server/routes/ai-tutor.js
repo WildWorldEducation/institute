@@ -200,8 +200,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                    messageNumber
-                )},                       
+                                        messageNumber
+                                    )},                       
                                     ${conn.escape(url)}
                                 );`;
                 await query(queryString);
@@ -372,14 +372,14 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                    messageNumber
-                )},                       
+                                        messageNumber
+                                    )},                       
                                     ${conn.escape(url)}
                                 );`;
                 await query(queryString);
                 res.json({
                     status: 'complete',
-                    speechUrl: url,
+                    speechUrl: url
                 });
             } catch (error) {
                 console.error(error);
@@ -417,8 +417,8 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
                     which consists of the following learning objectives: ${req.body.learningObjectives}.
                     
                     Please return only the percentage of correct answers, and nothing else.
-                    Please return a single JSON object containing the result, named "result".                    
-                    `;
+                    Please return a single JSON object containing the result, named "result".                                        
+                    `;   
 
         const completion = await openai.chat.completions.create({
             model: 'gpt-4.5-preview',
@@ -612,8 +612,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                    messageNumber
-                )},                       
+                                        messageNumber
+                                    )},                       
                                     ${conn.escape(url)}
                                 );`;
                 await query(queryString);
