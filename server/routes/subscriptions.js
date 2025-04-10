@@ -54,6 +54,12 @@ router.post('/create-checkout-session', async (req, res) => {
     try {
         userId = req.body.userId;
         tokensPerDollar = req.body.tokensPerDollar;
+        let priceId = '';
+        if (req.body.planType == 'capped') {
+            priceId = process.env.CAPPED_PLAN_PRICE_ID;
+        } else {
+            priceId = process.env.INFINITE_PLAN_PRICE_ID;
+        }
         // console.log(req.body);
         // console.log(req.body.priceId);
 
@@ -62,7 +68,7 @@ router.post('/create-checkout-session', async (req, res) => {
             mode: 'subscription',
             line_items: [
                 {
-                    price: process.env.CAPPED_PLAN_PRICE_ID,
+                    price: priceId,
                     quantity: 1
                 }
             ],
