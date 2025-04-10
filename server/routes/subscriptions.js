@@ -88,15 +88,19 @@ router.get('/success', async (req, res, next) => {
         req.query.session_id
     );
 
+    let subscriptionTier = '';
     // Convert from cents
-    const amountOfDollars = session.amount_total / 100;
-    const amountOfTokens = amountOfDollars * tokensPerDollar;
+    if (session.amount_total == 2000) {
+        subscriptionTier = 'capped';
+    } else if (session.amount_total == 10000) {
+        subscriptionTier = 'infinite';
+    }
 
     // Save the new tokens to the DB
     let queryString = `
             UPDATE users
-            SET tokens = tokens + ${amountOfTokens}
-            WHERE id = '${userId}';
+            SET subscription_tier = ${conn.escape(subscriptionTier)}
+            WHERE id = ${conn.escape(userId)};
             `;
 
     await query(queryString);
