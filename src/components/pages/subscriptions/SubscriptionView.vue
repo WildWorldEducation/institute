@@ -31,7 +31,7 @@ export default {
 
         await this.userDetailsStore.getUserDetails();
         // Check if user is over free monthly AI token limit
-        if (this.userDetailsStore.subscriptionTier != 'capped') {
+        if (this.userDetailsStore.subscriptionTier == 'free') {
             if (
                 this.settingsStore.freeMonthlyTokens <=
                 this.userDetailsStore.monthlyTokenUsage
