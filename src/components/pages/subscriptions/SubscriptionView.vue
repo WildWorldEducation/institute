@@ -27,7 +27,7 @@ export default {
         // Get free monthly AI token limit
         if (this.settingsStore.freeMonthlyTokens == 0) {
             await this.settingsStore.getSettings();
-        }       
+        }
 
         await this.userDetailsStore.getUserDetails();
         // Check if user is over free monthly AI token limit
@@ -127,7 +127,6 @@ export default {
             until next month.
         </div>
         <hr />
-        <!-- Buy subscription -->
         <div class="row mt-4">
             <div class="col">
                 <h2 class="secondary-heading h4">Capped plan</h2>
@@ -139,6 +138,7 @@ export default {
                 >
                     buy
                 </button>
+                <!-- Buy subscription -->
             </div>
             <div class="col">
                 <h2 class="secondary-heading h4">Infinite plan</h2>

@@ -54,15 +54,15 @@ router.post('/create-checkout-session', async (req, res) => {
     try {
         userId = req.body.userId;
         tokensPerDollar = req.body.tokensPerDollar;
+        // console.log(req.body);
+        // console.log(req.body.priceId);
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             mode: 'subscription',
             line_items: [
                 {
-                    price_data: {
-                        currency: 'usd'
-                    },
+                    price: process.env.CAPPED_PLAN_PRICE_ID,
                     quantity: 1
                 }
             ],
