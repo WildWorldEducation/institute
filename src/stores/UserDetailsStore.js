@@ -169,7 +169,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
             let haveChildNodeIndex = -1;
             // find if the node in subSubject
             if (filterObject.parent !== 0) {
-                haveChildNodeIndex = subjectsFilters.findIndex(node => node.skillName !== filterObject.parent)
+                haveChildNodeIndex = subjectsFilters.findIndex(node => node.skillName === filterObject.parent)
             } else {
                 haveChildNodeIndex = 0
             }

@@ -177,78 +177,96 @@ export const useSkillTreeStore = defineStore('skillTree', {
         },
 
         findSkillDataOfFilterObject(filterObject, userSkills) {
-            const baseSkillLists = userSkills;
-            let newUserSkill = filterObject;
-            let childNodes = newUserSkill;
-            let stopFlag = false;
-            const resultsArray = [];
-            if (childNodes.length === 0) {
-                return
-            }
-            while (!stopFlag) {
-                let currentNode = childNodes.pop();
-                if (currentNode.children) {
-                    childNodes = childNodes.concat(currentNode.children)
-                }
-                const nodeData = this.findSkillBaseOnName(currentNode.skillName, baseSkillLists);
-                const resultObject = {
-                    node: nodeData,
-                    // Leaf is the deepest node in a tree mean it will have no children
-                    isLeaf: !currentNode.children
-                }
-                resultsArray.push(resultObject);
-                if (!childNodes.length) {
-                    stopFlag = true
-                }
-            }
-            return resultsArray;
+            // const baseSkillLists = userSkills;
+            // let newUserSkill = filterObject;
+            // let childNodes = newUserSkill;
+            // let stopFlag = false;
+            // const resultsArray = [];
+            // if (childNodes.length === 0) {
+            //     return
+            // }
+            // while (!stopFlag) {
+            //     let currentNode = childNodes.pop();
+            //     if (currentNode.children) {
+            //         childNodes = childNodes.concat(currentNode.children)
+            //     }
+            //     const nodeData = this.findSkillBaseOnName(currentNode.skillName, baseSkillLists);
+            //     const resultObject = {
+            //         node: nodeData,
+            //         // Leaf is the deepest node in a tree mean it will have no children
+            //         isLeaf: !currentNode.children
+            //     }
+            //     resultsArray.push(resultObject);
+            //     if (!childNodes.length) {
+            //         stopFlag = true
+            //     }
+            // }
+            // return resultsArray;
+            let resultArray = [];
+            filterObject.forEach(element => {
+                const nodeData = this.findSkillBaseOnName(element.skillName, userSkills);
+
+                const object = { node: nodeData, isLeaf: element.isLeaf }
+                resultArray.push(object);
+            });
+            return resultArray
+
         },
         FindChildrenOfParent(nodeArrays, parentId) {
-            const resultArray = nodeArrays.filter(node => {
-                console.log('====')
-                console.log(node.node.parent === parentId)
-                console.log(typeof (node.node.parent))
-                console.log(typeof (parentId))
+            let resultArray = nodeArrays.filter(node => {
+
                 return node.node.parent === parentId
             })
-            return resultArray
+            // Beauty result for building the skill tree 
+            // Normal result for filter out the node
+            const beautyResult = resultArray.map(node => node.node);
+            return { leafNodeSiblings: beautyResult, nodeToFilter: resultArray };
         },
 
         // BUILD A NEW USER SKILL BASED ON FILTER PATHS
         buildUserSkillTreeBaseOnFilterObject(filterObject, userSkills) {
-            console.log(filterObject)
+            console.log('jh')
             let nodesNeededToBuildTree = this.findSkillDataOfFilterObject(filterObject, userSkills)
 
-            return
+
             if (!nodesNeededToBuildTree?.length) {
-                return
+                return []
             }
 
-            const leafNodes = nodesNeededToBuildTree.filter(node => node.isLeaf);
+            let leafNodes = nodesNeededToBuildTree.filter(node => node.isLeaf);
             let resultObject = null;
-            // CONTINUE TO IMPLEMENT THIS
+
             let stopFlag = false
             while (!stopFlag) {
                 const leafNode = leafNodes.pop();
                 // also remove the node from array of node
                 nodesNeededToBuildTree = nodesNeededToBuildTree.filter(node => node.node.id !== leafNode.node.id);
-                const leafNodeSiblings = this.FindChildrenOfParent(nodesNeededToBuildTree, leafNode.node.parent)
-                console.log('leaf node sibling: ')
-                console.log(leafNodeSiblings);
+                const { leafNodeSiblings, nodeToFilter } = this.FindChildrenOfParent(nodesNeededToBuildTree, leafNode.node.parent, leafNodes, nodesNeededToBuildTree)
+
+                // remove sibling node from the stack
+                leafNodes = leafNodes.filter(node => !nodeToFilter.includes(node));
+                nodesNeededToBuildTree = nodesNeededToBuildTree.filter(node => !nodeToFilter.includes(node))
+
                 const parentNode = this.findSkillBaseOnId(leafNode.node.parent, userSkills);
-                // CONTINUE DEVELOPMENT HERE
                 if (!parentNode) {
                     stopFlag = true
                 } else {
                     const childOfParent = [...leafNodeSiblings, leafNode.node]
+                    const parentIndex = nodesNeededToBuildTree.findIndex(node => node.node.id === parentNode.id);
                     resultObject = { ...parentNode, children: childOfParent }
+                    nodesNeededToBuildTree[parentIndex] = { node: resultObject, isLeaf: false };
+
                 }
+
                 if (!leafNodes.length) {
                     stopFlag = true
                 }
+
+                if (!nodesNeededToBuildTree.length) {
+                    stopFlag = true
+                }
             }
-            console.log('Final result: ');
-            console.log(resultObject);
+
             return [resultObject]
         }
 

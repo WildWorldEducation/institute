@@ -1164,28 +1164,23 @@ export default {
             };
 
             // ADDITIONAL FILTER FOR SUB-SKILL
-
-            const newUserSkill =
-                this.skillTreeStore.buildUserSkillTreeBaseOnFilterObject(
-                    this.userDetailsStore.subSubjectsFilters,
-                    userSkills
-                );
-            // if (newUserSkill.length) {
-            //     this.data = {
-            //         skill_name: 'My skills',
-            //         children: newUserSkill
-            //     };
-            // }
+            if (this.$parent.subSubjectsFilters.length > 1) {
+                const newUserSkill =
+                    this.skillTreeStore.buildUserSkillTreeBaseOnFilterObject(
+                        this.$parent.subSubjectsFilters,
+                        userSkills
+                    );
+                if (newUserSkill.length) {
+                    this.data = {
+                        skill_name: 'My skills',
+                        children: newUserSkill
+                    };
+                }
+            }
 
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(this.data);
-
-            // Node width and height
-            // Height
-            const dx = 24;
-            // Width
-            const dy = 270;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([this.nodeWidth, this.nodeHeight]);
