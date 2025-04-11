@@ -719,25 +719,25 @@ async function saveTokenUsage(userId, tokenCount) {
             userMonthlyTokenUsageResult[0].token_count;
 
         // Get the amount of tokens the user has used for the month so far
-        let queryString4 = `
-        SELECT tokens
-        FROM users
-        WHERE id = '${userId}';
-        `;
-        const userTokensResult = await query(queryString4);
-        let userTokens = userTokensResult[0].tokens;
+        // let queryString4 = `
+        // SELECT tokens
+        // FROM users
+        // WHERE id = '${userId}';
+        // `;
+        // const userTokensResult = await query(queryString4);
+        // let userTokens = userTokensResult[0].tokens;
 
         // Update the user's tokens
-        if (userMonthlyTokenUsage >= monthlyFreeLimit) {
-            userTokens = userTokens - tokenCount;
-            let queryString5 = `
-                UPDATE users
-                SET tokens = ${userTokens}
-                WHERE id = '${userId}';
-        `;
+        // if (userMonthlyTokenUsage >= monthlyFreeLimit) {
+        //     userTokens = userTokens - tokenCount;
+        //     let queryString5 = `
+        //         UPDATE users
+        //         SET tokens = ${userTokens}
+        //         WHERE id = '${userId}';
+        // `;
 
-            await query(queryString5);
-        }
+        //     await query(queryString5);
+        // }
     } catch (error) {
         throw error;
     }
