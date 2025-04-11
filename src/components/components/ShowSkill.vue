@@ -214,7 +214,7 @@ export default {
             await this.getLearningObjectives();
 
             // Meta title for SEO
-            document.title = this.skill.name + ' - The Collins Institute';
+            document.title = this.skill.name + ' - Parrhesia';
 
             //Load skill filters
             this.getSkillFilters();

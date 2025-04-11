@@ -480,7 +480,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
     // Title tag.
-    const baseTitle = 'The Collins Institute';
+    const baseTitle = 'Parrhesia';
     if (to.meta.title) {
         document.title = `${to.meta.title} - ${baseTitle}`;
     } else {
