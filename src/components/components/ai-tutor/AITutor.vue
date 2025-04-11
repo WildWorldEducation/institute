@@ -74,6 +74,12 @@ export default {
         );
 
         this.englishSkillLevel = this.skill.level.replace('_', ' ');
+
+        this.audio = new Audio();
+        this.audio.addEventListener('ended', () => {
+            this.isAudioPlaying = false;
+            this.currentIndexAudioPlaying = null;
+        });
     },
     updated() {
         if (this.mode !== 'hide') {
@@ -222,6 +228,7 @@ export default {
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;
                 this.audio.pause();
+                this.currentIndexAudioPlaying = null;
             } else {
                 let url = '';
                 for (let i = 0; i < this.chatHistory.length; i++) {
@@ -229,15 +236,13 @@ export default {
                         url = this.chatHistory[i].audio;
                     }
                 }
-                this.audio = new Audio(url);
+                this.audio.pause(); // Stop previous audio
+                this.audio.src = chatItem.audio;
+                this.audio.load(); // Important when changing src dynamically
+                this.audio.play();
+
                 this.isAudioPlaying = true;
                 this.currentIndexAudioPlaying = index;
-                // Handling when audio end playing
-                this.audio.addEventListener('ended', () => {
-                    this.isAudioPlaying = false;
-                    this.currentIndexAudioPlaying = null;
-                });
-                this.audio.play();
             }
         },
         playNewMessageAudio(index, url) {
@@ -245,14 +250,14 @@ export default {
             if (this.mode !== 'modal') {
                 newMessageIndex = parseInt(this.chatHistory.length) - 1;
             }
-            this.audio = new Audio(url);
-            this.audio.addEventListener('ended', () => {
-                this.isAudioPlaying = false;
-                this.currentIndexAudioPlaying = null;
-            });
+
+            this.audio.pause(); // Stop previous audio
+            this.audio.src = url;
+            this.audio.load(); // Important when changing src dynamically
+            this.audio.play();
+
             this.isAudioPlaying = true;
             this.currentIndexAudioPlaying = index;
-            this.audio.play();
             this.getChatHistory();
         },
         async sendMessage() {
@@ -518,7 +523,7 @@ export default {
             deep: true
         },
         mode: {
-            handler(newItem, oldItem) {
+            handlerhandler(newItem, oldItem) {
                 if (
                     newItem === 'modal' &&
                     (oldItem === 'hide' || oldItem === 'docked')
