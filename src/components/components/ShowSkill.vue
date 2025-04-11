@@ -178,6 +178,13 @@ export default {
                     ) {
                         this.isAITokenLimitReached = true;
                     }
+                } else if (this.userDetailsStore.subscriptionTier == 'capped') {
+                    if (
+                        this.settingsStore.cappedPlanTokenLimit <=
+                        this.userDetailsStore.monthlyTokenUsage
+                    ) {
+                        this.isAITokenLimitReached = true;
+                    }
                 }
             } catch (error) {
                 console.error('Error in checkTokenUsage:', error);

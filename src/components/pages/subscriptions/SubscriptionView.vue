@@ -17,7 +17,8 @@ export default {
             monthlyTokenUsage: null,
             year: 0,
             month: '',
-            isAITokenLimitReached: false
+            isAITokenLimitReached: false,
+            tokenLimit: 0
             // Not being charged yet
             // ttsModelPrice: 15,
             // sttModelPerMinutePrice: 0.006
@@ -34,6 +35,13 @@ export default {
         if (this.userDetailsStore.subscriptionTier == 'free') {
             if (
                 this.settingsStore.freeMonthlyTokens <=
+                this.userDetailsStore.monthlyTokenUsage
+            ) {
+                this.isAITokenLimitReached = true;
+            }
+        } else if (this.userDetailsStore.subscriptionTier == 'capped') {
+            if (
+                this.settingsStore.cappedPlanTokenLimit <=
                 this.userDetailsStore.monthlyTokenUsage
             ) {
                 this.isAITokenLimitReached = true;
@@ -61,6 +69,12 @@ export default {
 
         const d = new Date();
         this.month = month[d.getMonth()];
+
+        if (this.userDetailsStore.subscriptionTier == 'free') {
+        } else if (this.userDetailsStore.subscriptionTier == 'capped') {
+            this.tokenLimit = this.settingsStore.cappedPlanTokenLimit;
+        } else if (this.userDetailsStore.subscriptionTier == 'infinite') {
+        }
     },
     methods: {
         checkout(planType) {
@@ -101,8 +115,8 @@ export default {
         <ul>
             <li>
                 <p>
-                    <strong>Free limit:</strong>
-                    {{ settingsStore.freeMonthlyTokens.toLocaleString() }}
+                    <strong>Token limit:</strong>
+                    {{ tokenLimit }}
                 </p>
             </li>
             <li>
@@ -131,7 +145,7 @@ export default {
             <div class="col">
                 <h2 class="secondary-heading h4">Capped plan</h2>
                 <p>Ideal for moderate use</p>
-                <p>$30 / month</p>
+                <p>$20 / month</p>
                 <button
                     @click="checkout('capped')"
                     class="btn primary-btn mt-2"
@@ -143,7 +157,7 @@ export default {
             <div class="col">
                 <h2 class="secondary-heading h4">Infinite plan</h2>
                 <p>Ideal for daily use</p>
-                <p>$300 / month</p>
+                <p>$100 / month</p>
                 <button
                     @click="checkout('infinite')"
                     class="btn primary-btn mt-2"

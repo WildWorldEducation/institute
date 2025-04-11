@@ -13,7 +13,8 @@ export const useSettingsStore = defineStore('settings', {
         todoStudentQuestionTableRows: 0,
         todoContentFlagTableRows: 0,
         todoNewSkillTableRows: 0,
-        freeMonthlyTokens: 0
+        freeMonthlyTokens: 0,
+        cappedPlanTokenLimit: 0
     }),
     actions: {
         async getSettings() {
@@ -35,6 +36,7 @@ export const useSettingsStore = defineStore('settings', {
                 data[0].todo_student_question_table_rows;
             this.todoNewSkillTableRows = data[0].todo_new_skills_table_rows;
             this.freeMonthlyTokens = data[0].monthly_free_token_limit;
+            this.cappedPlanTokenLimit = data[0].capped_plan_token_limit;
         },
 
         async saveSettings() {
