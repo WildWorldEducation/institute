@@ -149,20 +149,13 @@ export const useUserDetailsStore = defineStore('userDetails', {
         },
         // Using array to store what node is showing
         updateSubSubjectFilter(filterObject, subjectsFilters) {
-            console.log('call update filter: ')
-
             // initial the filter data if there are none
-
             const obj = { skillName: filterObject.skillName, isLeaf: true }
-            console.log('before pushing: ')
-            console.log(JSON.stringify(subjectsFilters));
             const isInFilterArray = subjectsFilters.find(node => node.skillName === filterObject.skillName)
             if (isInFilterArray) {
                 subjectsFilters = subjectsFilters.filter(node => node.skillName !== filterObject.skillName);
-                console.log(JSON.stringify(subjectsFilters));
-                console.log('removed length is: ' + subjectsFilters.length)
-                console.log('===============')
-                return
+                this.subSubjectsFilters = subjectsFilters.map(e => e)
+                return subjectsFilters
             } else {
                 subjectsFilters.push(obj);
             }
@@ -177,10 +170,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
             if (haveChildNodeIndex >= 0) {
                 subjectsFilters[haveChildNodeIndex].isLeaf = false;
             }
-
-            console.log(JSON.stringify(subjectsFilters));
-            console.log('length is: ' + subjectsFilters.length)
-            console.log('===============')
+            this.subSubjectsFilters = subjectsFilters.map(e => e)
+            return subjectsFilters
         },
 
     }

@@ -1163,11 +1163,13 @@ export default {
                 children: this.skill.children
             };
 
+            console.log('filter in store: ');
+            console.log(this.userDetailsStore.subSubjectsFilters);
             // ADDITIONAL FILTER FOR SUB-SKILL
-            if (this.$parent.subSubjectsFilters.length > 1) {
+            if (this.userDetailsStore.subSubjectsFilters.length > 1) {
                 const newUserSkill =
                     this.skillTreeStore.buildUserSkillTreeBaseOnFilterObject(
-                        this.$parent.subSubjectsFilters,
+                        this.userDetailsStore.subSubjectsFilters,
                         userSkills
                     );
                 if (newUserSkill.length) {

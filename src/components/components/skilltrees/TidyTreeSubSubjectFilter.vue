@@ -23,10 +23,11 @@ export default {
                 parent: this.parentSkill.data.skill_name
             };
             // update the sub-subject filter array in userDetailsStore
-            this.userDetailsStore.updateSubSubjectFilter(
-                subSubjectFilterObject,
-                this.$parent.subSubjectsFilters
-            );
+            this.$parent.subSubjectFilterObject =
+                this.userDetailsStore.updateSubSubjectFilter(
+                    subSubjectFilterObject,
+                    this.$parent.subSubjectsFilters
+                );
 
             this.$parent.filterSkillTree();
         }

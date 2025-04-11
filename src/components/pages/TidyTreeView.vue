@@ -412,19 +412,21 @@ export default {
         },
         handleFilterButtonClick(skillName) {
             this.updateSubjectFilters(skillName);
-            this.userDetailsStore.updateSubSubjectFilter(
-                {
-                    skillName: skillName,
-                    parent: 0
-                },
-                this.subSubjectsFilters
-            );
+            this.subSubjectsFilters =
+                this.userDetailsStore.updateSubSubjectFilter(
+                    {
+                        skillName: skillName,
+                        parent: 0
+                    },
+                    this.subSubjectsFilters
+                );
+            console.log(this.subSubjectsFilters);
             this.$refs.childComponent.filter(
                 this.gradeFilter,
                 this.subjectFilters
             );
         },
-        // this sole purpose of this function is to pass it down to the child
+
         filterSkillTree() {
             this.$refs.childComponent.filter(
                 this.gradeFilter,
