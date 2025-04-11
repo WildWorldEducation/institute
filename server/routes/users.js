@@ -187,8 +187,7 @@ router.post('/new-instructor/add', (req, res, next) => {
             email: req.body.email,
             password: hashedPassword,
             role: 'instructor',
-            theme: 'instructor',
-            tokens: 0 // Add default tokens value
+            theme: 'instructor'
         };
 
         // OPTIMIZATION 1: Combine username and email check into one query
@@ -2030,28 +2029,6 @@ router.get('/reputation-events/:userId', isAuthenticated, (req, res, next) => {
                 throw err;
             }
             res.json(results);
-        } catch (err) {
-            next(err);
-        }
-    });
-});
-
-/**
- * User Tokens
- */
-router.put('/tokens/:id/update', isAuthenticated, (req, res, next) => {
-    let sqlQuery = `UPDATE users 
-            SET tokens = tokens - ${conn.escape(
-                req.body.tokensNeeded
-            )}             
-            WHERE id = ${conn.escape(req.params.id)};`;
-
-    conn.query(sqlQuery, async (err) => {
-        try {
-            if (err) {
-                throw err;
-            }
-            res.end();
         } catch (err) {
             next(err);
         }

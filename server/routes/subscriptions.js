@@ -49,11 +49,9 @@ Routes
 // });
 
 let userId;
-let tokensPerDollar;
 router.post('/create-checkout-session', async (req, res) => {
     try {
         userId = req.body.userId;
-        tokensPerDollar = req.body.tokensPerDollar;
         let priceId = '';
         if (req.body.planType == 'capped') {
             priceId = process.env.CAPPED_PLAN_PRICE_ID;
