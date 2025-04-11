@@ -18,15 +18,12 @@ export default {
             year: 0,
             month: '',
             isAITokenLimitReached: false,
-            tokenLimit: this.settingsStore.freeMonthlyTokens.toLocaleString()
-            // Not being charged yet
-            // ttsModelPrice: 15,
-            // sttModelPerMinutePrice: 0.006
+            tokenLimit: this.settingsStore.freePlanTokenLimit.toLocaleString()        
         };
     },
     async mounted() {
         // Get free monthly AI token limit
-        if (this.settingsStore.freeMonthlyTokens == 0) {
+        if (this.settingsStore.freePlanTokenLimit == 0) {
             await this.settingsStore.getSettings();
         }
 
@@ -34,7 +31,7 @@ export default {
         // Check if user is over free monthly AI token limit
         if (this.userDetailsStore.subscriptionTier == 'free') {
             if (
-                this.settingsStore.freeMonthlyTokens <=
+                this.settingsStore.freePlanTokenLimit <=
                 this.userDetailsStore.monthlyTokenUsage
             ) {
                 this.isAITokenLimitReached = true;
