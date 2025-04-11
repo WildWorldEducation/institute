@@ -171,10 +171,17 @@ export default {
                 }
 
                 // Check if user is over free monthly AI token limit
-                if (this.userDetailsStore.tokens <= 0) {
+                if (this.userDetailsStore.subscriptionTier == 'free') {
                     if (
-                        (this.settingsStore.freeMonthlyTokens || 0) <=
-                        (this.userDetailsStore.monthlyTokenUsage || 0)
+                        this.settingsStore.freeMonthlyTokens <=
+                        this.userDetailsStore.monthlyTokenUsage
+                    ) {
+                        this.isAITokenLimitReached = true;
+                    }
+                } else if (this.userDetailsStore.subscriptionTier == 'capped') {
+                    if (
+                        this.settingsStore.cappedPlanTokenLimit <=
+                        this.userDetailsStore.monthlyTokenUsage
                     ) {
                         this.isAITokenLimitReached = true;
                     }
@@ -1533,7 +1540,10 @@ export default {
                             </div>
                         </div>
                         <button
-                            v-if="sessionDetailsStore.isLoggedIn"
+                            v-if="
+                                sessionDetailsStore.isLoggedIn &&
+                                userDetailsStore.role == 'student'
+                            "
                             class="btn plus-btn"
                             @click="
                                 learningObjective.showAI =

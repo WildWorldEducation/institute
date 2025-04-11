@@ -392,6 +392,9 @@ export default {
                                         Reputation
                                     </RouterLink>
                                     <RouterLink
+                                        v-if="
+                                            userDetailsStore.role == 'student'
+                                        "
                                         to="/subscriptions"
                                         class="dropdown-item"
                                     >

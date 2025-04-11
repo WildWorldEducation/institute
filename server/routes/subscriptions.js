@@ -54,19 +54,21 @@ router.post('/create-checkout-session', async (req, res) => {
     try {
         userId = req.body.userId;
         tokensPerDollar = req.body.tokensPerDollar;
+        let priceId = '';
+        if (req.body.planType == 'capped') {
+            priceId = process.env.CAPPED_PLAN_PRICE_ID;
+        } else {
+            priceId = process.env.INFINITE_PLAN_PRICE_ID;
+        }
+        // console.log(req.body);
+        // console.log(req.body.priceId);
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
-            mode: 'payment',
+            mode: 'subscription',
             line_items: [
                 {
-                    price_data: {
-                        currency: 'usd',
-                        product_data: {
-                            name: req.body.amountOfTokens + ' tokens'
-                        },
-                        unit_amount: req.body.dollars * 100
-                    },
+                    price: priceId,
                     quantity: 1
                 }
             ],
@@ -86,15 +88,19 @@ router.get('/success', async (req, res, next) => {
         req.query.session_id
     );
 
+    let subscriptionTier = '';
     // Convert from cents
-    const amountOfDollars = session.amount_total / 100;
-    const amountOfTokens = amountOfDollars * tokensPerDollar;
+    if (session.amount_total == 2000) {
+        subscriptionTier = 'capped';
+    } else if (session.amount_total == 10000) {
+        subscriptionTier = 'infinite';
+    }
 
     // Save the new tokens to the DB
     let queryString = `
             UPDATE users
-            SET tokens = tokens + ${amountOfTokens}
-            WHERE id = '${userId}';
+            SET subscription_tier = ${conn.escape(subscriptionTier)}
+            WHERE id = ${conn.escape(userId)};
             `;
 
     await query(queryString);

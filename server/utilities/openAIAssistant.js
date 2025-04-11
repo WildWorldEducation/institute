@@ -100,18 +100,19 @@ async function createSocraticAssistant(topic, level, learningObjectives) {
             `, which consists of the following learning objectives:` +
             learningObjectives +
             `. Use the Socratic method to teach students.
-            
+
             IMPORTANT GUIDELINES:
             - Always ask ONLY ONE QUESTION per message
             - Make your question clear, focused, and specific
             - Never ask multiple questions in the same message, even if they are related
             - Wait for the student's response before asking another question
             - Focus on depth rather than breadth in your questions
-            
+
             Please keep all messages below 1000 characters.`,
         tools: [{ type: 'file_search' }],
         model: 'gpt-4.5-preview'
     });
+
     return assistant;
 }
 
@@ -176,7 +177,7 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         1. After the student answers a question, you MUST:
            a) Evaluate the correctness of their answer
            b) Provide clear feedback explaining why the answer is correct or incorrect
-           c) If the answer is incorrect, provide a detailed explanation 
+           c) If the answer is incorrect, provide a detailed explanation
            d) Ask a follow-up question to help the student understand better
 
         2. When giving feedback:
@@ -200,8 +201,12 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         const latestMessage = messages.data[0];
 
         // Save the user's token usage
-        let tokenCount = run.usage.total_tokens;
-        // console.log(tokenCount);
+        // These tokens are priced at $150 per million
+        let outputTokens = runStep.usage.completion_tokens;
+        // Work out tts equivalent usage
+        // 0.4 is hardcoded at the moment, based on pricing and choice of models
+        let ttsTokens = outputTokens * 0.4;
+        let tokenCount = runStep.usage.total_tokens + ttsTokens;
         saveTokenUsage(messageData.userId, tokenCount);
 
         return latestMessage;
@@ -371,8 +376,12 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
         const latestMessage = messages.data[0];
 
         // Save the user's token usage
-        let tokenCount = run.usage.total_tokens;
-        console.log(tokenCount);
+        // These tokens are priced at $150 per million
+        let outputTokens = runStep.usage.completion_tokens;
+        // Work out tts equivalent usage
+        // 0.4 is hardcoded at the moment, based on pricing and choice of models
+        let ttsTokens = outputTokens * 0.4;
+        let tokenCount = runStep.usage.total_tokens + ttsTokens;
         saveTokenUsage(messageData.userId, tokenCount);
 
         return latestMessage;
@@ -594,10 +603,12 @@ async function createRunStream(
         .on('runStepDone', (runStep) => {
             socket.emit('run-end');
             // Save the amount of tokens the user is using
-            //console.log(runStep);
-
-            let tokenCount = runStep.usage.total_tokens;
-            console.log('streaming: ' + tokenCount);
+            // These tokens are priced at $150 per million
+            let outputTokens = runStep.usage.completion_tokens;
+            // Work out tts equivalent usage
+            // 0.4 is hardcoded at the moment, based on pricing and choice of models
+            let ttsTokens = outputTokens * 0.4;
+            let tokenCount = runStep.usage.total_tokens + ttsTokens;
             saveTokenUsage(userId, tokenCount);
         })
         .on('toolCallCreated', (event) =>
@@ -689,7 +700,7 @@ async function saveTokenUsage(userId, tokenCount) {
 
         // Get the monthly free amount of tokens
         let queryString2 = `
-        SELECT monthly_token_limit
+        SELECT monthly_free_token_limit
         FROM settings;
         `;
         const monthlyFreeLimitResult = await query(queryString2);

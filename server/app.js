@@ -575,16 +575,6 @@ app.get('/sitemap.xml', (req, res) => {
 
 const environment = process.env.NODE_ENV;
 
-// For production deployment.
-// For the index.html.ejs file
-// For creating an absolute URL
-// to allow for nested routes to be loaded in new tabs
-// and refreshed in the browser.
-// Live server.
-process.env.BASE_URL = 'https://parrhesia.io';
-// Dev server.
-//process.env.BASE_URL = 'http://localhost:3000';
-
 app.get('/*', async (_req, res) => {
     const data = {
         environment,
