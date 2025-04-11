@@ -148,30 +148,28 @@ export const useUserDetailsStore = defineStore('userDetails', {
             fetch(url, requestOptions);
         },
         // Using array to store what node is showing
-        updateSubSubjectFilter(filterObject, subjectsFilters) {
+        updateSubSubjectFilter(filterObject) {
             // initial the filter data if there are none
             const obj = { skillName: filterObject.skillName, isLeaf: true }
-            const isInFilterArray = subjectsFilters.find(node => node.skillName === filterObject.skillName)
+            const isInFilterArray = this.subSubjectsFilters.find(node => node.skillName === filterObject.skillName)
             if (isInFilterArray) {
-                subjectsFilters = subjectsFilters.filter(node => node.skillName !== filterObject.skillName);
-                this.subSubjectsFilters = subjectsFilters.map(e => e)
-                return subjectsFilters
+                this.subSubjectsFilters = this.subSubjectsFilters.filter(node => node.skillName !== filterObject.skillName);
+
+                return
             } else {
-                subjectsFilters.push(obj);
+                this.subSubjectsFilters.push(obj);
             }
             let haveChildNodeIndex = -1;
             // find if the node in subSubject
             if (filterObject.parent !== 0) {
-                haveChildNodeIndex = subjectsFilters.findIndex(node => node.skillName === filterObject.parent)
+                haveChildNodeIndex = this.subSubjectsFilters.findIndex(node => node.skillName === filterObject.parent)
             } else {
                 haveChildNodeIndex = 0
             }
 
             if (haveChildNodeIndex >= 0) {
-                subjectsFilters[haveChildNodeIndex].isLeaf = false;
+                this.subSubjectsFilters[haveChildNodeIndex].isLeaf = false;
             }
-            this.subSubjectsFilters = subjectsFilters.map(e => e)
-            return subjectsFilters
         },
 
     }
