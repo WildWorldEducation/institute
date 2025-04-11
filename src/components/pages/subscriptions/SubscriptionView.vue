@@ -18,7 +18,7 @@ export default {
             year: 0,
             month: '',
             isAITokenLimitReached: false,
-            tokenLimit: this.settingsStore.freePlanTokenLimit.toLocaleString()        
+            tokenLimit: 0
         };
     },
     async mounted() {
@@ -36,6 +36,8 @@ export default {
             ) {
                 this.isAITokenLimitReached = true;
             }
+            this.tokenLimit =
+                this.settingsStore.freePlanTokenLimit.toLocaleString();
         } else if (this.userDetailsStore.subscriptionTier == 'capped') {
             if (
                 this.settingsStore.cappedPlanTokenLimit <=
@@ -43,6 +45,8 @@ export default {
             ) {
                 this.isAITokenLimitReached = true;
             }
+            this.tokenLimit =
+                this.settingsStore.cappedPlanTokenLimit.toLocaleString();
         }
 
         // Work out date
