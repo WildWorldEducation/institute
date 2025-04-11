@@ -161,7 +161,7 @@ export default {
                     typeof this.settingsStore.getSettings === 'function'
                 ) {
                     // Only get settings if free monthly tokens are 0 or not set
-                    if (this.settingsStore.freeMonthlyTokens === 0) {
+                    if (this.settingsStore.freePlanTokenLimit === 0) {
                         await this.settingsStore.getSettings();
                     }
                 } else {
@@ -173,7 +173,7 @@ export default {
                 // Check if user is over free monthly AI token limit
                 if (this.userDetailsStore.subscriptionTier == 'free') {
                     if (
-                        this.settingsStore.freeMonthlyTokens <=
+                        this.settingsStore.freePlanTokenLimit <=
                         this.userDetailsStore.monthlyTokenUsage
                     ) {
                         this.isAITokenLimitReached = true;

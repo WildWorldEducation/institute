@@ -18,15 +18,12 @@ export default {
             year: 0,
             month: '',
             isAITokenLimitReached: false,
-            tokenLimit: this.settingsStore.freeMonthlyTokens.toLocaleString()
-            // Not being charged yet
-            // ttsModelPrice: 15,
-            // sttModelPerMinutePrice: 0.006
+            tokenLimit: 0
         };
     },
     async mounted() {
         // Get free monthly AI token limit
-        if (this.settingsStore.freeMonthlyTokens == 0) {
+        if (this.settingsStore.freePlanTokenLimit == 0) {
             await this.settingsStore.getSettings();
         }
 
@@ -34,11 +31,13 @@ export default {
         // Check if user is over free monthly AI token limit
         if (this.userDetailsStore.subscriptionTier == 'free') {
             if (
-                this.settingsStore.freeMonthlyTokens <=
+                this.settingsStore.freePlanTokenLimit <=
                 this.userDetailsStore.monthlyTokenUsage
             ) {
                 this.isAITokenLimitReached = true;
             }
+            this.tokenLimit =
+                this.settingsStore.freePlanTokenLimit.toLocaleString();
         } else if (this.userDetailsStore.subscriptionTier == 'capped') {
             if (
                 this.settingsStore.cappedPlanTokenLimit <=
@@ -46,6 +45,8 @@ export default {
             ) {
                 this.isAITokenLimitReached = true;
             }
+            this.tokenLimit =
+                this.settingsStore.cappedPlanTokenLimit.toLocaleString();
         }
 
         // Work out date
