@@ -700,7 +700,7 @@ async function saveTokenUsage(userId, tokenCount) {
 
         // Get the monthly free amount of tokens
         let queryString2 = `
-        SELECT monthly_free_token_limit
+        SELECT free_plan_token_limit
         FROM settings;
         `;
         const monthlyFreeLimitResult = await query(queryString2);
