@@ -18,7 +18,7 @@ export default {
             year: 0,
             month: '',
             isAITokenLimitReached: false,
-            tokenLimit: 0
+            tokenLimit: this.settingsStore.freeMonthlyTokens.toLocaleString()
             // Not being charged yet
             // ttsModelPrice: 15,
             // sttModelPerMinutePrice: 0.006
@@ -115,14 +115,14 @@ export default {
         <ul>
             <li>
                 <p>
-                    <strong>Token limit:</strong>
-                    {{ tokenLimit }}
+                    <strong>Your subscription tier:</strong>
+                    {{ userDetailsStore.subscriptionTier.toLocaleString() }}
                 </p>
             </li>
             <li>
                 <p>
-                    <strong>Your subscription tier:</strong>
-                    {{ userDetailsStore.subscriptionTier.toLocaleString() }}
+                    <strong>Plan token limit:</strong>
+                    {{ tokenLimit }}
                 </p>
             </li>
             <li>
@@ -140,7 +140,7 @@ export default {
             You are over the monthly free limit. You can't use the AI features
             until next month.
         </div>
-        <hr />
+        <!-- <hr />
         <div class="row mt-4">
             <div class="col">
                 <h2 class="secondary-heading h4">Capped plan</h2>
@@ -151,9 +151,9 @@ export default {
                     class="btn primary-btn mt-2"
                 >
                     buy
-                </button>
-                <!-- Buy subscription -->
-            </div>
+                </button> -->
+        <!-- Buy subscription -->
+        <!-- </div>
             <div class="col">
                 <h2 class="secondary-heading h4">Infinite plan</h2>
                 <p>Ideal for daily use</p>
@@ -165,7 +165,7 @@ export default {
                     buy
                 </button>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 
