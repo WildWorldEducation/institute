@@ -218,10 +218,10 @@ export default {
             this.sendMessage();
         },
         // ask Open AI to ask a question about the learning objective
-        async requestQuestion() {
-            this.message = 'ask me a question';
-            this.sendMessage();
-        },
+        // async requestQuestion() {
+        //     this.message = 'ask me a question';
+        //     this.sendMessage();
+        // },
         // Format the response.
         applyMarkDownFormatting(string) {
             const md = window
@@ -317,15 +317,6 @@ export default {
         <span class="spinning-loader"></span>
     </div>
     <div v-else>
-        <!-- learning objective explanation button -->
-        <!-- <div
-            class="alert alert-warning mt-1"
-            role="alert"
-            v-if="$parent.isAITokenLimitReached"
-        >
-            You have reached your monthly AI token limit. Please recharge your
-            subscription to use more.
-        </div> -->
         <!-- Suggested interaction buttons -->
         <span class="d-flex justify-content-end mt-2">
             <button
@@ -337,13 +328,13 @@ export default {
                 tutor me on this
             </button>
             <!-- learning objective ask question button -->
-            <button
+            <!-- <button
                 class="btn border border-dark ms-1"
                 @click="requestQuestion()"
                 :disabled="$parent.isAITokenLimitReached"
             >
                 ask me a question
-            </button>
+            </button> -->
         </span>
         <!-- text input -->
         <span class="d-flex mt-1">
