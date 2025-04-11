@@ -39,7 +39,8 @@ const router = createRouter({
             component: () => import('../components/pages/HubView.vue'),
             meta: {
                 requiresAuth: false,
-                roles: ['student', 'admin']
+                roles: ['student', 'admin'],
+                title: 'Search'
             }
         },
         {
