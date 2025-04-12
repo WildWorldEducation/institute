@@ -95,7 +95,6 @@ export default {
                     return res.json().then((json) => Promise.reject(json));
                 })
                 .then(({ url }) => {
-                    console.log('add tokens');
                     window.location = url;
                 })
                 .catch((e) => {

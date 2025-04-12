@@ -133,19 +133,6 @@ export const useUserDetailsStore = defineStore('userDetails', {
 
             var url = '/users/theme/' + this.userId + '/edit';
             fetch(url, requestOptions);
-        },
-        async updateTokens(tokensNeeded) {
-            // API call
-            const requestOptions = {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    tokensNeeded: tokensNeeded
-                })
-            };
-
-            var url = '/users/tokens/' + this.userId + '/update';
-            fetch(url, requestOptions);
         }
     }
 });
