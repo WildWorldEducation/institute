@@ -1375,7 +1375,7 @@ export default {
                         <h2 class="h4 secondary-heading">Introduction</h2>
                         <div
                             class="bg-white rounded p-2"
-                            v-html="skill.introduction"
+                            v-html="skill.intro_sentence"
                         ></div>
                     </div>
 
