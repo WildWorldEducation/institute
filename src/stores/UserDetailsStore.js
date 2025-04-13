@@ -64,6 +64,10 @@ export const useUserDetailsStore = defineStore('userDetails', {
                     await this.getInstructor();
                 }
 
+                console.log(data.subjectFilters)
+                // May Need to convert to save in database later
+
+                //this.subSubjectsFilters = data.subjectFilters.map(data => { return { skillName: data, isLeaf: false } })
                 return this.$state;
             }
         },

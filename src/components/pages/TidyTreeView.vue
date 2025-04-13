@@ -56,7 +56,19 @@ export default {
             activeFilteredSubject: null,
             openSubFilterMenu: false,
             // Additional filter that contains nodes need to showing
-            subSubjectsFilters: []
+            subSubjectsFilters: [],
+            // Hard coded skills array that need additional filter
+            skillsNeedMoreFilter: [
+                'Language',
+                'History',
+                'Science and Invention'
+            ],
+            additionalFilterPosition: { top: 0, left: 0 },
+            // Had to using one object to pass down to TidyTreeSubSubjectFilter so we can watch it
+            additionalFilterData: {
+                additionalFilterPosition: null,
+                activeFilteredSubject: null
+            }
         };
     },
     async created() {
@@ -216,10 +228,24 @@ export default {
             }
 
             // we open the submenu for chosen subject child filter
-            if (isSkillGetShowing) {
+            const isSkillNeedAdditionalFilter = this.skillsNeedMoreFilter.find(
+                (skillName) => skillName === subject
+            );
+
+            if (isSkillGetShowing && isSkillNeedAdditionalFilter) {
                 this.activeFilteredSubject =
                     this.$refs.childComponent.findNodeWithName(subject);
                 this.openSubFilterMenu = true;
+                // get button position
+                const buttonPosition = this.getFilterButtonPosition(subject);
+                this.additionalFilterPosition.top = Math.ceil(
+                    buttonPosition.top
+                );
+                this.additionalFilterPosition.left =
+                    Math.ceil(buttonPosition.right) + 4;
+                // handle Science and Invention skill name case
+            } else {
+                this.openSubFilterMenu = false;
             }
         },
         toggleisUnlockedSkillsFilter() {
@@ -412,15 +438,11 @@ export default {
         },
         handleFilterButtonClick(skillName) {
             this.updateSubjectFilters(skillName);
-            this.subSubjectsFilters =
-                this.userDetailsStore.updateSubSubjectFilter(
-                    {
-                        skillName: skillName,
-                        parent: 0
-                    },
-                    this.subSubjectsFilters
-                );
-            console.log(this.subSubjectsFilters);
+            this.additionalFilterData = {
+                additionalFilterPosition: this.additionalFilterPosition,
+                activeFilteredSubject: this.activeFilteredSubject
+            };
+
             this.$refs.childComponent.filter(
                 this.gradeFilter,
                 this.subjectFilters
@@ -432,6 +454,33 @@ export default {
                 this.gradeFilter,
                 this.subjectFilters
             );
+        },
+
+        getFilterButtonPosition(subjectName) {
+            let resultObj = { top: 0, right: 0 };
+            switch (subjectName) {
+                case 'History':
+                    resultObj.right =
+                        this.$refs.HistoryFilterBtn.getBoundingClientRect().right;
+                    resultObj.top =
+                        this.$refs.HistoryFilterBtn.getBoundingClientRect().top;
+                    break;
+                case 'Language':
+                    resultObj.right =
+                        this.$refs.LanguageFilterBtn.getBoundingClientRect().right;
+                    resultObj.top =
+                        this.$refs.LanguageFilterBtn.getBoundingClientRect().top;
+                    break;
+                case 'Science and Invention':
+                    resultObj.right =
+                        this.$refs.ScienceAndInventionFilterBtn.getBoundingClientRect().right;
+                    resultObj.top =
+                        this.$refs.ScienceAndInventionFilterBtn.getBoundingClientRect().top;
+                    break;
+                default:
+                    break;
+            }
+            return resultObj;
         }
     }
 };
@@ -846,7 +895,7 @@ export default {
         </div>
     </div>
 
-    <!-- Left root subject filters  -->
+    <!-- Left root subject filters  For logged in users-->
     <div class="tablet-and-up-legend position-absolute left-legend-div">
         <div>
             <div
@@ -858,6 +907,7 @@ export default {
                 class="d-flex flex-column"
             >
                 <button
+                    ref="LanguageFilterBtn"
                     v-if="
                         !cohortsStore.cohortFilteredSubjects.includes(
                             'Language'
@@ -900,6 +950,7 @@ export default {
                     Math
                 </button>
                 <button
+                    ref="HistoryFilterBtn"
                     v-if="
                         !cohortsStore.cohortFilteredSubjects.includes('History')
                     "
@@ -949,6 +1000,7 @@ export default {
                     Computer Science
                 </button>
                 <button
+                    ref="ScienceAndInventionFilterBtn"
                     v-if="
                         !cohortsStore.cohortFilteredSubjects.includes(
                             'Science & Invention'
@@ -1179,6 +1231,8 @@ export default {
         :parentSkill="activeFilteredSubject"
         :openSubFilterMenu="openSubFilterMenu"
         :parents="[activeFilteredSubject?.data.skill_name]"
+        :position="additionalFilterPosition"
+        :additionalFilterData="additionalFilterData"
     />
 
     <!-- Filter for showing only unlocked skills in bottom left corner -->

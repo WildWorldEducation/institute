@@ -1,17 +1,31 @@
 <script>
+import { handleError } from 'vue';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
         return {
-            userDetailsStore
+            userDetailsStore,
+            top: '0px',
+            left: '0px'
         };
     },
-    props: ['parentSkill', 'openSubFilterMenu', 'filterSkillTree', 'parents'],
+    props: [
+        'parentSkill',
+        'openSubFilterMenu',
+        'filterSkillTree',
+        'parents',
+
+        'additionalFilterData'
+    ],
     data() {
         return {
-            showSkills: []
+            showSkills: [],
+            position: null,
+            // string position with px suffix for css
+            top: '0px',
+            left: '0px'
         };
     },
     computed: {},
@@ -33,11 +47,30 @@ export default {
         }
     },
     watch: {
-        parentSkill: {
+        additionalFilterData: {
             handler(newItem, oldItem) {
-                this.showSkills = newItem.children;
-            }
+                console.log(newItem);
+                this.showSkills = newItem.activeFilteredSubject.children;
+                this.position = newItem.additionalFilterPosition;
+                if (this.position) {
+                    this.top = this.position.top + 'px';
+                    this.left = this.position.left + 'px';
+                }
+            },
+            deep: true
         }
+        // parentSkill: {
+        //     handler(newItem, oldItem) {
+        //         this.showSkills = newItem.children;
+        //     }
+        // },
+        // position: {
+        //     handlingPositionChange(newItem) {
+        //         console.log('solland: ');
+        //         console.log(newItem);
+        //     },
+        //     deep: true
+        // }
     }
 };
 </script>
@@ -57,8 +90,8 @@ export default {
 <style scoped>
 .submenuBase {
     position: absolute;
-    top: 50%;
-    left: 15%;
+    top: v-bind(top);
+    left: v-bind(left);
     background-color: rgba(127, 255, 212, 0.501);
     border: 2px solid --primary-color;
 }
