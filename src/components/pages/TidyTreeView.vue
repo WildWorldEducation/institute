@@ -57,10 +57,19 @@ export default {
         };
     },
     async created() {
-        // To allow funcders to quickly see the site, without having to log in.
+        // To allow funders to quickly see the site, without having to log in.
         if (this.$route.query.dummyAccount == 'true') {
             this.autoLogin();
         }
+
+        // Meta description for browser tab, Google Search snippet and SEO
+        // (Meta title added in router file already)
+        document
+            .querySelector('meta[name="description"]')
+            .setAttribute(
+                'content',
+                'Create a roadmap and visualize progression for your learning journey.'
+            );
 
         // Hide subject filters for subjects that have been filtered from student, by instructor.
         if (this.sessionDetailsStore.isLoggedIn == true) {
