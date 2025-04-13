@@ -13,7 +13,7 @@ const router = createRouter({
             path: '/skill-tree',
             name: 'skill-tree',
             component: () => import('../components/pages/TidyTreeView.vue'),
-            meta: { preventZoom: true, title: 'Skill tree' }
+            meta: { preventZoom: true, title: 'Skill Tree' }
         },
         {
             path: '/learning-tracks',
@@ -39,7 +39,8 @@ const router = createRouter({
             component: () => import('../components/pages/HubView.vue'),
             meta: {
                 requiresAuth: false,
-                roles: ['student', 'admin']
+                roles: ['student', 'admin'],
+                title: 'Search'
             }
         },
         {
@@ -480,7 +481,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
     // Title tag.
-    const baseTitle = 'The Collins Institute';
+    const baseTitle = 'Parrhesia';
     if (to.meta.title) {
         document.title = `${to.meta.title} - ${baseTitle}`;
     } else {

@@ -40,6 +40,15 @@ export default {
         }
     },
     async created() {
+        // Meta description for browser tab, Google Search snippet and SEO
+        // (Meta title added in router file already)
+        document
+            .querySelector('meta[name="description"]')
+            .setAttribute(
+                'content',
+                'Search for a skill or profession you want to learn about.'
+            );
+        // Check tutorial complete
         if (this.sessionDetailsStore.isLoggedIn) this.checkIfTutorialComplete();
     },
     methods: {
