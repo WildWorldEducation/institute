@@ -213,8 +213,11 @@ export default {
 
             await this.getLearningObjectives();
 
-            // Meta title for SEO
-            document.title = this.skill.name + ' - The Collins Institute';
+            // Meta title and description for browser tab, Google Search snippet and SEO
+            document.title = this.skill.name + ' - Parrhesia';
+            document
+                .querySelector('meta[name="description"]')
+                .setAttribute('content', this.skill.intro_sentence);
 
             //Load skill filters
             this.getSkillFilters();
@@ -1375,7 +1378,7 @@ export default {
                         <h2 class="h4 secondary-heading">Introduction</h2>
                         <div
                             class="bg-white rounded p-2"
-                            v-html="skill.introduction"
+                            v-html="skill.intro_sentence"
                         ></div>
                     </div>
 
