@@ -158,7 +158,6 @@ export const useUserDetailsStore = defineStore('userDetails', {
             const isInFilterArray = this.subSubjectsFilters.find(node => node.skillName === filterObject.skillName)
             if (isInFilterArray) {
                 this.subSubjectsFilters = this.subSubjectsFilters.filter(node => node.skillName !== filterObject.skillName);
-
                 return
             } else {
                 this.subSubjectsFilters.push(obj);
@@ -175,6 +174,5 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.subSubjectsFilters[haveChildNodeIndex].isLeaf = false;
             }
         },
-
     }
 });

@@ -77,12 +77,22 @@ export default {
 
 <template>
     <div v-if="openSubFilterMenu" class="submenuBase">
-        <div>Show all</div>
-        <div
-            v-for="node in showSkills"
-            @click="updateSubjectFilter(node.data.skill_name)"
-        >
-            {{ node.data.skill_name }}
+        {{ JSON.stringify(userDetailsStore.subSubjectsFilters) }}
+        <div v-for="node in showSkills">
+            <button
+                @click="updateSubjectFilter(node.data.skill_name)"
+                class="btn mb-2"
+                :class="{
+                    'chosen-subject': userDetailsStore.subSubjectsFilters.find(
+                        (skill) => skill.skillName === node.data.skill_name
+                    ),
+                    'hidden-subject': !userDetailsStore.subSubjectsFilters.find(
+                        (skill) => skill.skillName === node.data.skill_name
+                    )
+                }"
+            >
+                {{ node.data.skill_name }}
+            </button>
         </div>
     </div>
 </template>
@@ -92,7 +102,57 @@ export default {
     position: absolute;
     top: v-bind(top);
     left: v-bind(left);
-    background-color: rgba(127, 255, 212, 0.501);
-    border: 2px solid --primary-color;
+
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 5px 10px;
+}
+
+/* Root subject filters */
+.chosen-subject,
+.switch-btn {
+    background-color: var(--primary-color) !important;
+    color: var(--primary-contrast-color) !important;
+    opacity: 1;
+}
+
+.chosen-subject:active,
+.chosen-subject:focus,
+.switch-btn:hover {
+    color: var(--primary-contrast-color) !important;
+    opacity: 1 !important;
+}
+
+.btn:active,
+.btn:focus {
+    color: var(--primary-contrast-color);
+    border: 1px solid black;
+}
+
+.chosen-subject:hover {
+    opacity: 0.5;
+    color: var(--primary-contrast-color) !important;
+    border: 1px solid black;
+}
+
+.hidden-subject {
+    color: var(--primary-contrast-color);
+    background-color: var(--primary-color) !important;
+    opacity: 0.5;
+}
+
+.hidden-subject:hover {
+    background-color: var(--primary-color) !important;
+    color: var(--primary-contrast-color);
+    border: 1px solid black;
+    opacity: 1;
+}
+
+.hidden-subject:active,
+.hidden-subject:focus {
+    background-color: var(--primary-color) !important;
+    color: var(--primary-contrast-color);
+    border: 1px solid black;
+    opacity: 0.5;
 }
 </style>
