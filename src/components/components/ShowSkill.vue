@@ -213,8 +213,11 @@ export default {
 
             await this.getLearningObjectives();
 
-            // Meta title for SEO
+            // Meta title and description for browser tab, Google Search snippet and SEO
             document.title = this.skill.name + ' - Parrhesia';
+            document
+                .querySelector('meta[name="description"]')
+                .setAttribute('content', this.skill.intro_sentence);
 
             //Load skill filters
             this.getSkillFilters();
