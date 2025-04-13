@@ -13,7 +13,7 @@ const router = createRouter({
             path: '/skill-tree',
             name: 'skill-tree',
             component: () => import('../components/pages/TidyTreeView.vue'),
-            meta: { preventZoom: true, title: 'Skill tree' }
+            meta: { preventZoom: true, title: 'Skill Tree' }
         },
         {
             path: '/learning-tracks',
