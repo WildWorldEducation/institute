@@ -17,8 +17,7 @@ export default {
             monthlyTokenUsage: null,
             year: 0,
             month: '',
-            isAITokenLimitReached: false,
-            tokenLimit: 0
+            isAITokenLimitReached: false
         };
     },
     async mounted() {
@@ -126,15 +125,16 @@ export default {
         </div>
         <hr />
         <div class="row mt-4">
-            <div class="col">
+            <!-- Free plan -->
+            <div class="col-md mb-3">
                 <h2 class="secondary-heading h4">Free plan</h2>
                 <p>
                     <strong>Token limit:</strong>
                     {{ this.settingsStore.freePlanTokenLimit.toLocaleString() }}
                 </p>
-                <!-- Buy subscription -->
             </div>
-            <div class="col">
+            <!-- Capped plan -->
+            <div class="col-md mb-3">
                 <h2 class="secondary-heading h4">Capped plan</h2>
                 <p>Ideal for moderate use</p>
                 <p>$20 / month</p>
@@ -144,15 +144,23 @@ export default {
                         this.settingsStore.cappedPlanTokenLimit.toLocaleString()
                     }}
                 </p>
+                <!-- Buy subscription -->
                 <button
+                    v-if="this.userDetailsStore.subscriptionTier == 'free'"
                     @click="checkout('capped')"
                     class="btn primary-btn mt-2"
                 >
                     buy
                 </button>
-                <!-- Buy subscription -->
+                <button
+                    v-if="this.userDetailsStore.subscriptionTier == 'capped'"
+                    disabled
+                    class="btn primary-btn mt-2"
+                >
+                    current plan
+                </button>
             </div>
-            <div class="col">
+            <div class="col-md mb-3">
                 <h2 class="secondary-heading h4">Infinite plan</h2>
                 <p>Ideal for daily use</p>
                 <p>$100 / month</p>
@@ -161,10 +169,17 @@ export default {
                     Infinite
                 </p>
                 <button
+                    v-if="this.userDetailsStore.subscriptionTier == 'free'"
                     @click="checkout('infinite')"
                     class="btn primary-btn mt-2"
                 >
                     buy
+                </button>
+                <button
+                    v-if="this.userDetailsStore.subscriptionTier == 'capped'"
+                    class="btn primary-btn mt-2"
+                >
+                    upgrade
                 </button>
             </div>
         </div>
