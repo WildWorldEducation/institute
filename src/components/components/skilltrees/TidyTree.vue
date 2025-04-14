@@ -1163,8 +1163,6 @@ export default {
                 children: this.skill.children
             };
 
-            console.log('filter in store: ');
-            console.log(this.userDetailsStore.subSubjectsFilters);
             // ADDITIONAL FILTER FOR SUB-SKILL
             if (this.userDetailsStore.subSubjectsFilters.length > 0) {
                 const newUserSkill =

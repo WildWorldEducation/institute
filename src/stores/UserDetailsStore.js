@@ -26,7 +26,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
             cohortId: null,
             isSkillsLocked: 0,
             tokens: 0,
-            monthlyTokenUsage: 0
+            monthlyTokenUsage: 0,
+
         };
     },
     actions: {
@@ -174,5 +175,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.subSubjectsFilters[haveChildNodeIndex].isLeaf = false;
             }
         },
+
+
     }
 });

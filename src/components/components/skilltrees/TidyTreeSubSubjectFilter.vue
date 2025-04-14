@@ -36,13 +36,41 @@ export default {
                 skillName: skillName,
                 parent: this.parentSkill.data.skill_name
             };
-            // update the sub-subject filter array in userDetailsStore
-            this.$parent.subSubjectFilterObject =
-                this.userDetailsStore.updateSubSubjectFilter(
-                    subSubjectFilterObject,
-                    this.$parent.subSubjectsFilters
-                );
 
+            // update the sub-subject filter array in userDetailsStore
+            this.userDetailsStore.updateSubSubjectFilter(
+                subSubjectFilterObject,
+                this.$parent.subSubjectsFilters
+            );
+
+            // Handle the case where there are no skill of this sub-menu in the objects filter => add all skill back
+            let oneSkillInFilterList = false;
+            for (let index = 0; index < this.showSkills.length; index++) {
+                const element = this.showSkills[index];
+                oneSkillInFilterList =
+                    this.userDetailsStore.subSubjectsFilters.some(
+                        (skill) => skill.skillName === element.data.skill_name
+                    );
+            }
+
+            console.log('kaslain: ');
+            console.log(this.userDetailsStore.subSubjectsFilters);
+            console.log('Gelt');
+            console.log(oneSkillInFilterList);
+            if (!oneSkillInFilterList) {
+                // if no skill in showskills is in filter list we re-add all of them
+                this.showSkills.forEach((element) => {
+                    const subSubjectFilterObject = {
+                        skillName: element.data.skill_name,
+                        parent: this.parentSkill.data.skill_name
+                    };
+
+                    // update the sub-subject filter array in userDetailsStore
+                    this.userDetailsStore.updateSubSubjectFilter(
+                        subSubjectFilterObject
+                    );
+                });
+            }
             this.$parent.filterSkillTree();
         }
     },
@@ -77,17 +105,19 @@ export default {
 
 <template>
     <div v-if="openSubFilterMenu" class="submenuBase">
-        {{ JSON.stringify(userDetailsStore.subSubjectsFilters) }}
         <div v-for="node in showSkills">
             <button
                 @click="updateSubjectFilter(node.data.skill_name)"
                 class="btn mb-2"
                 :class="{
-                    'chosen-subject': userDetailsStore.subSubjectsFilters.find(
-                        (skill) => skill.skillName === node.data.skill_name
-                    ),
+                    'chosen-subject':
+                        userDetailsStore.subSubjectsFilters.find(
+                            (skill) => skill.skillName === node.data.skill_name
+                        ) || !userDetailsStore.subSubjectsFilters.length,
                     'hidden-subject': !userDetailsStore.subSubjectsFilters.find(
-                        (skill) => skill.skillName === node.data.skill_name
+                        (skill) =>
+                            skill.skillName === node.data.skill_name ||
+                            userDetailsStore.subjectFilters.length
                     )
                 }"
             >

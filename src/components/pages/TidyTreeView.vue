@@ -232,10 +232,38 @@ export default {
                 (skillName) => skillName === subject
             );
 
+            let nodeSkillName = subject;
+            // handle the special case of Science & Invention skill
+            if (nodeSkillName === 'Science and Invention') {
+                nodeSkillName = 'Science & Invention';
+            }
+
             if (isSkillGetShowing && isSkillNeedAdditionalFilter) {
                 this.activeFilteredSubject =
-                    this.$refs.childComponent.findNodeWithName(subject);
+                    this.$refs.childComponent.findNodeWithName(nodeSkillName);
                 this.openSubFilterMenu = true;
+
+                const isAlreadyInFilterList =
+                    this.userDetailsStore.subSubjectsFilters.find(
+                        (node) => node.skillName === subject
+                    );
+                // if the subject is not on the list before it mean that we have to add all of it children including itself to the subjects
+                if (!isAlreadyInFilterList) {
+                    const arrayOfFilterSubjects =
+                        this.activeFilteredSubject.children.map((subject) => {
+                            return {
+                                skillName: subject.data.skill_name,
+                                isLeaf: true
+                            };
+                        });
+                    arrayOfFilterSubjects.push({
+                        skillName: nodeSkillName,
+                        isLeaf: false
+                    });
+                    this.userDetailsStore.subSubjectsFilters =
+                        arrayOfFilterSubjects;
+                }
+
                 // get button position
                 const buttonPosition = this.getFilterButtonPosition(subject);
                 this.additionalFilterPosition.top = Math.ceil(

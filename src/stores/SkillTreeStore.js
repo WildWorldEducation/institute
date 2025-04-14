@@ -20,7 +20,9 @@ export const useSkillTreeStore = defineStore('skillTree', {
         studentSkills: [],
         studentSkillTree: [],
         // WE Save the node that can appear in result for later use
-        searchResultNodes: null
+        searchResultNodes: null,
+        // Store oldest nodes for filter manipulation
+        oldestNodes: []
     }),
     actions: {
         // API call for Collapsible Skill Tree.
@@ -61,6 +63,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
             }
             // Default is all levels.
             else this.verticalTreeUserSkills = await result.json();
+
         },
         // API call for Custom skill tree.
         async getCustomLearningTrackSkills() {
@@ -145,6 +148,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
             }
             return results;
         },
+        // Helper function for build skill tree based on filter method
         findSkillBaseOnName(skillName, treeObject) {
             let childSkill = treeObject.map(e => e);
             let stopFlag = false;
@@ -160,7 +164,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
             }
             return result
         },
-
+        // Helper function for build skill tree based on filter method
         findSkillBaseOnId(id, treeObject) {
             let childSkill = treeObject.map(e => e);
             let stopFlag = false;
@@ -175,33 +179,8 @@ export const useSkillTreeStore = defineStore('skillTree', {
             }
             return result
         },
-
+        // Helper function for build skill tree based on filter method
         findSkillDataOfFilterObject(filterObject, userSkills) {
-            // const baseSkillLists = userSkills;
-            // let newUserSkill = filterObject;
-            // let childNodes = newUserSkill;
-            // let stopFlag = false;
-            // const resultsArray = [];
-            // if (childNodes.length === 0) {
-            //     return
-            // }
-            // while (!stopFlag) {
-            //     let currentNode = childNodes.pop();
-            //     if (currentNode.children) {
-            //         childNodes = childNodes.concat(currentNode.children)
-            //     }
-            //     const nodeData = this.findSkillBaseOnName(currentNode.skillName, baseSkillLists);
-            //     const resultObject = {
-            //         node: nodeData,
-            //         // Leaf is the deepest node in a tree mean it will have no children
-            //         isLeaf: !currentNode.children
-            //     }
-            //     resultsArray.push(resultObject);
-            //     if (!childNodes.length) {
-            //         stopFlag = true
-            //     }
-            // }
-            // return resultsArray;
             let resultArray = [];
             filterObject.forEach(element => {
                 const nodeData = this.findSkillBaseOnName(element.skillName, userSkills);
@@ -212,6 +191,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
             return resultArray
 
         },
+        // Helper function for build skill tree based on filter method
         FindChildrenOfParent(nodeArrays, parentId) {
             let resultArray = nodeArrays.filter(node => {
 
@@ -268,6 +248,10 @@ export const useSkillTreeStore = defineStore('skillTree', {
             }
 
             return [resultObject]
+        },
+        // This Action is for external use
+        findNodeDataBaseOnName(skillName) {
+
         }
 
     }
