@@ -36,8 +36,6 @@ export default {
             ) {
                 this.isAITokenLimitReached = true;
             }
-            this.tokenLimit =
-                this.settingsStore.freePlanTokenLimit.toLocaleString();
         } else if (this.userDetailsStore.subscriptionTier == 'capped') {
             if (
                 this.settingsStore.cappedPlanTokenLimit <=
@@ -45,8 +43,6 @@ export default {
             ) {
                 this.isAITokenLimitReached = true;
             }
-            this.tokenLimit =
-                this.settingsStore.cappedPlanTokenLimit.toLocaleString();
         }
 
         // Work out date
@@ -70,12 +66,6 @@ export default {
 
         const d = new Date();
         this.month = month[d.getMonth()];
-
-        if (this.userDetailsStore.subscriptionTier == 'free') {
-        } else if (this.userDetailsStore.subscriptionTier == 'capped') {
-            this.tokenLimit = this.settingsStore.cappedPlanTokenLimit;
-        } else if (this.userDetailsStore.subscriptionTier == 'infinite') {
-        }
     },
     methods: {
         checkout(planType) {
@@ -121,13 +111,7 @@ export default {
             </li>
             <li>
                 <p>
-                    <strong>Plan token limit:</strong>
-                    {{ tokenLimit }}
-                </p>
-            </li>
-            <li>
-                <p>
-                    <strong>Current usage:</strong>
+                    <strong>Current token usage:</strong>
                     {{ userDetailsStore.monthlyTokenUsage.toLocaleString() }}
                 </p>
             </li>
@@ -140,24 +124,42 @@ export default {
             You are over the monthly free limit. You can't use the AI features
             until next month.
         </div>
-        <!-- <hr />
+        <hr />
         <div class="row mt-4">
+            <div class="col">
+                <h2 class="secondary-heading h4">Free plan</h2>
+                <p>
+                    <strong>Token limit:</strong>
+                    {{ this.settingsStore.freePlanTokenLimit.toLocaleString() }}
+                </p>
+                <!-- Buy subscription -->
+            </div>
             <div class="col">
                 <h2 class="secondary-heading h4">Capped plan</h2>
                 <p>Ideal for moderate use</p>
                 <p>$20 / month</p>
+                <p>
+                    <strong>Token limit:</strong>
+                    {{
+                        this.settingsStore.cappedPlanTokenLimit.toLocaleString()
+                    }}
+                </p>
                 <button
                     @click="checkout('capped')"
                     class="btn primary-btn mt-2"
                 >
                     buy
-                </button> -->
-        <!-- Buy subscription -->
-        <!-- </div>
+                </button>
+                <!-- Buy subscription -->
+            </div>
             <div class="col">
                 <h2 class="secondary-heading h4">Infinite plan</h2>
                 <p>Ideal for daily use</p>
                 <p>$100 / month</p>
+                <p>
+                    <strong>Token limit:</strong>
+                    Infinite
+                </p>
                 <button
                     @click="checkout('infinite')"
                     class="btn primary-btn mt-2"
@@ -165,7 +167,7 @@ export default {
                     buy
                 </button>
             </div>
-        </div> -->
+        </div>
     </div>
 </template>
 
