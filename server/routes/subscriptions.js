@@ -71,7 +71,8 @@ router.get('/success', async (req, res, next) => {
     // Save the new tokens to the DB
     let queryString = `
             UPDATE users
-            SET subscription_tier = ${conn.escape(subscriptionTier)}
+            SET subscription_tier = ${conn.escape(subscriptionTier)},
+            subscription_date = ${conn.escape(subscriptionTier)}
             WHERE id = ${conn.escape(userId)};
             `;
 
