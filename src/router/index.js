@@ -447,6 +447,7 @@ const router = createRouter({
                 roles: ['instructor', 'admin']
             }
         },
+        // Subscriptions
         {
             path: '/subscriptions',
             name: 'subscription',
@@ -469,8 +470,15 @@ const router = createRouter({
                     '../components/pages/subscriptions/SubscriptionErrorView.vue'
                 )
         },
+        {
+            path: '/subscriptions/manage',
+            name: 'manage-subscription',
+            component: () =>
+                import(
+                    '../components/pages/subscriptions/ManageSubscriptionView.vue'
+                )
+        },
 
-        // Subscriptions
         {
             path: '/:pathMatch(.*)*',
             name: 'not-found',

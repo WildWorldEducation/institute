@@ -17,7 +17,8 @@ export default {
             monthlyTokenUsage: null,
             year: 0,
             month: '',
-            isAITokenLimitReached: false
+            isAITokenLimitReached: false,
+            isMobileCheck: window.innerWidth
         };
     },
     async mounted() {
@@ -97,31 +98,56 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Subscription</h1>
-        <!-- Token usage stats -->
-        <h2 class="secondary-heading h4 mb-4">
-            Monthly AI usage: {{ month }}, {{ year }}
-        </h2>
-        <ul>
-            <li>
-                <p>
-                    <strong>Your subscription tier:</strong>
-                    {{ userDetailsStore.subscriptionTier.toLocaleString() }}
-                </p>
-            </li>
-            <li>
-                <p>
-                    <strong>Current token usage:</strong>
-                    {{ userDetailsStore.monthlyTokenUsage.toLocaleString() }}
-                </p>
-            </li>
-        </ul>
-        <div
-            v-if="isAITokenLimitReached"
-            class="alert alert-warning"
-            role="alert"
-        >
-            You are over the monthly free limit. You can't use the AI features
-            until next month.
+        <div class="row mt-4">
+            <div class="col-md mb-3">
+                <!-- Token usage stats -->
+                <h2 class="secondary-heading h4 mb-4">
+                    Monthly AI usage: {{ month }}, {{ year }}
+                </h2>
+                <ul>
+                    <li>
+                        <p>
+                            <strong>Your subscription tier:</strong>
+                            {{
+                                userDetailsStore.subscriptionTier.toLocaleString()
+                            }}
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            <strong>Current token usage:</strong>
+                            {{
+                                userDetailsStore.monthlyTokenUsage.toLocaleString()
+                            }}
+                        </p>
+                    </li>
+                </ul>
+                <div
+                    v-if="isAITokenLimitReached"
+                    class="alert alert-warning"
+                    role="alert"
+                >
+                    You are over the monthly free limit. You can't use the AI
+                    features until next month.
+                </div>
+            </div>
+            <div
+                class="col-md mb-3 d-flex"
+                :class="
+                    isMobileCheck > 576
+                        ? 'justify-content-end'
+                        : 'justify-content-center'
+                "
+            >
+                <!-- Manage  billing -->
+                <router-link
+                    v-if="this.userDetailsStore.subscriptionTier != 'free'"
+                    class="btn primary-btn"
+                    to="/subscriptions/manage"
+                >
+                    Manage billing
+                </router-link>
+            </div>
         </div>
         <hr />
         <div class="row mt-4">
