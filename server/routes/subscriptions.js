@@ -60,6 +60,8 @@ router.get('/success', async (req, res, next) => {
         req.query.session_id
     );
 
+    console.log(session.customer);
+
     let subscriptionTier = '';
     // Convert from cents
     if (session.amount_total == 2000) {
@@ -71,13 +73,39 @@ router.get('/success', async (req, res, next) => {
     // Save the new tokens to the DB
     let queryString = `
             UPDATE users
-            SET subscription_tier = ${conn.escape(subscriptionTier)}          
+            SET subscription_tier = ${conn.escape(subscriptionTier)},
+            stripe_customer_id = ${conn.escape(session.customer)}
             WHERE id = ${conn.escape(userId)};
             `;
 
     await query(queryString);
 
     res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
+});
+
+router.post('/create-customer-portal-session', async (req, res) => {
+    try {
+        userId = req.body.userId;
+
+        // Get Stripe customer ID of user
+        let queryString = `
+            SELECT stripe_customer_id
+            FROM users            
+            WHERE id = ${conn.escape(userId)};
+            `;
+        const result = await query(queryString);
+
+        console.log(result[0].stripe_customer_id);
+
+        const session = await stripe.billingPortal.sessions.create({
+            customer: result[0].stripe_customer_id,
+            return_url: 'https://example.com/account'
+        });
+
+        res.json({ url: session.url });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
 });
 
 // Export the router for app to use.

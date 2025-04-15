@@ -90,6 +90,28 @@ export default {
                 .catch((e) => {
                     console.error(e.error);
                 });
+        },
+        loadPortal() {
+            fetch('/subscriptions/create-customer-portal-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    // convert cents to dollars
+                    userId: this.userDetailsStore.userId
+                })
+            })
+                .then((res) => {
+                    if (res.ok) return res.json();
+                    return res.json().then((json) => Promise.reject(json));
+                })
+                .then(({ url }) => {
+                    window.location = url;
+                })
+                .catch((e) => {
+                    console.error(e.error);
+                });
         }
     }
 };
@@ -140,13 +162,13 @@ export default {
                 "
             >
                 <!-- Manage  billing -->
-                <router-link
+                <button
                     v-if="this.userDetailsStore.subscriptionTier != 'free'"
                     class="btn primary-btn"
-                    to="/subscriptions/manage"
+                    @click="loadPortal()"
                 >
                     Manage billing
-                </router-link>
+                </button>
             </div>
         </div>
         <hr />
