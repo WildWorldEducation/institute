@@ -34,9 +34,9 @@ const router = createRouter({
             }
         },
         {
-            path: '/hub',
-            name: 'hub',
-            component: () => import('../components/pages/HubView.vue'),
+            path: '/search',
+            name: 'search',
+            component: () => import('../components/pages/SearchView.vue'),
             meta: {
                 requiresAuth: false,
                 roles: ['student', 'admin'],
