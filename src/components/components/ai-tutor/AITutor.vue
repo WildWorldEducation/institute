@@ -75,11 +75,6 @@ export default {
 
         this.englishSkillLevel = this.skill.level.replace('_', ' ');
     },
-    updated() {
-        if (this.mode !== 'hide') {
-            this.scrollToMessageInput();
-        }
-    },
     methods: {
         // Setting this method to allow the user to be able to create a new line with shift+enter
         handleKeyDown(e) {
@@ -306,6 +301,9 @@ export default {
                 console.error(error);
                 this.waitForAIresponse = false;
             }
+            this.$nextTick(() => {
+                this.scrollToMessageInput();
+            });
         },
         async askQuestion() {
             if (this.waitForAIresponse) {
@@ -331,6 +329,9 @@ export default {
                 console.error(error);
                 this.waitForAIresponse = false;
             }
+            this.$nextTick(() => {
+                this.scrollToMessageInput();
+            });
         },
         async assessMastery() {
             for (let i = 0; i < this.assessingTutorChatHistory.length; i++) {
@@ -472,6 +473,9 @@ export default {
                 }
                 if (newItem.isStreaming) {
                     this.waitForAIresponse = false;
+                    this.$nextTick(() => {
+                        this.scrollToMessageInput();
+                    });
                 }
                 if (!newItem.isStreaming && newItem.isRunJustEnded) {
                     const assistantMessage = {
@@ -513,6 +517,9 @@ export default {
                         newMessageIndex,
                         assistantMessage.content[0].text.value
                     );
+                    this.$nextTick(() => {
+                        this.scrollToMessageInput();
+                    });
                 }
             },
             deep: true
