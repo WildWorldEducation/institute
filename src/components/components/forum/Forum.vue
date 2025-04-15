@@ -17,7 +17,7 @@ export default {
         };
     },
     emits: ['progressTutorial', 'skipTutorial'],
-    props: ['skillId', 'showTutorialTip10', 'userRole'],
+    props: ['skillId', 'showTutorialTip10', 'showTutorialTip6', 'userRole'],
     data() {
         return {
             sourcePosts: [],
@@ -299,6 +299,46 @@ export default {
                     </div>
                 </li>
             </ul>
+        </div>
+        <!-- Instructor tooltip at Forum section -->
+        <div
+            v-if="userDetailsStore.role == 'instructor' && showTutorialTip6"
+            class="tool-tip-base d-flex justify-content-end"
+        >
+            <div
+                class="explain-tool-tip triangle-bottom-right narrow-info-panel hovering-info-panel"
+            >
+                <div class="tool-tip-text">
+                    <p>You can add more sources and vote on them.</p>
+
+                    <button
+                        class="btn primary-btn"
+                        @click="$emit('progressTutorial', 6)"
+                    >
+                        close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Editor tooltip at Forum section -->
+        <div
+            v-if="userDetailsStore.role == 'editor' && showTutorialTip6"
+            class="tool-tip-base d-flex justify-content-end"
+        >
+            <div
+                class="explain-tool-tip triangle-bottom-right narrow-info-panel hovering-info-panel"
+            >
+                <div class="tool-tip-text">
+                    <p>You can add more sources and vote on them.</p>
+                    <button
+                        class="btn primary-btn"
+                        @click="$emit('progressTutorial', 6)"
+                    >
+                        close
+                    </button>
+                </div>
+            </div>
         </div>
         <!-- ---- | Post List In This Forum | ---- -->
 
