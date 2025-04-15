@@ -33,7 +33,8 @@ export default {
             isAudioPlaying: false,
             assistantData: null,
             waitForGenerateAudio: false,
-            currentIndexAudioPlaying: null
+            currentIndexAudioPlaying: null,
+            audioQueue: []
         };
     },
     async mounted() {
@@ -142,9 +143,13 @@ export default {
             this.playNewMessageAudio(index, responseData.speechUrl);
         },
         playAudio(index) {
-            if (this.isAudioPlaying == true) {
+            if (this.isAudioPlaying) {
                 this.isAudioPlaying = false;
                 this.audio.pause();
+
+                // Clear the queue to avoid unexpected audio playing next
+                this.audioQueue = [];
+                this.currentIndexAudioPlaying = null;
             } else {
                 let url = '';
                 for (let i = 0; i < this.messageList.length; i++) {
@@ -152,22 +157,59 @@ export default {
                         url = this.messageList[i].audio;
                     }
                 }
+
                 this.audio = new Audio(url);
+                this.audio.addEventListener('ended', () => {
+                    this.isAudioPlaying = false;
+                    this.currentIndexAudioPlaying = null;
+
+                    // Play the next audio in queue if available
+                    this.playNextInQueue();
+                });
+
                 this.isAudioPlaying = true;
                 this.currentIndexAudioPlaying = index;
                 this.audio.play();
             }
         },
         playNewMessageAudio(index, url) {
+            if (this.isAudioPlaying) {
+                this.audioQueue.push({ index, url });
+                return;
+            }
             this.audio = new Audio(url);
             this.audio.addEventListener('ended', () => {
                 this.isAudioPlaying = false;
                 this.currentIndexAudioPlaying = null;
+
+                // Check if there are more audios in the queue and play the next one
+                this.playNextInQueue();
             });
             this.isAudioPlaying = true;
             this.currentIndexAudioPlaying = index;
             this.audio.play();
             this.getMessages();
+        },
+
+        playNextInQueue() {
+            if (this.audioQueue.length > 0) {
+                // Get next audio from the queue
+                const nextAudio = this.audioQueue.shift();
+
+                // Then play it
+                this.audio = new Audio(nextAudio.url);
+                this.audio.addEventListener('ended', () => {
+                    this.isAudioPlaying = false;
+                    this.currentIndexAudioPlaying = null;
+
+                    // Continue playing the queue
+                    this.playNextInQueue();
+                });
+
+                this.isAudioPlaying = true;
+                this.currentIndexAudioPlaying = nextAudio.index;
+                this.audio.play();
+            }
         },
 
         // send Open AI message regarding the learning objective
