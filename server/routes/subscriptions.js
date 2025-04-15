@@ -95,11 +95,9 @@ router.post('/create-customer-portal-session', async (req, res) => {
             `;
         const result = await query(queryString);
 
-        console.log(result[0].stripe_customer_id);
-
         const session = await stripe.billingPortal.sessions.create({
             customer: result[0].stripe_customer_id,
-            return_url: 'https://example.com/account'
+            return_url: process.env.BASE_URL + '/subscriptions'
         });
 
         res.json({ url: session.url });
