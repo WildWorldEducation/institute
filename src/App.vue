@@ -528,6 +528,10 @@ Themes
     --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
 }
 
+
+.editor-theme .secondary-heading.white-heading {
+  color: white !important;
+}
 /* Background just for moving between the 2 skill trees */
 .skill-tree-transition {
     --background-color: var(--skill-tree-background-color);
