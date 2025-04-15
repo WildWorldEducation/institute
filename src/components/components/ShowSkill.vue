@@ -999,7 +999,7 @@ export default {
                         :class="
                             isMobileCheck > 576
                                 ? 'triangle-top-right'
-                                : 'triangle-top-left'
+                                : 'triangle-top-middle'
                         "
                     >
                         <div class="tool-tip-text">
@@ -1050,24 +1050,128 @@ export default {
                 >
                     <div class="d-flex justify-content-between">
                         <!-- Edit skill btn-->
-                        <router-link
-                            v-if="sessionDetailsStore.isLoggedIn"
-                            :to="'/skills/edit/' + skillUrl"
-                            class="edit-btn btn primary-btn me-1"
-                            ><span v-if="isMobileCheck > 576">Edit &nbsp;</span>
-                            <!-- Pencil icon -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="20"
-                                height="20"
-                                fill="white"
+                        <div>
+                            <router-link
+                                v-if="sessionDetailsStore.isLoggedIn"
+                                :to="'/skills/edit/' + skillUrl"
+                                class="edit-btn btn primary-btn me-1"
                             >
-                                <path
-                                    d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z"
-                                />
-                            </svg>
-                        </router-link>
+                                <span v-if="isMobileCheck > 576"
+                                    >Edit &nbsp;</span
+                                >
+                                <!-- Pencil icon -->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="20"
+                                    height="20"
+                                    fill="white"
+                                >
+                                    <path
+                                        d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z"
+                                    />
+                                </svg>
+                            </router-link>
+
+                            <!-- Mobile tooltip Student - positioned directly under the button -->
+                            <div
+                                v-if="
+                                    userDetailsStore.role == 'student' &&
+                                    showTutorialTip3 &&
+                                    isMobileCheck < 576
+                                "
+                                class="tool-tip-base d-flex justify-content-start"
+                            >
+                                <div
+                                    class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel"
+                                    style="width: 300px"
+                                >
+                                    <div class="tool-tip-text">
+                                        <p>
+                                            Suggesting edits to this page or its
+                                            test can increase your reputation
+                                            score.
+                                        </p>
+                                        <p>
+                                            If this skill is marked as locked,
+                                            you can also bookmark this skill by
+                                            marking it as a goal.
+                                        </p>
+                                        <div
+                                            class="d-flex justify-content-between"
+                                        >
+                                            <button
+                                                class="btn primary-btn"
+                                                @click="progressTutorial(3)"
+                                            >
+                                                next
+                                            </button>
+                                            <button
+                                                class="btn red-btn"
+                                                @click="skipTutorial"
+                                            >
+                                                exit tutorial
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Mobile tooltip Instructor - positioned directly under the button -->
+                            <div
+                                v-if="
+                                    userDetailsStore.role == 'instructor' &&
+                                    showTutorialTip2 &&
+                                    isMobileCheck < 576
+                                "
+                                class="tool-tip-base"
+                            >
+                                <div
+                                    class="explain-tool-tip triangle-top-left narrow-info-panel hovering-info-panel"
+                                    style="width: 300px"
+                                >
+                                    <div class="tool-tip-text">
+                                        <p>
+                                            Here you can suggest an edit to this
+                                            skill page.
+                                        </p>
+                                        <button
+                                            class="btn primary-btn"
+                                            @click="progressTutorial(2)"
+                                        >
+                                            next
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Mobile tooltip Editor - positioned directly under the button -->
+                            <div
+                                v-if="
+                                    userDetailsStore.role == 'editor' &&
+                                    showTutorialTip2 &&
+                                    isMobileCheck < 576
+                                "
+                                class="tool-tip-base"
+                            >
+                                <div
+                                    class="explain-tool-tip triangle-top-left hovering-info-panel"
+                                    style="width: 300px"
+                                >
+                                    <div class="tool-tip-text">
+                                        <p>
+                                            The "Edit" button allows you to edit
+                                            this skill page or its assessment.
+                                        </p>
+                                        <button
+                                            class="btn primary-btn"
+                                            @click="progressTutorial(2)"
+                                        >
+                                            next
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Show version history -->
                         <router-link
                             v-if="
@@ -1221,7 +1325,9 @@ export default {
                 <!-- Student tooltips -->
                 <div
                     v-if="
-                        userDetailsStore.role == 'student' && showTutorialTip3
+                        userDetailsStore.role == 'student' &&
+                        showTutorialTip3 &&
+                        isMobileCheck > 576
                     "
                     class="tool-tip-base"
                 >
@@ -1288,7 +1394,11 @@ export default {
                 </div>
                 <!-- Editor tooltips -->
                 <div
-                    v-if="userDetailsStore.role == 'editor' && showTutorialTip2"
+                    v-if="
+                        userDetailsStore.role == 'editor' &&
+                        showTutorialTip2 &&
+                        isMobileCheck > 576
+                    "
                     class="tool-tip-base"
                 >
                     <div
@@ -1334,7 +1444,8 @@ export default {
                 <div
                     v-if="
                         userDetailsStore.role == 'instructor' &&
-                        showTutorialTip2
+                        showTutorialTip2 &&
+                        isMobileCheck > 576
                     "
                     class="tool-tip-base"
                 >
