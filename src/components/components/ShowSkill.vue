@@ -2025,7 +2025,8 @@ p {
 
 /* Mastery Reqruirements Section */
 ::v-deep(.mastery-requirements-section p) {
-    font-family: 'Poppins', sans-serif !important;
+    font-family: 'Poppins' !important;
+    color: black !important;
 }
 
 /* Tooltips */
