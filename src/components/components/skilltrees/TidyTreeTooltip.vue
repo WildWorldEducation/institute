@@ -6,28 +6,13 @@ export default {
         return {
             introSentence: '',
             topPosition: 0,
-            leftPosition: 0
+            leftPosition: 0,
+            fallbackImageUrl: '' // Add a fallback image path
         };
     },
     computed: {},
     async mounted() {},
     methods: {
-        // getting first paragraph from html string (no longer used: DELETE)
-        // getFirstParagraph(htmlString) {
-        //     const el = document.createElement('html');
-        //     el.innerHTML = htmlString;
-        //     ``;
-
-        //     const listOfParagraph = el.getElementsByTagName('p');
-        //     if (!listOfParagraph || listOfParagraph.length === 0) {
-        //         return;
-        //     }
-        //     const firstSentence = listOfParagraph[0].innerText.split(
-        //         '. ',
-        //         1
-        //     )[0];
-        //     return firstSentence + '...';
-        // },
         getTooltipData(skillId) {
             fetch(`/skills/intro-sentence?skillId=${skillId}`)
                 .then((res) => {
@@ -35,6 +20,10 @@ export default {
                 })
                 .then((result) => {
                     this.introSentence = result[0].intro_sentence;
+                })
+                .catch((error) => {
+                    console.error('Error fetching tooltip data:', error);
+                    this.introSentence = 'Information unavailable';
                 });
         },
         snakeCaseToTitleCase(string) {
@@ -69,29 +58,48 @@ export default {
                 const inViewLeftPosition = windowWidth - tooltipWidth;
                 this.leftPosition = inViewLeftPosition + 'px';
             }
+        },
+        // Add the missing imageUrlAlternative method
+        imageUrlAlternative(event) {
+            // Set a fallback image when the original fails to load
+            event.target.src = this.fallbackImageUrl;
+            // You could also add a class to style the fallback image differently
+            event.target.classList.add('fallback-image');
         }
     },
     watch: {
         tooltipData: {
             deep: true,
             handler(newItem, oldItem) {
-                // only get tooltip data when skill id change
-                if (newItem.skillId != oldItem.skillId) {
+                // Check if newItem and oldItem exist before comparing
+                if (!newItem || !oldItem) return;
+
+                // Only get tooltip data when skill id changes
+                if (newItem.skillId !== oldItem.skillId) {
                     this.getTooltipData(newItem.skillId);
                 }
-                // adjust position to always show full height and width
-                this.adjustTooltipPosition(
-                    parseInt(newItem.xPosition),
-                    parseInt(newItem.yPosition)
-                );
-            }
+
+                // Make sure both position values are available
+                if (newItem.xPosition && newItem.yPosition) {
+                    // Adjust position to always show full height and width
+                    this.adjustTooltipPosition(
+                        parseInt(newItem.xPosition),
+                        parseInt(newItem.yPosition)
+                    );
+                }
+            },
+            immediate: true // Trigger on component creation
         }
     }
 };
 </script>
 
 <template>
-    <div ref="tooltipElement" v-if="tooltipData.showing" class="tool-tip">
+    <div
+        ref="tooltipElement"
+        v-if="tooltipData && tooltipData.showing"
+        class="tool-tip"
+    >
         <div class="tooltip-skill-name-background">
             <div class="d-flex tooltip-header">
                 <img
@@ -162,6 +170,11 @@ export default {
 
 .skill-thumbnail {
     padding: 2px;
+}
+
+.fallback-image {
+    opacity: 0.7;
+    border: 1px dashed #ccc;
 }
 
 .tooltip-skill-name-background {
