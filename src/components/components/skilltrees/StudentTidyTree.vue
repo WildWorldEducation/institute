@@ -247,11 +247,10 @@ export default {
             this.context.setLineDash([]);
 
             let ctx1 = this.context;
-            //   let ctx2 = this.hiddenCanvasContext;
+            let ctx2 = this.hiddenCanvasContext;
 
             // Visible context.
             // If not a domain, make node a circle.
-
             if (node.data.type != 'domain') {
                 ctx1.beginPath();
                 // Node size
@@ -284,6 +283,22 @@ export default {
                     ctx1.strokeStyle = skillColor;
                     ctx1.stroke();
                 }
+            } else {
+                // Domain node styling
+                ctx1.beginPath();
+                // Make domain nodes visually different - larger, semi-translucent
+                const radius = 12;
+                ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
+
+                // Semi-translucent fill to indicate "don't click here first"
+                ctx1.fillStyle = 'rgba(220, 220, 220, 0.6)';
+                ctx1.fill();
+
+                // Lighter border
+                ctx1.lineWidth = 1.5;
+                ctx1.strokeStyle = '#a0a0a0';
+                ctx1.setLineDash([3, 2]); // Dotted line to indicate "container"
+                ctx1.stroke();
             }
 
             // Text.
@@ -319,7 +334,8 @@ export default {
                     ctx1.beginPath();
                     ctx1.strokeStyle = '#FFF';
                     ctx1.lineWidth = 4;
-                    ctx1.fillStyle = '#849cab';
+                    // Changed domain text color to be lighter (previously #849cab)
+                    ctx1.fillStyle = '#aabbc5';
                     ctx1.direction = 'rtl';
                     ctx1.strokeText(
                         node.data.skill_name,
@@ -330,27 +346,27 @@ export default {
                 }
             }
 
-            // Hidden context.
-            // if (node.data.type != 'domain') {
-            //     ctx2.beginPath();
-            //     ctx2.moveTo(node.y, node.x);
-            //     ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
-            //     ctx2.fill();
-            // } else {
-            //     ctx2.beginPath();
-            //     ctx2.moveTo(node.y, node.x - 10);
-            //     // top left edge.
-            //     ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
-            //     // bottom left edge.
-            //     ctx2.lineTo(node.y, node.x - 10 + 20);
-            //     // bottom right edge.
-            //     ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
-            //     // closing the path automatically creates the top right edge.
-            //     ctx2.closePath();
-            //     ctx2.lineWidth = 2;
-            //     ctx2.fill();
-            //     ctx2.stroke();
-            // }
+            // Hidden context for interactivity
+            if (node.data.type != 'domain') {
+                ctx2.beginPath();
+                ctx2.moveTo(node.y, node.x);
+                ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+                ctx2.fill();
+            } else {
+                ctx2.beginPath();
+                ctx2.moveTo(node.y, node.x - 10);
+                // top left edge.
+                ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
+                // bottom left edge.
+                ctx2.lineTo(node.y, node.x - 10 + 20);
+                // bottom right edge.
+                ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
+                // closing the path automatically creates the top right edge.
+                ctx2.closePath();
+                ctx2.lineWidth = 2;
+                ctx2.fill();
+                ctx2.stroke();
+            }
         },
         drawLink(link) {
             const linkGenerator = d3
