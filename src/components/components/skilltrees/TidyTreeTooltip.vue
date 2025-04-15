@@ -13,6 +13,21 @@ export default {
     computed: {},
     async mounted() {},
     methods: {
+        // getting first paragraph from html string (no longer used: DELETE)
+        // getFirstParagraph(htmlString) {
+        //     const el = document.createElement('html');
+        //     el.innerHTML = htmlString;
+        //     ``;
+        //     const listOfParagraph = el.getElementsByTagName('p');
+        //     if (!listOfParagraph || listOfParagraph.length === 0) {
+        //         return;
+        //     }
+        //     const firstSentence = listOfParagraph[0].innerText.split(
+        //         '. ',
+        //         1
+        //     )[0];
+        //     return firstSentence + '...';
+        // },
         getTooltipData(skillId) {
             fetch(`/skills/intro-sentence?skillId=${skillId}`)
                 .then((res) => {
