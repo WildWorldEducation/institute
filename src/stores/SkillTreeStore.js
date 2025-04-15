@@ -25,6 +25,8 @@ export const useSkillTreeStore = defineStore('skillTree', {
         oldestNodes: []
     }),
     actions: {
+
+
         // API call for Collapsible Skill Tree.
         async getUserSkills() {
             const userDetailsStore = useUserDetailsStore();
@@ -166,18 +168,22 @@ export const useSkillTreeStore = defineStore('skillTree', {
         },
         // Helper function for build skill tree based on filter method
         findSkillBaseOnId(id, treeObject) {
-            let childSkill = treeObject.map(e => e);
-            let stopFlag = false;
-            let result = null;
-            while (childSkill.length > 0 || !stopFlag) {
-                let currentNode = childSkill.pop();
-                if (currentNode.id == id) {
-                    result = currentNode;
-                    stopFlag = true
-                };
-                childSkill = childSkill.concat(currentNode.children)
+            try {
+                let childSkill = treeObject.map(e => e);
+                let stopFlag = false;
+                let result = null;
+                while (childSkill.length > 0 || !stopFlag) {
+                    let currentNode = childSkill.pop();
+                    if (currentNode.id == id) {
+                        result = currentNode;
+                        stopFlag = true
+                    };
+                    childSkill = childSkill.concat(currentNode.children)
+                }
+                return result
+            } catch (error) {
+                return null
             }
-            return result
         },
         // Helper function for build skill tree based on filter method
         findSkillDataOfFilterObject(filterObject, userSkills) {
@@ -215,7 +221,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
 
             let leafNodes = nodesNeededToBuildTree.filter(node => node.isLeaf);
             let resultObject = null;
-
+            let resultArray = [];
             let stopFlag = false
             while (!stopFlag) {
                 const leafNode = leafNodes.pop();
@@ -223,31 +229,36 @@ export const useSkillTreeStore = defineStore('skillTree', {
                 nodesNeededToBuildTree = nodesNeededToBuildTree.filter(node => node.node.id !== leafNode.node.id);
                 const { leafNodeSiblings, nodeToFilter } = this.FindChildrenOfParent(nodesNeededToBuildTree, leafNode.node.parent, leafNodes, nodesNeededToBuildTree)
 
-                // remove sibling node from the stack
+                // remove sibling node from the leaf nodes stack and node need to build tree stack
                 leafNodes = leafNodes.filter(node => !nodeToFilter.includes(node));
-                nodesNeededToBuildTree = nodesNeededToBuildTree.filter(node => !nodeToFilter.includes(node))
+                //nodesNeededToBuildTree = nodesNeededToBuildTree.filter(node => !nodeToFilter.includes(node))
 
                 const parentNode = this.findSkillBaseOnId(leafNode.node.parent, userSkills);
+
                 if (!parentNode) {
-                    stopFlag = true
+                    console.log(leafNode)
+                    // Mean we found the oldest node
+                    resultObject = { ...leafNode.node }
+                    resultArray.push(resultObject);
                 } else {
+                    // current node is not the oldest one
                     const childOfParent = [...leafNodeSiblings, leafNode.node]
                     const parentIndex = nodesNeededToBuildTree.findIndex(node => node.node.id === parentNode.id);
                     resultObject = { ...parentNode, children: childOfParent }
                     nodesNeededToBuildTree[parentIndex] = { node: resultObject, isLeaf: false };
+                    // Also push the parent node back to leafs stack
+                    leafNodes.push({ node: resultObject, isLeaf: true });
 
                 }
 
                 if (!leafNodes.length) {
                     stopFlag = true
                 }
-
-                if (!nodesNeededToBuildTree.length) {
-                    stopFlag = true
-                }
             }
+            console.log('Nakari: ')
+            console.log(resultArray)
 
-            return [resultObject]
+            return resultArray
         },
         // This Action is for external use
         findNodeDataBaseOnName(skillName) {

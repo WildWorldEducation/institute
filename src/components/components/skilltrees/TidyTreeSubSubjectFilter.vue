@@ -53,10 +53,6 @@ export default {
                     );
             }
 
-            console.log('kaslain: ');
-            console.log(this.userDetailsStore.subSubjectsFilters);
-            console.log('Gelt');
-            console.log(oneSkillInFilterList);
             if (!oneSkillInFilterList) {
                 // if no skill in showskills is in filter list we re-add all of them
                 this.showSkills.forEach((element) => {
@@ -77,7 +73,6 @@ export default {
     watch: {
         additionalFilterData: {
             handler(newItem, oldItem) {
-                console.log(newItem);
                 this.showSkills = newItem.activeFilteredSubject.children;
                 this.position = newItem.additionalFilterPosition;
                 if (this.position) {
@@ -87,18 +82,6 @@ export default {
             },
             deep: true
         }
-        // parentSkill: {
-        //     handler(newItem, oldItem) {
-        //         this.showSkills = newItem.children;
-        //     }
-        // },
-        // position: {
-        //     handlingPositionChange(newItem) {
-        //         console.log('solland: ');
-        //         console.log(newItem);
-        //     },
-        //     deep: true
-        // }
     }
 };
 </script>
@@ -110,14 +93,11 @@ export default {
                 @click="updateSubjectFilter(node.data.skill_name)"
                 class="btn mb-2"
                 :class="{
-                    'chosen-subject':
-                        userDetailsStore.subSubjectsFilters.find(
-                            (skill) => skill.skillName === node.data.skill_name
-                        ) || !userDetailsStore.subSubjectsFilters.length,
+                    'chosen-subject': userDetailsStore.subSubjectsFilters.find(
+                        (skill) => skill.skillName === node.data.skill_name
+                    ),
                     'hidden-subject': !userDetailsStore.subSubjectsFilters.find(
-                        (skill) =>
-                            skill.skillName === node.data.skill_name ||
-                            userDetailsStore.subjectFilters.length
+                        (skill) => skill.skillName === node.data.skill_name
                     )
                 }"
             >

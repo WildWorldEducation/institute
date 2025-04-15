@@ -757,7 +757,7 @@ export default {
         },
         // Find node with name include
         findNodeWithName(searchString) {
-            // D3
+            // Because D3 has it own search node function so we will use it
             let breakLoop = false;
             let resultNode = null;
             this.root.each(function (node) {
@@ -1162,7 +1162,6 @@ export default {
                 skill_name: 'My skills',
                 children: this.skill.children
             };
-
             // ADDITIONAL FILTER FOR SUB-SKILL
             if (this.userDetailsStore.subSubjectsFilters.length > 0) {
                 const newUserSkill =
@@ -1170,6 +1169,8 @@ export default {
                         this.userDetailsStore.subSubjectsFilters,
                         userSkills
                     );
+                console.log('Imrik: ');
+                console.log(newUserSkill);
                 if (newUserSkill.length) {
                     this.data = {
                         skill_name: 'My skills',

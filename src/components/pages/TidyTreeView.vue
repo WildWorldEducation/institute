@@ -2,6 +2,7 @@
 import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import { useCohortsStore } from '../../stores/CohortsStore.js';
+import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 
 import SkillTreeSearchBar from '../components/skills-tree-search-bar/SkillTreeSearchBar.vue';
 import TidyTree from '../components/skilltrees/TidyTree.vue';
@@ -13,11 +14,12 @@ export default {
         const sessionDetailsStore = useSessionDetailsStore();
         const userDetailsStore = useUserDetailsStore();
         const cohortsStore = useCohortsStore();
-
+        const skillTreeStore = useSkillTreeStore();
         return {
             sessionDetailsStore,
             userDetailsStore,
-            cohortsStore
+            cohortsStore,
+            skillTreeStore
         };
     },
     data() {
@@ -145,7 +147,7 @@ export default {
             this.$refs.childComponent.resetPos();
         },
         // Filters
-        updateSubjectFilters(subject) {
+        async updateSubjectFilters(subject) {
             // Flag to determine if the click is to filtered the skill NOT un-filter it
             let isSkillGetShowing = false;
             // Only if user is logged in.
@@ -190,10 +192,28 @@ export default {
                     }
                 } else {
                     // add it
-                    // this.userDetailsStore.subjectFilters.push(subject);
-                    // turn on the flag
-                    console.log('is showing only this skill: ' + subject);
                     isSkillGetShowing = true;
+                    this.userDetailsStore.subjectFilters.push(subject);
+                    // Also we have to add all of it children to subject filter (for now may need change when we update to store filter object in db)
+                    if (!this.skillTreeStore.userSkills.length) {
+                        await this.skillTreeStore.getUserSkills();
+                    }
+                    const realSkillName = this.transformToOriginalName(subject);
+                    const nodeData = this.skillTreeStore.userSkills.find(
+                        (node) => node.skill_name === realSkillName
+                    );
+
+                    const filterObject = { skillName: subject, parent: 0 };
+                    this.userDetailsStore.updateSubSubjectFilter(filterObject);
+                    nodeData.children.forEach((childNode) => {
+                        const filterObject = {
+                            skillName: childNode.skill_name,
+                            parent: childNode.parent
+                        };
+                        this.userDetailsStore.updateSubSubjectFilter(
+                            filterObject
+                        );
+                    });
                 }
             }
             // If not logged in.
@@ -232,11 +252,7 @@ export default {
                 (skillName) => skillName === subject
             );
 
-            let nodeSkillName = subject;
-            // handle the special case of Science & Invention skill
-            if (nodeSkillName === 'Science and Invention') {
-                nodeSkillName = 'Science & Invention';
-            }
+            let nodeSkillName = this.transformToOriginalName(subject);
 
             if (isSkillGetShowing && isSkillNeedAdditionalFilter) {
                 this.activeFilteredSubject =
@@ -509,6 +525,15 @@ export default {
                     break;
             }
             return resultObj;
+        },
+
+        // handel Science and Invention skill name case
+        transformToOriginalName(subjectName) {
+            // handle the special case of Science & Invention skill
+            if (subjectName === 'Science and Invention') {
+                return 'Science & Invention';
+            }
+            return subjectName;
         }
     }
 };

@@ -154,8 +154,9 @@ export const useUserDetailsStore = defineStore('userDetails', {
         },
         // Using array to store what node is showing
         updateSubSubjectFilter(filterObject) {
+            console.log('control group')
             // initial the filter data if there are none
-            const obj = { skillName: filterObject.skillName, isLeaf: true }
+            const obj = { skillName: filterObject.skillName, isLeaf: filterObject.parent !== 0 ? true : false }
             const isInFilterArray = this.subSubjectsFilters.find(node => node.skillName === filterObject.skillName)
             if (isInFilterArray) {
                 this.subSubjectsFilters = this.subSubjectsFilters.filter(node => node.skillName !== filterObject.skillName);
@@ -167,13 +168,13 @@ export const useUserDetailsStore = defineStore('userDetails', {
             // find if the node in subSubject
             if (filterObject.parent !== 0) {
                 haveChildNodeIndex = this.subSubjectsFilters.findIndex(node => node.skillName === filterObject.parent)
-            } else {
-                haveChildNodeIndex = 0
             }
 
             if (haveChildNodeIndex >= 0) {
                 this.subSubjectsFilters[haveChildNodeIndex].isLeaf = false;
             }
+
+
         },
 
 
