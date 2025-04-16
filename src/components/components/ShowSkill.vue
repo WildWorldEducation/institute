@@ -1410,14 +1410,13 @@ export default {
                     <!-- Introduction -->
                     <div class="">
                         <h2 class="h4 secondary-heading">Introduction</h2>
-                        <div
-                            class="bg-white rounded p-2"
-                            v-html="skill.intro_sentence"
-                        ></div>
+                        <div class="bg-white rounded p-2">
+                            <p>{{ skill.intro_sentence }}</p>
+                        </div>
                     </div>
 
                     <!-- Mastery Requirements -->
-                    <div v-if="skill.type != 'domain'" class="mt-4">
+                    <div v-if="skill.type != 'domain'" class="mt-1">
                         <h2 class="h4 secondary-heading">
                             Requirements for Mastery
                         </h2>
