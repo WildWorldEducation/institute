@@ -581,7 +581,7 @@ router.beforeEach(async (to, from, next) => {
         to.name !== 'skill-tree' &&
         to.name !== 'show-skill' &&
         to.name !== 'instructor-signup' &&
-        to.name !== 'hub'
+        to.name !== 'search'
     ) {
         next({ name: 'skill-tree' });
         return;
