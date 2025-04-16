@@ -172,7 +172,7 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink
-                                to="/hub"
+                                to="/search"
                                 class="nav-link close-on-click"
                                 >Search</RouterLink
                             >
@@ -182,7 +182,7 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink
-                                to="/hub"
+                                to="/search"
                                 class="nav-link close-on-click"
                                 >Search</RouterLink
                             >

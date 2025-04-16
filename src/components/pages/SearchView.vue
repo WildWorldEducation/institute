@@ -1,7 +1,7 @@
 <script>
 // import components.
-import LastVisitedSkills from '../components/hub-components/LastVisitedSkills.vue';
-import RecommendedSkillsGenerator from '../components/hub-components/RecommendedSkillsGenerator.vue';
+import LastVisitedSkills from '../components/search-components/LastVisitedSkills.vue';
+import RecommendedSkillsGenerator from '../components/search-components/RecommendedSkillsGenerator.vue';
 // Import store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useSessionDetailsStore } from '../../stores/SessionDetailsStore';
