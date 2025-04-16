@@ -109,7 +109,7 @@ router.post('/create-customer-portal-session', async (req, res) => {
 
 // Stripe webhook - allow app to receive events from Stripe API
 const STRIPE_WEBHOOK_SECRET =
-    'whsec_dbd37de3ef8a7a9148983a3589c54550a47d48d533015343faf175c2f340ing secret is whsec_dbd37de2aab';
+    'whsec_dbd37de3ef8a7a9148983a3589c54550a47d48d533015343faf175c2f3402aab';
 router.post(
     '/webhooks',
     express.raw({ type: 'application/json' }),
