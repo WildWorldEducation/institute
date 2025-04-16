@@ -112,9 +112,10 @@ const STRIPE_WEBHOOK_SECRET =
     'whsec_dbd37de3ef8a7a9148983a3589c54550a47d48d533015343faf175c2f3402aab';
 router.post(
     '/webhooks',
-    express.raw({ type: 'application/json' }),
+    express.json({ type: 'application/json' }),
     async (req, res) => {
         try {
+            console.log(req.body);
             const sig = req.headers['stripe-signature'];
             const event = stripe.webhooks.constructEvent(
                 req.body,
