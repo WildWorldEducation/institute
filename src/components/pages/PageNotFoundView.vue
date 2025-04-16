@@ -15,7 +15,9 @@ export default {
         class="d-flex flex-column my-4 align-items-center bg-light rounded p-3"
     >
         <h1 class="text-center heading">Sorry, this page does not exist!</h1>
-        <router-link class="btn primary-btn my-3 back-btn" :to="{ name: 'hub' }"
+        <router-link
+            class="btn primary-btn my-3 back-btn"
+            :to="{ name: 'search' }"
             >Back to Hub</router-link
         >
     </div>

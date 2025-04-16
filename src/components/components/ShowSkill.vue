@@ -590,18 +590,11 @@ export default {
                     this.userDetailsStore.role === 'instructor'
                 ) {
                     this.showTutorialTip5 = false;
-                    this.showTutorialTip6 = true;
+                    this.markTutorialComplete();
                 }
                 this.showTutorialTip6 = true;
             } else if (step == 6) {
                 this.showTutorialTip6 = false;
-                if (
-                    this.userDetailsStore.role === 'editor' ||
-                    this.userDetailsStore.role === 'instructor'
-                ) {
-                    this.showTutorialTip6 = false;
-                    this.markTutorialComplete();
-                }
                 this.showTutorialTip7 = true;
             } else if (step == 7) {
                 this.showTutorialTip7 = false;
@@ -668,6 +661,7 @@ export default {
         scrollToTooltip() {
             this.$nextTick(() => {
                 if (
+                    this.userDetailsStore.role == 'student' &&
                     this.showTutorialTip6 &&
                     this.$refs.learningObjectivesSection
                 ) {
@@ -1294,12 +1288,20 @@ export default {
                                 The "Edit" button allows you to edit this skill
                                 page or its assessment.
                             </p>
-                            <button
-                                class="btn primary-btn"
-                                @click="progressTutorial(2)"
-                            >
-                                next
-                            </button>
+                            <div class="d-flex justify-content-between">
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(2)"
+                                >
+                                    next
+                                </button>
+                                <button
+                                    class="btn red-btn"
+                                    @click="skipTutorial"
+                                >
+                                    exit tutorial
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1316,12 +1318,20 @@ export default {
                                 friend, or flag this page as unhelpful or
                                 incorrect.
                             </p>
-                            <button
-                                class="btn primary-btn"
-                                @click="progressTutorial(3)"
-                            >
-                                next
-                            </button>
+                            <div class="d-flex justify-content-between">
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(3)"
+                                >
+                                    next
+                                </button>
+                                <button
+                                    class="btn red-btn"
+                                    @click="skipTutorial"
+                                >
+                                    exit tutorial
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1711,7 +1721,6 @@ export default {
                 <Forum
                     v-if="isSkillLoaded"
                     :skillId="skill.id"
-                    :showTutorialTip6="showTutorialTip6"
                     :showTutorialTip10="showTutorialTip10"
                     :userRole="userDetailsStore.role"
                     @skipTutorial="skipTutorial"
@@ -1966,10 +1975,7 @@ export default {
                         class="btn primary-btn"
                         @click="progressTutorial(5)"
                     >
-                        next
-                    </button>
-                    <button class="btn red-btn" @click="skipTutorial">
-                        exit tutorial
+                        close
                     </button>
                 </div>
             </div>
@@ -2025,7 +2031,8 @@ p {
 
 /* Mastery Reqruirements Section */
 ::v-deep(.mastery-requirements-section p) {
-    font-family: 'Poppins', sans-serif !important;
+    font-family: 'Poppins' !important;
+    color: black !important;
 }
 
 /* Tooltips */

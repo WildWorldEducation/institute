@@ -22,6 +22,11 @@ export default {
         };
     },
     async mounted() {
+        //Stripe external script
+        let stripeScript = document.createElement('script');
+        stripeScript.setAttribute('src', 'https://js.stripe.com/v3/');
+        document.head.appendChild(stripeScript);
+
         // Get free monthly AI token limit
         if (this.settingsStore.freePlanTokenLimit == 0) {
             await this.settingsStore.getSettings();

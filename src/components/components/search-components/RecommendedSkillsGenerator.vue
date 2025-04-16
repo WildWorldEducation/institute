@@ -150,7 +150,7 @@ export default {
                 id="searchBar"
                 type="text"
                 class="recommended-skills-input"
-                placeholder="What skill or profession do you want to learn?"
+                placeholder="Which skill or profession do you want to learn about?"
                 v-model="query"
             />
             <button

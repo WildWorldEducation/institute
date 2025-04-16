@@ -76,36 +76,6 @@
       display: none;
     }
 
-    /* SnapChat button */
-    .snapchat-creative-kit-share a {
-      width: 40px;
-      height: 40px;
-    }
-
-    .snapchat-creative-kit-share button {
-      width: 40px;
-      height: 40px;
-    }
-
-    .snapchat-creative-kit-share button div {
-      width: 40px;
-      height: 40px;
-    }
-
-    .snapchat-creative-kit-share a div {
-      width: 40px;
-      height: 40px;
-    }
-
-    .snapchat-creative-kit-share a div img {
-      width: 24px;
-      height: 24px;
-    }
-
-    .snapchat-creative-kit-share button div img {
-      width: 24px;
-      height: 24px;
-    }
 
     /* Does not work if in the component file.
     Is to remove underline from source link in source forum on skill pages.
@@ -147,22 +117,14 @@
   <!-- Summernote Lite -->
   <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-  <!-- Markdown formatter for OpenAI responses -->
-  <script src="
-  https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js
-  "></script>
+
   <!-- Markdown it Latex plugin for display math and science content -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
-
-  <script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath/texmath.min.js"></script>
   <!-- Plausible web analytics -->
   <script defer data-domain="parrhesia.io" src="https://plausible.io/js/script.js"></script>
   <!-- Google Search Console site ownership verification tag -->
   <meta name="google-site-verification" content="y1xesxPvb1GwyssylGalOU86R7lSYEzVfYum58QSI_E" />
 
-  <!-- Stripe checkout page -->
-  <script src="https://js.stripe.com/v3/"></script>
   <% if (environment==='production' ) { %>
     <link rel="stylesheet" href="<%= process.env.BASE_URL + '/'+ manifest['src/main.css'].file %>" />
     <% } %>

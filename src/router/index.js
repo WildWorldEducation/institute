@@ -34,9 +34,9 @@ const router = createRouter({
             }
         },
         {
-            path: '/hub',
-            name: 'hub',
-            component: () => import('../components/pages/HubView.vue'),
+            path: '/search',
+            name: 'search',
+            component: () => import('../components/pages/SearchView.vue'),
             meta: {
                 requiresAuth: false,
                 roles: ['student', 'admin'],
@@ -589,7 +589,7 @@ router.beforeEach(async (to, from, next) => {
         to.name !== 'skill-tree' &&
         to.name !== 'show-skill' &&
         to.name !== 'instructor-signup' &&
-        to.name !== 'hub'
+        to.name !== 'search'
     ) {
         next({ name: 'skill-tree' });
         return;
