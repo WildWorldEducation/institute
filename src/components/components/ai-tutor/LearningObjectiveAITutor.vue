@@ -37,6 +37,35 @@ export default {
         };
     },
     async mounted() {
+        /*
+         * External scripts needed for AI chat bots
+         */
+        // Katex for equation formatting
+        let katexScript = document.createElement('script');
+        katexScript.setAttribute(
+            'src',
+            'https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js'
+        );
+        document.head.appendChild(katexScript);
+
+        // Markdown formatting for math content
+        let texMathScript = document.createElement('script');
+        texMathScript.setAttribute(
+            'src',
+            'https://cdn.jsdelivr.net/npm/markdown-it-texmath/texmath.min.js'
+        );
+        document.head.appendChild(texMathScript);
+
+        // Markdown IT for chat text formatting
+        let markdownITScript = document.createElement('script');
+        markdownITScript.setAttribute(
+            'src',
+            'https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js'
+        );
+        document.head.appendChild(markdownITScript);
+
+        /// ------------
+
         this.englishSkillLevel = this.skillLevel.replace('_', ' ');
         // load thread.
         await this.getMessages();
