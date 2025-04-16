@@ -173,9 +173,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
             if (haveChildNodeIndex >= 0) {
                 this.subSubjectsFilters[haveChildNodeIndex].isLeaf = false;
             }
-
-
         },
+
 
 
     }

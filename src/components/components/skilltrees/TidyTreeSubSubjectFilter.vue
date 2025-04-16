@@ -32,41 +32,81 @@ export default {
     async mounted() {},
     methods: {
         updateSubjectFilter(skillName) {
+            // flag to determine the state of ours show skill in filter object
+            let state = 'no skill';
             const subSubjectFilterObject = {
                 skillName: skillName,
                 parent: this.parentSkill.data.skill_name
             };
-
-            // update the sub-subject filter array in userDetailsStore
-            this.userDetailsStore.updateSubSubjectFilter(
-                subSubjectFilterObject,
-                this.$parent.subSubjectsFilters
-            );
-
-            // Handle the case where there are no skill of this sub-menu in the objects filter => add all skill back
-            let oneSkillInFilterList = false;
+            // Handle the case when all skill is in filter objects and user click a skill => we remove other skill from filter object
+            // and only keep the one get clicked
+            const skillsInSubjectFilter = [];
             for (let index = 0; index < this.showSkills.length; index++) {
                 const element = this.showSkills[index];
-                oneSkillInFilterList =
-                    this.userDetailsStore.subSubjectsFilters.some(
-                        (skill) => skill.skillName === element.data.skill_name
+                const filterSkill =
+                    this.userDetailsStore.subSubjectsFilters.find(
+                        (node) => node.skillName === element.data.skill_name
                     );
+                if (filterSkill) {
+                    skillsInSubjectFilter.push(filterSkill);
+                }
             }
+            console.log('you teng');
+            console.log(skillsInSubjectFilter);
 
-            if (!oneSkillInFilterList) {
-                // if no skill in showskills is in filter list we re-add all of them
-                this.showSkills.forEach((element) => {
-                    const subSubjectFilterObject = {
-                        skillName: element.data.skill_name,
+            if (skillsInSubjectFilter.length === this.showSkills.length) {
+                // find other skill that need to remove from filter object
+                const skillsNeedRemove = this.showSkills.filter(
+                    (skill) => skill.data.skill_name !== skillName
+                );
+                skillsNeedRemove.forEach((skill) => {
+                    const filterObject = {
+                        skillName: skill.data.skill_name,
                         parent: this.parentSkill.data.skill_name
                     };
-
-                    // update the sub-subject filter array in userDetailsStore
-                    this.userDetailsStore.updateSubSubjectFilter(
-                        subSubjectFilterObject
-                    );
+                    this.userDetailsStore.updateSubSubjectFilter(filterObject);
                 });
+                state = 'Show a skill';
+            } else {
+                // update the sub-subject filter array in userDetailsStore
+                this.userDetailsStore.updateSubSubjectFilter(
+                    subSubjectFilterObject
+                );
             }
+
+            if (state === 'no skill') {
+                // Handle the case where there are no skill of this sub-menu in the objects filter => add all skill back
+                let oneSkillInFilterList = false;
+
+                // We find out if a skill in showskills is in filter obj. We only need one so using some and break
+                for (let index = 0; index < this.showSkills.length; index++) {
+                    const element = this.showSkills[index];
+                    oneSkillInFilterList =
+                        this.userDetailsStore.subSubjectsFilters.some(
+                            (skill) =>
+                                skill.skillName === element.data.skill_name
+                        );
+                    if (oneSkillInFilterList) {
+                        break;
+                    }
+                }
+
+                if (!oneSkillInFilterList) {
+                    // if no skill in showskills is in filter list we re-add all of them
+                    this.showSkills.forEach((element) => {
+                        const subSubjectFilterObject = {
+                            skillName: element.data.skill_name,
+                            parent: this.parentSkill.data.skill_name
+                        };
+
+                        // update the sub-subject filter array in userDetailsStore
+                        this.userDetailsStore.updateSubSubjectFilter(
+                            subSubjectFilterObject
+                        );
+                    });
+                }
+            }
+
             this.$parent.filterSkillTree();
         }
     },
