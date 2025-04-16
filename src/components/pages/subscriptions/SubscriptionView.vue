@@ -22,6 +22,11 @@ export default {
         };
     },
     async mounted() {
+        //Stripe exteral script
+        let recaptchaScript = document.createElement('script');
+        recaptchaScript.setAttribute('src', 'https://js.stripe.com/v3/');
+        document.head.appendChild(recaptchaScript);
+
         // Get free monthly AI token limit
         if (this.settingsStore.freePlanTokenLimit == 0) {
             await this.settingsStore.getSettings();
