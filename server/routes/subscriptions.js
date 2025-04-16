@@ -83,6 +83,7 @@ router.get('/success', async (req, res, next) => {
     res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
 });
 
+// Allow customer to make changes to subscription and billing
 router.post('/create-customer-portal-session', async (req, res) => {
     try {
         userId = req.body.userId;
@@ -105,6 +106,29 @@ router.post('/create-customer-portal-session', async (req, res) => {
         res.status(500).json({ error: e.message });
     }
 });
+
+// Stripe webhook - allow app to receive events from Stripe API
+const STRIPE_WEBHOOK_SECRET =
+    'whsec_dbd37de3ef8a7a9148983a3589c54550a47d48d533015343faf175c2f340ing secret is whsec_dbd37de2aab';
+router.post(
+    '/webhooks',
+    express.raw({ type: 'application/json' }),
+    async (req, res) => {
+        try {
+            const sig = req.headers['stripe-signature'];
+            const event = stripe.webhooks.constructEvent(
+                req.body,
+                sig,
+                STRIPE_WEBHOOK_SECRET
+            );
+            console.log(event);
+
+            return res.sendStatus(200);
+        } catch (e) {
+            res.status(500).json({ error: e.message });
+        }
+    }
+);
 
 // Export the router for app to use.
 module.exports = router;

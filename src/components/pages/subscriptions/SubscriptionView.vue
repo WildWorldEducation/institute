@@ -75,7 +75,6 @@ export default {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    // convert cents to dollars
                     userId: this.userDetailsStore.userId,
                     planType: planType
                 })
@@ -98,7 +97,6 @@ export default {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    // convert cents to dollars
                     userId: this.userDetailsStore.userId
                 })
             })
