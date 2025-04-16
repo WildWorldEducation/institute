@@ -405,7 +405,7 @@ export default {
                             showTutorialTip4 ||
                             showTutorialTip5)
                     "
-                    class="info-panel me-4 mt-1 bg-light"
+                    class="info-panel me-4 mt-1"
                 >
                     <div
                         v-if="showTutorialTip1_1"
@@ -532,7 +532,7 @@ export default {
                             showTutorialTip4 ||
                             showTutorialTip5)
                     "
-                    class="info-panel me-4 mt-1 bg-light"
+                    class="info-panel me-4 mt-1"
                 >
                     <div v-if="showTutorialTip2" class="tool-tip-base">
                         <div class="explain-tool-tip triangle-top-right">
@@ -642,7 +642,7 @@ export default {
                             showTutorialTip3 ||
                             showTutorialTip4)
                     "
-                    class="info-panel me-4 mt-1 bg-light"
+                    class="info-panel me-4 mt-1"
                 >
                     <div v-if="showTutorialTip2" class="tool-tip-base">
                         <div class="explain-tool-tip triangle-top-right">
