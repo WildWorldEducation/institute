@@ -36,7 +36,7 @@ router.post('/create-checkout-session', async (req, res) => {
             priceId = process.env.INFINITE_PLAN_PRICE_ID;
         }
         // console.log(req.body);
-        // console.log(req.body.priceId);
+        console.log(priceId);
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -154,7 +154,7 @@ router.post(
 
                     let updateSubQueryString = `
                         UPDATE users
-                        subscription_tier = 'free'
+                        SET subscription_tier = '${planType}'
                         WHERE stripe_customer_id = ${conn.escape(
                             stripeCustomerId
                         )};                         
