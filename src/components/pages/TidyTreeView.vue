@@ -148,6 +148,11 @@ export default {
         },
         // Filters
         async updateSubjectFilters(subject) {
+            // get full list of skill for student
+            if (!this.skillTreeStore.studentSkills.length) {
+                await this.skillTreeStore.getStudentSkills();
+            }
+
             // Flag to determine if the click is to filtered the skill NOT un-filter it
             let isSkillGetShowing = false;
             // Only if user is logged in.
@@ -261,7 +266,7 @@ export default {
                     this.subjectFilters.push(subject);
                 }
             }
-
+            /// ================================================================================
             // we open the submenu for chosen subject child filter
             const isSkillNeedAdditionalFilter = this.skillsNeedMoreFilter.find(
                 (skillName) => skillName === subject
@@ -271,7 +276,9 @@ export default {
 
             if (isSkillGetShowing && isSkillNeedAdditionalFilter) {
                 this.activeFilteredSubject =
-                    this.$refs.childComponent.findNodeWithName(nodeSkillName);
+                    this.skillTreeStore.studentSkills.find(
+                        (skill) => skill.skill_name === subject
+                    );
                 this.openSubFilterMenu = true;
 
                 const isAlreadyInFilterList =
@@ -283,7 +290,7 @@ export default {
                     const arrayOfFilterSubjects =
                         this.activeFilteredSubject.children.map((subject) => {
                             return {
-                                skillName: subject.data.skill_name,
+                                skillName: subject.skill_name,
                                 isLeaf: true
                             };
                         });
@@ -1298,7 +1305,7 @@ export default {
     <TidyTreeSubSubjectFilter
         :parentSkill="activeFilteredSubject"
         :openSubFilterMenu="openSubFilterMenu"
-        :parents="[activeFilteredSubject?.data.skill_name]"
+        :parents="[activeFilteredSubject?.skill_name]"
         :position="additionalFilterPosition"
         :additionalFilterData="additionalFilterData"
     />
