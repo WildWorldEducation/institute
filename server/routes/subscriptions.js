@@ -9,8 +9,8 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 
-// MomentJS
-const moment = require('moment');
+// // MomentJS
+// const moment = require('moment');
 
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_API_KEY);
@@ -64,14 +64,11 @@ router.get('/success', async (req, res, next) => {
     );
 
     let subscriptionTier = '';
-    let priceId = '';
     // Convert from cents
     if (session.amount_total == 2000) {
         subscriptionTier = 'capped';
-        priceId = process.env.CAPPED_PLAN_PRICE_ID;
     } else if (session.amount_total == 10000) {
         subscriptionTier = 'infinite';
-        priceId = process.env.INFINITE_PLAN_PRICE_ID;
     }
 
     // Save the new Stripe customer ID to the user table
@@ -84,23 +81,23 @@ router.get('/success', async (req, res, next) => {
 
     await query(usersTableQueryString);
 
-    // Current date time
-    const currentPeriodStart = moment().format('YYYY-MM-DD HH:mm:ss');
-    // Date time in one month
-    let currentPeriodEndMonth = moment()
-        .add(1, 'months')
-        .format('YYYY-MM-DD HH:mm:ss');
+    // // Current date time
+    // const currentPeriodStart = moment().format('YYYY-MM-DD HH:mm:ss');
+    // // Date time in one month
+    // let currentPeriodEndMonth = moment()
+    //     .add(1, 'months')
+    //     .format('YYYY-MM-DD HH:mm:ss');
 
     // Save the subscription details to the subscription table
-    let subscriptionTableQueryString = `
-            INSERT INTO subscriptions (user_id, stripe_subscription_id,
-            stripe_price_id, current_period_start, current_period_end, created_at)
-            VALUES (${conn.escape(userId)}, '${
-        session.subscription
-    }' , '${priceId}', '${currentPeriodStart}', '${currentPeriodEndMonth}', '${currentPeriodStart}');           
-            `;
+    // let subscriptionTableQueryString = `
+    //         INSERT INTO subscriptions (user_id, stripe_subscription_id,
+    //         stripe_price_id, current_period_start, current_period_end, created_at)
+    //         VALUES (${conn.escape(userId)}, '${
+    //     session.subscription
+    // }' , '${priceId}', '${currentPeriodStart}', '${currentPeriodEndMonth}', '${currentPeriodStart}');
+    //         `;
 
-    await query(subscriptionTableQueryString);
+    // await query(subscriptionTableQueryString);
 
     res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
 });
@@ -145,13 +142,43 @@ router.post(
                     console.log('subscriptionUpdated');
                     console.log(subscriptionUpdated);
                     stripeCustomerId = subscriptionUpdated.customer;
+                    newPriceId = subscriptionUpdated.plan.id;
+                    let planType = '';
+                    if (newPriceId == process.env.CAPPED_PLAN_PRICE_ID) {
+                        planType = 'capped';
+                    } else if (
+                        newPriceId == process.env.INFINITE_PLAN_PRICE_ID
+                    ) {
+                        planType = 'infinite';
+                    }
+
+                    let updateSubQueryString = `
+                        UPDATE users
+                        subscription_tier = 'free'
+                        WHERE stripe_customer_id = ${conn.escape(
+                            stripeCustomerId
+                        )};                         
+                    `;
+
+                    await query(updateSubQueryString);
+
                     // change tier to relevant one
                     break;
                 case 'customer.subscription.deleted':
-                    const subscriptionCancelled = event.data.object;
+                    const subscriptionEnded = event.data.object;
                     console.log('subscriptionCancelled');
-                    console.log(subscriptionCancelled);
-                    stripeCustomerId = subscriptionCancelled.customer;
+                    console.log(subscriptionEnded);
+                    stripeCustomerId = subscriptionEnded.customer;
+
+                    let endSubQueryString = `
+                        UPDATE users
+                        subscription_tier = 'free'
+                        WHERE stripe_customer_id = ${conn.escape(
+                            stripeCustomerId
+                        )};                         
+                    `;
+
+                    await query(endSubQueryString);
                     // set tier to "free"
                     break;
                 default:

@@ -226,12 +226,6 @@ export default {
                 >
                     buy
                 </button>
-                <button
-                    v-if="this.userDetailsStore.subscriptionTier == 'capped'"
-                    class="btn primary-btn mt-2"
-                >
-                    upgrade
-                </button>
             </div>
         </div>
     </div>
