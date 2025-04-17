@@ -156,13 +156,17 @@ export const useSkillTreeStore = defineStore('skillTree', {
             let stopFlag = false;
             let result = null;
 
-            while (childSkill.length > 0 || !stopFlag) {
+            while (!stopFlag) {
                 let currentNode = childSkill.pop();
-                if (currentNode.skill_name === skillName) {
-                    result = currentNode;
+                if (currentNode) {
+                    if (currentNode.skill_name === skillName) {
+                        result = currentNode;
+                        stopFlag = true
+                    };
+                    childSkill = childSkill.concat(currentNode.children)
+                } else {
                     stopFlag = true
-                };
-                childSkill = childSkill.concat(currentNode.children)
+                }
             }
             return result
         },
@@ -188,14 +192,16 @@ export const useSkillTreeStore = defineStore('skillTree', {
         // Helper function for build skill tree based on filter method
         findSkillDataOfFilterObject(filterObject, userSkills) {
             let resultArray = [];
-            filterObject.forEach(element => {
+            for (let index = 0; index < filterObject.length; index++) {
+                const element = filterObject[index];
+
                 const nodeData = this.findSkillBaseOnName(element.skillName, userSkills);
-
                 const object = { node: nodeData, isLeaf: element.isLeaf }
-                resultArray.push(object);
-            });
-            return resultArray
 
+                resultArray.push(object);
+            }
+
+            return resultArray
         },
         // Helper function for build skill tree based on filter method
         FindChildrenOfParent(nodeArrays, parentId) {
@@ -211,8 +217,10 @@ export const useSkillTreeStore = defineStore('skillTree', {
 
         // BUILD A NEW USER SKILL BASED ON FILTER PATHS
         buildUserSkillTreeBaseOnFilterObject(filterObject, userSkills) {
+            const localFilterObject = filterObject.map(e => e);
             console.log('jh')
-            let nodesNeededToBuildTree = this.findSkillDataOfFilterObject(filterObject, userSkills)
+            let nodesNeededToBuildTree = this.findSkillDataOfFilterObject(localFilterObject, userSkills)
+
 
 
             if (!nodesNeededToBuildTree?.length) {
@@ -220,6 +228,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
             }
 
             let leafNodes = nodesNeededToBuildTree.filter(node => node.isLeaf);
+
             let resultObject = null;
             let resultArray = [];
             let stopFlag = false
@@ -233,14 +242,8 @@ export const useSkillTreeStore = defineStore('skillTree', {
                 leafNodes = leafNodes.filter(node => !nodeToFilter.includes(node));
                 //nodesNeededToBuildTree = nodesNeededToBuildTree.filter(node => !nodeToFilter.includes(node))
 
-                const parentNode = this.findSkillBaseOnId(leafNode.node.parent, userSkills);
-
-                if (!parentNode) {
-                    console.log(leafNode)
-                    // Mean we found the oldest node
-                    resultObject = { ...leafNode.node }
-                    resultArray.push(resultObject);
-                } else {
+                if (leafNode.node.parent !== 0) {
+                    const parentNode = this.findSkillBaseOnId(leafNode.node.parent, userSkills);
                     // current node is not the oldest one
                     const childOfParent = [...leafNodeSiblings, leafNode.node]
                     const parentIndex = nodesNeededToBuildTree.findIndex(node => node.node.id === parentNode.id);
@@ -248,22 +251,19 @@ export const useSkillTreeStore = defineStore('skillTree', {
                     nodesNeededToBuildTree[parentIndex] = { node: resultObject, isLeaf: false };
                     // Also push the parent node back to leafs stack
                     leafNodes.push({ node: resultObject, isLeaf: true });
+                } else {
+                    // Mean we found the oldest node because 0 is an illegal id for skill 
+                    resultObject = { ...leafNode.node }
+
+                    resultArray.push(resultObject);
 
                 }
-
                 if (!leafNodes.length) {
                     stopFlag = true
                 }
             }
-            console.log('Nakari: ')
-            console.log(resultArray)
-
             return resultArray
         },
-        // This Action is for external use
-        findNodeDataBaseOnName(skillName) {
-
-        }
 
     }
 });

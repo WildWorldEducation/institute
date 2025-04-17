@@ -1162,6 +1162,7 @@ export default {
                 skill_name: 'My skills',
                 children: this.skill.children
             };
+
             // ADDITIONAL FILTER FOR SUB-SKILL
             if (this.userDetailsStore.subSubjectsFilters.length > 0) {
                 const newUserSkill =
@@ -1169,8 +1170,6 @@ export default {
                         this.userDetailsStore.subSubjectsFilters,
                         userSkills
                     );
-                console.log('Imrik: ');
-                console.log(newUserSkill);
                 if (newUserSkill.length) {
                     this.data = {
                         skill_name: 'My skills',

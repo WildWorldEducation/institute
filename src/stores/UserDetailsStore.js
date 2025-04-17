@@ -65,7 +65,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
                     await this.getInstructor();
                 }
 
-                console.log(data.subjectFilters)
+
                 // May Need to convert to save in database later
 
                 //this.subSubjectsFilters = data.subjectFilters.map(data => { return { skillName: data, isLeaf: false } })
@@ -154,7 +154,6 @@ export const useUserDetailsStore = defineStore('userDetails', {
         },
         // Using array to store what node is showing
         updateSubSubjectFilter(filterObject) {
-            console.log('control group')
             // initial the filter data if there are none
             const obj = { skillName: filterObject.skillName, isLeaf: filterObject.parent !== 0 ? true : false }
             const isInFilterArray = this.subSubjectsFilters.find(node => node.skillName === filterObject.skillName)
@@ -175,7 +174,24 @@ export const useUserDetailsStore = defineStore('userDetails', {
             }
         },
 
-
+        removeSkillFromFilter(skillNodeData) {
+            this.subSubjectsFilters = this.subSubjectsFilters.filter(filterObject => filterObject.skillName !== skillNodeData.skill_name)
+            let childStack = skillNodeData.children;
+            if (!childStack.length) {
+                return
+            }
+            let stopFlag = false;
+            while (!stopFlag) {
+                if (!childStack.length) {
+                    stopFlag = true
+                }
+                const currentNode = childStack.pop();
+                if (currentNode) {
+                    this.subSubjectsFilters = this.subSubjectsFilters.filter(subjectFilter => subjectFilter.skillName !== currentNode.skill_name);
+                    childStack = childStack.concat(currentNode.children)
+                }
+            }
+        }
 
     }
 });

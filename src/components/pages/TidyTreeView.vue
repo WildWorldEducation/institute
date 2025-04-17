@@ -172,6 +172,21 @@ export default {
                             (e) => e !== subject
                         );
 
+                    // Remove the skill from subSubject skill Tree
+                    if (!this.skillTreeStore.userSkills.length) {
+                        await this.skillTreeStore.getUserSkills();
+                    }
+
+                    const subjectNodeData =
+                        this.skillTreeStore.findSkillBaseOnName(
+                            subject,
+                            this.skillTreeStore.userSkills
+                        );
+
+                    this.userDetailsStore.removeSkillFromFilter(
+                        subjectNodeData
+                    );
+
                     // if array is empty, add all subjects.
                     if (this.userDetailsStore.subjectFilters.length == 0) {
                         this.userDetailsStore.subjectFilters.push('Language');
@@ -480,8 +495,8 @@ export default {
             this.isTutorialComplete = true;
             this.markTutorialComplete();
         },
-        handleFilterButtonClick(skillName) {
-            this.updateSubjectFilters(skillName);
+        async handleFilterButtonClick(skillName) {
+            await this.updateSubjectFilters(skillName);
             this.additionalFilterData = {
                 additionalFilterPosition: this.additionalFilterPosition,
                 activeFilteredSubject: this.activeFilteredSubject

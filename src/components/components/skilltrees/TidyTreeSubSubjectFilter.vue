@@ -51,8 +51,6 @@ export default {
                     skillsInSubjectFilter.push(filterSkill);
                 }
             }
-            console.log('you teng');
-            console.log(skillsInSubjectFilter);
 
             if (skillsInSubjectFilter.length === this.showSkills.length) {
                 // find other skill that need to remove from filter object
