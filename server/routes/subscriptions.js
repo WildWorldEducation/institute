@@ -9,6 +9,9 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 
+// MomentJS
+const moment = require('moment');
+
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_API_KEY);
 
@@ -60,25 +63,44 @@ router.get('/success', async (req, res, next) => {
         req.query.session_id
     );
 
-    console.log(session.customer);
-
     let subscriptionTier = '';
+    let priceId = '';
     // Convert from cents
     if (session.amount_total == 2000) {
         subscriptionTier = 'capped';
+        priceId = process.env.CAPPED_PLAN_PRICE_ID;
     } else if (session.amount_total == 10000) {
         subscriptionTier = 'infinite';
+        priceId = process.env.INFINITE_PLAN_PRICE_ID;
     }
 
-    // Save the new tokens to the DB
-    let queryString = `
+    // Save the new Stripe customer ID to the user table
+    let usersTableQueryString = `
             UPDATE users
-            SET subscription_tier = ${conn.escape(subscriptionTier)},
-            stripe_customer_id = ${conn.escape(session.customer)}
+            SET stripe_customer_id = ${conn.escape(session.customer)},
+            subscription_tier = '${subscriptionTier}'
             WHERE id = ${conn.escape(userId)};
             `;
 
-    await query(queryString);
+    await query(usersTableQueryString);
+
+    // Current date time
+    const currentPeriodStart = moment().format('YYYY-MM-DD HH:mm:ss');
+    // Date time in one month
+    let currentPeriodEndMonth = moment()
+        .add(1, 'months')
+        .format('YYYY-MM-DD HH:mm:ss');
+
+    // Save the subscription details to the subscription table
+    let subscriptionTableQueryString = `
+            INSERT INTO subscriptions (user_id, stripe_subscription_id,
+            stripe_price_id, current_period_start, current_period_end, created_at)
+            VALUES (${conn.escape(userId)}, '${
+        session.subscription
+    }' , '${priceId}', '${currentPeriodStart}', '${currentPeriodEndMonth}', '${currentPeriodStart}');           
+            `;
+
+    await query(subscriptionTableQueryString);
 
     res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
 });
@@ -107,24 +129,37 @@ router.post('/create-customer-portal-session', async (req, res) => {
     }
 });
 
-// Stripe webhook - allow app to receive events from Stripe API
-const STRIPE_WEBHOOK_SECRET =
-    'whsec_dbd37de3ef8a7a9148983a3589c54550a47d48d533015343faf175c2f3402aab';
+// Stripe webhooks - receive events from Stripe customer portal
 router.post(
     '/webhooks',
     express.json({ type: 'application/json' }),
     async (req, res) => {
         try {
-            console.log(req.body);
-            const sig = req.headers['stripe-signature'];
-            const event = stripe.webhooks.constructEvent(
-                req.body,
-                sig,
-                STRIPE_WEBHOOK_SECRET
-            );
-            console.log(event);
+            const event = req.body;
+            let stripeCustomerId = '';
 
-            return res.sendStatus(200);
+            // Handle the event
+            switch (event.type) {
+                case 'customer.subscription.updated':
+                    const subscriptionUpdated = event.data.object;
+                    console.log('subscriptionUpdated');
+                    console.log(subscriptionUpdated);
+                    stripeCustomerId = subscriptionUpdated.customer;
+                    // change tier to relevant one
+                    break;
+                case 'customer.subscription.deleted':
+                    const subscriptionCancelled = event.data.object;
+                    console.log('subscriptionCancelled');
+                    console.log(subscriptionCancelled);
+                    stripeCustomerId = subscriptionCancelled.customer;
+                    // set tier to "free"
+                    break;
+                default:
+                    console.log(`Unhandled event type ${event.type}`);
+            }
+
+            // Return a response to acknowledge receipt of the event
+            response.json({ received: true });
         } catch (e) {
             res.status(500).json({ error: e.message });
         }
