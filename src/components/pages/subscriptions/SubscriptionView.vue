@@ -183,6 +183,13 @@ export default {
                     <strong>Token limit:</strong>
                     {{ this.settingsStore.freePlanTokenLimit.toLocaleString() }}
                 </p>
+                <button
+                    v-if="this.userDetailsStore.subscriptionTier == 'free'"
+                    disabled
+                    class="btn primary-btn mt-2"
+                >
+                    current plan
+                </button>
             </div>
             <!-- Capped plan -->
             <div class="col-md mb-3">

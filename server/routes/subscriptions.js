@@ -172,7 +172,7 @@ router.post(
 
                     let endSubQueryString = `
                         UPDATE users
-                        subscription_tier = 'free'
+                        SET subscription_tier = 'free'
                         WHERE stripe_customer_id = ${conn.escape(
                             stripeCustomerId
                         )};                         
