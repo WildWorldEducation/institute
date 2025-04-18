@@ -35,8 +35,6 @@ router.post('/create-checkout-session', async (req, res) => {
         } else {
             priceId = process.env.INFINITE_PLAN_PRICE_ID;
         }
-        // console.log(req.body);
-        console.log(priceId);
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
