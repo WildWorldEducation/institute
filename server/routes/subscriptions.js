@@ -30,8 +30,8 @@ router.post('/create-checkout-session', async (req, res) => {
     try {
         userId = req.body.userId;
         let priceId = '';
-        if (req.body.planType == 'capped') {
-            priceId = process.env.CAPPED_PLAN_PRICE_ID;
+        if (req.body.planType == 'basic') {
+            priceId = process.env.BASIC_PLAN_PRICE_ID;
         } else {
             priceId = process.env.INFINITE_PLAN_PRICE_ID;
         }
@@ -64,7 +64,7 @@ router.get('/success', async (req, res, next) => {
     let subscriptionTier = '';
     // Convert from cents
     if (session.amount_total == 2000) {
-        subscriptionTier = 'capped';
+        subscriptionTier = 'basic';
     } else if (session.amount_total == 10000) {
         subscriptionTier = 'infinite';
     }
@@ -133,8 +133,8 @@ router.post(
                     let result = await query(checkPlanQueryString);
                     const previousPlan = result[0].subscription_tier;
                     let previousPriceId = '';
-                    if (previousPlan == 'capped') {
-                        previousPriceId = process.env.CAPPED_PLAN_PRICE_ID;
+                    if (previousPlan == 'basic') {
+                        previousPriceId = process.env.BASIC_PLAN_PRICE_ID;
                     } else if (previousPlan == 'infinite') {
                         previousPriceId = process.env.INFINITE_PLAN_PRICE_ID;
                     }
@@ -143,8 +143,8 @@ router.post(
                     // If it has, update it in the DB, otherwise, ignore this event.
                     if (priceId != previousPriceId) {
                         let planType = '';
-                        if (priceId == process.env.CAPPED_PLAN_PRICE_ID) {
-                            planType = 'capped';
+                        if (priceId == process.env.BASIC_PLAN_PRICE_ID) {
+                            planType = 'basic';
                         } else if (
                             priceId == process.env.INFINITE_PLAN_PRICE_ID
                         ) {

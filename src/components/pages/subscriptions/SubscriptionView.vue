@@ -41,9 +41,9 @@ export default {
             ) {
                 this.isAITokenLimitReached = true;
             }
-        } else if (this.userDetailsStore.subscriptionTier == 'capped') {
+        } else if (this.userDetailsStore.subscriptionTier == 'basic') {
             if (
-                this.settingsStore.cappedPlanTokenLimit <=
+                this.settingsStore.basicPlanTokenLimit <=
                 this.userDetailsStore.monthlyTokenUsage
             ) {
                 this.isAITokenLimitReached = true;
@@ -191,27 +191,27 @@ export default {
                     current plan
                 </button>
             </div>
-            <!-- Capped plan -->
+            <!-- Basic plan -->
             <div class="col-md mb-3">
-                <h2 class="secondary-heading h4">Capped plan</h2>
+                <h2 class="secondary-heading h4">Basic plan</h2>
                 <p>Ideal for moderate use</p>
                 <p>$20 / month</p>
                 <p>
                     <strong>Token limit:</strong>
                     {{
-                        this.settingsStore.cappedPlanTokenLimit.toLocaleString()
+                        this.settingsStore.basicPlanTokenLimit.toLocaleString()
                     }}
                 </p>
                 <!-- Buy subscription -->
                 <button
                     v-if="this.userDetailsStore.subscriptionTier == 'free'"
-                    @click="checkout('capped')"
+                    @click="checkout('basic')"
                     class="btn primary-btn mt-2"
                 >
                     buy
                 </button>
                 <button
-                    v-if="this.userDetailsStore.subscriptionTier == 'capped'"
+                    v-if="this.userDetailsStore.subscriptionTier == 'basic'"
                     disabled
                     class="btn primary-btn mt-2"
                 >

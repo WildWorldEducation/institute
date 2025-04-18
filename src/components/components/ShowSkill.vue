@@ -178,9 +178,9 @@ export default {
                     ) {
                         this.isAITokenLimitReached = true;
                     }
-                } else if (this.userDetailsStore.subscriptionTier == 'capped') {
+                } else if (this.userDetailsStore.subscriptionTier == 'basic') {
                     if (
-                        this.settingsStore.cappedPlanTokenLimit <=
+                        this.settingsStore.basicPlanTokenLimit <=
                         this.userDetailsStore.monthlyTokenUsage
                     ) {
                         this.isAITokenLimitReached = true;
