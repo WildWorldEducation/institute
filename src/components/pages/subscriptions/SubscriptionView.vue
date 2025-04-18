@@ -233,6 +233,13 @@ export default {
                 >
                     buy
                 </button>
+                <button
+                    v-if="this.userDetailsStore.subscriptionTier == 'infinite'"
+                    disabled
+                    class="btn primary-btn mt-2"
+                >
+                    current plan
+                </button>
             </div>
         </div>
     </div>
