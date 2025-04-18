@@ -471,15 +471,6 @@ const router = createRouter({
                 )
         },
         {
-            path: '/subscriptions/manage',
-            name: 'manage-subscription',
-            component: () =>
-                import(
-                    '../components/pages/subscriptions/ManageSubscriptionView.vue'
-                )
-        },
-
-        {
             path: '/:pathMatch(.*)*',
             name: 'not-found',
             component: () => import('../components/pages/PageNotFoundView.vue')
