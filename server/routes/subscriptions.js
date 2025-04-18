@@ -139,17 +139,19 @@ router.post(
             switch (event.type) {
                 case 'customer.subscription.updated':
                     const subscriptionUpdated = event.data.object;
-                    console.log('subscriptionUpdated');
+                    console.log('Subscription Updated');
                     console.log(subscriptionUpdated);
                     stripeCustomerId = subscriptionUpdated.customer;
                     newPriceId = subscriptionUpdated.plan.id;
                     let planType = '';
                     if (newPriceId == process.env.CAPPED_PLAN_PRICE_ID) {
                         planType = 'capped';
+                        console.log('New plan is "Capped"');
                     } else if (
                         newPriceId == process.env.INFINITE_PLAN_PRICE_ID
                     ) {
                         planType = 'infinite';
+                        console.log('New plan is "Infinite"');
                     }
 
                     let updateSubQueryString = `
@@ -160,13 +162,15 @@ router.post(
                         )};                         
                     `;
 
+                    console.log(updateSubQueryString);
+
                     await query(updateSubQueryString);
 
                     // change tier to relevant one
                     break;
                 case 'customer.subscription.deleted':
                     const subscriptionEnded = event.data.object;
-                    console.log('subscriptionCancelled');
+                    console.log('Subscription ended');
                     console.log(subscriptionEnded);
                     stripeCustomerId = subscriptionEnded.customer;
 
@@ -177,6 +181,8 @@ router.post(
                             stripeCustomerId
                         )};                         
                     `;
+
+                    console.log(endSubQueryString);
 
                     await query(endSubQueryString);
                     // set tier to "free"
