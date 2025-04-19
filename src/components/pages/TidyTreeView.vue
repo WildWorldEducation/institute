@@ -516,11 +516,19 @@ export default {
         },
 
         async handleOpenSubSubjectFilterMenu(subject) {
+            // Handle close sub-menu first
+            if (
+                this.userDetailsStore.subjectFilters.includes(subject) &&
+                this.openSubFilterMenu
+            ) {
+                this.openSubFilterMenu = false;
+                return;
+            }
+
             const skillInSubSubjectFilter =
                 this.userDetailsStore.subSubjectsFilters.find(
                     (node) => node.skillName === subject
                 );
-            console.log('doom stack');
             console.log(skillInSubSubjectFilter);
             if (skillInSubSubjectFilter) {
                 this.openSubFilterMenu = true;
@@ -1028,9 +1036,11 @@ export default {
                         Language
                     </button>
                     <!-- Additional filter btn -->
-                    <button class="additional-filter-btn">
+                    <button
+                        class="additional-filter-btn"
+                        @click="handleOpenSubSubjectFilterMenu('Language')"
+                    >
                         <svg
-                            @click="handleOpenSubSubjectFilterMenu('Language')"
                             v-if="
                                 !openSubFilterMenu &&
                                 userDetailsStore.subjectFilters.includes(
@@ -1047,7 +1057,6 @@ export default {
                             />
                         </svg>
                         <svg
-                            @click="openSubFilterMenu = false"
                             v-if="
                                 userDetailsStore.subjectFilters.includes(
                                     'Language'
@@ -1085,22 +1094,68 @@ export default {
                 >
                     Math
                 </button>
-                <button
-                    ref="HistoryFilterBtn"
-                    v-if="
-                        !cohortsStore.cohortFilteredSubjects.includes('History')
-                    "
-                    class="btn mb-2"
-                    :class="{
-                        'chosen-subject':
-                            userDetailsStore.subjectFilters.includes('History'),
-                        'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes('History')
-                    }"
-                    @click="handleFilterButtonClick('History')"
-                >
-                    History
-                </button>
+                <div class="d-flex">
+                    <button
+                        ref="HistoryFilterBtn"
+                        v-if="
+                            !cohortsStore.cohortFilteredSubjects.includes(
+                                'History'
+                            )
+                        "
+                        class="btn mb-2"
+                        :class="{
+                            'chosen-subject':
+                                userDetailsStore.subjectFilters.includes(
+                                    'History'
+                                ),
+                            'hidden-subject':
+                                !userDetailsStore.subjectFilters.includes(
+                                    'History'
+                                )
+                        }"
+                        @click="handleFilterButtonClick('History')"
+                    >
+                        History
+                    </button>
+                    <!-- Additional filter btn -->
+                    <button
+                        class="additional-filter-btn"
+                        @click="handleOpenSubSubjectFilterMenu('History')"
+                    >
+                        <svg
+                            v-if="
+                                !openSubFilterMenu &&
+                                userDetailsStore.subjectFilters.includes(
+                                    'History'
+                                )
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            height="16"
+                            width="16"
+                        >
+                            <path
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM232 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"
+                            />
+                        </svg>
+                        <svg
+                            @click="openSubFilterMenu = false"
+                            v-if="
+                                userDetailsStore.subjectFilters.includes(
+                                    'History'
+                                ) && openSubFilterMenu
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            height="16"
+                            width="16"
+                        >
+                            <path
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM184 232l144 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-144 0c-13.3 0-24-10.7-24-24s10.7-24 24-24z"
+                            />
+                        </svg>
+                    </button>
+                </div>
                 <button
                     v-if="!cohortsStore.cohortFilteredSubjects.includes('Life')"
                     class="btn mb-2"
@@ -1135,28 +1190,74 @@ export default {
                 >
                     Computer Science
                 </button>
-                <button
-                    ref="ScienceAndInventionFilterBtn"
-                    v-if="
-                        !cohortsStore.cohortFilteredSubjects.includes(
-                            'Science & Invention'
-                        )
-                    "
-                    class="btn mb-2"
-                    :class="{
-                        'chosen-subject':
-                            userDetailsStore.subjectFilters.includes(
-                                'Science and Invention'
-                            ),
-                        'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes(
+                <div class="d-flex">
+                    <button
+                        ref="ScienceAndInventionFilterBtn"
+                        v-if="
+                            !cohortsStore.cohortFilteredSubjects.includes(
+                                'Science & Invention'
+                            )
+                        "
+                        class="btn mb-2"
+                        :class="{
+                            'chosen-subject':
+                                userDetailsStore.subjectFilters.includes(
+                                    'Science and Invention'
+                                ),
+                            'hidden-subject':
+                                !userDetailsStore.subjectFilters.includes(
+                                    'Science and Invention'
+                                )
+                        }"
+                        @click="
+                            handleFilterButtonClick('Science and Invention')
+                        "
+                    >
+                        Science & Invention
+                    </button>
+                    <!-- Additional filter btn -->
+                    <button
+                        class="additional-filter-btn"
+                        @click="
+                            handleOpenSubSubjectFilterMenu(
                                 'Science and Invention'
                             )
-                    }"
-                    @click="handleFilterButtonClick('Science and Invention')"
-                >
-                    Science & Invention
-                </button>
+                        "
+                    >
+                        <svg
+                            v-if="
+                                !openSubFilterMenu &&
+                                userDetailsStore.subjectFilters.includes(
+                                    'Science and Invention'
+                                )
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            height="16"
+                            width="16"
+                        >
+                            <path
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM232 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"
+                            />
+                        </svg>
+                        <svg
+                            @click="openSubFilterMenu = false"
+                            v-if="
+                                userDetailsStore.subjectFilters.includes(
+                                    'Science and Invention'
+                                ) && openSubFilterMenu
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            height="16"
+                            width="16"
+                        >
+                            <path
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM184 232l144 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-144 0c-13.3 0-24-10.7-24-24s10.7-24 24-24z"
+                            />
+                        </svg>
+                    </button>
+                </div>
                 <button
                     v-if="
                         !cohortsStore.cohortFilteredSubjects.includes(
