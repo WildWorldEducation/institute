@@ -653,7 +653,6 @@ p {
 }
 
 /* End of themes section */
-
 .router-link-active {
     text-decoration: underline;
     color: var(--primary-color);
