@@ -138,6 +138,7 @@ export default {
                         alt=""
                         width="50"
                         height="50"
+                        aria-label="Collins Institute logo"
                     />
                     <img
                         v-else
@@ -145,6 +146,7 @@ export default {
                         alt=""
                         width="50"
                         height="50"
+                        aria-label="Collins Institute logo"
                     />
                 </RouterLink>
                 <button

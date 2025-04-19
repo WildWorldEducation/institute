@@ -1156,6 +1156,7 @@ export default {
                         <button
                             @click="copyShareableURLToClipBoard"
                             class="btn me-1"
+                            aria-label="share"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -1191,6 +1192,7 @@ export default {
                         <button
                             class="btn primary-btn me-1"
                             @click="restartTutorial"
+                            aria-label="info"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -1431,11 +1433,17 @@ export default {
                     <div class="info-box p-2 mb-2">
                         <!-- AWS S3 hosted feature image -->
                         <!-- Using random number otherwise url doesnt change (cache)-->
-                        <a :href="skill.image_url">
+                        <a
+                            :href="skill.image_url"
+                            :aria-label="
+                                'full size image representing ' + skill.name
+                            "
+                        >
                             <img
                                 :src="skill.image_thumbnail_url"
                                 @error="imageUrlAlternative"
                                 class="rounded img-fluid"
+                                :alt="'image representing ' + skill.name"
                             />
                         </a>
                         <!-- Grade level -->
