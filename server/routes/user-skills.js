@@ -594,8 +594,7 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                                 studentSkills.push(results[i]);
                             }
                         }
-                        console.log('student skill: ')
-                        console.log(studentSkills);
+
                         res.json(studentSkills);
                     } catch (err) {
                         next(err);

@@ -273,7 +273,6 @@ export default {
             );
 
             let nodeSkillName = this.transformToOriginalName(subject);
-
             if (isSkillGetShowing && isSkillNeedAdditionalFilter) {
                 this.activeFilteredSubject =
                     this.skillTreeStore.studentSkills.find(
@@ -308,12 +307,13 @@ export default {
                     buttonPosition.top
                 );
                 this.additionalFilterPosition.left =
-                    Math.ceil(buttonPosition.right) + 4;
+                    Math.ceil(buttonPosition.right) + 24;
                 // handle Science and Invention skill name case
             } else {
                 this.openSubFilterMenu = false;
             }
         },
+
         toggleisUnlockedSkillsFilter() {
             if (this.userDetailsStore.isUnlockedSkillsOnlyFilter == 1) {
                 this.userDetailsStore.isUnlockedSkillsOnlyFilter = 0;
@@ -504,6 +504,60 @@ export default {
         },
         async handleFilterButtonClick(skillName) {
             await this.updateSubjectFilters(skillName);
+            this.additionalFilterData = {
+                additionalFilterPosition: this.additionalFilterPosition,
+                activeFilteredSubject: this.activeFilteredSubject
+            };
+
+            this.$refs.childComponent.filter(
+                this.gradeFilter,
+                this.subjectFilters
+            );
+        },
+
+        async handleOpenSubSubjectFilterMenu(subject) {
+            const skillInSubSubjectFilter =
+                this.userDetailsStore.subSubjectsFilters.find(
+                    (node) => node.skillName === subject
+                );
+            if (skillInSubSubjectFilter) {
+                this.openSubFilterMenu = true;
+                return;
+            }
+            let nodeSkillName = this.transformToOriginalName(subject);
+            // if the skill is not in subSubject filter we add it and all of it children into the filter object
+            this.activeFilteredSubject = this.skillTreeStore.studentSkills.find(
+                (skill) => skill.skill_name === subject
+            );
+            this.openSubFilterMenu = true;
+
+            const isAlreadyInFilterList =
+                this.userDetailsStore.subSubjectsFilters.find(
+                    (node) => node.skillName === subject
+                );
+            // if the subject is not on the list before it mean that we have to add all of it children including itself to the subjects
+            if (!isAlreadyInFilterList) {
+                const arrayOfFilterSubjects =
+                    this.activeFilteredSubject.children.map((subject) => {
+                        return {
+                            skillName: subject.skill_name,
+                            isLeaf: true
+                        };
+                    });
+                arrayOfFilterSubjects.push({
+                    skillName: nodeSkillName,
+                    isLeaf: false
+                });
+                this.userDetailsStore.subSubjectsFilters =
+                    arrayOfFilterSubjects;
+            }
+
+            // get button position
+            const buttonPosition = this.getFilterButtonPosition(subject);
+            this.additionalFilterPosition.top = Math.ceil(buttonPosition.top);
+            this.additionalFilterPosition.left =
+                Math.ceil(buttonPosition.right) + 24;
+            // handle Science and Invention skill name case
             this.additionalFilterData = {
                 additionalFilterPosition: this.additionalFilterPosition,
                 activeFilteredSubject: this.activeFilteredSubject
@@ -981,28 +1035,66 @@ export default {
                 "
                 class="d-flex flex-column"
             >
-                <button
-                    ref="LanguageFilterBtn"
-                    v-if="
-                        !cohortsStore.cohortFilteredSubjects.includes(
-                            'Language'
-                        )
-                    "
-                    class="btn mb-2"
-                    :class="{
-                        'chosen-subject':
-                            userDetailsStore.subjectFilters.includes(
-                                'Language'
-                            ),
-                        'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes(
+                <div class="d-flex">
+                    <button
+                        ref="LanguageFilterBtn"
+                        v-if="
+                            !cohortsStore.cohortFilteredSubjects.includes(
                                 'Language'
                             )
-                    }"
-                    @click="handleFilterButtonClick('Language')"
-                >
-                    Language
-                </button>
+                        "
+                        class="btn mb-2"
+                        :class="{
+                            'chosen-subject':
+                                userDetailsStore.subjectFilters.includes(
+                                    'Language'
+                                ),
+                            'hidden-subject':
+                                !userDetailsStore.subjectFilters.includes(
+                                    'Language'
+                                )
+                        }"
+                        @click="handleFilterButtonClick('Language')"
+                    >
+                        Language
+                    </button>
+                    <!-- Additional filter btn -->
+                    <button class="additional-filter-btn">
+                        <svg
+                            @click="handleOpenSubSubjectFilterMenu('Language')"
+                            v-if="
+                                !openSubFilterMenu &&
+                                userDetailsStore.subjectFilters.includes(
+                                    'Language'
+                                )
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            height="16"
+                            width="16"
+                        >
+                            <path
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM232 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"
+                            />
+                        </svg>
+                        <svg
+                            @click="openSubFilterMenu = false"
+                            v-if="
+                                userDetailsStore.subjectFilters.includes(
+                                    'Language'
+                                ) && openSubFilterMenu
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            height="16"
+                            width="16"
+                        >
+                            <path
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM184 232l144 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-144 0c-13.3 0-24-10.7-24-24s10.7-24 24-24z"
+                            />
+                        </svg>
+                    </button>
+                </div>
                 <button
                     v-if="
                         !cohortsStore.cohortFilteredSubjects.includes(
@@ -2284,6 +2376,23 @@ export default {
 
 .skill-tree-input {
     width: 100%;
+}
+
+.additional-filter-btn {
+    background-color: inherit;
+    border: 0px !important;
+    outline: none;
+    display: flex;
+    align-items: start;
+    padding-top: 3px;
+}
+
+.additional-filter-btn svg {
+    fill: var(--primary-color);
+}
+
+.additional-filter-btn:hover > svg {
+    fill: #dce2f2;
 }
 
 /* Modals */
