@@ -1156,6 +1156,7 @@ export default {
                         <button
                             @click="copyShareableURLToClipBoard"
                             class="btn me-1"
+                            aria-label="share"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -1191,6 +1192,7 @@ export default {
                         <button
                             class="btn primary-btn me-1"
                             @click="restartTutorial"
+                            aria-label="info"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
