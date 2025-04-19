@@ -528,7 +528,7 @@ app.get('/sitemap.xml', (req, res) => {
         },
         {
             path: '/skills',
-            priority: 0.8
+            priority: 1
         }
     ];
 
