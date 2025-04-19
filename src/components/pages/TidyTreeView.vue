@@ -516,7 +516,7 @@ export default {
         },
 
         async handleOpenSubSubjectFilterMenu(subject) {
-            // Handle close sub-menu first
+            // Handle close sub-menu case first
             if (
                 this.userDetailsStore.subjectFilters.includes(subject) &&
                 this.openSubFilterMenu
@@ -529,12 +529,26 @@ export default {
                 this.userDetailsStore.subSubjectsFilters.find(
                     (node) => node.skillName === subject
                 );
-            console.log(skillInSubSubjectFilter);
+            // skill already open before case
             if (skillInSubSubjectFilter) {
                 this.openSubFilterMenu = true;
-                return;
+                // also update active filter object and sub-menu position
+                this.activeFilteredSubject =
+                    this.skillTreeStore.studentSkills.find(
+                        (skill) => skill.skill_name === subject
+                    );
+                // get button position
+                const buttonPosition = this.getFilterButtonPosition(subject);
+                this.additionalFilterPosition.top = Math.ceil(
+                    buttonPosition.top
+                );
+                this.additionalFilterPosition.left =
+                    Math.ceil(buttonPosition.right) + 24;
             }
-            await this.updateSubjectFilters(subject);
+            // first time open sub-menu case
+            else {
+                await this.updateSubjectFilters(subject);
+            }
             this.additionalFilterData = {
                 additionalFilterPosition: this.additionalFilterPosition,
                 activeFilteredSubject: this.activeFilteredSubject
@@ -1058,9 +1072,8 @@ export default {
                         </svg>
                         <svg
                             v-if="
-                                userDetailsStore.subjectFilters.includes(
-                                    'Language'
-                                ) && openSubFilterMenu
+                                activeFilteredSubject.skill_name ===
+                                    'Language' && openSubFilterMenu
                             "
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
@@ -1139,11 +1152,9 @@ export default {
                             />
                         </svg>
                         <svg
-                            @click="openSubFilterMenu = false"
                             v-if="
-                                userDetailsStore.subjectFilters.includes(
-                                    'History'
-                                ) && openSubFilterMenu
+                                activeFilteredSubject.skill_name ===
+                                    'History' && openSubFilterMenu
                             "
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
@@ -1241,7 +1252,6 @@ export default {
                             />
                         </svg>
                         <svg
-                            @click="openSubFilterMenu = false"
                             v-if="
                                 userDetailsStore.subjectFilters.includes(
                                     'Science and Invention'
