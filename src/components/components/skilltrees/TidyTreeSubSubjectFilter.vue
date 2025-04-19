@@ -124,24 +124,28 @@ export default {
 </script>
 
 <template>
-    <div v-if="openSubFilterMenu" class="submenuBase">
-        <div v-for="node in showSkills">
-            <button
-                @click="updateSubjectFilter(node.skill_name)"
-                class="btn mb-2"
-                :class="{
-                    'chosen-subject': userDetailsStore.subSubjectsFilters.find(
-                        (skill) => skill.skillName === node.skill_name
-                    ),
-                    'hidden-subject': !userDetailsStore.subSubjectsFilters.find(
-                        (skill) => skill.skillName === node.skill_name
-                    )
-                }"
-            >
-                {{ node.skill_name }}
-            </button>
+    <Transition name="slide-fade">
+        <div v-if="openSubFilterMenu" class="submenuBase">
+            <div v-for="node in showSkills">
+                <button
+                    @click="updateSubjectFilter(node.skill_name)"
+                    class="btn mb-2"
+                    :class="{
+                        'chosen-subject':
+                            userDetailsStore.subSubjectsFilters.find(
+                                (skill) => skill.skillName === node.skill_name
+                            ),
+                        'hidden-subject':
+                            !userDetailsStore.subSubjectsFilters.find(
+                                (skill) => skill.skillName === node.skill_name
+                            )
+                    }"
+                >
+                    {{ node.skill_name }}
+                </button>
+            </div>
         </div>
-    </div>
+    </Transition>
 </template>
 
 <style scoped>
@@ -201,5 +205,20 @@ export default {
     color: var(--primary-contrast-color);
     border: 1px solid black;
     opacity: 0.5;
+}
+
+/* Animation for sub menu  */
+.slide-fade-enter-active {
+    transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+    transition: all 0.3s ease-in;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+    transform: translateX(-26px);
+    opacity: 0;
 }
 </style>

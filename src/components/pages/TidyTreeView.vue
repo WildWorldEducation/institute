@@ -520,44 +520,13 @@ export default {
                 this.userDetailsStore.subSubjectsFilters.find(
                     (node) => node.skillName === subject
                 );
+            console.log('doom stack');
+            console.log(skillInSubSubjectFilter);
             if (skillInSubSubjectFilter) {
                 this.openSubFilterMenu = true;
                 return;
             }
-            let nodeSkillName = this.transformToOriginalName(subject);
-            // if the skill is not in subSubject filter we add it and all of it children into the filter object
-            this.activeFilteredSubject = this.skillTreeStore.studentSkills.find(
-                (skill) => skill.skill_name === subject
-            );
-            this.openSubFilterMenu = true;
-
-            const isAlreadyInFilterList =
-                this.userDetailsStore.subSubjectsFilters.find(
-                    (node) => node.skillName === subject
-                );
-            // if the subject is not on the list before it mean that we have to add all of it children including itself to the subjects
-            if (!isAlreadyInFilterList) {
-                const arrayOfFilterSubjects =
-                    this.activeFilteredSubject.children.map((subject) => {
-                        return {
-                            skillName: subject.skill_name,
-                            isLeaf: true
-                        };
-                    });
-                arrayOfFilterSubjects.push({
-                    skillName: nodeSkillName,
-                    isLeaf: false
-                });
-                this.userDetailsStore.subSubjectsFilters =
-                    arrayOfFilterSubjects;
-            }
-
-            // get button position
-            const buttonPosition = this.getFilterButtonPosition(subject);
-            this.additionalFilterPosition.top = Math.ceil(buttonPosition.top);
-            this.additionalFilterPosition.left =
-                Math.ceil(buttonPosition.right) + 24;
-            // handle Science and Invention skill name case
+            await this.updateSubjectFilters(subject);
             this.additionalFilterData = {
                 additionalFilterPosition: this.additionalFilterPosition,
                 activeFilteredSubject: this.activeFilteredSubject
