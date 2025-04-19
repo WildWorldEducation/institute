@@ -1438,6 +1438,7 @@ export default {
                                 :src="skill.image_thumbnail_url"
                                 @error="imageUrlAlternative"
                                 class="rounded img-fluid"
+                                :alt="'image representing ' + skill.name"
                             />
                         </a>
                         <!-- Grade level -->
