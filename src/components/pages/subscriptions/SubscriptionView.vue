@@ -122,11 +122,16 @@ export default {
 
 <template>
     <div class="container">
-        <h1 class="heading">Subscription</h1>
+        <h1 class="heading" :class="{ 'text-center': isMobileCheck < 576 }">
+            Subscription
+        </h1>
         <div class="row mt-4">
             <div class="col-md mb-3">
                 <!-- Token usage stats -->
-                <h2 class="secondary-heading h4 mb-4">
+                <h2
+                    class="secondary-heading h4 mb-4"
+                    :class="{ 'text-center': isMobileCheck < 576 }"
+                >
                     Monthly AI usage: {{ month }}, {{ year }}
                 </h2>
                 <ul>
@@ -177,7 +182,10 @@ export default {
         <hr />
         <div class="row mt-4">
             <!-- Free plan -->
-            <div class="col-md mb-3">
+            <div
+                class="col-md mb-3"
+                :class="{ 'text-center': isMobileCheck < 576 }"
+            >
                 <h2 class="secondary-heading h4">Free plan</h2>
                 <p>
                     <strong>Token limit:</strong>
@@ -192,7 +200,12 @@ export default {
                 </button>
             </div>
             <!-- Basic plan -->
-            <div class="col-md mb-3">
+            <div
+                class="col-md mb-3"
+                :class="{
+                    'text-center': isMobileCheck < 576
+                }"
+            >
                 <h2 class="secondary-heading h4">Basic plan</h2>
                 <p>Ideal for moderate use</p>
                 <p>$20 / month</p>
@@ -213,12 +226,15 @@ export default {
                 <button
                     v-if="this.userDetailsStore.subscriptionTier == 'basic'"
                     disabled
-                    class="btn primary-btn mt-2"
+                    class="btn primary-btn mt-1 mb-3"
                 >
                     current plan
                 </button>
             </div>
-            <div class="col-md mb-3">
+            <div
+                class="col-md mb-3"
+                :class="{ 'text-center': isMobileCheck < 576 }"
+            >
                 <h2 class="secondary-heading h4">Infinite plan</h2>
                 <p>Ideal for daily use</p>
                 <p>$100 / month</p>
@@ -236,7 +252,7 @@ export default {
                 <button
                     v-if="this.userDetailsStore.subscriptionTier == 'infinite'"
                     disabled
-                    class="btn primary-btn mt-2"
+                    class="btn primary-btn mt-1 mb-3"
                 >
                     current plan
                 </button>

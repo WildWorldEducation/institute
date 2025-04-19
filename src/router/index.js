@@ -619,12 +619,12 @@ router.beforeEach(async (to, from, next) => {
     if (
         to.name == 'skill-tree' ||
         to.name == 'learning-tracks' ||
-        to.name == 'radial-tree' ||
         to.name == 'skills' ||
         to.name == 'student-skills' ||
         to.name == 'student-signup' ||
         to.name == 'editor-signup' ||
         to.name == 'instructor-signup' ||
+        to.name == 'subscription' ||
         to.name == 'login'
     ) {
         document.getElementById('app').style.overflow = 'hidden';
