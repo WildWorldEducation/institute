@@ -1,5 +1,0 @@
-<<<<<<<< HEAD:dist/assets/CohortsStore-a7acd401.js
-import{x as e}from"./main-06b8cce1.js";const c=e("cohorts",{state:()=>({cohorts:[],cohortSkills:[],cohortFilteredSubjects:[]}),actions:{async getCohorts(t){const o=await(await fetch("/cohorts/"+t+"/list")).json();return this.cohorts=o,this.$state},async getCohortSkillFilters(t){const s=await fetch("/cohorts/"+t+"/skill-filters");this.cohortSkills=await s.json()},async getCohortFilteredSubjects(t){const s=await fetch("/cohorts/"+t+"/filteredSubjects");this.cohortFilteredSubjects=await s.json()}}});export{c as u};
-========
-import{x as e}from"./main-b824f3f8.js";const c=e("cohorts",{state:()=>({cohorts:[],cohortSkills:[],cohortFilteredSubjects:[]}),actions:{async getCohorts(t){const o=await(await fetch("/cohorts/"+t+"/list")).json();return this.cohorts=o,this.$state},async getCohortSkillFilters(t){const s=await fetch("/cohorts/"+t+"/skill-filters");this.cohortSkills=await s.json()},async getCohortFilteredSubjects(t){const s=await fetch("/cohorts/"+t+"/filteredSubjects");this.cohortFilteredSubjects=await s.json()}}});export{c as u};
->>>>>>>> dev:dist/assets/CohortsStore-c87d2601.js

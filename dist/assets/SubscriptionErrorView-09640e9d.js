@@ -1,5 +1,0 @@
-<<<<<<<< HEAD:dist/assets/SubscriptionErrorView-9e1f96de.js
-import{_ as o,o as s,c as t,a as e}from"./main-06b8cce1.js";const c={name:"Error"},n={class:"container"},r=e("h1",{class:"heading"},"Payment Error",-1),a=e("p",null,"Payment cancelled.",-1),_=[r,a];function i(d,l,p,h,m,f){return s(),t("div",n,_)}const E=o(c,[["render",i]]);export{E as default};
-========
-import{_ as o,o as s,c as t,a as e}from"./main-b824f3f8.js";const c={name:"Error"},n={class:"container"},r=e("h1",{class:"heading"},"Payment Error",-1),a=e("p",null,"Payment cancelled.",-1),_=[r,a];function i(d,l,p,h,m,f){return s(),t("div",n,_)}const E=o(c,[["render",i]]);export{E as default};
->>>>>>>> dev:dist/assets/SubscriptionErrorView-09640e9d.js
