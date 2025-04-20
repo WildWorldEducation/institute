@@ -191,6 +191,23 @@ export const useUserDetailsStore = defineStore('userDetails', {
                     childStack = childStack.concat(currentNode.children)
                 }
             }
+        },
+        searchSubSubjectFilter(skillName) {
+            const result = this.subSubjectsFilters.find(filterObject => filterObject.skillName === skillName)
+            return result;
+        },
+        /**
+         * Find if any element in array is in sub-subject filter array
+         * Mainly for finding if child of a skill is in sub-subject filter
+         * @param {*} skillArray child node data of a skill 
+         */
+        checkIfHaveSkillInSubSubjectFilter(skillArray) {
+            let result = false;
+            const skill = skillArray.some(skillData => this.searchSubSubjectFilter(skillData.skill_name));
+            if (skill) {
+                result = true
+            }
+            return result;
         }
 
     }

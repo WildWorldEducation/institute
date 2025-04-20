@@ -153,6 +153,9 @@ export default {
                 await this.skillTreeStore.getStudentSkills();
             }
 
+            console.log('student skill 234');
+            console.log(this.skillTreeStore.studentSkills);
+
             // Flag to determine if the click is to filtered the skill NOT un-filter it
             let isSkillGetShowing = false;
             // Only if user is logged in.
@@ -516,6 +519,12 @@ export default {
         },
 
         async handleOpenSubSubjectFilterMenu(subject) {
+            if (!this.skillTreeStore.studentSkills.length) {
+                await this.skillTreeStore.getStudentSkills();
+            }
+            console.log('Click');
+            console.log(this.userDetailsStore.subSubjectsFilters);
+            console.log(this.userDetailsStore.subjectFilters);
             // Handle close sub-menu case first
             if (
                 this.userDetailsStore.subjectFilters.includes(subject) &&
@@ -530,13 +539,17 @@ export default {
                     (node) => node.skillName === subject
                 );
             // skill already open before case
-            if (skillInSubSubjectFilter) {
+            if (
+                skillInSubSubjectFilter ||
+                this.userDetailsStore.subjectFilters.includes(subject)
+            ) {
                 this.openSubFilterMenu = true;
                 // also update active filter object and sub-menu position
                 this.activeFilteredSubject =
                     this.skillTreeStore.studentSkills.find(
                         (skill) => skill.skill_name === subject
                     );
+
                 // get button position
                 const buttonPosition = this.getFilterButtonPosition(subject);
                 this.additionalFilterPosition.top = Math.ceil(
@@ -544,6 +557,23 @@ export default {
                 );
                 this.additionalFilterPosition.left =
                     Math.ceil(buttonPosition.right) + 24;
+
+                // handle case user have root subject filter in database but not in filter subject
+                const isChildInSubjectFilter =
+                    this.userDetailsStore.checkIfHaveSkillInSubSubjectFilter(
+                        this.activeFilteredSubject.children
+                    );
+                if (!isChildInSubjectFilter) {
+                    this.activeFilteredSubject.children.forEach((childNode) => {
+                        const filterObject = {
+                            skillName: childNode.skill_name,
+                            parent: childNode.parent
+                        };
+                        this.userDetailsStore.updateSubSubjectFilter(
+                            filterObject
+                        );
+                    });
+                }
             }
             // first time open sub-menu case
             else {
@@ -1072,7 +1102,7 @@ export default {
                         </svg>
                         <svg
                             v-if="
-                                activeFilteredSubject.skill_name ===
+                                activeFilteredSubject?.skill_name ===
                                     'Language' && openSubFilterMenu
                             "
                             xmlns="http://www.w3.org/2000/svg"
@@ -1153,7 +1183,7 @@ export default {
                         </svg>
                         <svg
                             v-if="
-                                activeFilteredSubject.skill_name ===
+                                activeFilteredSubject?.skill_name ===
                                     'History' && openSubFilterMenu
                             "
                             xmlns="http://www.w3.org/2000/svg"
@@ -1253,9 +1283,8 @@ export default {
                         </svg>
                         <svg
                             v-if="
-                                userDetailsStore.subjectFilters.includes(
-                                    'Science and Invention'
-                                ) && openSubFilterMenu
+                                activeFilteredSubject?.skill_name ===
+                                    'Science and Invention' && openSubFilterMenu
                             "
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
