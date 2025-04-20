@@ -687,7 +687,7 @@ async function saveTokenUsage(userId, tokenCount) {
 
         const d = new Date();
         let month = monthName[d.getMonth()];
-        let queryString1 = `
+        let queryString = `
         INSERT INTO user_monthly_token_usage (user_id, year, month, token_count) 
         VALUES(${conn.escape(userId)},
         ${year}, '${month}', ${conn.escape(tokenCount)}) 
@@ -696,48 +696,7 @@ async function saveTokenUsage(userId, tokenCount) {
         )};
         `;
 
-        await query(queryString1);
-
-        // Get the monthly free amount of tokens
-        let queryString2 = `
-        SELECT free_plan_token_limit
-        FROM settings;
-        `;
-        const monthlyFreeLimitResult = await query(queryString2);
-        const monthlyFreeLimit = monthlyFreeLimitResult[0].monthly_token_limit;
-
-        // Get the amount of tokens the user has used for the month so far
-        let queryString3 = `
-        SELECT token_count
-        FROM user_monthly_token_usage
-        WHERE user_id = '${userId}'
-        AND year = ${year}
-        AND month = '${month}';
-        `;
-        const userMonthlyTokenUsageResult = await query(queryString3);
-        const userMonthlyTokenUsage =
-            userMonthlyTokenUsageResult[0].token_count;
-
-        // Get the amount of tokens the user has used for the month so far
-        // let queryString4 = `
-        // SELECT tokens
-        // FROM users
-        // WHERE id = '${userId}';
-        // `;
-        // const userTokensResult = await query(queryString4);
-        // let userTokens = userTokensResult[0].tokens;
-
-        // Update the user's tokens
-        // if (userMonthlyTokenUsage >= monthlyFreeLimit) {
-        //     userTokens = userTokens - tokenCount;
-        //     let queryString5 = `
-        //         UPDATE users
-        //         SET tokens = ${userTokens}
-        //         WHERE id = '${userId}';
-        // `;
-
-        //     await query(queryString5);
-        // }
+        await query(queryString);
     } catch (error) {
         throw error;
     }
