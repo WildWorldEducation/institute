@@ -203,7 +203,9 @@ router.post(
                                         messageNumber
                                     )},                       
                                     ${conn.escape(url)}
-                                );`;
+                                )
+                                ON DUPLICATE KEY UPDATE                                 
+                                url = ${conn.escape(url)};`;
                 await query(queryString);
                 res.json({
                     status: 'complete',
@@ -375,7 +377,10 @@ router.post(
                                         messageNumber
                                     )},                       
                                     ${conn.escape(url)}
-                                );`;
+                                )
+                                ON DUPLICATE KEY UPDATE                                 
+                                url = ${conn.escape(url)};`;
+
                 await query(queryString);
                 res.json({
                     status: 'complete',
@@ -615,7 +620,10 @@ router.post(
                                         messageNumber
                                     )},                       
                                     ${conn.escape(url)}
-                                );`;
+                                )
+                                ON DUPLICATE KEY UPDATE                                 
+                                url = ${conn.escape(url)};`;
+
                 await query(queryString);
                 res.json({
                     status: 'complete',
