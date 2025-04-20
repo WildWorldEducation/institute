@@ -154,7 +154,7 @@ router.post(
                     }
                 } catch (error) {
                     console.error(error);
-                    throw error;
+                    next(error);
                 }
 
                 res.json({
@@ -213,7 +213,7 @@ router.post(
                 console.error(error);
                 res.status = 500;
                 res.json({ mess: 'something went wrong' });
-                throw error;
+                next(error);
             }
         } catch (error) {
             console.error(error);
@@ -326,7 +326,7 @@ router.post(
                     }
                 } catch (error) {
                     console.error(error);
-                    throw error;
+                    next(error);
                 }
 
                 res.json({
@@ -385,7 +385,7 @@ router.post(
                 console.error(error);
                 res.status = 500;
                 res.json({ mess: 'something went wrong' });
-                throw error;
+                next(error);
             }
         } catch (error) {
             console.error(error);
@@ -418,7 +418,7 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
                     
                     Please return only the percentage of correct answers, and nothing else.
                     Please return a single JSON object containing the result, named "result".                                        
-                    `;   
+                    `;
 
         const completion = await openai.chat.completions.create({
             model: 'gpt-4.5-preview',
@@ -562,7 +562,7 @@ router.get(
                     }
                 } catch (error) {
                     console.error(error);
-                    throw error;
+                    next(error);
                 }
 
                 const assistantDataForClient = {
@@ -624,13 +624,12 @@ router.post(
             } catch (error) {
                 console.error(error);
                 res.status = 500;
-                res.json({ mess: 'something went wrong' });
-                throw error;
+                next(error);
             }
         } catch (error) {
             console.error(error);
             res.status = 500;
-            res.json({ mess: 'something went wrong' });
+            next(error);
         }
     }
 );
