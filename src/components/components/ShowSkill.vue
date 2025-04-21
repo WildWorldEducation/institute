@@ -1444,6 +1444,8 @@ export default {
                                 @error="imageUrlAlternative"
                                 class="rounded img-fluid"
                                 :alt="'image representing ' + skill.name"
+                                width="294.4"
+                                height="294.4"
                             />
                         </a>
                         <!-- Grade level -->
