@@ -148,6 +148,7 @@ export default {
         },
         // Filters
         async updateSubjectFilters(subject) {
+            const rightSubjectName = this.transformToOriginalName(subject);
             // get full list of skill for student
             if (!this.skillTreeStore.studentSkills.length) {
                 await this.skillTreeStore.getStudentSkills();
@@ -183,7 +184,7 @@ export default {
 
                     const subjectNodeData =
                         this.skillTreeStore.findSkillBaseOnName(
-                            subject,
+                            rightSubjectName,
                             this.skillTreeStore.userSkills
                         );
 
@@ -217,11 +218,14 @@ export default {
                     if (!this.skillTreeStore.userSkills.length) {
                         await this.skillTreeStore.getUserSkills();
                     }
-                    const realSkillName = this.transformToOriginalName(subject);
+
                     const nodeData = this.skillTreeStore.userSkills.find(
-                        (node) => node.skill_name === realSkillName
+                        (node) => node.skill_name === rightSubjectName
                     );
-                    const filterObject = { skillName: subject, parent: 0 };
+                    const filterObject = {
+                        skillName: rightSubjectName,
+                        parent: 0
+                    };
                     this.userDetailsStore.updateSubSubjectFilter(filterObject);
 
                     // also add all it child to subject filter
@@ -276,33 +280,35 @@ export default {
                 (skillName) => skillName === subject
             );
 
-            let nodeSkillName = this.transformToOriginalName(subject);
             if (isSkillGetShowing && isSkillNeedAdditionalFilter) {
                 this.activeFilteredSubject =
                     this.skillTreeStore.studentSkills.find(
-                        (skill) => skill.skill_name === subject
+                        (skill) => skill.skill_name === rightSubjectName
                     );
                 this.openSubFilterMenu = true;
 
                 const isAlreadyInFilterList =
                     this.userDetailsStore.subSubjectsFilters.find(
-                        (node) => node.skillName === subject
+                        (node) => node.skillName === rightSubjectName
                     );
                 // if the subject is not on the list before it mean that we have to add all of it children including itself to the subjects
                 if (!isAlreadyInFilterList) {
-                    const arrayOfFilterSubjects =
-                        this.activeFilteredSubject.children.map((subject) => {
-                            return {
-                                skillName: subject.skill_name,
-                                isLeaf: true
-                            };
-                        });
-                    arrayOfFilterSubjects.push({
-                        skillName: nodeSkillName,
-                        isLeaf: false
+                    const parentFilterObject = {
+                        skillName: rightSubjectName,
+                        parent: 0
+                    };
+                    this.userDetailsStore.updateSubSubjectFilter(
+                        parentFilterObject
+                    );
+                    this.activeFilteredSubject.children.forEach((skillNode) => {
+                        const filterObject = {
+                            skillName: skillNode.skill_name,
+                            parent: skillNode.parent
+                        };
+                        this.userDetailsStore.updateSubSubjectFilter(
+                            filterObject
+                        );
                     });
-                    this.userDetailsStore.subSubjectsFilters =
-                        arrayOfFilterSubjects;
                 }
 
                 // get button position
@@ -520,6 +526,7 @@ export default {
         },
 
         async handleOpenSubSubjectFilterMenu(subject) {
+            const rightSubjectName = this.transformToOriginalName(subject);
             if (!this.skillTreeStore.studentSkills.length) {
                 await this.skillTreeStore.getStudentSkills();
             }
@@ -535,7 +542,7 @@ export default {
 
             const skillInSubSubjectFilter =
                 this.userDetailsStore.subSubjectsFilters.find(
-                    (node) => node.skillName === subject
+                    (node) => node.skillName === rightSubjectName
                 );
             // skill already open before case
             if (
@@ -546,7 +553,7 @@ export default {
                 // also update active filter object and sub-menu position
                 this.activeFilteredSubject =
                     this.skillTreeStore.studentSkills.find(
-                        (skill) => skill.skill_name === subject
+                        (skill) => skill.skill_name === rightSubjectName
                     );
 
                 // get button position
