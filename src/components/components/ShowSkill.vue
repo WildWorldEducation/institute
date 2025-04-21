@@ -1056,14 +1056,7 @@ export default {
             </div>
             <!-- Buttons -->
             <div class="row mb-2">
-                <div
-                    class="col d-flex"
-                    :class="{
-                        'flex-row justify-content-between':
-                            isMobileCheck >= 576,
-                        'flex-column': isMobileCheck < 576
-                    }"
-                >
+                <div class="col d-flex flex-row justify-content-between">
                     <div class="d-flex">
                         <!-- Edit skill btn-->
                         <router-link
@@ -1121,7 +1114,9 @@ export default {
                             class="btn primary-btn"
                             @click="openModal(skill)"
                         >
-                            Create goal&nbsp;
+                            <span v-if="isMobileCheck > 576"
+                                >Create goal&nbsp;</span
+                            >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 512 512"
@@ -1134,7 +1129,6 @@ export default {
                                 />
                             </svg>
                         </button>
-
                         <!-- Modal -->
                         <div
                             v-if="toggleModal"
@@ -1167,7 +1161,7 @@ export default {
                             </div>
                         </div>
                     </div>
-                    <div class="d-flex mt-2 mt-md-0">
+                    <div class="d-flex">
                         <!-- Sharable URL -->
                         <button
                             @click="copyShareableURLToClipBoard"
@@ -1205,6 +1199,7 @@ export default {
                                 />
                             </svg>
                         </button>
+                        <!-- Tutorial button -->
                         <button
                             class="btn primary-btn me-1"
                             @click="restartTutorial"
