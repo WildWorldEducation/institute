@@ -120,6 +120,15 @@ export default {
             userSkills = this.skillTreeStore.verticalTreeUserSkills;
         }
 
+        // Update sub-subject filter object with root subject in filterSubject
+        this.userDetailsStore.subjectFilters.forEach((subject) => {
+            const filterObject = {
+                skillName: subject,
+                parent: 0
+            };
+            this.userDetailsStore.updateSubSubjectFilter(filterObject);
+        });
+
         // Specify the chart’s dimensions.
         this.height = window.innerHeight;
         this.width = window.innerWidth;
@@ -1162,6 +1171,9 @@ export default {
                 skill_name: 'My skills',
                 children: this.skill.children
             };
+
+            console.log('Jade Dragon');
+            console.log(this.userDetailsStore.subSubjectsFilters);
 
             // ADDITIONAL FILTER FOR SUB-SKILL
             if (this.userDetailsStore.subSubjectsFilters.length > 0) {

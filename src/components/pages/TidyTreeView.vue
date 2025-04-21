@@ -152,10 +152,6 @@ export default {
             if (!this.skillTreeStore.studentSkills.length) {
                 await this.skillTreeStore.getStudentSkills();
             }
-
-            console.log('student skill 234');
-            console.log(this.skillTreeStore.studentSkills);
-
             // Flag to determine if the click is to filtered the skill NOT un-filter it
             let isSkillGetShowing = false;
             // Only if user is logged in.
@@ -225,13 +221,18 @@ export default {
                     const nodeData = this.skillTreeStore.userSkills.find(
                         (node) => node.skill_name === realSkillName
                     );
-
                     const filterObject = { skillName: subject, parent: 0 };
                     this.userDetailsStore.updateSubSubjectFilter(filterObject);
+
+                    // also add all it child to subject filter
                     nodeData.children.forEach((childNode) => {
+                        const parent = this.skillTreeStore.findSkillBaseOnId(
+                            childNode.parent,
+                            this.skillTreeStore.studentSkills
+                        );
                         const filterObject = {
                             skillName: childNode.skill_name,
-                            parent: childNode.parent
+                            parent: parent.skill_name
                         };
                         this.userDetailsStore.updateSubSubjectFilter(
                             filterObject
@@ -522,9 +523,7 @@ export default {
             if (!this.skillTreeStore.studentSkills.length) {
                 await this.skillTreeStore.getStudentSkills();
             }
-            console.log('Click');
-            console.log(this.userDetailsStore.subSubjectsFilters);
-            console.log(this.userDetailsStore.subjectFilters);
+
             // Handle close sub-menu case first
             if (
                 this.userDetailsStore.subjectFilters.includes(subject) &&
@@ -565,9 +564,13 @@ export default {
                     );
                 if (!isChildInSubjectFilter) {
                     this.activeFilteredSubject.children.forEach((childNode) => {
+                        const parent = this.skillTreeStore.findSkillBaseOnId(
+                            childNode.parent,
+                            this.skillTreeStore.studentSkills
+                        );
                         const filterObject = {
                             skillName: childNode.skill_name,
-                            parent: childNode.parent
+                            parent: parent.skill_name
                         };
                         this.userDetailsStore.updateSubSubjectFilter(
                             filterObject

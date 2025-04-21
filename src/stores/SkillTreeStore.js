@@ -205,8 +205,13 @@ export const useSkillTreeStore = defineStore('skillTree', {
         },
         // Helper function for build skill tree based on filter method
         FindChildrenOfParent(nodeArrays, parentId) {
+            // handle case the oldest node is the leaf node
+            if (parentId === 0) {
+                return {
+                    leafNodeSiblings: [], nodeToFilter: []
+                }
+            }
             let resultArray = nodeArrays.filter(node => {
-
                 return node.node.parent === parentId
             })
             // Beauty result for building the skill tree 
@@ -217,12 +222,10 @@ export const useSkillTreeStore = defineStore('skillTree', {
 
         // BUILD A NEW USER SKILL BASED ON FILTER PATHS
         buildUserSkillTreeBaseOnFilterObject(filterObject, userSkills) {
+            console.log('Touch the moment')
             const localFilterObject = filterObject.map(e => e);
 
             let nodesNeededToBuildTree = this.findSkillDataOfFilterObject(localFilterObject, userSkills)
-
-
-
             if (!nodesNeededToBuildTree?.length) {
                 return []
             }

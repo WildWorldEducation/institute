@@ -155,7 +155,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
         // Using array to store what node is showing
         updateSubSubjectFilter(filterObject) {
             // initial the filter data if there are none
-            const obj = { skillName: filterObject.skillName, isLeaf: filterObject.parent !== 0 ? true : false }
+            const obj = { skillName: filterObject.skillName, isLeaf: true }
             const isInFilterArray = this.subSubjectsFilters.find(node => node.skillName === filterObject.skillName)
             if (isInFilterArray) {
                 this.subSubjectsFilters = this.subSubjectsFilters.filter(node => node.skillName !== filterObject.skillName);
@@ -165,9 +165,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
             }
             let haveChildNodeIndex = -1;
             // find if the node in subSubject
-            if (filterObject.parent !== 0) {
-                haveChildNodeIndex = this.subSubjectsFilters.findIndex(node => node.skillName === filterObject.parent)
-            }
+
+            haveChildNodeIndex = this.subSubjectsFilters.findIndex(node => node.skillName === filterObject.parent)
 
             if (haveChildNodeIndex >= 0) {
                 this.subSubjectsFilters[haveChildNodeIndex].isLeaf = false;
