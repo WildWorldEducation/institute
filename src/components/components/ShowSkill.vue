@@ -195,11 +195,11 @@ export default {
         async getSkill() {
             // solution for image to be changed when we change it from AWS
             this.randomNum = Math.random();
-             /* 
+            /* 
              / Load the skill data
              / Split into 2 parts, for SEO
             */
-            // Load the first part of the skill data - above the fold for mobile view 
+            // Load the first part of the skill data - above the fold for mobile view
             await this.showSkillStore.getSkillFirstPart(this.skillUrl);
             this.skill.name = this.showSkillStore.skill.name;
             this.skill.intro_sentence =
@@ -209,7 +209,7 @@ export default {
             this.skill.image_thumbnail_url =
                 this.showSkillStore.skill.image_thumbnail_url;
             this.skill.is_human_edited =
-                this.showSkillStore.skill.image_thumbnail_url
+                this.showSkillStore.skill.image_thumbnail_url;
 
             // Load the rest of the skill data
             await this.showSkillStore.getSkillSecondPart(this.skillUrl);
@@ -1446,7 +1446,7 @@ export default {
                 </div>
                 <!-- Infobox -->
                 <div class="col-md-4 order-1 order-md-2">
-                    <div class="info-box p-2 mb-2">
+                    <div class="info-box p-2 mb-4">
                         <!-- AWS S3 hosted feature image -->
                         <!-- Using random number otherwise url doesnt change (cache)-->
                         <a
@@ -1488,7 +1488,6 @@ export default {
                                 v-if="skill.is_human_edited"
                                 b-tooltip.hover
                                 title="This page was written or edited by a human"
-                                style="height: 50px"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -1506,7 +1505,6 @@ export default {
                                 v-else
                                 b-tooltip.hover
                                 title="This page was written by an AI"
-                                style="height: 50px"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
