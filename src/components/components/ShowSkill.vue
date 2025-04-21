@@ -1013,7 +1013,10 @@ export default {
                         </router-link>
                         <!-- Sharable URL -->
                         <button
-                            v-if="!sessionDetailsStore.isLoggedIn"
+                            v-if="
+                                !sessionDetailsStore.isLoggedIn &&
+                                isMobileCheck < 576
+                            "
                             @click="copyShareableURLToClipBoard"
                             class="btn me-1"
                             aria-label="share"
