@@ -1174,12 +1174,16 @@ export default {
                 children: this.skill.children
             };
 
+            if (!this.skillTreeStore.studentSkills.length) {
+                this.skillTreeStore.getStudentSkills();
+            }
+
             // ADDITIONAL FILTER FOR SUB-SKILL
             if (this.userDetailsStore.subSubjectsFilters.length > 0) {
                 const newUserSkill =
                     this.skillTreeStore.buildUserSkillTreeBaseOnFilterObject(
                         this.userDetailsStore.subSubjectsFilters,
-                        userSkills
+                        this.skillTreeStore.studentSkills
                     );
                 if (newUserSkill.length) {
                     this.data = {

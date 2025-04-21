@@ -165,6 +165,12 @@ export default {
                     this.userDetailsStore.subjectFilters = [];
                     this.userDetailsStore.subjectFilters.push(subject);
                     isSkillGetShowing = true;
+                    // also update sub-subject filter and it child
+                    this.userDetailsStore.subSubjectsFilters = [];
+                    this.userDetailsStore.updateSubSubjectFilter({
+                        skillName: rightSubjectName,
+                        parent: 0
+                    });
                 }
 
                 // Check if filter already present.
@@ -185,7 +191,7 @@ export default {
                     const subjectNodeData =
                         this.skillTreeStore.findSkillBaseOnName(
                             rightSubjectName,
-                            this.skillTreeStore.userSkills
+                            this.skillTreeStore.studentSkills
                         );
 
                     this.userDetailsStore.removeSkillFromFilter(
@@ -209,17 +215,48 @@ export default {
                         this.userDetailsStore.subjectFilters.push(
                             'Dangerous Ideas'
                         );
+
+                        // also update the sub subject filter
+                        this.userDetailsStore.updateSubSubjectFilter({
+                            skillName: 'Language',
+                            parent: 0
+                        });
+                        this.userDetailsStore.updateSubSubjectFilter({
+                            skillName: 'Mathematic',
+                            parent: 0
+                        });
+                        this.userDetailsStore.updateSubSubjectFilter({
+                            skillName: 'Science & Invention',
+                            parent: 0
+                        });
+                        this.userDetailsStore.updateSubSubjectFilter({
+                            skillName: 'Computer Science',
+                            parent: 0
+                        });
+                        this.userDetailsStore.updateSubSubjectFilter({
+                            skillName: 'History',
+                            parent: 0
+                        });
+                        this.userDetailsStore.updateSubSubjectFilter({
+                            skillName: 'Life',
+                            parent: 0
+                        });
+                        this.userDetailsStore.updateSubSubjectFilter({
+                            skillName: 'Dangerous Ideas',
+                            parent: 0
+                        });
                     }
                 } else {
                     // add it
                     isSkillGetShowing = true;
                     this.userDetailsStore.subjectFilters.push(subject);
+
                     // Also we have to add all of it children to subject filter (for now may need change when we update to store filter object in db)
                     if (!this.skillTreeStore.userSkills.length) {
                         await this.skillTreeStore.getUserSkills();
                     }
 
-                    const nodeData = this.skillTreeStore.userSkills.find(
+                    const nodeData = this.skillTreeStore.studentSkills.find(
                         (node) => node.skill_name === rightSubjectName
                     );
                     const filterObject = {
@@ -238,6 +275,7 @@ export default {
                             skillName: childNode.skill_name,
                             parent: parent.skill_name
                         };
+
                         this.userDetailsStore.updateSubSubjectFilter(
                             filterObject
                         );
@@ -309,6 +347,26 @@ export default {
                             filterObject
                         );
                     });
+                } else {
+                    // check if any of the skill children is in filter object
+                    if (
+                        !this.userDetailsStore.checkIfHaveSkillInSubSubjectFilter(
+                            this.activeFilteredSubject.children
+                        )
+                    ) {
+                        // we add all child of it
+                        this.activeFilteredSubject.children.forEach(
+                            (skillNode) => {
+                                const filterObj = {
+                                    skillName: skillNode.skill_name,
+                                    parent: skillNode.parent
+                                };
+                                this.userDetailsStore.updateSubSubjectFilter(
+                                    filterObj
+                                );
+                            }
+                        );
+                    }
                 }
 
                 // get button position
@@ -322,6 +380,7 @@ export default {
             } else {
                 this.openSubFilterMenu = false;
             }
+            // ==================================================================================
         },
 
         toggleisUnlockedSkillsFilter() {
@@ -569,6 +628,7 @@ export default {
                     this.userDetailsStore.checkIfHaveSkillInSubSubjectFilter(
                         this.activeFilteredSubject.children
                     );
+
                 if (!isChildInSubjectFilter) {
                     this.activeFilteredSubject.children.forEach((childNode) => {
                         const parent = this.skillTreeStore.findSkillBaseOnId(
@@ -579,6 +639,7 @@ export default {
                             skillName: childNode.skill_name,
                             parent: parent.skill_name
                         };
+
                         this.userDetailsStore.updateSubSubjectFilter(
                             filterObject
                         );
@@ -1294,7 +1355,7 @@ export default {
                         <svg
                             v-if="
                                 activeFilteredSubject?.skill_name ===
-                                    'Science and Invention' && openSubFilterMenu
+                                    'Science & Invention' && openSubFilterMenu
                             "
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"

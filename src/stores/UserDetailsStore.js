@@ -208,6 +208,5 @@ export const useUserDetailsStore = defineStore('userDetails', {
             }
             return result;
         }
-
     }
 });

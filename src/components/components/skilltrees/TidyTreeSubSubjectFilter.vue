@@ -110,8 +110,8 @@ export default {
     watch: {
         additionalFilterData: {
             handler(newItem, oldItem) {
-                this.showSkills = newItem.activeFilteredSubject.children;
-                this.position = newItem.additionalFilterPosition;
+                this.showSkills = newItem?.activeFilteredSubject?.children;
+                this.position = newItem?.additionalFilterPosition;
                 if (this.position) {
                     this.top = this.position.top + 'px';
                     this.left = this.position.left + 'px';

@@ -197,8 +197,9 @@ export const useSkillTreeStore = defineStore('skillTree', {
 
                 const nodeData = this.findSkillBaseOnName(element.skillName, userSkills);
                 const object = { node: nodeData, isLeaf: element.isLeaf }
-
-                resultArray.push(object);
+                if (object.node) {
+                    resultArray.push(object);
+                }
             }
 
             return resultArray
