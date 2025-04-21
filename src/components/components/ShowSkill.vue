@@ -791,7 +791,12 @@ export default {
             <!-- Name and description -->
             <div>
                 <div class="d-flex justify-content-between top-row">
-                    <h1 class="heading">{{ skill.name }}</h1>
+                    <h1
+                        class="heading"
+                        :class="{ 'text-center': isMobileCheck < 576 }"
+                    >
+                        {{ skill.name }}
+                    </h1>
                     <!-- Take assessment btn-->
                     <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
                     <router-link
