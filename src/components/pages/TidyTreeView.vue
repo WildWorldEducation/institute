@@ -259,7 +259,7 @@ export default {
         // Onboardning tutorials
         async checkIfTutorialComplete() {
             // Only show tutorial on desktop
-            if (window.innerWidth > 767) {
+            if (window.innerWidth > 576) {
                 try {
                     const result = await fetch(
                         '/users/check-tutorial-progress/vertical-tree/' +

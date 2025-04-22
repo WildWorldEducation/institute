@@ -24,7 +24,7 @@ export default {
             showTutorialTip1: false,
             showTutorialTip2: false,
             showTutorialTip3: false,
-            isMobile: window.innerWidth <= 767
+            isMobileCheck: window.innerWidth <= 576
         };
     },
     components: {
