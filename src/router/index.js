@@ -34,9 +34,9 @@ const router = createRouter({
             }
         },
         {
-            path: '/hub',
-            name: 'hub',
-            component: () => import('../components/pages/HubView.vue'),
+            path: '/search',
+            name: 'search',
+            component: () => import('../components/pages/SearchView.vue'),
             meta: {
                 requiresAuth: false,
                 roles: ['student', 'admin'],
@@ -447,6 +447,7 @@ const router = createRouter({
                 roles: ['instructor', 'admin']
             }
         },
+        // Subscriptions
         {
             path: '/subscriptions',
             name: 'subscription',
@@ -469,8 +470,6 @@ const router = createRouter({
                     '../components/pages/subscriptions/SubscriptionErrorView.vue'
                 )
         },
-
-        // Subscriptions
         {
             path: '/:pathMatch(.*)*',
             name: 'not-found',
@@ -581,7 +580,7 @@ router.beforeEach(async (to, from, next) => {
         to.name !== 'skill-tree' &&
         to.name !== 'show-skill' &&
         to.name !== 'instructor-signup' &&
-        to.name !== 'hub'
+        to.name !== 'search'
     ) {
         next({ name: 'skill-tree' });
         return;
@@ -620,12 +619,12 @@ router.beforeEach(async (to, from, next) => {
     if (
         to.name == 'skill-tree' ||
         to.name == 'learning-tracks' ||
-        to.name == 'radial-tree' ||
         to.name == 'skills' ||
         to.name == 'student-skills' ||
         to.name == 'student-signup' ||
         to.name == 'editor-signup' ||
         to.name == 'instructor-signup' ||
+        to.name == 'subscription' ||
         to.name == 'login'
     ) {
         document.getElementById('app').style.overflow = 'hidden';

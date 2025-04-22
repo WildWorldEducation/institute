@@ -138,6 +138,7 @@ export default {
                         alt=""
                         width="50"
                         height="50"
+                        aria-label="Collins Institute logo"
                     />
                     <img
                         v-else
@@ -145,6 +146,7 @@ export default {
                         alt=""
                         width="50"
                         height="50"
+                        aria-label="Collins Institute logo"
                     />
                 </RouterLink>
                 <button
@@ -172,7 +174,7 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink
-                                to="/hub"
+                                to="/search"
                                 class="nav-link close-on-click"
                                 >Search</RouterLink
                             >
@@ -182,7 +184,7 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink
-                                to="/hub"
+                                to="/search"
                                 class="nav-link close-on-click"
                                 >Search</RouterLink
                             >
@@ -528,6 +530,10 @@ Themes
     --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
 }
 
+
+.editor-theme .secondary-heading.white-heading {
+  color: white !important;
+}
 /* Background just for moving between the 2 skill trees */
 .skill-tree-transition {
     --background-color: var(--skill-tree-background-color);
@@ -649,7 +655,6 @@ p {
 }
 
 /* End of themes section */
-
 .router-link-active {
     text-decoration: underline;
     color: var(--primary-color);

@@ -258,7 +258,7 @@ export default {
         this.updateParentSubjectFilter();
 
         // Get skill icon data
-        await this.getIconData();
+        this.getIconData();
         this.isLoading = false;
     },
     methods: {

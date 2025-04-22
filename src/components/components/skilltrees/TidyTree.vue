@@ -315,7 +315,7 @@ export default {
         // Set initial zoom value.
         this.resetPos();
 
-        await this.getIconData();
+        this.getIconData();
 
         // For the loading animation.
 
