@@ -21,19 +21,26 @@ export default {
     <div class="container-fluid">
         <h2 class="secondary-heading h4">Mark Assessments</h2>
         <div id="list-body">
-            <div class="assessment" v-for="assessment in this.assessments">
-                <RouterLink
-                    class="assessment-link"
-                    :to="'/mark-assessment/' + assessment.id"
-                >
-                    <span id="student-name">
-                        {{ assessment.studentUsername }},
-                    </span>
-                    <span id="skill-name"> {{ assessment.skillName }}, </span>
-                    <span id="date">
-                        {{ assessment.date }}
-                    </span>
-                </RouterLink>
+            <div v-if="assessments.length > 0">
+                <div class="assessment" v-for="assessment in this.assessments">
+                    <RouterLink
+                        class="assessment-link"
+                        :to="'/mark-assessment/' + assessment.id"
+                    >
+                        <span id="student-name">
+                            {{ assessment.studentUsername }},
+                        </span>
+                        <span id="skill-name">
+                            {{ assessment.skillName }},
+                        </span>
+                        <span id="date">
+                            {{ assessment.date }}
+                        </span>
+                    </RouterLink>
+                </div>
+            </div>
+            <div v-else class="empty-message">
+                There are no assessments to be marked currently.
             </div>
         </div>
     </div>
@@ -92,5 +99,9 @@ export default {
     align-items: center;
     max-width: fit-content;
     height: 44px;
+}
+
+.empty-message {
+    color: #667085;
 }
 </style>
