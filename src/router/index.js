@@ -12,7 +12,7 @@ const router = createRouter({
         {
             path: '/',
             redirect: () => {
-                return window.innerWidth <= 767
+                return window.innerWidth <= 576
                     ? { name: 'search' }
                     : { name: 'skill-tree' };
             }
