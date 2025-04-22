@@ -1238,6 +1238,7 @@ export default {
                         </button>
                         <!-- Tutorial button -->
                         <button
+                            v-if="sessionDetailsStore.isLoggedIn"
                             class="btn primary-btn me-1"
                             @click="restartTutorial"
                             aria-label="info"
@@ -2218,6 +2219,7 @@ p {
 
     .assessment-btn {
         max-width: 100%;
+        max-height: 38px;
     }
 }
 
