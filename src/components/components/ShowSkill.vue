@@ -1082,11 +1082,11 @@ export default {
                 <!-- A line divide -->
                 <hr
                     class="border border-2 opacity-100 hr"
-                    v-if="isMobileCheck > 576 || sessionDetailsStore.isLoggedIn"
+                    v-if="isMobileCheck > 576"
                 />
             </div>
             <!-- Buttons -->
-            <div class="row mb-2">
+            <div class="row mb-2 mt-2">
                 <div class="col d-flex justify-content-between">
                     <div class="d-flex">
                         <!-- Edit skill btn-->
@@ -2218,6 +2218,7 @@ p {
     }
 
     .assessment-btn {
+        width: 100%;
         max-width: 100%;
         max-height: 38px;
     }
