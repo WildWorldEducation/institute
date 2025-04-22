@@ -710,6 +710,115 @@ router.get('/url/:skillUrl', (req, res, next) => {
     });
 });
 
+// Load skill - split into 2 for SEO purposes
+// For loading the first part of the skill,
+// that is 'above the fold' on mobile.
+router.get('/first/url/:skillUrl', (req, res, next) => {
+    let skill;
+    // Get skill.
+    const sqlQuery = `SELECT name, intro_sentence, type, level, image_thumbnail_url, is_human_edited
+                    FROM 
+                        skills
+                    WHERE url = ${conn.escape(
+                        req.params.skillUrl
+                    )} AND is_deleted = 0`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            skill = results[0];
+
+            if (typeof skill !== 'undefined' && skill) {
+                if (skill.is_copy_of_skill_id != null) {
+                    const sqlQueryForCopiedSkillNode = `SELECT *
+                FROM skills
+                WHERE skills.id = ${conn.escape(skill.is_copy_of_skill_id)}
+                AND skills.is_deleted = 0;`;
+
+                    conn.query(sqlQueryForCopiedSkillNode, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            }
+                            let skill2 = results[0];
+                            skill2.is_copy_of_skill_id = skill2.id;
+                            skill2.type = skill.type;
+                            skill2.parent = skill.parent;
+                            skill2.version_number = skill.version_number;
+                            res.json(skill2);
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
+                } else {
+                    res.json(skill);
+                }
+            } else {
+                res.end();
+            }
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
+// For loading the second part of the skill.
+router.get('/second/url/:skillUrl', (req, res, next) => {
+    let skill;
+    // Get skill.
+    const sqlQuery = `SELECT s.id, s.url, s.parent, s.introduction, s.image_url, s.icon_url, s.icon, s.mastery_requirements,
+                        s.version_number, s.order, parent_skill.type AS parent_type
+                    FROM 
+                        skills AS s
+                    LEFT JOIN 
+                        skills AS parent_skill ON s.parent = parent_skill.id
+                    WHERE s.url = ${conn.escape(
+                        req.params.skillUrl
+                    )} AND s.is_deleted = 0`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            skill = results[0];
+
+            if (typeof skill !== 'undefined' && skill) {
+                if (skill.is_copy_of_skill_id != null) {
+                    const sqlQueryForCopiedSkillNode = `SELECT *
+                FROM skills
+                WHERE skills.id = ${conn.escape(skill.is_copy_of_skill_id)}
+                AND skills.is_deleted = 0;`;
+
+                    conn.query(sqlQueryForCopiedSkillNode, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            }
+                            let skill2 = results[0];
+                            skill2.is_copy_of_skill_id = skill2.id;
+                            skill2.type = skill.type;
+                            skill2.parent = skill.parent;
+                            skill2.version_number = skill.version_number;
+                            res.json(skill2);
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
+                } else {
+                    res.json(skill);
+                }
+            } else {
+                res.end();
+            }
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
 // For sending the intro data separately to the skill tree skill panels.
 // We send it separately because otherwise, if we send it with the other data, it slows
 // down the page load of the skill trees.
