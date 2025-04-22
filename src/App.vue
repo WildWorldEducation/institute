@@ -493,7 +493,6 @@ Themes
 
     --stroke-width: 0px;
 
-    overflow-y: auto;
 }
 
 /* The Instructor theme */
