@@ -835,32 +835,34 @@ export default {
                         class="btn me-1 assessment-btn"
                         @click="scrollToAITutor()"
                     >
-                        <!-- Half star icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 576 512"
-                            width="22"
-                            fill="white"
-                        >
-                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="M288 0c-12.2 .1-23.3 7-28.6 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3L288 439.8 288 0zM429.9 512c1.1 .1 2.1 .1 3.2 0l-3.2 0z"
-                            />
-                        </svg>
-                        Take the Test
-                        <!-- Half star icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 576 512"
-                            width="22"
-                            fill="white"
-                        >
-                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="m 169.24356,0 c 12.2,0.1 23.3,7 28.6,18 l 64.4,132.3 143.6,21.2 c 12,1.8 22,10.2 25.7,21.7 3.7,11.5 0.7,24.2 -7.9,32.7 l -104.2,103.1 24.6,145.7 c 2,12 -3,24.2 -12.9,31.3 -9.9,7.1 -23,8 -33.8,2.3 l -128.1,-68.5 z M 27.343555,512 c -1.1,0.1 -2.1,0.1 -3.2,0 z"
-                                id="path17"
-                            />
-                        </svg>
+                        <span>
+                            <!-- Half star icon -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 576 512"
+                                width="22"
+                                fill="white"
+                            >
+                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                <path
+                                    d="M288 0c-12.2 .1-23.3 7-28.6 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3L288 439.8 288 0zM429.9 512c1.1 .1 2.1 .1 3.2 0l-3.2 0z"
+                                />
+                            </svg>
+                            Take the Test
+                            <!-- Half star icon -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 576 512"
+                                width="22"
+                                fill="white"
+                            >
+                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                <path
+                                    d="m 169.24356,0 c 12.2,0.1 23.3,7 28.6,18 l 64.4,132.3 143.6,21.2 c 12,1.8 22,10.2 25.7,21.7 3.7,11.5 0.7,24.2 -7.9,32.7 l -104.2,103.1 24.6,145.7 c 2,12 -3,24.2 -12.9,31.3 -9.9,7.1 -23,8 -33.8,2.3 l -128.1,-68.5 z M 27.343555,512 c -1.1,0.1 -2.1,0.1 -3.2,0 z"
+                                    id="path17"
+                                />
+                            </svg>
+                        </span>
                     </button>
                     <!-- Unmastered Subskills Modal -->
                     <div
@@ -973,6 +975,7 @@ export default {
                             />
                         </svg>
                     </button>
+                    <!-- Guest mode -->
                     <span
                         v-else-if="!sessionDetailsStore.isLoggedIn"
                         class="d-flex justify-content-between"
@@ -2125,6 +2128,7 @@ p {
     border-style: solid;
     background-color: #7f1e1e;
     color: white; /* Matching the text color used by both buttons */
+    justify-content: center;
 }
 
 .info-box {
@@ -2210,6 +2214,10 @@ p {
 
     .top-row {
         flex-direction: column;
+    }
+
+    .assessment-btn {
+        max-width: 100%;
     }
 }
 
