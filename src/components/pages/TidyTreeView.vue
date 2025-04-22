@@ -258,21 +258,26 @@ export default {
         },
         // Onboardning tutorials
         async checkIfTutorialComplete() {
-            try {
-                const result = await fetch(
-                    '/users/check-tutorial-progress/vertical-tree/' +
-                        this.userDetailsStore.userId
-                );
-                const data = await result.json();
+            // Only show tutorial on desktop
+            if (window.innerWidth > 767) {
+                try {
+                    const result = await fetch(
+                        '/users/check-tutorial-progress/vertical-tree/' +
+                            this.userDetailsStore.userId
+                    );
+                    const data = await result.json();
 
-                // Check for students only
-                if (data === 0 && this.userDetailsStore.role == 'student') {
-                    this.showWelcomeModal = true;
-                } else if (data === 1) {
-                    this.isTutorialComplete = true;
+                    if (data === 0 && this.userDetailsStore.role == 'student') {
+                        this.showWelcomeModal = true;
+                    } else if (data === 1) {
+                        this.isTutorialComplete = true;
+                    }
+                } catch (error) {
+                    console.error('Error checking tutorial progress:', error);
                 }
-            } catch (error) {
-                console.error('Error checking tutorial progress:', error);
+            } else {
+                // On mobile, don't show the tutorial for TidyTreeView
+                this.isTutorialComplete = true;
             }
         },
         progressTutorial(step) {

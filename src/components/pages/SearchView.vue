@@ -23,7 +23,8 @@ export default {
             isTutorialComplete: false,
             showTutorialTip1: false,
             showTutorialTip2: false,
-            showTutorialTip3: false
+            showTutorialTip3: false,
+            isMobile: window.innerWidth <= 767
         };
     },
     components: {
@@ -49,30 +50,36 @@ export default {
                 'Search for a skill or profession you want to learn about.'
             );
         // Check tutorial complete
-        if (this.sessionDetailsStore.isLoggedIn) this.checkIfTutorialComplete();
+        if (window.innerWidth <= 767 && this.sessionDetailsStore.isLoggedIn) {
+            this.checkIfTutorialComplete();
+        }
     },
     methods: {
         // Tutorial
         async checkIfTutorialComplete() {
-            try {
-                const result = await fetch(
-                    '/users/check-tutorial-progress/hub/' +
-                        this.userDetailsStore.userId
-                );
-                const data = await result.json();
+            // Only check and show tutorial on mobile
+            if (window.innerWidth <= 767) {
+                try {
+                    const result = await fetch(
+                        '/users/check-tutorial-progress/hub/' +
+                            this.userDetailsStore.userId
+                    );
+                    const data = await result.json();
 
-                if (data === 0 && this.userDetailsStore.role != 'student') {
-                    this.showWelcomeModal = true;
-                } else if (
-                    data === 0 &&
-                    this.userDetailsStore.role == 'student'
-                ) {
-                    this.showTutorialTip1 = true;
-                } else if (data === 1) {
-                    this.isTutorialComplete = true;
+                    if (
+                        data === 0 &&
+                        this.userDetailsStore.role === 'student'
+                    ) {
+                        this.showWelcomeModal = true;
+                    } else if (data === 1) {
+                        this.isTutorialComplete = true;
+                    }
+                } catch (error) {
+                    console.error('Error checking tutorial progress:', error);
                 }
-            } catch (error) {
-                console.error('Error checking tutorial progress:', error);
+            } else {
+                // On desktop, don't show the tutorial for SearchView
+                this.isTutorialComplete = true;
             }
         },
         progressTutorial(step) {
