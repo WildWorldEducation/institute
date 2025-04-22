@@ -1239,7 +1239,7 @@ export default {
                         <!-- Tutorial button -->
                         <button
                             v-if="sessionDetailsStore.isLoggedIn"
-                            class="btn primary-btn me-1"
+                            class="btn me-1"
                             @click="restartTutorial"
                             aria-label="info"
                         >
@@ -1247,8 +1247,8 @@ export default {
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 192 512"
                                 width="20"
-                                height="20"
-                                fill="white"
+                                height="23"
+                                class="primary-icon"
                             >
                                 <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                 <path
@@ -1455,7 +1455,7 @@ export default {
                 <!-- A line divide -->
                 <hr
                     class="border border-1 opacity-100 hr mt-2"
-                    v-if="isMobileCheck > 576 || sessionDetailsStore.isLoggedIn"
+                    v-if="isMobileCheck > 576"
                 />
             </div>
             <!-- Content -->
