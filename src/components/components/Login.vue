@@ -7,7 +7,8 @@ export default {
         return {
             // loginError: "",
             username: null,
-            password: null
+            password: null,
+            isMobileCheck: window.innerWidth
         };
     },
     mounted() {
@@ -36,10 +37,12 @@ export default {
                 .then(function (response) {
                     return response.json();
                 })
-                .then(function (data) {
+                .then((data) => {
                     if (data.account == 'authorized') {
                         if (data.role == 'student') {
-                            router.push({ name: 'skill-tree' });
+                            if (this.isMobileCheck < 576) {
+                                router.push({ name: 'search' });
+                            } else router.push({ name: 'skill-tree' });
                         } else if (data.role == 'instructor') {
                             router.push({ name: 'students' });
                         } else if (data.role == 'editor') {

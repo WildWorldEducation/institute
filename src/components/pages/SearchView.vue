@@ -23,8 +23,7 @@ export default {
             isTutorialComplete: false,
             showTutorialTip1: false,
             showTutorialTip2: false,
-            showTutorialTip3: false,
-            isMobileCheck: window.innerWidth <= 576
+            showTutorialTip3: false
         };
     },
     components: {
@@ -50,7 +49,7 @@ export default {
                 'Search for a skill or profession you want to learn about.'
             );
         // Check tutorial complete
-        if (window.innerWidth <= 576 && this.sessionDetailsStore.isLoggedIn) {
+        if (window.innerWidth < 576 && this.sessionDetailsStore.isLoggedIn) {
             this.checkIfTutorialComplete();
         }
     },
@@ -58,7 +57,7 @@ export default {
         // Tutorial
         async checkIfTutorialComplete() {
             // Only check and show tutorial on mobile
-            if (window.innerWidth <= 576) {
+            if (window.innerWidth < 576) {
                 try {
                     const result = await fetch(
                         '/users/check-tutorial-progress/hub/' +

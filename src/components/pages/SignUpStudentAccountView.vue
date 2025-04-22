@@ -29,7 +29,8 @@ export default {
             // For Google sign up absolute API url.
             isProduction: import.meta.env.PROD,
             showVideoModal: true,
-            showModalVideo: true
+            showModalVideo: true,
+            isMobileCheck: window.innerWidth
         };
     },
     async created() {},
@@ -96,7 +97,9 @@ export default {
                 .then((data) => {
                     if (data.account == 'authorized') {
                         alert('Account created.');
-                        router.push({ name: 'skill-tree' });
+                        if (this.isMobileCheck < 576) {
+                            router.push({ name: 'search' });
+                        } else router.push({ name: 'skill-tree' });
                     } else if (data.account == 'username already taken') {
                         alert(data.account);
                     } else if (data.account == 'email already taken') {
