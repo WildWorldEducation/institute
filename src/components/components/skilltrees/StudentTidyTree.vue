@@ -361,10 +361,10 @@ export default {
 
             // If skill is mastered.
             if (link.target.data.is_mastered == 1) {
-                this.context.lineWidth = 4;
+                this.context.lineWidth = 6;
                 this.context.strokeStyle = '#8d6ce7';
             } else {
-                this.context.lineWidth = 2;
+                this.context.lineWidth = 4;
                 // Determine colour of links based on user's theme
                 if (this.userDetailsStore.theme == 'original')
                     this.context.strokeStyle = '#000';
