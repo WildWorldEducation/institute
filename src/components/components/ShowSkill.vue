@@ -975,10 +975,61 @@ export default {
                             />
                         </svg>
                     </button>
+                </div>
+                <!-- Student tooltip -->
+                <div
+                    v-if="
+                        userDetailsStore.role == 'student' && showTutorialTip2
+                    "
+                    class="tool-tip-base d-flex justify-content-end"
+                >
+                    <div
+                        class="explain-tool-tip hovering-info-panel"
+                        :class="
+                            isMobileCheck > 576
+                                ? 'triangle-top-right'
+                                : 'triangle-top-left'
+                        "
+                    >
+                        <div class="tool-tip-text">
+                            <p>
+                                This is where you can take an assessment for
+                                this skill, if it is unlocked.
+                            </p>
+                            <p>
+                                If it's locked, this button will instead take
+                                you to the closest unlocked skill.
+                            </p>
+                            <div class="d-flex justify-content-between">
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(2)"
+                                >
+                                    next
+                                </button>
+                                <button
+                                    class="btn red-btn"
+                                    @click="skipTutorial"
+                                >
+                                    exit tutorial
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- A line divide -->
+                <hr
+                    class="border border-2 opacity-100 hr"
+                    v-if="isMobileCheck > 576"
+                />
+            </div>
+            <!-- Buttons -->
+            <div class="row mb-2 mt-2">
+                <div class="col d-flex justify-content-between">
                     <!-- Guest mode -->
                     <span
-                        v-else-if="!sessionDetailsStore.isLoggedIn"
-                        class="d-flex justify-content-between"
+                        v-if="!sessionDetailsStore.isLoggedIn"
+                        class="d-flex justify-content-between w-100"
                     >
                         <!-- If not logged in, go to Login page -->
                         <router-link
@@ -1037,57 +1088,7 @@ export default {
                             </svg>
                         </button>
                     </span>
-                </div>
-                <!-- Student tooltip -->
-                <div
-                    v-if="
-                        userDetailsStore.role == 'student' && showTutorialTip2
-                    "
-                    class="tool-tip-base d-flex justify-content-end"
-                >
-                    <div
-                        class="explain-tool-tip hovering-info-panel"
-                        :class="
-                            isMobileCheck > 576
-                                ? 'triangle-top-right'
-                                : 'triangle-top-left'
-                        "
-                    >
-                        <div class="tool-tip-text">
-                            <p>
-                                This is where you can take an assessment for
-                                this skill, if it is unlocked.
-                            </p>
-                            <p>
-                                If it's locked, this button will instead take
-                                you to the closest unlocked skill.
-                            </p>
-                            <div class="d-flex justify-content-between">
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(2)"
-                                >
-                                    next
-                                </button>
-                                <button
-                                    class="btn red-btn"
-                                    @click="skipTutorial"
-                                >
-                                    exit tutorial
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- A line divide -->
-                <hr
-                    class="border border-2 opacity-100 hr"
-                    v-if="isMobileCheck > 576"
-                />
-            </div>
-            <!-- Buttons -->
-            <div class="row mb-2 mt-2">
-                <div class="col d-flex justify-content-between">
+
                     <div class="d-flex">
                         <!-- Edit skill btn-->
                         <router-link
@@ -2150,6 +2151,7 @@ p {
 
 .hr {
     border-color: var(--dark-color) !important;
+    margin-top: 0px;
 }
 
 #skill-info-container {
