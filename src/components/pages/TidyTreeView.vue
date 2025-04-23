@@ -194,9 +194,6 @@ export default {
                         );
 
                     // Remove the skill from subSubject skill Tree
-                    if (!this.skillTreeStore.userSkills.length) {
-                        await this.skillTreeStore.getUserSkills();
-                    }
 
                     const subjectNodeData =
                         this.skillTreeStore.findSkillBaseOnName(
@@ -347,7 +344,7 @@ export default {
                             (skillNode) => {
                                 const parent =
                                     this.skillTreeStore.findSkillBaseOnId(
-                                        childNode.parent,
+                                        skillNode.parent,
                                         this.skillTreeStore.studentSkills
                                     );
                                 const filterObject = {
@@ -488,9 +485,6 @@ export default {
                 this.gradeFilter,
                 this.subjectFilters
             );
-
-            console.log('Bomb there');
-            console.log(this.userDetailsStore.subSubjectsFilters);
         },
         // Onboardning tutorials
         async checkIfTutorialComplete() {
@@ -1801,7 +1795,6 @@ export default {
                 >
                     Dangerous Ideas
                 </button>
-                <div>HA HA GEEST</div>
             </div>
             <button
                 class="btn switch-btn"
