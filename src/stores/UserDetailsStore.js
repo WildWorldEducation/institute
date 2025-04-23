@@ -154,6 +154,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
         },
         // Using array to store what node is showing
         updateSubSubjectFilter(filterObject) {
+
             // initial the filter data if there are none
             const obj = { skillName: filterObject.skillName, isLeaf: true }
             const isInFilterArray = this.subSubjectsFilters.find(node => node.skillName === filterObject.skillName)

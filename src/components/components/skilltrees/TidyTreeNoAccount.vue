@@ -726,15 +726,14 @@ export default {
             }
 
             // ADDITIONAL FILTER FOR SUB-SKILL
-            console.log('Force all ');
-            console.log(this.userDetailsStore.subSubjectsFilters);
+
             if (this.userDetailsStore.subSubjectsFilters.length > 0) {
-                console.log('ha ha ');
                 const newUserSkill =
                     this.skillTreeStore.buildGuestUserSkillTreeBaseOnFilterObject(
                         this.userDetailsStore.subSubjectsFilters,
                         this.skillsStore.guestModeVerticalTreeSkills
                     );
+
                 if (newUserSkill.length) {
                     this.data = {
                         skill_name: 'My skills',

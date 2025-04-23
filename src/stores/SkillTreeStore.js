@@ -268,6 +268,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
         // ----------------------------------------------------------------------------------------------------------------------------------------------------------
         // Because the skill tree for no-account users uses a different object format for nodes, we had to rewrite the buildTree function to accommodate the change
         buildGuestUserSkillTreeBaseOnFilterObject(filterObject, userSkills) {
+
             const localFilterObject = filterObject.map(e => e);
             let nodesNeededToBuildTree = this.findSkillDataOfGuestFilterObject(localFilterObject, userSkills)
             if (!nodesNeededToBuildTree?.length) {

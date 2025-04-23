@@ -105,6 +105,9 @@ export default {
     mounted() {
         this.GetGoogleLoginResult();
     },
+    unmounted() {
+        this.userDetailsStore.subSubjectsFilters = [];
+    },
     components: {
         TidyTree,
         TidyTreeSubSubjectFilter,
@@ -320,9 +323,13 @@ export default {
                         parentFilterObject
                     );
                     this.activeFilteredSubject.children.forEach((skillNode) => {
+                        const parent = this.skillTreeStore.findSkillBaseOnId(
+                            childNode.parent,
+                            this.skillsStore.guestModeVerticalTreeSkills
+                        );
                         const filterObject = {
                             skillName: skillNode.skill_name,
-                            parent: skillNode.parent
+                            parent: parent.name
                         };
                         this.userDetailsStore.updateSubSubjectFilter(
                             filterObject
@@ -338,12 +345,17 @@ export default {
                         // we add all child of it
                         this.activeFilteredSubject.children.forEach(
                             (skillNode) => {
-                                const filterObj = {
+                                const parent =
+                                    this.skillTreeStore.findSkillBaseOnId(
+                                        childNode.parent,
+                                        this.skillTreeStore.studentSkills
+                                    );
+                                const filterObject = {
                                     skillName: skillNode.skill_name,
-                                    parent: skillNode.parent
+                                    parent: parent.skill_name
                                 };
                                 this.userDetailsStore.updateSubSubjectFilter(
-                                    filterObj
+                                    filterObject
                                 );
                             }
                         );
@@ -372,18 +384,59 @@ export default {
             }
         },
         async handleUpdateGuestFilterSubject(subject) {
+            const rightSubjectName = this.transformToOriginalName(subject);
             // if all subjects are selected, show only the clicked subject
             if (this.subjectFilters.length == 7) {
                 this.subjectFilters = [];
                 this.subjectFilters.push(subject);
+                // Handle case all 7 root skill is in filter array
+                this.subjectFilters = [subject];
+                this.userDetailsStore.subSubjectsFilters = [];
+                const subjectFilter = {
+                    skillName: rightSubjectName,
+                    parent: 0
+                };
+                this.userDetailsStore.updateSubSubjectFilter(subjectFilter);
+                const isSkillNeedAdditionalFilter =
+                    this.skillsNeedMoreFilter.find(
+                        (skillName) => skillName === subject
+                    );
+                if (isSkillNeedAdditionalFilter) {
+                    const nodeData =
+                        this.skillTreeStore.findGuestSkillBaseOnName(
+                            rightSubjectName,
+                            this.skillsStore.guestModeVerticalTreeSkills
+                        );
+                    if (nodeData) {
+                        nodeData.children.forEach((skill) => {
+                            const updateObj = {
+                                skillName: skill.name,
+                                parent: nodeData.name
+                            };
+                            this.userDetailsStore.updateSubSubjectFilter(
+                                updateObj
+                            );
+                        });
+                    }
+                }
             }
-
             // Check if filter already present.
             else if (this.subjectFilters.includes(subject)) {
                 // remove it
                 this.subjectFilters = this.subjectFilters.filter(
                     (e) => e !== subject
                 );
+
+                const subjectNodeData =
+                    this.skillTreeStore.findGuestSkillBaseOnName(
+                        rightSubjectName,
+                        this.skillsStore.guestModeVerticalTreeSkills
+                    );
+                // very hacky way to not rewrite the remove from filter for guest mode
+                this.userDetailsStore.removeSkillFromFilter({
+                    ...subjectNodeData,
+                    skill_name: subjectNodeData.name
+                });
 
                 // if array is empty, add all subjects.
                 if (this.subjectFilters.length == 0) {
@@ -394,15 +447,50 @@ export default {
                     this.subjectFilters.push('History');
                     this.subjectFilters.push('Life');
                     this.subjectFilters.push('Dangerous Ideas');
+                    this.userDetailsStore.subSubjectsFilters = [];
                 }
             } else {
-                // add it
+                // add it to existing subject filter array
                 this.subjectFilters.push(subject);
+                // add item to subject filter
+                const parentSubjectFilter = {
+                    skillName: rightSubjectName,
+                    parent: 0
+                };
+                this.userDetailsStore.updateSubSubjectFilter(
+                    parentSubjectFilter
+                );
+                const isSkillNeedAdditionalFilter =
+                    this.skillsNeedMoreFilter.find(
+                        (skillName) => skillName === subject
+                    );
+                if (isSkillNeedAdditionalFilter) {
+                    const nodeData =
+                        this.skillTreeStore.findGuestSkillBaseOnName(
+                            rightSubjectName,
+                            this.skillsStore.guestModeVerticalTreeSkills
+                        );
+                    if (nodeData) {
+                        nodeData.children.forEach((skill) => {
+                            const updateObj = {
+                                skillName: skill.name,
+                                parent: nodeData.name
+                            };
+                            this.userDetailsStore.updateSubSubjectFilter(
+                                updateObj
+                            );
+                        });
+                    }
+                }
             }
+
             this.$refs.childComponent.filter(
                 this.gradeFilter,
                 this.subjectFilters
             );
+
+            console.log('Bomb there');
+            console.log(this.userDetailsStore.subSubjectsFilters);
         },
         // Onboardning tutorials
         async checkIfTutorialComplete() {
@@ -708,8 +796,12 @@ export default {
                 skillInSubSubjectFilter ||
                 this.subjectFilters.includes(subject)
             ) {
+                if (this.subjectFilters.length === 7) {
+                    this.subjectFilters = this.subjectFilters.filter(
+                        (skill) => skill === subject
+                    );
+                }
                 this.openSubFilterMenu = true;
-                // also update active filter object and sub-menu position
 
                 this.activeFilteredSubject =
                     this.skillsStore.guestModeVerticalTreeSkills.find(
@@ -767,8 +859,6 @@ export default {
                 this.gradeFilter,
                 this.subjectFilters
             );
-            console.log('Skink: ');
-            console.log(this.userDetailsStore.subSubjectsFilters);
         },
 
         filterSkillTree() {
@@ -1684,7 +1774,7 @@ export default {
                         <svg
                             v-if="
                                 activeFilteredSubject?.name ===
-                                    'Science and Invention' && openSubFilterMenu
+                                    'Science & Invention' && openSubFilterMenu
                             "
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
