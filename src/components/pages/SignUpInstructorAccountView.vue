@@ -139,6 +139,11 @@ export default {
             document.body.appendChild(form);
 
             form.submit();
+        },
+        handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                this.ValidateForm();
+            }
         }
     }
 };
@@ -157,6 +162,7 @@ export default {
                         placeholder="Username"
                         class="form-control"
                         required
+                        @keypress="handleKeyPress"
                     />
                     <div
                         v-if="
@@ -176,6 +182,7 @@ export default {
                         class="form-control"
                         @blur="ValidateEmail"
                         required
+                        @keypress="handleKeyPress"
                     />
                     <div
                         v-if="
@@ -200,6 +207,7 @@ export default {
                             class="form-control"
                             autocomplete="new-password"
                             required
+                            @keypress="handleKeyPress"
                         />
                         <!-- Show and Hide Password Section -->
                         <div
