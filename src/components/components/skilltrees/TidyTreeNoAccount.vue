@@ -1076,12 +1076,27 @@ export default {
             let radius;
             if (node.data.type == 'sub') {
                 radius = 7.5;
+            } else if (node.data.type == 'domain') {
+                radius = 12; // Make domain nodes slightly larger
             } else {
                 radius = 10;
             }
 
             ctx1.beginPath();
             ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
+
+            // Special styling for domain nodes
+            if (node.data.type == 'domain') {
+                // Use a semi-translucent fill for domain nodes
+                ctx1.fillStyle = 'rgba(220, 220, 220, 0.6)';
+                ctx1.fill();
+                ctx1.lineWidth = 1.5;
+                ctx1.strokeStyle = '#a0a0a0'; // Lighter border color
+                ctx1.setLineDash([3, 2]); // Dotted line to indicate "container"
+                ctx1.stroke();
+                return;
+            }
+
             // get the color associate with skill level
             const skillColor = node.data.level
                 ? this.hexColor(node.data.level)
@@ -1127,17 +1142,30 @@ export default {
             let radius;
             if (node.data.type == 'sub') {
                 radius = 7.5;
+            } else if (node.data.type == 'domain') {
+                radius = 12; // Make domain nodes slightly larger
             } else {
                 radius = 10;
             }
 
             ctx1.beginPath();
-            // ctx1.arc(node.y, node.x, radius * 1.5, 0, 2 * Math.PI);
             let xPosition = node.y;
             if (node.data.children.length > 0) {
                 xPosition = xPosition - 180;
             }
             ctx1.roundRect(xPosition, node.x - 20, 180, 40, 20);
+
+            // Special styling for domain nodes
+            if (node.data.type == 'domain') {
+                ctx1.fillStyle = 'rgba(230, 230, 230, 0.7)'; // Light semi-translucent fill
+                ctx1.fill();
+                ctx1.lineWidth = 1.5;
+                ctx1.strokeStyle = '#b0b0b0'; // Lighter border
+                ctx1.setLineDash([3, 2]); // Dotted line to visually indicate "container"
+                ctx1.stroke();
+                return;
+            }
+
             // get the color associate with skill level
             const skillColor = node.data.level
                 ? this.hexColor(node.data.level)
@@ -1152,15 +1180,10 @@ export default {
                 ctx1.strokeStyle = outlineColor;
                 ctx1.stroke();
             }
-
             // If not, just an outline.
             else {
                 ctx1.lineWidth = 4;
-                if (node.data.type == 'domain') {
-                    ctx1.fillStyle = '#eee';
-                } else {
-                    ctx1.fillStyle = '#fff';
-                }
+                ctx1.fillStyle = '#fff';
                 ctx1.fill();
                 ctx1.strokeStyle = skillColor;
                 ctx1.stroke();
@@ -1404,8 +1427,10 @@ export default {
             if (!node.data.name) {
                 return;
             }
+
             // to avoid sharp artifacts with the stroke of the text.
             ctx1.lineJoin = 'bevel';
+
             // we move the skill name to the left and change the color if it a domain node
             // using the non domain as if condition will save us some compute time as none domain node is more common
             if (node.data.type != 'domain') {
@@ -1414,7 +1439,8 @@ export default {
                 ctx1.beginPath();
                 ctx1.strokeStyle = '#FFF';
                 ctx1.lineWidth = 4;
-                ctx1.fillStyle = isSearched ? '#ff0000' : '#849cab';
+                // Updated domain text color to be lighter gray
+                ctx1.fillStyle = isSearched ? '#ff0000' : '#aabbc5';
                 ctx1.direction = 'ltr';
 
                 let xPosition = node.y - 140;
