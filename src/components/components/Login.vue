@@ -7,7 +7,8 @@ export default {
         return {
             // loginError: "",
             username: null,
-            password: null
+            password: null,
+            isMobileCheck: window.innerWidth
         };
     },
     mounted() {
@@ -36,10 +37,12 @@ export default {
                 .then(function (response) {
                     return response.json();
                 })
-                .then(function (data) {
+                .then((data) => {
                     if (data.account == 'authorized') {
                         if (data.role == 'student') {
-                            router.push({ name: 'skill-tree' });
+                            if (this.isMobileCheck < 576) {
+                                router.push({ name: 'search' });
+                            } else router.push({ name: 'skill-tree' });
                         } else if (data.role == 'instructor') {
                             router.push({ name: 'students' });
                         } else if (data.role == 'editor') {
@@ -116,12 +119,23 @@ export default {
                 <button class="btn btn-dark mb-2" @click="Submit()">
                     Sign in
                 </button>
+                <!-- Different landing page for mobile -->
                 <div
+                    v-if="isMobileCheck < 576"
                     id="g_id_onload"
                     data-client_id="13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com"
                     data-context="signin"
                     data-ux_mode="popup"
-                    data-login_uri="/google-login-attempt"
+                    data-login_uri="/google-login-attempt?device=mobile"
+                    data-auto_prompt="false"
+                ></div>
+                <div
+                    v-else
+                    id="g_id_onload"
+                    data-client_id="13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com"
+                    data-context="signin"
+                    data-ux_mode="popup"
+                    data-login_uri="/google-login-attempt?device=not-mobile"
                     data-auto_prompt="false"
                 ></div>
                 <div
