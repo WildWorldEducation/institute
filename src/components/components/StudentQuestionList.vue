@@ -44,17 +44,27 @@ export default {
         <h2 class="secondary-heading h4">Check New Questions</h2>
 
         <div class="list-body pt-2">
-            <div class="question" v-for="question in questions">
-                <RouterLink
-                    class="question-link"
-                    :to="`/check-student-question/${question.id}`"
-                >
-                    <span class="student-name"> {{ question.student }}, </span>
-                    <span class="skill-name"> {{ question.skillname }}, </span>
-                    <span class="date">{{
-                        formatDate(question.create_date)
-                    }}</span>
-                </RouterLink>
+            <div v-if="questions.length > 0">
+                <div class="question" v-for="question in questions">
+                    <RouterLink
+                        class="question-link"
+                        :to="`/check-student-question/${question.id}`"
+                    >
+                        <span class="student-name">
+                            {{ question.student }},
+                        </span>
+                        <span class="skill-name">
+                            {{ question.skillname }},
+                        </span>
+                        <span class="date">{{
+                            formatDate(question.create_date)
+                        }}</span>
+                    </RouterLink>
+                </div>
+            </div>
+            <div v-else class="empty-message">
+                There are no student submitted questions to be checked
+                currently.
             </div>
         </div>
     </div>
@@ -89,5 +99,8 @@ export default {
 
 .list-body {
     overflow: auto;
+}
+.empty-message {
+    color: #667085;
 }
 </style>

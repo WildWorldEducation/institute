@@ -426,7 +426,7 @@ export default {
                 .y((d) => d.x)
                 .context(this.context);
 
-            this.context.lineWidth = 2;
+            this.context.lineWidth = 4;
 
             if (
                 (link.source.data.type == 'super' &&

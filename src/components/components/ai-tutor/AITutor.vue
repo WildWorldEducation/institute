@@ -758,7 +758,7 @@ export default {
                             class="btn socratic-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap"
                             :class="{
                                 'text-decoration-underline':
-                                    tutorType === 'socratic'
+                                    mode !== 'hide' && tutorType === 'socratic'
                             }"
                             @click="handleTutorClick('socratic')"
                         >

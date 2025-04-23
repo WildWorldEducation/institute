@@ -19,7 +19,8 @@ export default {
             query: '',
             recommendedSkillsOrderedByRelevance: [],
             showRecommendedSkills: false,
-            waitForAIresponse: false
+            waitForAIresponse: false,
+            isMobileCheck: window.innerWidth
         };
     },
     components: { TutorLoadingSymbol },
@@ -150,7 +151,11 @@ export default {
                 id="searchBar"
                 type="text"
                 class="recommended-skills-input"
-                placeholder="Which skill or profession do you want to learn about?"
+                :placeholder="
+                    isMobileCheck < 576
+                        ? 'Search...'
+                        : 'Which skill or profession do you want to learn about?'
+                "
                 v-model="query"
             />
             <button
