@@ -120,11 +120,21 @@ export default {
                     Sign in
                 </button>
                 <div
+                    v-if="isMobileCheck < 576"
                     id="g_id_onload"
                     data-client_id="13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com"
                     data-context="signin"
                     data-ux_mode="popup"
-                    data-login_uri="/google-login-attempt"
+                    data-login_uri="/google-login-attempt?device=mobile"
+                    data-auto_prompt="false"
+                ></div>
+                <div
+                    v-else
+                    id="g_id_onload"
+                    data-client_id="13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com"
+                    data-context="signin"
+                    data-ux_mode="popup"
+                    data-login_uri="/google-login-attempt?device=not-mobile"
                     data-auto_prompt="false"
                 ></div>
                 <div

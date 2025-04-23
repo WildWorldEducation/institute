@@ -133,13 +133,14 @@ const { saveUserAvatarToAWS } = require('./utilities/save-image-to-aws');
  */
 
 // Log in with Google.
-var googleUserDetails;
+let googleUserDetails;
+let googleLoginResult;
 app.post('/google-login-attempt', (req, res) => {
+    let device = req.query.device;
     googleUserDetails = jwt.decode(req.body.credential);
-    res.redirect('/google-login-attempt');
+    res.redirect('/google-login-attempt?device=' + device);
 });
 
-var googleLoginResult;
 app.get('/google-login-attempt', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     // Get user id based on Google email, if it exists.
@@ -164,8 +165,13 @@ app.get('/google-login-attempt', (req, res) => {
                 req.session.userId = results[0].id;
                 req.session.userName = results[0].username;
                 req.session.role = results[0].role;
-                if (req.session.role == 'student') res.redirect('/skill-tree');
-                else res.redirect('/');
+                if (req.session.role == 'student') {
+                    if (req.query.device == 'not-mobile') {
+                        res.redirect('/skill-tree');
+                    } else {
+                        res.redirect('/search');
+                    }
+                } else res.redirect('/');
             } else {
                 // Create account.
                 res.redirect('/google-student-signup-attempt');
