@@ -39,7 +39,6 @@ export default {
             tree: {},
             root: {},
             context: {},
-            hiddenCanvasContext: {},
             r: 1.5,
             nodes: [],
             nextCol: 1,
@@ -147,8 +146,6 @@ export default {
             canvas.width = this.width;
             canvas.height = this.height;
             this.context = canvas.getContext('2d');
-            let hiddenCanvas = document.getElementById('hidden-canvas');
-            this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
 
             this.drawTree(d3.zoomIdentity);
         },
@@ -157,7 +154,6 @@ export default {
 
             // Zoom and pan.
             this.context.save();
-            this.hiddenCanvasContext.save();
             // Clear canvases.
             this.context.clearRect(
                 0,
@@ -165,16 +161,8 @@ export default {
                 this.context.canvas.width,
                 this.context.canvas.height
             );
-            this.hiddenCanvasContext.clearRect(
-                0,
-                0,
-                this.hiddenCanvasContext.canvas.width,
-                this.hiddenCanvasContext.canvas.height
-            );
             this.context.translate(transform.x, transform.y);
-            this.hiddenCanvasContext.translate(transform.x, transform.y);
             this.context.scale(transform.k, transform.k);
-            this.hiddenCanvasContext.scale(transform.k, transform.k);
 
             // For node labels to appear at correct zoom level.
             this.scale = transform.k;
@@ -233,21 +221,17 @@ export default {
                     node.__pickColor = this.genColor();
                     this.colToNode[node.__pickColor] = node;
                 }
-                // On the hidden canvas each rectangle gets a unique color.
-                this.hiddenCanvasContext.fillStyle = node.__pickColor;
                 // Draw the actual shape
                 this.drawNode(node);
             }
 
             this.context.restore();
-            this.hiddenCanvasContext.restore();
         },
         drawNode(node) {
             // Make sure the nodes have solid outlines
             this.context.setLineDash([]);
 
             let ctx1 = this.context;
-            let ctx2 = this.hiddenCanvasContext;
 
             // Visible context.
             // If not a domain, make node a circle.
@@ -344,28 +328,6 @@ export default {
                     );
                     ctx1.fillText(node.data.skill_name, node.y - 5, node.x + 2);
                 }
-            }
-
-            // Hidden context for interactivity
-            if (node.data.type != 'domain') {
-                ctx2.beginPath();
-                ctx2.moveTo(node.y, node.x);
-                ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
-                ctx2.fill();
-            } else {
-                ctx2.beginPath();
-                ctx2.moveTo(node.y, node.x - 10);
-                // top left edge.
-                ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
-                // bottom left edge.
-                ctx2.lineTo(node.y, node.x - 10 + 20);
-                // bottom right edge.
-                ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
-                // closing the path automatically creates the top right edge.
-                ctx2.closePath();
-                ctx2.lineWidth = 2;
-                ctx2.fill();
-                ctx2.stroke();
             }
         },
         drawLink(link) {
