@@ -1539,8 +1539,8 @@ export default {
                         </svg>
                         <svg
                             v-if="
-                                activeFilteredSubject?.skill_name ===
-                                    'Language' && openSubFilterMenu
+                                activeFilteredSubject?.name === 'Language' &&
+                                openSubFilterMenu
                             "
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
@@ -1565,16 +1565,55 @@ export default {
                 >
                     Math
                 </button>
-                <button
-                    class="btn mb-2"
-                    :class="{
-                        'chosen-subject': subjectFilters.includes('History'),
-                        'hidden-subject': !subjectFilters.includes('History')
-                    }"
-                    @click="handleUpdateGuestFilterSubject('History')"
-                >
-                    History
-                </button>
+                <div class="d-flex">
+                    <button
+                        ref="HistoryFilterBtn"
+                        class="btn mb-2"
+                        :class="{
+                            'chosen-subject':
+                                subjectFilters.includes('History'),
+                            'hidden-subject':
+                                !subjectFilters.includes('History')
+                        }"
+                        @click="handleUpdateGuestFilterSubject('History')"
+                    >
+                        History
+                    </button>
+                    <!-- Additional filter btn -->
+                    <button
+                        class="additional-filter-btn"
+                        @click="handleOpenGuestSubSubjectFilterMenu('History')"
+                    >
+                        <svg
+                            v-if="
+                                !openSubFilterMenu &&
+                                subjectFilters.includes('History')
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            height="16"
+                            width="16"
+                        >
+                            <path
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM232 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"
+                            />
+                        </svg>
+                        <svg
+                            v-if="
+                                activeFilteredSubject?.name === 'History' &&
+                                openSubFilterMenu
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            height="16"
+                            width="16"
+                        >
+                            <path
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM184 232l144 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-144 0c-13.3 0-24-10.7-24-24s10.7-24 24-24z"
+                            />
+                        </svg>
+                    </button>
+                </div>
                 <button
                     class="btn mb-2"
                     :class="{
@@ -1599,24 +1638,65 @@ export default {
                 >
                     Computer Science
                 </button>
-                <button
-                    class="btn mb-2"
-                    :class="{
-                        'chosen-subject': subjectFilters.includes(
-                            'Science and Invention'
-                        ),
-                        'hidden-subject': !subjectFilters.includes(
-                            'Science and Invention'
-                        )
-                    }"
-                    @click="
-                        this.handleUpdateGuestFilterSubject(
-                            'Science and Invention'
-                        )
-                    "
-                >
-                    Science & Invention
-                </button>
+                <div class="d-flex">
+                    <button
+                        ref="ScienceAndInventionFilterBtn"
+                        class="btn mb-2"
+                        :class="{
+                            'chosen-subject': subjectFilters.includes(
+                                'Science and Invention'
+                            ),
+                            'hidden-subject': !subjectFilters.includes(
+                                'Science and Invention'
+                            )
+                        }"
+                        @click="
+                            this.handleUpdateGuestFilterSubject(
+                                'Science and Invention'
+                            )
+                        "
+                    >
+                        Science & Invention
+                    </button>
+                    <!-- Additional filter btn -->
+                    <button
+                        class="additional-filter-btn"
+                        @click="
+                            handleOpenGuestSubSubjectFilterMenu(
+                                'Science and Invention'
+                            )
+                        "
+                    >
+                        <svg
+                            v-if="
+                                !openSubFilterMenu &&
+                                subjectFilters.includes('Science and Invention')
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            height="16"
+                            width="16"
+                        >
+                            <path
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM232 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"
+                            />
+                        </svg>
+                        <svg
+                            v-if="
+                                activeFilteredSubject?.name ===
+                                    'Science and Invention' && openSubFilterMenu
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            height="16"
+                            width="16"
+                        >
+                            <path
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM184 232l144 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-144 0c-13.3 0-24-10.7-24-24s10.7-24 24-24z"
+                            />
+                        </svg>
+                    </button>
+                </div>
                 <button
                     class="btn mb-2"
                     :class="{
