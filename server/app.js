@@ -194,12 +194,14 @@ app.get('/google-login-result', (req, res) => {
 app.post('/google-student-signup-attempt', (req, res) => {
     googleUserDetails = jwt.decode(req.body.credential);
     googleUserDetails.role = req.query.accountType;
-    res.redirect('/google-student-signup-attempt');
+    let deviceType = req.query.deviceType;
+    res.redirect('/google-student-signup-attempt?deviceType=' + deviceType);
 });
 
 const { unlockInitialSkills } = require('./utilities/unlock-initial-skills');
 app.get('/google-student-signup-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
+    let deviceType = req.query.deviceType;
     // Check if user already exists.
     let sqlQuery1 = `SELECT * 
         FROM users 
@@ -235,7 +237,12 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                 req.session.userName = results[0].username;
                 req.session.role = results[0].role;
                 googleLoginResult = 'new account';
-                res.redirect('/skill-tree');
+                if (req.session.role == 'student')
+                    if (deviceType == 'mobile') res.redirect('/search');
+                    else res.redirect('/skill-tree');
+                else {
+                    res.redirect('/students');
+                }
             }
             // If not.
             else {
@@ -274,7 +281,13 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                             // Unlock skills here
                             unlockInitialSkills(newStudentId);
                             googleLoginResult = 'new account';
-                            res.redirect('/skill-tree');
+                            if (req.session.role == 'student')
+                                if (deviceType == 'mobile')
+                                    res.redirect('/search');
+                                else res.redirect('/skill-tree');
+                            else {
+                                res.redirect('/students');
+                            }
                         }
                     } catch (err) {
                         next(err);

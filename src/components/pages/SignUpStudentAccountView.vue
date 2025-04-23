@@ -135,6 +135,12 @@ export default {
         },
 
         handleCredentialResponse(response) {
+            // Check if mobile device
+            // (Different landing page for mobile)
+            let deviceType = '';
+            if (this.isMobileCheck < 576) {
+                deviceType = 'mobile';
+            } else deviceType = 'not-mobile';
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = `${
@@ -143,7 +149,7 @@ export default {
                     : 'http://localhost:3000'
             }/google-student-signup-attempt?accountType=${
                 this.newUser.accountType
-            }`;
+            }&deviceType=${deviceType}`;
 
             const input = document.createElement('input');
             input.type = 'hidden';

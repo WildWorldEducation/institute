@@ -119,6 +119,7 @@ export default {
                 <button class="btn btn-dark mb-2" @click="Submit()">
                     Sign in
                 </button>
+                <!-- Different landing page for mobile -->
                 <div
                     v-if="isMobileCheck < 576"
                     id="g_id_onload"
