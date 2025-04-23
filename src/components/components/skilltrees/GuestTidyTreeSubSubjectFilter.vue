@@ -36,7 +36,7 @@ export default {
             let state = 'no skill';
             const subSubjectFilterObject = {
                 skillName: skillName,
-                parent: this.parentSkill.skill_name
+                parent: this.parentSkill.name
             };
             // Handle the case when all skill is in filter objects and user click a skill => we remove other skill from filter object
             // and only keep the one get clicked
@@ -45,7 +45,7 @@ export default {
                 const element = this.showSkills[index];
                 const filterSkill =
                     this.userDetailsStore.subSubjectsFilters.find(
-                        (node) => node.skillName === element.skill_name
+                        (node) => node.skillName === element.name
                     );
                 if (filterSkill) {
                     skillsInSubjectFilter.push(filterSkill);
@@ -55,12 +55,12 @@ export default {
             if (skillsInSubjectFilter.length === this.showSkills.length) {
                 // find other skill that need to remove from filter object
                 const skillsNeedRemove = this.showSkills.filter(
-                    (skill) => skill.skill_name !== skillName
+                    (skill) => skill.name !== skillName
                 );
                 skillsNeedRemove.forEach((skill) => {
                     const filterObject = {
-                        skillName: skill.skill_name,
-                        parent: this.parentSkill.skill_name
+                        skillName: skill.name,
+                        parent: this.parentSkill.name
                     };
                     this.userDetailsStore.updateSubSubjectFilter(filterObject);
                 });
@@ -81,7 +81,7 @@ export default {
                     const element = this.showSkills[index];
                     oneSkillInFilterList =
                         this.userDetailsStore.subSubjectsFilters.some(
-                            (skill) => skill.skillName === element.skill_name
+                            (skill) => skill.skillName === element.name
                         );
                     if (oneSkillInFilterList) {
                         break;
@@ -92,8 +92,8 @@ export default {
                     // if no skill in showskills is in filter list we re-add all of them
                     this.showSkills.forEach((element) => {
                         const subSubjectFilterObject = {
-                            skillName: element.skill_name,
-                            parent: this.parentSkill.skill_name
+                            skillName: element.name,
+                            parent: this.parentSkill.name
                         };
 
                         // update the sub-subject filter array in userDetailsStore
@@ -128,20 +128,20 @@ export default {
         <div v-if="openSubFilterMenu" class="submenuBase">
             <div v-for="node in showSkills">
                 <button
-                    @click="updateSubjectFilter(node.skill_name)"
+                    @click="updateSubjectFilter(node.name)"
                     class="btn mb-2"
                     :class="{
                         'chosen-subject':
                             userDetailsStore.subSubjectsFilters.find(
-                                (skill) => skill.skillName === node.skill_name
+                                (skill) => skill.skillName === node.name
                             ),
                         'hidden-subject':
                             !userDetailsStore.subSubjectsFilters.find(
-                                (skill) => skill.skillName === node.skill_name
+                                (skill) => skill.skillName === node.name
                             )
                     }"
                 >
-                    {{ node.skill_name }}
+                    {{ node.name }}
                 </button>
             </div>
         </div>

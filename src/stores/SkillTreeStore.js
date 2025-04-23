@@ -265,6 +265,89 @@ export const useSkillTreeStore = defineStore('skillTree', {
             }
             return resultArray
         },
+        // ----------------------------------------------------------------------------------------------------------------------------------------------------------
+        // Because the skill tree for no-account users uses a different object format for nodes, we had to rewrite the buildTree function to accommodate the change
+        buildGuestUserSkillTreeBaseOnFilterObject(filterObject, userSkills) {
+            const localFilterObject = filterObject.map(e => e);
+            let nodesNeededToBuildTree = this.findSkillDataOfGuestFilterObject(localFilterObject, userSkills)
+            if (!nodesNeededToBuildTree?.length) {
+                return []
+            }
+            let leafNodes = nodesNeededToBuildTree.filter(node => node.isLeaf);
 
+            let resultObject = null;
+            let resultArray = [];
+            let stopFlag = false
+            while (!stopFlag) {
+                const leafNode = leafNodes.pop();
+                // also remove the node from array of node
+                nodesNeededToBuildTree = nodesNeededToBuildTree.filter(node => node.node.id !== leafNode.node.id);
+                const { leafNodeSiblings, nodeToFilter } = this.FindChildrenOfParent(nodesNeededToBuildTree, leafNode.node.parent, leafNodes, nodesNeededToBuildTree)
+
+                // remove sibling node from the leaf nodes stack and node need to build tree stack
+                leafNodes = leafNodes.filter(node => !nodeToFilter.includes(node));
+                //nodesNeededToBuildTree = nodesNeededToBuildTree.filter(node => !nodeToFilter.includes(node))
+
+                if (leafNode.node.parent !== 0) {
+                    const parentNode = this.findSkillBaseOnId(leafNode.node.parent, userSkills);
+                    // current node is not the oldest one
+                    const childOfParent = [...leafNodeSiblings, leafNode.node]
+                    const parentIndex = nodesNeededToBuildTree.findIndex(node => node.node.id === parentNode.id);
+                    resultObject = { ...parentNode, children: childOfParent }
+                    nodesNeededToBuildTree[parentIndex] = { node: resultObject, isLeaf: false };
+                    // Also push the parent node back to leafs stack
+                    leafNodes.push({ node: resultObject, isLeaf: true });
+                } else {
+                    // Mean we found the oldest node because 0 is an illegal id for skill 
+                    resultObject = { ...leafNode.node }
+
+                    resultArray.push(resultObject);
+
+                }
+                if (!leafNodes.length) {
+                    stopFlag = true
+                }
+            }
+            return resultArray
+        },
+
+
+
+        // Helper function for build skill tree based on filter method
+        findGuestSkillBaseOnName(skillName, treeObject) {
+            let childSkill = treeObject.map(e => e);
+            let stopFlag = false;
+            let result = null;
+
+            while (!stopFlag) {
+                let currentNode = childSkill.pop();
+                if (currentNode) {
+                    if (currentNode.name === skillName) {
+                        result = currentNode;
+                        stopFlag = true
+                    };
+                    childSkill = childSkill.concat(currentNode.children)
+                } else {
+                    stopFlag = true
+                }
+            }
+            return result
+        },
+
+        // Helper function for build skill tree based on filter method
+        findSkillDataOfGuestFilterObject(filterObject, userSkills) {
+            let resultArray = [];
+            for (let index = 0; index < filterObject.length; index++) {
+                const element = filterObject[index];
+
+                const nodeData = this.findGuestSkillBaseOnName(element.skillName, userSkills);
+                const object = { node: nodeData, isLeaf: element.isLeaf }
+                if (object.node) {
+                    resultArray.push(object);
+                }
+            }
+
+            return resultArray
+        },
     }
 });

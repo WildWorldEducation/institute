@@ -3,11 +3,13 @@ import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import { useCohortsStore } from '../../stores/CohortsStore.js';
 import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
+import { useSkillsStore } from '../../stores/SkillsStore.js';
 
 import SkillTreeSearchBar from '../components/skills-tree-search-bar/SkillTreeSearchBar.vue';
 import TidyTree from '../components/skilltrees/TidyTree.vue';
 import TidyTreeNoAccount from '../components/skilltrees/TidyTreeNoAccount.vue';
 import TidyTreeSubSubjectFilter from '../components/skilltrees/TidyTreeSubSubjectFilter.vue';
+import GuestTidyTreeSubSubjectFilter from '../components/skilltrees/GuestTidyTreeSubSubjectFilter.vue';
 
 export default {
     setup() {
@@ -15,11 +17,13 @@ export default {
         const userDetailsStore = useUserDetailsStore();
         const cohortsStore = useCohortsStore();
         const skillTreeStore = useSkillTreeStore();
+        const skillsStore = useSkillsStore();
         return {
             sessionDetailsStore,
             userDetailsStore,
             cohortsStore,
-            skillTreeStore
+            skillTreeStore,
+            skillsStore
         };
     },
     data() {
@@ -57,6 +61,7 @@ export default {
             introSearchModal: true,
             activeFilteredSubject: null,
             openSubFilterMenu: false,
+            openGuestSubFilterMenu: false,
             // Additional filter that contains nodes need to showing
             subSubjectsFilters: [],
             // Hard coded skills array that need additional filter
@@ -104,7 +109,8 @@ export default {
         TidyTree,
         TidyTreeSubSubjectFilter,
         TidyTreeNoAccount,
-        SkillTreeSearchBar
+        SkillTreeSearchBar,
+        GuestTidyTreeSubSubjectFilter
     },
     methods: {
         closeIntroSearchModal() {
@@ -155,6 +161,7 @@ export default {
             }
             // Flag to determine if the click is to filtered the skill NOT un-filter it
             let isSkillGetShowing = false;
+
             // Only if user is logged in.
             if (
                 this.sessionDetailsStore.isLoggedIn == true &&
@@ -284,33 +291,7 @@ export default {
             }
             // If not logged in.
             else {
-                // if all subjects are selected, show only the clicked subject
-                if (this.subjectFilters.length == 7) {
-                    this.subjectFilters = [];
-                    this.subjectFilters.push(subject);
-                }
-
-                // Check if filter already present.
-                else if (this.subjectFilters.includes(subject)) {
-                    // remove it
-                    this.subjectFilters = this.subjectFilters.filter(
-                        (e) => e !== subject
-                    );
-
-                    // if array is empty, add all subjects.
-                    if (this.subjectFilters.length == 0) {
-                        this.subjectFilters.push('Language');
-                        this.subjectFilters.push('Mathematics');
-                        this.subjectFilters.push('Science and Invention');
-                        this.subjectFilters.push('Computer Science');
-                        this.subjectFilters.push('History');
-                        this.subjectFilters.push('Life');
-                        this.subjectFilters.push('Dangerous Ideas');
-                    }
-                } else {
-                    // add it
-                    this.subjectFilters.push(subject);
-                }
+                this.handleUpdateGuestFilterSubject(subject);
             }
             /// ================================================================================
             // we open the submenu for chosen subject child filter
@@ -389,6 +370,39 @@ export default {
             } else if (this.userDetailsStore.isUnlockedSkillsOnlyFilter == 0) {
                 this.userDetailsStore.isUnlockedSkillsOnlyFilter = 1;
             }
+        },
+        async handleUpdateGuestFilterSubject(subject) {
+            // if all subjects are selected, show only the clicked subject
+            if (this.subjectFilters.length == 7) {
+                this.subjectFilters = [];
+                this.subjectFilters.push(subject);
+            }
+
+            // Check if filter already present.
+            else if (this.subjectFilters.includes(subject)) {
+                // remove it
+                this.subjectFilters = this.subjectFilters.filter(
+                    (e) => e !== subject
+                );
+
+                // if array is empty, add all subjects.
+                if (this.subjectFilters.length == 0) {
+                    this.subjectFilters.push('Language');
+                    this.subjectFilters.push('Mathematics');
+                    this.subjectFilters.push('Science and Invention');
+                    this.subjectFilters.push('Computer Science');
+                    this.subjectFilters.push('History');
+                    this.subjectFilters.push('Life');
+                    this.subjectFilters.push('Dangerous Ideas');
+                }
+            } else {
+                // add it
+                this.subjectFilters.push(subject);
+            }
+            this.$refs.childComponent.filter(
+                this.gradeFilter,
+                this.subjectFilters
+            );
         },
         // Onboardning tutorials
         async checkIfTutorialComplete() {
@@ -659,6 +673,102 @@ export default {
                 this.gradeFilter,
                 this.subjectFilters
             );
+        },
+
+        async handleOpenGuestSubSubjectFilterMenu(subject) {
+            const rightSubjectName = this.transformToOriginalName(subject);
+            if (this.skillsStore.guestModeVerticalTreeSkills.length == 0) {
+                await this.skillsStore.getGuestModeVerticalTreeSkills('phd', [
+                    'Language',
+                    'Mathematics',
+                    // please keep spelling like this (dont use "&")
+                    'Science and Invention',
+                    'Computer Science',
+                    'History',
+                    'Life',
+                    'Dangerous Ideas'
+                ]);
+            }
+
+            // Handle close sub-menu case first
+            if (
+                this.subjectFilters.includes(subject) &&
+                this.openSubFilterMenu
+            ) {
+                this.openSubFilterMenu = false;
+                return;
+            }
+
+            const skillInSubSubjectFilter =
+                this.userDetailsStore.subSubjectsFilters.find(
+                    (node) => node.skillName === rightSubjectName
+                );
+            // skill already open before case
+            if (
+                skillInSubSubjectFilter ||
+                this.subjectFilters.includes(subject)
+            ) {
+                this.openSubFilterMenu = true;
+                // also update active filter object and sub-menu position
+
+                this.activeFilteredSubject =
+                    this.skillsStore.guestModeVerticalTreeSkills.find(
+                        (skill) => skill.name === rightSubjectName
+                    );
+
+                // get button position
+                const buttonPosition = this.getFilterButtonPosition(subject);
+                this.additionalFilterPosition.top = Math.ceil(
+                    buttonPosition.top
+                );
+                this.additionalFilterPosition.left =
+                    Math.ceil(buttonPosition.right) + 24;
+
+                // handle case user have root subject filter in database but not in filter subject
+                const isChildInSubjectFilter =
+                    this.userDetailsStore.checkIfHaveGuestSkillIntSubSubjectFilter(
+                        this.activeFilteredSubject.children
+                    );
+
+                if (!isChildInSubjectFilter) {
+                    const parentSubjectFilter = {
+                        skillName: this.activeFilteredSubject.name,
+                        parent: 0
+                    };
+                    this.userDetailsStore.updateSubSubjectFilter(
+                        parentSubjectFilter
+                    );
+                    this.activeFilteredSubject.children.forEach((childNode) => {
+                        const parent = this.skillTreeStore.findSkillBaseOnId(
+                            childNode.parent,
+                            this.skillsStore.guestModeVerticalTreeSkills
+                        );
+                        const filterObject = {
+                            skillName: childNode.name,
+                            parent: parent.name
+                        };
+
+                        this.userDetailsStore.updateSubSubjectFilter(
+                            filterObject
+                        );
+                    });
+                }
+            }
+            // first time open sub-menu case
+            else {
+                await this.handleUpdateGuestFilterSubject(subject);
+            }
+            this.additionalFilterData = {
+                additionalFilterPosition: this.additionalFilterPosition,
+                activeFilteredSubject: this.activeFilteredSubject
+            };
+
+            this.$refs.childComponent.filter(
+                this.gradeFilter,
+                this.subjectFilters
+            );
+            console.log('Skink: ');
+            console.log(this.userDetailsStore.subSubjectsFilters);
         },
 
         filterSkillTree() {
@@ -1116,9 +1226,10 @@ export default {
         </div>
     </div>
 
-    <!-- Left root subject filters  For logged in users-->
+    <!-- Left root subject filters-->
     <div class="tablet-and-up-legend position-absolute left-legend-div">
         <div>
+            <!-- For Logged in User -->
             <div
                 v-if="
                     isSubjectFilter &&
@@ -1390,23 +1501,58 @@ export default {
                     Dangerous Ideas
                 </button>
             </div>
+            <!-- For guest use -->
             <div v-else-if="isSubjectFilter" class="d-flex flex-column">
-                <button
-                    class="btn mb-2"
-                    :class="{
-                        'chosen-subject': subjectFilters.includes('Language'),
-                        'hidden-subject': !subjectFilters.includes('Language')
-                    }"
-                    @click="
-                        this.updateSubjectFilters('Language');
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
-                >
-                    Language
-                </button>
+                <div class="d-flex">
+                    <button
+                        ref="LanguageFilterBtn"
+                        class="btn mb-2"
+                        :class="{
+                            'chosen-subject':
+                                subjectFilters.includes('Language'),
+                            'hidden-subject':
+                                !subjectFilters.includes('Language')
+                        }"
+                        @click="this.handleUpdateGuestFilterSubject('Language')"
+                    >
+                        Language
+                    </button>
+
+                    <!-- Additional filter btn -->
+                    <button
+                        class="additional-filter-btn"
+                        @click="handleOpenGuestSubSubjectFilterMenu('Language')"
+                    >
+                        <svg
+                            v-if="
+                                !openSubFilterMenu &&
+                                subjectFilters.includes('Language')
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            height="16"
+                            width="16"
+                        >
+                            <path
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM232 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"
+                            />
+                        </svg>
+                        <svg
+                            v-if="
+                                activeFilteredSubject?.skill_name ===
+                                    'Language' && openSubFilterMenu
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            height="16"
+                            width="16"
+                        >
+                            <path
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM184 232l144 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-144 0c-13.3 0-24-10.7-24-24s10.7-24 24-24z"
+                            />
+                        </svg>
+                    </button>
+                </div>
                 <button
                     class="btn mb-2"
                     :class="{
@@ -1415,13 +1561,7 @@ export default {
                         'hidden-subject':
                             !subjectFilters.includes('Mathematics')
                     }"
-                    @click="
-                        this.updateSubjectFilters('Mathematics');
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
+                    @click="this.handleUpdateGuestFilterSubject('Mathematics')"
                 >
                     Math
                 </button>
@@ -1431,13 +1571,7 @@ export default {
                         'chosen-subject': subjectFilters.includes('History'),
                         'hidden-subject': !subjectFilters.includes('History')
                     }"
-                    @click="
-                        this.updateSubjectFilters('History');
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
+                    @click="handleUpdateGuestFilterSubject('History')"
                 >
                     History
                 </button>
@@ -1447,13 +1581,7 @@ export default {
                         'chosen-subject': subjectFilters.includes('Life'),
                         'hidden-subject': !subjectFilters.includes('Life')
                     }"
-                    @click="
-                        this.updateSubjectFilters('Life');
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
+                    @click="this.handleUpdateGuestFilterSubject('Life')"
                 >
                     Life
                 </button>
@@ -1466,11 +1594,7 @@ export default {
                             !subjectFilters.includes('Computer Science')
                     }"
                     @click="
-                        this.updateSubjectFilters('Computer Science');
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
+                        this.handleUpdateGuestFilterSubject('Computer Science')
                     "
                 >
                     Computer Science
@@ -1486,11 +1610,9 @@ export default {
                         )
                     }"
                     @click="
-                        this.updateSubjectFilters('Science and Invention');
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
+                        this.handleUpdateGuestFilterSubject(
+                            'Science and Invention'
+                        )
                     "
                 >
                     Science & Invention
@@ -1504,15 +1626,12 @@ export default {
                             !subjectFilters.includes('Dangerous Ideas')
                     }"
                     @click="
-                        this.updateSubjectFilters('Dangerous Ideas');
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
+                        this.handleUpdateGuestFilterSubject('Dangerous Ideas')
                     "
                 >
                     Dangerous Ideas
                 </button>
+                <div>HA HA GEEST</div>
             </div>
             <button
                 class="btn switch-btn"
@@ -1572,9 +1691,19 @@ export default {
         </div>
     </div>
 
-    <!-- Sub subject filters only appear when a root subject is choose -->
-
+    <!-- Sub subject filters only appear when a root subject is choose and user is logged in-->
     <TidyTreeSubSubjectFilter
+        v-if="sessionDetailsStore.isLoggedIn"
+        :parentSkill="activeFilteredSubject"
+        :openSubFilterMenu="openSubFilterMenu"
+        :parents="[activeFilteredSubject?.skill_name]"
+        :position="additionalFilterPosition"
+        :additionalFilterData="additionalFilterData"
+    />
+
+    <!-- Sub subject filter for not logged in user (Guest) -->
+    <GuestTidyTreeSubSubjectFilter
+        v-if="!sessionDetailsStore.isLoggedIn"
         :parentSkill="activeFilteredSubject"
         :openSubFilterMenu="openSubFilterMenu"
         :parents="[activeFilteredSubject?.skill_name]"

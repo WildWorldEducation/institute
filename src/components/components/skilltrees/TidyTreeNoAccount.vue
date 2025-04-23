@@ -1,6 +1,8 @@
 <script>
 // Import the stores.
 import { useSkillsStore } from '../../../stores/SkillsStore';
+import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';
@@ -14,8 +16,12 @@ import TidyTreeTooltip from './TidyTreeTooltip.vue';
 export default {
     setup() {
         const skillsStore = useSkillsStore();
+        const skillTreeStore = useSkillTreeStore();
+        const userDetailsStore = useUserDetailsStore();
         return {
-            skillsStore
+            skillsStore,
+            skillTreeStore,
+            userDetailsStore
         };
     },
     data() {
@@ -714,6 +720,28 @@ export default {
                 skill_name: 'My skills',
                 children: this.skill.children
             };
+
+            if (!this.skillTreeStore.studentSkills.length) {
+                this.skillTreeStore.getStudentSkills();
+            }
+
+            // ADDITIONAL FILTER FOR SUB-SKILL
+            console.log('Force all ');
+            console.log(this.userDetailsStore.subSubjectsFilters);
+            if (this.userDetailsStore.subSubjectsFilters.length > 0) {
+                console.log('ha ha ');
+                const newUserSkill =
+                    this.skillTreeStore.buildGuestUserSkillTreeBaseOnFilterObject(
+                        this.userDetailsStore.subSubjectsFilters,
+                        this.skillsStore.guestModeVerticalTreeSkills
+                    );
+                if (newUserSkill.length) {
+                    this.data = {
+                        skill_name: 'My skills',
+                        children: newUserSkill
+                    };
+                }
+            }
 
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.

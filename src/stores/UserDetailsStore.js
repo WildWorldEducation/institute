@@ -20,14 +20,14 @@ export const useUserDetailsStore = defineStore('userDetails', {
             theme: 'original',
             gradeFilter: null,
             subjectFilters: [],
-            subSubjectsFilters: [], // additional filter for child nodes 
+            subSubjectsFilters: [], // additional filter for child nodes
+            guestSubJectFilter: [],
             isUnlockedSkillsOnlyFilter: null,
             reputationScore: null,
             cohortId: null,
             isSkillsLocked: 0,
             tokens: 0,
             monthlyTokenUsage: 0,
-
         };
     },
     actions: {
@@ -203,6 +203,65 @@ export const useUserDetailsStore = defineStore('userDetails', {
         checkIfHaveSkillInSubSubjectFilter(skillArray) {
             let result = false;
             const skill = skillArray.some(skillData => this.searchSubSubjectFilter(skillData.skill_name));
+            if (skill) {
+                result = true
+            }
+            return result;
+        },
+        // ------------------------------------------------------------
+        // Guest Relate filter Actions
+        // ------------------------------------------------------------
+        // Using array to store what node is showing
+        updateGuestSubjectFilter(filterObject) {
+            // initial the filter data if there are none
+            const obj = { skillName: filterObject.skillName, isLeaf: true }
+            const isInFilterArray = this.guestSubJectFilter.find(node => node.skillName === filterObject.skillName)
+            if (isInFilterArray) {
+                this.subSubjectsFilters = this.guestSubJectFilter.filter(node => node.skillName !== filterObject.skillName);
+                return
+            } else {
+                this.guestSubJectFilter.push(obj);
+            }
+            let haveChildNodeIndex = -1;
+            // find if the node in subSubject
+
+            haveChildNodeIndex = this.guestSubJectFilter.findIndex(node => node.skillName === filterObject.parent)
+
+            if (haveChildNodeIndex >= 0) {
+                this.subSubjectsFilters[haveChildNodeIndex].isLeaf = false;
+            }
+        },
+
+        removeSkillFromGuestFilter(skillNodeData) {
+            this.guestSubJectFilter = this.guestSubJectFilter.filter(filterObject => filterObject.skillName !== skillNodeData.skill_name)
+            let childStack = skillNodeData.children;
+            if (!childStack.length) {
+                return
+            }
+            let stopFlag = false;
+            while (!stopFlag) {
+                if (!childStack.length) {
+                    stopFlag = true
+                }
+                const currentNode = childStack.pop();
+                if (currentNode) {
+                    this.guestSubJectFilter = this.guestSubJectFilter.filter(subjectFilter => subjectFilter.skillName !== currentNode.skill_name);
+                    childStack = childStack.concat(currentNode.children)
+                }
+            }
+        },
+        searchGuestSubSubjectFilter(skillName) {
+            const result = this.subSubjectsFilters.find(filterObject => filterObject.skillName === skillName)
+            return result;
+        },
+        /**
+         * Find if any element in array is in sub-subject filter array
+         * Mainly for finding if child of a skill is in sub-subject filter
+         * @param {*} skillArray child node data of a skill 
+         */
+        checkIfHaveGuestSkillIntSubSubjectFilter(skillArray) {
+            let result = false;
+            const skill = skillArray.some(skillData => this.searchGuestSubSubjectFilter(skillData.name));
             if (skill) {
                 result = true
             }
