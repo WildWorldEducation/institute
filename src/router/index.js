@@ -10,6 +10,14 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
+            path: '/',
+            redirect: () => {
+                return window.innerWidth < 576
+                    ? { name: 'search' }
+                    : { name: 'skill-tree' };
+            }
+        },
+        {
             path: '/skill-tree',
             name: 'skill-tree',
             component: () => import('../components/pages/TidyTreeView.vue'),
@@ -582,11 +590,6 @@ router.beforeEach(async (to, from, next) => {
         to.name !== 'instructor-signup' &&
         to.name !== 'search'
     ) {
-        next({ name: 'skill-tree' });
-        return;
-    }
-
-    if (to.path == '/') {
         next({ name: 'skill-tree' });
         return;
     }
