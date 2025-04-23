@@ -169,6 +169,12 @@ export default {
                 // Redirect to the instructor signup page instead of just changing the account type
                 this.$router.push('/instructor-signup');
             }
+        },
+        // New method to handle Enter key press
+        handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                this.ValidateForm();
+            }
         }
     }
 };
@@ -202,6 +208,7 @@ export default {
                         placeholder="Username"
                         class="form-control"
                         required
+                        @keypress="handleKeyPress"
                     />
                     <div
                         v-if="
@@ -221,6 +228,7 @@ export default {
                         class="form-control"
                         @blur="ValidateEmail"
                         required
+                        @keypress="handleKeyPress"
                     />
                     <div
                         v-if="
@@ -245,6 +253,7 @@ export default {
                             class="form-control"
                             autocomplete="new-password"
                             required
+                            @keypress="handleKeyPress"
                         />
                         <!-- Show and Hide Password Section -->
                         <div
@@ -306,6 +315,7 @@ export default {
                     <select
                         class="form-select"
                         v-model="newUser.skillTreeGradeLevel"
+                        @keypress="handleKeyPress"
                     >
                         <option selected value="phd">Choose your level</option>
                         <option value="grade_school">Grade School</option>

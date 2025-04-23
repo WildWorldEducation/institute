@@ -494,6 +494,7 @@ Themes
     --skill-tree-color: black;
 
     --stroke-width: 0px;
+
 }
 
 /* The Instructor theme */
