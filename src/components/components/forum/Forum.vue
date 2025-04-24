@@ -300,6 +300,7 @@ export default {
                 </li>
             </ul>
         </div>
+
         <!-- ---- | Post List In This Forum | ---- -->
 
         <ForumResource

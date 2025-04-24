@@ -10,10 +10,18 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
+            path: '/',
+            redirect: () => {
+                return window.innerWidth < 576
+                    ? { name: 'search' }
+                    : { name: 'skill-tree' };
+            }
+        },
+        {
             path: '/skill-tree',
             name: 'skill-tree',
             component: () => import('../components/pages/TidyTreeView.vue'),
-            meta: { preventZoom: true, title: 'Skill tree' }
+            meta: { preventZoom: true, title: 'Skill Tree' }
         },
         {
             path: '/learning-tracks',
@@ -34,12 +42,13 @@ const router = createRouter({
             }
         },
         {
-            path: '/hub',
-            name: 'hub',
-            component: () => import('../components/pages/HubView.vue'),
+            path: '/search',
+            name: 'search',
+            component: () => import('../components/pages/SearchView.vue'),
             meta: {
                 requiresAuth: false,
-                roles: ['student', 'admin']
+                roles: ['student', 'admin'],
+                title: 'Search'
             }
         },
         {
@@ -446,6 +455,7 @@ const router = createRouter({
                 roles: ['instructor', 'admin']
             }
         },
+        // Subscriptions
         {
             path: '/subscriptions',
             name: 'subscription',
@@ -468,8 +478,6 @@ const router = createRouter({
                     '../components/pages/subscriptions/SubscriptionErrorView.vue'
                 )
         },
-
-        // Subscriptions
         {
             path: '/:pathMatch(.*)*',
             name: 'not-found',
@@ -480,7 +488,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
     // Title tag.
-    const baseTitle = 'The Collins Institute';
+    const baseTitle = 'Parrhesia';
     if (to.meta.title) {
         document.title = `${to.meta.title} - ${baseTitle}`;
     } else {
@@ -568,16 +576,6 @@ router.beforeEach(async (to, from, next) => {
         );
     }
 
-    // // To prevent the background image (from certain themes) from flashing when switching between skill tree pages.
-    // if (
-    //     (to.name == 'skill-tree' && from.name == 'radial-tree') ||
-    //     (from.name == 'skill-tree' && to.name == 'radial-tree')
-    // ) {
-    //     document.body.classList.add('skill-tree-transition');
-    // } else if (from.name == 'radial-tree' || from.name == 'skill-tree') {
-    //     document.body.classList.remove('skill-tree-transition');
-    // }
-
     // Check if initial data has been loaded and user is not logged in, redirect to login
     if (
         !sessionDetailsStore.isLoggedIn &&
@@ -590,13 +588,8 @@ router.beforeEach(async (to, from, next) => {
         to.name !== 'skill-tree' &&
         to.name !== 'show-skill' &&
         to.name !== 'instructor-signup' &&
-        to.name !== 'hub'
+        to.name !== 'search'
     ) {
-        next({ name: 'skill-tree' });
-        return;
-    }
-
-    if (to.path == '/') {
         next({ name: 'skill-tree' });
         return;
     }
@@ -629,12 +622,12 @@ router.beforeEach(async (to, from, next) => {
     if (
         to.name == 'skill-tree' ||
         to.name == 'learning-tracks' ||
-        to.name == 'radial-tree' ||
         to.name == 'skills' ||
         to.name == 'student-skills' ||
         to.name == 'student-signup' ||
         to.name == 'editor-signup' ||
         to.name == 'instructor-signup' ||
+        to.name == 'subscription' ||
         to.name == 'login'
     ) {
         document.getElementById('app').style.overflow = 'hidden';

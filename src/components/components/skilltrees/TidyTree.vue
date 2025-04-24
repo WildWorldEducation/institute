@@ -156,6 +156,7 @@ export default {
             willReadFrequently: true
         });
 
+        // Skill panel - touch screen devices only
         // Listen for clicks on the main canvas
         canvas.addEventListener('click', async (e) => {
             //Figure out where the mouse click occurred.
@@ -205,54 +206,107 @@ export default {
                 this.skill.x = node.x;
                 this.skill.y = node.y;
 
-                // Get the mastery requirements data separately.
-                // Because this is so much data, we do not send it with the rest of the skill tree,
-                // or it will slow the load down too much.
-                const result = await fetch(
-                    '/skills/introduction-and-url/' + this.skill.id
-                );
-                const result2 = await result.json();
-                if (this.skill.type == 'super') {
-                    // Get urls of subskills, if a super skill
-                    const subSkillsResult = await fetch(
-                        '/skills/sub-skills/' + this.skill.id
+                // only open on touch screen devices
+                if (e.sourceCapabilities.firesTouchEvents == true) {
+                    // Get the intro data separately.
+                    // Because this is so much data, we do not send it with the rest of the skill tree,
+                    // or it will slow the load down too much.
+                    const result = await fetch(
+                        '/skills/intro-sentence-and-url/' + this.skill.id
                     );
-                    const subSkillsResultJson = await subSkillsResult.json();
-                    this.skill.subskills = subSkillsResultJson;
+                    const result2 = await result.json();
+                    if (this.skill.type == 'super') {
+                        // Get urls of subskills, if a super skill
+                        const subSkillsResult = await fetch(
+                            '/skills/sub-skills/' + this.skill.id
+                        );
+                        const subSkillsResultJson =
+                            await subSkillsResult.json();
+                        this.skill.subskills = subSkillsResultJson;
+                    }
+                    this.skill.introduction = result2.intro_sentence;
+                    this.skill.url = result2.url;
+                    this.skill.image_thumbnail_url =
+                        result2.image_thumbnail_url;
+                    this.showSkillPanel = true;
+                } else {
+                    const result = await fetch(
+                        '/skills/url-only/' + this.skill.id
+                    );
+                    const resultData = await result.json();
+                    const routeData = this.$router.resolve({
+                        path: '/skills/' + resultData.url
+                    });
+                    window.open(routeData.href, '_blank');
                 }
-                this.skill.introduction = result2.introduction;
-                this.skill.url = result2.url;
-                this.skill.image_thumbnail_url = result2.image_thumbnail_url;
-                this.showSkillPanel = true;
             }
         });
 
+        // Tool tip - laptop/desktop only
         // MOUSE MOVE EVENT LISTENER
         d3.select('#canvas').on('mousemove', (event) => {
-            // Get mouse positions from the main canvas.
-            const [mouseX, mouseY] = d3.pointer(event);
+            // Prevent this from showing on touch device
+            if (event.sourceCapabilities.firesTouchEvents == false) {
+                // Get mouse positions from the main canvas.
+                const [mouseX, mouseY] = d3.pointer(event);
 
-            const node = this.getMouseOverNode(mouseX, mouseY);
+                const node = this.getMouseOverNode(mouseX, mouseY);
 
-            if (node) {
-                let tooltipTopPosition = mouseY + 20;
-                let tooltipLeftPosition = mouseX;
-                const borderColor = this.hexBorderColor(node.data.level);
-                // Make sure position alway visible
-                if (tooltipTopPosition)
-                    this.tooltipData = {
-                        showing: true,
-                        xPosition: `${tooltipTopPosition}`,
-                        yPosition: `${tooltipLeftPosition}`,
-                        skillName: node.data.skill_name,
-                        skillLevel: node.data.level,
-                        borderColor: borderColor,
-                        thumbnail: node.data.thumbnail,
-                        skillId: node.data.id
-                    };
-            } else {
-                this.tooltipData.showing = false;
+                if (node) {
+                    let tooltipTopPosition = mouseY + 20;
+                    let tooltipLeftPosition = mouseX;
+                    const borderColor = this.hexBorderColor(node.data.level);
+                    // Make sure position alway visible
+                    if (tooltipTopPosition)
+                        this.tooltipData = {
+                            showing: true,
+                            xPosition: `${tooltipTopPosition}`,
+                            yPosition: `${tooltipLeftPosition}`,
+                            skillName: node.data.skill_name,
+                            skillLevel: node.data.level,
+                            borderColor: borderColor,
+                            thumbnail: node.data.thumbnail,
+                            skillId: node.data.id
+                        };
+                } else {
+                    this.tooltipData.showing = false;
+                }
             }
+        });
+
+        // Open skill page
+        canvas.addEventListener('dblclick', async (e) => {
+            //Figure out where the mouse click occurred.
+            var mouseX = e.layerX;
+            var mouseY = e.layerY;
+
+            // Get the corresponding pixel color on the hidden canvas
+            // and look up the node in our map.
+            var ctx = this.hiddenCanvasContext;
+
+            // This will return that pixel's color
+            var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
+
+            //Our map uses these rgb strings as keys to nodes.
+            var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
+            var node = this.colToNode[colString];
+
+            if (node && node.data.id) {
+                // We clicked on something, lets set the color of the node
+                // we also have access to the data associated with it, which in
+                // this case is just its original index in the data array.
+                node.renderCol = node.__pickColor;
+                this.currentNodeX = node.x;
+                this.currentNodeY = node.y;
+                this.skill.id = node.data.id;
+            }
+
+            const result = await fetch('/skills/url-only/' + this.skill.id);
+            const resultData = await result.json();
+            const routeData = this.$router.resolve({
+                path: '/skills/' + resultData.url
+            });
+            window.open(routeData.href, '_blank');
         });
 
         // Zoom and pan with mouse
@@ -272,7 +326,7 @@ export default {
         // Set initial zoom value.
         this.resetPos();
 
-        await this.getIconData();
+        this.getIconData();
 
         // For the loading animation.
 
@@ -463,10 +517,10 @@ export default {
 
             // If skill is mastered.
             if (link.target.data.is_mastered == 1) {
-                this.context.lineWidth = 4;
+                this.context.lineWidth = 5;
                 this.context.strokeStyle = '#8d6ce7';
             } else {
-                this.context.lineWidth = 2;
+                this.context.lineWidth = 4;
                 // Determine colour of links based on user's theme
                 if (this.userDetailsStore.theme == 'original')
                     this.context.strokeStyle = '#000';
@@ -1524,16 +1578,30 @@ export default {
             let radius;
             if (node.data.type == 'sub') {
                 radius = 7.5;
+            } else if (node.data.type == 'domain') {
+                radius = 12; // Make domain nodes slightly larger
             } else {
                 radius = 10;
             }
 
             ctx1.beginPath();
             ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
-            // get the color associate with skill level
+
+            // Get the color associate with skill level
             const skillColor = node.data.level
                 ? this.hexColor(node.data.level)
                 : '#000';
+
+            // Special styling for domain nodes
+            if (node.data.type == 'domain') {
+                // Use a semi-translucent fill for domain nodes
+                ctx1.fillStyle = 'rgba(220, 220, 220, 0.6)';
+                ctx1.fill();
+                ctx1.lineWidth = 1.5;
+                ctx1.strokeStyle = '#a0a0a0'; // Lighter border color
+                ctx1.stroke();
+                return;
+            }
 
             // If mastered, make a solid shape.
             if (node.data.is_mastered == 1) {
@@ -1574,21 +1642,34 @@ export default {
             let radius;
             if (node.data.type == 'sub') {
                 radius = 7.5;
+            } else if (node.data.type == 'domain') {
+                radius = 12; // Make domain nodes slightly larger
             } else {
                 radius = 10;
             }
 
             ctx1.beginPath();
-            // ctx1.arc(node.y, node.x, radius * 1.5, 0, 2 * Math.PI);
             let xPosition = node.y;
             if (node.data.children.length > 0) {
                 xPosition = xPosition - 180;
             }
             ctx1.roundRect(xPosition, node.x - 20, 180, 40, 20);
-            // get the color associate with skill level
+
+            // Get the color associate with skill level
             const skillColor = node.data.level
                 ? this.hexColor(node.data.level)
                 : '#000';
+
+            // Special styling for domain nodes - semi-translucent with a different visual style
+            if (node.data.type == 'domain') {
+                ctx1.fillStyle = 'rgba(230, 230, 230, 0.7)'; // Light semi-translucent fill
+                ctx1.fill();
+                ctx1.lineWidth = 1.5;
+                ctx1.strokeStyle = '#b0b0b0'; // Lighter border
+                ctx1.setLineDash([3, 2]); // Dotted line to visually indicate "container"
+                ctx1.stroke();
+                return;
+            }
 
             // If mastered, make a solid shape.
             if (node.data.is_mastered == 1) {
@@ -1599,7 +1680,6 @@ export default {
                 ctx1.strokeStyle = outlineColor;
                 ctx1.stroke();
             }
-
             // If not, just an outline.
             else {
                 ctx1.lineWidth = 4;
@@ -1855,7 +1935,8 @@ export default {
                 ctx1.beginPath();
                 ctx1.strokeStyle = '#FFF';
                 ctx1.lineWidth = 4;
-                ctx1.fillStyle = isSearched ? '#ff0000' : '#849cab';
+                // Updated domain text color to be lighter gray (previously #849cab)
+                ctx1.fillStyle = isSearched ? '#ff0000' : '#aabbc5';
                 ctx1.direction = 'ltr';
 
                 let xPosition = node.y - 140;

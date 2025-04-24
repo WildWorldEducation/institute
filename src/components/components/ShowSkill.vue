@@ -89,7 +89,11 @@ export default {
             // Defaults to true. False only for certain skills.
             // This is just to prevent them displaying. They are still loaded, as used by the AI.
             showLearningObjectives: true,
-            isAITokenLimitReached: false
+            isAITokenLimitReached: false,
+            showMasteryModal: false,
+            areAllSubskillsMastered: false,
+            unmasteredSubskills: [],
+            showUnmasteredModal: false
         };
     },
     components: {
@@ -100,16 +104,28 @@ export default {
     },
     async created() {
         try {
+            // Set to false at the beginning to be safe
+            this.isSkillLoaded = false;
+
             // Needed for token limit
             if (this.sessionDetailsStore.isLoggedIn) {
                 await this.checkTokenUsage();
             }
 
+            // Get the skill data
             await this.getSkill();
+
+            // Only set isSkillLoaded to true if getSkill completes successfully
             this.isSkillLoaded = true;
 
             if (this.sessionDetailsStore.isLoggedIn) {
                 await this.getUserSkills();
+                // Check for subskill mastery directly here
+                if (this.skill.type === 'super') {
+                    await this.checkSubskillMastery();
+                } else {
+                    this.areAllSubskillsMastered = true;
+                }
             }
 
             // Turn this on only if user is logged in.
@@ -122,7 +138,6 @@ export default {
             }
         } catch (error) {
             console.error('Error in created hook:', error);
-            // Optionally, set some error state or show a user-friendly message
             this.isSkillLoaded = false;
         }
     },
@@ -146,7 +161,7 @@ export default {
                     typeof this.settingsStore.getSettings === 'function'
                 ) {
                     // Only get settings if free monthly tokens are 0 or not set
-                    if (this.settingsStore.freeMonthlyTokens === 0) {
+                    if (this.settingsStore.freePlanTokenLimit === 0) {
                         await this.settingsStore.getSettings();
                     }
                 } else {
@@ -156,10 +171,17 @@ export default {
                 }
 
                 // Check if user is over free monthly AI token limit
-                if (this.userDetailsStore.tokens <= 0) {
+                if (this.userDetailsStore.subscriptionTier == 'free') {
                     if (
-                        (this.settingsStore.freeMonthlyTokens || 0) <=
-                        (this.userDetailsStore.monthlyTokenUsage || 0)
+                        this.settingsStore.freePlanTokenLimit <=
+                        this.userDetailsStore.monthlyTokenUsage
+                    ) {
+                        this.isAITokenLimitReached = true;
+                    }
+                } else if (this.userDetailsStore.subscriptionTier == 'basic') {
+                    if (
+                        this.settingsStore.basicPlanTokenLimit <=
+                        this.userDetailsStore.monthlyTokenUsage
                     ) {
                         this.isAITokenLimitReached = true;
                     }
@@ -173,8 +195,24 @@ export default {
         async getSkill() {
             // solution for image to be changed when we change it from AWS
             this.randomNum = Math.random();
-            // Load the skill data
-            await this.showSkillStore.findSkill(this.skillUrl);
+            /* 
+             / Load the skill data
+             / Split into 2 parts, for SEO
+            */
+            // Load the first part of the skill data - above the fold for mobile view
+            await this.showSkillStore.getSkillFirstPart(this.skillUrl);
+            this.skill.name = this.showSkillStore.skill.name;
+            this.skill.intro_sentence =
+                this.showSkillStore.skill.intro_sentence;
+            this.skill.type = this.showSkillStore.skill.type;
+            this.skill.level = this.showSkillStore.skill.level;
+            this.skill.image_thumbnail_url =
+                this.showSkillStore.skill.image_thumbnail_url;
+            this.skill.is_human_edited =
+                this.showSkillStore.skill.image_thumbnail_url;
+
+            // Load the rest of the skill data
+            await this.showSkillStore.getSkillSecondPart(this.skillUrl);
             this.skill = this.showSkillStore.skill;
             this.skillId = this.skill.id;
 
@@ -191,8 +229,11 @@ export default {
 
             await this.getLearningObjectives();
 
-            // Meta title for SEO
-            document.title = this.skill.name + ' - The Collins Institute';
+            // Meta title and description for browser tab, Google Search snippet and SEO
+            document.title = this.skill.name + ' - Parrhesia';
+            document
+                .querySelector('meta[name="description"]')
+                .setAttribute('content', this.skill.intro_sentence);
 
             //Load skill filters
             this.getSkillFilters();
@@ -213,7 +254,7 @@ export default {
             this.skill.learningObjectives = await result.json();
             if (this.sessionDetailsStore.isLoggedIn) {
                 for (let i = 0; i < this.skill.learningObjectives.length; i++) {
-                    this.skill.learningObjectives[i].showAI = true;
+                    this.skill.learningObjectives[i].showAI = false;
                 }
             }
         },
@@ -221,7 +262,6 @@ export default {
             fetch('/skills/record-visit/' + skillId);
         },
         async getSkillFilters() {
-            // Run the GET request.
             if (this.skillTagsStore.skillTagsList.length == 0)
                 await this.skillTagsStore.getSkillTagsList();
 
@@ -272,6 +312,41 @@ export default {
                 if (this.userSkills[i].is_accessible == 1) {
                     this.accessibleSkills.push(this.userSkills[i]);
                 }
+            }
+            // Add this check right here, after processing userSkills
+            if (this.skill.type === 'super') {
+                try {
+                    // Get all subskills for this super skill
+                    const response = await fetch(
+                        `/skills/sub-skills/${this.skill.id}`
+                    );
+                    const subskills = await response.json();
+
+                    // If no subskills, consider all mastered
+                    if (!subskills || subskills.length === 0) {
+                        this.areAllSubskillsMastered = true;
+                    } else {
+                        // Check if all subskills are mastered by the user
+                        let allMastered = true;
+                        for (const subskill of subskills) {
+                            const found = this.userSkills.find(
+                                (us) => us.id === subskill.id
+                            );
+                            if (!found || found.is_mastered !== 1) {
+                                allMastered = false;
+                                break;
+                            }
+                        }
+
+                        this.areAllSubskillsMastered = allMastered;
+                    }
+                } catch (error) {
+                    console.error('Error checking subskill mastery:', error);
+                    this.areAllSubskillsMastered = false;
+                }
+            } else {
+                // Not a super skill, so this check doesn't apply
+                this.areAllSubskillsMastered = true;
             }
         },
         async MakeMastered() {
@@ -524,15 +599,16 @@ export default {
                 this.showTutorialTip5 = true;
             } else if (step == 5) {
                 this.showTutorialTip5 = false;
-                this.showTutorialTip6 = true;
-                // Skip straight to AI tutor tooltip for editors/instructors
+
+                // For editors and instructors, skip to tooltip 7 which will show at the Forum section
                 if (
                     this.userDetailsStore.role === 'editor' ||
                     this.userDetailsStore.role === 'instructor'
                 ) {
-                    this.showTutorialTip6 = false;
-                    this.showTutorialTip7 = true;
+                    this.showTutorialTip5 = false;
+                    this.markTutorialComplete();
                 }
+                this.showTutorialTip6 = true;
             } else if (step == 6) {
                 this.showTutorialTip6 = false;
                 this.showTutorialTip7 = true;
@@ -601,6 +677,7 @@ export default {
         scrollToTooltip() {
             this.$nextTick(() => {
                 if (
+                    this.userDetailsStore.role == 'student' &&
                     this.showTutorialTip6 &&
                     this.$refs.learningObjectivesSection
                 ) {
@@ -624,6 +701,56 @@ export default {
                     block: 'start'
                 });
             }
+        },
+        async checkSubskillMastery() {
+            if (this.skill.type !== 'super') {
+                // Not a super skill, so this check doesn't apply
+                this.areAllSubskillsMastered = true;
+                return;
+            }
+
+            try {
+                // Get all subskills for this super skill
+                const response = await fetch(
+                    `/skills/sub-skills/${this.skill.id}`
+                );
+                const subskills = await response.json();
+
+                // If no subskills, consider all mastered
+                if (!subskills || subskills.length === 0) {
+                    this.areAllSubskillsMastered = true;
+                    this.unmasteredSubskills = [];
+                    return;
+                }
+
+                // Check if all subskills are mastered by the user
+                let allMastered = true;
+                this.unmasteredSubskills = []; // Reset this array
+
+                for (const subskill of subskills) {
+                    const found = this.userSkills.find(
+                        (us) => us.id === subskill.id
+                    );
+                    if (!found || found.is_mastered !== '1') {
+                        allMastered = false;
+                        this.unmasteredSubskills.push(subskill);
+                    }
+                }
+
+                this.areAllSubskillsMastered = allMastered;
+            } catch (error) {
+                console.error('Error checking subskill mastery:', error);
+                this.areAllSubskillsMastered = false;
+                this.unmasteredSubskills = [];
+            }
+        },
+
+        showUnmasteredSubskillsModal() {
+            this.showUnmasteredModal = true;
+        },
+        handleSkillMastered() {
+            this.isMastered = true;
+            this.showMasteryModal = true;
         }
     },
     /**
@@ -664,7 +791,12 @@ export default {
             <!-- Name and description -->
             <div>
                 <div class="d-flex justify-content-between top-row">
-                    <h1 class="heading">{{ skill.name }}</h1>
+                    <h1
+                        class="heading"
+                        :class="{ 'text-center': isMobileCheck < 576 }"
+                    >
+                        {{ skill.name }}
+                    </h1>
                     <!-- Take assessment btn-->
                     <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
                     <router-link
@@ -697,10 +829,89 @@ export default {
                             userDetailsStore.role == 'student' &&
                             !isMastered &&
                             skill.type != 'domain' &&
-                            skill.id
+                            skill.id &&
+                            (skill.type !== 'super' || areAllSubskillsMastered)
                         "
                         class="btn me-1 assessment-btn"
                         @click="scrollToAITutor()"
+                    >
+                        <span>
+                            <!-- Half star icon -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 576 512"
+                                width="22"
+                                fill="white"
+                            >
+                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                <path
+                                    d="M288 0c-12.2 .1-23.3 7-28.6 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3L288 439.8 288 0zM429.9 512c1.1 .1 2.1 .1 3.2 0l-3.2 0z"
+                                />
+                            </svg>
+                            Take the Test
+                            <!-- Half star icon -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 576 512"
+                                width="22"
+                                fill="white"
+                            >
+                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                <path
+                                    d="m 169.24356,0 c 12.2,0.1 23.3,7 28.6,18 l 64.4,132.3 143.6,21.2 c 12,1.8 22,10.2 25.7,21.7 3.7,11.5 0.7,24.2 -7.9,32.7 l -104.2,103.1 24.6,145.7 c 2,12 -3,24.2 -12.9,31.3 -9.9,7.1 -23,8 -33.8,2.3 l -128.1,-68.5 z M 27.343555,512 c -1.1,0.1 -2.1,0.1 -3.2,0 z"
+                                    id="path17"
+                                />
+                            </svg>
+                        </span>
+                    </button>
+                    <!-- Unmastered Subskills Modal -->
+                    <div
+                        v-if="showUnmasteredModal"
+                        class="modal"
+                        @click.self="showUnmasteredModal = false"
+                    >
+                        <div class="modal-content">
+                            <h1 class="heading h5">
+                                Complete these cluster skills first:
+                            </h1>
+                            <div v-for="subskill in unmasteredSubskills">
+                                <router-link
+                                    :class="{
+                                        'grade-school':
+                                            skill.level == 'grade_school',
+                                        'middle-school':
+                                            skill.level == 'middle_school',
+                                        'high-school':
+                                            skill.level == 'high_school',
+                                        college: skill.level == 'college',
+                                        phd: skill.level == 'phd'
+                                    }"
+                                    class="skill-link btn mb-1 text-start"
+                                    :to="`/skills/${subskill.url}`"
+                                    @click="showUnmasteredModal = false"
+                                >
+                                    {{ subskill.name }}
+                                </router-link>
+                            </div>
+                            <button
+                                class="btn primary-btn ms-auto me-0"
+                                @click="showUnmasteredModal = false"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                    <button
+                        v-if="
+                            userDetailsStore.role == 'student' &&
+                            !isMastered &&
+                            skill.type === 'super' &&
+                            !areAllSubskillsMastered
+                        "
+                        class="btn me-1 assessment-btn"
+                        style="opacity: 0.7"
+                        @click="showUnmasteredSubskillsModal"
+                        title="Click to see which subskills need to be mastered"
                     >
                         <!-- Half star icon -->
                         <svg
@@ -714,7 +925,7 @@ export default {
                                 d="M288 0c-12.2 .1-23.3 7-28.6 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3L288 439.8 288 0zM429.9 512c1.1 .1 2.1 .1 3.2 0l-3.2 0z"
                             />
                         </svg>
-                        Take the Test
+                        Master Subskills First
                         <!-- Half star icon -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -764,40 +975,6 @@ export default {
                             />
                         </svg>
                     </button>
-                    <!-- If not logged in, go to Login page -->
-                    <router-link
-                        v-else-if="!sessionDetailsStore.isLoggedIn"
-                        class="btn me-1 assessment-btn"
-                        to="/login"
-                    >
-                        <!-- Half star icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 576 512"
-                            width="22"
-                            fill="white"
-                        >
-                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="M288 0c-12.2 .1-23.3 7-28.6 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3L288 439.8 288 0zM429.9 512c1.1 .1 2.1 .1 3.2 0l-3.2 0z"
-                            />
-                        </svg>
-                        <span v-if="skill.type != 'domain'">Take the Test</span
-                        ><span v-else>Mark Complete</span>
-                        <!-- Half star icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 576 512"
-                            width="22"
-                            fill="white"
-                        >
-                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="m 169.24356,0 c 12.2,0.1 23.3,7 28.6,18 l 64.4,132.3 143.6,21.2 c 12,1.8 22,10.2 25.7,21.7 3.7,11.5 0.7,24.2 -7.9,32.7 l -104.2,103.1 24.6,145.7 c 2,12 -3,24.2 -12.9,31.3 -9.9,7.1 -23,8 -33.8,2.3 l -128.1,-68.5 z M 27.343555,512 c -1.1,0.1 -2.1,0.1 -3.2,0 z"
-                                id="path17"
-                            />
-                        </svg>
-                    </router-link>
                 </div>
                 <!-- Student tooltip -->
                 <div
@@ -840,25 +1017,79 @@ export default {
                         </div>
                     </div>
                 </div>
-                <!-- Description only seen by admins -->
-                <div
-                    v-if="userDetailsStore.role == 'admin'"
-                    class="row pe-4 ps-4 ps-md-0 skill-description"
-                >
-                    <p>{{ skill.description }}</p>
-                </div>
                 <!-- A line divide -->
-                <hr class="border border-2 opacity-100 hr" />
+                <hr
+                    class="border border-2 opacity-100 hr"
+                    v-if="isMobileCheck > 576"
+                />
             </div>
             <!-- Buttons -->
-            <div class="row mb-2">
+            <div class="row mb-2 mt-2">
                 <div class="col d-flex justify-content-between">
-                    <div
-                        class="d-flex"
-                        :class="{
-                            'justify-content-center': isMobileCheck < 576
-                        }"
+                    <!-- Guest mode -->
+                    <span
+                        v-if="!sessionDetailsStore.isLoggedIn"
+                        class="d-flex justify-content-between w-100"
                     >
+                        <!-- If not logged in, go to Login page -->
+                        <router-link
+                            class="btn me-1 assessment-btn"
+                            to="/login"
+                        >
+                            <!-- Half star icon -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 576 512"
+                                width="22"
+                                fill="white"
+                            >
+                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                <path
+                                    d="M288 0c-12.2 .1-23.3 7-28.6 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3L288 439.8 288 0zM429.9 512c1.1 .1 2.1 .1 3.2 0l-3.2 0z"
+                                />
+                            </svg>
+                            <span v-if="skill.type != 'domain'"
+                                >Take the Test</span
+                            ><span v-else>Mark Complete</span>
+                            <!-- Half star icon -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 576 512"
+                                width="22"
+                                fill="white"
+                            >
+                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                <path
+                                    d="m 169.24356,0 c 12.2,0.1 23.3,7 28.6,18 l 64.4,132.3 143.6,21.2 c 12,1.8 22,10.2 25.7,21.7 3.7,11.5 0.7,24.2 -7.9,32.7 l -104.2,103.1 24.6,145.7 c 2,12 -3,24.2 -12.9,31.3 -9.9,7.1 -23,8 -33.8,2.3 l -128.1,-68.5 z M 27.343555,512 c -1.1,0.1 -2.1,0.1 -3.2,0 z"
+                                    id="path17"
+                                />
+                            </svg>
+                        </router-link>
+                        <!-- Sharable URL -->
+                        <button
+                            v-if="
+                                !sessionDetailsStore.isLoggedIn &&
+                                isMobileCheck < 576
+                            "
+                            @click="copyShareableURLToClipBoard"
+                            class="btn me-1"
+                            aria-label="share"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                width="20"
+                                heigth="20"
+                            >
+                                <path
+                                    class="primary-icon"
+                                    d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"
+                                />
+                            </svg>
+                        </button>
+                    </span>
+
+                    <div class="d-flex">
                         <!-- Edit skill btn-->
                         <router-link
                             v-if="sessionDetailsStore.isLoggedIn"
@@ -915,7 +1146,9 @@ export default {
                             class="btn primary-btn"
                             @click="openModal(skill)"
                         >
-                            Create goal&nbsp;
+                            <span v-if="isMobileCheck > 576"
+                                >Create goal&nbsp;</span
+                            >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 512 512"
@@ -928,7 +1161,6 @@ export default {
                                 />
                             </svg>
                         </button>
-
                         <!-- Modal -->
                         <div
                             v-if="toggleModal"
@@ -961,11 +1193,18 @@ export default {
                             </div>
                         </div>
                     </div>
-                    <div class="d-flex justify-content-end">
+                    <div
+                        class="d-flex"
+                        v-if="
+                            isMobileCheck > 576 ||
+                            sessionDetailsStore.isLoggedIn
+                        "
+                    >
                         <!-- Sharable URL -->
                         <button
                             @click="copyShareableURLToClipBoard"
                             class="btn me-1"
+                            aria-label="share"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -998,16 +1237,19 @@ export default {
                                 />
                             </svg>
                         </button>
+                        <!-- Tutorial button -->
                         <button
-                            class="btn primary-btn me-1"
+                            v-if="sessionDetailsStore.isLoggedIn"
+                            class="btn me-1"
                             @click="restartTutorial"
+                            aria-label="info"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 192 512"
                                 width="20"
-                                height="20"
-                                fill="white"
+                                height="23"
+                                class="primary-icon"
                             >
                                 <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                 <path
@@ -1098,12 +1340,20 @@ export default {
                                 The "Edit" button allows you to edit this skill
                                 page or its assessment.
                             </p>
-                            <button
-                                class="btn primary-btn"
-                                @click="progressTutorial(2)"
-                            >
-                                next
-                            </button>
+                            <div class="d-flex justify-content-between">
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(2)"
+                                >
+                                    next
+                                </button>
+                                <button
+                                    class="btn red-btn"
+                                    @click="skipTutorial"
+                                >
+                                    exit tutorial
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1120,12 +1370,20 @@ export default {
                                 friend, or flag this page as unhelpful or
                                 incorrect.
                             </p>
-                            <button
-                                class="btn primary-btn"
-                                @click="progressTutorial(3)"
-                            >
-                                next
-                            </button>
+                            <div class="d-flex justify-content-between">
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(3)"
+                                >
+                                    next
+                                </button>
+                                <button
+                                    class="btn red-btn"
+                                    @click="skipTutorial"
+                                >
+                                    exit tutorial
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1144,12 +1402,20 @@ export default {
                             <p>
                                 Here you can suggest an edit to this skill page.
                             </p>
-                            <button
-                                class="btn primary-btn"
-                                @click="progressTutorial(2)"
-                            >
-                                next
-                            </button>
+                            <div class="d-flex justify-content-between">
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(2)"
+                                >
+                                    next
+                                </button>
+                                <button
+                                    class="btn red-btn"
+                                    @click="skipTutorial"
+                                >
+                                    exit tutorial
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1169,18 +1435,29 @@ export default {
                                 friend, or flag this page as unhelpful or
                                 incorrect.
                             </p>
-                            <button
-                                class="btn primary-btn"
-                                @click="progressTutorial(3)"
-                            >
-                                next
-                            </button>
+                            <div class="d-flex justify-content-between">
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(3)"
+                                >
+                                    next
+                                </button>
+                                <button
+                                    class="btn red-btn"
+                                    @click="skipTutorial"
+                                >
+                                    exit tutorial
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- A line divide -->
-                <hr class="border border-1 opacity-100 hr mt-2" />
+                <hr
+                    class="border border-1 opacity-100 hr mt-2"
+                    v-if="isMobileCheck > 576"
+                />
             </div>
             <!-- Content -->
             <div class="row">
@@ -1188,14 +1465,13 @@ export default {
                     <!-- Introduction -->
                     <div class="">
                         <h2 class="h4 secondary-heading">Introduction</h2>
-                        <div
-                            class="bg-white rounded p-2"
-                            v-html="skill.introduction"
-                        ></div>
+                        <div class="bg-white rounded p-2">
+                            <p>{{ skill.intro_sentence }}</p>
+                        </div>
                     </div>
 
                     <!-- Mastery Requirements -->
-                    <div v-if="skill.type != 'domain'" class="mt-4">
+                    <div v-if="skill.type != 'domain'" class="mt-1">
                         <h2 class="h4 secondary-heading">
                             Requirements for Mastery
                         </h2>
@@ -1207,14 +1483,22 @@ export default {
                 </div>
                 <!-- Infobox -->
                 <div class="col-md-4 order-1 order-md-2">
-                    <div class="info-box p-2 mb-2">
+                    <div class="info-box p-2 mb-4">
                         <!-- AWS S3 hosted feature image -->
                         <!-- Using random number otherwise url doesnt change (cache)-->
-                        <a :href="skill.image_url">
+                        <a
+                            :href="skill.image_url"
+                            :aria-label="
+                                'full size image representing ' + skill.name
+                            "
+                        >
                             <img
                                 :src="skill.image_thumbnail_url"
                                 @error="imageUrlAlternative"
                                 class="rounded img-fluid"
+                                :alt="'image representing ' + skill.name"
+                                width="294.4"
+                                height="294.4"
                             />
                         </a>
                         <!-- Grade level -->
@@ -1241,7 +1525,6 @@ export default {
                                 v-if="skill.is_human_edited"
                                 b-tooltip.hover
                                 title="This page was written or edited by a human"
-                                style="height: 50px"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -1259,7 +1542,6 @@ export default {
                                 v-else
                                 b-tooltip.hover
                                 title="This page was written by an AI"
-                                style="height: 50px"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -1355,7 +1637,10 @@ export default {
                             </div>
                         </div>
                         <button
-                            v-if="sessionDetailsStore.isLoggedIn"
+                            v-if="
+                                sessionDetailsStore.isLoggedIn &&
+                                userDetailsStore.role == 'student'
+                            "
                             class="btn plus-btn"
                             @click="
                                 learningObjective.showAI =
@@ -1432,9 +1717,12 @@ export default {
                 :showTutorialTip7="showTutorialTip7"
                 :showTutorialTip8="showTutorialTip8"
                 :showTutorialTip9="showTutorialTip9"
+                :areAllSubskillsMastered="areAllSubskillsMastered"
                 @skipTutorial="skipTutorial"
                 @progressTutorial="progressTutorial"
+                @skillMastered="handleSkillMastered"
             />
+
             <div
                 v-else-if="
                     isSkillLoaded &&
@@ -1442,11 +1730,48 @@ export default {
                     skill.type !== 'domain'
                 "
             >
-                <h2 class="h2 secondary-heading">AI tutor</h2>
                 <em
                     >You have reached your monthly AI token limit. Please
                     recharge your subscription to use more.</em
                 >
+            </div>
+            <!-- Skill Mastered Modal -->
+            <div v-if="showMasteryModal" class="modal">
+                <div class="modal-content mastery-modal">
+                    <div class="text-center mb-4">
+                        <h2 class="heading">Congratulations!</h2>
+                        <p class="mb-3">
+                            You have mastered the skill
+                            <strong>{{ skill.name }}</strong
+                            >!
+                        </p>
+
+                        <!-- Trophy icon -->
+                        <div class="trophy-icon mb-3">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 576 512"
+                                width="80"
+                                height="80"
+                                fill="#FFD700"
+                            >
+                                <!-- Font Awesome Trophy Icon -->
+                                <path
+                                    d="M400 0H176c-26.5 0-48.1 21.8-47.1 48.2c.2 5.3 .4 10.6 .7 15.8H24C10.7 64 0 74.7 0 88c0 92.6 33.5 157 78.5 200.7c44.3 43.1 98.3 64.8 138.1 75.8c23.4 6.5 39.4 26 39.4 45.6c0 20.9-17 37.9-37.9 37.9H192c-17.7 0-32 14.3-32 32s14.3 32 32 32H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H357.9C337 448 320 431 320 410.1c0-19.6 15.9-39.2 39.4-45.6c39.9-11 93.9-32.7 138.2-75.8C542.5 245 576 180.6 576 88c0-13.3-10.7-24-24-24H446.4c.3-5.2 .5-10.4 .7-15.8C448.1 21.8 426.5 0 400 0zM48.9 112h84.4c9.1 90.1 29.2 150.3 51.9 190.6c-24.9-11-50.8-26.5-73.2-48.3c-32-31.1-58-76-63-142.3zM464.1 254.3c-22.4 21.8-48.3 37.3-73.2 48.3c22.7-40.3 42.8-100.5 51.9-190.6h84.4c-5.1 66.3-31.1 111.2-63 142.3z"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center">
+                        <button
+                            class="btn primary-btn"
+                            @click="showMasteryModal = false"
+                        >
+                            Continue
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1614,18 +1939,34 @@ export default {
                     for mastering it, and take a test to demonstrate your
                     mastery.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(1)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-else-if="showTutorialTip4">
                 <p>
                     The "Requirements for mastery" section explains everything a
                     student needs to learn to master the skill.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(4)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(4)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-else-if="showTutorialTip5">
                 <p>
@@ -1633,9 +1974,8 @@ export default {
                     This" section, students can find various sites and resources
                     to learn about this topic.
                 </p>
-                <p>You can add more, vote on these, or edit them.</p>
                 <button class="btn primary-btn" @click="progressTutorial(5)">
-                    next
+                    close
                 </button>
             </div>
         </div>
@@ -1655,18 +1995,34 @@ export default {
                     This page is where students can learn about, and take a test
                     to try to master, this skill.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(1)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-else-if="showTutorialTip4">
                 <p>
                     The "Requirements for mastery" section explains everything a
                     student needs to learn to master the skill.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(4)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(4)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-else-if="showTutorialTip5">
                 <p>
@@ -1674,16 +2030,57 @@ export default {
                     This" section, students can find various sites and resources
                     to learn about this topic.
                 </p>
-                <p>You can add more and vote on these.</p>
-                <button class="btn primary-btn" @click="progressTutorial(5)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(5)"
+                    >
+                        close
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+.mastery-modal {
+    max-width: 400px;
+    padding: 30px;
+    text-align: center;
+    animation: fadeIn 0.5s;
+}
+
+.trophy-icon {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    animation: trophy-bounce 1s ease-in-out;
+}
+
+@keyframes trophy-bounce {
+    0% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    50% {
+        transform: translateY(10px);
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
 p {
     color: black !important;
 }
@@ -1694,7 +2091,8 @@ p {
 
 /* Mastery Reqruirements Section */
 ::v-deep(.mastery-requirements-section p) {
-    font-family: 'Poppins', sans-serif !important;
+    font-family: 'Poppins' !important;
+    color: black !important;
 }
 
 /* Tooltips */
@@ -1732,6 +2130,7 @@ p {
     border-style: solid;
     background-color: #7f1e1e;
     color: white; /* Matching the text color used by both buttons */
+    justify-content: center;
 }
 
 .info-box {
@@ -1752,6 +2151,7 @@ p {
 
 .hr {
     border-color: var(--dark-color) !important;
+    margin-top: 0px;
 }
 
 #skill-info-container {
@@ -1817,6 +2217,12 @@ p {
 
     .top-row {
         flex-direction: column;
+    }
+
+    .assessment-btn {
+        width: 100%;
+        max-width: 100%;
+        max-height: 38px;
     }
 }
 

@@ -209,11 +209,11 @@ router.post(
                             1,
                             ${conn.escape(req.session.userId)},
                             ${conn.escape(
-                                    req.body.name
-                                )},                           
+                                req.body.name
+                            )},                           
                             ${conn.escape(
-                                    req.body.description
-                                )},                                                      
+                                req.body.description
+                            )},                                                      
                             ${conn.escape(req.body.mastery_requirements)},
                             ${conn.escape(req.body.level)});`;
 
@@ -277,8 +277,8 @@ router.post(
         const sqlQuery = `SELECT *
                           FROM skills
                           WHERE skills.id = ${conn.escape(
-            req.body.skillToBeCopied.id
-        )} AND skills.is_deleted = 0;`;
+                              req.body.skillToBeCopied.id
+                          )} AND skills.is_deleted = 0;`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -504,23 +504,22 @@ router.post('/guest-mode/find-filtered-skill', (req, res, next) => {
     let sqlQuery = `SELECT id, name, image_thumbnail_url, parent, type, level, skills.order as skillorder, display_name, url
                     FROM skills
                     WHERE is_filtered = 'available' AND is_deleted = 0
-                    ORDER BY skillorder;`
+                    ORDER BY skillorder;`;
     try {
         conn.query(sqlQuery, (err, result) => {
             if (err) {
-                throw err
+                throw err;
             }
             const availableSkills = result;
-            const data = findGuestHiddenSkillData(skillName, availableSkills)
-            res.json(data)
-        })
+            const data = findGuestHiddenSkillData(skillName, availableSkills);
+            res.json(data);
+        });
     } catch (error) {
-        console.error(error)
+        console.error(error);
         res.status = 500;
-        res.json(null)
+        res.json(null);
     }
-
-})
+});
 
 // Filtered Nested List - for "Instructor" and "Editor" roles - Collapsable Tree.
 router.get('/filtered-nested-list', (req, res, next) => {
@@ -602,9 +601,6 @@ router.get('/filtered-nested-list', (req, res, next) => {
     }
 });
 
-
-
-
 /**
  * Get Single Item
  */
@@ -663,15 +659,15 @@ router.get('/url/:skillUrl', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     // Get skill.
-    const sqlQuery = `SELECT s.id, s.name, s.url, s.parent, s.introduction, s.type, s.level, s.image_url, s.image_thumbnail_url, s.icon_url, s.icon, s.mastery_requirements,
+    const sqlQuery = `SELECT s.id, s.name, s.url, s.parent, s.introduction, s.intro_sentence, s.type, s.level, s.image_url, s.image_thumbnail_url, s.icon_url, s.icon, s.mastery_requirements,
                         s.version_number, s.order, parent_skill.type AS parent_type
                     FROM 
                         skills AS s
                     LEFT JOIN 
                         skills AS parent_skill ON s.parent = parent_skill.id
                     WHERE s.url = ${conn.escape(
-        req.params.skillUrl
-    )} AND s.is_deleted = 0`;
+                        req.params.skillUrl
+                    )} AND s.is_deleted = 0`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -714,17 +710,149 @@ router.get('/url/:skillUrl', (req, res, next) => {
     });
 });
 
-// For sending the mastery requirements data separately to the skill tree skill panels.
+// Load skill - split into 2 for SEO purposes
+// For loading the first part of the skill,
+// that is 'above the fold' on mobile.
+router.get('/first/url/:skillUrl', (req, res, next) => {
+    let skill;
+    // Get skill.
+    const sqlQuery = `SELECT name, intro_sentence, type, level, image_thumbnail_url, is_human_edited
+                    FROM 
+                        skills
+                    WHERE url = ${conn.escape(
+                        req.params.skillUrl
+                    )} AND is_deleted = 0`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            skill = results[0];
+
+            if (typeof skill !== 'undefined' && skill) {
+                if (skill.is_copy_of_skill_id != null) {
+                    const sqlQueryForCopiedSkillNode = `SELECT *
+                FROM skills
+                WHERE skills.id = ${conn.escape(skill.is_copy_of_skill_id)}
+                AND skills.is_deleted = 0;`;
+
+                    conn.query(sqlQueryForCopiedSkillNode, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            }
+                            let skill2 = results[0];
+                            skill2.is_copy_of_skill_id = skill2.id;
+                            skill2.type = skill.type;
+                            skill2.parent = skill.parent;
+                            skill2.version_number = skill.version_number;
+                            res.json(skill2);
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
+                } else {
+                    res.json(skill);
+                }
+            } else {
+                res.end();
+            }
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
+// For loading the second part of the skill.
+router.get('/second/url/:skillUrl', (req, res, next) => {
+    let skill;
+    // Get skill.
+    const sqlQuery = `SELECT s.id, s.url, s.parent, s.introduction, s.image_url, s.icon_url, s.icon, s.mastery_requirements,
+                        s.version_number, s.order, parent_skill.type AS parent_type
+                    FROM 
+                        skills AS s
+                    LEFT JOIN 
+                        skills AS parent_skill ON s.parent = parent_skill.id
+                    WHERE s.url = ${conn.escape(
+                        req.params.skillUrl
+                    )} AND s.is_deleted = 0`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            skill = results[0];
+
+            if (typeof skill !== 'undefined' && skill) {
+                if (skill.is_copy_of_skill_id != null) {
+                    const sqlQueryForCopiedSkillNode = `SELECT *
+                FROM skills
+                WHERE skills.id = ${conn.escape(skill.is_copy_of_skill_id)}
+                AND skills.is_deleted = 0;`;
+
+                    conn.query(sqlQueryForCopiedSkillNode, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            }
+                            let skill2 = results[0];
+                            skill2.is_copy_of_skill_id = skill2.id;
+                            skill2.type = skill.type;
+                            skill2.parent = skill.parent;
+                            skill2.version_number = skill.version_number;
+                            res.json(skill2);
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
+                } else {
+                    res.json(skill);
+                }
+            } else {
+                res.end();
+            }
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
+// For sending the intro data separately to the skill tree skill panels.
 // We send it separately because otherwise, if we send it with the other data, it slows
 // down the page load of the skill trees.
-router.get('/introduction-and-url/:id', (req, res, next) => {
+router.get('/intro-sentence-and-url/:id', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     // Get skill.
-    const sqlQuery = `SELECT introduction, url, image_thumbnail_url
+    const sqlQuery = `SELECT intro_sentence, url, image_thumbnail_url
     FROM skills
     WHERE skills.id = ${conn.escape(req.params.id)}
      AND skills.is_deleted = 0;`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+
+            res.json(results[0]);
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
+// To open skill tab by clicking node on skill tree
+router.get('/url-only/:id', (req, res, next) => {
+    // Not checking if user is logged in, as this is available for guest access.
+    res.setHeader('Content-Type', 'application/json');
+    // Get skill.
+    const sqlQuery = `SELECT url
+    FROM skills
+    WHERE skills.id = ${conn.escape(req.params.id)}
+    AND skills.is_deleted = 0;`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -743,7 +871,7 @@ router.get('/sub-skills/:id', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     // Get skill.
-    const getSubSkillsSqlQuery = `SELECT name, url
+    const getSubSkillsSqlQuery = `SELECT id, name, url
     FROM skills
     WHERE skills.parent = ${conn.escape(req.params.id)}
      AND skills.is_deleted = 0
@@ -907,8 +1035,8 @@ router.put(
                     ${conn.escape(imageUrl)},
                     ${conn.escape(iconUrl)},
                     ${conn.escape(
-                req.body.mastery_requirements
-            )},                    
+                        req.body.mastery_requirements
+                    )},                    
                     ${conn.escape(req.body.level)},                    
                     ${conn.escape(req.body.order)},
                     ${conn.escape(req.body.comment)},
@@ -926,18 +1054,18 @@ router.put(
                         url = ${conn.escape(req.body.url)},
                         parent = ${conn.escape(req.body.parent)},
                         description = ${conn.escape(
-                        req.body.description
-                    )},                         
+                            req.body.description
+                        )},                         
                         mastery_requirements = ${conn.escape(
-                        req.body.mastery_requirements
-                    )}, 
+                            req.body.mastery_requirements
+                        )}, 
                         type = ${conn.escape(req.body.type)}, 
                         level = ${conn.escape(req.body.level)},
                         introduction = ${conn.escape(req.body.introduction)},
                         skills.order = ${conn.escape(req.body.order)}, 
                         version_number = ${conn.escape(
-                        versionNumber
-                    )},                        
+                            versionNumber
+                        )},                        
                         icon = ${conn.escape(scaledDownIcon)},             
                         image_url = ${conn.escape(imageUrl)},
                         image_thumbnail_url = ${conn.escape(imageThumbnailUrl)},
@@ -1001,8 +1129,8 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
          
          ON DUPLICATE KEY
          UPDATE mastery_requirements = ${conn.escape(
-            req.body.mastery_requirements
-        )}, 
+             req.body.mastery_requirements
+         )}, 
          date = CURRENT_TIMESTAMP(), 
          image = ${conn.escape(req.body.image)},          
          icon = ${conn.escape(req.body.icon)},     
@@ -1163,10 +1291,11 @@ router.put(
                                         recordUserAction(
                                             {
                                                 userId: req.session.userId,
-                                                userAction: `${req.body.edit
-                                                    ? 'edit_and_approve'
-                                                    : 'approve'
-                                                    }`,
+                                                userAction: `${
+                                                    req.body.edit
+                                                        ? 'edit_and_approve'
+                                                        : 'approve'
+                                                }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
                                             },
@@ -1786,7 +1915,10 @@ router.get('/name-list-old', (req, res, next) => {
 // Import OpenAI package.
 const { OpenAI } = require('openai');
 const { path } = require('pdfkit');
-const { findInaccessiblePath, findGuestHiddenSkillData } = require('../utilities/skill-relate-functions');
+const {
+    findInaccessiblePath,
+    findGuestHiddenSkillData
+} = require('../utilities/skill-relate-functions');
 // To access the .env file.
 require('dotenv').config();
 // Include API key.
@@ -2005,19 +2137,18 @@ router.post('/guest-user/get-recommended-skills', async (req, res, next) => {
 
 // Create a new instance of an existing skill,
 // in order to have the skill show in more than one place in the tree.
-router.get(
-    '/introduction-data',
-    async (req, res, next) => {
-        const skillId = req.query.skillId;
-        let sqlQuery = `SELECT skills.introduction FROM skills WHERE skills.id = ${conn.escape(skillId)}`;
-        // sql for instructor and editor account
-        conn.query(sqlQuery, async (err, result) => {
-            if (err) {
-                throw err;
-            }
-            res.json(result);
-        });
-    }
-);
+router.get('/intro-sentence', async (req, res, next) => {
+    const skillId = req.query.skillId;
+    let sqlQuery = `SELECT skills.intro_sentence FROM skills WHERE skills.id = ${conn.escape(
+        skillId
+    )}`;
+
+    conn.query(sqlQuery, async (err, result) => {
+        if (err) {
+            throw err;
+        }
+        res.json(result);
+    });
+});
 
 module.exports = router;

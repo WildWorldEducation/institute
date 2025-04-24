@@ -25,16 +25,16 @@ export default {
         'skill',
         'showTutorialTip7',
         'showTutorialTip8',
-        'showTutorialTip9'
+        'showTutorialTip9',
+        'areAllSubskillsMastered'
     ],
-    emits: ['progressTutorial', 'skipTutorial'],
+    emits: ['progressTutorial', 'skipTutorial', 'skillMastered'],
     components: {
         TutorLoadingSymbol,
         TooltipBtn,
         SpeechRecorder,
         PlayingAudioAnimation
     },
-    emits: ['progressTutorial'],
     data() {
         return {
             message: '',
@@ -61,23 +61,54 @@ export default {
             isNewSocraticChat: true,
             isNewAssessingChat: true,
             waitForGenerateAudio: false,
-            currentIndexAudioPlaying: null
+            currentIndexAudioPlaying: null,
+            isMobileCheck: window.innerWidth
         };
     },
     async created() {
         this.connectToSocketSever();
     },
     async mounted() {
+        /*
+         * External scripts needed for AI chat bots
+         */
+        // Katex for equation formatting
+        let katexScript = document.createElement('script');
+        katexScript.setAttribute(
+            'src',
+            'https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js'
+        );
+        document.head.appendChild(katexScript);
+
+        // Markdown formatting for math content
+        let texMathScript = document.createElement('script');
+        texMathScript.setAttribute(
+            'src',
+            'https://cdn.jsdelivr.net/npm/markdown-it-texmath/texmath.min.js'
+        );
+        document.head.appendChild(texMathScript);
+
+        // Markdown IT for chat text formatting
+        let markdownITScript = document.createElement('script');
+        markdownITScript.setAttribute(
+            'src',
+            'https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js'
+        );
+        document.head.appendChild(markdownITScript);
+
+        // -------
+
         this.learningObjectives = this.skill.learningObjectives.map(
             (a) => a.objective
         );
 
         this.englishSkillLevel = this.skill.level.replace('_', ' ');
-    },
-    updated() {
-        if (this.mode !== 'hide') {
-            this.scrollToMessageInput();
-        }
+
+        this.audio = new Audio();
+        this.audio.addEventListener('ended', () => {
+            this.isAudioPlaying = false;
+            this.currentIndexAudioPlaying = null;
+        });
     },
     methods: {
         // Setting this method to allow the user to be able to create a new line with shift+enter
@@ -192,8 +223,8 @@ export default {
             this.waitForGenerateAudio = true;
             this.chatHistory[index].isAudioGenerating = true;
 
-            console.log('threadId: ' + this.threadID);
-            console.log('more thread Id: ' + this.assistantData.threadId);
+            // console.log('threadId: ' + this.threadID);
+            // console.log('more thread Id: ' + this.assistantData.threadId);
 
             const requestOptions = {
                 method: 'POST',
@@ -221,6 +252,7 @@ export default {
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;
                 this.audio.pause();
+                this.currentIndexAudioPlaying = null;
             } else {
                 let url = '';
                 for (let i = 0; i < this.chatHistory.length; i++) {
@@ -228,15 +260,13 @@ export default {
                         url = this.chatHistory[i].audio;
                     }
                 }
-                this.audio = new Audio(url);
+                this.audio.pause(); // Stop previous audio
+                this.audio.src = chatItem.audio;
+                this.audio.load(); // Important when changing src dynamically
+                this.audio.play();
+
                 this.isAudioPlaying = true;
                 this.currentIndexAudioPlaying = index;
-                // Handling when audio end playing
-                this.audio.addEventListener('ended', () => {
-                    this.isAudioPlaying = false;
-                    this.currentIndexAudioPlaying = null;
-                });
-                this.audio.play();
             }
         },
         playNewMessageAudio(index, url) {
@@ -244,14 +274,14 @@ export default {
             if (this.mode !== 'modal') {
                 newMessageIndex = parseInt(this.chatHistory.length) - 1;
             }
-            this.audio = new Audio(url);
-            this.audio.addEventListener('ended', () => {
-                this.isAudioPlaying = false;
-                this.currentIndexAudioPlaying = null;
-            });
+
+            this.audio.pause(); // Stop previous audio
+            this.audio.src = url;
+            this.audio.load(); // Important when changing src dynamically
+            this.audio.play();
+
             this.isAudioPlaying = true;
             this.currentIndexAudioPlaying = index;
-            this.audio.play();
             this.getChatHistory();
         },
         async sendMessage() {
@@ -305,6 +335,9 @@ export default {
                 console.error(error);
                 this.waitForAIresponse = false;
             }
+            this.$nextTick(() => {
+                this.scrollToMessageInput();
+            });
         },
         async askQuestion() {
             if (this.waitForAIresponse) {
@@ -330,6 +363,9 @@ export default {
                 console.error(error);
                 this.waitForAIresponse = false;
             }
+            this.$nextTick(() => {
+                this.scrollToMessageInput();
+            });
         },
         async assessMastery() {
             for (let i = 0; i < this.assessingTutorChatHistory.length; i++) {
@@ -411,11 +447,19 @@ export default {
         //     inputMessage.scrollIntoView({ behavior: 'smooth' });
         // },
         async makeMastered() {
-            alert('Congratulations, you have mastered this skill!');
+            // Don't use alert, instead emit an event to the parent component
             await this.userSkillsStore.MakeMastered(
                 this.userDetailsStore.userId,
                 this.skill
             );
+
+            // Emit an event to notify the parent that mastery was achieved
+            this.$emit('skillMastered');
+
+            // Close the tutor modal if it's open
+            if (this.mode === 'modal') {
+                this.mode = 'docked';
+            }
         },
         // Streaming
         connectToSocketSever() {
@@ -463,6 +507,9 @@ export default {
                 }
                 if (newItem.isStreaming) {
                     this.waitForAIresponse = false;
+                    this.$nextTick(() => {
+                        this.scrollToMessageInput();
+                    });
                 }
                 if (!newItem.isStreaming && newItem.isRunJustEnded) {
                     const assistantMessage = {
@@ -504,12 +551,15 @@ export default {
                         newMessageIndex,
                         assistantMessage.content[0].text.value
                     );
+                    this.$nextTick(() => {
+                        this.scrollToMessageInput();
+                    });
                 }
             },
             deep: true
         },
         mode: {
-            handler(newItem, oldItem) {
+            handlerhandler(newItem, oldItem) {
                 if (
                     newItem === 'modal' &&
                     (oldItem === 'hide' || oldItem === 'docked')
@@ -708,7 +758,7 @@ export default {
                             class="btn socratic-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap"
                             :class="{
                                 'text-decoration-underline':
-                                    tutorType === 'socratic'
+                                    mode !== 'hide' && tutorType === 'socratic'
                             }"
                             @click="handleTutorClick('socratic')"
                         >
@@ -759,9 +809,23 @@ export default {
                             class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap"
                             :class="{
                                 'text-decoration-underline':
-                                    tutorType === 'assessing'
+                                    tutorType === 'assessing',
+                                disabled:
+                                    skill.type === 'super' &&
+                                    !areAllSubskillsMastered
                             }"
-                            @click="handleTutorClick('assessing')"
+                            @click="
+                                skill.type === 'super' &&
+                                !areAllSubskillsMastered
+                                    ? null
+                                    : handleTutorClick('assessing')
+                            "
+                            :title="
+                                skill.type === 'super' &&
+                                !areAllSubskillsMastered
+                                    ? 'Master all subskills first to unlock this assessment'
+                                    : ''
+                            "
                         >
                             Conversational Test
                         </button>
@@ -814,6 +878,11 @@ export default {
                         <!-- Multiple Choice Assessment -->
                         <router-link
                             class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 d-block text-nowrap"
+                            :class="{
+                                disabled:
+                                    skill.type === 'super' &&
+                                    !areAllSubskillsMastered
+                            }"
                             :to="
                                 userDetailsStore.userId
                                     ? skill.id + '/assessment'
@@ -822,6 +891,19 @@ export default {
                         >
                             Multiple-Choice Test
                         </router-link>
+                    </div>
+                    <!-- Explanation message for disabled button -->
+                    <div
+                        v-if="
+                            skill.type === 'super' && !areAllSubskillsMastered
+                        "
+                        class="text-end small"
+                        :class="{ 'text-center': isMobileCheck < 576 }"
+                    >
+                        <em
+                            >To unlock the tests, first master all the cluster
+                            skills</em
+                        >
                     </div>
                 </div>
             </div>

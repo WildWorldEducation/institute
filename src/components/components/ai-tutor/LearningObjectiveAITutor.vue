@@ -37,6 +37,35 @@ export default {
         };
     },
     async mounted() {
+        /*
+         * External scripts needed for AI chat bots
+         */
+        // Katex for equation formatting
+        let katexScript = document.createElement('script');
+        katexScript.setAttribute(
+            'src',
+            'https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js'
+        );
+        document.head.appendChild(katexScript);
+
+        // Markdown formatting for math content
+        let texMathScript = document.createElement('script');
+        texMathScript.setAttribute(
+            'src',
+            'https://cdn.jsdelivr.net/npm/markdown-it-texmath/texmath.min.js'
+        );
+        document.head.appendChild(texMathScript);
+
+        // Markdown IT for chat text formatting
+        let markdownITScript = document.createElement('script');
+        markdownITScript.setAttribute(
+            'src',
+            'https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js'
+        );
+        document.head.appendChild(markdownITScript);
+
+        /// ------------
+
         this.englishSkillLevel = this.skillLevel.replace('_', ' ');
         // load thread.
         await this.getMessages();
@@ -175,6 +204,16 @@ export default {
             if (this.waitForAIresponse) {
                 return;
             }
+
+            // If the message is empty, call requestQuestion instead
+            function isEmptyOrSpaces(message) {
+                return message === null || message.match(/^ *$/) !== null;
+            }
+            if (isEmptyOrSpaces(this.message)) {
+                this.requestTutoring();
+                return;
+            }
+
             // Turn on loading icon
             this.waitForAIresponse = true;
             try {
@@ -204,90 +243,14 @@ export default {
         },
         // ask Open AI to ask a question about the learning objective
         async requestTutoring() {
-            if (this.waitForAIresponse) {
-                return;
-            }
-            this.waitForAIresponse = true;
-            try {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        learningObjective: this.learningObjective,
-                        learningObjectiveId: this.learningObjectiveId,
-                        userName: this.userDetailsStore.userName,
-                        userId: this.userDetailsStore.userId,
-                        skillName: this.skillName,
-                        skillLevel: this.englishSkillLevel
-                    })
-                };
-
-                var url = '/ai-tutor/learning-objective/request-tutoring';
-
-                const res = await fetch(url, requestOptions);
-                if (res.status === 500) {
-                    alert('The tutor can`t answer !!');
-                    this.waitForAIresponse = false;
-                    return;
-                }
-
-                await this.getMessages();
-                this.waitForAIresponse = false;
-                // Staring convert the newly done message to speech
-                const newMessageIndex = parseInt(this.messageList.length) - 1;
-
-                this.generateAudio(
-                    newMessageIndex,
-                    this.messageList[0].content[0].text.value
-                );
-            } catch (error) {
-                console.error(error);
-                this.waitForAIresponse = false;
-            }
+            this.message = 'tutor me on this';
+            this.sendMessage();
         },
         // ask Open AI to ask a question about the learning objective
-        async requestQuestion() {
-            if (this.waitForAIresponse) {
-                return;
-            }
-            this.waitForAIresponse = true;
-            try {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        learningObjective: this.learningObjective,
-                        learningObjectiveId: this.learningObjectiveId,
-                        userName: this.userDetailsStore.userName,
-                        userId: this.userDetailsStore.userId,
-                        skillName: this.skillName,
-                        skillLevel: this.englishSkillLevel
-                    })
-                };
-
-                var url = '/ai-tutor/learning-objective/ask-question';
-
-                const res = await fetch(url, requestOptions);
-                if (res.status === 500) {
-                    alert('The tutor can`t answer !!');
-                    this.waitForAIresponse = false;
-                    return;
-                }
-
-                await this.getMessages();
-                this.waitForAIresponse = false;
-                // Staring convert the newly done message to speech
-                const newMessageIndex = parseInt(this.messageList.length) - 1;
-
-                this.generateAudio(
-                    newMessageIndex,
-                    this.messageList[0].content[0].text.value
-                );
-            } catch (error) {
-                console.error(error);
-                this.waitForAIresponse = false;
-            }
-        },
+        // async requestQuestion() {
+        //     this.message = 'ask me a question';
+        //     this.sendMessage();
+        // },
         // Format the response.
         applyMarkDownFormatting(string) {
             const md = window
@@ -383,15 +346,6 @@ export default {
         <span class="spinning-loader"></span>
     </div>
     <div v-else>
-        <!-- learning objective explanation button -->
-        <!-- <div
-            class="alert alert-warning mt-1"
-            role="alert"
-            v-if="$parent.isAITokenLimitReached"
-        >
-            You have reached your monthly AI token limit. Please recharge your
-            subscription to use more.
-        </div> -->
         <!-- Suggested interaction buttons -->
         <span class="d-flex justify-content-end mt-2">
             <button
@@ -403,13 +357,13 @@ export default {
                 tutor me on this
             </button>
             <!-- learning objective ask question button -->
-            <button
+            <!-- <button
                 class="btn border border-dark ms-1"
                 @click="requestQuestion()"
                 :disabled="$parent.isAITokenLimitReached"
             >
                 ask me a question
-            </button>
+            </button> -->
         </span>
         <!-- text input -->
         <span class="d-flex mt-1">
@@ -422,7 +376,6 @@ export default {
             <button
                 class="btn border border-dark ms-1 message-btn"
                 @click="sendMessage()"
-                :disabled="this.message == '' || this.message == ' '"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -479,10 +432,7 @@ export default {
                 </div>
                 <!-- AI tutor messages -->
                 <div
-                    v-else-if="
-                        message.role === 'assistant' &&
-                        message.content[0].type == 'text'
-                    "
+                    v-else-if="message.role === 'assistant'"
                     class="tutor-conversation p-2"
                     v-html="
                         applyMarkDownFormatting(message.content[0].text.value)

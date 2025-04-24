@@ -100,18 +100,19 @@ async function createSocraticAssistant(topic, level, learningObjectives) {
             `, which consists of the following learning objectives:` +
             learningObjectives +
             `. Use the Socratic method to teach students.
-            
+
             IMPORTANT GUIDELINES:
             - Always ask ONLY ONE QUESTION per message
             - Make your question clear, focused, and specific
             - Never ask multiple questions in the same message, even if they are related
             - Wait for the student's response before asking another question
             - Focus on depth rather than breadth in your questions
-            
-            Please keep all messages below 2000 characters.`,
+
+            Please keep all messages below 1000 characters.`,
         tools: [{ type: 'file_search' }],
         model: 'gpt-4.5-preview'
     });
+
     return assistant;
 }
 
@@ -176,7 +177,7 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         1. After the student answers a question, you MUST:
            a) Evaluate the correctness of their answer
            b) Provide clear feedback explaining why the answer is correct or incorrect
-           c) If the answer is incorrect, provide a detailed explanation 
+           c) If the answer is incorrect, provide a detailed explanation
            d) Ask a follow-up question to help the student understand better
 
         2. When giving feedback:
@@ -192,7 +193,7 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
            - Wait for the student to respond before asking another question
 
         Make sure to have $ delimiters before any science and math strings that can convert to Latex
-        Please keep all messages below 2000 characters, and succinct.`
+        Please keep all messages below 1000 characters, and succinct.`
     });
 
     if (run.status === 'completed') {
@@ -200,8 +201,12 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         const latestMessage = messages.data[0];
 
         // Save the user's token usage
-        let tokenCount = run.usage.total_tokens;
-        // console.log(tokenCount);
+        // These tokens are priced at $150 per million
+        let outputTokens = runStep.usage.completion_tokens;
+        // Work out tts equivalent usage
+        // 0.4 is hardcoded at the moment, based on pricing and choice of models
+        let ttsTokens = outputTokens * 0.4;
+        let tokenCount = runStep.usage.total_tokens + ttsTokens;
         saveTokenUsage(messageData.userId, tokenCount);
 
         return latestMessage;
@@ -278,7 +283,7 @@ async function createAssessingAssistant(topic, level, learningObjectives) {
             - After receiving an answer, provide feedback before asking the next question
             - Assess one concept or objective at a time
        
-            Please keep all messages below 2000 characters.`,
+            Please keep all messages below 1000 characters.`,
         tools: [],
         model: 'gpt-4.5-preview'
     });
@@ -363,7 +368,7 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
            - Aim to guide the student towards a more comprehensive understanding
 
         Make sure to have $ delimiters before any science and math strings that can convert to Latex.
-        Please keep all messages below 2000 characters, and succinct.`
+        Please keep all messages below 1000 characters, and succinct.`
     });
 
     if (run.status === 'completed') {
@@ -371,8 +376,12 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
         const latestMessage = messages.data[0];
 
         // Save the user's token usage
-        let tokenCount = run.usage.total_tokens;
-        console.log(tokenCount);
+        // These tokens are priced at $150 per million
+        let outputTokens = runStep.usage.completion_tokens;
+        // Work out tts equivalent usage
+        // 0.4 is hardcoded at the moment, based on pricing and choice of models
+        let ttsTokens = outputTokens * 0.4;
+        let tokenCount = runStep.usage.total_tokens + ttsTokens;
         saveTokenUsage(messageData.userId, tokenCount);
 
         return latestMessage;
@@ -427,7 +436,7 @@ async function createLearningObjectiveAssistant(level, learningObjective) {
             - Wait for the student's response before asking a new question
             - Build questions that help the student reach a deeper understanding
             
-            Please keep all messages below 2000 characters.`,
+            Please keep all messages below 1000 characters.`,
         tools: [],
         model: 'gpt-4.5-preview'
     });
@@ -479,83 +488,84 @@ async function getLearningObjectiveThread(userId, learningObjectiveId) {
     }
 }
 
-async function requestLearningObjectiveTutoring(
-    threadId,
-    assistantId,
-    messageData
-) {
-    // Add a message to the thread
-    const message = await openai.beta.threads.messages.create(threadId, {
-        role: 'user',
-        content: 'tutor me on this'
-    });
+// async function requestLearningObjectiveTutoring(
+//     threadId,
+//     assistantId,
+//     messageData
+// ) {
+//     // Add a message to the thread
+//     const message = await openai.beta.threads.messages.create(threadId, {
+//         role: 'user',
+//         content: 'tutor me on this'
+//     });
 
-    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-        assistant_id: assistantId,
-        instructions: `The user is at a ${messageData.skillLevel} level and age.
-        Provide a lesson on ${messageData.learningObjective}.
-        
-        IMPORTANT GUIDELINES:
-        - Structure your response as a clear lesson
-        - If you include questions, ONLY ASK ONE QUESTION at the end of your message
-        - Never ask multiple questions in a single message
-        
-        Please keep the lesson under 2000 characters.`
-    });
+//     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+//         assistant_id: assistantId,
+//         instructions: `The user is at a ${messageData.skillLevel} level and age.
+//         Provide a lesson on ${messageData.learningObjective}.
 
-    if (run.status === 'completed') {
-        const messages = await openai.beta.threads.messages.list(threadId);
-        const latestMessage = messages.data[0];
+//         IMPORTANT GUIDELINES:
+//         - Structure your response as a clear lesson
+//         - If you include questions, ONLY ASK ONE QUESTION at the end of your message
+//         - Never ask multiple questions in a single message
 
-        // Save the user's token usage
-        let tokenCount = run.usage.total_tokens;
-        console.log(tokenCount);
-        saveTokenUsage(messageData.userId, tokenCount);
+//         Please keep the lesson under 1000 characters.`
+//     });
 
-        return latestMessage;
-    } else {
-        console.log(run.status);
-    }
-}
+//     if (run.status === 'completed') {
+//         const messages = await openai.beta.threads.messages.list(threadId);
+//         const latestMessage = messages.data[0];
 
-async function generateLearningObjectiveQuestion(
-    threadId,
-    assistantId,
-    messageData
-) {
-    // Add a message to the thread
-    const message = await openai.beta.threads.messages.create(threadId, {
-        role: 'user',
-        content: 'ask me a question'
-    });
+//         // Save the user's token usage
+//         let tokenCount = run.usage.total_tokens;
+//         console.log(tokenCount);
+//         saveTokenUsage(messageData.userId, tokenCount);
 
-    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-        assistant_id: assistantId,
-        instructions: `The user is at a ${messageData.skillLevel} level and age.
-        Ask them ONE question about: ${messageData.learningObjective}.
-        
-        IMPORTANT:
-        - Ask ONLY ONE clear, focused question
-        - Never ask multiple questions in a single message
-        - Make your question specific and targeted to assess understanding`
-    });
+//         return latestMessage;
+//     } else {
+//         console.log(run.status);
+//     }
+// }
 
-    if (run.status === 'completed') {
-        const messages = await openai.beta.threads.messages.list(threadId);
-        const latestMessage = messages.data[0];
+// async function generateLearningObjectiveQuestion(
+//     threadId,
+//     assistantId,
+//     messageData
+// ) {
+//     // Add a message to the thread
+//     const message = await openai.beta.threads.messages.create(threadId, {
+//         role: 'user',
+//         content: 'ask me a question'
+//     });
 
-        // Save the user's token usage
-        let tokenCount = run.usage.total_tokens;
-        console.log(tokenCount);
-        saveTokenUsage(messageData.userId, tokenCount);
+//     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+//         assistant_id: assistantId,
+//         instructions: `The user is at a ${messageData.skillLevel} level and age.
+//         Ask them ONE question about: ${messageData.learningObjective}.
 
-        return latestMessage;
-    } else {
-        console.log(run.status);
-    }
-}
+//         IMPORTANT:
+//         - Ask ONLY ONE clear, focused question
+//         - Never ask multiple questions in a single message
+//         - Make your question specific and targeted to assess understanding`
+//     });
+
+//     if (run.status === 'completed') {
+//         const messages = await openai.beta.threads.messages.list(threadId);
+//         const latestMessage = messages.data[0];
+
+//         // Save the user's token usage
+//         let tokenCount = run.usage.total_tokens;
+//         console.log(tokenCount);
+//         saveTokenUsage(messageData.userId, tokenCount);
+
+//         return latestMessage;
+//     } else {
+//         console.log(run.status);
+//     }
+// }
 
 // Chat streaming
+
 async function createRunStream(
     threadId,
     assistantId,
@@ -593,10 +603,12 @@ async function createRunStream(
         .on('runStepDone', (runStep) => {
             socket.emit('run-end');
             // Save the amount of tokens the user is using
-            //console.log(runStep);
-
-            let tokenCount = runStep.usage.total_tokens;
-            console.log('streaming: ' + tokenCount);
+            // These tokens are priced at $150 per million
+            let outputTokens = runStep.usage.completion_tokens;
+            // Work out tts equivalent usage
+            // 0.4 is hardcoded at the moment, based on pricing and choice of models
+            let ttsTokens = outputTokens * 0.4;
+            let tokenCount = runStep.usage.total_tokens + ttsTokens;
             saveTokenUsage(userId, tokenCount);
         })
         .on('toolCallCreated', (event) =>
@@ -675,7 +687,7 @@ async function saveTokenUsage(userId, tokenCount) {
 
         const d = new Date();
         let month = monthName[d.getMonth()];
-        let queryString1 = `
+        let queryString = `
         INSERT INTO user_monthly_token_usage (user_id, year, month, token_count) 
         VALUES(${conn.escape(userId)},
         ${year}, '${month}', ${conn.escape(tokenCount)}) 
@@ -684,48 +696,7 @@ async function saveTokenUsage(userId, tokenCount) {
         )};
         `;
 
-        await query(queryString1);
-
-        // Get the monthly free amount of tokens
-        let queryString2 = `
-        SELECT monthly_token_limit
-        FROM settings;
-        `;
-        const monthlyFreeLimitResult = await query(queryString2);
-        const monthlyFreeLimit = monthlyFreeLimitResult[0].monthly_token_limit;
-
-        // Get the amount of tokens the user has used for the month so far
-        let queryString3 = `
-        SELECT token_count
-        FROM user_monthly_token_usage
-        WHERE user_id = '${userId}'
-        AND year = ${year}
-        AND month = '${month}';
-        `;
-        const userMonthlyTokenUsageResult = await query(queryString3);
-        const userMonthlyTokenUsage =
-            userMonthlyTokenUsageResult[0].token_count;
-
-        // Get the amount of tokens the user has used for the month so far
-        let queryString4 = `
-        SELECT tokens
-        FROM users
-        WHERE id = '${userId}';
-        `;
-        const userTokensResult = await query(queryString4);
-        let userTokens = userTokensResult[0].tokens;
-
-        // Update the user's tokens
-        if (userMonthlyTokenUsage >= monthlyFreeLimit) {
-            userTokens = userTokens - tokenCount;
-            let queryString5 = `
-                UPDATE users
-                SET tokens = ${userTokens}
-                WHERE id = '${userId}';
-        `;
-
-            await query(queryString5);
-        }
+        await query(queryString);
     } catch (error) {
         throw error;
     }
@@ -816,8 +787,8 @@ module.exports = {
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
-    requestLearningObjectiveTutoring,
-    generateLearningObjectiveQuestion,
+    //requestLearningObjectiveTutoring,
+    //generateLearningObjectiveQuestion,
     createRunStream,
     // To record user's token usage
     saveTokenUsage,

@@ -1,4 +1,6 @@
 <script>
+// Import
+import router from '../../router';
 import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import { useCohortsStore } from '../../stores/CohortsStore.js';
@@ -79,6 +81,20 @@ export default {
         };
     },
     async created() {
+        // To allow funders to quickly see the site, without having to log in.
+        if (this.$route.query.dummyAccount == 'true') {
+            this.autoLogin();
+        }
+
+        // Meta description for browser tab, Google Search snippet and SEO
+        // (Meta title added in router file already)
+        document
+            .querySelector('meta[name="description"]')
+            .setAttribute(
+                'content',
+                'Create a roadmap and visualize progression for your learning journey.'
+            );
+
         // Hide subject filters for subjects that have been filtered from student, by instructor.
         if (this.sessionDetailsStore.isLoggedIn == true) {
             if (this.cohortsStore.cohortFilteredSubjects.length == 0) {
@@ -116,6 +132,36 @@ export default {
         GuestTidyTreeSubSubjectFilter
     },
     methods: {
+        // To allow funcders to quickly see the site, without having to log in.
+        autoLogin() {
+            console.log('auto login');
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: 'test-account',
+                    password: 'T3st@cc0unt'
+                })
+            };
+            var url = '/login-attempt';
+
+            fetch(url, requestOptions)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
+                    if (data.account == 'authorized') {
+                        if (data.role == 'student') {
+                            router.push({ name: 'skill-tree' });
+                        } else router.push({ name: 'skills' });
+                    } else if (data.account == 'wrong-password') {
+                        alert('wrong password');
+                    } else {
+                        alert('no account');
+                    }
+                });
+        },
+
         closeIntroSearchModal() {
             this.introSearchModal = false;
         },
@@ -488,21 +534,26 @@ export default {
         },
         // Onboardning tutorials
         async checkIfTutorialComplete() {
-            try {
-                const result = await fetch(
-                    '/users/check-tutorial-progress/vertical-tree/' +
-                        this.userDetailsStore.userId
-                );
-                const data = await result.json();
+            // Only show tutorial on desktop
+            if (window.innerWidth > 576) {
+                try {
+                    const result = await fetch(
+                        '/users/check-tutorial-progress/vertical-tree/' +
+                            this.userDetailsStore.userId
+                    );
+                    const data = await result.json();
 
-                // Check for students only
-                if (data === 0 && this.userDetailsStore.role == 'student') {
-                    this.showWelcomeModal = true;
-                } else if (data === 1) {
-                    this.isTutorialComplete = true;
+                    if (data === 0 && this.userDetailsStore.role == 'student') {
+                        this.showWelcomeModal = true;
+                    } else if (data === 1) {
+                        this.isTutorialComplete = true;
+                    }
+                } catch (error) {
+                    console.error('Error checking tutorial progress:', error);
                 }
-            } catch (error) {
-                console.error('Error checking tutorial progress:', error);
+            } else {
+                // On mobile, don't show the tutorial for TidyTreeView
+                this.isTutorialComplete = true;
             }
         },
         progressTutorial(step) {

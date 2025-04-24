@@ -33,8 +33,8 @@ const {
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
-    requestLearningObjectiveTutoring,
-    generateLearningObjectiveQuestion,
+    // requestLearningObjectiveTutoring,
+    // generateLearningObjectiveQuestion,
     // To record user's token usage
     saveTokenUsage,
     getSkillDataByObjectiveId,
@@ -154,7 +154,7 @@ router.post(
                     }
                 } catch (error) {
                     console.error(error);
-                    throw error;
+                    next(error);
                 }
 
                 res.json({
@@ -200,10 +200,12 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                    messageNumber
-                )},                       
+                                        messageNumber
+                                    )},                       
                                     ${conn.escape(url)}
-                                );`;
+                                )
+                                ON DUPLICATE KEY UPDATE                                 
+                                url = ${conn.escape(url)};`;
                 await query(queryString);
                 res.json({
                     status: 'complete',
@@ -213,7 +215,7 @@ router.post(
                 console.error(error);
                 res.status = 500;
                 res.json({ mess: 'something went wrong' });
-                throw error;
+                next(error);
             }
         } catch (error) {
             console.error(error);
@@ -326,7 +328,7 @@ router.post(
                     }
                 } catch (error) {
                     console.error(error);
-                    throw error;
+                    next(error);
                 }
 
                 res.json({
@@ -372,20 +374,23 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                    messageNumber
-                )},                       
+                                        messageNumber
+                                    )},                       
                                     ${conn.escape(url)}
-                                );`;
+                                )
+                                ON DUPLICATE KEY UPDATE                                 
+                                url = ${conn.escape(url)};`;
+
                 await query(queryString);
                 res.json({
                     status: 'complete',
-                    speechUrl: url,
+                    speechUrl: url
                 });
             } catch (error) {
                 console.error(error);
                 res.status = 500;
                 res.json({ mess: 'something went wrong' });
-                throw error;
+                next(error);
             }
         } catch (error) {
             console.error(error);
@@ -417,7 +422,7 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
                     which consists of the following learning objectives: ${req.body.learningObjectives}.
                     
                     Please return only the percentage of correct answers, and nothing else.
-                    Please return a single JSON object containing the result, named "result".                    
+                    Please return a single JSON object containing the result, named "result".                                        
                     `;
 
         const completion = await openai.chat.completions.create({
@@ -562,7 +567,7 @@ router.get(
                     }
                 } catch (error) {
                     console.error(error);
-                    throw error;
+                    next(error);
                 }
 
                 const assistantDataForClient = {
@@ -612,10 +617,13 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                    messageNumber
-                )},                       
+                                        messageNumber
+                                    )},                       
                                     ${conn.escape(url)}
-                                );`;
+                                )
+                                ON DUPLICATE KEY UPDATE                                 
+                                url = ${conn.escape(url)};`;
+
                 await query(queryString);
                 res.json({
                     status: 'complete',
@@ -624,13 +632,12 @@ router.post(
             } catch (error) {
                 console.error(error);
                 res.status = 500;
-                res.json({ mess: 'something went wrong' });
-                throw error;
+                next(error);
             }
         } catch (error) {
             console.error(error);
             res.status = 500;
-            res.json({ mess: 'something went wrong' });
+            next(error);
         }
     }
 );
@@ -638,58 +645,58 @@ router.post(
 /**
  * Get the learning objective AI tutor to tutor on that learning objective
  */
-router.post(
-    '/learning-objective/request-tutoring',
-    isAuthenticated,
-    async (req, res, next) => {
-        try {
-            const assistantData = await getLearningObjectiveThread(
-                req.body.userId,
-                req.body.learningObjectiveId
-            );
+// router.post(
+//     '/learning-objective/request-tutoring',
+//     isAuthenticated,
+//     async (req, res, next) => {
+//         try {
+//             const assistantData = await getLearningObjectiveThread(
+//                 req.body.userId,
+//                 req.body.learningObjectiveId
+//             );
 
-            await requestLearningObjectiveTutoring(
-                assistantData[0].thread_id,
-                assistantData[0].assistant_id,
-                req.body
-            );
+//             await requestLearningObjectiveTutoring(
+//                 assistantData[0].thread_id,
+//                 assistantData[0].assistant_id,
+//                 req.body
+//             );
 
-            res.end();
-        } catch (error) {
-            console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
-        }
-    }
-);
+//             res.end();
+//         } catch (error) {
+//             console.error(error);
+//             res.status = 500;
+//             res.json({ mess: 'something went wrong' });
+//         }
+//     }
+// );
 
 /**
  * Get the learning objective AI tutor to ask a question
  */
-router.post(
-    '/learning-objective/ask-question',
-    isAuthenticated,
-    async (req, res, next) => {
-        try {
-            const assistantData = await getLearningObjectiveThread(
-                req.body.userId,
-                req.body.learningObjectiveId
-            );
+// router.post(
+//     '/learning-objective/ask-question',
+//     isAuthenticated,
+//     async (req, res, next) => {
+//         try {
+//             const assistantData = await getLearningObjectiveThread(
+//                 req.body.userId,
+//                 req.body.learningObjectiveId
+//             );
 
-            await generateLearningObjectiveQuestion(
-                assistantData[0].thread_id,
-                assistantData[0].assistant_id,
-                req.body
-            );
+//             await generateLearningObjectiveQuestion(
+//                 assistantData[0].thread_id,
+//                 assistantData[0].assistant_id,
+//                 req.body
+//             );
 
-            res.end();
-        } catch (error) {
-            console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
-        }
-    }
-);
+//             res.end();
+//         } catch (error) {
+//             console.error(error);
+//             res.status = 500;
+//             res.json({ mess: 'something went wrong' });
+//         }
+//     }
+// );
 
 /**
  * STT (Speech to Text) for tutors

@@ -122,8 +122,6 @@ app.use('/skill-learning-objectives', skillLearningObjectives);
 const subscriptions = require('./routes/subscriptions');
 app.use('/subscriptions', subscriptions);
 
-app.locals.title = 'Skill Tree';
-
 if (process.env.NODE_ENV === 'production') {
     app.use('/', express.static(distPath));
 } else {
@@ -135,13 +133,14 @@ const { saveUserAvatarToAWS } = require('./utilities/save-image-to-aws');
  */
 
 // Log in with Google.
-var googleUserDetails;
+let googleUserDetails;
+let googleLoginResult;
 app.post('/google-login-attempt', (req, res) => {
+    let device = req.query.device;
     googleUserDetails = jwt.decode(req.body.credential);
-    res.redirect('/google-login-attempt');
+    res.redirect('/google-login-attempt?device=' + device);
 });
 
-var googleLoginResult;
 app.get('/google-login-attempt', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     // Get user id based on Google email, if it exists.
@@ -166,8 +165,13 @@ app.get('/google-login-attempt', (req, res) => {
                 req.session.userId = results[0].id;
                 req.session.userName = results[0].username;
                 req.session.role = results[0].role;
-                if (req.session.role == 'student') res.redirect('/skill-tree');
-                else res.redirect('/');
+                if (req.session.role == 'student') {
+                    if (req.query.device == 'not-mobile') {
+                        res.redirect('/skill-tree');
+                    } else {
+                        res.redirect('/search');
+                    }
+                } else res.redirect('/');
             } else {
                 // Create account.
                 res.redirect('/google-student-signup-attempt');
@@ -190,12 +194,14 @@ app.get('/google-login-result', (req, res) => {
 app.post('/google-student-signup-attempt', (req, res) => {
     googleUserDetails = jwt.decode(req.body.credential);
     googleUserDetails.role = req.query.accountType;
-    res.redirect('/google-student-signup-attempt');
+    let deviceType = req.query.deviceType;
+    res.redirect('/google-student-signup-attempt?deviceType=' + deviceType);
 });
 
 const { unlockInitialSkills } = require('./utilities/unlock-initial-skills');
 app.get('/google-student-signup-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
+    let deviceType = req.query.deviceType;
     // Check if user already exists.
     let sqlQuery1 = `SELECT * 
         FROM users 
@@ -231,7 +237,12 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                 req.session.userName = results[0].username;
                 req.session.role = results[0].role;
                 googleLoginResult = 'new account';
-                res.redirect('/skill-tree');
+                if (req.session.role == 'student')
+                    if (deviceType == 'mobile') res.redirect('/search');
+                    else res.redirect('/skill-tree');
+                else {
+                    res.redirect('/students');
+                }
             }
             // If not.
             else {
@@ -270,7 +281,13 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                             // Unlock skills here
                             unlockInitialSkills(newStudentId);
                             googleLoginResult = 'new account';
-                            res.redirect('/skill-tree');
+                            if (req.session.role == 'student')
+                                if (deviceType == 'mobile')
+                                    res.redirect('/search');
+                                else res.redirect('/skill-tree');
+                            else {
+                                res.redirect('/students');
+                            }
                         }
                     } catch (err) {
                         next(err);
@@ -530,7 +547,7 @@ app.get('/sitemap.xml', (req, res) => {
         },
         {
             path: '/skills',
-            priority: 0.8
+            priority: 1
         }
     ];
 
@@ -574,16 +591,6 @@ app.get('/sitemap.xml', (req, res) => {
 });
 
 const environment = process.env.NODE_ENV;
-
-// For production deployment.
-// For the index.html.ejs file
-// For creating an absolute URL
-// to allow for nested routes to be loaded in new tabs
-// and refreshed in the browser.
-// Live server.
-process.env.BASE_URL = 'https://parrhesia.io';
-// Dev server.
-//process.env.BASE_URL = 'http://localhost:3000';
 
 app.get('/*', async (_req, res) => {
     const data = {

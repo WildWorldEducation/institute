@@ -199,6 +199,7 @@ export default {
                 position: absolute;
                 height: -webkit-fill-available;
                 width: 100%;
+                height: 100%;
                 left: -5px;
             "
             class="content"

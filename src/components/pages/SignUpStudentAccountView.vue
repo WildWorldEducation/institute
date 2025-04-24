@@ -29,7 +29,8 @@ export default {
             // For Google sign up absolute API url.
             isProduction: import.meta.env.PROD,
             showVideoModal: true,
-            showModalVideo: true
+            showModalVideo: true,
+            isMobileCheck: window.innerWidth
         };
     },
     async created() {},
@@ -96,7 +97,9 @@ export default {
                 .then((data) => {
                     if (data.account == 'authorized') {
                         alert('Account created.');
-                        router.push({ name: 'skill-tree' });
+                        if (this.isMobileCheck < 576) {
+                            router.push({ name: 'search' });
+                        } else router.push({ name: 'skill-tree' });
                     } else if (data.account == 'username already taken') {
                         alert(data.account);
                     } else if (data.account == 'email already taken') {
@@ -132,6 +135,12 @@ export default {
         },
 
         handleCredentialResponse(response) {
+            // Check if mobile device
+            // (Different landing page for mobile)
+            let deviceType = '';
+            if (this.isMobileCheck < 576) {
+                deviceType = 'mobile';
+            } else deviceType = 'not-mobile';
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = `${
@@ -140,7 +149,7 @@ export default {
                     : 'http://localhost:3000'
             }/google-student-signup-attempt?accountType=${
                 this.newUser.accountType
-            }`;
+            }&deviceType=${deviceType}`;
 
             const input = document.createElement('input');
             input.type = 'hidden';
@@ -160,6 +169,12 @@ export default {
                 // Redirect to the instructor signup page instead of just changing the account type
                 this.$router.push('/instructor-signup');
             }
+        },
+        // New method to handle Enter key press
+        handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                this.ValidateForm();
+            }
         }
     }
 };
@@ -174,7 +189,7 @@ export default {
         >
             <iframe
                 class="intro-video"
-                src="https://www.youtube.com/embed/hu_hjfLLwY0?si=TyvLiAgxcQgmY92q"
+                src="https://www.youtube.com/embed/VRQ47XRBApg?si=CfPv1r0gKRuFpGMM"
                 title="YouTube video player"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -193,6 +208,7 @@ export default {
                         placeholder="Username"
                         class="form-control"
                         required
+                        @keypress="handleKeyPress"
                     />
                     <div
                         v-if="
@@ -212,6 +228,7 @@ export default {
                         class="form-control"
                         @blur="ValidateEmail"
                         required
+                        @keypress="handleKeyPress"
                     />
                     <div
                         v-if="
@@ -236,6 +253,7 @@ export default {
                             class="form-control"
                             autocomplete="new-password"
                             required
+                            @keypress="handleKeyPress"
                         />
                         <!-- Show and Hide Password Section -->
                         <div
@@ -297,6 +315,7 @@ export default {
                     <select
                         class="form-select"
                         v-model="newUser.skillTreeGradeLevel"
+                        @keypress="handleKeyPress"
                     >
                         <option selected value="phd">Choose your level</option>
                         <option value="grade_school">Grade School</option>
@@ -332,7 +351,7 @@ export default {
                 >
                     <iframe
                         class="intro-video"
-                        src="https://www.youtube.com/embed/hu_hjfLLwY0?si=TyvLiAgxcQgmY92q"
+                        src="https://www.youtube.com/embed/VRQ47XRBApg?si=CfPv1r0gKRuFpGMM"
                         title="YouTube video player"
                         frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

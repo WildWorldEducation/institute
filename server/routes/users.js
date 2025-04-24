@@ -187,8 +187,7 @@ router.post('/new-instructor/add', (req, res, next) => {
             email: req.body.email,
             password: hashedPassword,
             role: 'instructor',
-            theme: 'instructor',
-            tokens: 0 // Add default tokens value
+            theme: 'instructor'
         };
 
         // OPTIMIZATION 1: Combine username and email check into one query
@@ -775,10 +774,12 @@ router.get('/show/:id', (req, res, next) => {
         // Note: avatar has query param to deal with image caching by browser,
         // in case image is changed.
         let sqlQuery = `
-    SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, is_deleted, is_google_auth, grade_filter, theme,
-    is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter, reputation_score, is_unlocked_skills_only_filter, cohort_id, tokens
-    FROM users        
-    WHERE id = ${conn.escape(req.params.id)} 
+    SELECT users.id, first_name, last_name, username, 
+    CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', users.id, '?v=', UNIX_TIMESTAMP()) AS avatar, 
+    email, role, is_deleted, is_google_auth, grade_filter, theme,
+    is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter, reputation_score, is_unlocked_skills_only_filter, cohort_id, subscription_tier
+    FROM users           
+    WHERE users.id = ${conn.escape(req.params.id)} 
     AND is_deleted = 0
     LIMIT 1`;
 
@@ -2030,28 +2031,6 @@ router.get('/reputation-events/:userId', isAuthenticated, (req, res, next) => {
                 throw err;
             }
             res.json(results);
-        } catch (err) {
-            next(err);
-        }
-    });
-});
-
-/**
- * User Tokens
- */
-router.put('/tokens/:id/update', isAuthenticated, (req, res, next) => {
-    let sqlQuery = `UPDATE users 
-            SET tokens = tokens - ${conn.escape(
-                req.body.tokensNeeded
-            )}             
-            WHERE id = ${conn.escape(req.params.id)};`;
-
-    conn.query(sqlQuery, async (err) => {
-        try {
-            if (err) {
-                throw err;
-            }
-            res.end();
         } catch (err) {
             next(err);
         }

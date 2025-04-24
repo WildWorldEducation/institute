@@ -7,7 +7,13 @@ export default {
         return {
             // loginError: "",
             username: null,
-            password: null
+            password: null,
+            errors: {
+                username: null,
+                password: null
+            },
+            isSubmitting: false,
+            isMobileCheck: window.innerWidth
         };
     },
     mounted() {
@@ -21,7 +27,38 @@ export default {
     },
     computed: {},
     methods: {
+        validateForm() {
+            // Reset errors
+            this.errors = {
+                username: null,
+                password: null
+            };
+
+            let isValid = true;
+
+            // Validate username
+            if (!this.username || this.username.trim() === '') {
+                this.errors.username = 'Username is required';
+                isValid = false;
+            }
+
+            // Validate password
+            if (!this.password || this.password.trim() === '') {
+                this.errors.password = 'Password is required';
+                isValid = false;
+            }
+
+            return isValid;
+        },
+
         Submit() {
+            // Validate form before submission
+            if (!this.validateForm()) {
+                return;
+            }
+
+            this.isSubmitting = true;
+
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -33,23 +70,31 @@ export default {
             var url = '/login-attempt';
 
             fetch(url, requestOptions)
-                .then(function (response) {
+                .then((response) => {
                     return response.json();
                 })
-                .then(function (data) {
+                .then((data) => {
+                    this.isSubmitting = false;
                     if (data.account == 'authorized') {
                         if (data.role == 'student') {
-                            router.push({ name: 'skill-tree' });
+                            if (this.isMobileCheck < 576) {
+                                router.push({ name: 'search' });
+                            } else router.push({ name: 'skill-tree' });
                         } else if (data.role == 'instructor') {
                             router.push({ name: 'students' });
                         } else if (data.role == 'editor') {
                             router.push({ name: 'todo' });
                         } else router.push({ name: 'skills' });
                     } else if (data.account == 'wrong-password') {
-                        alert('wrong password');
+                        alert('Wrong password');
                     } else {
-                        alert('no account');
+                        alert('No account found');
                     }
+                })
+                .catch((error) => {
+                    this.isSubmitting = false;
+                    console.error('Login error:', error);
+                    alert('An error occurred during login. Please try again.');
                 });
         },
         GetGoogleLoginResult() {
@@ -61,6 +106,12 @@ export default {
                     if (data.account == 'no account')
                         alert('No account found.');
                 });
+        },
+        handleKeyPress(event) {
+            // Check if the Enter key was pressed
+            if (event.key === 'Enter') {
+                this.Submit();
+            }
         }
     }
 };
@@ -92,8 +143,13 @@ export default {
                         type="text"
                         placeholder="Username"
                         class="form-control"
+                        :class="{ 'is-invalid': errors.username }"
                         required
+                        @keypress="handleKeyPress"
                     />
+                    <div v-if="errors.username" class="invalid-feedback">
+                        {{ errors.username }}
+                    </div>
                 </div>
                 <div class="mb-3 text-start">
                     <!-- <img class="me-1" src="images/icons/lock-solid.svg" alt="" width="16" height="16"> -->
@@ -103,8 +159,13 @@ export default {
                         type="password"
                         placeholder="Password"
                         class="form-control"
+                        :class="{ 'is-invalid': errors.password }"
                         required
+                        @keypress="handleKeyPress"
                     />
+                    <div v-if="errors.password" class="invalid-feedback">
+                        {{ errors.password }}
+                    </div>
                 </div>
                 <div class="d-flex password-extras">
                     <div style="color: rgba(164, 139, 229, 1)">
@@ -113,15 +174,30 @@ export default {
                         >
                     </div>
                 </div>
-                <button class="btn btn-dark mb-2" @click="Submit()">
-                    Sign in
+                <button
+                    class="btn btn-dark mb-2"
+                    @click="Submit()"
+                    :disabled="isSubmitting"
+                >
+                    {{ isSubmitting ? 'Signing in...' : 'Sign in' }}
                 </button>
+                <!-- Different landing page for mobile -->
                 <div
+                    v-if="isMobileCheck < 576"
                     id="g_id_onload"
                     data-client_id="13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com"
                     data-context="signin"
                     data-ux_mode="popup"
-                    data-login_uri="/google-login-attempt"
+                    data-login_uri="/google-login-attempt?device=mobile"
+                    data-auto_prompt="false"
+                ></div>
+                <div
+                    v-else
+                    id="g_id_onload"
+                    data-client_id="13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com"
+                    data-context="signin"
+                    data-ux_mode="popup"
+                    data-login_uri="/google-login-attempt?device=not-mobile"
                     data-auto_prompt="false"
                 ></div>
                 <div
@@ -135,7 +211,7 @@ export default {
                     data-width="330"
                 ></div>
                 <div class="mt-4 signup text-center">
-                    Don’t have an account?
+                    Don't have an account?
                     <a href="/student-signup" class="links">Register</a>
                 </div>
             </div>
@@ -150,6 +226,14 @@ export default {
     background-repeat: no-repeat;
     width: 100%;
     font-family: 'Inter', sans-serif;
+}
+
+.invalid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #dc3545;
 }
 
 .welcome-message {

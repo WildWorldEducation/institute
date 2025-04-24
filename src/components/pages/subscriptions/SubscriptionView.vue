@@ -17,26 +17,33 @@ export default {
             monthlyTokenUsage: null,
             year: 0,
             month: '',
-            dollars: 10,
             isAITokenLimitReached: false,
-            assistantsModelPrice: { input: 75, output: 150 },
-            amountOfTokens: 0
-            // Not being charged yet
-            // ttsModelPrice: 15,
-            // sttModelPerMinutePrice: 0.006
+            isMobileCheck: window.innerWidth
         };
     },
     async mounted() {
+        //Stripe external script
+        let stripeScript = document.createElement('script');
+        stripeScript.setAttribute('src', 'https://js.stripe.com/v3/');
+        document.head.appendChild(stripeScript);
+
         // Get free monthly AI token limit
-        if (this.settingsStore.freeMonthlyTokens == 0) {
+        if (this.settingsStore.freePlanTokenLimit == 0) {
             await this.settingsStore.getSettings();
         }
 
         await this.userDetailsStore.getUserDetails();
         // Check if user is over free monthly AI token limit
-        if (this.userDetailsStore.tokens <= 0) {
+        if (this.userDetailsStore.subscriptionTier == 'free') {
             if (
-                this.settingsStore.freeMonthlyTokens <=
+                this.settingsStore.freePlanTokenLimit <=
+                this.userDetailsStore.monthlyTokenUsage
+            ) {
+                this.isAITokenLimitReached = true;
+            }
+        } else if (this.userDetailsStore.subscriptionTier == 'basic') {
+            if (
+                this.settingsStore.basicPlanTokenLimit <=
                 this.userDetailsStore.monthlyTokenUsage
             ) {
                 this.isAITokenLimitReached = true;
@@ -66,20 +73,15 @@ export default {
         this.month = month[d.getMonth()];
     },
     methods: {
-        checkout() {
-            this.amountOfTokens =
-                this.dollars * this.settingsStore.tokensPerDollar;
+        checkout(planType) {
             fetch('/subscriptions/create-checkout-session', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    // convert cents to dollars
-                    dollars: this.dollars,
                     userId: this.userDetailsStore.userId,
-                    tokensPerDollar: this.settingsStore.tokensPerDollar,
-                    amountOfTokens: this.amountOfTokens
+                    planType: planType
                 })
             })
                 .then((res) => {
@@ -87,22 +89,32 @@ export default {
                     return res.json().then((json) => Promise.reject(json));
                 })
                 .then(({ url }) => {
-                    console.log('add tokens');
                     window.location = url;
                 })
                 .catch((e) => {
                     console.error(e.error);
                 });
-        }
-    },
-    computed: {
-        numberOfInputTokens() {
-            let tokensPerDollar = 1000000 / this.assistantsModelPrice.input;
-            return Math.trunc(this.dollars * tokensPerDollar);
         },
-        numberOfOutputTokens() {
-            let tokensPerDollar = 1000000 / this.assistantsModelPrice.output;
-            return Math.trunc(this.dollars * tokensPerDollar);
+        loadPortal() {
+            fetch('/subscriptions/create-customer-portal-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: this.userDetailsStore.userId
+                })
+            })
+                .then((res) => {
+                    if (res.ok) return res.json();
+                    return res.json().then((json) => Promise.reject(json));
+                })
+                .then(({ url }) => {
+                    window.location = url;
+                })
+                .catch((e) => {
+                    console.error(e.error);
+                });
         }
     }
 };
@@ -110,82 +122,142 @@ export default {
 
 <template>
     <div class="container">
-        <h1 class="heading">Subscription</h1>
-        <!-- <p>
-            <em>
-                In general one token is roughly equivalent to 4 characters
-                (letters)</em
+        <h1 class="heading" :class="{ 'text-center': isMobileCheck < 576 }">
+            Subscription
+        </h1>
+        <div class="row mt-4">
+            <div class="col-md mb-3">
+                <!-- Token usage stats -->
+                <h2
+                    class="secondary-heading h4 mb-4"
+                    :class="{ 'text-center': isMobileCheck < 576 }"
+                >
+                    Monthly AI usage: {{ month }}, {{ year }}
+                </h2>
+                <ul>
+                    <li>
+                        <p>
+                            <strong>Your subscription tier:</strong>
+                            {{
+                                userDetailsStore.subscriptionTier.toLocaleString()
+                            }}
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            <strong>Current token usage:</strong>
+                            {{
+                                userDetailsStore.monthlyTokenUsage.toLocaleString()
+                            }}
+                        </p>
+                    </li>
+                </ul>
+                <div
+                    v-if="isAITokenLimitReached"
+                    class="alert alert-warning"
+                    role="alert"
+                >
+                    You are over the monthly free limit. You can't use the AI
+                    features until next month.
+                </div>
+            </div>
+            <div
+                class="col-md mb-3 d-flex"
+                :class="
+                    isMobileCheck > 576
+                        ? 'justify-content-end'
+                        : 'justify-content-center'
+                "
             >
-        </p> -->
-        <h2 class="secondary-heading h4 mb-4">
-            Monthly AI usage: {{ month }}, {{ year }}
-        </h2>
-        <ul>
-            <li>
-                <p>
-                    <strong>Free limit:</strong>
-                    {{ settingsStore.freeMonthlyTokens.toLocaleString() }}
-                </p>
-            </li>
-            <li>
-                <p>
-                    <strong>Your tokens:</strong>
-                    {{ userDetailsStore.tokens.toLocaleString() }}
-                </p>
-            </li>
-            <li>
-                <p>
-                    <strong>Current usage:</strong>
-                    {{ userDetailsStore.monthlyTokenUsage.toLocaleString() }}
-                </p>
-            </li>
-        </ul>
-        <div
-            v-if="isAITokenLimitReached"
-            class="alert alert-warning"
-            role="alert"
-        >
-            You are over the monthly free limit. You can't use the AI features
-            until next month.
+                <!-- Manage  billing -->
+                <button
+                    v-if="this.userDetailsStore.subscriptionTier != 'free'"
+                    class="btn primary-btn"
+                    @click="loadPortal()"
+                >
+                    Manage billing
+                </button>
+            </div>
         </div>
-        <h2 class="secondary-heading h4 mt-5">Buy tokens</h2>
-        <label>$&nbsp; </label>
-        <input
-            class=""
-            type="number"
-            v-model="dollars"
-            min="1"
-            max="500"
-        /><br />
-        <p class="mt-3">
-            <strong>Amount of tokens:</strong>
-            {{
-                (dollars * this.settingsStore.tokensPerDollar).toLocaleString()
-            }}
-        </p>
-        <button @click="checkout()" class="btn primary-btn mt-2">
-            Check out
-        </button>
-
-        <!-- <li>
-                <strong>Amount of input tokens:</strong>
-                {{ numberOfInputTokens }}
-            </li>
-            or
-            <li>
-                <strong>Amount of output tokens:</strong>
-                {{ numberOfOutputTokens }}
-            </li> -->
-        <!-- Not being charged yet -->
-        <!-- <li>Amount of speech to text seconds:</li>
-            <li>Amount of text to speech tokens:</li> -->
-
-        <!-- <h2 class="secondary-heading h4 mt-5">Example usage:</h2>
-        <ul>
-            <li>AI asking me a question: 329 tokens</li>
-            <li>AI explaining something: 673 tokens</li>
-            <li>AI assessing if I have mastered a skill:</li>
-        </ul> -->
+        <hr />
+        <div class="row mt-4">
+            <!-- Free plan -->
+            <div
+                class="col-md mb-3"
+                :class="{ 'text-center': isMobileCheck < 576 }"
+            >
+                <h2 class="secondary-heading h4">Free plan</h2>
+                <p>
+                    <strong>Token limit:</strong>
+                    {{ this.settingsStore.freePlanTokenLimit.toLocaleString() }}
+                </p>
+                <button
+                    v-if="this.userDetailsStore.subscriptionTier == 'free'"
+                    disabled
+                    class="btn primary-btn mt-2"
+                >
+                    current plan
+                </button>
+            </div>
+            <!-- Basic plan -->
+            <div
+                class="col-md mb-3"
+                :class="{
+                    'text-center': isMobileCheck < 576
+                }"
+            >
+                <h2 class="secondary-heading h4">Basic plan</h2>
+                <p>Ideal for moderate use</p>
+                <p>$20 / month</p>
+                <p>
+                    <strong>Token limit:</strong>
+                    {{
+                        this.settingsStore.basicPlanTokenLimit.toLocaleString()
+                    }}
+                </p>
+                <!-- Buy subscription -->
+                <button
+                    v-if="this.userDetailsStore.subscriptionTier == 'free'"
+                    @click="checkout('basic')"
+                    class="btn primary-btn mt-2"
+                >
+                    buy
+                </button>
+                <button
+                    v-if="this.userDetailsStore.subscriptionTier == 'basic'"
+                    disabled
+                    class="btn primary-btn mt-1 mb-3"
+                >
+                    current plan
+                </button>
+            </div>
+            <div
+                class="col-md mb-3"
+                :class="{ 'text-center': isMobileCheck < 576 }"
+            >
+                <h2 class="secondary-heading h4">Infinite plan</h2>
+                <p>Ideal for daily use</p>
+                <p>$100 / month</p>
+                <p>
+                    <strong>Token limit:</strong>
+                    Infinite
+                </p>
+                <button
+                    v-if="this.userDetailsStore.subscriptionTier == 'free'"
+                    @click="checkout('infinite')"
+                    class="btn primary-btn mt-2"
+                >
+                    buy
+                </button>
+                <button
+                    v-if="this.userDetailsStore.subscriptionTier == 'infinite'"
+                    disabled
+                    class="btn primary-btn mt-1 mb-3"
+                >
+                    current plan
+                </button>
+            </div>
+        </div>
     </div>
 </template>
 

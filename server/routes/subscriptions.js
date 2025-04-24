@@ -9,6 +9,9 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 
+// // MomentJS
+// const moment = require('moment');
+
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_API_KEY);
 
@@ -22,51 +25,23 @@ const query = util.promisify(conn.query).bind(conn);
 Routes
 --------------------------------------------
 --------------------------------------------*/
-// Route not used: DELETE
-// /**
-//  * Get Monthly Token Usage by User
-//  */
-// router.get('/get-token-count/:userId/:year/:month', (req, res, next) => {
-//     if (req.session.userName) {
-//         res.setHeader('Content-Type', 'application/json');
-//         let sqlQuery = `SELECT token_count
-//         FROM user_monthly_token_usage
-//         WHERE user_id = ${conn.escape(req.params.userId)}
-//         AND year = ${conn.escape(req.params.year)}
-//         AND month = ${conn.escape(req.params.month)};`;
-
-//         conn.query(sqlQuery, (err, results) => {
-//             try {
-//                 if (err) {
-//                     throw err;
-//                 }
-//                 res.json(results[0]);
-//             } catch (err) {
-//                 next(err);
-//             }
-//         });
-//     }
-// });
-
 let userId;
-let tokensPerDollar;
 router.post('/create-checkout-session', async (req, res) => {
     try {
         userId = req.body.userId;
-        tokensPerDollar = req.body.tokensPerDollar;
+        let priceId = '';
+        if (req.body.planType == 'basic') {
+            priceId = process.env.BASIC_PLAN_PRICE_ID;
+        } else {
+            priceId = process.env.INFINITE_PLAN_PRICE_ID;
+        }
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
-            mode: 'payment',
+            mode: 'subscription',
             line_items: [
                 {
-                    price_data: {
-                        currency: 'usd',
-                        product_data: {
-                            name: req.body.amountOfTokens + ' tokens'
-                        },
-                        unit_amount: req.body.dollars * 100
-                    },
+                    price: priceId,
                     quantity: 1
                 }
             ],
@@ -86,21 +61,133 @@ router.get('/success', async (req, res, next) => {
         req.query.session_id
     );
 
+    let subscriptionTier = '';
     // Convert from cents
-    const amountOfDollars = session.amount_total / 100;
-    const amountOfTokens = amountOfDollars * tokensPerDollar;
+    if (session.amount_total == 2000) {
+        subscriptionTier = 'basic';
+    } else if (session.amount_total == 10000) {
+        subscriptionTier = 'infinite';
+    }
 
-    // Save the new tokens to the DB
-    let queryString = `
+    // Save the new Stripe customer ID to the user table
+    let usersTableQueryString = `
             UPDATE users
-            SET tokens = tokens + ${amountOfTokens}
-            WHERE id = '${userId}';
+            SET stripe_customer_id = ${conn.escape(session.customer)},
+            subscription_tier = '${subscriptionTier}'
+            WHERE id = ${conn.escape(userId)};
             `;
 
-    await query(queryString);
+    await query(usersTableQueryString);
 
     res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
 });
+
+// Allow customer to make changes to subscription and billing
+router.post('/create-customer-portal-session', async (req, res) => {
+    try {
+        userId = req.body.userId;
+
+        // Get Stripe customer ID of user
+        let queryString = `
+            SELECT stripe_customer_id
+            FROM users            
+            WHERE id = ${conn.escape(userId)};
+            `;
+        const result = await query(queryString);
+
+        const session = await stripe.billingPortal.sessions.create({
+            customer: result[0].stripe_customer_id,
+            return_url: process.env.BASE_URL + '/subscriptions'
+        });
+
+        res.json({ url: session.url });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Stripe webhooks - receive events from Stripe customer portal
+router.post(
+    '/webhooks',
+    express.json({ type: 'application/json' }),
+    async (req, res) => {
+        try {
+            const event = req.body;
+            let stripeCustomerId = '';
+
+            // Handle the event
+            switch (event.type) {
+                case 'customer.subscription.updated':
+                    const subscriptionUpdated = event.data.object;
+                    stripeCustomerId = subscriptionUpdated.customer;
+
+                    // Check if the subscription plan type has changed
+                    let checkPlanQueryString = `
+                            SELECT subscription_tier
+                            FROM users
+                            WHERE stripe_customer_id = ${conn.escape(
+                                stripeCustomerId
+                            )};                         
+                        `;
+
+                    let result = await query(checkPlanQueryString);
+                    const previousPlan = result[0].subscription_tier;
+                    let previousPriceId = '';
+                    if (previousPlan == 'basic') {
+                        previousPriceId = process.env.BASIC_PLAN_PRICE_ID;
+                    } else if (previousPlan == 'infinite') {
+                        previousPriceId = process.env.INFINITE_PLAN_PRICE_ID;
+                    }
+
+                    priceId = subscriptionUpdated.plan.id;
+                    // If it has, update it in the DB, otherwise, ignore this event.
+                    if (priceId != previousPriceId) {
+                        let planType = '';
+                        if (priceId == process.env.BASIC_PLAN_PRICE_ID) {
+                            planType = 'basic';
+                        } else if (
+                            priceId == process.env.INFINITE_PLAN_PRICE_ID
+                        ) {
+                            planType = 'infinite';
+                        }
+                        // change tier to relevant one
+                        let updateSubQueryString = `
+                            UPDATE users
+                            SET subscription_tier = '${planType}'
+                            WHERE stripe_customer_id = ${conn.escape(
+                                stripeCustomerId
+                            )};                         
+                        `;
+
+                        await query(updateSubQueryString);
+                    }
+                    break;
+                case 'customer.subscription.deleted':
+                    const subscriptionEnded = event.data.object;
+                    stripeCustomerId = subscriptionEnded.customer;
+
+                    let endSubQueryString = `
+                        UPDATE users
+                        SET subscription_tier = 'free'
+                        WHERE stripe_customer_id = ${conn.escape(
+                            stripeCustomerId
+                        )};                         
+                    `;
+
+                    await query(endSubQueryString);
+                    // set tier to "free"
+                    break;
+                default:
+                    console.log(`Unhandled event type ${event.type}`);
+            }
+
+            // Return a response to acknowledge receipt of the event
+            response.json({ received: true });
+        } catch (e) {
+            res.status(500).json({ error: e.message });
+        }
+    }
+);
 
 // Export the router for app to use.
 module.exports = router;

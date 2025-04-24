@@ -38,7 +38,7 @@ const createSocket = (server) => {
                            Even if covering multiple related concepts, focus on one clear question at a time.
 
                         Make sure to have $ delimiters before any science and math strings that can convert to Latex
-                        Please keep all messages below 2000 characters, and succinct.`;
+                        Please keep all messages below 1000 characters, and succinct.`;
                 } else if (messageData.tutorType == 'assessing') {
                     instructions = `The user is at a ${messageData.skillLevel} level and age.
                 Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
@@ -65,7 +65,7 @@ const createSocket = (server) => {
                    - Aim to guide the student towards a more comprehensive understanding
 
                 Make sure to have $ delimiters before any science and math strings that can convert to Latex.
-                Please keep all messages below 2000 characters.`;
+                Please keep all messages below 1000 characters.`;
                 }
 
                 await createRunStream(
@@ -116,7 +116,7 @@ const createSocket = (server) => {
                      - Prioritize asking questions on learning objectives that the student does not seem to know well
                               
                     Make sure to have $ delimiters before any science and math strings that can convert to Latex.
-                    Please keep all messages below 2000 characters.`;
+                    Please keep all messages below 1000 characters.`;
                 }
 
                 await createRunStream(

@@ -14,7 +14,10 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Payment Successful!</h1>
-        <p>You now have {{ userDetailsStore.tokens }} tokens</p>
+        <p>
+            You are now subscribed to the
+            <strong>{{ userDetailsStore.subscriptionTier }}</strong> plan
+        </p>
     </div>
 </template>
 <style scoped></style>
