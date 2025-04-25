@@ -69,6 +69,8 @@ export default {
         this.englishSkillLevel = this.skillLevel.replace('_', ' ');
         // load thread.
         await this.getMessages();
+        this.getLatexString(this.messageList[0].content[0].text.value);
+        console.log(this.messageList[0]);
     },
     async created() {
         this.connectToSocketSever();
@@ -279,6 +281,39 @@ export default {
             // We dont want this to be watched and added to the chat history.
             socketState.streamType = 'pause';
             socketState.streamingMessage = '';
+        },
+        getLatexString(message) {
+            console.log('Morathi: ');
+            console.log(message);
+            const results = [];
+            let isStartDollarSign = false;
+            let isGettingLatexString = false;
+            let latexString = '';
+            let startIndex = 0;
+            let endIndex = 0;
+            for (let index = 0; index < message.length; index++) {
+                const character = message[index];
+                if (character === '$') {
+                    isStartDollarSign = !isStartDollarSign;
+                }
+                if (isStartDollarSign) {
+                    isGettingLatexString = true;
+                    latexString = latexString + character;
+                    startIndex = index;
+                }
+                if (isGettingLatexString && !isStartDollarSign) {
+                    endIndex = index;
+                    latexString = latexString + character;
+                    results.push({
+                        string: latexString,
+                        startIndex: startIndex,
+                        endIndex: endIndex
+                    });
+                    isGettingLatexString = false;
+                }
+            }
+            console.log('Telic: ');
+            console.log(results);
         }
     },
     watch: {
