@@ -215,6 +215,26 @@ export default {
                 console.error(error);
             }
         },
+        convertLatexToPlainText(message) {
+            let string = message;
+            // handle exponent square case
+            string = string.replaceAll('^2', 'squared');
+            // handle exponent cube case
+            string = string.replaceAll('^3', 'cubed');
+            // handle other exponent case
+            string = string.replaceAll('^', 'to the power of');
+            // transform inequalities symbol to text
+            string = string.replaceAll('<', 'is smaller than');
+            string = string.replaceAll('>', 'is greater than');
+            string = string.replaceAll('leq', 'is smaller than or equal to');
+            string = string.replaceAll('geq', 'is greater than or equal to');
+            // handle square root in latex
+            string = string.replaceAll('sqrt', 'square root of');
+            // At last we remove all $ sign
+            string = string.replaceAll('$', '');
+
+            return string;
+        },
         async generateAudio(index, message) {
             // let newMessageIndex = 0;
             if (this.mode !== 'modal') {
@@ -223,14 +243,13 @@ export default {
             this.waitForGenerateAudio = true;
             this.chatHistory[index].isAudioGenerating = true;
 
-            // console.log('threadId: ' + this.threadID);
-            // console.log('more thread Id: ' + this.assistantData.threadId);
+            const plainTextMessage = this.convertLatexToPlainText(message);
 
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    message: message,
+                    message: plainTextMessage,
                     messageNumber: index,
                     threadID: this.assistantData.threadId
                 })
@@ -247,7 +266,6 @@ export default {
             this.chatHistory[index].isAudioGenerating = false;
             this.playNewMessageAudio(index, responseData.speechUrl);
         },
-
         playAudio(index) {
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;

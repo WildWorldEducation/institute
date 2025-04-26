@@ -69,7 +69,6 @@ export default {
         this.englishSkillLevel = this.skillLevel.replace('_', ' ');
         // load thread.
         await this.getMessages();
-        this.convertLatexToPlainText(this.messageList[0].content[0].text.value);
     },
     async created() {
         this.connectToSocketSever();
