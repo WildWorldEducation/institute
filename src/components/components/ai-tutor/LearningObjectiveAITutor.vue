@@ -69,8 +69,7 @@ export default {
         this.englishSkillLevel = this.skillLevel.replace('_', ' ');
         // load thread.
         await this.getMessages();
-        this.getLatexString(this.messageList[0].content[0].text.value);
-        console.log(this.messageList[0]);
+        this.convertLatexToPlainText(this.messageList[0].content[0].text.value);
     },
     async created() {
         this.connectToSocketSever();
@@ -152,11 +151,13 @@ export default {
         async generateAudio(index, message) {
             this.waitForGenerateAudio = true;
             this.messageList[0].isAudioGenerating = true;
+            // convert some latex symbol that will give the AI trouble to spell out
+            const plainTextMessage = this.convertLatexToPlainText(message);
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    message: message,
+                    message: plainTextMessage,
                     messageNumber: index,
                     threadID: this.assistantData.threadId
                 })
@@ -184,6 +185,10 @@ export default {
                     }
                 }
                 this.audio = new Audio(url);
+                this.audio.addEventListener('ended', () => {
+                    this.isAudioPlaying = false;
+                    this.currentIndexAudioPlaying = null;
+                });
                 this.isAudioPlaying = true;
                 this.currentIndexAudioPlaying = index;
                 this.audio.play();
@@ -282,38 +287,62 @@ export default {
             socketState.streamType = 'pause';
             socketState.streamingMessage = '';
         },
-        getLatexString(message) {
-            console.log('Morathi: ');
-            console.log(message);
-            const results = [];
-            let isStartDollarSign = false;
-            let isGettingLatexString = false;
-            let latexString = '';
-            let startIndex = 0;
-            let endIndex = 0;
-            for (let index = 0; index < message.length; index++) {
-                const character = message[index];
-                if (character === '$') {
-                    isStartDollarSign = !isStartDollarSign;
-                }
-                if (isStartDollarSign) {
-                    isGettingLatexString = true;
-                    latexString = latexString + character;
-                    startIndex = index;
-                }
-                if (isGettingLatexString && !isStartDollarSign) {
-                    endIndex = index;
-                    latexString = latexString + character;
-                    results.push({
-                        string: latexString,
-                        startIndex: startIndex,
-                        endIndex: endIndex
-                    });
-                    isGettingLatexString = false;
-                }
-            }
-            console.log('Telic: ');
-            console.log(results);
+        // getLatexString(message) {
+        //     console.log('Morathi: ');
+        //     console.log(message);
+        //     const results = [];
+        //     let isStartDollarSign = false;
+        //     let isGettingLatexString = false;
+        //     let latexString = '';
+        //     let startIndex = 0;
+        //     let endIndex = 0;
+        //     for (let index = 0; index < message.length; index++) {
+        //         const character = message[index];
+        //         if (character === '$') {
+        //             isStartDollarSign = !isStartDollarSign;
+        //             if (isStartDollarSign) {
+        //                 startIndex = index;
+        //             } else {
+        //                 endIndex = index;
+        //             }
+        //         }
+        //         if (isStartDollarSign) {
+        //             isGettingLatexString = true;
+        //             latexString = latexString + character;
+        //         }
+        //         if (isGettingLatexString && !isStartDollarSign) {
+        //             latexString = latexString + character;
+        //             results.push({
+        //                 string: latexString,
+        //                 startIndex: startIndex,
+        //                 endIndex: endIndex
+        //             });
+        //             latexString = '';
+        //             isGettingLatexString = false;
+        //         }
+        //     }
+
+        //     return results;
+        // },
+        convertLatexToPlainText(message) {
+            let string = message;
+            // handle exponent square case
+            string = string.replaceAll('^2', 'squared');
+            // handle exponent cube case
+            string = string.replaceAll('^3', 'cubed');
+            // handle other exponent case
+            string = string.replaceAll('^', 'to the power of');
+            // transform inequalities symbol to text
+            string = string.replaceAll('<', 'is smaller than');
+            string = string.replaceAll('>', 'is greater than');
+            string = string.replaceAll('leq', 'is smaller than or equal to');
+            string = string.replaceAll('geq', 'is greater than or equal to');
+            // handle square root in latex
+            string = string.replaceAll('sqrt', 'square root of');
+            // At last we remove all $ sign
+            string = string.replaceAll('$', '');
+
+            return string;
         }
     },
     watch: {
