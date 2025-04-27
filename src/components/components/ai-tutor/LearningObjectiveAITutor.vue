@@ -70,11 +70,6 @@ export default {
         this.englishSkillLevel = this.skillLevel.replace('_', ' ');
         // load message thread.
         await this.getMessages();
-
-        if (typeof this.messageList.length > 0)
-            this.convertLatexToPlainText(
-                this.messageList[0].content[0].text.value
-            );
     },
     async created() {
         this.connectToSocketSever();
@@ -156,7 +151,8 @@ export default {
         async generateAudio(index, message) {
             this.waitForGenerateAudio = true;
             this.messageList[0].isAudioGenerating = true;
-            // convert some latex symbol that will give the AI trouble to spell out
+
+            // Convert latex symbols that will give the TTS AI trouble to speak
             const plainTextMessage = this.convertLatexToPlainText(message);
             const requestOptions = {
                 method: 'POST',
@@ -276,54 +272,7 @@ export default {
             let formattedMessage = md.render(string);
             return formattedMessage;
         },
-        connectToSocketSever() {
-            socket.connect();
-        },
-        disconnectToSocketSever() {
-            socket.disconnect();
-        },
-        removeStreamMessage() {
-            // We dont want this to be watched and added to the chat history.
-            socketState.streamType = 'pause';
-            socketState.streamingMessage = '';
-        },
-        // getLatexString(message) {
-        //     console.log('Morathi: ');
-        //     console.log(message);
-        //     const results = [];
-        //     let isStartDollarSign = false;
-        //     let isGettingLatexString = false;
-        //     let latexString = '';
-        //     let startIndex = 0;
-        //     let endIndex = 0;
-        //     for (let index = 0; index < message.length; index++) {
-        //         const character = message[index];
-        //         if (character === '$') {
-        //             isStartDollarSign = !isStartDollarSign;
-        //             if (isStartDollarSign) {
-        //                 startIndex = index;
-        //             } else {
-        //                 endIndex = index;
-        //             }
-        //         }
-        //         if (isStartDollarSign) {
-        //             isGettingLatexString = true;
-        //             latexString = latexString + character;
-        //         }
-        //         if (isGettingLatexString && !isStartDollarSign) {
-        //             latexString = latexString + character;
-        //             results.push({
-        //                 string: latexString,
-        //                 startIndex: startIndex,
-        //                 endIndex: endIndex
-        //             });
-        //             latexString = '';
-        //             isGettingLatexString = false;
-        //         }
-        //     }
-
-        //     return results;
-        // },
+        // Format response for audio
         convertLatexToPlainText(message) {
             let string = message;
             // handle exponent square case
@@ -343,6 +292,17 @@ export default {
             string = string.replaceAll('$', '');
 
             return string;
+        },
+        connectToSocketSever() {
+            socket.connect();
+        },
+        disconnectToSocketSever() {
+            socket.disconnect();
+        },
+        removeStreamMessage() {
+            // We dont want this to be watched and added to the chat history.
+            socketState.streamType = 'pause';
+            socketState.streamingMessage = '';
         }
     },
     watch: {
