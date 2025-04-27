@@ -1077,7 +1077,6 @@ export default {
                 >
                     <div class="user-conversation">
                         <em>{{ message.content[0].text.value }}</em>
-                        <em>{{ message.index }}</em>
                     </div>
                 </div>
 
@@ -1102,7 +1101,6 @@ export default {
                                 )
                             "
                         ></div>
-                        <em>{{ message.index }}</em>
                     </div>
                     <!-- Generate / Play audio -->
                     <!-- Loading animation -->
