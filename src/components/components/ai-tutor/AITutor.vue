@@ -62,7 +62,8 @@ export default {
             isNewAssessingChat: true,
             waitForGenerateAudio: false,
             currentIndexAudioPlaying: null,
-            isMobileCheck: window.innerWidth
+            isMobileCheck: window.innerWidth,
+            hasTutorButtonBeenClicked: false
         };
     },
     async created() {
@@ -134,7 +135,10 @@ export default {
             }
 
             if (!this.$parent.isAITokenLimitReached) {
+                // Display modal tutor
                 this.mode = 'modal';
+                // Re-enable tutor button
+                this.hasTutorButtonBeenClicked = false;
                 this.askQuestion();
             } else {
                 this.mode = 'docked';
@@ -512,6 +516,8 @@ export default {
             if (!this.userDetailsStore.userId) {
                 this.$router.push('/login');
             } else {
+                // Disable tutor button
+                this.hasTutorButtonBeenClicked = true;
                 this.showTutorModal(type);
             }
         },
@@ -780,7 +786,8 @@ export default {
                             class="btn socratic-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap"
                             :class="{
                                 'text-decoration-underline':
-                                    mode !== 'hide' && tutorType === 'socratic'
+                                    mode !== 'hide' && tutorType === 'socratic',
+                                disabled: hasTutorButtonBeenClicked
                             }"
                             @click="handleTutorClick('socratic')"
                         >
@@ -833,8 +840,9 @@ export default {
                                 'text-decoration-underline':
                                     tutorType === 'assessing',
                                 disabled:
-                                    skill.type === 'super' &&
-                                    !areAllSubskillsMastered
+                                    (skill.type === 'super' &&
+                                        !areAllSubskillsMastered) ||
+                                    hasTutorButtonBeenClicked
                             }"
                             @click="
                                 skill.type === 'super' &&
