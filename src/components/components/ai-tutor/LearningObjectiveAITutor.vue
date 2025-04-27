@@ -39,6 +39,7 @@ export default {
     async mounted() {
         /*
          * External scripts needed for AI chat bots
+         * moved away from index.html for SEO/performance reasons
          */
         // Katex for equation formatting
         let katexScript = document.createElement('script');
@@ -65,9 +66,9 @@ export default {
         document.head.appendChild(markdownITScript);
 
         /// ------------
-
+        // Format level name
         this.englishSkillLevel = this.skillLevel.replace('_', ' ');
-        // load thread.
+        // load message thread.
         await this.getMessages();
     },
     async created() {
@@ -150,7 +151,8 @@ export default {
         async generateAudio(index, message) {
             this.waitForGenerateAudio = true;
             this.messageList[0].isAudioGenerating = true;
-            // convert some latex symbol that will give the AI trouble to spell out
+
+            // Convert latex symbols that will give the TTS AI trouble to speak
             const plainTextMessage = this.convertLatexToPlainText(message);
             const requestOptions = {
                 method: 'POST',
@@ -252,11 +254,6 @@ export default {
             this.message = 'tutor me on this';
             this.sendMessage();
         },
-        // ask Open AI to ask a question about the learning objective
-        // async requestQuestion() {
-        //     this.message = 'ask me a question';
-        //     this.sendMessage();
-        // },
         // Format the response.
         applyMarkDownFormatting(string) {
             const md = window
@@ -355,6 +352,17 @@ export default {
                 );
             });
             return localMessage;
+        },
+        connectToSocketSever() {
+            socket.connect();
+        },
+        disconnectToSocketSever() {
+            socket.disconnect();
+        },
+        removeStreamMessage() {
+            // We dont want this to be watched and added to the chat history.
+            socketState.streamType = 'pause';
+            socketState.streamingMessage = '';
         }
     },
     watch: {
