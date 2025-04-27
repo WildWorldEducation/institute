@@ -221,13 +221,26 @@ export default {
                 console.error(error);
             }
         },
-        // Audio methods
+        /*
+         * Audio methods
+         */
+        // Generate audio immediately
         async generateAudio(index, message) {
-            if (this.mode !== 'modal') {
-                newMessageIndex = parseInt(this.chatHistory.length);
+            console.log('generate audio');
+
+            console.log(index);
+            console.log(message);
+            console.log(this.chatHistory);
+
+            // Start loading animation
+            for (let i = 0; i < this.chatHistory.length; i++) {
+                if (this.chatHistory[i].index == index) {
+                    this.chatHistory[i].isAudioGenerating = true;
+                }
             }
+
+            // Play button not enabled
             this.waitForGenerateAudio = true;
-            this.chatHistory[index].isAudioGenerating = true;
 
             // Convert latex symbols that will give the TTS AI trouble to speak
             let messageForTTS = this.convertLatexToPlainText(message);
@@ -250,9 +263,15 @@ export default {
             const response = await fetch(url, requestOptions);
             const responseData = await response.json();
             this.waitForGenerateAudio = false;
-            this.chatHistory[index].isAudioGenerating = false;
+            // Stop loading animation
+            for (let i = 0; i < this.chatHistory.length; i++) {
+                if (this.chatHistory[i].index == index) {
+                    this.chatHistory[i].isAudioGenerating = false;
+                }
+            }
             this.playNewMessageAudio(index, responseData.speechUrl);
         },
+        // Press play button
         playAudio(index) {
             // If playing, pause
             if (this.isAudioPlaying == true) {
@@ -277,12 +296,8 @@ export default {
                 this.currentIndexAudioPlaying = index;
             }
         },
+        // Auto play audio after streaming from Open AI
         playNewMessageAudio(index, url) {
-            let newMessageIndex = 0;
-            if (this.mode !== 'modal') {
-                newMessageIndex = parseInt(this.chatHistory.length) - 1;
-            }
-
             this.audio.pause(); // Stop previous audio
             this.audio.src = url;
             this.audio.load(); // Important when changing src dynamically
@@ -542,7 +557,16 @@ export default {
                         this.scrollToMessageInput();
                     });
                 }
+
                 if (!newItem.isStreaming && newItem.isRunJustEnded) {
+                    // "index" is for generating and playing audio, and order in chat
+                    let index = 0;
+                    if (
+                        this.chatHistory != undefined &&
+                        this.chatHistory.length > 0
+                    ) {
+                        index = this.chatHistory.length;
+                    }
                     const assistantMessage = {
                         role: 'assistant',
                         content: [
@@ -552,7 +576,8 @@ export default {
                                 },
                                 type: 'text'
                             }
-                        ]
+                        ],
+                        index: index
                     };
 
                     this.removeStreamMessage();
@@ -566,20 +591,8 @@ export default {
                         this.chatHistory.push(assistantMessage);
                     }
 
-                    // Reverse the messages to get the index, for the TTS feature
-                    // (as Open AI returns the most recent message at index 0)
-                    let reversedMessages = this.chatHistory.reverse();
-                    for (let i = 0; i < reversedMessages.length; i++) {
-                        reversedMessages[i].index = i;
-                    }
-                    this.chatHistory = reversedMessages.reverse();
-
-                    // Staring convert the newly done message to speech
-                    const newMessageIndex =
-                        parseInt(this.chatHistory.length) - 1;
-
                     this.generateAudio(
-                        newMessageIndex,
+                        assistantMessage.index,
                         assistantMessage.content[0].text.value
                     );
                     this.$nextTick(() => {
@@ -1062,6 +1075,7 @@ export default {
                 >
                     <div class="user-conversation">
                         <em>{{ message.content[0].text.value }}</em>
+                        <em>{{ message.index }}</em>
                     </div>
                 </div>
 
@@ -1086,6 +1100,7 @@ export default {
                                 )
                             "
                         ></div>
+                        <em>{{ message.index }}</em>
                     </div>
                     <!-- Generate / Play audio -->
                     <!-- Loading animation -->
