@@ -71,6 +71,7 @@ export default {
     async mounted() {
         /*
          * External scripts needed for AI chat bots
+         * moved away from index.html for SEO/performance reasons
          */
         // Katex for equation formatting
         let katexScript = document.createElement('script');
@@ -101,8 +102,13 @@ export default {
         this.learningObjectives = this.skill.learningObjectives.map(
             (a) => a.objective
         );
-
         this.englishSkillLevel = this.skill.level.replace('_', ' ');
+
+        this.audio = new Audio();
+        this.audio.addEventListener('ended', () => {
+            this.isAudioPlaying = false;
+            this.currentIndexAudioPlaying = null;
+        });
     },
     methods: {
         // Setting this method to allow the user to be able to create a new line with shift+enter
@@ -113,10 +119,12 @@ export default {
             e.preventDefault();
             this.sendMessage();
         },
-        // 2 different threads
+        // Open tutor modal and load messages
         async showTutorModal(type) {
+            // Socratic or Testing
             this.tutorType = type;
 
+            // Load messages
             await this.getChatHistory();
 
             if (type == 'socratic')
@@ -209,22 +217,22 @@ export default {
                 console.error(error);
             }
         },
+        // Audio methods
         async generateAudio(index, message) {
-            // let newMessageIndex = 0;
             if (this.mode !== 'modal') {
                 newMessageIndex = parseInt(this.chatHistory.length);
             }
             this.waitForGenerateAudio = true;
             this.chatHistory[index].isAudioGenerating = true;
 
-            // console.log('threadId: ' + this.threadID);
-            // console.log('more thread Id: ' + this.assistantData.threadId);
+            // Convert latex symbols that will give the TTS AI trouble to speak
+            let messageForTTS = this.convertLatexToPlainText(message);
 
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    message: message,
+                    message: messageForTTS,
                     messageNumber: index,
                     threadID: this.assistantData.threadId
                 })
@@ -241,11 +249,11 @@ export default {
             this.chatHistory[index].isAudioGenerating = false;
             this.playNewMessageAudio(index, responseData.speechUrl);
         },
-
         playAudio(index) {
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;
                 this.audio.pause();
+                this.currentIndexAudioPlaying = null;
             } else {
                 let url = '';
                 for (let i = 0; i < this.chatHistory.length; i++) {
@@ -253,15 +261,13 @@ export default {
                         url = this.chatHistory[i].audio;
                     }
                 }
-                this.audio = new Audio(url);
+                this.audio.pause(); // Stop previous audio
+                this.audio.src = chatItem.audio;
+                this.audio.load(); // Important when changing src dynamically
+                this.audio.play();
+
                 this.isAudioPlaying = true;
                 this.currentIndexAudioPlaying = index;
-                // Handling when audio end playing
-                this.audio.addEventListener('ended', () => {
-                    this.isAudioPlaying = false;
-                    this.currentIndexAudioPlaying = null;
-                });
-                this.audio.play();
             }
         },
         playNewMessageAudio(index, url) {
@@ -269,14 +275,14 @@ export default {
             if (this.mode !== 'modal') {
                 newMessageIndex = parseInt(this.chatHistory.length) - 1;
             }
-            this.audio = new Audio(url);
-            this.audio.addEventListener('ended', () => {
-                this.isAudioPlaying = false;
-                this.currentIndexAudioPlaying = null;
-            });
+
+            this.audio.pause(); // Stop previous audio
+            this.audio.src = url;
+            this.audio.load(); // Important when changing src dynamically
+            this.audio.play();
+
             this.isAudioPlaying = true;
             this.currentIndexAudioPlaying = index;
-            this.audio.play();
             this.getChatHistory();
         },
         async sendMessage() {
@@ -433,6 +439,27 @@ export default {
             let formattedMessage = md.render(string);
             return formattedMessage;
         },
+        // Format response for audio
+        convertLatexToPlainText(message) {
+            let string = message;
+            // handle exponent square case
+            string = string.replaceAll('^2', 'squared');
+            // handle exponent cube case
+            string = string.replaceAll('^3', 'cubed');
+            // handle other exponent case
+            string = string.replaceAll('^', 'to the power of');
+            // transform inequalities symbol to text
+            string = string.replaceAll('<', 'is smaller than');
+            string = string.replaceAll('>', 'is greater than');
+            string = string.replaceAll('leq', 'is smaller than or equal to');
+            string = string.replaceAll('geq', 'is greater than or equal to');
+            // handle square root in latex
+            string = string.replaceAll('sqrt', 'square root of');
+            // At last we remove all $ sign
+            string = string.replaceAll('$', '');
+
+            return string;
+        },
         scrollToMessageInput() {
             let inputMessage = this.$refs.messageInputDiv;
             inputMessage.scrollTop = inputMessage.scrollHeight;
@@ -554,7 +581,7 @@ export default {
             deep: true
         },
         mode: {
-            handler(newItem, oldItem) {
+            handlerhandler(newItem, oldItem) {
                 if (
                     newItem === 'modal' &&
                     (oldItem === 'hide' || oldItem === 'docked')
