@@ -39,6 +39,7 @@ export default {
     async mounted() {
         /*
          * External scripts needed for AI chat bots
+         * moved away from index.html for SEO/performance reasons
          */
         // Katex for equation formatting
         let katexScript = document.createElement('script');
@@ -65,11 +66,15 @@ export default {
         document.head.appendChild(markdownITScript);
 
         /// ------------
-
+        // Format level name
         this.englishSkillLevel = this.skillLevel.replace('_', ' ');
-        // load thread.
+        // load message thread.
         await this.getMessages();
-        this.convertLatexToPlainText(this.messageList[0].content[0].text.value);
+
+        if (typeof this.messageList.length > 0)
+            this.convertLatexToPlainText(
+                this.messageList[0].content[0].text.value
+            );
     },
     async created() {
         this.connectToSocketSever();
@@ -253,11 +258,6 @@ export default {
             this.message = 'tutor me on this';
             this.sendMessage();
         },
-        // ask Open AI to ask a question about the learning objective
-        // async requestQuestion() {
-        //     this.message = 'ask me a question';
-        //     this.sendMessage();
-        // },
         // Format the response.
         applyMarkDownFormatting(string) {
             const md = window
