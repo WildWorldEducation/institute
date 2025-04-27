@@ -254,11 +254,14 @@ export default {
             this.playNewMessageAudio(index, responseData.speechUrl);
         },
         playAudio(index) {
+            // If playing, pause
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;
                 this.audio.pause();
                 this.currentIndexAudioPlaying = null;
-            } else {
+            }
+            // Else, play
+            else {
                 let url = '';
                 for (let i = 0; i < this.chatHistory.length; i++) {
                     if (this.chatHistory[i].index == index) {
@@ -266,7 +269,7 @@ export default {
                     }
                 }
                 this.audio.pause(); // Stop previous audio
-                this.audio.src = chatItem.audio;
+                this.audio.src = url;
                 this.audio.load(); // Important when changing src dynamically
                 this.audio.play();
 
