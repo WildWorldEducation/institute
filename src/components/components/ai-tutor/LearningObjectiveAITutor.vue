@@ -269,10 +269,9 @@ export default {
                     katexOptions: { macros: { '\\RR': '\\mathbb{R}' } }
                 });
 
-            // let newString = string.replace('\\[ ', '$');
-            // newString = newString.replace(' \\]', '$');
+            const formattedString = this.formatTextForDisplay(string);
 
-            let formattedMessage = md.render(string);
+            let formattedMessage = md.render(formattedString);
             return formattedMessage;
         },
         connectToSocketSever() {
@@ -286,43 +285,41 @@ export default {
             socketState.streamType = 'pause';
             socketState.streamingMessage = '';
         },
-        // getLatexString(message) {
-        //     console.log('Morathi: ');
-        //     console.log(message);
-        //     const results = [];
-        //     let isStartDollarSign = false;
-        //     let isGettingLatexString = false;
-        //     let latexString = '';
-        //     let startIndex = 0;
-        //     let endIndex = 0;
-        //     for (let index = 0; index < message.length; index++) {
-        //         const character = message[index];
-        //         if (character === '$') {
-        //             isStartDollarSign = !isStartDollarSign;
-        //             if (isStartDollarSign) {
-        //                 startIndex = index;
-        //             } else {
-        //                 endIndex = index;
-        //             }
-        //         }
-        //         if (isStartDollarSign) {
-        //             isGettingLatexString = true;
-        //             latexString = latexString + character;
-        //         }
-        //         if (isGettingLatexString && !isStartDollarSign) {
-        //             latexString = latexString + character;
-        //             results.push({
-        //                 string: latexString,
-        //                 startIndex: startIndex,
-        //                 endIndex: endIndex
-        //             });
-        //             latexString = '';
-        //             isGettingLatexString = false;
-        //         }
-        //     }
-
-        //     return results;
-        // },
+        // Get all latex string in a message
+        getLatexStrings(message) {
+            const results = [];
+            let isStartDollarSign = false;
+            let isGettingLatexString = false;
+            let latexString = '';
+            let startIndex = 0;
+            let endIndex = 0;
+            // get string between dollar sign
+            for (let index = 0; index < message.length; index++) {
+                const character = message[index];
+                if (character === '$') {
+                    isStartDollarSign = !isStartDollarSign;
+                    if (isStartDollarSign) {
+                        startIndex = index;
+                    } else {
+                        endIndex = index;
+                    }
+                }
+                if (isStartDollarSign) {
+                    isGettingLatexString = true;
+                    latexString = latexString + character;
+                }
+                if (isGettingLatexString && !isStartDollarSign) {
+                    latexString = latexString + character;
+                    results.push({
+                        string: latexString,
+                        startIndex: startIndex,
+                        endIndex: endIndex
+                    });
+                    latexString = '';
+                    isGettingLatexString = false;
+                }
+            }
+        },
         convertLatexToPlainText(message) {
             let string = message;
             // handle exponent square case
@@ -338,10 +335,26 @@ export default {
             string = string.replaceAll('geq', 'is greater than or equal to');
             // handle square root in latex
             string = string.replaceAll('sqrt', 'square root of');
+            // handle regular div symbol
+            string = string.replaceAll('\\div', 'divide by');
             // At last we remove all $ sign
             string = string.replaceAll('$', '');
 
             return string;
+        },
+        // Formatting the message to render correctly with KaTeX
+        formatTextForDisplay(message) {
+            const latexStringList = this.getLatexStrings(message);
+            let localMessage = message;
+            latexStringList.forEach((element) => {
+                // remove any white space and newline inside the string
+                const newString = element.string.trim();
+                localMessage = localMessage.replaceAll(
+                    element.string,
+                    newString
+                );
+            });
+            return localMessage;
         }
     },
     watch: {

@@ -109,6 +109,8 @@ export default {
             this.isAudioPlaying = false;
             this.currentIndexAudioPlaying = null;
         });
+
+        // ========================================================================================
     },
     methods: {
         // Setting this method to allow the user to be able to create a new line with shift+enter
@@ -124,6 +126,8 @@ export default {
             this.tutorType = type;
 
             await this.getChatHistory();
+            console.log('dragon slayer');
+            console.log(this.chatHistory);
 
             if (type == 'socratic')
                 this.chatHistory = this.socraticTutorChatHistory;
@@ -452,8 +456,8 @@ export default {
                     delimiters: ['brackets', 'dollars'],
                     katexOptions: { macros: { '\\RR': '\\mathbb{R}' } }
                 });
-
-            let formattedMessage = md.render(string);
+            const formattedString = this.formatTextForDisplay(string);
+            let formattedMessage = md.render(formattedString);
             return formattedMessage;
         },
         scrollToMessageInput() {
@@ -515,6 +519,55 @@ export default {
             if (!this.userDetailsStore.userId) {
                 this.$router.push('/login');
             }
+        },
+        // Get all latex string in a message
+        getLatexStrings(message) {
+            const results = [];
+            let isStartDollarSign = false;
+            let isGettingLatexString = false;
+            let latexString = '';
+            let startIndex = 0;
+            let endIndex = 0;
+            // get string between dollar sign
+            for (let index = 0; index < message.length; index++) {
+                const character = message[index];
+                if (character === '$') {
+                    isStartDollarSign = !isStartDollarSign;
+                    if (isStartDollarSign) {
+                        startIndex = index;
+                    } else {
+                        endIndex = index;
+                    }
+                }
+                if (isStartDollarSign) {
+                    isGettingLatexString = true;
+                    latexString = latexString + character;
+                }
+                if (isGettingLatexString && !isStartDollarSign) {
+                    latexString = latexString + character;
+                    results.push({
+                        string: latexString,
+                        startIndex: startIndex,
+                        endIndex: endIndex
+                    });
+                    latexString = '';
+                    isGettingLatexString = false;
+                }
+            }
+        },
+        // Formatting the message to render correctly with KaTeX
+        formatTextForDisplay(message) {
+            const latexStringList = this.getLatexStrings(message);
+            let localMessage = message;
+            latexStringList.forEach((element) => {
+                // remove any white space and newline inside the string
+                const newString = element.string.trim();
+                localMessage = localMessage.replaceAll(
+                    element.string,
+                    newString
+                );
+            });
+            return localMessage;
         }
     },
     watch: {
