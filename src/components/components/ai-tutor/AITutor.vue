@@ -226,12 +226,6 @@ export default {
          */
         // Generate audio immediately
         async generateAudio(index, message) {
-            console.log('generate audio');
-
-            console.log(index);
-            console.log(message);
-            console.log(this.chatHistory);
-
             // Start loading animation
             for (let i = 0; i < this.chatHistory.length; i++) {
                 if (this.chatHistory[i].index == index) {
