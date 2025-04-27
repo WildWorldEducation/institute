@@ -602,7 +602,8 @@ export default {
             let localMessage = message;
             latexStringList.forEach((element) => {
                 // remove any white space and newline inside the string
-                const newString = element.string.trim();
+                let newString = element.string.replaceAll('$ ', '$');
+                newString = newString.replaceAll(' $', '$');
                 localMessage = localMessage.replaceAll(
                     element.string,
                     newString
