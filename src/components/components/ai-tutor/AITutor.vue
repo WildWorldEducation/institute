@@ -202,8 +202,7 @@ export default {
                         this.assessMastery();
                     }
                 }
-                // console.log('chat history is: ');
-                // console.log(this.chatHistory);
+
                 if (this.chatHistory.length > 0) {
                     this.threadID = this.chatHistory[0].thread_id;
                     if (this.tutorType == 'socratic')
@@ -212,9 +211,9 @@ export default {
                         this.isNewAssessingChat = false;
                 }
 
-                if (this.mode == 'modal') {
-                    this.chatHistory = this.chatHistory.reverse();
-                }
+                // if (this.mode == 'modal') {
+                //     this.chatHistory = this.chatHistory.reverse();
+                // }
 
                 this.$parent.checkTokenUsage();
             } catch (error) {
@@ -537,6 +536,15 @@ export default {
             if (!this.userDetailsStore.userId) {
                 this.$router.push('/login');
             }
+        }
+    },
+    computed: {
+        sortedChatHistory() {
+            if (this.mode == 'modal')
+                return [...this.chatHistory].sort((a, b) => a.index - b.index);
+            // Sort by index
+            else if (this.mode == 'docked')
+                return [...this.chatHistory].sort((a, b) => b.index - a.index); // Sort by index
         }
     },
     watch: {
@@ -1061,7 +1069,7 @@ export default {
             ></div>
 
             <!-- Chat history -->
-            <template v-for="(message, index) in chatHistory">
+            <template v-for="(message, index) in sortedChatHistory">
                 <!-- Student messages -->
                 <div
                     v-if="message.role === 'user'"
