@@ -605,7 +605,7 @@ export default {
             deep: true
         },
         mode: {
-            handlerhandler(newItem, oldItem) {
+            handler(newItem, oldItem) {
                 if (
                     newItem === 'modal' &&
                     (oldItem === 'hide' || oldItem === 'docked')
