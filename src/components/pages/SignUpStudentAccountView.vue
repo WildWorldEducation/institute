@@ -45,6 +45,10 @@ export default {
         if (window.innerWidth < 800) {
             this.showModalVideo = false;
         }
+        document.addEventListener('keydown', this.handleKeyPress);
+    },
+    unmounted() {
+        document.removeEventListener('keydown', this.handleKeyPress);
     },
     methods: {
         ValidateForm() {
@@ -175,6 +179,11 @@ export default {
             if (event.key === 'Enter') {
                 this.ValidateForm();
             }
+        },
+        clearError(field) {
+            if (this.validate[field]) {
+                this.validate[field] = false;
+            }
         }
     }
 };
@@ -208,7 +217,7 @@ export default {
                         placeholder="Username"
                         class="form-control"
                         required
-                        @keypress="handleKeyPress"
+                        @input="clearError('username')"
                     />
                     <div
                         v-if="
@@ -228,7 +237,7 @@ export default {
                         class="form-control"
                         @blur="ValidateEmail"
                         required
-                        @keypress="handleKeyPress"
+                        @input="clearError('email')"
                     />
                     <div
                         v-if="
@@ -253,7 +262,7 @@ export default {
                             class="form-control"
                             autocomplete="new-password"
                             required
-                            @keypress="handleKeyPress"
+                            @input="clearError('password')"
                         />
                         <!-- Show and Hide Password Section -->
                         <div

@@ -24,9 +24,18 @@ export default {
         document.head.appendChild(script);
 
         this.GetGoogleLoginResult();
+        document.addEventListener('keydown', this.handleKeyPress);
+    },
+    unmounted() {
+        document.removeEventListener('keydown', this.handleKeyPress);
     },
     computed: {},
     methods: {
+        clearError(field) {
+            if (this.errors[field]) {
+                this.errors[field] = null;
+            }
+        },
         validateForm() {
             // Reset errors
             this.errors = {
@@ -145,7 +154,7 @@ export default {
                         class="form-control"
                         :class="{ 'is-invalid': errors.username }"
                         required
-                        @keypress="handleKeyPress"
+                        @input="clearError('username')"
                     />
                     <div v-if="errors.username" class="invalid-feedback">
                         {{ errors.username }}
@@ -161,7 +170,7 @@ export default {
                         class="form-control"
                         :class="{ 'is-invalid': errors.password }"
                         required
-                        @keypress="handleKeyPress"
+                        @input="clearError('password')"
                     />
                     <div v-if="errors.password" class="invalid-feedback">
                         {{ errors.password }}
