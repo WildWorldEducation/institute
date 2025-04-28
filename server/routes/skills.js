@@ -2033,25 +2033,26 @@ router.post(
 
             const inputVector = response.data[0].embedding;
 
-            let sqlQuery = `SELECT skills.id, skills.name, skills.url, skills.level, skills.parent
-                    FROM skills_vector
-                    JOIN skills
-                    ON skills.id = skills_vector.skill_id                    
-                    WHERE VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
-                          VEC_FromText('[${inputVector}]')) < 1.1
-                    AND skills.id NOT IN 
-                    (SELECT skill_id
-                    FROM user_skills
-                    WHERE user_id = ${conn.escape(userId)}
-                    AND is_mastered = 1)     
-                    AND skills.id NOT IN 
-                    (SELECT skill_id 
-                    FROM cohort_skill_filters
-                    WHERE cohort_id = ${conn.escape(cohortId)})               
-                    ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
-                          VEC_FromText('[${inputVector}]'))
-                          LIMIT 50
-                    `;
+            let sqlQuery = `SELECT skills.id, skills.name, skills.url, skills.level, skills.parent, 
+            CONCAT('https://${skillIconBucketName}.s3.amazonaws.com/', skills.url) AS icon_url
+            FROM skills_vector
+            JOIN skills
+            ON skills.id = skills_vector.skill_id                    
+            WHERE VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
+                  VEC_FromText('[${inputVector}]')) < 1.1
+            AND skills.id NOT IN 
+            (SELECT skill_id
+            FROM user_skills
+            WHERE user_id = ${conn.escape(userId)}
+            AND is_mastered = 1)     
+            AND skills.id NOT IN 
+            (SELECT skill_id 
+            FROM cohort_skill_filters
+            WHERE cohort_id = ${conn.escape(cohortId)})               
+            ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
+                  VEC_FromText('[${inputVector}]'))
+                  LIMIT 50
+            `;
             // sql for instructor and editor account
             conn.query(sqlQuery, async (err, resultsSortedByRelevence) => {
                 if (err) {
@@ -2110,16 +2111,17 @@ router.post('/guest-user/get-recommended-skills', async (req, res, next) => {
 
         const inputVector = response.data[0].embedding;
 
-        let sqlQuery = `SELECT skills.id, skills.name, skills.url, skills.level, skills.parent
-                    FROM skills_vector
-                    JOIN skills
-                    ON skills.id = skills_vector.skill_id                    
-                    WHERE VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
-                          VEC_FromText('[${inputVector}]')) < 1.1                              
-                    ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
-                          VEC_FromText('[${inputVector}]'))
-                          LIMIT 50
-                    `;
+        let sqlQuery = `SELECT skills.id, skills.name, skills.url, skills.level, skills.parent,
+        CONCAT('https://${skillIconBucketName}.s3.amazonaws.com/', skills.url) AS icon_url
+        FROM skills_vector
+        JOIN skills
+        ON skills.id = skills_vector.skill_id                    
+        WHERE VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
+              VEC_FromText('[${inputVector}]')) < 1.1                              
+        ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
+              VEC_FromText('[${inputVector}]'))
+              LIMIT 50
+        `;
         // sql for instructor and editor account
         conn.query(sqlQuery, async (err, resultsSortedByRelevence) => {
             if (err) {
