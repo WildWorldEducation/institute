@@ -249,7 +249,16 @@ export default {
                 </router-link>
                 <router-link
                     v-else
-                    class="skill-link btn m-1 skill-btn"
+                    :class="{
+                        'grade-school':
+                            recommendedSkill.level == 'grade_school',
+                        'middle-school':
+                            recommendedSkill.level == 'middle_school',
+                        'high-school': recommendedSkill.level == 'high_school',
+                        college: recommendedSkill.level == 'college',
+                        phd: recommendedSkill.level == 'phd'
+                    }"
+                    class="skill-link btn m-1"
                     :to="`/skills/${recommendedSkill.url}`"
                     target="_blank"
                 >
