@@ -259,7 +259,6 @@ export default {
                 <button
                     b-tooltip.hover
                     tile="remove skill from learning track"
-                    v-if="sessionDetailsStore.isLoggedIn"
                     class="red-btn small-btn"
                     @click="removeRecommendedSkill(index)"
                 >
