@@ -137,7 +137,6 @@ export default {
 <style scoped>
 /* Loading animation for thumbnail image*/
 .loading-animation {
-    min-height: 100%;
     height: 220px;
     width: 220px;
 }
