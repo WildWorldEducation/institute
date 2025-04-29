@@ -2139,11 +2139,11 @@ router.post('/guest-user/get-recommended-skills', async (req, res, next) => {
 
 // Create a new instance of an existing skill,
 // in order to have the skill show in more than one place in the tree.
-router.get('/intro-sentence', async (req, res, next) => {
+router.get('/intro-sentence-and-thumbnail', async (req, res, next) => {
     const skillId = req.query.skillId;
-    let sqlQuery = `SELECT skills.intro_sentence FROM skills WHERE skills.id = ${conn.escape(
-        skillId
-    )}`;
+    let sqlQuery = `SELECT intro_sentence, image_thumbnail_url as thumbnail
+                    FROM skills 
+                    WHERE id = ${conn.escape(skillId)}`;
 
     conn.query(sqlQuery, async (err, result) => {
         if (err) {
