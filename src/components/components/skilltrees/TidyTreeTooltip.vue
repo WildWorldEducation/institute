@@ -70,12 +70,13 @@ export default {
     watch: {
         tooltipData: {
             deep: true,
-            handler(newItem, oldItem) {              
+            handler(newItem, oldItem) {
                 // Check if newItem and oldItem exist before comparing
                 if (!newItem || !oldItem) return;
 
                 // Only get tooltip data when skill id changes
                 if (newItem.skillId !== oldItem.skillId) {
+                    this.thumbnail = '';
                     this.getTooltipData(newItem.skillId);
                 }
 
@@ -103,12 +104,20 @@ export default {
         <div class="tooltip-skill-name-background">
             <div class="d-flex tooltip-header">
                 <img
+                    v-if="thumbnail != ''"
                     :src="thumbnail"
                     class="rounded-2 skill-thumbnail"
                     @error="imageUrlAlternative"
                     height="220"
                     width="220"
                 />
+                <!-- Loading animation -->
+                <div
+                    v-else
+                    class="d-flex align-items-center justify-content-center loading-animation py-4"
+                >
+                    <span class="loader"></span>
+                </div>
                 <div class="tooltip-skill-name">
                     <div class="skill-name">
                         {{ tooltipData.skillName }}
@@ -126,6 +135,37 @@ export default {
 </template>
 
 <style scoped>
+/* Loading animation for thumbnail image*/
+.loading-animation {
+    min-height: 100%;
+    height: 220px;
+    width: 220px;
+}
+
+.loader {
+    position: absolute;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* End of loading animation */
+
 .tool-tip {
     width: 400px;
     height: 300px;
