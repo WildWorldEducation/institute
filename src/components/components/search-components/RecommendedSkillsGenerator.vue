@@ -164,11 +164,6 @@ export default {
                 );
             }
         },
-
-        removeRecommendedSkill(index) {
-            this.recommendedSkillsOrderedByRelevance.splice(index, 1);
-        },
-
         async createLearningTrack() {
             let url =
                 '/learning-tracks/' + this.userDetailsStore.userId + '/create';
@@ -316,7 +311,7 @@ export default {
                     <img
                         v-if="recommendedSkill.icon_url"
                         :src="recommendedSkill.icon_url"
-                        class="skill-icon"
+                        class="icons"
                         alt=""
                         loading="lazy"
                     />
@@ -341,31 +336,12 @@ export default {
                     <img
                         v-if="recommendedSkill.icon_url"
                         :src="recommendedSkill.icon_url"
-                        class="skill-icon"
+                        class="icons"
                         alt=""
                         loading="lazy"
                     />
                     {{ recommendedSkill.name }}
                 </router-link>
-                <!-- Delete button -->
-                <button
-                    b-tooltip.hover
-                    title="remove skill from learning track"
-                    class="red-btn small-btn"
-                    @click="removeRecommendedSkill(index)"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 384 512"
-                        fill="white"
-                        height="11"
-                        width="11"
-                    >
-                        <path
-                            d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
-                        />
-                    </svg>
-                </button>
             </div>
         </div>
     </div>
@@ -449,11 +425,10 @@ input:-webkit-autofill:active {
 }
 
 /* Skill icon styling */
-.skill-icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 4px;
-    display: inline-block;
+.icons {
+    /* mix-blend-mode: multiply; */
+    height: 30px;
+    border-radius: 50%;
 }
 
 /* Level colors */
