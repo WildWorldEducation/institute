@@ -278,7 +278,7 @@ export default {
 
     <!-- Recommended Skills by Relevance -->
     <div v-if="showRecommendedSkills">
-        <h2 class="tertiary-heading h5">Recommended Skills</h2>
+        <h2 class="tertiary-heading h5 mt-3">Recommended Skills</h2>
         <div id="skill-list" class="d-flex flex-wrap">
             <router-link
                 v-for="recommendedSkill in recommendedSkillsOrderedByRelevance"
