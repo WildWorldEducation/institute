@@ -5,36 +5,21 @@ export default {
     data() {
         return {
             introSentence: '',
+            thumbnail: '',
             topPosition: 0,
             leftPosition: 0,
             fallbackImageUrl: '' // Add a fallback image path
         };
     },
-    computed: {},
-    async mounted() {},
     methods: {
-        // getting first paragraph from html string (no longer used: DELETE)
-        // getFirstParagraph(htmlString) {
-        //     const el = document.createElement('html');
-        //     el.innerHTML = htmlString;
-        //     ``;
-        //     const listOfParagraph = el.getElementsByTagName('p');
-        //     if (!listOfParagraph || listOfParagraph.length === 0) {
-        //         return;
-        //     }
-        //     const firstSentence = listOfParagraph[0].innerText.split(
-        //         '. ',
-        //         1
-        //     )[0];
-        //     return firstSentence + '...';
-        // },
         getTooltipData(skillId) {
-            fetch(`/skills/intro-sentence?skillId=${skillId}`)
+            fetch(`/skills/intro-sentence-and-thumbnail?skillId=${skillId}`)
                 .then((res) => {
                     return res.json();
                 })
                 .then((result) => {
                     this.introSentence = result[0].intro_sentence;
+                    this.thumbnail = result[0].thumbnail;
                 })
                 .catch((error) => {
                     console.error('Error fetching tooltip data:', error);
@@ -85,7 +70,7 @@ export default {
     watch: {
         tooltipData: {
             deep: true,
-            handler(newItem, oldItem) {
+            handler(newItem, oldItem) {              
                 // Check if newItem and oldItem exist before comparing
                 if (!newItem || !oldItem) return;
 
@@ -118,7 +103,7 @@ export default {
         <div class="tooltip-skill-name-background">
             <div class="d-flex tooltip-header">
                 <img
-                    :src="tooltipData.thumbnail"
+                    :src="thumbnail"
                     class="rounded-2 skill-thumbnail"
                     @error="imageUrlAlternative"
                     height="220"
