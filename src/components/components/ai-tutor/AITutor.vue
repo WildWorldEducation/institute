@@ -721,6 +721,7 @@ export default {
                 <div class="d-flex">
                     <!-- For speech to text -->
                     <SpeechRecorder
+                        v-if="mode != 'hide'"
                         :tutorType="tutorType"
                         :skill="skill"
                         :skillLevel="englishSkillLevel"
