@@ -262,7 +262,11 @@ export default {
                     this.chatHistory[i].isAudioGenerating = false;
                 }
             }
-            this.playNewMessageAudio(index, responseData.speechUrl);
+
+            // We are no longer auto playing audio. This will become a setting
+            // the user can choose manual or auto.
+            this.getChatHistory();
+            //this.playNewMessageAudio(index, responseData.speechUrl);
         },
         // Press play button
         playAudio(index) {
