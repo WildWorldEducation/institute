@@ -63,7 +63,9 @@ export default {
             waitForGenerateAudio: false,
             currentIndexAudioPlaying: null,
             isMobileCheck: window.innerWidth,
-            hasTutorButtonBeenClicked: false
+            hasTutorButtonBeenClicked: false,
+            modalTextAreaHeigh: '60px',
+            modalChatHistoryHeigh: '80%'
         };
     },
     async created() {
@@ -536,6 +538,21 @@ export default {
             if (!this.userDetailsStore.userId) {
                 this.$router.push('/login');
             }
+        },
+        changeTextAreaHeigh() {
+            const el = this.$refs.modalMessageInput;
+            if (el.scrollHeight <= el.clientHeight) {
+                return;
+            }
+
+            const newTextAreaHeigh = el.scrollHeight + 'px';
+
+            // calculate how much the text area should grow in percent
+            const newTextAreaHeightPercent = Math.round(
+                (parseInt(el.scrollHeight) / 60) * 100 - 100
+            );
+            // set the new height of the text area
+            this.modalTextAreaHeigh = newTextAreaHeigh;
         }
     },
     computed: {
@@ -605,7 +622,7 @@ export default {
             deep: true
         },
         mode: {
-            handlerhandler(newItem, oldItem) {
+            modeHandler(newItem, oldItem) {
                 if (
                     newItem === 'modal' &&
                     (oldItem === 'hide' || oldItem === 'docked')
@@ -624,6 +641,7 @@ export default {
                         this.chatHistory.reverse();
                     }
                 }
+                console.log('in node watch');
             }
         }
     }
@@ -1045,105 +1063,90 @@ export default {
             Thinking
             <TutorLoadingSymbol />
         </div>
-        <!-- Message thread -->
-        <div
-            v-if="showChat && mode != 'hide'"
-            class="d-flex flex-column mx-auto chat-history"
-            :class="{
-                'chat-history': mode === 'docked',
-                'modal-chat-history': mode === 'modal',
-                'socratic-chat': tutorType === 'socratic',
-                'assessing-chat': tutorType === 'assessing'
-            }"
-            ref="messageInputDiv"
-        >
-            <!-- Currently streaming message (docked mode) -->
+        <div class="d-flex flex-column align-items-start" style="height: 95%">
+            <!-- Message thread -->
             <div
-                v-if="
-                    stateOfSocket.isStreaming &&
-                    stateOfSocket.streamType === 'aiTutor' &&
-                    mode == 'docked'
-                "
-                class="d-flex my-3 tutor-conversation streamed-message"
-                v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
-            ></div>
-
-            <!-- Chat history -->
-            <template v-for="(message, index) in sortedChatHistory">
-                <!-- Student messages -->
+                v-if="showChat && mode != 'hide'"
+                class="d-flex flex-column mx-auto chat-history w-100"
+                :class="{
+                    'chat-history': mode === 'docked',
+                    'modal-chat-history': mode === 'modal',
+                    'socratic-chat': tutorType === 'socratic',
+                    'assessing-chat': tutorType === 'assessing'
+                }"
+                ref="messageInputDiv"
+            >
+                <!-- Currently streaming message (docked mode) -->
                 <div
-                    v-if="message.role === 'user'"
-                    class="d-flex justify-content-end message-divider"
-                >
-                    <div class="user-conversation">
-                        <em>{{ message.content[0].text.value }}</em>
-                    </div>
-                </div>
-
-                <!-- AI tutor messages with conditional border styling -->
-                <div
-                    v-else-if="
-                        message.role === 'assistant' &&
-                        message.content[0].type == 'text'
+                    v-if="
+                        stateOfSocket.isStreaming &&
+                        stateOfSocket.streamType === 'aiTutor' &&
+                        mode == 'docked'
                     "
-                    class="d-flex justify-content-between w-100"
-                    :class="{
-                        'message-divider': index !== 0,
-                        'first-message': index === 0
-                        // 'last-message': index === chatHistory.length - 1
-                    }"
-                >
-                    <div class="tutor-conversation">
-                        <div
-                            v-html="
-                                applyMarkDownFormatting(
-                                    message.content[0].text.value
-                                )
-                            "
-                        ></div>
-                    </div>
-                    <!-- Generate / Play audio -->
-                    <!-- Loading animation -->
+                    class="d-flex my-3 tutor-conversation streamed-message"
+                    v-html="
+                        applyMarkDownFormatting(stateOfSocket.streamingMessage)
+                    "
+                ></div>
+
+                <!-- Chat history -->
+                <template v-for="(message, index) in sortedChatHistory">
+                    <!-- Student messages -->
                     <div
-                        v-if="
-                            message.isAudioGenerating &&
-                            message.role === 'assistant'
-                        "
-                        class="d-flex"
+                        v-if="message.role === 'user'"
+                        class="d-flex justify-content-end message-divider"
                     >
-                        <span class="speech-loader"></span>
+                        <div class="user-conversation">
+                            <em>{{ message.content[0].text.value }}</em>
+                        </div>
                     </div>
 
-                    <!-- Play/pause button, playing animation -->
-                    <button
+                    <!-- AI tutor messages with conditional border styling -->
+                    <div
                         v-else-if="
-                            !waitForGenerateAudio &&
-                            !message.isAudioGenerating &&
-                            message.role === 'assistant'
+                            message.role === 'assistant' &&
+                            message.content[0].type == 'text'
                         "
-                        @click="playAudio(message.index)"
-                        class="btn speechButton"
+                        class="d-flex justify-content-between w-100"
+                        :class="{
+                            'message-divider': index !== 0,
+                            'first-message': index === 0
+                            // 'last-message': index === chatHistory.length - 1
+                        }"
                     >
-                        <svg
-                            v-if="isAudioPlaying == false"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            fill="yellow"
-                            height="18"
-                            width="18"
-                        >
-                            <path
-                                d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c7.6-4.2 16.8-4.1 24.3 .5l144 88c7.1 4.4 11.5 12.1 11.5 20.5s-4.4 16.1-11.5 20.5l-144 88c-7.4 4.5-16.7 4.7-24.3 .5s-12.3-12.2-12.3-20.9l0-176c0-8.7 4.7-16.7 12.3-20.9z"
-                            />
-                        </svg>
+                        <div class="tutor-conversation">
+                            <div
+                                v-html="
+                                    applyMarkDownFormatting(
+                                        message.content[0].text.value
+                                    )
+                                "
+                            ></div>
+                        </div>
+                        <!-- Generate / Play audio -->
+                        <!-- Loading animation -->
                         <div
-                            v-else-if="
-                                isAudioPlaying == true &&
-                                message.index === currentIndexAudioPlaying
+                            v-if="
+                                message.isAudioGenerating &&
+                                message.role === 'assistant'
                             "
-                            class="d-flex gap-1 align-items-center"
+                            class="d-flex"
+                        >
+                            <span class="speech-loader"></span>
+                        </div>
+
+                        <!-- Play/pause button, playing animation -->
+                        <button
+                            v-else-if="
+                                !waitForGenerateAudio &&
+                                !message.isAudioGenerating &&
+                                message.role === 'assistant'
+                            "
+                            @click="playAudio(message.index)"
+                            class="btn speechButton"
                         >
                             <svg
+                                v-if="isAudioPlaying == false"
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 512 512"
                                 fill="yellow"
@@ -1151,65 +1154,92 @@ export default {
                                 width="18"
                             >
                                 <path
-                                    d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
+                                    d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c7.6-4.2 16.8-4.1 24.3 .5l144 88c7.1 4.4 11.5 12.1 11.5 20.5s-4.4 16.1-11.5 20.5l-144 88c-7.4 4.5-16.7 4.7-24.3 .5s-12.3-12.2-12.3-20.9l0-176c0-8.7 4.7-16.7 12.3-20.9z"
                                 />
                             </svg>
-                            <PlayingAudioAnimation />
-                        </div>
-                    </button>
-                    <!-- Generate speech button -->
-                </div>
-            </template>
+                            <div
+                                v-else-if="
+                                    isAudioPlaying == true &&
+                                    message.index === currentIndexAudioPlaying
+                                "
+                                class="d-flex gap-1 align-items-center"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    fill="yellow"
+                                    height="18"
+                                    width="18"
+                                >
+                                    <path
+                                        d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
+                                    />
+                                </svg>
+                                <PlayingAudioAnimation />
+                            </div>
+                        </button>
+                        <!-- Generate speech button -->
+                    </div>
+                </template>
 
-            <!-- Currently streaming message (modal mode) -->
+                <!-- Currently streaming message (modal mode) -->
+                <div
+                    v-if="
+                        stateOfSocket.isStreaming &&
+                        stateOfSocket.streamType === 'aiTutor' &&
+                        mode == 'modal'
+                    "
+                    class="d-flex my-3 tutor-conversation streamed-message"
+                    :class="{
+                        'mt-auto':
+                            (isNewSocraticChat && tutorType == 'socratic') ||
+                            (isNewAssessingChat && tutorType == 'assessing')
+                    }"
+                    v-html="
+                        applyMarkDownFormatting(stateOfSocket.streamingMessage)
+                    "
+                ></div>
+            </div>
+            <!-- User input (modal mode) -->
             <div
-                v-if="
-                    stateOfSocket.isStreaming &&
-                    stateOfSocket.streamType === 'aiTutor' &&
-                    mode == 'modal'
-                "
-                class="d-flex my-3 tutor-conversation streamed-message"
-                :class="{
-                    'mt-auto':
-                        (isNewSocraticChat && tutorType == 'socratic') ||
-                        (isNewAssessingChat && tutorType == 'assessing')
-                }"
-                v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
-            ></div>
-        </div>
-
-        <!-- User input (modal mode) -->
-        <div :class="'modal-user-chat-div'" v-if="mode === 'modal'">
-            <textarea
-                ref="messageInput"
-                class="chat-text-area rounded border border-dark me-1"
-                v-model="message"
-                type="text"
-                @keydown.enter="handleKeyDown"
+                :class="'modal-user-chat-div'"
+                class="mt-auto"
+                v-if="mode === 'modal'"
             >
-            </textarea>
-            <!-- Send button -->
-            <div
-                b-tooltip.hover
-                tile="send message"
-                class="d-flex flex-row-reverse"
-                :disabled="$parent.isAITokenLimitReached"
-            >
-                <button class="btn primary-btn send-btn" @click="sendMessage()">
-                    <!-- Speech bubble icon -->
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        width="18"
-                        height="18"
-                        fill="white"
+                <textarea
+                    ref="modalMessageInput"
+                    class="chat-text-area modal-chat-text-area rounded border border-dark me-1"
+                    v-model="message"
+                    type="text"
+                    @keydown.enter="handleKeyDown"
+                    @keydown="changeTextAreaHeigh()"
+                >
+                </textarea>
+                <!-- Send button -->
+                <div
+                    b-tooltip.hover
+                    tile="send message"
+                    class="d-flex flex-row-reverse"
+                    :disabled="$parent.isAITokenLimitReached"
+                >
+                    <button
+                        class="btn primary-btn send-btn"
+                        @click="sendMessage()"
                     >
-                        <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                        <path
-                            d="M256 448c141.4 0 256-93.1 256-208S397.4 32 256 32S0 125.1 0 240c0 45.1 17.7 86.8 47.7 120.9c-1.9 24.5-11.4 46.3-21.4 62.9c-5.5 9.2-11.1 16.6-15.2 21.6c-2.1 2.5-3.7 4.4-4.9 5.7c-.6 .6-1 1.1-1.3 1.4l-.3 .3c0 0 0 0 0 0c0 0 0 0 0 0s0 0 0 0s0 0 0 0c-4.6 4.6-5.9 11.4-3.4 17.4c2.5 6 8.3 9.9 14.8 9.9c28.7 0 57.6-8.9 81.6-19.3c22.9-10 42.4-21.9 54.3-30.6c31.8 11.5 67 17.9 104.1 17.9zM128 208a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm128 0a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm96 32a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
-                        />
-                    </svg>
-                </button>
+                        <!-- Speech bubble icon -->
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            width="18"
+                            height="18"
+                            fill="white"
+                        >
+                            <path
+                                d="M256 448c141.4 0 256-93.1 256-208S397.4 32 256 32S0 125.1 0 240c0 45.1 17.7 86.8 47.7 120.9c-1.9 24.5-11.4 46.3-21.4 62.9c-5.5 9.2-11.1 16.6-15.2 21.6c-2.1 2.5-3.7 4.4-4.9 5.7c-.6 .6-1 1.1-1.3 1.4l-.3 .3c0 0 0 0 0 0c0 0 0 0 0 0s0 0 0 0s0 0 0 0c-4.6 4.6-5.9 11.4-3.4 17.4c2.5 6 8.3 9.9 14.8 9.9c28.7 0 57.6-8.9 81.6-19.3c22.9-10 42.4-21.9 54.3-30.6c31.8 11.5 67 17.9 104.1 17.9zM128 208a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm128 0a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm96 32a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
+                            />
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -1224,6 +1254,22 @@ export default {
 .first-message {
     padding: 20px 0;
     margin-top: auto;
+}
+
+.modal-mode-container {
+    position: fixed;
+    z-index: 10000;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    height: 90%;
+    background-color: white !important;
+    border-radius: 15px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+        rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    padding-top: 15px;
+    padding-bottom: 10px;
 }
 
 /* Increase text size for the popup modal mode */
@@ -1242,9 +1288,6 @@ export default {
 }
 
 /* Make sure the chat text area has larger text too for consistency */
-.modal-mode-container .chat-text-area {
-    font-size: 1.1rem;
-}
 .last-message {
     border-bottom: 1px solid #e0e0e0;
     padding-bottom: 20px;
@@ -1351,15 +1394,25 @@ export default {
 }
 
 .modal-chat-history {
-    height: 80%;
+    height: 95%;
     overflow-y: auto;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
 }
 
 .modal-user-chat-div {
-    width: 100%;
     display: flex;
+    flex-direction: row;
     background-color: white;
-    margin-top: 10px;
+    width: 100%;
+}
+
+.modal-chat-text-area {
+    height: v-bind(modalTextAreaHeigh);
+    min-height: 60px;
+    overflow-y: auto;
+    word-wrap: break-word;
+    font-size: 1.1rem;
 }
 
 .send-message-button {
@@ -1375,22 +1428,6 @@ export default {
 .assessing-btn {
     background-color: #7f1e1e;
     color: white;
-}
-
-.modal-mode-container {
-    position: fixed;
-    z-index: 10000;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    height: 90%;
-    background-color: white !important;
-    border-radius: 15px;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
-        rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
-    padding-top: 15px;
-    padding-bottom: 10px;
 }
 
 .hidden-chat-symbol {

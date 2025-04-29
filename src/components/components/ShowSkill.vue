@@ -1703,7 +1703,7 @@ export default {
             </div>
         </div>
         <!-- AI Tutor -->
-        <div class="row mt-3 mb-3" ref="aiTutorSection">
+        <div class="row mt-3 mb-3 position-relative" ref="aiTutorSection">
             <!-- Only show AI tutor for Student -->
             <!-- Not show AI tutor for domain type of skill-->
             <AITutor
