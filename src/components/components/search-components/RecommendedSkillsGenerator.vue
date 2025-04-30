@@ -20,17 +20,18 @@ export default {
             recommendedSkillsOrderedByRelevance: [],
             showRecommendedSkills: false,
             waitForAIresponse: false,
-            isMobileCheck: window.innerWidth
+            isMobileCheck: window.innerWidth,
+            debounceTimer: null,
+            isTyping: false
         };
     },
     components: { TutorLoadingSymbol },
     mounted() {
         // Allow search to accept Enter key
-        // Get the input field
         var input = document.getElementById('searchBar');
 
         // Execute a function when the user presses a key on the keyboard
-        input.addEventListener('keypress', function (event) {
+        input.addEventListener('keypress', (event) => {
             // If the user presses the "Enter" key on the keyboard
             if (event.key === 'Enter') {
                 // Not progress if user do not type in any word
@@ -39,19 +40,52 @@ export default {
                 }
                 // Cancel the default action, if needed
                 event.preventDefault();
-                // Trigger the button element with a click
-                document.getElementById('searchButton').click();
+                // Clear any pending debounce
+                clearTimeout(this.debounceTimer);
+                this.isTyping = false;
+                // Trigger search
+                if (this.sessionDetailsStore.isLoggedIn) {
+                    this.getRecommendedSkills();
+                } else {
+                    this.getRecommendedSkillsGuestMode();
+                }
             }
+        });
+
+        // Add input event for debounced search
+        input.addEventListener('input', () => {
+            this.isTyping = true;
+            clearTimeout(this.debounceTimer);
+
+            // Set debounce timer (700ms)
+            this.debounceTimer = setTimeout(() => {
+                if (this.query && this.query.length >= 3) {
+                    this.isTyping = false;
+                    if (this.sessionDetailsStore.isLoggedIn) {
+                        this.getRecommendedSkills();
+                    } else {
+                        this.getRecommendedSkillsGuestMode();
+                    }
+                }
+            }, 700);
         });
     },
 
     methods: {
         // For logged in users
         async getRecommendedSkills() {
-            this.waitForAIresponse = true;
-            if (this.query === '' || this.query === null) {
+            // Don't run the search if query is empty or too short
+            if (
+                this.query === '' ||
+                this.query === null ||
+                this.query.length < 3
+            ) {
                 return;
             }
+
+            this.waitForAIresponse = true;
+            this.showRecommendedSkills = false;
+
             let url = '/skills/get-recommended-skills';
             const requestOption = {
                 method: 'POST',
@@ -62,26 +96,43 @@ export default {
                     query: this.query
                 })
             };
-            const result = await fetch(url, requestOption);
-            const readableResult = await result.json();
-            this.waitForAIresponse = false;
 
-            if (readableResult.length === 0) {
-                alert('can`t find any result that match yours need');
-                this.showRecommendedSkills = false;
+            try {
+                const result = await fetch(url, requestOption);
+                const readableResult = await result.json();
+                this.waitForAIresponse = false;
 
-                return;
+                if (readableResult.length === 0) {
+                    alert("Can't find any result that matches your need");
+                    this.showRecommendedSkills = false;
+                    return;
+                }
+
+                this.recommendedSkillsOrderedByRelevance = readableResult;
+                this.showRecommendedSkills = true;
+            } catch (error) {
+                console.error('Error fetching recommended skills:', error);
+                this.waitForAIresponse = false;
+                alert(
+                    'There was an error processing your request. Please try again.'
+                );
             }
-
-            this.recommendedSkillsOrderedByRelevance = readableResult;
-            this.showRecommendedSkills = true;
         },
+
         // For guest users
         async getRecommendedSkillsGuestMode() {
-            this.waitForAIresponse = true;
-            if (this.query === '' || this.query === null) {
+            // Don't run the search if query is empty or too short
+            if (
+                this.query === '' ||
+                this.query === null ||
+                this.query.length < 3
+            ) {
                 return;
             }
+
+            this.waitForAIresponse = true;
+            this.showRecommendedSkills = false;
+
             let url = '/skills/guest-user/get-recommended-skills';
             const requestOption = {
                 method: 'POST',
@@ -92,18 +143,26 @@ export default {
                     query: this.query
                 })
             };
-            const result = await fetch(url, requestOption);
-            const readableResult = await result.json();
-            this.recommendedSkillsOrderedByRelevance = readableResult;
-            this.waitForAIresponse = false;
 
-            if (!this.recommendedSkillsOrderedByRelevance) {
-                this.showRecommendedSkills = false;
+            try {
+                const result = await fetch(url, requestOption);
+                const readableResult = await result.json();
+                this.waitForAIresponse = false;
+
+                if (!readableResult || readableResult.length === 0) {
+                    this.showRecommendedSkills = false;
+                    return;
+                }
+
+                this.recommendedSkillsOrderedByRelevance = readableResult;
+                this.showRecommendedSkills = true;
+            } catch (error) {
+                console.error('Error fetching recommended skills:', error);
+                this.waitForAIresponse = false;
+                alert(
+                    'There was an error processing your request. Please try again.'
+                );
             }
-            this.showRecommendedSkills = true;
-        },
-        removeRecommendedSkill(index) {
-            this.recommendedSkillsOrderedByRelevance.splice(index, 1);
         },
         async createLearningTrack() {
             let url =
@@ -163,6 +222,7 @@ export default {
                 id="searchButton"
                 @click="getRecommendedSkills"
                 class="btn primary-btn rounded p-2"
+                :disabled="waitForAIresponse || isTyping || query.length < 3"
             >
                 <!-- Magnifying glass icon -->
                 <svg
@@ -182,6 +242,7 @@ export default {
                 id="searchButton"
                 @click="getRecommendedSkillsGuestMode"
                 class="btn primary-btn rounded p-2"
+                :disabled="waitForAIresponse || isTyping || query.length < 3"
             >
                 <!-- Magnifying glass icon -->
                 <svg
@@ -217,74 +278,31 @@ export default {
 
     <!-- Recommended Skills by Relevance -->
     <div v-if="showRecommendedSkills">
-        <h2 class="secondary-heading h5 bg-white rounded p-2 mt-2">
-            Recommended Skills
-        </h2>
-        <div
-            :class="{ 'd-flex flex-wrap': !sessionDetailsStore.isLoggedIn }"
-            class="recommended-skills-wrapper"
-        >
-            <div
-                v-for="(
-                    recommendedSkill, index
-                ) in recommendedSkillsOrderedByRelevance"
-                class="d-flex flex-row align-items-end"
+        <h2 class="tertiary-heading h5 mt-3">Recommended Skills</h2>
+        <div id="skill-list" class="d-flex flex-wrap">
+            <router-link
+                v-for="recommendedSkill in recommendedSkillsOrderedByRelevance"
+                :key="recommendedSkill.id"
+                :class="{
+                    'grade-school': recommendedSkill.level == 'grade_school',
+                    'middle-school': recommendedSkill.level == 'middle_school',
+                    'high-school': recommendedSkill.level == 'high_school',
+                    college: recommendedSkill.level == 'college',
+                    phd: recommendedSkill.level == 'phd'
+                }"
+                class="skill-link btn m-2 d-flex"
+                :to="`/skills/${recommendedSkill.url}`"
+                target="_blank"
             >
-                <router-link
-                    v-if="sessionDetailsStore.isLoggedIn"
-                    :class="{
-                        'grade-school':
-                            recommendedSkill.level == 'grade_school',
-                        'middle-school':
-                            recommendedSkill.level == 'middle_school',
-                        'high-school': recommendedSkill.level == 'high_school',
-                        college: recommendedSkill.level == 'college',
-                        phd: recommendedSkill.level == 'phd'
-                    }"
-                    class="skill-link btn m-1"
-                    :to="`/skills/${recommendedSkill.url}`"
-                    target="_blank"
-                >
-                    {{ recommendedSkill.name }}
-                </router-link>
-                <router-link
-                    v-else
-                    class="skill-link btn m-1 skill-btn"
-                    :to="`/skills/${recommendedSkill.url}`"
-                    target="_blank"
-                >
-                    {{ recommendedSkill.name }}
-                </router-link>
-                <!-- Delete button -->
-                <button
-                    b-tooltip.hover
-                    tile="remove skill from learning track"
-                    v-if="sessionDetailsStore.isLoggedIn"
-                    class="red-btn small-btn"
-                    @click="removeRecommendedSkill(index)"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 384 512"
-                        fill="white"
-                        height="11"
-                        width="11"
-                    >
-                        <path
-                            d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
-                        />
-                    </svg>
-                </button>
-            </div>
+                <img
+                    v-if="recommendedSkill.icon_url"
+                    :src="recommendedSkill.icon_url"
+                    class="icons"
+                    alt=""
+                    loading="lazy"
+                />&nbsp; {{ recommendedSkill.name }}
+            </router-link>
         </div>
-        <!-- Create learning track button -->
-        <!-- <button
-            v-if="sessionDetailsStore.isLoggedIn"
-            class="btn primary-btn mt-3"
-            @click="createLearningTrack"
-        >
-            Create learning track
-        </button> -->
     </div>
 </template>
 
@@ -317,7 +335,6 @@ input:-webkit-autofill:active {
 .search-bar {
     display: flex;
     flex-direction: column;
-    /* border: 1px solid #dce2f2; */
     border: 1px solid var(--primary-color);
     border-radius: 8px;
     background-color: white;
@@ -362,6 +379,35 @@ input:-webkit-autofill:active {
     color: black;
 }
 
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+}
+
+#skill-list {
+    overflow-y: auto;
+    border-radius: 10px;
+}
+
+#skill-list div {
+    padding: 10px 6px;
+}
+
+.skill-link {
+    width: fit-content;
+    padding-left: 0.35rem;
+}
+
 .skill-link:hover {
     border: 1px solid black;
 }
@@ -383,5 +429,19 @@ input:-webkit-autofill:active {
 .phd {
     background-color: #ff0000;
     color: white;
+}
+
+.icons {
+    height: 30px;
+    border-radius: 50%;
+}
+
+#skill-list div:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+#no-skill-cell {
+    height: 41px;
 }
 </style>

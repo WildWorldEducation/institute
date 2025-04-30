@@ -2033,25 +2033,26 @@ router.post(
 
             const inputVector = response.data[0].embedding;
 
-            let sqlQuery = `SELECT skills.id, skills.name, skills.url, skills.level, skills.parent
-                    FROM skills_vector
-                    JOIN skills
-                    ON skills.id = skills_vector.skill_id                    
-                    WHERE VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
-                          VEC_FromText('[${inputVector}]')) < 1.1
-                    AND skills.id NOT IN 
-                    (SELECT skill_id
-                    FROM user_skills
-                    WHERE user_id = ${conn.escape(userId)}
-                    AND is_mastered = 1)     
-                    AND skills.id NOT IN 
-                    (SELECT skill_id 
-                    FROM cohort_skill_filters
-                    WHERE cohort_id = ${conn.escape(cohortId)})               
-                    ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
-                          VEC_FromText('[${inputVector}]'))
-                          LIMIT 50
-                    `;
+            let sqlQuery = `SELECT skills.id, skills.name, skills.url, skills.level, skills.parent, 
+            CONCAT('https://${skillIconBucketName}.s3.amazonaws.com/', skills.url) AS icon_url
+            FROM skills_vector
+            JOIN skills
+            ON skills.id = skills_vector.skill_id                    
+            WHERE VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
+                  VEC_FromText('[${inputVector}]')) < 1.1
+            AND skills.id NOT IN 
+            (SELECT skill_id
+            FROM user_skills
+            WHERE user_id = ${conn.escape(userId)}
+            AND is_mastered = 1)     
+            AND skills.id NOT IN 
+            (SELECT skill_id 
+            FROM cohort_skill_filters
+            WHERE cohort_id = ${conn.escape(cohortId)})               
+            ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
+                  VEC_FromText('[${inputVector}]'))
+                  LIMIT 50
+            `;
             // sql for instructor and editor account
             conn.query(sqlQuery, async (err, resultsSortedByRelevence) => {
                 if (err) {
@@ -2110,16 +2111,17 @@ router.post('/guest-user/get-recommended-skills', async (req, res, next) => {
 
         const inputVector = response.data[0].embedding;
 
-        let sqlQuery = `SELECT skills.id, skills.name, skills.url, skills.level, skills.parent
-                    FROM skills_vector
-                    JOIN skills
-                    ON skills.id = skills_vector.skill_id                    
-                    WHERE VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
-                          VEC_FromText('[${inputVector}]')) < 1.1                              
-                    ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
-                          VEC_FromText('[${inputVector}]'))
-                          LIMIT 50
-                    `;
+        let sqlQuery = `SELECT skills.id, skills.name, skills.url, skills.level, skills.parent,
+        CONCAT('https://${skillIconBucketName}.s3.amazonaws.com/', skills.url) AS icon_url
+        FROM skills_vector
+        JOIN skills
+        ON skills.id = skills_vector.skill_id                    
+        WHERE VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
+              VEC_FromText('[${inputVector}]')) < 1.1                              
+        ORDER BY VEC_DISTANCE_EUCLIDEAN(skills_vector.embedding,
+              VEC_FromText('[${inputVector}]'))
+              LIMIT 50
+        `;
         // sql for instructor and editor account
         conn.query(sqlQuery, async (err, resultsSortedByRelevence) => {
             if (err) {
@@ -2137,11 +2139,11 @@ router.post('/guest-user/get-recommended-skills', async (req, res, next) => {
 
 // Create a new instance of an existing skill,
 // in order to have the skill show in more than one place in the tree.
-router.get('/intro-sentence', async (req, res, next) => {
+router.get('/intro-sentence-and-thumbnail', async (req, res, next) => {
     const skillId = req.query.skillId;
-    let sqlQuery = `SELECT skills.intro_sentence FROM skills WHERE skills.id = ${conn.escape(
-        skillId
-    )}`;
+    let sqlQuery = `SELECT intro_sentence, image_thumbnail_url as thumbnail
+                    FROM skills 
+                    WHERE id = ${conn.escape(skillId)}`;
 
     conn.query(sqlQuery, async (err, result) => {
         if (err) {

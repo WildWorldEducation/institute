@@ -158,7 +158,7 @@ export default {
             } else if (step == 6) {
                 if (this.isMobileCheck > 576) {
                     this.showTutorialTip6 = false;
-                    this.showTutorialTip7 = true;
+                    this.showTutorialTip8 = true;
                 } else {
                     this.showMobileTutorialTip6 = false;
                     this.showMobileTutorialTip7 = true;
@@ -182,6 +182,20 @@ export default {
             this.showTutorialTip1 = true;
             this.showTutorialTip2 = false;
             this.isTutorialComplete = false;
+        },
+        skipTutorial() {
+            this.showTutorialTip1 = false;
+            this.showTutorialTip2 = false;
+            this.showTutorialTip3 = false;
+            this.showTutorialTip4 = false;
+            this.showTutorialTip5 = false;
+            this.showTutorialTip6 = false;
+            this.showTutorialTip7 = false;
+            this.showTutorialTip8 = false;
+            this.showMobileTutorialTip5 = false;
+            this.showMobileTutorialTip6 = false;
+            this.showMobileTutorialTip7 = false;
+            this.isTutorialComplete = true;
         },
         markTutorialComplete() {
             let url =
@@ -320,9 +334,14 @@ export default {
             class="info-panel bg-light rounded p-2 mb-2"
         >
             <p>Use the buttons below to filter the skills by level.</p>
-            <button class="btn primary-btn" @click="progressTutorial(5)">
-                next
-            </button>
+            <div class="d-flex justify-content-between">
+                <button class="btn primary-btn" @click="progressTutorial(5)">
+                    next
+                </button>
+                <button class="btn red-btn" @click="skipTutorial">
+                    exit tutorial
+                </button>
+            </div>
         </div>
         <!-- Grade buttons -->
         <div class="d-flex">
@@ -630,9 +649,14 @@ export default {
         <!-- Tooltip -->
         <div v-if="showTutorialTip6" class="info-panel bg-light rounded p-2">
             Use the buttons on the left to filter the skills by subject.<br />
-            <button class="btn primary-btn" @click="progressTutorial(6)">
-                next
-            </button>
+            <div class="d-flex justify-content-between">
+                <button class="btn primary-btn" @click="progressTutorial(6)">
+                    next
+                </button>
+                <button class="btn red-btn" @click="skipTutorial">
+                    exit tutorial
+                </button>
+            </div>
         </div>
     </div>
 
@@ -934,17 +958,33 @@ export default {
         <div class="modal-content">
             <div v-if="showTutorialTip1">
                 <p>This is your student's skill tree.</p>
-                <button class="btn primary-btn" @click="progressTutorial(1)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-else-if="showTutorialTip2">
                 <p>
                     You can get a bird's eye view of their progress from here.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(2)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(2)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-else-if="showTutorialTip3">
                 <strong>Navigation</strong>
@@ -952,9 +992,17 @@ export default {
                     If you know how to use Google Maps, you should know how to
                     navigate here.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(3)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(3)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-else-if="showTutorialTip4">
                 <p>On a computer, use the mouse to navigate around.</p>
@@ -970,24 +1018,48 @@ export default {
                     For computers and tablets, there are also zoom buttons at
                     the bottom right.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(4)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(4)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-else-if="showMobileTutorialTip5">
                 <p>
                     The filter button will show ways to filter the skill tree by
                     both subjects and levels.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(5)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(5)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-if="showMobileTutorialTip6">
                 <p>The center button will recenter the tree</p>
-                <button class="btn primary-btn" @click="progressTutorial(6)">
-                    next
-                </button>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(6)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
             </div>
             <div v-if="showMobileTutorialTip7">
                 <p>
