@@ -172,7 +172,8 @@ export default {
             this.waitForGenerateAudio = false;
             this.messageList[0].isAudioGenerating = false;
 
-            this.playNewMessageAudio(index, responseData.speechUrl);
+            this.getMessages();
+            //  this.playNewMessageAudio(index, responseData.speechUrl);
         },
         playAudio(index) {
             if (this.isAudioPlaying == true) {

@@ -85,8 +85,7 @@ export default {
                 yPosition: 0,
                 skillName: '',
                 skillLevel: '',
-                borderColor: '',
-                thumbnail: ''
+                borderColor: ''
             }
         };
     },
@@ -254,7 +253,6 @@ export default {
                             skillName: node.data.skill_name,
                             skillLevel: node.data.level,
                             borderColor: borderColor,
-                            thumbnail: node.data.thumbnail,
                             skillId: node.data.id
                         };
                 } else {

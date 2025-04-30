@@ -63,7 +63,8 @@ export default {
             waitForGenerateAudio: false,
             currentIndexAudioPlaying: null,
             isMobileCheck: window.innerWidth,
-            hasTutorButtonBeenClicked: false
+            hasTutorButtonBeenClicked: false,
+            isNavigatingToAssessment: false
         };
     },
     async created() {
@@ -286,7 +287,11 @@ export default {
                     this.chatHistory[i].isAudioGenerating = false;
                 }
             }
-            this.playNewMessageAudio(index, responseData.speechUrl);
+
+            // We are no longer auto playing audio. This will become a setting
+            // the user can choose manual or auto.
+            this.getChatHistory();
+            //this.playNewMessageAudio(index, responseData.speechUrl);
         },
         // Press play button
         playAudio(index) {
@@ -556,10 +561,29 @@ export default {
                 this.showTutorModal(type);
             }
         },
-        handleMultipleChoiceClick() {
+        navigateToAssessment() {
+            // Prevent navigation if conditions aren't met
+            if (this.skill.type === 'super' && !this.areAllSubskillsMastered) {
+                return;
+            }
+
+            // If user not logged in, send to login page immediately
             if (!this.userDetailsStore.userId) {
                 this.$router.push('/login');
+                return;
             }
+            // Set loading state immediately for visual feedback
+            this.isNavigatingToAssessment = true;
+
+            // Navigate after a short delay to ensure loading is visible
+            setTimeout(() => {
+                this.$router.push(`${this.skill.id}/assessment`);
+
+                // Safety timeout to reset state if navigation fails
+                setTimeout(() => {
+                    this.isNavigatingToAssessment = false;
+                }, 5000);
+            }, 50);
         },
         // Get all latex string in a message
         getLatexStrings(message) {
@@ -679,7 +703,7 @@ export default {
             deep: true
         },
         mode: {
-            handlerhandler(newItem, oldItem) {
+            handler(newItem, oldItem) {
                 if (
                     newItem === 'modal' &&
                     (oldItem === 'hide' || oldItem === 'docked')
@@ -795,6 +819,7 @@ export default {
                 <div class="d-flex">
                     <!-- For speech to text -->
                     <SpeechRecorder
+                        v-if="mode != 'hide'"
                         :tutorType="tutorType"
                         :skill="skill"
                         :skillLevel="englishSkillLevel"
@@ -997,22 +1022,22 @@ export default {
                             skill.id
                         "
                     >
-                        <!-- Multiple Choice Assessment -->
-                        <router-link
+                        <!-- Replace the router-link with this button -->
+                        <button
                             class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 d-block text-nowrap"
                             :class="{
                                 disabled:
                                     skill.type === 'super' &&
                                     !areAllSubskillsMastered
                             }"
-                            :to="
-                                userDetailsStore.userId
-                                    ? skill.id + '/assessment'
-                                    : '/login'
+                            @click="navigateToAssessment"
+                            :disabled="
+                                skill.type === 'super' &&
+                                !areAllSubskillsMastered
                             "
                         >
                             Multiple-Choice Test
-                        </router-link>
+                        </button>
                     </div>
                     <!-- Explanation message for disabled button -->
                     <div
@@ -1029,6 +1054,14 @@ export default {
                     </div>
                 </div>
             </div>
+            <!-- Loading animation for assessment navigation -->
+            <div v-if="isNavigatingToAssessment" class="loading-overlay">
+                <div class="loading-container">
+                    <span class="loader"></span>
+                    <div class="loading-text mt-3">Loading assessment...</div>
+                </div>
+            </div>
+
             <div v-if="mode != 'hide'" class="d-flex justify-content-between">
                 <!-- Toggle chat button -->
                 <button class="btn plus-btn ms-1" @click="showChat = !showChat">
@@ -1504,4 +1537,49 @@ export default {
         width: 100%;
     }
 }
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.loading-text {
+    font-size: 1.2rem;
+    color: var(--primary-color);
+}
+
+/* Loading animation */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* End of loading animation */
 </style>
