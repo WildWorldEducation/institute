@@ -542,15 +542,22 @@ export default {
         changeTextAreaHeigh() {
             const el = this.$refs.modalMessageInput;
             if (el.scrollHeight <= el.clientHeight) {
+                this.modalTextAreaHeigh = '60px';
                 return;
             }
-
+            // Set the new height of the text area
             const newTextAreaHeigh = el.scrollHeight + 'px';
 
-            // calculate how much the text area should grow in percent
-            const newTextAreaHeightPercent = Math.round(
-                (parseInt(el.scrollHeight) / 60) * 100 - 100
-            );
+            // If the text area is empty, set it to 60px
+            if (this.message.length === 0) {
+                this.modalChatHistoryHeigh = '60px';
+                return;
+            }
+            // If the text area is too big, set it to 400px
+            if (el.scrollHeight > 400) {
+                this.modalTextAreaHeigh = '400px';
+                return;
+            }
             // set the new height of the text area
             this.modalTextAreaHeigh = newTextAreaHeigh;
         }
@@ -1212,7 +1219,7 @@ export default {
                     v-model="message"
                     type="text"
                     @keydown.enter="handleKeyDown"
-                    @keydown="changeTextAreaHeigh()"
+                    @input="changeTextAreaHeigh()"
                 >
                 </textarea>
                 <!-- Send button -->
