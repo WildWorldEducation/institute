@@ -131,7 +131,13 @@ export default {
             // Load messages
             await this.getChatHistory();
             console.log('dragon slayer');
-            console.log(this.chatHistory);
+            console.log(this.chatHistory[1].content[0].text.value);
+            console.log('Gilgalion');
+            console.log(
+                this.formatTextForDisplay(
+                    this.chatHistory[1].content[0].text.value
+                )
+            );
 
             if (type == 'socratic')
                 this.chatHistory = this.socraticTutorChatHistory;
@@ -330,6 +336,7 @@ export default {
             this.getChatHistory();
         },
         async sendMessage() {
+            return;
             if (this.waitForAIresponse) {
                 return;
             }
@@ -385,6 +392,7 @@ export default {
             });
         },
         async askQuestion() {
+            return;
             if (this.waitForAIresponse) {
                 return;
             }
@@ -597,7 +605,12 @@ export default {
             for (let index = 0; index < message.length; index++) {
                 const character = message[index];
                 if (character === '$') {
+                    if (message[index + 1] === '$') {
+                        continue;
+                    }
                     isStartDollarSign = !isStartDollarSign;
+                    // handle double dollar sign case
+
                     if (isStartDollarSign) {
                         startIndex = index;
                     } else {
@@ -619,6 +632,7 @@ export default {
                     isGettingLatexString = false;
                 }
             }
+            return results;
         },
         // Formatting the message to render correctly with KaTeX
         formatTextForDisplay(message) {
@@ -639,10 +653,18 @@ export default {
     computed: {
         sortedChatHistory() {
             if (this.mode == 'modal')
-                return [...this.chatHistory].sort((a, b) => a.index - b.index);
-            // Sort by index
-            else if (this.mode == 'docked')
-                return [...this.chatHistory].sort((a, b) => b.index - a.index); // Sort by index
+                if (this.chatHistory) {
+                    return [...this.chatHistory].sort(
+                        (a, b) => a.index - b.index
+                    );
+                }
+                // Sort by index
+                else if (this.mode == 'docked')
+                    if (this.chatHistory) {
+                        return [...this.chatHistory].sort(
+                            (a, b) => b.index - a.index
+                        ); // Sort by index
+                    }
         }
     },
     watch: {
@@ -1190,8 +1212,8 @@ export default {
                 <!-- AI tutor messages with conditional border styling -->
                 <div
                     v-else-if="
-                        message.role === 'assistant' &&
-                        message.content[0].type == 'text'
+                        message?.role === 'assistant' &&
+                        message?.content[0]?.type == 'text'
                     "
                     class="d-flex justify-content-between w-100"
                     :class="{
