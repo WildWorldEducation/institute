@@ -93,7 +93,10 @@ export default {
             showMasteryModal: false,
             areAllSubskillsMastered: false,
             unmasteredSubskills: [],
-            showUnmasteredModal: false
+            showUnmasteredModal: false,
+            thumbnailCDN: import.meta.env
+                .VITE_CLOUDFRONT_SKILL_INFOBOX_IMAGE_THUMBNAILS_CDN_NAME,
+            thumbnail: ''
         };
     },
     components: {
@@ -206,10 +209,13 @@ export default {
                 this.showSkillStore.skill.intro_sentence;
             this.skill.type = this.showSkillStore.skill.type;
             this.skill.level = this.showSkillStore.skill.level;
-            this.skill.image_thumbnail_url =
-                this.showSkillStore.skill.image_thumbnail_url;
+            // this.skill.image_thumbnail_url =
+            //     this.showSkillStore.skill.image_thumbnail_url;
+            // console.log(this.showSkillStore.skill.image_thumbnail_url);
             this.skill.is_human_edited =
                 this.showSkillStore.skill.is_human_edited;
+
+            this.thumbnailURL = this.thumbnailCDN + '/' + this.skillUrl;
 
             // Load the rest of the skill data
             await this.showSkillStore.getSkillSecondPart(this.skillUrl);
@@ -1493,7 +1499,7 @@ export default {
                             "
                         >
                             <img
-                                :src="skill.image_thumbnail_url"
+                                :src="thumbnailURL"
                                 @error="imageUrlAlternative"
                                 class="rounded img-fluid"
                                 :alt="'image representing ' + skill.name"
