@@ -768,7 +768,7 @@ router.get('/first/url/:skillUrl', (req, res, next) => {
 router.get('/second/url/:skillUrl', (req, res, next) => {
     let skill;
     // Get skill.
-    const sqlQuery = `SELECT s.id, s.url, s.parent, s.introduction, s.image_url, s.icon_url, s.icon, s.mastery_requirements,
+    const sqlQuery = `SELECT s.id, s.url, s.parent, s.image_url, s.mastery_requirements,
                         s.version_number, s.order, parent_skill.type AS parent_type
                     FROM 
                         skills AS s

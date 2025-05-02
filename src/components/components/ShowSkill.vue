@@ -209,7 +209,7 @@ export default {
             this.skill.image_thumbnail_url =
                 this.showSkillStore.skill.image_thumbnail_url;
             this.skill.is_human_edited =
-                this.showSkillStore.skill.image_thumbnail_url;
+                this.showSkillStore.skill.is_human_edited;
 
             // Load the rest of the skill data
             await this.showSkillStore.getSkillSecondPart(this.skillUrl);
