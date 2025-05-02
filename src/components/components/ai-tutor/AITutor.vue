@@ -130,14 +130,6 @@ export default {
 
             // Load messages
             await this.getChatHistory();
-            console.log('dragon slayer');
-            console.log(this.chatHistory[1].content[0].text.value);
-            console.log('Gilgalion');
-            console.log(
-                this.formatTextForDisplay(
-                    this.chatHistory[1].content[0].text.value
-                )
-            );
 
             if (type == 'socratic')
                 this.chatHistory = this.socraticTutorChatHistory;
@@ -336,7 +328,6 @@ export default {
             this.getChatHistory();
         },
         async sendMessage() {
-            return;
             if (this.waitForAIresponse) {
                 return;
             }
@@ -632,16 +623,71 @@ export default {
                     isGettingLatexString = false;
                 }
             }
+
+            return results;
+        },
+        getLatexStringsBetweenSquareBracket(message) {
+            let results = [];
+            // get string between square bracket
+            // for example: \[a,b,c\]
+            let isStartSquareBracketSign = false;
+            let isGettingSquareBracketString = false;
+            let squareBracketString = '';
+            let startSquareBracketIndex = 0;
+            let endSquareBracketIndex = 0;
+            // get string between square bracket
+            for (let index = 0; index < message.length; index++) {
+                const character = message[index];
+                if (character === '\\') {
+                    if (message[index + 1] === '[') {
+                        isStartSquareBracketSign = true;
+                        startSquareBracketIndex = index;
+                    } else if (message[index + 1] === ']') {
+                        isStartSquareBracketSign = false;
+                        endSquareBracketIndex = index;
+                    }
+                }
+                if (isStartSquareBracketSign) {
+                    isGettingSquareBracketString = true;
+                    squareBracketString = squareBracketString + character;
+                }
+                if (isGettingSquareBracketString && !isStartSquareBracketSign) {
+                    squareBracketString = squareBracketString + character;
+                    // also get the next character which is ']'
+                    squareBracketString =
+                        squareBracketString + message[index + 1];
+                    results.push({
+                        string: squareBracketString,
+                        startIndex: startSquareBracketIndex,
+                        endIndex: endSquareBracketIndex
+                    });
+                    squareBracketString = '';
+                    isGettingSquareBracketString = false;
+                }
+            }
             return results;
         },
         // Formatting the message to render correctly with KaTeX
         formatTextForDisplay(message) {
             const latexStringList = this.getLatexStrings(message);
             let localMessage = message;
+            // handle dollar sign case
             latexStringList.forEach((element) => {
                 // remove any white space and newline inside the string
                 let newString = element.string.replaceAll('$ ', '$');
                 newString = newString.replaceAll(' $', '$');
+                localMessage = localMessage.replaceAll(
+                    element.string,
+                    newString
+                );
+            });
+
+            // handle square bracket case
+            const squareBracketStringList =
+                this.getLatexStringsBetweenSquareBracket(message);
+            squareBracketStringList.forEach((element) => {
+                // remove any white space and newline inside the string
+                let newString = '\n' + element.string;
                 localMessage = localMessage.replaceAll(
                     element.string,
                     newString
