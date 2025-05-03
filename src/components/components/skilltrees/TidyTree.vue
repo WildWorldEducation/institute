@@ -1235,7 +1235,7 @@ export default {
                 const newUserSkill =
                     this.skillTreeStore.buildUserSkillTreeBaseOnFilterObject(
                         this.userDetailsStore.subSubjectsFilters,
-                        this.skillTreeStore.studentSkills
+                        userSkills
                     );
                 if (newUserSkill.length) {
                     this.data = {

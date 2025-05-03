@@ -734,6 +734,8 @@ export default {
                 children: skills
             };
 
+            console.log('skills', skills);
+
             this.data = {
                 skill_name: 'My skills',
                 children: this.skill.children
@@ -751,8 +753,8 @@ export default {
                         this.userDetailsStore.subSubjectsFilters,
                         this.skillsStore.guestModeVerticalTreeSkills
                     );
-
                 if (newUserSkill.length) {
+                    // reapply the subject filter to the skill tree
                     this.data = {
                         skill_name: 'My skills',
                         children: newUserSkill
