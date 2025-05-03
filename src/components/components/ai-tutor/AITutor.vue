@@ -383,7 +383,6 @@ export default {
             });
         },
         async askQuestion() {
-            return;
             if (this.waitForAIresponse) {
                 return;
             }
