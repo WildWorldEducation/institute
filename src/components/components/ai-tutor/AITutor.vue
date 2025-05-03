@@ -984,7 +984,7 @@ export default {
             <!-- Loading animation for assessment navigation -->
             <div v-if="isNavigatingToAssessment" class="loading-overlay">
                 <div class="loading-container">
-                    <span class="loader"></span>
+                    <span class="assessment-loader"></span>
                     <div class="loading-text mt-3">Loading assessment...</div>
                 </div>
             </div>
@@ -1489,7 +1489,7 @@ export default {
 }
 
 /* Loading animation */
-.loader {
+.assessment-loader {
     width: 48px;
     height: 48px;
     border: 5px solid var(--primary-color);
