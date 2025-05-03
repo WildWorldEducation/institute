@@ -111,6 +111,8 @@ export default {
             this.isAudioPlaying = false;
             this.currentIndexAudioPlaying = null;
         });
+
+        // ========================================================================================
     },
     methods: {
         // Setting this method to allow the user to be able to create a new line with shift+enter
@@ -220,6 +222,26 @@ export default {
             } catch (error) {
                 console.error(error);
             }
+        },
+        convertLatexToPlainText(message) {
+            let string = message;
+            // handle exponent square case
+            string = string.replaceAll('^2', 'squared');
+            // handle exponent cube case
+            string = string.replaceAll('^3', 'cubed');
+            // handle other exponent case
+            string = string.replaceAll('^', 'to the power of');
+            // transform inequalities symbol to text
+            string = string.replaceAll('<', 'is smaller than');
+            string = string.replaceAll('>', 'is greater than');
+            string = string.replaceAll('leq', 'is smaller than or equal to');
+            string = string.replaceAll('geq', 'is greater than or equal to');
+            // handle square root in latex
+            string = string.replaceAll('sqrt', 'square root of');
+            // At last we remove all $ sign
+            string = string.replaceAll('$', '');
+
+            return string;
         },
         /*
          * Audio methods
@@ -455,8 +477,8 @@ export default {
                     delimiters: ['brackets', 'dollars'],
                     katexOptions: { macros: { '\\RR': '\\mathbb{R}' } }
                 });
-
-            let formattedMessage = md.render(string);
+            const formattedString = this.formatTextForDisplay(string);
+            let formattedMessage = md.render(formattedString);
             return formattedMessage;
         },
         // Format response for audio
@@ -548,7 +570,6 @@ export default {
                 this.$router.push('/login');
                 return;
             }
-
             // Set loading state immediately for visual feedback
             this.isNavigatingToAssessment = true;
 
@@ -561,15 +582,134 @@ export default {
                     this.isNavigatingToAssessment = false;
                 }, 5000);
             }, 50);
+        },
+        // Get all latex string in a message
+        getLatexStrings(message) {
+            const results = [];
+            let isStartDollarSign = false;
+            let isGettingLatexString = false;
+            let latexString = '';
+            let startIndex = 0;
+            let endIndex = 0;
+            // get string between dollar sign
+            for (let index = 0; index < message.length; index++) {
+                const character = message[index];
+                if (character === '$') {
+                    if (message[index + 1] === '$') {
+                        continue;
+                    }
+                    isStartDollarSign = !isStartDollarSign;
+                    // handle double dollar sign case
+
+                    if (isStartDollarSign) {
+                        startIndex = index;
+                    } else {
+                        endIndex = index;
+                    }
+                }
+                if (isStartDollarSign) {
+                    isGettingLatexString = true;
+                    latexString = latexString + character;
+                }
+                if (isGettingLatexString && !isStartDollarSign) {
+                    latexString = latexString + character;
+                    results.push({
+                        string: latexString,
+                        startIndex: startIndex,
+                        endIndex: endIndex
+                    });
+                    latexString = '';
+                    isGettingLatexString = false;
+                }
+            }
+
+            return results;
+        },
+        getLatexStringsBetweenSquareBracket(message) {
+            let results = [];
+            // get string between square bracket
+            // for example: \[a,b,c\]
+            let isStartSquareBracketSign = false;
+            let isGettingSquareBracketString = false;
+            let squareBracketString = '';
+            let startSquareBracketIndex = 0;
+            let endSquareBracketIndex = 0;
+            // get string between square bracket
+            for (let index = 0; index < message.length; index++) {
+                const character = message[index];
+                if (character === '\\') {
+                    if (message[index + 1] === '[') {
+                        isStartSquareBracketSign = true;
+                        startSquareBracketIndex = index;
+                    } else if (message[index + 1] === ']') {
+                        isStartSquareBracketSign = false;
+                        endSquareBracketIndex = index;
+                    }
+                }
+                if (isStartSquareBracketSign) {
+                    isGettingSquareBracketString = true;
+                    squareBracketString = squareBracketString + character;
+                }
+                if (isGettingSquareBracketString && !isStartSquareBracketSign) {
+                    squareBracketString = squareBracketString + character;
+                    // also get the next character which is ']'
+                    squareBracketString =
+                        squareBracketString + message[index + 1];
+                    results.push({
+                        string: squareBracketString,
+                        startIndex: startSquareBracketIndex,
+                        endIndex: endSquareBracketIndex
+                    });
+                    squareBracketString = '';
+                    isGettingSquareBracketString = false;
+                }
+            }
+            return results;
+        },
+        // Formatting the message to render correctly with KaTeX
+        formatTextForDisplay(message) {
+            const latexStringList = this.getLatexStrings(message);
+            let localMessage = message;
+            // handle dollar sign case
+            latexStringList.forEach((element) => {
+                // remove any white space and newline inside the string
+                let newString = element.string.replaceAll('$ ', '$');
+                newString = newString.replaceAll(' $', '$');
+                localMessage = localMessage.replaceAll(
+                    element.string,
+                    newString
+                );
+            });
+
+            // handle square bracket case
+            const squareBracketStringList =
+                this.getLatexStringsBetweenSquareBracket(message);
+            squareBracketStringList.forEach((element) => {
+                // remove any white space and newline inside the string
+                let newString = '\n' + element.string;
+                localMessage = localMessage.replaceAll(
+                    element.string,
+                    newString
+                );
+            });
+            return localMessage;
         }
     },
     computed: {
         sortedChatHistory() {
             if (this.mode == 'modal')
-                return [...this.chatHistory].sort((a, b) => a.index - b.index);
-            // Sort by index
-            else if (this.mode == 'docked')
-                return [...this.chatHistory].sort((a, b) => b.index - a.index); // Sort by index
+                if (this.chatHistory) {
+                    return [...this.chatHistory].sort(
+                        (a, b) => a.index - b.index
+                    );
+                }
+                // Sort by index
+                else if (this.mode == 'docked')
+                    if (this.chatHistory) {
+                        return [...this.chatHistory].sort(
+                            (a, b) => b.index - a.index
+                        ); // Sort by index
+                    }
         }
     },
     watch: {
@@ -1117,8 +1257,8 @@ export default {
                 <!-- AI tutor messages with conditional border styling -->
                 <div
                     v-else-if="
-                        message.role === 'assistant' &&
-                        message.content[0].type == 'text'
+                        message?.role === 'assistant' &&
+                        message?.content[0]?.type == 'text'
                     "
                     class="d-flex justify-content-between w-100"
                     :class="{
