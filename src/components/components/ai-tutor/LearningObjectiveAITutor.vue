@@ -39,6 +39,7 @@ export default {
     async mounted() {
         /*
          * External scripts needed for AI chat bots
+         * moved away from index.html for SEO/performance reasons
          */
         // Katex for equation formatting
         let katexScript = document.createElement('script');
@@ -65,9 +66,9 @@ export default {
         document.head.appendChild(markdownITScript);
 
         /// ------------
-
+        // Format level name
         this.englishSkillLevel = this.skillLevel.replace('_', ' ');
-        // load thread.
+        // load message thread.
         await this.getMessages();
     },
     async created() {
@@ -150,11 +151,14 @@ export default {
         async generateAudio(index, message) {
             this.waitForGenerateAudio = true;
             this.messageList[0].isAudioGenerating = true;
+
+            // Convert latex symbols that will give the TTS AI trouble to speak
+            const plainTextMessage = this.convertLatexToPlainText(message);
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    message: message,
+                    message: plainTextMessage,
                     messageNumber: index,
                     threadID: this.assistantData.threadId
                 })
@@ -168,7 +172,8 @@ export default {
             this.waitForGenerateAudio = false;
             this.messageList[0].isAudioGenerating = false;
 
-            this.playNewMessageAudio(index, responseData.speechUrl);
+            this.getMessages();
+            //  this.playNewMessageAudio(index, responseData.speechUrl);
         },
         playAudio(index) {
             if (this.isAudioPlaying == true) {
@@ -182,6 +187,10 @@ export default {
                     }
                 }
                 this.audio = new Audio(url);
+                this.audio.addEventListener('ended', () => {
+                    this.isAudioPlaying = false;
+                    this.currentIndexAudioPlaying = null;
+                });
                 this.isAudioPlaying = true;
                 this.currentIndexAudioPlaying = index;
                 this.audio.play();
@@ -246,11 +255,6 @@ export default {
             this.message = 'tutor me on this';
             this.sendMessage();
         },
-        // ask Open AI to ask a question about the learning objective
-        // async requestQuestion() {
-        //     this.message = 'ask me a question';
-        //     this.sendMessage();
-        // },
         // Format the response.
         applyMarkDownFormatting(string) {
             const md = window
@@ -268,6 +272,27 @@ export default {
 
             let formattedMessage = md.render(string);
             return formattedMessage;
+        },
+        // Format response for audio
+        convertLatexToPlainText(message) {
+            let string = message;
+            // handle exponent square case
+            string = string.replaceAll('^2', 'squared');
+            // handle exponent cube case
+            string = string.replaceAll('^3', 'cubed');
+            // handle other exponent case
+            string = string.replaceAll('^', 'to the power of');
+            // transform inequalities symbol to text
+            string = string.replaceAll('<', 'is smaller than');
+            string = string.replaceAll('>', 'is greater than');
+            string = string.replaceAll('leq', 'is smaller than or equal to');
+            string = string.replaceAll('geq', 'is greater than or equal to');
+            // handle square root in latex
+            string = string.replaceAll('sqrt', 'square root of');
+            // At last we remove all $ sign
+            string = string.replaceAll('$', '');
+
+            return string;
         },
         connectToSocketSever() {
             socket.connect();

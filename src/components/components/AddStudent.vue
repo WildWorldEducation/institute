@@ -148,7 +148,7 @@ export default {
                 await this.usersStore.getUsers();
                 this.isLoading = false;
                 alert('account created');
-                this.$router.push({ name: 'users' });
+                this.$router.push({ name: 'students' });
             } catch (err) {
                 console.error('Error creating user ', err);
             }
@@ -391,6 +391,7 @@ export default {
                                 placeholder="Password"
                                 class="form-control"
                                 id="password-input"
+                                autocomplete="new-password"
                                 required
                             />
                             <!-- Show and Hide Password Section -->

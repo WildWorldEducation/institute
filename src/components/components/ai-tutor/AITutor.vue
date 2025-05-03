@@ -62,7 +62,9 @@ export default {
             isNewAssessingChat: true,
             waitForGenerateAudio: false,
             currentIndexAudioPlaying: null,
-            isMobileCheck: window.innerWidth
+            isMobileCheck: window.innerWidth,
+            hasTutorButtonBeenClicked: false,
+            isNavigatingToAssessment: false
         };
     },
     async created() {
@@ -71,6 +73,7 @@ export default {
     async mounted() {
         /*
          * External scripts needed for AI chat bots
+         * moved away from index.html for SEO/performance reasons
          */
         // Katex for equation formatting
         let katexScript = document.createElement('script');
@@ -101,7 +104,6 @@ export default {
         this.learningObjectives = this.skill.learningObjectives.map(
             (a) => a.objective
         );
-
         this.englishSkillLevel = this.skill.level.replace('_', ' ');
 
         this.audio = new Audio();
@@ -119,10 +121,12 @@ export default {
             e.preventDefault();
             this.sendMessage();
         },
-        // 2 different threads
+        // Open tutor modal and load messages
         async showTutorModal(type) {
+            // Socratic or Testing
             this.tutorType = type;
 
+            // Load messages
             await this.getChatHistory();
 
             if (type == 'socratic')
@@ -132,7 +136,10 @@ export default {
             }
 
             if (!this.$parent.isAITokenLimitReached) {
+                // Display modal tutor
                 this.mode = 'modal';
+                // Re-enable tutor button
+                this.hasTutorButtonBeenClicked = false;
                 this.askQuestion();
             } else {
                 this.mode = 'docked';
@@ -196,8 +203,7 @@ export default {
                         this.assessMastery();
                     }
                 }
-                // console.log('chat history is: ');
-                // console.log(this.chatHistory);
+
                 if (this.chatHistory.length > 0) {
                     this.threadID = this.chatHistory[0].thread_id;
                     if (this.tutorType == 'socratic')
@@ -206,31 +212,38 @@ export default {
                         this.isNewAssessingChat = false;
                 }
 
-                if (this.mode == 'modal') {
-                    this.chatHistory = this.chatHistory.reverse();
-                }
+                // if (this.mode == 'modal') {
+                //     this.chatHistory = this.chatHistory.reverse();
+                // }
 
                 this.$parent.checkTokenUsage();
             } catch (error) {
                 console.error(error);
             }
         },
+        /*
+         * Audio methods
+         */
+        // Generate audio immediately
         async generateAudio(index, message) {
-            // let newMessageIndex = 0;
-            if (this.mode !== 'modal') {
-                newMessageIndex = parseInt(this.chatHistory.length);
+            // Start loading animation
+            for (let i = 0; i < this.chatHistory.length; i++) {
+                if (this.chatHistory[i].index == index) {
+                    this.chatHistory[i].isAudioGenerating = true;
+                }
             }
-            this.waitForGenerateAudio = true;
-            this.chatHistory[index].isAudioGenerating = true;
 
-            // console.log('threadId: ' + this.threadID);
-            // console.log('more thread Id: ' + this.assistantData.threadId);
+            // Play button not enabled
+            this.waitForGenerateAudio = true;
+
+            // Convert latex symbols that will give the TTS AI trouble to speak
+            let messageForTTS = this.convertLatexToPlainText(message);
 
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    message: message,
+                    message: messageForTTS,
                     messageNumber: index,
                     threadID: this.assistantData.threadId
                 })
@@ -244,16 +257,28 @@ export default {
             const response = await fetch(url, requestOptions);
             const responseData = await response.json();
             this.waitForGenerateAudio = false;
-            this.chatHistory[index].isAudioGenerating = false;
-            this.playNewMessageAudio(index, responseData.speechUrl);
-        },
+            // Stop loading animation
+            for (let i = 0; i < this.chatHistory.length; i++) {
+                if (this.chatHistory[i].index == index) {
+                    this.chatHistory[i].isAudioGenerating = false;
+                }
+            }
 
+            // We are no longer auto playing audio. This will become a setting
+            // the user can choose manual or auto.
+            this.getChatHistory();
+            //this.playNewMessageAudio(index, responseData.speechUrl);
+        },
+        // Press play button
         playAudio(index) {
+            // If playing, pause
             if (this.isAudioPlaying == true) {
                 this.isAudioPlaying = false;
                 this.audio.pause();
                 this.currentIndexAudioPlaying = null;
-            } else {
+            }
+            // Else, play
+            else {
                 let url = '';
                 for (let i = 0; i < this.chatHistory.length; i++) {
                     if (this.chatHistory[i].index == index) {
@@ -261,7 +286,7 @@ export default {
                     }
                 }
                 this.audio.pause(); // Stop previous audio
-                this.audio.src = chatItem.audio;
+                this.audio.src = url;
                 this.audio.load(); // Important when changing src dynamically
                 this.audio.play();
 
@@ -269,12 +294,8 @@ export default {
                 this.currentIndexAudioPlaying = index;
             }
         },
+        // Auto play audio after streaming from Open AI
         playNewMessageAudio(index, url) {
-            let newMessageIndex = 0;
-            if (this.mode !== 'modal') {
-                newMessageIndex = parseInt(this.chatHistory.length) - 1;
-            }
-
             this.audio.pause(); // Stop previous audio
             this.audio.src = url;
             this.audio.load(); // Important when changing src dynamically
@@ -438,6 +459,27 @@ export default {
             let formattedMessage = md.render(string);
             return formattedMessage;
         },
+        // Format response for audio
+        convertLatexToPlainText(message) {
+            let string = message;
+            // handle exponent square case
+            string = string.replaceAll('^2', 'squared');
+            // handle exponent cube case
+            string = string.replaceAll('^3', 'cubed');
+            // handle other exponent case
+            string = string.replaceAll('^', 'to the power of');
+            // transform inequalities symbol to text
+            string = string.replaceAll('<', 'is smaller than');
+            string = string.replaceAll('>', 'is greater than');
+            string = string.replaceAll('leq', 'is smaller than or equal to');
+            string = string.replaceAll('geq', 'is greater than or equal to');
+            // handle square root in latex
+            string = string.replaceAll('sqrt', 'square root of');
+            // At last we remove all $ sign
+            string = string.replaceAll('$', '');
+
+            return string;
+        },
         scrollToMessageInput() {
             let inputMessage = this.$refs.messageInputDiv;
             inputMessage.scrollTop = inputMessage.scrollHeight;
@@ -490,13 +532,44 @@ export default {
             if (!this.userDetailsStore.userId) {
                 this.$router.push('/login');
             } else {
+                // Disable tutor button
+                this.hasTutorButtonBeenClicked = true;
                 this.showTutorModal(type);
             }
         },
-        handleMultipleChoiceClick() {
+        navigateToAssessment() {
+            // Prevent navigation if conditions aren't met
+            if (this.skill.type === 'super' && !this.areAllSubskillsMastered) {
+                return;
+            }
+
+            // If user not logged in, send to login page immediately
             if (!this.userDetailsStore.userId) {
                 this.$router.push('/login');
+                return;
             }
+
+            // Set loading state immediately for visual feedback
+            this.isNavigatingToAssessment = true;
+
+            // Navigate after a short delay to ensure loading is visible
+            setTimeout(() => {
+                this.$router.push(`${this.skill.id}/assessment`);
+
+                // Safety timeout to reset state if navigation fails
+                setTimeout(() => {
+                    this.isNavigatingToAssessment = false;
+                }, 5000);
+            }, 50);
+        }
+    },
+    computed: {
+        sortedChatHistory() {
+            if (this.mode == 'modal')
+                return [...this.chatHistory].sort((a, b) => a.index - b.index);
+            // Sort by index
+            else if (this.mode == 'docked')
+                return [...this.chatHistory].sort((a, b) => b.index - a.index); // Sort by index
         }
     },
     watch: {
@@ -511,7 +584,16 @@ export default {
                         this.scrollToMessageInput();
                     });
                 }
+
                 if (!newItem.isStreaming && newItem.isRunJustEnded) {
+                    // "index" is for generating and playing audio, and order in chat
+                    let index = 0;
+                    if (
+                        this.chatHistory != undefined &&
+                        this.chatHistory.length > 0
+                    ) {
+                        index = this.chatHistory.length;
+                    }
                     const assistantMessage = {
                         role: 'assistant',
                         content: [
@@ -521,7 +603,8 @@ export default {
                                 },
                                 type: 'text'
                             }
-                        ]
+                        ],
+                        index: index
                     };
 
                     this.removeStreamMessage();
@@ -535,20 +618,8 @@ export default {
                         this.chatHistory.push(assistantMessage);
                     }
 
-                    // Reverse the messages to get the index, for the TTS feature
-                    // (as Open AI returns the most recent message at index 0)
-                    let reversedMessages = this.chatHistory.reverse();
-                    for (let i = 0; i < reversedMessages.length; i++) {
-                        reversedMessages[i].index = i;
-                    }
-                    this.chatHistory = reversedMessages.reverse();
-
-                    // Staring convert the newly done message to speech
-                    const newMessageIndex =
-                        parseInt(this.chatHistory.length) - 1;
-
                     this.generateAudio(
-                        newMessageIndex,
+                        assistantMessage.index,
                         assistantMessage.content[0].text.value
                     );
                     this.$nextTick(() => {
@@ -559,7 +630,7 @@ export default {
             deep: true
         },
         mode: {
-            handlerhandler(newItem, oldItem) {
+            handler(newItem, oldItem) {
                 if (
                     newItem === 'modal' &&
                     (oldItem === 'hide' || oldItem === 'docked')
@@ -675,6 +746,7 @@ export default {
                 <div class="d-flex">
                     <!-- For speech to text -->
                     <SpeechRecorder
+                        v-if="mode != 'hide'"
                         :tutorType="tutorType"
                         :skill="skill"
                         :skillLevel="englishSkillLevel"
@@ -758,7 +830,8 @@ export default {
                             class="btn socratic-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap"
                             :class="{
                                 'text-decoration-underline':
-                                    mode !== 'hide' && tutorType === 'socratic'
+                                    mode !== 'hide' && tutorType === 'socratic',
+                                disabled: hasTutorButtonBeenClicked
                             }"
                             @click="handleTutorClick('socratic')"
                         >
@@ -811,8 +884,9 @@ export default {
                                 'text-decoration-underline':
                                     tutorType === 'assessing',
                                 disabled:
-                                    skill.type === 'super' &&
-                                    !areAllSubskillsMastered
+                                    (skill.type === 'super' &&
+                                        !areAllSubskillsMastered) ||
+                                    hasTutorButtonBeenClicked
                             }"
                             @click="
                                 skill.type === 'super' &&
@@ -875,22 +949,22 @@ export default {
                             skill.id
                         "
                     >
-                        <!-- Multiple Choice Assessment -->
-                        <router-link
+                        <!-- Replace the router-link with this button -->
+                        <button
                             class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 d-block text-nowrap"
                             :class="{
                                 disabled:
                                     skill.type === 'super' &&
                                     !areAllSubskillsMastered
                             }"
-                            :to="
-                                userDetailsStore.userId
-                                    ? skill.id + '/assessment'
-                                    : '/login'
+                            @click="navigateToAssessment"
+                            :disabled="
+                                skill.type === 'super' &&
+                                !areAllSubskillsMastered
                             "
                         >
                             Multiple-Choice Test
-                        </router-link>
+                        </button>
                     </div>
                     <!-- Explanation message for disabled button -->
                     <div
@@ -907,6 +981,14 @@ export default {
                     </div>
                 </div>
             </div>
+            <!-- Loading animation for assessment navigation -->
+            <div v-if="isNavigatingToAssessment" class="loading-overlay">
+                <div class="loading-container">
+                    <span class="loader"></span>
+                    <div class="loading-text mt-3">Loading assessment...</div>
+                </div>
+            </div>
+
             <div v-if="mode != 'hide'" class="d-flex justify-content-between">
                 <!-- Toggle chat button -->
                 <button class="btn plus-btn ms-1" @click="showChat = !showChat">
@@ -1021,7 +1103,7 @@ export default {
             ></div>
 
             <!-- Chat history -->
-            <template v-for="(message, index) in chatHistory">
+            <template v-for="(message, index) in sortedChatHistory">
                 <!-- Student messages -->
                 <div
                     v-if="message.role === 'user'"
@@ -1382,4 +1464,49 @@ export default {
         width: 100%;
     }
 }
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.loading-text {
+    font-size: 1.2rem;
+    color: var(--primary-color);
+}
+
+/* Loading animation */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* End of loading animation */
 </style>
