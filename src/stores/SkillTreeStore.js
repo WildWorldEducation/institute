@@ -22,11 +22,10 @@ export const useSkillTreeStore = defineStore('skillTree', {
         // WE Save the node that can appear in result for later use
         searchResultNodes: null,
         // Store oldest nodes for filter manipulation
-        oldestNodes: []
+        oldestNodes: [],
+        fullSkillList: [],
     }),
     actions: {
-
-
         // API call for Collapsible Skill Tree.
         async getUserSkills() {
             const userDetailsStore = useUserDetailsStore();
@@ -34,8 +33,11 @@ export const useSkillTreeStore = defineStore('skillTree', {
             const result = await fetch(
                 '/user-skills/filter-by-cohort/' + userDetailsStore.userId
             );
-
             this.userSkills = await result.json();
+        },
+        async getFullSkillList(userId) {
+            const result = await fetch('/user-skills/' + userId);
+            this.fullSkillList = await result.json();
         },
         // API call for Full skill tree.
         async getVerticalTreeUserSkills(level, subjects, isUnlockedOnly) {
@@ -274,6 +276,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
             if (!nodesNeededToBuildTree?.length) {
                 return []
             }
+
             let leafNodes = nodesNeededToBuildTree.filter(node => node.isLeaf);
 
             let resultObject = null;

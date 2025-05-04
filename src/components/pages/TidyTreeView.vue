@@ -346,10 +346,18 @@ export default {
             );
 
             if (isSkillGetShowing && isSkillNeedAdditionalFilter) {
+                if (this.skillTreeStore.fullSkillList.length == 0) {
+                    await this.skillTreeStore.getFullSkillList(
+                        this.userDetailsStore.userId
+                    );
+                }
+
+                // using guest mode skill tree to get the skill node because it have all the skill user can see
                 this.activeFilteredSubject =
-                    this.skillTreeStore.studentSkills.find(
+                    this.skillTreeStore.fullSkillList.find(
                         (skill) => skill.skill_name === rightSubjectName
                     );
+
                 this.openSubFilterMenu = true;
 
                 const isAlreadyInFilterList =
@@ -733,10 +741,7 @@ export default {
 
         async handleOpenSubSubjectFilterMenu(subject) {
             const rightSubjectName = this.transformToOriginalName(subject);
-            if (!this.skillTreeStore.studentSkills.length) {
-                await this.skillTreeStore.getStudentSkills();
-            }
-
+            console.log('open sub subject filter menu', rightSubjectName);
             // Handle close sub-menu case first
             if (
                 this.userDetailsStore.subjectFilters.includes(subject) &&
@@ -762,6 +767,26 @@ export default {
                         (skill) => skill.skill_name === rightSubjectName
                     );
 
+                // get user skill list
+                let userSkills = [];
+                if (this.userDetailsStore.gradeFilter == 'grade_school') {
+                    userSkills =
+                        this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
+                } else if (
+                    this.userDetailsStore.gradeFilter == 'middle_school'
+                ) {
+                    userSkills =
+                        this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
+                } else if (this.userDetailsStore.gradeFilter == 'high_school') {
+                    userSkills =
+                        this.skillTreeStore.highSchoolVerticalTreeUserSkills;
+                } else if (this.userDetailsStore.gradeFilter == 'college') {
+                    userSkills =
+                        this.skillTreeStore.collegeVerticalTreeUserSkills;
+                } else {
+                    userSkills = this.skillTreeStore.verticalTreeUserSkills;
+                }
+
                 // get button position
                 const buttonPosition = this.getFilterButtonPosition(subject);
                 this.additionalFilterPosition.top = Math.ceil(
@@ -780,7 +805,7 @@ export default {
                     this.activeFilteredSubject.children.forEach((childNode) => {
                         const parent = this.skillTreeStore.findSkillBaseOnId(
                             childNode.parent,
-                            this.skillTreeStore.studentSkills
+                            userSkills
                         );
                         const filterObject = {
                             skillName: childNode.skill_name,
