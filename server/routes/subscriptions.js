@@ -189,5 +189,32 @@ router.post(
     }
 );
 
+// Cancel subscription
+// (Subscription tier changes to "Free plan" at the end of the billing cycle.
+router.post('/cancel', async (req, res) => {
+    try {
+        userId = req.body.userId;
+
+        // Get Stripe customer ID of user
+        let queryString = `
+            SELECT stripe_subscription_id
+            FROM users            
+            WHERE id = ${conn.escape(userId)};
+            `;
+        const result = await query(queryString);
+
+        const subscription = await stripe.subscriptions.update(
+            result[0].stripe_subscription_id,
+            {
+                cancel_at_period_end: true
+            }
+        );
+
+        res.end();
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;

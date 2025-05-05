@@ -132,7 +132,7 @@ export default {
                     class="secondary-heading h4 mb-4"
                     :class="{ 'text-center': isMobileCheck < 576 }"
                 >
-                    Monthly AI usage: {{ month }}, {{ year }}
+                    Monthly AI usage: {{ month }} {{ year }}
                 </h2>
                 <ul>
                     <li>
@@ -186,7 +186,7 @@ export default {
                 class="col-md mb-3"
                 :class="{ 'text-center': isMobileCheck < 576 }"
             >
-                <h2 class="secondary-heading h4">Free plan</h2>
+                <h2 class="secondary-heading h4">Free</h2>
                 <p>
                     <strong>Token limit:</strong>
                     {{ this.settingsStore.freePlanTokenLimit.toLocaleString() }}
@@ -198,6 +198,9 @@ export default {
                 >
                     current plan
                 </button>
+                <button v-else class="btn primary-btn mt-2">
+                    downgrade to the Free plan
+                </button>
             </div>
             <!-- Basic plan -->
             <div
@@ -206,7 +209,7 @@ export default {
                     'text-center': isMobileCheck < 576
                 }"
             >
-                <h2 class="secondary-heading h4">Basic plan</h2>
+                <h2 class="secondary-heading h4">Basic</h2>
                 <p>Ideal for moderate use</p>
                 <p>$20 / month</p>
                 <p>
@@ -224,18 +227,23 @@ export default {
                     buy
                 </button>
                 <button
-                    v-if="this.userDetailsStore.subscriptionTier == 'basic'"
+                    v-else-if="
+                        this.userDetailsStore.subscriptionTier == 'basic'
+                    "
                     disabled
                     class="btn primary-btn mt-1 mb-3"
                 >
                     current plan
+                </button>
+                <button v-else class="btn primary-btn mt-2">
+                    downgrade to the Basic plan
                 </button>
             </div>
             <div
                 class="col-md mb-3"
                 :class="{ 'text-center': isMobileCheck < 576 }"
             >
-                <h2 class="secondary-heading h4">Infinite plan</h2>
+                <h2 class="secondary-heading h4">Infinite</h2>
                 <p>Ideal for daily use</p>
                 <p>$100 / month</p>
                 <p>
@@ -255,6 +263,9 @@ export default {
                     class="btn primary-btn mt-1 mb-3"
                 >
                     current plan
+                </button>
+                <button v-else class="btn primary-btn mt-2">
+                    upgrade to the Infinite plan
                 </button>
             </div>
         </div>
