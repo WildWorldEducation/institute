@@ -764,9 +764,14 @@ export default {
                 this.userDetailsStore.subjectFilters.includes(subject)
             ) {
                 this.openSubFilterMenu = true;
+                if (this.skillTreeStore.fullSkillList.length == 0) {
+                    await this.skillTreeStore.getFullSkillList(
+                        this.userDetailsStore.userId
+                    );
+                }
                 // also update active filter object and sub-menu position
                 this.activeFilteredSubject =
-                    this.skillTreeStore.studentSkills.find(
+                    this.skillTreeStore.fullSkillList.find(
                         (skill) => skill.skill_name === rightSubjectName
                     );
 
