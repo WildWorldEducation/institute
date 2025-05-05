@@ -96,7 +96,8 @@ export default {
             showUnmasteredModal: false,
             thumbnailCDN: import.meta.env
                 .VITE_CLOUDFRONT_SKILL_INFOBOX_IMAGE_THUMBNAILS_CDN_NAME,
-            thumbnail: ''
+            thumbnail: '',
+            thumbnailURL: ''
         };
     },
     components: {
