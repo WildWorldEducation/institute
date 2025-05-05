@@ -122,9 +122,6 @@ export default {
 
 <template>
     <div class="container">
-        <h1 class="heading" :class="{ 'text-center': isMobileCheck < 576 }">
-            Subscription
-        </h1>
         <div class="row mt-4">
             <div class="col-md mb-3">
                 <!-- Token usage stats -->
