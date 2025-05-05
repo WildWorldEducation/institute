@@ -61,6 +61,8 @@ router.get('/success', async (req, res, next) => {
         req.query.session_id
     );
 
+    console.log(session.subscription);
+
     let subscriptionTier = '';
     // Convert from cents
     if (session.amount_total == 2000) {
@@ -73,7 +75,8 @@ router.get('/success', async (req, res, next) => {
     let usersTableQueryString = `
             UPDATE users
             SET stripe_customer_id = ${conn.escape(session.customer)},
-            subscription_tier = '${subscriptionTier}'
+            subscription_tier = '${subscriptionTier}',
+            stripe_subscription_id = ${conn.escape(session.subscription)}
             WHERE id = ${conn.escape(userId)};
             `;
 
@@ -119,6 +122,9 @@ router.post(
             switch (event.type) {
                 case 'customer.subscription.updated':
                     const subscriptionUpdated = event.data.object;
+
+                    console.log(event.data.object);
+
                     stripeCustomerId = subscriptionUpdated.customer;
 
                     // Check if the subscription plan type has changed
@@ -175,7 +181,6 @@ router.post(
                     `;
 
                     await query(endSubQueryString);
-                    // set tier to "free"
                     break;
                 default:
                     console.log(`Unhandled event type ${event.type}`);
@@ -210,7 +215,7 @@ router.post('/cancel', async (req, res) => {
             }
         );
 
-        res.end();
+        res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
     } catch (e) {
         res.status(500).json({ error: e.message });
     }

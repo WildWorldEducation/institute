@@ -73,6 +73,7 @@ export default {
         this.month = month[d.getMonth()];
     },
     methods: {
+        // Purchase subscription
         checkout(planType) {
             fetch('/subscriptions/create-checkout-session', {
                 method: 'POST',
@@ -95,6 +96,8 @@ export default {
                     console.error(e.error);
                 });
         },
+        // Load the Stripe Customer Portal page
+        // (This redirects to Stripe's website)
         loadPortal() {
             fetch('/subscriptions/create-customer-portal-session', {
                 method: 'POST',
@@ -115,6 +118,18 @@ export default {
                 .catch((e) => {
                     console.error(e.error);
                 });
+        },
+        // Cancel subscription at end of billing cycle.
+        cancelPlan() {
+            fetch('/subscriptions/cancel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: this.userDetailsStore.userId
+                })
+            });
         }
     }
 };
@@ -198,9 +213,6 @@ export default {
                 >
                     current plan
                 </button>
-                <button v-else class="btn primary-btn mt-2">
-                    downgrade to the Free plan
-                </button>
             </div>
             <!-- Basic plan -->
             <div
@@ -235,10 +247,15 @@ export default {
                 >
                     current plan
                 </button>
-                <button v-else class="btn primary-btn mt-2">
-                    downgrade to the Basic plan
+                <button
+                    @click="cancelPlan()"
+                    v-else
+                    class="btn primary-btn mt-2"
+                >
+                    downgrade to the Free plan
                 </button>
             </div>
+            <!-- Infinite plan -->
             <div
                 class="col-md mb-3"
                 :class="{ 'text-center': isMobileCheck < 576 }"
@@ -258,15 +275,22 @@ export default {
                     buy
                 </button>
                 <button
-                    v-if="this.userDetailsStore.subscriptionTier == 'infinite'"
+                    v-else-if="
+                        this.userDetailsStore.subscriptionTier == 'infinite'
+                    "
                     disabled
                     class="btn primary-btn mt-1 mb-3"
                 >
                     current plan
                 </button>
-                <button v-else class="btn primary-btn mt-2">
-                    upgrade to the Infinite plan
-                </button>
+                <div v-else>
+                    <!-- <button class="btn primary-btn mt-2">
+                        downgrade to the Basic plan
+                    </button> -->
+                    <button @click="cancelPlan()" class="btn primary-btn mt-2">
+                        downgrade to the Free plan
+                    </button>
+                </div>
             </div>
         </div>
     </div>
