@@ -200,7 +200,6 @@ export default {
                     this.image = this.skill.image_thumbnail_url;
                     this.icon = this.skill.icon_url;
 
-                    console.log(this.skill);
                     this.getSkillFilters();
                 });
         },
