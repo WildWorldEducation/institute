@@ -34,7 +34,7 @@ export default {
                 name: '',
                 parent: '',
                 description: '',
-                introduction: '',
+                intro_sentence: '',
                 image_url: '',
                 icon_url: '',
                 mastery_requirements: '',
@@ -89,7 +89,7 @@ export default {
                 violated: false,
                 name: false,
                 description: false,
-                introduction: false,
+                intro_sentence: false,
                 orphan: false,
                 superValidate: false,
                 noChild: false
@@ -155,23 +155,6 @@ export default {
                     }
                 })
                 .then(() => {
-                    $('#summernote-introduction')
-                        .summernote({
-                            disableDragAndDrop: true,
-                            toolbar: [
-                                ['font', ['bold', 'underline', 'clear']],
-                                ['para', ['ul', 'ol', 'paragraph']],
-                                ['view', ['fullscreen', 'codeview', 'help']]
-                            ],
-                            callbacks: {
-                                // To determine if content has changed, to unlock the "Submit" button.
-                                onChange: (contents) => {
-                                    this.skill.introduction = contents;
-                                }
-                            }
-                        })
-                        .summernote('code', this.skill.introduction);
-
                     $('#summernote-mastery-requirements')
                         .summernote({
                             disableDragAndDrop: true,
@@ -412,9 +395,6 @@ export default {
                 this.skill.mastery_requirements = $(
                     '#summernote-mastery-requirements'
                 ).summernote('code');
-                this.skill.introduction = $(
-                    '#summernote-introduction'
-                ).summernote('code');
             }
 
             if (this.skill.name === '' || this.skill.name === null) {
@@ -452,7 +432,7 @@ export default {
                     name: this.skill.name,
                     parent: this.skill.parent,
                     description: this.skill.description,
-                    introduction: this.skill.introduction,
+                    intro_sentence: this.skill.intro_sentence,
                     image: this.skill.image_url,
                     isImageUpdated: isImageUpdated,
                     imageThumbnail: this.skill.image_thumbnail_url,
@@ -502,9 +482,6 @@ export default {
             this.skill.mastery_requirements = $(
                 '#summernote-mastery-requirements'
             ).summernote('code');
-            this.skill.introduction = $('#summernote-introduction').summernote(
-                'code'
-            );
 
             const requestOptions = {
                 method: 'POST',
@@ -514,7 +491,7 @@ export default {
                     image: this.skill.image_url,
                     icon: this.skill.icon_url,
                     mastery_requirements: this.skill.mastery_requirements,
-                    introduction: this.skill.introduction,
+                    intro_sentence: this.skill.intro_sentence,
                     comment: this.comment
                 })
             };
@@ -670,7 +647,8 @@ export default {
                 this.skill.type !== this.originalSkill.type ||
                 this.skill.level !== this.originalSkill.level ||
                 this.skill.mastery_requirements !==
-                    this.originalSkill.mastery_requirements
+                    this.originalSkill.mastery_requirements ||
+                this.skill.intro_sentence !== this.originalSkill.intro_sentence
             );
         }
     }
@@ -1217,16 +1195,19 @@ export default {
                 <div class="col">
                     <div class="mb-3">
                         <h2 class="secondary-heading h4">Introduction</h2>
-                        <textarea
-                            v-model="skill.introduction"
+                        <input
+                            v-model="skill.intro_sentence"
                             class="form-control"
-                            rows="2"
-                            id="summernote-introduction"
-                        ></textarea>
+                            type="text"
+                            placeholder="Enter a brief intro sentence"
+                        />
                     </div>
                     <div>
-                        <div v-if="validate.introduction" class="form-validate">
-                            please enter introduction for skill
+                        <div
+                            v-if="validate.intro_sentence"
+                            class="form-validate"
+                        >
+                            please enter an intro sentence for skill
                         </div>
                     </div>
                 </div>
