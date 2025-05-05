@@ -386,6 +386,10 @@ export default {
                             filterObject
                         );
                     });
+                    console.log(
+                        'this.activeFilteredSubject',
+                        this.activeFilteredSubject
+                    );
                 } else {
                     // check if any of the skill children is in filter object
                     if (
@@ -741,7 +745,6 @@ export default {
 
         async handleOpenSubSubjectFilterMenu(subject) {
             const rightSubjectName = this.transformToOriginalName(subject);
-            console.log('open sub subject filter menu', rightSubjectName);
             // Handle close sub-menu case first
             if (
                 this.userDetailsStore.subjectFilters.includes(subject) &&

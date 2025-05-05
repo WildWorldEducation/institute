@@ -734,8 +734,6 @@ export default {
                 children: skills
             };
 
-            console.log('skills', skills);
-
             this.data = {
                 skill_name: 'My skills',
                 children: this.skill.children

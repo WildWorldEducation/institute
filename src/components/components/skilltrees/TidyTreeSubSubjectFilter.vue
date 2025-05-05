@@ -1,12 +1,18 @@
 <script>
 import { handleError } from 'vue';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
+import { useSessionDetailsStore } from '../../../stores/SessionDetailsStore';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const skillTreeStore = useSkillTreeStore();
+        const sessionDetailsStore = useSessionDetailsStore();
         return {
+            sessionDetailsStore,
             userDetailsStore,
+            skillTreeStore,
             top: '0px',
             left: '0px'
         };
@@ -16,7 +22,6 @@ export default {
         'openSubFilterMenu',
         'filterSkillTree',
         'parents',
-
         'additionalFilterData'
     ],
     data() {
@@ -25,7 +30,15 @@ export default {
             position: null,
             // string position with px suffix for css
             top: '0px',
-            left: '0px'
+            left: '0px',
+            openNestedSubFilterMenu: false,
+
+            additionalFilterPosition: {
+                top: 0,
+                left: 0
+            },
+            nestedFilterData: null,
+            activeFilteredSubject: null
         };
     },
     computed: {},
@@ -36,7 +49,7 @@ export default {
             let state = 'no skill';
             const subSubjectFilterObject = {
                 skillName: skillName,
-                parent: this.parentSkill.skill_name
+                parent: this.activeFilteredSubject.skill_name
             };
             // Handle the case when all skill is in filter objects and user click a skill => we remove other skill from filter object
             // and only keep the one get clicked
@@ -60,7 +73,7 @@ export default {
                 skillsNeedRemove.forEach((skill) => {
                     const filterObject = {
                         skillName: skill.skill_name,
-                        parent: this.parentSkill.skill_name
+                        parent: this.activeFilteredSubject.skill_name
                     };
                     this.userDetailsStore.updateSubSubjectFilter(filterObject);
                 });
@@ -93,7 +106,7 @@ export default {
                     this.showSkills.forEach((element) => {
                         const subSubjectFilterObject = {
                             skillName: element.skill_name,
-                            parent: this.parentSkill.skill_name
+                            parent: this.activeFilteredSubject.skill_name
                         };
 
                         // update the sub-subject filter array in userDetailsStore
@@ -105,6 +118,33 @@ export default {
             }
 
             this.$parent.filterSkillTree();
+        },
+        // handel Science and Invention skill name case
+        getFilterButtonPosition(subjectName) {
+            let resultObj = { top: 0, right: 0 };
+            switch (subjectName) {
+                case 'History':
+                    resultObj.right =
+                        this.$refs.HistoryFilterBtn.getBoundingClientRect().right;
+                    resultObj.top =
+                        this.$refs.HistoryFilterBtn.getBoundingClientRect().top;
+                    break;
+                case 'Language':
+                    resultObj.right =
+                        this.$refs.LanguageFilterBtn.getBoundingClientRect().right;
+                    resultObj.top =
+                        this.$refs.LanguageFilterBtn.getBoundingClientRect().top;
+                    break;
+                case 'Science and Invention':
+                    resultObj.right =
+                        this.$refs.ScienceAndInventionFilterBtn.getBoundingClientRect().right;
+                    resultObj.top =
+                        this.$refs.ScienceAndInventionFilterBtn.getBoundingClientRect().top;
+                    break;
+                default:
+                    break;
+            }
+            return resultObj;
         }
     },
     watch: {
@@ -116,6 +156,42 @@ export default {
                     this.top = this.position.top + 'px';
                     this.left = this.position.left + 'px';
                 }
+                const activeFilteredSubject = newItem.activeFilteredSubject;
+                this.activeFilteredSubject = activeFilteredSubject;
+
+                // handle the case when there is only one child in the subject
+                if (activeFilteredSubject.children.length === 1) {
+                    this.showSkills =
+                        activeFilteredSubject.children[0].children;
+                    this.activeFilteredSubject =
+                        activeFilteredSubject.children[0];
+                }
+
+                // check if one of the showSkills is in the filter list
+                let oneSkillInFilterList = false;
+                for (let index = 0; index < this.showSkills.length; index++) {
+                    const element = this.showSkills[index];
+                    oneSkillInFilterList =
+                        this.userDetailsStore.subSubjectsFilters.some(
+                            (skill) => skill.skillName === element.skill_name
+                        );
+                    if (oneSkillInFilterList) {
+                        break;
+                    }
+                }
+                // if no skill in showskills is in filter list we re-add all of them
+                if (!oneSkillInFilterList) {
+                    this.showSkills.forEach((element) => {
+                        const subSubjectFilterObject = {
+                            skillName: element.skill_name,
+                            parent: this.activeFilteredSubject.skill_name
+                        };
+                        // update the sub-subject filter array in userDetailsStore
+                        this.userDetailsStore.updateSubSubjectFilter(
+                            subSubjectFilterObject
+                        );
+                    });
+                }
             },
             deep: true
         }
@@ -124,28 +200,41 @@ export default {
 </script>
 
 <template>
-    <Transition name="slide-fade">
-        <div v-if="openSubFilterMenu" class="submenuBase">
-            <div v-for="node in showSkills">
-                <button
-                    @click="updateSubjectFilter(node.skill_name)"
-                    class="btn mb-2"
-                    :class="{
-                        'chosen-subject':
-                            userDetailsStore.subSubjectsFilters.find(
-                                (skill) => skill.skillName === node.skill_name
-                            ),
-                        'hidden-subject':
-                            !userDetailsStore.subSubjectsFilters.find(
-                                (skill) => skill.skillName === node.skill_name
-                            )
-                    }"
-                >
-                    {{ node.skill_name }}
-                </button>
+    <div>
+        <Transition name="slide-fade">
+            <div v-if="openSubFilterMenu" class="submenuBase">
+                <div v-for="node in showSkills">
+                    <button
+                        @click="updateSubjectFilter(node.skill_name)"
+                        class="btn mb-2"
+                        :class="{
+                            'chosen-subject':
+                                userDetailsStore.subSubjectsFilters.find(
+                                    (skill) =>
+                                        skill.skillName === node.skill_name
+                                ),
+                            'hidden-subject':
+                                !userDetailsStore.subSubjectsFilters.find(
+                                    (skill) =>
+                                        skill.skillName === node.skill_name
+                                )
+                        }"
+                    >
+                        {{ node.skill_name }}
+                    </button>
+                </div>
             </div>
-        </div>
-    </Transition>
+        </Transition>
+        <!-- Nested additional filter -->
+        <!-- Sub subject filters only appear when a root subject is choose and user is logged in-->
+        <!-- <TidyTreeSubSubjectFilter
+            :parentSkill="activeFilteredSubject"
+            :openSubFilterMenu="openNestedSubFilterMenu"
+            :parents="[activeFilteredSubject?.skill_name]"
+            :position="additionalFilterPosition"
+            :additionalFilterData="nestedFilterData"
+        /> -->
+    </div>
 </template>
 
 <style scoped>
