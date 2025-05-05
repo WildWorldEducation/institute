@@ -50,7 +50,6 @@ export default {
 
 <template>
     <div class="row">
-        <h2 class="tertiary-heading h5">Goals</h2>
         <!-- Tooltip -->
         <div
             v-if="showTutorialTip && userDetailsStore.role == 'student'"

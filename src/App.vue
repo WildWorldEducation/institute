@@ -435,6 +435,13 @@ export default {
                                 <RouterLink to="/reputation" class="nav-link">
                                     Reputation
                                 </RouterLink>
+                                <RouterLink
+                                    v-if="userDetailsStore.role == 'student'"
+                                    to="/subscriptions"
+                                    class="nav-link"
+                                >
+                                    Subscription
+                                </RouterLink>
                                 <a
                                     v-if="sessionDetailsStore.isLoggedIn"
                                     @click="LogOut()"
