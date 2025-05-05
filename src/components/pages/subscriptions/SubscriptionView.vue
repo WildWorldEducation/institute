@@ -213,6 +213,13 @@ export default {
                 >
                     current plan
                 </button>
+                <button
+                    v-else
+                    @click="cancelPlan()"
+                    class="btn primary-btn mt-1 mb-3"
+                >
+                    downgrade
+                </button>
             </div>
             <!-- Basic plan -->
             <div
@@ -247,13 +254,6 @@ export default {
                 >
                     current plan
                 </button>
-                <button
-                    @click="cancelPlan()"
-                    v-else
-                    class="btn primary-btn mt-2"
-                >
-                    downgrade to the Free plan
-                </button>
             </div>
             <!-- Infinite plan -->
             <div
@@ -274,23 +274,16 @@ export default {
                 >
                     buy
                 </button>
+
                 <button
                     v-else-if="
                         this.userDetailsStore.subscriptionTier == 'infinite'
                     "
                     disabled
-                    class="btn primary-btn mt-1 mb-3"
+                    class="btn primary-btn mt-1"
                 >
                     current plan
                 </button>
-                <div v-else>
-                    <!-- <button class="btn primary-btn mt-2">
-                        downgrade to the Basic plan
-                    </button> -->
-                    <button @click="cancelPlan()" class="btn primary-btn mt-2">
-                        downgrade to the Free plan
-                    </button>
-                </div>
             </div>
         </div>
     </div>

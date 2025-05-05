@@ -61,8 +61,6 @@ router.get('/success', async (req, res, next) => {
         req.query.session_id
     );
 
-    console.log(session.subscription);
-
     let subscriptionTier = '';
     // Convert from cents
     if (session.amount_total == 2000) {
@@ -71,7 +69,7 @@ router.get('/success', async (req, res, next) => {
         subscriptionTier = 'infinite';
     }
 
-    // Save the new Stripe customer ID to the user table
+    // Save the new Stripe customer ID and subscription ID to the user table
     let usersTableQueryString = `
             UPDATE users
             SET stripe_customer_id = ${conn.escape(session.customer)},
@@ -122,9 +120,6 @@ router.post(
             switch (event.type) {
                 case 'customer.subscription.updated':
                     const subscriptionUpdated = event.data.object;
-
-                    console.log(event.data.object);
-
                     stripeCustomerId = subscriptionUpdated.customer;
 
                     // Check if the subscription plan type has changed

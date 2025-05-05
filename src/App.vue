@@ -334,6 +334,7 @@ export default {
                             v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item"
                         >
+                            <!-- Large screen menu -->
                             <div class="dropdown d-none d-sm-block">
                                 <a
                                     href="#"
@@ -412,6 +413,7 @@ export default {
                                     </a>
                                 </div>
                             </div>
+                            <!-- Mobile menu -->
                             <div class="d-sm-none">
                                 <RouterLink to="/profile" class="nav-link">
                                     Profile
@@ -434,6 +436,13 @@ export default {
                                 </RouterLink>
                                 <RouterLink to="/reputation" class="nav-link">
                                     Reputation
+                                </RouterLink>
+                                <RouterLink
+                                    v-if="userDetailsStore.role == 'student'"
+                                    to="/subscriptions"
+                                    class="nav-link"
+                                >
+                                    Subscription
                                 </RouterLink>
                                 <a
                                     v-if="sessionDetailsStore.isLoggedIn"
