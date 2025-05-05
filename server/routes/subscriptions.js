@@ -210,6 +210,8 @@ router.post('/cancel', async (req, res) => {
             }
         );
 
+        console.log(subscription);
+
         res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
     } catch (e) {
         res.status(500).json({ error: e.message });
