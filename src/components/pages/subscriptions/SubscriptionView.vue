@@ -20,9 +20,7 @@ export default {
             month: '',
             isAITokenLimitReached: false,
             isMobileCheck: window.innerWidth,
-            showWelcomeModal: false,
-            showTutorialTip1: false,
-            isTutorialComplete: false
+            showTooltip: false
         };
     },
 
@@ -80,11 +78,6 @@ export default {
 
         const d = new Date();
         this.month = month[d.getMonth()];
-    },
-    async created() {
-        if (window.innerWidth < 576 && this.sessionDetailsStore.isLoggedIn) {
-            this.checkIfTutorialComplete();
-        }
     },
     computed: {
         formattedMonthlyTokenUsage() {
@@ -152,104 +145,11 @@ export default {
                     console.error(e.error);
                 });
         },
-
-        progressTutorial(step) {
-            if (step == 1) {
-                this.showTutorialTip1 = false;
-                this.markTutorialComplete();
-            }
+        openTooltip() {
+            this.showTooltip = true;
         },
-        markTutorialComplete() {
-            let url =
-                '/users/mark-tutorial-complete/hub/' +
-                this.userDetailsStore.userId;
-            const requestOptions = {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' }
-            };
-            fetch(url, requestOptions);
-        },
-        async startTutorial() {
-            // Show the tutorial tooltips and mark tutorial as not complete
-            this.showTutorialTip1 = true;
-            this.isTutorialComplete = false;
-            this.showWelcomeModal = false;
-            // Reset tutorial fields for the user
-            await this.resetTutorialProgress();
-        },
-        async resetTutorialProgress() {
-            try {
-                await fetch(
-                    `/users/reset-all-tutorials/${this.userDetailsStore.userId}`,
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    }
-                );
-            } catch (error) {
-                console.error('Error resetting tutorials:', error);
-            }
-        },
-        async closeTutorial() {
-            // Close the welcome modal
-            this.showWelcomeModal = false;
-            // Mark all tutorials as complete
-            await this.markAllTutorialsComplete();
-        },
-        restartTutorial() {
-            this.startTutorial();
-        },
-        async markAllTutorialsComplete() {
-            try {
-                const response = await fetch(
-                    `/users/mark-all-tutorials-complete/${this.userDetailsStore.userId}`,
-                    {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' }
-                    }
-                );
-                if (response.ok) {
-                    this.isTutorialComplete = true;
-                } else {
-                    console.error('Error marking tutorials as complete.');
-                }
-            } catch (error) {
-                console.error('API request failed:', error);
-            }
-        },
-        skipTutorial() {
-            this.showTutorialTip1 = false;
-
-            this.isTutorialComplete = true;
-            this.markTutorialComplete();
-        },
-        async checkIfTutorialComplete() {
-            // Only check and show tutorial on mobile
-            if (window.innerWidth < 576) {
-                try {
-                    const result = await fetch(
-                        '/users/check-tutorial-progress/hub/' +
-                            this.userDetailsStore.userId
-                    );
-                    const data = await result.json();
-
-                    if (
-                        data === 0 &&
-                        this.userDetailsStore.role === 'student'
-                    ) {
-                        this.showWelcomeModal = true;
-                    } else if (data === 1) {
-                        this.isTutorialComplete = true;
-                    }
-                } catch (error) {
-                    console.error('Error checking tutorial progress:', error);
-                }
-            } else {
-                // If not mobile, mark tutorial as complete
-                this.isTutorialComplete = true;
-            }
+        closeTooltip() {
+            this.showTooltip = false;
         }
     }
 };
@@ -266,7 +166,7 @@ export default {
             </h1>
             <!-- Tutorial button -->
             <div class="d-flex justify-content-end">
-                <button class="btn mb-2" @click="restartTutorial">
+                <button class="btn mb-2" @click="openTooltip">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 192 512"
@@ -316,21 +216,17 @@ export default {
                 </div>
             </div>
 
-            <!-- Student -->
-            <div v-if="showTutorialTip1" class="modal">
-                <div v-if="showTutorialTip1" class="modal-content">
-                    <!-- Student -->
+            <!-- Single Tooltip -->
+            <div v-if="showTooltip" class="modal">
+                <div class="modal-content">
                     <div>
                         <p>
                             It is against our policy to share accounts and each
                             account is meant to only be used by one user.
                         </p>
 
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(1)"
-                        >
-                            close
+                        <button class="btn primary-btn" @click="closeTooltip">
+                            Close
                         </button>
                     </div>
                 </div>
