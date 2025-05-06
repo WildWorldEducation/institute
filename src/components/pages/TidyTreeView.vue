@@ -444,7 +444,7 @@ export default {
             const isSkillNeedAdditionalFilter = this.skillsNeedMoreFilter.find(
                 (skillName) => skillName === subject
             );
-            if (this.skillsStore.guestModeVerticalTreeSkills.length == 0) {
+            if (this.skillsStore.guestModeVerticalTreeSkills.length < 6) {
                 await this.skillsStore.getGuestModeVerticalTreeSkills('phd', [
                     'Language',
                     'Mathematics',
@@ -475,6 +475,7 @@ export default {
                     this.skillsNeedMoreFilter.find(
                         (skillName) => skillName === subject
                     );
+                // add all it children to subject filter
                 if (isSkillNeedAdditionalFilter) {
                     const nodeData =
                         this.skillTreeStore.findGuestSkillBaseOnName(
@@ -532,7 +533,9 @@ export default {
                     this.userDetailsStore.subSubjectsFilters = [];
                     this.openSubFilterMenu = false;
                 }
-            } else {
+            }
+            // handle case add another subject to filter list
+            else {
                 if (isSkillNeedAdditionalFilter) {
                     this.openSubFilterMenu = true;
                 }
@@ -547,13 +550,36 @@ export default {
                 this.userDetailsStore.updateSubSubjectFilter(
                     parentSubjectFilter
                 );
+                console.log(
+                    'subjectFilter',
+                    this.userDetailsStore.subSubjectsFilters
+                );
+                // add all it children to subject filter
+                const nodeData =
+                    this.skillsStore.guestModeVerticalTreeSkills.find(
+                        (node) => node.name === rightSubjectName
+                    );
+                if (nodeData) {
+                    nodeData.children.forEach((childNode) => {
+                        const filterObject = {
+                            skillName: childNode.name,
+                            parent: nodeData.name
+                        };
+
+                        this.userDetailsStore.updateSubSubjectFilter(
+                            filterObject
+                        );
+                    });
+                }
+                this.userDetailsStore.updateSubSubjectFilter(
+                    parentSubjectFilter
+                );
             }
 
             if (isSkillNeedAdditionalFilter && isSkillGetShowing) {
                 this.activeFilteredSubject =
                     this.skillsStore.guestModeVerticalTreeSkills.find(
                         (skill) => {
-                            console.log(skill);
                             return skill.name === rightSubjectName;
                         }
                     );
@@ -570,9 +596,10 @@ export default {
                 this.additionalFilterData.additionalFilterPosition =
                     this.additionalFilterPosition;
 
-                // handle case filter skill is science and invention
-
                 if (this.activeFilteredSubject?.name == 'Science & Invention') {
+                    this.userDetailsStore.changeIsLeafProperty(
+                        this.activeFilteredSubject.children[0].name
+                    );
                     this.activeFilteredSubject.children[0].children.forEach(
                         (childNode) => {
                             const parent =
@@ -589,9 +616,13 @@ export default {
                             );
                         }
                     );
+                    // turn science and invention isLeaf to false
                 }
             }
-
+            console.log(
+                'this.userDetailsStore.subSubjectsFilters',
+                this.userDetailsStore.subSubjectsFilters
+            );
             this.$refs.childComponent.filter(
                 this.gradeFilter,
                 this.subjectFilters
