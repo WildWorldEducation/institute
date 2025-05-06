@@ -318,8 +318,8 @@ export default {
                     ctx1.beginPath();
                     ctx1.strokeStyle = '#FFF';
                     ctx1.lineWidth = 4;
-                    // Changed domain text color to be lighter (previously #849cab)
-                    ctx1.fillStyle = '#aabbc5';
+                    // Changed domain text color to be darker (previously #849cab/ #aabbc5)
+                    ctx1.fillStyle = '#546673';
                     ctx1.direction = 'rtl';
                     ctx1.strokeText(
                         node.data.skill_name,
