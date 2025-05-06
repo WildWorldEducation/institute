@@ -1,6 +1,7 @@
 <script>
 import { handleError } from 'vue';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import { active } from 'd3';
 
 export default {
     setup() {
@@ -25,7 +26,8 @@ export default {
             position: null,
             // string position with px suffix for css
             top: '0px',
-            left: '0px'
+            left: '0px',
+            activeFilteredSubject: null
         };
     },
     computed: {},
@@ -36,7 +38,7 @@ export default {
             let state = 'no skill';
             const subSubjectFilterObject = {
                 skillName: skillName,
-                parent: this.parentSkill.name
+                parent: this.activeFilteredSubject.name
             };
             // Handle the case when all skill is in filter objects and user click a skill => we remove other skill from filter object
             // and only keep the one get clicked
@@ -60,7 +62,7 @@ export default {
                 skillsNeedRemove.forEach((skill) => {
                     const filterObject = {
                         skillName: skill.name,
-                        parent: this.parentSkill.name
+                        parent: this.activeFilteredSubject.name
                     };
                     this.userDetailsStore.updateSubSubjectFilter(filterObject);
                 });
@@ -115,6 +117,14 @@ export default {
                 if (this.position) {
                     this.top = this.position.top + 'px';
                     this.left = this.position.left + 'px';
+                }
+                const activeFilteredSubject = newItem?.activeFilteredSubject;
+                this.activeFilteredSubject = activeFilteredSubject;
+                if (activeFilteredSubject?.children.length === 1) {
+                    this.activeFilteredSubject =
+                        activeFilteredSubject.children[0];
+                    this.showSkills =
+                        activeFilteredSubject.children[0].children;
                 }
             },
             deep: true
