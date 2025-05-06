@@ -627,7 +627,6 @@ router.beforeEach(async (to, from, next) => {
         to.name == 'student-signup' ||
         to.name == 'editor-signup' ||
         to.name == 'instructor-signup' ||
-        to.name == 'subscription' ||
         to.name == 'login'
     ) {
         document.getElementById('app').style.overflow = 'hidden';
