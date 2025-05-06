@@ -1,15 +1,16 @@
 <script>
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import { useSettingsStore } from '../../../stores/SettingsStore.js';
-
+import { useSessionDetailsStore } from '../../../stores/SessionDetailsStore';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
         const settingsStore = useSettingsStore();
-
+        const sessionDetailsStore = useSessionDetailsStore();
         return {
             userDetailsStore,
-            settingsStore
+            settingsStore,
+            sessionDetailsStore
         };
     },
     data() {
@@ -18,9 +19,11 @@ export default {
             year: 0,
             month: '',
             isAITokenLimitReached: false,
-            isMobileCheck: window.innerWidth
+            isMobileCheck: window.innerWidth,
+            showTooltip: false
         };
     },
+
     async mounted() {
         //Stripe external script
         let stripeScript = document.createElement('script');
@@ -28,7 +31,7 @@ export default {
         document.head.appendChild(stripeScript);
 
         // Get free monthly AI token limit
-        if (this.settingsStore.freePlanTokenLimit == 0) {
+        if (!this.settingsStore.freePlanTokenLimit) {
             await this.settingsStore.getSettings();
         }
 
@@ -36,15 +39,19 @@ export default {
         // Check if user is over free monthly AI token limit
         if (this.userDetailsStore.subscriptionTier == 'free') {
             if (
+                this.settingsStore.freePlanTokenLimit &&
+                this.userDetailsStore.monthlyTokenUsage &&
                 this.settingsStore.freePlanTokenLimit <=
-                this.userDetailsStore.monthlyTokenUsage
+                    this.userDetailsStore.monthlyTokenUsage
             ) {
                 this.isAITokenLimitReached = true;
             }
         } else if (this.userDetailsStore.subscriptionTier == 'basic') {
             if (
+                this.settingsStore.basicPlanTokenLimit &&
+                this.userDetailsStore.monthlyTokenUsage &&
                 this.settingsStore.basicPlanTokenLimit <=
-                this.userDetailsStore.monthlyTokenUsage
+                    this.userDetailsStore.monthlyTokenUsage
             ) {
                 this.isAITokenLimitReached = true;
             }
@@ -71,6 +78,28 @@ export default {
 
         const d = new Date();
         this.month = month[d.getMonth()];
+    },
+    computed: {
+        formattedMonthlyTokenUsage() {
+            return this.userDetailsStore.monthlyTokenUsage
+                ? this.userDetailsStore.monthlyTokenUsage.toLocaleString()
+                : '0';
+        },
+        formattedFreePlanTokenLimit() {
+            return this.settingsStore.freePlanTokenLimit
+                ? this.settingsStore.freePlanTokenLimit.toLocaleString()
+                : '0';
+        },
+        formattedBasicPlanTokenLimit() {
+            return this.settingsStore.basicPlanTokenLimit
+                ? this.settingsStore.basicPlanTokenLimit.toLocaleString()
+                : '0';
+        },
+        subscriptionTierFormatted() {
+            return this.userDetailsStore.subscriptionTier
+                ? this.userDetailsStore.subscriptionTier.toLocaleString()
+                : 'free';
+        }
     },
     methods: {
         // Purchase subscription
@@ -130,6 +159,12 @@ export default {
                     userId: this.userDetailsStore.userId
                 })
             });
+        },
+        openTooltip() {
+            this.showTooltip = true;
+        },
+        closeTooltip() {
+            this.showTooltip = false;
         }
     }
 };
@@ -137,9 +172,24 @@ export default {
 
 <template>
     <div class="container">
-        <h1 class="heading" :class="{ 'text-center': isMobileCheck < 576 }">
-            Subscription
-        </h1>
+        <div class="d-flex justify-content-end w-100">
+            <!-- Tutorial button -->
+            <button class="btn mb-2" @click="openTooltip">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 192 512"
+                    width="20"
+                    height="20"
+                    class="primary-icon"
+                >
+                    <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                    <path
+                        d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                    />
+                </svg>
+            </button>
+        </div>
+
         <div class="row mt-4">
             <div class="col-md mb-3">
                 <!-- Token usage stats -->
@@ -153,17 +203,13 @@ export default {
                     <li>
                         <p>
                             <strong>Your subscription tier:</strong>
-                            {{
-                                userDetailsStore.subscriptionTier.toLocaleString()
-                            }}
+                            {{ subscriptionTierFormatted }}
                         </p>
                     </li>
                     <li>
                         <p>
                             <strong>Current token usage:</strong>
-                            {{
-                                userDetailsStore.monthlyTokenUsage.toLocaleString()
-                            }}
+                            {{ formattedMonthlyTokenUsage }}
                         </p>
                     </li>
                 </ul>
@@ -176,6 +222,22 @@ export default {
                     features until next month.
                 </div>
             </div>
+
+            <!-- Single Tooltip -->
+            <div v-if="showTooltip" class="modal">
+                <div class="modal-content">
+                    <div>
+                        <p>
+                            It is against our policy to share accounts and each
+                            account is meant to only be used by one user.
+                        </p>
+
+                        <button class="btn primary-btn" @click="closeTooltip">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div
                 class="col-md mb-3 d-flex"
                 :class="
@@ -186,7 +248,7 @@ export default {
             >
                 <!-- Manage  billing -->
                 <button
-                    v-if="this.userDetailsStore.subscriptionTier != 'free'"
+                    v-if="userDetailsStore.subscriptionTier != 'free'"
                     class="btn primary-btn"
                     @click="loadPortal()"
                 >
@@ -204,10 +266,10 @@ export default {
                 <h2 class="secondary-heading h4">Free</h2>
                 <p>
                     <strong>Token limit:</strong>
-                    {{ this.settingsStore.freePlanTokenLimit.toLocaleString() }}
+                    {{ formattedFreePlanTokenLimit }}
                 </p>
                 <button
-                    v-if="this.userDetailsStore.subscriptionTier == 'free'"
+                    v-if="userDetailsStore.subscriptionTier == 'free'"
                     disabled
                     class="btn primary-btn mt-2"
                 >
@@ -233,13 +295,11 @@ export default {
                 <p>$20 / month</p>
                 <p>
                     <strong>Token limit:</strong>
-                    {{
-                        this.settingsStore.basicPlanTokenLimit.toLocaleString()
-                    }}
+                    {{ formattedBasicPlanTokenLimit }}
                 </p>
                 <!-- Buy subscription -->
                 <button
-                    v-if="this.userDetailsStore.subscriptionTier == 'free'"
+                    v-if="userDetailsStore.subscriptionTier == 'free'"
                     @click="checkout('basic')"
                     class="btn primary-btn mt-2"
                 >
@@ -268,7 +328,7 @@ export default {
                     Infinite
                 </p>
                 <button
-                    v-if="this.userDetailsStore.subscriptionTier == 'free'"
+                    v-if="userDetailsStore.subscriptionTier == 'free'"
                     @click="checkout('infinite')"
                     class="btn primary-btn mt-2"
                 >
@@ -289,4 +349,47 @@ export default {
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* Modals */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 2000;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    /* 5% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    max-width: 520px;
+    font-size: 18px;
+    /* Could be more or less, depending on screen size */
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 480px) {
+    /* Modal Content/Box */
+    .modal-content {
+        width: 90%;
+        margin-top: 5%;
+    }
+}
+</style>

@@ -69,7 +69,8 @@ export default {
             finishTime: null,
             needToSelectInstructor: false,
             aiLoading: false,
-            numOfImagesRequired: 1
+            numOfImagesRequired: 1,
+            isSubmitting: false // flag to track submission status
         };
     },
     async created() {
@@ -389,9 +390,14 @@ export default {
         },
         // Async because essay questions are marked on server.
         async Submit() {
+            // Set flag to true to disable the button
+            this.isSubmitting = true;
+
             this.UserAnswer();
             if (!this.isAllQuestionsAnswered) {
                 alert('Please answer all questions before submitting.');
+                // Reset flag if validation fails
+                this.isSubmitting = false;
                 return;
             }
             // get the time when user submit the assessment result for result page
@@ -560,36 +566,63 @@ export default {
                                     }
                                 }
                             });
+                        })
+                        .catch((error) => {
+                            console.error(
+                                'Error submitting assessment:',
+                                error
+                            );
+                            // Reset submission flag if there's an error
+                            this.isSubmitting = false;
                         });
                 } else {
                     // Submit essay questions to AI for marking.
-                    for (let i = 0; i < this.questions.length; i++) {
-                        if (this.questions[i].questionType == 'essay') {
-                            let question = this.questions[i].question;
-                            let answer = this.questions[i].userAnswer;
+                    try {
+                        for (let i = 0; i < this.questions.length; i++) {
+                            if (this.questions[i].questionType == 'essay') {
+                                let question = this.questions[i].question;
+                                let answer = this.questions[i].userAnswer;
 
-                            await this.AIMarkEssayQuestion(question, answer, i);
-                        } else if (this.questions[i].questionType == 'image') {
-                            let question = this.questions[i].question;
-                            let answer = this.questions[i].userAnswer;
+                                await this.AIMarkEssayQuestion(
+                                    question,
+                                    answer,
+                                    i
+                                );
+                            } else if (
+                                this.questions[i].questionType == 'image'
+                            ) {
+                                let question = this.questions[i].question;
+                                let answer = this.questions[i].userAnswer;
 
-                            await this.AIMarkImageQuestion(question, answer, i);
+                                await this.AIMarkImageQuestion(
+                                    question,
+                                    answer,
+                                    i
+                                );
+                            }
                         }
-                    }
-                    if (
-                        (this.score / this.questions.length) * 100 >=
-                        this.settingsStore.passMark
-                    ) {
-                        await this.MakeMastered(this.skill);
-                        this.isQuizPassed = true;
-                        // show result page and hide assessment part
-                        this.assessmentStatus = 'You passed';
-                        this.showResult = true;
-                    } else {
-                        // show result page and hide assessment part
-                        this.isQuizPassed = true;
-                        this.assessmentStatus = 'You failed';
-                        this.showResult = true;
+                        if (
+                            (this.score / this.questions.length) * 100 >=
+                            this.settingsStore.passMark
+                        ) {
+                            await this.MakeMastered(this.skill);
+                            this.isQuizPassed = true;
+                            // show result page and hide assessment part
+                            this.assessmentStatus = 'You passed';
+                            this.showResult = true;
+                        } else {
+                            // show result page and hide assessment part
+                            this.isQuizPassed = true;
+                            this.assessmentStatus = 'You failed';
+                            this.showResult = true;
+                        }
+                    } catch (error) {
+                        console.error(
+                            'Error marking questions with AI:',
+                            error
+                        );
+                        // Reset submission flag if there's an error
+                        this.isSubmitting = false;
                     }
                 }
             }
@@ -606,22 +639,29 @@ export default {
                 })
             };
             let url = '/questions/mark-essay-question';
-            await fetch(url, requestOptions)
-                .then(function (response) {
-                    return response.json();
-                })
-                .then((result) => {
-                    if (result.isCorrect == true) {
-                        this.score++;
-                        this.questions[i].isCorrect = true;
-                    } else {
-                        this.questions[i].explanation = result.explanation;
-                        this.questions[i].isCorrect = false;
-                    }
-                })
-                .finally(() => {
-                    this.aiLoading = false;
-                });
+            try {
+                await fetch(url, requestOptions)
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then((result) => {
+                        if (result.isCorrect == true) {
+                            this.score++;
+                            this.questions[i].isCorrect = true;
+                        } else {
+                            this.questions[i].explanation = result.explanation;
+                            this.questions[i].isCorrect = false;
+                        }
+                    })
+                    .finally(() => {
+                        this.aiLoading = false;
+                    });
+            } catch (error) {
+                console.error('Error marking essay question:', error);
+                this.aiLoading = false;
+                this.isSubmitting = false; // Reset flag on error
+                throw error; // Rethrow to be caught by the Submit method
+            }
         },
         async AIMarkImageQuestion(question, answer, i) {
             this.aiLoading = true;
@@ -635,26 +675,33 @@ export default {
                 })
             };
             let url = '/questions/mark-image-question';
-            await fetch(url, requestOptions)
-                .then(function (response) {
-                    return response.json();
-                })
-                .then((result) => {
-                    if (result.isError == true) {
-                        this.questions[i].isCorrect = false;
-                        this.questions[i].explanation =
-                            'There was an error grading this question. The file size(s) may be too big.';
-                    } else if (result.isCorrect == true) {
-                        this.score++;
-                        this.questions[i].isCorrect = true;
-                    } else {
-                        this.questions[i].explanation = result.explanation;
-                        this.questions[i].isCorrect = false;
-                    }
-                })
-                .finally(() => {
-                    this.aiLoading = false;
-                });
+            try {
+                await fetch(url, requestOptions)
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then((result) => {
+                        if (result.isError == true) {
+                            this.questions[i].isCorrect = false;
+                            this.questions[i].explanation =
+                                'There was an error grading this question. The file size(s) may be too big.';
+                        } else if (result.isCorrect == true) {
+                            this.score++;
+                            this.questions[i].isCorrect = true;
+                        } else {
+                            this.questions[i].explanation = result.explanation;
+                            this.questions[i].isCorrect = false;
+                        }
+                    })
+                    .finally(() => {
+                        this.aiLoading = false;
+                    });
+            } catch (error) {
+                console.error('Error marking image question:', error);
+                this.aiLoading = false;
+                this.isSubmitting = false; // Reset flag on error
+                throw error; // Rethrow to be caught by the Submit method
+            }
         },
         UserAnswer() {
             for (let i = 0; i < this.questions.length; i++) {
@@ -932,8 +979,9 @@ export default {
                         v-if="questionNumber >= questions.length - 1"
                         @click="Submit()"
                         class="btn green-btn"
+                        :disabled="isSubmitting"
                     >
-                        Submit
+                        {{ isSubmitting ? 'Submitting...' : 'Submit' }}
                     </button>
                 </div>
             </div>
