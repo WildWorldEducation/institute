@@ -597,19 +597,19 @@ export default {
                     this.additionalFilterPosition;
 
                 if (this.activeFilteredSubject?.name == 'Science & Invention') {
-                    this.userDetailsStore.changeIsLeafProperty(
+                    console.log(
+                        'subsubjectFilters',
+                        this.userDetailsStore.subSubjectsFilters
+                    );
+                    this.userDetailsStore.changeIsLeafStatus(
                         this.activeFilteredSubject.children[0].name
                     );
                     this.activeFilteredSubject.children[0].children.forEach(
                         (childNode) => {
-                            const parent =
-                                this.skillTreeStore.findSkillBaseOnId(
-                                    childNode.parent,
-                                    this.skillsStore.guestModeVerticalTreeSkills
-                                );
                             const filterObject = {
                                 skillName: childNode.name,
-                                parent: parent.name
+                                parent: this.activeFilteredSubject.children[0]
+                                    .name
                             };
                             this.userDetailsStore.updateSubSubjectFilter(
                                 filterObject

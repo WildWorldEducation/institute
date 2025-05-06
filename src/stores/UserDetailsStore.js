@@ -270,6 +270,15 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 result = true
             }
             return result;
+        },
+        // change the isLeaf status of the filter object
+        changeIsLeafStatus(skillName) {
+            this.subSubjectsFilters = this.subSubjectsFilters.map(filterObject => {
+                if (filterObject.skillName === skillName) {
+                    return { ...filterObject, isLeaf: !filterObject.isLeaf };
+                }
+                return filterObject;
+            });
         }
     }
 });
