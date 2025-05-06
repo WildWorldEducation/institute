@@ -49,7 +49,10 @@ export default {
 </script>
 
 <template>
-    <div class="row">
+    <div>
+        <div v-if="goals.length === 0" class="empty-message">
+            You haven't set any goals yet.
+        </div>
         <!-- Tooltip -->
         <div
             v-if="showTutorialTip && userDetailsStore.role == 'student'"
@@ -106,6 +109,11 @@ export default {
 </template>
 
 <style scoped>
+.empty-message {
+    color: #667085;
+    padding: 15px;
+    text-align: center;
+}
 /* Tooltips */
 .hovering-info-panel {
     position: absolute;
