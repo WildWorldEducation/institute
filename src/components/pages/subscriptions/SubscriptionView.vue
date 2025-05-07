@@ -83,6 +83,14 @@ export default {
         this.month = month[d.getMonth()];
     },
     computed: {
+        formattedStripeDate() {
+            let dateObj = new Date(this.subscription.current_period_end * 1000);
+            const month = dateObj.getUTCMonth() + 1; // months from 1-12
+            const day = dateObj.getUTCDate();
+            const year = dateObj.getUTCFullYear();
+            const formattedDate = year + '/' + month + '/' + day;
+            return formattedDate;
+        },
         formattedMonthlyTokenUsage() {
             return this.userDetailsStore.monthlyTokenUsage
                 ? this.userDetailsStore.monthlyTokenUsage.toLocaleString()
@@ -111,7 +119,6 @@ export default {
             );
             const subscriptionData = await result.json();
             this.subscription = subscriptionData.subscription;
-            console.log(this.subscription);
         },
         // Purchase subscription
         checkout(planType) {
@@ -172,6 +179,8 @@ export default {
                     body: JSON.stringify({
                         userId: this.userDetailsStore.userId
                     })
+                }).then(() => {
+                    this.getSubscription();
                 });
             } else {
                 return;
@@ -240,11 +249,12 @@ export default {
                     features until next month.
                 </div>
                 <div
-                    v-if="subscription.cancel_at_period_end"
+                    v-if="subscription && subscription.cancel_at_period_end"
                     class="alert alert-warning"
                     role="alert"
                 >
-                    Your plan will downgrade to the Free plan on ...
+                    Your plan will downgrade to the Free plan on
+                    {{ formattedStripeDate }}
                 </div>
             </div>
 

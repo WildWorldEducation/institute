@@ -35,10 +35,13 @@ router.get('/subscription-id/:userId', async (req, res, next) => {
 
     let result = await query(queryString);
 
-    let subId = result[0].stripe_subscription_id;
-    const subscription = await stripe.subscriptions.retrieve(subId);
-
-    res.json({ subscription: subscription });
+    if (result[0].stripe_subscription_id != null) {
+        let subId = result[0].stripe_subscription_id;
+        const subscription = await stripe.subscriptions.retrieve(subId);
+        res.json({ subscription: subscription });
+    } else {
+        res.json({ subscription: null });
+    }
 });
 
 let userId;
@@ -225,8 +228,6 @@ router.post('/cancel', async (req, res) => {
                 cancel_at_period_end: true
             }
         );
-
-        console.log(subscription);
 
         res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
     } catch (e) {
