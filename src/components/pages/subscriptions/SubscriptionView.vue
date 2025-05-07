@@ -24,12 +24,7 @@ export default {
             subscription: {}
         };
     },
-    async mounted() {
-        //Stripe external script
-        let stripeScript = document.createElement('script');
-        stripeScript.setAttribute('src', 'https://js.stripe.com/v3/');
-        document.head.appendChild(stripeScript);
-
+    async created() {
         // Get free monthly AI token limit
         if (!this.settingsStore.freePlanTokenLimit) {
             await this.settingsStore.getSettings();
@@ -37,6 +32,13 @@ export default {
 
         await this.userDetailsStore.getUserDetails();
         await this.getSubscription();
+    },
+    async mounted() {
+        //Stripe external script
+        let stripeScript = document.createElement('script');
+        stripeScript.setAttribute('src', 'https://js.stripe.com/v3/');
+        document.head.appendChild(stripeScript);
+
         // Check if user is over free monthly AI token limit
         if (this.userDetailsStore.subscriptionTier == 'free') {
             if (
@@ -107,7 +109,8 @@ export default {
             const result = await fetch(
                 '/subscriptions/subscription-id/' + this.userDetailsStore.userId
             );
-            this.subscription = await result.json();
+            const subscriptionData = await result.json();
+            this.subscription = subscriptionData.subscription;
             console.log(this.subscription);
         },
         // Purchase subscription
@@ -235,6 +238,13 @@ export default {
                 >
                     You are over the monthly free limit. You can't use the AI
                     features until next month.
+                </div>
+                <div
+                    v-if="subscription.cancel_at_period_end"
+                    class="alert alert-warning"
+                    role="alert"
+                >
+                    Your plan will downgrade to the Free plan on ...
                 </div>
             </div>
 
