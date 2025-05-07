@@ -25,6 +25,25 @@ const query = util.promisify(conn.query).bind(conn);
 Routes
 --------------------------------------------
 --------------------------------------------*/
+router.get('/subscription-id/:userId', async (req, res, next) => {
+    // Save the new Stripe customer ID and subscription ID to the user table
+    let queryString = `
+            SELECT stripe_subscription_id
+            FROM users            
+            WHERE id = ${conn.escape(req.params.userId)};
+            `;
+
+    let result = await query(queryString);
+
+    if (result[0].stripe_subscription_id != null) {
+        let subId = result[0].stripe_subscription_id;
+        const subscription = await stripe.subscriptions.retrieve(subId);
+        res.json({ subscription: subscription });
+    } else {
+        res.json({ subscription: null });
+    }
+});
+
 let userId;
 router.post('/create-checkout-session', async (req, res) => {
     try {
@@ -69,11 +88,12 @@ router.get('/success', async (req, res, next) => {
         subscriptionTier = 'infinite';
     }
 
-    // Save the new Stripe customer ID to the user table
+    // Save the new Stripe customer ID and subscription ID to the user table
     let usersTableQueryString = `
             UPDATE users
             SET stripe_customer_id = ${conn.escape(session.customer)},
-            subscription_tier = '${subscriptionTier}'
+            subscription_tier = '${subscriptionTier}',
+            stripe_subscription_id = ${conn.escape(session.subscription)}
             WHERE id = ${conn.escape(userId)};
             `;
 
@@ -175,7 +195,6 @@ router.post(
                     `;
 
                     await query(endSubQueryString);
-                    // set tier to "free"
                     break;
                 default:
                     console.log(`Unhandled event type ${event.type}`);
@@ -188,6 +207,33 @@ router.post(
         }
     }
 );
+
+// Cancel subscription
+// (Subscription tier changes to "Free plan" at the end of the billing cycle.
+router.post('/cancel', async (req, res) => {
+    try {
+        userId = req.body.userId;
+
+        // Get Stripe customer ID of user
+        let queryString = `
+            SELECT stripe_subscription_id
+            FROM users            
+            WHERE id = ${conn.escape(userId)};
+            `;
+        const result = await query(queryString);
+
+        const subscription = await stripe.subscriptions.update(
+            result[0].stripe_subscription_id,
+            {
+                cancel_at_period_end: true
+            }
+        );
+
+        res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
 
 // Export the router for app to use.
 module.exports = router;

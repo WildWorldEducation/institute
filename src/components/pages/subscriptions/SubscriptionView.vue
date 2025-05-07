@@ -20,22 +20,25 @@ export default {
             month: '',
             isAITokenLimitReached: false,
             isMobileCheck: window.innerWidth,
-            showTooltip: false
+            showTooltip: false,
+            subscription: {}
         };
     },
-
-    async mounted() {
-        //Stripe external script
-        let stripeScript = document.createElement('script');
-        stripeScript.setAttribute('src', 'https://js.stripe.com/v3/');
-        document.head.appendChild(stripeScript);
-
+    async created() {
         // Get free monthly AI token limit
         if (!this.settingsStore.freePlanTokenLimit) {
             await this.settingsStore.getSettings();
         }
 
         await this.userDetailsStore.getUserDetails();
+        await this.getSubscription();
+    },
+    async mounted() {
+        //Stripe external script
+        let stripeScript = document.createElement('script');
+        stripeScript.setAttribute('src', 'https://js.stripe.com/v3/');
+        document.head.appendChild(stripeScript);
+
         // Check if user is over free monthly AI token limit
         if (this.userDetailsStore.subscriptionTier == 'free') {
             if (
@@ -80,6 +83,14 @@ export default {
         this.month = month[d.getMonth()];
     },
     computed: {
+        formattedStripeDate() {
+            let dateObj = new Date(this.subscription.current_period_end * 1000);
+            const month = dateObj.getUTCMonth() + 1; // months from 1-12
+            const day = dateObj.getUTCDate();
+            const year = dateObj.getUTCFullYear();
+            const formattedDate = year + '/' + month + '/' + day;
+            return formattedDate;
+        },
         formattedMonthlyTokenUsage() {
             return this.userDetailsStore.monthlyTokenUsage
                 ? this.userDetailsStore.monthlyTokenUsage.toLocaleString()
@@ -102,6 +113,14 @@ export default {
         }
     },
     methods: {
+        async getSubscription() {
+            const result = await fetch(
+                '/subscriptions/subscription-id/' + this.userDetailsStore.userId
+            );
+            const subscriptionData = await result.json();
+            this.subscription = subscriptionData.subscription;
+        },
+        // Purchase subscription
         checkout(planType) {
             fetch('/subscriptions/create-checkout-session', {
                 method: 'POST',
@@ -124,6 +143,8 @@ export default {
                     console.error(e.error);
                 });
         },
+        // Load the Stripe Customer Portal page
+        // (This redirects to Stripe's website)
         loadPortal() {
             fetch('/subscriptions/create-customer-portal-session', {
                 method: 'POST',
@@ -145,6 +166,27 @@ export default {
                     console.error(e.error);
                 });
         },
+        // Cancel subscription at end of billing cycle.
+        cancelPlan() {
+            if (
+                confirm('Are you sure you want to downgrade to the Free plan?')
+            ) {
+                fetch('/subscriptions/cancel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: this.userDetailsStore.userId
+                    })
+                }).then(() => {
+                    this.getSubscription();
+                });
+            } else {
+                return;
+            }
+        },
+        // Tutorial tooltips
         openTooltip() {
             this.showTooltip = true;
         },
@@ -182,7 +224,7 @@ export default {
                     class="secondary-heading h4 mb-4"
                     :class="{ 'text-center': isMobileCheck < 576 }"
                 >
-                    Monthly AI usage: {{ month }}, {{ year }}
+                    Monthly AI usage: {{ month }} {{ year }}
                 </h2>
                 <ul>
                     <li>
@@ -205,6 +247,14 @@ export default {
                 >
                     You are over the monthly free limit. You can't use the AI
                     features until next month.
+                </div>
+                <div
+                    v-if="subscription && subscription.cancel_at_period_end"
+                    class="alert alert-warning"
+                    role="alert"
+                >
+                    Your plan will downgrade to the Free plan on
+                    {{ formattedStripeDate }}
                 </div>
             </div>
 
@@ -248,7 +298,7 @@ export default {
                 class="col-md mb-3"
                 :class="{ 'text-center': isMobileCheck < 576 }"
             >
-                <h2 class="secondary-heading h4">Free plan</h2>
+                <h2 class="secondary-heading h4">Free</h2>
                 <p>
                     <strong>Token limit:</strong>
                     {{ formattedFreePlanTokenLimit }}
@@ -260,6 +310,13 @@ export default {
                 >
                     current plan
                 </button>
+                <button
+                    v-else-if="subscription.cancel_at_period_end == false"
+                    @click="cancelPlan()"
+                    class="btn primary-btn mt-1 mb-3"
+                >
+                    downgrade
+                </button>
             </div>
             <!-- Basic plan -->
             <div
@@ -268,7 +325,7 @@ export default {
                     'text-center': isMobileCheck < 576
                 }"
             >
-                <h2 class="secondary-heading h4">Basic plan</h2>
+                <h2 class="secondary-heading h4">Basic</h2>
                 <p>Ideal for moderate use</p>
                 <p>$20 / month</p>
                 <p>
@@ -284,18 +341,21 @@ export default {
                     buy
                 </button>
                 <button
-                    v-if="userDetailsStore.subscriptionTier == 'basic'"
+                    v-else-if="
+                        this.userDetailsStore.subscriptionTier == 'basic'
+                    "
                     disabled
                     class="btn primary-btn mt-1 mb-3"
                 >
                     current plan
                 </button>
             </div>
+            <!-- Infinite plan -->
             <div
                 class="col-md mb-3"
                 :class="{ 'text-center': isMobileCheck < 576 }"
             >
-                <h2 class="secondary-heading h4">Infinite plan</h2>
+                <h2 class="secondary-heading h4">Infinite</h2>
                 <p>Ideal for daily use</p>
                 <p>$100 / month</p>
                 <p>
@@ -309,10 +369,13 @@ export default {
                 >
                     buy
                 </button>
+
                 <button
-                    v-if="userDetailsStore.subscriptionTier == 'infinite'"
+                    v-else-if="
+                        this.userDetailsStore.subscriptionTier == 'infinite'
+                    "
                     disabled
-                    class="btn primary-btn mt-1 mb-3"
+                    class="btn primary-btn mt-1"
                 >
                     current plan
                 </button>

@@ -334,6 +334,7 @@ export default {
                             v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item"
                         >
+                            <!-- Large screen menu -->
                             <div class="dropdown d-none d-sm-block">
                                 <a
                                     href="#"
@@ -412,6 +413,7 @@ export default {
                                     </a>
                                 </div>
                             </div>
+                            <!-- Mobile menu -->
                             <div class="d-sm-none">
                                 <RouterLink to="/profile" class="nav-link">
                                     Profile
