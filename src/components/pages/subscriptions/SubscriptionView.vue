@@ -23,7 +23,6 @@ export default {
             showTooltip: false
         };
     },
-
     async mounted() {
         //Stripe external script
         let stripeScript = document.createElement('script');
@@ -160,6 +159,7 @@ export default {
                 })
             });
         },
+        // Tutorial tooltips
         openTooltip() {
             this.showTooltip = true;
         },
