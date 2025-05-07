@@ -35,6 +35,7 @@ export default {
         }
 
         await this.userDetailsStore.getUserDetails();
+        await this.checkIfSubscriptionToBeCancelled();
         // Check if user is over free monthly AI token limit
         if (this.userDetailsStore.subscriptionTier == 'free') {
             if (
@@ -101,6 +102,13 @@ export default {
         }
     },
     methods: {
+        async checkIfSubscriptionToBeCancelled() {
+            const result = await fetch(
+                '/subscriptions/subscription-id/' + this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            console.log(data);
+        },
         // Purchase subscription
         checkout(planType) {
             fetch('/subscriptions/create-checkout-session', {

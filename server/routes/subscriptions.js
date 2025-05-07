@@ -25,6 +25,21 @@ const query = util.promisify(conn.query).bind(conn);
 Routes
 --------------------------------------------
 --------------------------------------------*/
+router.get('/subscription-id/:userId', async (req, res, next) => {
+    // Save the new Stripe customer ID and subscription ID to the user table
+    let queryString = `
+            SELECT stripe_subscription_id
+            FROM users            
+            WHERE id = ${conn.escape(req.params.userId)};
+            `;
+
+    let result = await query(queryString);
+
+    console.log(result[0]);
+
+    res.json({ subscriptionId: result[0] });
+});
+
 let userId;
 router.post('/create-checkout-session', async (req, res) => {
     try {
