@@ -35,9 +35,10 @@ router.get('/subscription-id/:userId', async (req, res, next) => {
 
     let result = await query(queryString);
 
-    console.log(result[0]);
+    let subId = result[0].stripe_subscription_id;
+    const subscription = await stripe.subscriptions.retrieve(subId);
 
-    res.json({ subscriptionId: result[0] });
+    res.json({ subscription: subscription });
 });
 
 let userId;

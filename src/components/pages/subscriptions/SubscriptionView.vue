@@ -20,7 +20,8 @@ export default {
             month: '',
             isAITokenLimitReached: false,
             isMobileCheck: window.innerWidth,
-            showTooltip: false
+            showTooltip: false,
+            subscription: {}
         };
     },
     async mounted() {
@@ -35,7 +36,7 @@ export default {
         }
 
         await this.userDetailsStore.getUserDetails();
-        await this.checkIfSubscriptionToBeCancelled();
+        await this.getSubscription();
         // Check if user is over free monthly AI token limit
         if (this.userDetailsStore.subscriptionTier == 'free') {
             if (
@@ -102,12 +103,12 @@ export default {
         }
     },
     methods: {
-        async checkIfSubscriptionToBeCancelled() {
+        async getSubscription() {
             const result = await fetch(
                 '/subscriptions/subscription-id/' + this.userDetailsStore.userId
             );
-            const data = await result.json();
-            console.log(data);
+            this.subscription = await result.json();
+            console.log(this.subscription);
         },
         // Purchase subscription
         checkout(planType) {
@@ -157,15 +158,21 @@ export default {
         },
         // Cancel subscription at end of billing cycle.
         cancelPlan() {
-            fetch('/subscriptions/cancel', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    userId: this.userDetailsStore.userId
-                })
-            });
+            if (
+                confirm('Are you sure you want to downgrade to the Free plan?')
+            ) {
+                fetch('/subscriptions/cancel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: this.userDetailsStore.userId
+                    })
+                });
+            } else {
+                return;
+            }
         },
         // Tutorial tooltips
         openTooltip() {
@@ -284,7 +291,7 @@ export default {
                     current plan
                 </button>
                 <button
-                    v-else
+                    v-else-if="subscription.cancel_at_period_end == false"
                     @click="cancelPlan()"
                     class="btn primary-btn mt-1 mb-3"
                 >
