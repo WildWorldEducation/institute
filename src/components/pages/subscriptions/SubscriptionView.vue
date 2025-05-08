@@ -386,7 +386,7 @@ export default {
                     buy
                 </button>
                 <button
-                    v-else-if="userDetailsStore.subscriptionTier == 'basic'"
+                    v-else-if="userDetailsStore.subscriptionTier == 'infinite'"
                     @click="downgradePlan()"
                     class="btn primary-btn mt-1"
                 >
