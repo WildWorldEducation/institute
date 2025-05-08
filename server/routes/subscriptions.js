@@ -35,8 +35,6 @@ router.get('/get-sub/:userId', async (req, res, next) => {
 
     let result = await query(queryString);
 
-    console.log(result);
-
     // If the subscription ID was recorded in our DB, as it should have been
     if (result[0].stripe_subscription_id != null) {
         let subId = result[0].stripe_subscription_id;
@@ -267,41 +265,41 @@ router.post('/downgrade', async (req, res) => {
         console.log(subscriptionId);
 
         // Create a subscription schedule with the existing subscription
-        const subscriptionSchedule = await stripe.subscriptionSchedules.create({
+        const schedule = await stripe.subscriptionSchedules.create({
             from_subscription: subscriptionId
         });
 
-        console.log(subscriptionSchedule);
+        console.log(schedule);
 
         // Update the schedule with the new phase
-        // const subscriptionSchedule = await stripe.subscriptionSchedules.update(
-        //     schedule.id,
-        //     {
-        //         phases: [
-        //             {
-        //                 items: [
-        //                     {
-        //                         price: schedule.phases[0].items[0].price,
-        //                         quantity: schedule.phases[0].items[0].quantity
-        //                     }
-        //                 ],
-        //                 start_date: schedule.phases[0].start_date,
-        //                 end_date: schedule.phases[0].end_date
-        //             },
-        //             {
-        //                 items: [
-        //                     {
-        //                         price: process.env.BASIC_PLAN_PRICE_ID,
-        //                         quantity: 1
-        //                     }
-        //                 ],
-        //                 iterations: 1
-        //             }
-        //         ]
-        //     }
-        // );
+        const subscriptionSchedule = await stripe.subscriptionSchedules.update(
+            schedule.id,
+            {
+                phases: [
+                    {
+                        items: [
+                            {
+                                price: schedule.phases[0].items[0].price,
+                                quantity: schedule.phases[0].items[0].quantity
+                            }
+                        ],
+                        start_date: schedule.phases[0].start_date,
+                        end_date: schedule.phases[0].end_date
+                    },
+                    {
+                        items: [
+                            {
+                                price: process.env.BASIC_PLAN_PRICE_ID,
+                                quantity: 1
+                            }
+                        ],
+                        iterations: 1
+                    }
+                ]
+            }
+        );
 
-        //  console.log(subscriptionSchedule);
+        console.log(subscriptionSchedule);
 
         res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
     } catch (e) {
