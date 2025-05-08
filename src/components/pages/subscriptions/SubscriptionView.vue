@@ -115,7 +115,7 @@ export default {
     methods: {
         async getSubscription() {
             const result = await fetch(
-                '/subscriptions/' + this.userDetailsStore.userId
+                '/subscriptions/get-sub/' + this.userDetailsStore.userId
             );
             const subscriptionData = await result.json();
             this.subscription = subscriptionData.subscription;
@@ -188,6 +188,7 @@ export default {
         },
         // Downgrade subscription from Infinite to Basic.
         downgradePlan() {
+            console.log(this.subscription.id);
             if (
                 confirm('Are you sure you want to downgrade to the Basic plan?')
             ) {
@@ -197,7 +198,7 @@ export default {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        userId: this.userDetailsStore.userId
+                        subscriptionId: this.subscription.id
                     })
                 }).then(() => {
                     this.getSubscription();
@@ -386,7 +387,10 @@ export default {
                     buy
                 </button>
                 <button
-                    v-else-if="userDetailsStore.subscriptionTier == 'infinite'"
+                    v-else-if="
+                        subscription &&
+                        userDetailsStore.subscriptionTier == 'infinite'
+                    "
                     @click="downgradePlan()"
                     class="btn primary-btn mt-1"
                 >

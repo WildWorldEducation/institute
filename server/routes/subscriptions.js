@@ -25,7 +25,7 @@ const query = util.promisify(conn.query).bind(conn);
 Routes
 --------------------------------------------
 --------------------------------------------*/
-router.get('/:userId', async (req, res, next) => {
+router.get('/get-sub/:userId', async (req, res, next) => {
     // Save the new Stripe customer ID and subscription ID to the user table
     let queryString = `
             SELECT stripe_subscription_id, stripe_customer_id
@@ -34,6 +34,8 @@ router.get('/:userId', async (req, res, next) => {
             `;
 
     let result = await query(queryString);
+
+    console.log(result);
 
     // If the subscription ID was recorded in our DB, as it should have been
     if (result[0].stripe_subscription_id != null) {
