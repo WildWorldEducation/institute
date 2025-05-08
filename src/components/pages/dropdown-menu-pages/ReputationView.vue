@@ -22,7 +22,6 @@ export default {
 
 <template>
     <div class="container pb-4 theme-background mt-2">
-        <h2 class="secondary-heading h4">Reputation</h2>
         <ReputationScore />
         <ReputationEvents
             v-if="

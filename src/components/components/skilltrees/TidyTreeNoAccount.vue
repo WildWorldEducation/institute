@@ -1437,8 +1437,8 @@ export default {
                 ctx1.beginPath();
                 ctx1.strokeStyle = '#FFF';
                 ctx1.lineWidth = 4;
-                // Updated domain text color to be lighter gray
-                ctx1.fillStyle = isSearched ? '#ff0000' : '#aabbc5';
+                // Updated domain text color to be darker gray
+                ctx1.fillStyle = isSearched ? '#ff0000' : '#546673';
                 ctx1.direction = 'ltr';
 
                 let xPosition = node.y - 140;

@@ -49,30 +49,10 @@ export default {
 </script>
 
 <template>
-    <div class="row">
-        <h2 class="tertiary-heading h5">Goals</h2>
-        <!-- Tooltip -->
-        <div
-            v-if="showTutorialTip && userDetailsStore.role == 'student'"
-            class="tool-tip-base"
-        >
-            <div class="explain-tool-tip hovering-info-panel triangle-top-left">
-                <div class="tool-tip-text">
-                    <p>This section shows any goals you might have made.</p>
-                    <p>
-                        You can make a goal when there is a skill you want to
-                        master but it is not unlocked yet.
-                    </p>
-                    <button
-                        class="btn primary-btn"
-                        @click="handleProgressTutorial(1)"
-                    >
-                        close
-                    </button>
-                </div>
-            </div>
+    <div>
+        <div v-if="goals.length === 0" class="empty-message">
+            You haven't set any goals yet.
         </div>
-
         <div id="goal-list">
             <router-link
                 v-for="goal in goals"
@@ -103,20 +83,45 @@ export default {
                 {{ goal.name }}
             </router-link>
         </div>
+        <!-- Tooltip -->
+        <div
+            v-if="showTutorialTip && userDetailsStore.role == 'student'"
+            class="tool-tip-base"
+        >
+            <div class="explain-tool-tip hovering-info-panel triangle-top-left">
+                <div class="tool-tip-text">
+                    <p>This section shows any goals you might have made.</p>
+                    <p>
+                        You can make a goal when there is a skill you want to
+                        master but it is not unlocked yet.
+                    </p>
+                    <button
+                        class="btn primary-btn"
+                        @click="handleProgressTutorial(1)"
+                    >
+                        close
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <style scoped>
+.empty-message {
+    color: #667085;
+    padding: 15px;
+    text-align: center;
+}
 /* Tooltips */
 .hovering-info-panel {
     position: absolute;
     z-index: 100;
-    /* border-color: var(--primary-color);
-    border-width: 2px;
-    border-style: solid; */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    min-width: 320px; /* Set a minimum width */
     width: fit-content;
-    margin-bottom: 0 !important; /* Remove any margin that might push content */
+    max-width: 90vw; /* Make it responsive */
+    margin-bottom: 0 !important;
 }
 /* Scrollbar */
 ::-webkit-scrollbar {

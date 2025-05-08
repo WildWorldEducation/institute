@@ -267,13 +267,58 @@ export default {
                     katexOptions: { macros: { '\\RR': '\\mathbb{R}' } }
                 });
 
-            // let newString = string.replace('\\[ ', '$');
-            // newString = newString.replace(' \\]', '$');
+            const formattedString = this.formatTextForDisplay(string);
 
-            let formattedMessage = md.render(string);
+            let formattedMessage = md.render(formattedString);
             return formattedMessage;
         },
-        // Format response for audio
+        connectToSocketSever() {
+            socket.connect();
+        },
+        disconnectToSocketSever() {
+            socket.disconnect();
+        },
+        removeStreamMessage() {
+            // We dont want this to be watched and added to the chat history.
+            socketState.streamType = 'pause';
+            socketState.streamingMessage = '';
+        },
+        // Get all latex string in a message
+        getLatexStrings(message) {
+            const results = [];
+            let isStartDollarSign = false;
+            let isGettingLatexString = false;
+            let latexString = '';
+            let startIndex = 0;
+            let endIndex = 0;
+            // get string between dollar sign
+            for (let index = 0; index < message.length; index++) {
+                const character = message[index];
+                if (character === '$') {
+                    isStartDollarSign = !isStartDollarSign;
+                    if (isStartDollarSign) {
+                        startIndex = index;
+                    } else {
+                        endIndex = index;
+                    }
+                }
+                if (isStartDollarSign) {
+                    isGettingLatexString = true;
+                    latexString = latexString + character;
+                }
+                if (isGettingLatexString && !isStartDollarSign) {
+                    latexString = latexString + character;
+                    results.push({
+                        string: latexString,
+                        startIndex: startIndex,
+                        endIndex: endIndex
+                    });
+                    latexString = '';
+                    isGettingLatexString = false;
+                }
+            }
+            return results;
+        },
         convertLatexToPlainText(message) {
             let string = message;
             // handle exponent square case
@@ -289,10 +334,28 @@ export default {
             string = string.replaceAll('geq', 'is greater than or equal to');
             // handle square root in latex
             string = string.replaceAll('sqrt', 'square root of');
+            // handle regular div symbol
+            string = string.replaceAll('\\div', 'divide by');
             // At last we remove all $ sign
             string = string.replaceAll('$', '');
 
             return string;
+        },
+        // Formatting the message to render correctly with KaTeX
+        formatTextForDisplay(message) {
+            const latexStringList = this.getLatexStrings(message);
+            let localMessage = message;
+            latexStringList.forEach((element) => {
+                // remove any white space and newline inside the string
+                let newString = element.string.replaceAll('$ ', '$');
+                newString = newString.replaceAll(' $', '$');
+                localMessage = localMessage.replaceAll(
+                    element.string,
+                    newString
+                );
+            });
+
+            return localMessage;
         },
         connectToSocketSever() {
             socket.connect();

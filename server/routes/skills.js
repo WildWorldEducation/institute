@@ -768,7 +768,7 @@ router.get('/first/url/:skillUrl', (req, res, next) => {
 router.get('/second/url/:skillUrl', (req, res, next) => {
     let skill;
     // Get skill.
-    const sqlQuery = `SELECT s.id, s.url, s.parent, s.introduction, s.image_url, s.icon_url, s.icon, s.mastery_requirements,
+    const sqlQuery = `SELECT s.id, s.url, s.parent, s.image_url, s.mastery_requirements,
                         s.version_number, s.order, parent_skill.type AS parent_type
                     FROM 
                         skills AS s
@@ -1025,7 +1025,7 @@ router.put(
             let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
                     (id, version_number, user_id, name, description, icon_image, icon,
-                    mastery_requirements, level, skill_history.order, comment, introduction)
+                    mastery_requirements, level, skill_history.order, comment, intro_sentence)
                     VALUES
                     (${conn.escape(req.params.id)},
                     ${conn.escape(versionNumber)},
@@ -1040,7 +1040,7 @@ router.put(
                     ${conn.escape(req.body.level)},                    
                     ${conn.escape(req.body.order)},
                     ${conn.escape(req.body.comment)},
-                    ${conn.escape(req.body.introduction)});`;
+                    ${conn.escape(req.body.intro_sentence)});`;
 
             conn.query(addVersionHistoryInsertSQLQuery, async (err) => {
                 try {
@@ -1061,7 +1061,9 @@ router.put(
                         )}, 
                         type = ${conn.escape(req.body.type)}, 
                         level = ${conn.escape(req.body.level)},
-                        introduction = ${conn.escape(req.body.introduction)},
+                        intro_sentence = ${conn.escape(
+                            req.body.intro_sentence
+                        )},
                         skills.order = ${conn.escape(req.body.order)}, 
                         version_number = ${conn.escape(
                             versionNumber

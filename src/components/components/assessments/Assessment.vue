@@ -69,7 +69,8 @@ export default {
             finishTime: null,
             needToSelectInstructor: false,
             aiLoading: false,
-            numOfImagesRequired: 1
+            numOfImagesRequired: 1,
+            isSubmitting: false // flag to track submission status
         };
     },
     async created() {
@@ -389,195 +390,60 @@ export default {
         },
         // Async because essay questions are marked on server.
         async Submit() {
-            this.UserAnswer();
-            if (!this.isAllQuestionsAnswered) {
-                alert('Please answer all questions before submitting.');
-                return;
-            }
-            // get the time when user submit the assessment result for result page
-            this.finishTime = new Date();
-            // if the last answer is also an essay question we handle it just like with the next and previous
-            if (this.questions[this.questionNumber].questionType == 'essay') {
-                // Get the answer
-                let answer;
-                answer = this.$refs.essayAnswer.getAnswer();
-                // Store user answer in questions array before move to next questions
-                this.questions[this.questionNumber].userAnswer = answer;
-            } else if (
-                this.questions[this.questionNumber].questionType == 'image'
-            ) {
-                // Get the answer
-                let answer;
-                answer = this.$refs.imageAnswer.getAnswer();
-                // Store user answer in questions array before move to next questions
-                this.questions[this.questionNumber].userAnswer = answer;
-            }
-            // Mark the MC questions (if there are any).
-            for (let i = 0; i < this.questions.length; i++) {
-                // Tally the score.
-                if (this.questions[i].questionType == 'mc') {
-                    this.numMCQuestions++;
-                    if (
-                        this.questions[i].userAnswer ==
-                        this.questions[i].correct_answer
-                    ) {
-                        this.score++;
-                    }
-                } else if (this.questions[i].questionType == 'essay') {
-                    this.numEssayQuestions++;
-                } else {
-                    this.numImageQuestions++;
-                }
-            }
+            // Set flag to true to disable the button and show loading overlay
+            this.isSubmitting = true;
 
-            // If no essay questions, we return result.
-            if (this.numEssayQuestions === 0 && this.numImageQuestions === 0) {
-                // Pass mark from settings store.
+            try {
+                // Get the last answer if it's an essay or image question
+                this.UserAnswer();
+                if (!this.isAllQuestionsAnswered) {
+                    alert('Please answer all questions before submitting.');
+                    this.isSubmitting = false;
+                    return;
+                }
+
+                // Get the time when user submit the assessment result for result page
+                this.finishTime = new Date();
+
+                // Get the last answer if it's an essay or image question
                 if (
-                    (this.score / this.numMCQuestions) * 100 >=
-                    this.settingsStore.passMark
+                    this.questions[this.questionNumber].questionType == 'essay'
                 ) {
-                    await this.MakeMastered(this.skill);
-                    this.isQuizPassed = true;
-                    // show result page and hide assessment part
-                    this.assessmentStatus = 'You passed';
-                    this.showResult = true;
-                } else {
-                    // show result page and hide assessment part
-                    this.isQuizPassed = true;
-                    this.assessmentStatus = 'You failed';
-                    this.showResult = true;
+                    const answer = this.$refs.essayAnswer.getAnswer();
+                    this.questions[this.questionNumber].userAnswer = answer;
+                } else if (
+                    this.questions[this.questionNumber].questionType == 'image'
+                ) {
+                    const answer = this.$refs.imageAnswer.getAnswer();
+                    this.questions[this.questionNumber].userAnswer = answer;
                 }
-            }
 
-            // If there are essay or image questions.
-            else {
-                if (this.settingsStore.isManualEssayMarking == 1) {
-                    // Deal with the essay questions.
-                    let fetchMethod = 'POST';
-
-                    if (this.oldAssessment !== undefined) {
-                        fetchMethod = 'PUT';
-                    }
-
-                    let numUnmarkedQuestions =
-                        this.numEssayQuestions + this.numImageQuestions;
-
-                    // create an unmarked assessment record
-                    const requestOptions = {
-                        method: fetchMethod,
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            totalScore: this.totalNumOfQuestions,
-                            currentScore: this.score,
-                            numUnmarkedQuestions: numUnmarkedQuestions
-                        })
-                    };
-                    var url =
-                        '/assessments/' +
-                        this.userDetailsStore.userId +
-                        '/' +
-                        this.skillId;
-                    /**
-                     * we have the function below so we can access this key word in the promise
-                     */
-                    const turnOnModal = () => {
-                        this.isQuizPassed = true;
-                        this.showResult = true;
-                        this.assessmentStatus =
-                            'please wait for answers to be marked';
-                    };
-
-                    fetch(url, requestOptions)
-                        .then(function (response) {
-                            return response.json();
-                        })
-                        // Retrieve the assessment id.
-                        .then((data) => {
-                            this.assessmentId = data.id;
-                            // Delete any existing questions in this assessment.
-                            fetch(
-                                '/unmarked-answers/delete/' + this.assessmentId,
-                                {
-                                    method: 'DELETE'
-                                }
-                            ).then(() => {
-                                for (
-                                    let i = 0;
-                                    i < this.questions.length;
-                                    i++
-                                ) {
-                                    if (
-                                        this.questions[i].questionType ==
-                                        'essay'
-                                    ) {
-                                        // create unmarked essay question records for each one.
-                                        const requestOptions = {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type':
-                                                    'application/json'
-                                            },
-                                            body: JSON.stringify({
-                                                answer: this.questions[i]
-                                                    .userAnswer,
-                                                questionId: this.questions[i].id
-                                            })
-                                        };
-                                        var url =
-                                            '/unmarked-answers/add/essay/' +
-                                            this.assessmentId;
-                                        fetch(url, requestOptions).then(
-                                            function (response) {
-                                                turnOnModal();
-                                            }
-                                        );
-                                    } else if (
-                                        this.questions[i].questionType ==
-                                        'image'
-                                    ) {
-                                        // create unmarked essay question records for each one.
-                                        const requestOptions = {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type':
-                                                    'application/json'
-                                            },
-                                            body: JSON.stringify({
-                                                answer: this.questions[i]
-                                                    .userAnswer,
-                                                questionId: this.questions[i].id
-                                            })
-                                        };
-                                        var url =
-                                            '/unmarked-answers/add/image/' +
-                                            this.assessmentId;
-                                        fetch(url, requestOptions).then(
-                                            function (response) {
-                                                turnOnModal();
-                                            }
-                                        );
-                                    }
-                                }
-                            });
-                        });
-                } else {
-                    // Submit essay questions to AI for marking.
-                    for (let i = 0; i < this.questions.length; i++) {
-                        if (this.questions[i].questionType == 'essay') {
-                            let question = this.questions[i].question;
-                            let answer = this.questions[i].userAnswer;
-
-                            await this.AIMarkEssayQuestion(question, answer, i);
-                        } else if (this.questions[i].questionType == 'image') {
-                            let question = this.questions[i].question;
-                            let answer = this.questions[i].userAnswer;
-
-                            await this.AIMarkImageQuestion(question, answer, i);
+                // Mark the MC questions (if there are any)
+                for (let i = 0; i < this.questions.length; i++) {
+                    // Tally the score
+                    if (this.questions[i].questionType == 'mc') {
+                        this.numMCQuestions++;
+                        if (
+                            this.questions[i].userAnswer ==
+                            this.questions[i].correct_answer
+                        ) {
+                            this.score++;
                         }
+                    } else if (this.questions[i].questionType == 'essay') {
+                        this.numEssayQuestions++;
+                    } else {
+                        this.numImageQuestions++;
                     }
+                }
+
+                // If no essay questions, we return result
+                if (
+                    this.numEssayQuestions === 0 &&
+                    this.numImageQuestions === 0
+                ) {
+                    // Pass mark from settings store
                     if (
-                        (this.score / this.questions.length) * 100 >=
+                        (this.score / this.numMCQuestions) * 100 >=
                         this.settingsStore.passMark
                     ) {
                         await this.MakeMastered(this.skill);
@@ -591,70 +457,249 @@ export default {
                         this.assessmentStatus = 'You failed';
                         this.showResult = true;
                     }
+
+                    // Only set isSubmitting to false AFTER showResult is true
+                    // This ensures the loading overlay disappears only when results are ready
+                    this.isSubmitting = false;
                 }
+                // If there are essay or image questions
+                else {
+                    if (this.settingsStore.isManualEssayMarking == 1) {
+                        // Deal with the essay questions
+                        let fetchMethod = 'POST';
+                        if (this.oldAssessment !== undefined) {
+                            fetchMethod = 'PUT';
+                        }
+
+                        let numUnmarkedQuestions =
+                            this.numEssayQuestions + this.numImageQuestions;
+
+                        // create an unmarked assessment record
+                        const requestOptions = {
+                            method: fetchMethod,
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                totalScore: this.totalNumOfQuestions,
+                                currentScore: this.score,
+                                numUnmarkedQuestions: numUnmarkedQuestions
+                            })
+                        };
+
+                        var url =
+                            '/assessments/' +
+                            this.userDetailsStore.userId +
+                            '/' +
+                            this.skillId;
+
+                        try {
+                            const response = await fetch(url, requestOptions);
+                            const data = await response.json();
+                            this.assessmentId = data.id;
+
+                            // Delete any existing questions in this assessment
+                            await fetch(
+                                '/unmarked-answers/delete/' + this.assessmentId,
+                                {
+                                    method: 'DELETE'
+                                }
+                            );
+
+                            // Submit all questions
+                            const promises = [];
+                            for (let i = 0; i < this.questions.length; i++) {
+                                if (this.questions[i].questionType == 'essay') {
+                                    const requestOptions = {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            answer: this.questions[i]
+                                                .userAnswer,
+                                            questionId: this.questions[i].id
+                                        })
+                                    };
+                                    var url =
+                                        '/unmarked-answers/add/essay/' +
+                                        this.assessmentId;
+                                    promises.push(fetch(url, requestOptions));
+                                } else if (
+                                    this.questions[i].questionType == 'image'
+                                ) {
+                                    const requestOptions = {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            answer: this.questions[i]
+                                                .userAnswer,
+                                            questionId: this.questions[i].id
+                                        })
+                                    };
+                                    var url =
+                                        '/unmarked-answers/add/image/' +
+                                        this.assessmentId;
+                                    promises.push(fetch(url, requestOptions));
+                                }
+                            }
+
+                            // Wait for all requests to complete
+                            await Promise.all(promises);
+
+                            // Only now show the result and remove loading overlay
+                            this.isQuizPassed = true;
+                            this.showResult = true;
+                            this.assessmentStatus =
+                                'please wait for answers to be marked';
+                            this.isSubmitting = false;
+                        } catch (error) {
+                            console.error(
+                                'Error submitting assessment:',
+                                error
+                            );
+                            alert(
+                                'There was an error submitting your assessment. Please try again.'
+                            );
+                            this.isSubmitting = false;
+                        }
+                    } else {
+                        // Submit essay questions to AI for marking
+                        try {
+                            for (let i = 0; i < this.questions.length; i++) {
+                                if (this.questions[i].questionType == 'essay') {
+                                    let question = this.questions[i].question;
+                                    let answer = this.questions[i].userAnswer;
+                                    await this.AIMarkEssayQuestion(
+                                        question,
+                                        answer,
+                                        i
+                                    );
+                                } else if (
+                                    this.questions[i].questionType == 'image'
+                                ) {
+                                    let question = this.questions[i].question;
+                                    let answer = this.questions[i].userAnswer;
+                                    await this.AIMarkImageQuestion(
+                                        question,
+                                        answer,
+                                        i
+                                    );
+                                }
+                            }
+
+                            if (
+                                (this.score / this.questions.length) * 100 >=
+                                this.settingsStore.passMark
+                            ) {
+                                await this.MakeMastered(this.skill);
+                                this.isQuizPassed = true;
+                                this.assessmentStatus = 'You passed';
+                            } else {
+                                this.isQuizPassed = true;
+                                this.assessmentStatus = 'You failed';
+                            }
+
+                            // Show result page BEFORE removing loading overlay
+                            this.showResult = true;
+                            // Only now remove the loading overlay
+                            this.isSubmitting = false;
+                        } catch (error) {
+                            console.error(
+                                'Error marking questions with AI:',
+                                error
+                            );
+                            alert(
+                                'There was an error marking your answers. Please try again.'
+                            );
+                            this.isSubmitting = false;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Unexpected error during submission:', error);
+                alert('There was an unexpected error. Please try again.');
+                this.isSubmitting = false;
             }
         },
         async AIMarkEssayQuestion(question, answer, i) {
-            this.aiLoading = true;
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    question: question,
-                    answer: answer,
-                    level: this.skill.level
-                })
-            };
-            let url = '/questions/mark-essay-question';
-            await fetch(url, requestOptions)
-                .then(function (response) {
-                    return response.json();
-                })
-                .then((result) => {
-                    if (result.isCorrect == true) {
-                        this.score++;
-                        this.questions[i].isCorrect = true;
-                    } else {
-                        this.questions[i].explanation = result.explanation;
-                        this.questions[i].isCorrect = false;
-                    }
-                })
-                .finally(() => {
+            if (!this.isSubmitting) {
+                this.aiLoading = true;
+            }
+            try {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        question: question,
+                        answer: answer,
+                        level: this.skill.level
+                    })
+                };
+
+                // Define the URL properly here
+                const url = '/questions/mark-essay-question';
+
+                const response = await fetch(url, requestOptions);
+                const result = await response.json();
+
+                if (result.isCorrect == true) {
+                    this.score++;
+                    this.questions[i].isCorrect = true;
+                } else {
+                    this.questions[i].explanation = result.explanation;
+                    this.questions[i].isCorrect = false;
+                }
+            } catch (error) {
+                console.error('Error marking essay question:', error);
+                throw error;
+            } finally {
+                if (!this.isSubmitting) {
                     this.aiLoading = false;
-                });
+                }
+            }
         },
+
         async AIMarkImageQuestion(question, answer, i) {
-            this.aiLoading = true;
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    question: question,
-                    answer: answer,
-                    level: this.skill.level
-                })
-            };
-            let url = '/questions/mark-image-question';
-            await fetch(url, requestOptions)
-                .then(function (response) {
-                    return response.json();
-                })
-                .then((result) => {
-                    if (result.isError == true) {
-                        this.questions[i].isCorrect = false;
-                        this.questions[i].explanation =
-                            'There was an error grading this question. The file size(s) may be too big.';
-                    } else if (result.isCorrect == true) {
-                        this.score++;
-                        this.questions[i].isCorrect = true;
-                    } else {
-                        this.questions[i].explanation = result.explanation;
-                        this.questions[i].isCorrect = false;
-                    }
-                })
-                .finally(() => {
+            if (!this.isSubmitting) {
+                this.aiLoading = true;
+            }
+            try {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        question: question,
+                        answer: answer,
+                        level: this.skill.level
+                    })
+                };
+
+                // Define the URL properly here
+                const url = '/questions/mark-image-question';
+
+                const response = await fetch(url, requestOptions);
+                const result = await response.json();
+
+                if (result.isError == true) {
+                    this.questions[i].isCorrect = false;
+                    this.questions[i].explanation =
+                        'There was an error grading this question. The file size(s) may be too big.';
+                } else if (result.isCorrect == true) {
+                    this.score++;
+                    this.questions[i].isCorrect = true;
+                } else {
+                    this.questions[i].explanation = result.explanation;
+                    this.questions[i].isCorrect = false;
+                }
+            } catch (error) {
+                console.error('Error marking image question:', error);
+                throw error; // Let the calling method handle this
+            } finally {
+                if (!this.isSubmitting) {
                     this.aiLoading = false;
-                });
+                }
+            }
         },
         UserAnswer() {
             for (let i = 0; i < this.questions.length; i++) {
@@ -720,13 +765,21 @@ export default {
         <span class="loader"></span>
     </div>
 
+    <!-- Loading animation for assessment submission -->
+    <div v-if="isSubmitting && !showResult" class="loading-overlay">
+        <div class="loading-container">
+            <span class="assessment-grading-loader"></span>
+            <div class="loading-text mt-3">Processing your answers...</div>
+        </div>
+    </div>
     <!-- Assessment -->
     <div
         v-if="
             loading == false &&
             isQuizPassed == false &&
             !needToSelectInstructor &&
-            !aiLoading
+            !aiLoading &&
+            !isSubmitting
         "
     >
         <!-- Show student a warning if their take this assessment before and still wait for marking -->
@@ -928,10 +981,12 @@ export default {
                     >
                         Next
                     </button>
+
                     <button
                         v-if="questionNumber >= questions.length - 1"
                         @click="Submit()"
                         class="btn green-btn"
+                        :disabled="isSubmitting"
                     >
                         Submit
                     </button>
@@ -1226,6 +1281,56 @@ export default {
 }
 /* End of Modal Styling */
 
+/* Loading overlay for assessment submission - using dark background */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 9999; /* High z-index to appear above everything */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.loading-text {
+    font-size: 1.2rem;
+    color: var(--primary-color);
+}
+
+/* Loading animation with unique class name */
+.assessment-grading-loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+/* Small spinner for button */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.2em;
+}
+
+/* Disabled button style */
+.green-btn:disabled {
+    background-color: #95d4ca;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
 .loader {
     width: 48px;
     height: 48px;
