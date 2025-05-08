@@ -115,7 +115,7 @@ export default {
     methods: {
         async getSubscription() {
             const result = await fetch(
-                '/subscriptions/subscription-id/' + this.userDetailsStore.userId
+                '/subscriptions/' + this.userDetailsStore.userId
             );
             const subscriptionData = await result.json();
             this.subscription = subscriptionData.subscription;
@@ -172,6 +172,48 @@ export default {
                 confirm('Are you sure you want to downgrade to the Free plan?')
             ) {
                 fetch('/subscriptions/cancel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: this.userDetailsStore.userId
+                    })
+                }).then(() => {
+                    this.getSubscription();
+                });
+            } else {
+                return;
+            }
+        },
+        // Downgrade subscription from Infinite to Basic.
+        downgradePlan() {
+            if (
+                confirm('Are you sure you want to downgrade to the Basic plan?')
+            ) {
+                fetch('/subscriptions/downgrade', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: this.userDetailsStore.userId
+                    })
+                }).then(() => {
+                    this.getSubscription();
+                });
+            } else {
+                return;
+            }
+        },
+        // Upgrade subscription from Basic to Infinite.
+        upgradePlan() {
+            if (
+                confirm(
+                    'Are you sure you want to upgrade to the Infinite plan?'
+                )
+            ) {
+                fetch('/subscriptions/upgrade', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -306,12 +348,15 @@ export default {
                 <button
                     v-if="userDetailsStore.subscriptionTier == 'free'"
                     disabled
-                    class="btn primary-btn mt-2"
+                    class="btn primary-btn mt-1"
                 >
                     current plan
                 </button>
                 <button
-                    v-else-if="subscription.cancel_at_period_end == false"
+                    v-else-if="
+                        subscription &&
+                        subscription.cancel_at_period_end == false
+                    "
                     @click="cancelPlan()"
                     class="btn primary-btn mt-1 mb-3"
                 >
@@ -336,9 +381,16 @@ export default {
                 <button
                     v-if="userDetailsStore.subscriptionTier == 'free'"
                     @click="checkout('basic')"
-                    class="btn primary-btn mt-2"
+                    class="btn primary-btn mt-1"
                 >
                     buy
+                </button>
+                <button
+                    v-else-if="userDetailsStore.subscriptionTier == 'basic'"
+                    @click="downgradePlan()"
+                    class="btn primary-btn mt-1"
+                >
+                    downgrade
                 </button>
                 <button
                     v-else-if="
@@ -365,11 +417,17 @@ export default {
                 <button
                     v-if="userDetailsStore.subscriptionTier == 'free'"
                     @click="checkout('infinite')"
-                    class="btn primary-btn mt-2"
+                    class="btn primary-btn mt-1"
                 >
                     buy
                 </button>
-
+                <button
+                    v-else-if="userDetailsStore.subscriptionTier == 'basic'"
+                    @click="upgradePlan()"
+                    class="btn primary-btn mt-1"
+                >
+                    upgrade (incomplete)
+                </button>
                 <button
                     v-else-if="
                         this.userDetailsStore.subscriptionTier == 'infinite'

@@ -25,22 +25,40 @@ const query = util.promisify(conn.query).bind(conn);
 Routes
 --------------------------------------------
 --------------------------------------------*/
-router.get('/subscription-id/:userId', async (req, res, next) => {
+router.get('/:userId', async (req, res, next) => {
     // Save the new Stripe customer ID and subscription ID to the user table
     let queryString = `
-            SELECT stripe_subscription_id
+            SELECT stripe_subscription_id, stripe_customer_id
             FROM users            
             WHERE id = ${conn.escape(req.params.userId)};
             `;
 
     let result = await query(queryString);
 
+    // If the subscription ID was recorded in our DB, as it should have been
     if (result[0].stripe_subscription_id != null) {
         let subId = result[0].stripe_subscription_id;
         const subscription = await stripe.subscriptions.retrieve(subId);
         res.json({ subscription: subscription });
-    } else {
-        res.json({ subscription: null });
+    }
+    // If not, we have to get it.
+    else {
+        const subscriptions = await stripe.subscriptions.list({
+            customer: result[0].stripe_customer_id
+        });
+        const subscriptionId = subscriptions.data[0].id;
+
+        // First save it in our DB
+        let sqlQueryString = `
+            UPDATE users
+            SET stripe_subscription_id = ${conn.escape(subscriptionId)}    
+            WHERE id = ${conn.escape(userId)};
+            `;
+
+        await query(sqlQueryString);
+
+        // Then return the object
+        res.json({ subscription: subscriptions.data[0] });
     }
 });
 
@@ -188,7 +206,8 @@ router.post(
 
                     let endSubQueryString = `
                         UPDATE users
-                        SET subscription_tier = 'free'
+                        SET subscription_tier = 'free',
+                        stripe_subscription_id = ''
                         WHERE stripe_customer_id = ${conn.escape(
                             stripeCustomerId
                         )};                         
@@ -209,7 +228,7 @@ router.post(
 );
 
 // Cancel subscription
-// (Subscription tier changes to "Free plan" at the end of the billing cycle.
+// (Subscription tier changes to "Free plan" at the end of the billing cycle.)
 router.post('/cancel', async (req, res) => {
     try {
         userId = req.body.userId;
@@ -226,6 +245,102 @@ router.post('/cancel', async (req, res) => {
             result[0].stripe_subscription_id,
             {
                 cancel_at_period_end: true
+            }
+        );
+
+        res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Downgrade subscription
+// (Subscription tier changes from "Infinte plan" to "Basic plan" at end of billing cycle)
+router.post('/downgrade', async (req, res) => {
+    try {
+        userId = req.body.userId;
+
+        // Get Stripe customer ID of user
+        let queryString = `
+            SELECT stripe_subscription_id
+            FROM users            
+            WHERE id = ${conn.escape(userId)};
+            `;
+        const result = await query(queryString);
+
+        let subscription = result[0].stripe_subscription_id;
+
+        // Create a subscription schedule with the existing subscription
+        const schedule = await stripe.subscriptionSchedules.create({
+            from_subscription: subscription
+        });
+
+        // Update the schedule with the new phase
+        const subscriptionSchedule = await stripe.subscriptionSchedules.update(
+            schedule.id,
+            {
+                phases: [
+                    {
+                        items: [
+                            {
+                                price: schedule.phases[0].items[0].price,
+                                quantity: schedule.phases[0].items[0].quantity
+                            }
+                        ],
+                        start_date: schedule.phases[0].start_date,
+                        end_date: schedule.phases[0].end_date
+                    },
+                    {
+                        items: [
+                            {
+                                price: process.env.BASIC_PLAN_PRICE_ID,
+                                quantity: 1
+                            }
+                        ],
+                        iterations: 1
+                    }
+                ]
+            }
+        );
+
+        res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Unfinished!!
+// Upgrade subscription
+// (Subscription tier changes from "Basic plan" to "Infinite plan" immmediately.)
+router.post('/upgrade', async (req, res) => {
+    try {
+        userId = req.body.userId;
+
+        // Get Stripe customer ID of user
+        let queryString = `
+            SELECT stripe_subscription_id
+            FROM users            
+            WHERE id = ${conn.escape(userId)};
+            `;
+        const result = await query(queryString);
+
+        const subscriptionToBeUpdated = await stripe.subscriptions.retrieve(
+            result[0].stripe_subscription_id
+        );
+
+        //console.log(subscription.items.data);
+        let itemId = subscriptionToBeUpdated.items.data[0].id;
+        let priceId = process.env.INFINITE_PLAN_PRICE_ID;
+
+        subscription = await stripe.subscriptions.update(
+            subscriptionToBeUpdated.id,
+            {
+                items: [
+                    {
+                        id: itemId,
+                        price: priceId
+                    }
+                ]
             }
         );
 
