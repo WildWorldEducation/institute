@@ -42,7 +42,7 @@ router.get('/:userId', async (req, res, next) => {
         res.json({ subscription: subscription });
     }
     // If not, we have to get it.
-    else {
+    else if (result[0].stripe_customer_id != null) {
         const subscriptions = await stripe.subscriptions.list({
             customer: result[0].stripe_customer_id
         });
@@ -59,6 +59,8 @@ router.get('/:userId', async (req, res, next) => {
 
         // Then return the object
         res.json({ subscription: subscriptions.data[0] });
+    } else {
+        res.json({ subscription: null });
     }
 });
 
@@ -255,53 +257,49 @@ router.post('/cancel', async (req, res) => {
 });
 
 // Downgrade subscription
-// (Subscription tier changes from "Infinte plan" to "Basic plan" at end of billing cycle)
+// (Subscription tier changes from "Infinite plan" to "Basic plan" at end of billing cycle)
 router.post('/downgrade', async (req, res) => {
+    console.log(req.body);
     try {
-        userId = req.body.userId;
-
-        // Get Stripe customer ID of user
-        let queryString = `
-            SELECT stripe_subscription_id
-            FROM users            
-            WHERE id = ${conn.escape(userId)};
-            `;
-        const result = await query(queryString);
-
-        let subscription = result[0].stripe_subscription_id;
+        let subscriptionId = req.body.subscriptionId;
+        console.log(subscriptionId);
 
         // Create a subscription schedule with the existing subscription
-        const schedule = await stripe.subscriptionSchedules.create({
-            from_subscription: subscription
+        const subscriptionSchedule = await stripe.subscriptionSchedules.create({
+            from_subscription: subscriptionId
         });
 
+        console.log(subscriptionSchedule);
+
         // Update the schedule with the new phase
-        const subscriptionSchedule = await stripe.subscriptionSchedules.update(
-            schedule.id,
-            {
-                phases: [
-                    {
-                        items: [
-                            {
-                                price: schedule.phases[0].items[0].price,
-                                quantity: schedule.phases[0].items[0].quantity
-                            }
-                        ],
-                        start_date: schedule.phases[0].start_date,
-                        end_date: schedule.phases[0].end_date
-                    },
-                    {
-                        items: [
-                            {
-                                price: process.env.BASIC_PLAN_PRICE_ID,
-                                quantity: 1
-                            }
-                        ],
-                        iterations: 1
-                    }
-                ]
-            }
-        );
+        // const subscriptionSchedule = await stripe.subscriptionSchedules.update(
+        //     schedule.id,
+        //     {
+        //         phases: [
+        //             {
+        //                 items: [
+        //                     {
+        //                         price: schedule.phases[0].items[0].price,
+        //                         quantity: schedule.phases[0].items[0].quantity
+        //                     }
+        //                 ],
+        //                 start_date: schedule.phases[0].start_date,
+        //                 end_date: schedule.phases[0].end_date
+        //             },
+        //             {
+        //                 items: [
+        //                     {
+        //                         price: process.env.BASIC_PLAN_PRICE_ID,
+        //                         quantity: 1
+        //                     }
+        //                 ],
+        //                 iterations: 1
+        //             }
+        //         ]
+        //     }
+        // );
+
+        //  console.log(subscriptionSchedule);
 
         res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
     } catch (e) {
