@@ -34,8 +34,6 @@ router.get('/get-sub/:userId', async (req, res, next) => {
 
     let result = await query(queryString);
 
-    console.log(result[0].stripe_customer_id);
-
     // If the user has a Stripe ID.
     if (
         result[0].stripe_customer_id != null &&
@@ -44,10 +42,6 @@ router.get('/get-sub/:userId', async (req, res, next) => {
         const subscriptions = await stripe.subscriptions.list({
             customer: result[0].stripe_customer_id
         });
-
-        console.log('test');
-        console.log(subscriptions);
-        console.log(subscriptions.length);
 
         // If a subscription is found.
         if (subscriptions.data.length > 0) {
@@ -231,13 +225,13 @@ router.post(
 // (Subscription tier changes to "Free plan" at the end of the billing cycle.)
 router.post('/cancel', async (req, res) => {
     try {
-        userId = req.body.userId;
+        let userId = req.body.userId;
 
         // Get Stripe customer ID of user
         let queryString = `
             SELECT stripe_customer_id
             FROM users            
-            WHERE id = ${conn.escape(req.params.userId)};
+            WHERE id = ${conn.escape(userId)};
             `;
 
         let result = await query(queryString);
@@ -255,7 +249,7 @@ router.post('/cancel', async (req, res) => {
             if (subscriptions.data.length > 0) {
                 const subscriptionId = subscriptions.data[0].id;
                 const subscription = await stripe.subscriptions.update(
-                    result[0].stripe_subscription_id,
+                    subscriptionId,
                     {
                         cancel_at_period_end: true
                     }

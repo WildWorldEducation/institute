@@ -119,6 +119,7 @@ export default {
             );
             const subscriptionData = await result.json();
             this.subscription = subscriptionData.subscription;
+            console.log(this.subscription);
         },
         // Purchase subscription
         checkout(planType) {
