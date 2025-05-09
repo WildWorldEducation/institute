@@ -26,39 +26,39 @@ Routes
 --------------------------------------------
 --------------------------------------------*/
 router.get('/get-sub/:userId', async (req, res, next) => {
-    // Save the new Stripe customer ID and subscription ID to the user table
     let queryString = `
-            SELECT stripe_subscription_id, stripe_customer_id
+            SELECT stripe_customer_id
             FROM users            
             WHERE id = ${conn.escape(req.params.userId)};
             `;
 
     let result = await query(queryString);
 
-    // If the subscription ID was recorded in our DB, as it should have been
-    if (result[0].stripe_subscription_id != null) {
-        let subId = result[0].stripe_subscription_id;
-        const subscription = await stripe.subscriptions.retrieve(subId);
-        res.json({ subscription: subscription });
-    }
-    // If not, we have to get it.
-    else if (result[0].stripe_customer_id != null) {
+    console.log(result[0].stripe_customer_id);
+
+    // If the user has a Stripe ID.
+    if (
+        result[0].stripe_customer_id != null &&
+        result[0].stripe_customer_id != ''
+    ) {
         const subscriptions = await stripe.subscriptions.list({
             customer: result[0].stripe_customer_id
         });
-        const subscriptionId = subscriptions.data[0].id;
 
-        // First save it in our DB
-        let sqlQueryString = `
-            UPDATE users
-            SET stripe_subscription_id = ${conn.escape(subscriptionId)}    
-            WHERE id = ${conn.escape(userId)};
-            `;
+        console.log('test');
+        console.log(subscriptions);
+        console.log(subscriptions.length);
 
-        await query(sqlQueryString);
-
-        // Then return the object
-        res.json({ subscription: subscriptions.data[0] });
+        // If a subscription is found.
+        if (subscriptions.data.length > 0) {
+            const subscriptionId = subscriptions.data[0].id;
+            const subscription = await stripe.subscriptions.retrieve(
+                subscriptionId
+            );
+            res.json({ subscription: subscription });
+        } else {
+            res.json({ subscription: null });
+        }
     } else {
         res.json({ subscription: null });
     }
@@ -112,8 +112,7 @@ router.get('/success', async (req, res, next) => {
     let usersTableQueryString = `
             UPDATE users
             SET stripe_customer_id = ${conn.escape(session.customer)},
-            subscription_tier = '${subscriptionTier}',
-            stripe_subscription_id = ${conn.escape(session.subscription)}
+            subscription_tier = '${subscriptionTier}'            
             WHERE id = ${conn.escape(userId)};
             `;
 
@@ -208,8 +207,7 @@ router.post(
 
                     let endSubQueryString = `
                         UPDATE users
-                        SET subscription_tier = 'free',
-                        stripe_subscription_id = ''
+                        SET subscription_tier = 'free'                                            
                         WHERE stripe_customer_id = ${conn.escape(
                             stripeCustomerId
                         )};                         
@@ -237,18 +235,51 @@ router.post('/cancel', async (req, res) => {
 
         // Get Stripe customer ID of user
         let queryString = `
-            SELECT stripe_subscription_id
+            SELECT stripe_customer_id
             FROM users            
-            WHERE id = ${conn.escape(userId)};
+            WHERE id = ${conn.escape(req.params.userId)};
             `;
-        const result = await query(queryString);
 
-        const subscription = await stripe.subscriptions.update(
-            result[0].stripe_subscription_id,
-            {
-                cancel_at_period_end: true
+        let result = await query(queryString);
+
+        // If the user has a Stripe ID.
+        if (
+            result[0].stripe_customer_id != null &&
+            result[0].stripe_customer_id != ''
+        ) {
+            const subscriptions = await stripe.subscriptions.list({
+                customer: result[0].stripe_customer_id
+            });
+
+            // If a subscription is found.
+            if (subscriptions.data.length > 0) {
+                const subscriptionId = subscriptions.data[0].id;
+                const subscription = await stripe.subscriptions.update(
+                    result[0].stripe_subscription_id,
+                    {
+                        cancel_at_period_end: true
+                    }
+                );
+            } else {
+                // In case there is no subscription, update it on our side
+                let endSubQueryString = `
+                UPDATE users
+                SET subscription_tier = 'free'                                            
+                WHERE id = ${conn.escape(userId)};                         
+            `;
+
+                await query(endSubQueryString);
             }
-        );
+        } else {
+            // In case there is no subscription, update it on our side
+            let endSubQueryString = `
+           UPDATE users
+           SET subscription_tier = 'free'                                            
+           WHERE id = ${conn.escape(userId)};                         
+       `;
+
+            await query(endSubQueryString);
+        }
 
         res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
     } catch (e) {
@@ -262,44 +293,31 @@ router.post('/downgrade', async (req, res) => {
     console.log(req.body);
     try {
         let subscriptionId = req.body.subscriptionId;
-        console.log(subscriptionId);
 
-        // Create a subscription schedule with the existing subscription
-        const schedule = await stripe.subscriptionSchedules.create({
-            from_subscription: subscriptionId
-        });
+        const subscription = await stripe.subscriptions.retrieve(
+            subscriptionId
+        );
 
-        console.log(schedule);
+        console.log(subscription);
+        res.end();
+        return;
+        // console.log(subscription.items.data[0].id);
 
-        // Update the schedule with the new phase
-        const subscriptionSchedule = await stripe.subscriptionSchedules.update(
-            schedule.id,
+        let subscriptionItemId = subscription.items.data[0].id;
+
+        const updatedSubscription = await stripe.subscriptions.update(
+            subscriptionId,
             {
-                phases: [
+                items: [
                     {
-                        items: [
-                            {
-                                price: schedule.phases[0].items[0].price,
-                                quantity: schedule.phases[0].items[0].quantity
-                            }
-                        ],
-                        start_date: schedule.phases[0].start_date,
-                        end_date: schedule.phases[0].end_date
-                    },
-                    {
-                        items: [
-                            {
-                                price: process.env.BASIC_PLAN_PRICE_ID,
-                                quantity: 1
-                            }
-                        ],
-                        iterations: 1
+                        id: subscriptionItemId,
+                        price: process.env.BASIC_PLAN_PRICE_ID
                     }
                 ]
             }
         );
 
-        console.log(subscriptionSchedule);
+        console.log(updatedSubscription);
 
         res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
     } catch (e) {
