@@ -284,7 +284,6 @@ router.post('/cancel', async (req, res) => {
 // Downgrade subscription
 // (Subscription tier changes from "Infinite plan" to "Basic plan" at end of billing cycle)
 router.post('/downgrade', async (req, res) => {
-    console.log(req.body);
     try {
         let subscriptionId = req.body.subscriptionId;
 
@@ -292,24 +291,58 @@ router.post('/downgrade', async (req, res) => {
             subscriptionId
         );
 
-        console.log(subscription);
-        res.end();
-        return;
-        // console.log(subscription.items.data[0].id);
+        // Get the start and end dates of the current billing cycle.
+        let subItemCurrentPeriodStart =
+            subscription.items.data[0].current_period_start;
+        let subItemCurrentPeriodEnd =
+            subscription.items.data[0].current_period_end;
 
-        let subscriptionItemId = subscription.items.data[0].id;
+        let subItemId = subscription.items.data[0].id;
 
-        const updatedSubscription = await stripe.subscriptions.update(
-            subscriptionId,
+        // Create a subscription schedule with the existing subscription
+        const schedule = await stripe.subscriptionSchedules.create({
+            from_subscription: subscriptionId
+        });
+
+        // Update the schedule with the new phase
+        const subscriptionSchedule = await stripe.subscriptionSchedules.update(
+            schedule.id,
             {
-                items: [
+                phases: [
                     {
-                        id: subscriptionItemId,
-                        price: process.env.BASIC_PLAN_PRICE_ID
+                        start_date: subItemCurrentPeriodStart,
+                        end_date: subItemCurrentPeriodEnd,
+                        items: [
+                            {
+                                price: process.env.INFINITE_PLAN_PRICE_ID
+                            }
+                        ]
+                    },
+                    {
+                        start_date: subItemCurrentPeriodEnd,
+                        items: [
+                            {
+                                price: process.env.BASIC_PLAN_PRICE_ID
+                            }
+                        ]
                     }
                 ]
             }
         );
+
+        // NOTE: this downgrades immediatley, not at end of cycle.!!
+        // TODO: fix that
+        // const updatedSubscription = await stripe.subscriptions.update(
+        //     subscriptionId,
+        //     {
+        //         items: [
+        //             {
+        //                 id: subscriptionItemId,
+        //                 price: process.env.BASIC_PLAN_PRICE_ID
+        //             }
+        //         ]
+        //     }
+        // );
 
         console.log(updatedSubscription);
 
