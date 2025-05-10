@@ -366,7 +366,7 @@ export default {
                     assistantId: this.assistantData.assistantId,
                     tutorType: this.tutorType,
                     skillName: this.skill.name,
-                    skillLevel: this.skillLevel,
+                    skillLevel: this.englishSkillLevel,
                     learningObjectives: this.learningObjectives,
                     // The message from the student
                     message: this.message,
