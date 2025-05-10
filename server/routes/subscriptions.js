@@ -49,7 +49,15 @@ router.get('/get-sub/:userId', async (req, res, next) => {
             const subscription = await stripe.subscriptions.retrieve(
                 subscriptionId
             );
-            res.json({ subscription: subscription });
+
+            let subSchedule = null;
+            if (subscription.schedule != null) {
+                subSchedule = await stripe.subscriptionSchedules.retrieve(
+                    subscription.schedule
+                );
+            }
+
+            res.json({ subscription: subscription, subSchedule: subSchedule });
         } else {
             res.json({ subscription: null });
         }
@@ -64,9 +72,9 @@ router.post('/create-checkout-session', async (req, res) => {
         userId = req.body.userId;
         let priceId = '';
         if (req.body.planType == 'basic') {
-            priceId = process.env.BASIC_PLAN_PRICE_ID;
+            priceId = process.env.VITE_BASIC_PLAN_PRICE_ID;
         } else {
-            priceId = process.env.INFINITE_PLAN_PRICE_ID;
+            priceId = process.env.VITE_INFINITE_PLAN_PRICE_ID;
         }
 
         const session = await stripe.checkout.sessions.create({
@@ -167,19 +175,20 @@ router.post(
                     const previousPlan = result[0].subscription_tier;
                     let previousPriceId = '';
                     if (previousPlan == 'basic') {
-                        previousPriceId = process.env.BASIC_PLAN_PRICE_ID;
+                        previousPriceId = process.env.VITE_BASIC_PLAN_PRICE_ID;
                     } else if (previousPlan == 'infinite') {
-                        previousPriceId = process.env.INFINITE_PLAN_PRICE_ID;
+                        previousPriceId =
+                            process.env.VITE_INFINITE_PLAN_PRICE_ID;
                     }
 
                     priceId = subscriptionUpdated.plan.id;
                     // If it has, update it in the DB, otherwise, ignore this event.
                     if (priceId != previousPriceId) {
                         let planType = '';
-                        if (priceId == process.env.BASIC_PLAN_PRICE_ID) {
+                        if (priceId == process.env.VITE_BASIC_PLAN_PRICE_ID) {
                             planType = 'basic';
                         } else if (
-                            priceId == process.env.INFINITE_PLAN_PRICE_ID
+                            priceId == process.env.VITE_INFINITE_PLAN_PRICE_ID
                         ) {
                             planType = 'infinite';
                         }
@@ -286,6 +295,7 @@ router.post('/cancel', async (req, res) => {
 router.post('/downgrade', async (req, res) => {
     try {
         let subscriptionId = req.body.subscriptionId;
+        let subScheduleId = req.body.subScheduleId;
 
         const subscription = await stripe.subscriptions.retrieve(
             subscriptionId
@@ -297,16 +307,18 @@ router.post('/downgrade', async (req, res) => {
         let subItemCurrentPeriodEnd =
             subscription.items.data[0].current_period_end;
 
-        let subItemId = subscription.items.data[0].id;
-
-        // Create a subscription schedule with the existing subscription
-        const schedule = await stripe.subscriptionSchedules.create({
-            from_subscription: subscriptionId
-        });
+        // If there is no subscription schedule yet
+        if (subScheduleId == null || subScheduleId == '') {
+            // Create a subscription schedule with the existing subscription
+            const schedule = await stripe.subscriptionSchedules.create({
+                from_subscription: subscriptionId
+            });
+            subScheduleId = schedule.id;
+        }
 
         // Update the schedule with the new phase
         const subscriptionSchedule = await stripe.subscriptionSchedules.update(
-            schedule.id,
+            subScheduleId,
             {
                 phases: [
                     {
@@ -314,7 +326,7 @@ router.post('/downgrade', async (req, res) => {
                         end_date: subItemCurrentPeriodEnd,
                         items: [
                             {
-                                price: process.env.INFINITE_PLAN_PRICE_ID
+                                price: process.env.VITE_INFINITE_PLAN_PRICE_ID
                             }
                         ]
                     },
@@ -322,29 +334,13 @@ router.post('/downgrade', async (req, res) => {
                         start_date: subItemCurrentPeriodEnd,
                         items: [
                             {
-                                price: process.env.BASIC_PLAN_PRICE_ID
+                                price: process.env.VITE_BASIC_PLAN_PRICE_ID
                             }
                         ]
                     }
                 ]
             }
         );
-
-        // NOTE: this downgrades immediatley, not at end of cycle.!!
-        // TODO: fix that
-        // const updatedSubscription = await stripe.subscriptions.update(
-        //     subscriptionId,
-        //     {
-        //         items: [
-        //             {
-        //                 id: subscriptionItemId,
-        //                 price: process.env.BASIC_PLAN_PRICE_ID
-        //             }
-        //         ]
-        //     }
-        // );
-
-        console.log(updatedSubscription);
 
         res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
     } catch (e) {
@@ -373,7 +369,7 @@ router.post('/upgrade', async (req, res) => {
 
         //console.log(subscription.items.data);
         let itemId = subscriptionToBeUpdated.items.data[0].id;
-        let priceId = process.env.INFINITE_PLAN_PRICE_ID;
+        let priceId = process.env.VITE_INFINITE_PLAN_PRICE_ID;
 
         subscription = await stripe.subscriptions.update(
             subscriptionToBeUpdated.id,

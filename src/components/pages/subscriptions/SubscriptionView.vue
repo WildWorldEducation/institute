@@ -207,7 +207,6 @@ export default {
         },
         // Downgrade subscription from Infinite to Basic.
         downgradePlan() {
-            console.log(this.subscription.id);
             if (
                 confirm('Are you sure you want to downgrade to the Basic plan?')
             ) {
@@ -218,7 +217,9 @@ export default {
                     },
                     body: JSON.stringify({
                         subscriptionId: this.subscription.id,
-                        subScheduleId: this.subSchedule.id
+                        subScheduleId: this.subSchedule
+                            ? this.subSchedule.id
+                            : null
                     })
                 }).then(() => {
                     this.getSubscription();
