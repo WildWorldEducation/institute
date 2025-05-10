@@ -21,7 +21,11 @@ export default {
             isAITokenLimitReached: false,
             isMobileCheck: window.innerWidth,
             showTooltip: false,
-            subscription: {}
+            subscription: {},
+            subSchedule: {},
+            basicPlanPriceId: import.meta.env.VITE_BASIC_PLAN_PRICE_ID,
+            infinitePlanPriceId: import.meta.env.VITE_INFINITE_PLAN_PRICE_ID,
+            nextSubSchedulePhasePlan: ''
         };
     },
     async created() {
@@ -83,7 +87,7 @@ export default {
         this.month = month[d.getMonth()];
     },
     computed: {
-        formattedStripeDate() {
+        formattedStripeCurrentPeriodEndDate() {
             let dateObj = new Date(this.subscription.current_period_end * 1000);
             const month = dateObj.getUTCMonth() + 1; // months from 1-12
             const day = dateObj.getUTCDate();
@@ -118,8 +122,22 @@ export default {
                 '/subscriptions/get-sub/' + this.userDetailsStore.userId
             );
             const subscriptionData = await result.json();
+            // Load the subscription, if there is one
             this.subscription = subscriptionData.subscription;
-            console.log(this.subscription);
+            // Check if there is a subscription schedule
+            // This would have been created in the case of a downgrade or upgrade,
+            // but not cancellation (downgrade to free plan).
+            this.subSchedule = subscriptionData.subSchedule;
+            if (this.subSchedule) {
+                let nextPhasePlan = this.subSchedule.phases[1].items[0].price;
+                if (nextPhasePlan == this.basicPlanPriceId) {
+                    this.nextSubSchedulePhasePlan = 'Basic';
+                } else if (nextPhasePlan == this.infinitePlanPriceId) {
+                    this.nextSubSchedulePhasePlan = 'Infinite';
+                }
+                console.log(this.nextSubSchedulePhasePlan);
+            }
+            console.log(subscriptionData);
         },
         // Purchase subscription
         checkout(planType) {
@@ -298,7 +316,16 @@ export default {
                     role="alert"
                 >
                     Your plan will downgrade to the Free plan on
-                    {{ formattedStripeDate }}
+                    {{ formattedStripeCurrentPeriodEndDate }}
+                </div>
+                <div
+                    v-if="nextSubSchedulePhasePlan != ''"
+                    class="alert alert-warning"
+                    role="alert"
+                >
+                    Your plan will downgrade to the
+                    {{ nextSubSchedulePhasePlan }} plan on
+                    {{ formattedStripeCurrentPeriodEndDate }}
                 </div>
             </div>
 
