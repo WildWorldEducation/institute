@@ -697,19 +697,21 @@ export default {
     },
     computed: {
         sortedChatHistory() {
-            if (this.mode == 'modal')
+            if (this.mode == 'modal') {
                 if (this.chatHistory) {
                     return [...this.chatHistory].sort(
                         (a, b) => a.index - b.index
                     );
                 }
-                // Sort by index
-                else if (this.mode == 'docked')
-                    if (this.chatHistory) {
-                        return [...this.chatHistory].sort(
-                            (a, b) => b.index - a.index
-                        ); // Sort by index
-                    }
+            }
+            // Sort by index
+            else if (this.mode == 'docked') {
+                if (this.chatHistory) {
+                    return [...this.chatHistory].sort(
+                        (a, b) => b.index - a.index
+                    ); // Sort by index
+                }
+            }
         }
     },
     watch: {
@@ -1089,7 +1091,7 @@ export default {
                             skill.id
                         "
                     >
-                        <!-- Replace the router-link with this button -->
+                        <!-- MC Test -->
                         <button
                             class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 d-block text-nowrap"
                             :class="{
@@ -1241,7 +1243,6 @@ export default {
                 class="d-flex my-3 tutor-conversation streamed-message"
                 v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)"
             ></div>
-
             <!-- Chat history -->
             <template v-for="(message, index) in sortedChatHistory">
                 <!-- Student messages -->
