@@ -151,14 +151,14 @@ export default {
         },
         async hideTutorModal(type) {
             this.tutorType = type;
-
             await this.getChatHistory();
             if (type == 'socratic')
                 this.chatHistory = this.socraticTutorChatHistory;
             else if (type == 'assessing') {
                 this.chatHistory = this.assessingTutorChatHistory;
             }
-
+            // reset chat input height
+            this.modalTextAreaHeigh = '60px';
             this.mode = 'docked';
         },
         // For both tutors
@@ -1105,6 +1105,7 @@ export default {
                         </div>
                     </div>
                 </div>
+                <!-- Link to test page -->
                 <div class="row g-2">
                     <div
                         class="col-12 col-md-6 offset-md-6"
@@ -1154,6 +1155,7 @@ export default {
                 </div>
             </div>
 
+            <!-- Chat toggle button (Hide Mode) -->
             <div v-if="mode != 'hide'" class="d-flex justify-content-between">
                 <!-- Toggle chat button -->
                 <button class="btn plus-btn ms-1" @click="showChat = !showChat">
@@ -1244,7 +1246,13 @@ export default {
             Thinking
             <TutorLoadingSymbol />
         </div>
-        <div class="d-flex flex-column align-items-start" style="height: 95%">
+        <div
+            class="d-flex flex-column align-items-start tutor-chatting-section"
+            :class="{
+                'tutor-chatting-waiting-response-section':
+                    mode === 'modal' && waitForAIresponse
+            }"
+        >
             <!-- Message thread -->
             <div
                 v-if="showChat && mode != 'hide'"
@@ -1581,6 +1589,13 @@ export default {
     margin-bottom: 5px;
 }
 
+.modal-mode-waiting-response-chat {
+    height: 90% !important;
+    padding-bottom: 0px !important;
+    margin-bottom: 0px !important;
+    overflow-y: auto !important;
+}
+
 .modal-user-chat-div {
     display: flex;
     flex-direction: row;
@@ -1594,6 +1609,8 @@ export default {
     overflow-y: auto;
     word-wrap: break-word;
     font-size: 1.1rem;
+    resize: none;
+    padding: 5px;
 }
 
 .send-message-button {
@@ -1633,6 +1650,14 @@ export default {
 
 .warn-text {
     color: yellow;
+}
+
+.tutor-chatting-section {
+    height: 95%;
+}
+
+.tutor-chatting-waiting-response-section {
+    height: 94% !important;
 }
 /* ************************* */
 /* Tablet Styling */
