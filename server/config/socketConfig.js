@@ -163,6 +163,11 @@ const createSocket = (server) => {
                     messageData.userId
                 );
             });
+
+            socket.on('error', (error) => {
+                console.error('Socket error:', error);
+            });
+
         } catch (error) {
             socket.emit('error', error);
             console.error(error);

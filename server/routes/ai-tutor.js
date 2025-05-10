@@ -166,6 +166,7 @@ router.post(
             console.error(error);
             res.status = 500;
             res.json({ mess: 'something went wrong' });
+            next(error);
         }
     }
 );
@@ -200,8 +201,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                                        messageNumber
-                                    )},                       
+                    messageNumber
+                )},                       
                                     ${conn.escape(url)}
                                 )
                                 ON DUPLICATE KEY UPDATE                                 
@@ -221,6 +222,7 @@ router.post(
             console.error(error);
             res.status = 500;
             res.json({ mess: 'something went wrong' });
+            next(error);
         }
     }
 );
@@ -338,8 +340,7 @@ router.post(
             }
         } catch (error) {
             console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
+            next(error);
         }
     }
 );
@@ -374,8 +375,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                                        messageNumber
-                                    )},                       
+                    messageNumber
+                )},                       
                                     ${conn.escape(url)}
                                 )
                                 ON DUPLICATE KEY UPDATE                                 
@@ -388,14 +389,13 @@ router.post(
                 });
             } catch (error) {
                 console.error(error);
-                res.status = 500;
-                res.json({ mess: 'something went wrong' });
+
                 next(error);
             }
         } catch (error) {
             console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
+
+            next(error);
         }
     }
 );
@@ -449,8 +449,7 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
         });
     } catch (error) {
         console.error(error);
-        res.status = 500;
-        res.json({ mess: 'something went wrong' });
+        next(error);
     }
 });
 
@@ -581,8 +580,7 @@ router.get(
             }
         } catch (error) {
             console.error(error);
-            res.status = 500;
-            res.json({ mess: 'something went wrong' });
+            next(error);
         }
     }
 );
@@ -617,8 +615,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                                        messageNumber
-                                    )},                       
+                    messageNumber
+                )},                       
                                     ${conn.escape(url)}
                                 )
                                 ON DUPLICATE KEY UPDATE                                 
@@ -702,68 +700,71 @@ router.post(
  * STT (Speech to Text) for tutors
  */
 router.post('/stt/convert', async (req, res, next) => {
-    // prepare variables
-    const userId = req.session.userId;
-    const skillUrl = req.body.skillUrl;
-    const skillName = req.body.skillName;
-    const skillLevel = req.body.skillLevel;
-    const learningObjectives = req.body.learningObjectives;
-    const audioData = req.body.audioData;
-    const tutorType = req.body.tutorType;
-
-    // Convert Base64 to buffer
-    let bufferObj = Buffer.from(
-        audioData.replace('data:audio/webm; codecs=opus;base64,', ''),
-        'base64'
-    );
-
-    // Generate unique filename
-    function makeName(length) {
-        let result = '';
-        const characters =
-            'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        const charactersLength = characters.length;
-        let counter = 0;
-        while (counter < length) {
-            result += characters.charAt(
-                Math.floor(Math.random() * charactersLength)
-            );
-            counter += 1;
+    try {
+        // prepare variables
+        const userId = req.session.userId;
+        const skillUrl = req.body.skillUrl;
+        const skillName = req.body.skillName;
+        const skillLevel = req.body.skillLevel;
+        const learningObjectives = req.body.learningObjectives;
+        const audioData = req.body.audioData;
+        const tutorType = req.body.tutorType;
+        // Convert Base64 to buffer
+        let bufferObj = Buffer.from(
+            audioData.replace('data:audio/webm; codecs=opus;base64,', ''),
+            'base64'
+        );
+        // Generate unique filename
+        function makeName(length) {
+            let result = '';
+            const characters =
+                'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            const charactersLength = characters.length;
+            let counter = 0;
+            while (counter < length) {
+                result += characters.charAt(
+                    Math.floor(Math.random() * charactersLength)
+                );
+                counter += 1;
+            }
+            return result;
         }
-        return result;
+        let uniqueName = makeName(10);
+        let filePath =
+            './public/audio/tempSpeechRecordings/' + uniqueName + '.webm';
+
+        await writeFile(filePath, bufferObj);
+
+        let messageObject = await speechToText(filePath);
+        let message = messageObject.text;
+        //console.log(message);
+
+        if (tutorType == 'socratic')
+            await sendSpeechToSocraticAI(
+                userId,
+                skillUrl,
+                skillName,
+                skillLevel,
+                learningObjectives,
+                message
+            );
+        else if (tutorType == 'assessing')
+            await sendSpeechToAssessingAI(
+                userId,
+                skillUrl,
+                skillName,
+                skillLevel,
+                learningObjectives,
+                message
+            );
+
+        //console.log('res.end()');
+
+        res.end();
+    } catch (error) {
+        console.error(error);
+        next(error);
     }
-    let uniqueName = makeName(10);
-    let filePath =
-        './public/audio/tempSpeechRecordings/' + uniqueName + '.webm';
-
-    await writeFile(filePath, bufferObj);
-
-    let messageObject = await speechToText(filePath);
-    let message = messageObject.text;
-    //console.log(message);
-
-    if (tutorType == 'socratic')
-        await sendSpeechToSocraticAI(
-            userId,
-            skillUrl,
-            skillName,
-            skillLevel,
-            learningObjectives,
-            message
-        );
-    else if (tutorType == 'assessing')
-        await sendSpeechToAssessingAI(
-            userId,
-            skillUrl,
-            skillName,
-            skillLevel,
-            learningObjectives,
-            message
-        );
-
-    //console.log('res.end()');
-
-    res.end();
 });
 
 // crete new vector store (NEED TO CHANGE FROM GET TO POST LATER)
@@ -799,7 +800,9 @@ async function sendSpeechToSocraticAI(
             messageData
         );
     } catch (error) {
+
         console.error(error);
+        throw error;
     }
 }
 
@@ -821,7 +824,6 @@ async function sendSpeechToAssessingAI(
             learningObjectives: learningObjectives,
             message
         };
-
         await assessingTutorMessage(
             assistantData[0].thread_id,
             assistantData[0].assistant_id,
@@ -829,6 +831,7 @@ async function sendSpeechToAssessingAI(
         );
     } catch (error) {
         console.error(error);
+        throw error;
     }
 }
 

@@ -122,6 +122,10 @@ app.use('/skill-learning-objectives', skillLearningObjectives);
 const subscriptions = require('./routes/subscriptions');
 app.use('/subscriptions', subscriptions);
 
+// error handling middleware
+const errorHandlingMiddleware = require('./middlewares/errorHandlingMiddleWare');
+app.use(errorHandlingMiddleware);
+
 if (process.env.NODE_ENV === 'production') {
     app.use('/', express.static(distPath));
 } else {
