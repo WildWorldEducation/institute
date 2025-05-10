@@ -217,7 +217,8 @@ export default {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        subscriptionId: this.subscription.id
+                        subscriptionId: this.subscription.id,
+                        subScheduleId: this.subSchedule.id
                     })
                 }).then(() => {
                     this.getSubscription();
@@ -417,7 +418,8 @@ export default {
                 <button
                     v-else-if="
                         subscription &&
-                        userDetailsStore.subscriptionTier == 'infinite'
+                        userDetailsStore.subscriptionTier == 'infinite' &&
+                        nextSubSchedulePhasePlan != 'Basic'
                     "
                     @click="downgradePlan()"
                     class="btn primary-btn mt-1"
