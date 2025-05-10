@@ -21,7 +21,11 @@ export default {
             isAITokenLimitReached: false,
             isMobileCheck: window.innerWidth,
             showTooltip: false,
-            subscription: {}
+            subscription: {},
+            subSchedule: {},
+            basicPlanPriceId: import.meta.env.VITE_BASIC_PLAN_PRICE_ID,
+            infinitePlanPriceId: import.meta.env.VITE_INFINITE_PLAN_PRICE_ID,
+            nextSubSchedulePhasePlan: ''
         };
     },
     async created() {
@@ -83,7 +87,7 @@ export default {
         this.month = month[d.getMonth()];
     },
     computed: {
-        formattedStripeDate() {
+        formattedStripeCurrentPeriodEndDate() {
             let dateObj = new Date(this.subscription.current_period_end * 1000);
             const month = dateObj.getUTCMonth() + 1; // months from 1-12
             const day = dateObj.getUTCDate();
@@ -115,10 +119,25 @@ export default {
     methods: {
         async getSubscription() {
             const result = await fetch(
-                '/subscriptions/subscription-id/' + this.userDetailsStore.userId
+                '/subscriptions/get-sub/' + this.userDetailsStore.userId
             );
             const subscriptionData = await result.json();
+            // Load the subscription, if there is one
             this.subscription = subscriptionData.subscription;
+            // Check if there is a subscription schedule
+            // This would have been created in the case of a downgrade or upgrade,
+            // but not cancellation (downgrade to free plan).
+            this.subSchedule = subscriptionData.subSchedule;
+            if (this.subSchedule) {
+                let nextPhasePlan = this.subSchedule.phases[1].items[0].price;
+                if (nextPhasePlan == this.basicPlanPriceId) {
+                    this.nextSubSchedulePhasePlan = 'Basic';
+                } else if (nextPhasePlan == this.infinitePlanPriceId) {
+                    this.nextSubSchedulePhasePlan = 'Infinite';
+                }
+                console.log(this.nextSubSchedulePhasePlan);
+            }
+            console.log(subscriptionData);
         },
         // Purchase subscription
         checkout(planType) {
@@ -172,6 +191,51 @@ export default {
                 confirm('Are you sure you want to downgrade to the Free plan?')
             ) {
                 fetch('/subscriptions/cancel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: this.userDetailsStore.userId
+                    })
+                }).then(() => {
+                    this.getSubscription();
+                });
+            } else {
+                return;
+            }
+        },
+        // Downgrade subscription from Infinite to Basic.
+        downgradePlan() {
+            if (
+                confirm('Are you sure you want to downgrade to the Basic plan?')
+            ) {
+                fetch('/subscriptions/downgrade', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        subscriptionId: this.subscription.id,
+                        subScheduleId: this.subSchedule
+                            ? this.subSchedule.id
+                            : null
+                    })
+                }).then(() => {
+                    this.getSubscription();
+                });
+            } else {
+                return;
+            }
+        },
+        // Upgrade subscription from Basic to Infinite.
+        upgradePlan() {
+            if (
+                confirm(
+                    'Are you sure you want to upgrade to the Infinite plan?'
+                )
+            ) {
+                fetch('/subscriptions/upgrade', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -254,7 +318,16 @@ export default {
                     role="alert"
                 >
                     Your plan will downgrade to the Free plan on
-                    {{ formattedStripeDate }}
+                    {{ formattedStripeCurrentPeriodEndDate }}
+                </div>
+                <div
+                    v-if="nextSubSchedulePhasePlan != ''"
+                    class="alert alert-warning"
+                    role="alert"
+                >
+                    Your plan will downgrade to the
+                    {{ nextSubSchedulePhasePlan }} plan on
+                    {{ formattedStripeCurrentPeriodEndDate }}
                 </div>
             </div>
 
@@ -306,12 +379,15 @@ export default {
                 <button
                     v-if="userDetailsStore.subscriptionTier == 'free'"
                     disabled
-                    class="btn primary-btn mt-2"
+                    class="btn primary-btn mt-1"
                 >
                     current plan
                 </button>
                 <button
-                    v-else-if="subscription.cancel_at_period_end == false"
+                    v-else-if="
+                        subscription &&
+                        subscription.cancel_at_period_end == false
+                    "
                     @click="cancelPlan()"
                     class="btn primary-btn mt-1 mb-3"
                 >
@@ -336,9 +412,20 @@ export default {
                 <button
                     v-if="userDetailsStore.subscriptionTier == 'free'"
                     @click="checkout('basic')"
-                    class="btn primary-btn mt-2"
+                    class="btn primary-btn mt-1"
                 >
                     buy
+                </button>
+                <button
+                    v-else-if="
+                        subscription &&
+                        userDetailsStore.subscriptionTier == 'infinite' &&
+                        nextSubSchedulePhasePlan != 'Basic'
+                    "
+                    @click="downgradePlan()"
+                    class="btn primary-btn mt-1"
+                >
+                    downgrade
                 </button>
                 <button
                     v-else-if="
@@ -365,11 +452,17 @@ export default {
                 <button
                     v-if="userDetailsStore.subscriptionTier == 'free'"
                     @click="checkout('infinite')"
-                    class="btn primary-btn mt-2"
+                    class="btn primary-btn mt-1"
                 >
                     buy
                 </button>
-
+                <button
+                    v-else-if="userDetailsStore.subscriptionTier == 'basic'"
+                    @click="upgradePlan()"
+                    class="btn primary-btn mt-1"
+                >
+                    upgrade (incomplete)
+                </button>
                 <button
                     v-else-if="
                         this.userDetailsStore.subscriptionTier == 'infinite'
