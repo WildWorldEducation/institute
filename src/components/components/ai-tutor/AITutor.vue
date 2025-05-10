@@ -368,7 +368,7 @@ export default {
                     assistantId: this.assistantData.assistantId,
                     tutorType: this.tutorType,
                     skillName: this.skill.name,
-                    skillLevel: this.skillLevel,
+                    skillLevel: this.englishSkillLevel,
                     learningObjectives: this.learningObjectives,
                     // The message from the student
                     message: this.message,
@@ -721,19 +721,21 @@ export default {
     },
     computed: {
         sortedChatHistory() {
-            if (this.mode == 'modal')
+            if (this.mode == 'modal') {
                 if (this.chatHistory) {
                     return [...this.chatHistory].sort(
                         (a, b) => a.index - b.index
                     );
                 }
-                // Sort by index
-                else if (this.mode == 'docked')
-                    if (this.chatHistory) {
-                        return [...this.chatHistory].sort(
-                            (a, b) => b.index - a.index
-                        ); // Sort by index
-                    }
+            }
+            // Sort by index
+            else if (this.mode == 'docked') {
+                if (this.chatHistory) {
+                    return [...this.chatHistory].sort(
+                        (a, b) => b.index - a.index
+                    ); // Sort by index
+                }
+            }
         }
     },
     watch: {
@@ -1115,7 +1117,7 @@ export default {
                             skill.id
                         "
                     >
-                        <!-- Replace the router-link with this button -->
+                        <!-- MC Test -->
                         <button
                             class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 d-block text-nowrap"
                             :class="{
@@ -1256,7 +1258,7 @@ export default {
             <!-- Message thread -->
             <div
                 v-if="showChat && mode != 'hide'"
-                class="d-flex flex-column mx-auto chat-history w-100"
+                class="d-flex flex-column mx-auto chat-history"
                 :class="{
                     'chat-history': mode === 'docked',
                     'modal-chat-history': mode === 'modal',
@@ -1277,7 +1279,6 @@ export default {
                         applyMarkDownFormatting(stateOfSocket.streamingMessage)
                     "
                 ></div>
-
                 <!-- Chat history -->
                 <template v-for="(message, index) in sortedChatHistory">
                     <!-- Student messages -->

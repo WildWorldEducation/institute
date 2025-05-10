@@ -132,8 +132,8 @@ async function getSocraticTutorThread(userId, skillUrl) {
         let queryString = `SELECT * 
                            FROM ai_socratic_tutor_threads 
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND skill_url = ${conn.escape(skillUrl)}`;
+            userId
+        )} AND skill_url = ${conn.escape(skillUrl)}`;
 
         const result = await query(queryString);
         return result;
@@ -165,10 +165,10 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         role: 'user',
         content: messageData.message
     });
-
-    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-        assistant_id: assistantId,
-        instructions: `Please tutor about the subject: ${messageData.skillName},
+    try {
+        let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+            assistant_id: assistantId,
+            instructions: `Please tutor about the subject: ${messageData.skillName},
         comprising the following learning objectives: ${messageData.learningObjectives}.
         Tutor the user as if they are at a ${messageData.skillLevel} level and age.
         Use the Socratic method of teaching.
@@ -194,25 +194,30 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
 
         Make sure to have $ delimiters before any science and math strings that can convert to Latex
         Please keep all messages below 1000 characters, and succinct.`
-    });
+        });
 
-    if (run.status === 'completed') {
-        const messages = await openai.beta.threads.messages.list(threadId);
-        const latestMessage = messages.data[0];
+        if (run.status === 'completed') {
+            const messages = await openai.beta.threads.messages.list(threadId);
+            const latestMessage = messages.data[0];
 
-        // Save the user's token usage
-        // These tokens are priced at $150 per million
-        let outputTokens = runStep.usage.completion_tokens;
-        // Work out tts equivalent usage
-        // 0.4 is hardcoded at the moment, based on pricing and choice of models
-        let ttsTokens = outputTokens * 0.4;
-        let tokenCount = runStep.usage.total_tokens + ttsTokens;
-        saveTokenUsage(messageData.userId, tokenCount);
+            // Save the user's token usage
+            // These tokens are priced at $150 per million
+            let outputTokens = runStep.usage.completion_tokens;
+            // Work out tts equivalent usage
+            // 0.4 is hardcoded at the moment, based on pricing and choice of models
+            let ttsTokens = outputTokens * 0.4;
+            let tokenCount = runStep.usage.total_tokens + ttsTokens;
+            saveTokenUsage(messageData.userId, tokenCount);
 
-        return latestMessage;
-    } else {
-        console.log(run.status);
+            return latestMessage;
+        } else {
+            console.log(run.status);
+        }
+    } catch (error) {
+        console.error('Error in socraticTutorMessage:', error);
+        throw error;
     }
+
 }
 
 // Test the student
@@ -306,8 +311,8 @@ async function getAssessingTutorThread(userId, skillUrl) {
         let queryString = `SELECT * 
                            FROM ai_assessing_tutor_threads 
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND skill_url = ${conn.escape(skillUrl)}`;
+            userId
+        )} AND skill_url = ${conn.escape(skillUrl)}`;
 
         const result = await query(queryString);
         return result;
@@ -339,10 +344,10 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
         role: 'user',
         content: messageData.message
     });
-
-    let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-        assistant_id: assistantId,
-        instructions: `The user is at a ${messageData.skillLevel} level and age.
+    try {
+        let run = await openai.beta.threads.runs.createAndPoll(threadId, {
+            assistant_id: assistantId,
+            instructions: `The user is at a ${messageData.skillLevel} level and age.
         Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
 
         ASSESSMENT AND FEEDBACK GUIDELINES:
@@ -369,24 +374,29 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
 
         Make sure to have $ delimiters before any science and math strings that can convert to Latex.
         Please keep all messages below 1000 characters, and succinct.`
-    });
+        });
 
-    if (run.status === 'completed') {
-        const messages = await openai.beta.threads.messages.list(threadId);
-        const latestMessage = messages.data[0];
+        if (run.status === 'completed') {
+            const messages = await openai.beta.threads.messages.list(threadId);
+            const latestMessage = messages.data[0];
 
-        // Save the user's token usage
-        // These tokens are priced at $150 per million
-        let outputTokens = runStep.usage.completion_tokens;
-        // Work out tts equivalent usage
-        // 0.4 is hardcoded at the moment, based on pricing and choice of models
-        let ttsTokens = outputTokens * 0.4;
-        let tokenCount = runStep.usage.total_tokens + ttsTokens;
-        saveTokenUsage(messageData.userId, tokenCount);
+            // Save the user's token usage
+            // These tokens are priced at $150 per million
+            let outputTokens = runStep.usage.completion_tokens;
+            // Work out tts equivalent usage
+            // 0.4 is hardcoded at the moment, based on pricing and choice of models
+            let ttsTokens = outputTokens * 0.4;
+            let tokenCount = runStep.usage.total_tokens + ttsTokens;
+            saveTokenUsage(messageData.userId, tokenCount);
 
-        return latestMessage;
-    } else {
-        console.log(run.status);
+            return latestMessage;
+        } else {
+            console.log(run.status);
+        }
+    } catch (error) {
+        console.error('Error in assessingTutorMessage:', error);
+        throw error;
+
     }
 }
 
@@ -475,8 +485,8 @@ async function getLearningObjectiveThread(userId, learningObjectiveId) {
         let queryString = `SELECT * 
                            FROM ai_tutor_learning_objective_threads
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND learning_objective_id = ${conn.escape(
+            userId
+        )} AND learning_objective_id = ${conn.escape(
             learningObjectiveId
         )}`;
 
@@ -484,6 +494,7 @@ async function getLearningObjectiveThread(userId, learningObjectiveId) {
 
         return result;
     } catch (error) {
+        console.error('Error in getLearningObjectiveThread:', error);
         throw error;
     }
 }
@@ -578,85 +589,69 @@ async function createRunStream(
 ) {
     // console.log('stream type: ');
     // console.log(streamType);
+    try {
+        if (!isEmptyMessage) {
+            try {
+                await openai.beta.threads.messages.create(threadId, {
+                    role: 'user',
+                    content: userMessage
+                });
 
-    if (!isEmptyMessage) {
-        await openai.beta.threads.messages.create(threadId, {
-            role: 'user',
-            content: userMessage
-        });
-    }
-
-    const run = openai.beta.threads.runs
-        .stream(threadId, {
-            assistant_id: assistantId,
-            instructions: assistantInstruction
-        })
-        .on('textDelta', (textDelta, snapshot) => {
-            socket.emit(
-                'stream-message',
-                textDelta,
-                streamType,
-                snapshot,
-                threadId
-            );
-        })
-        .on('runStepDone', (runStep) => {
-            socket.emit('run-end');
-            // Save the amount of tokens the user is using
-            // These tokens are priced at $150 per million
-            let outputTokens = runStep.usage.completion_tokens;
-            // Work out tts equivalent usage
-            // 0.4 is hardcoded at the moment, based on pricing and choice of models
-            let ttsTokens = outputTokens * 0.4;
-            let tokenCount = runStep.usage.total_tokens + ttsTokens;
-            saveTokenUsage(userId, tokenCount);
-        })
-        .on('toolCallCreated', (event) =>
-            console.log('assistant ' + event.type)
-        )
-        .on('toolCallDelta', (toolCallDelta, snapshot) => {
-            if (toolCallDelta.type === 'code_interpreter') {
-                if (toolCallDelta.code_interpreter.input) {
-                    process.stdout.write(toolCallDelta.code_interpreter.input);
-                }
-                if (toolCallDelta.code_interpreter.outputs) {
-                    process.stdout.write('\noutput >\n');
-                    toolCallDelta.code_interpreter.outputs.forEach((output) => {
-                        if (output.type === 'logs') {
-                            process.stdout.write(`\n${output.logs}\n`);
-                        }
-                    });
-                }
+            } catch (error) {
+                console.error('Error creating message:', error);
+                throw error;
             }
-        });
-    // .on('messageDone', async (event) => {
-    //     if (event.content[0].type === 'text') {
-    //         const { text } = event.content[0];
-    //         const { annotations } = text;
-    //         const citations = [];
+        }
+        const run = openai.beta.threads.runs
+            .stream(threadId, {
+                assistant_id: assistantId,
+                instructions: assistantInstruction
+            })
+            .on('textDelta', (textDelta, snapshot) => {
+                socket.emit(
+                    'stream-message',
+                    textDelta,
+                    streamType,
+                    snapshot,
+                    threadId
+                );
+            })
+            .on('runStepDone', (runStep) => {
+                socket.emit('run-end');
+                // Save the amount of tokens the user is using
+                // These tokens are priced at $150 per million
+                let outputTokens = runStep.usage.completion_tokens;
+                // Work out tts equivalent usage
+                // 0.4 is hardcoded at the moment, based on pricing and choice of models
+                let ttsTokens = outputTokens * 0.4;
+                let tokenCount = runStep.usage.total_tokens + ttsTokens;
+                saveTokenUsage(userId, tokenCount);
+            })
+            .on('toolCallCreated', (event) =>
+                console.log('assistant ' + event.type)
+            )
+            .on('toolCallDelta', (toolCallDelta, snapshot) => {
+                if (toolCallDelta.type === 'code_interpreter') {
+                    if (toolCallDelta.code_interpreter.input) {
+                        process.stdout.write(toolCallDelta.code_interpreter.input);
+                    }
+                    if (toolCallDelta.code_interpreter.outputs) {
+                        process.stdout.write('\noutput >\n');
+                        toolCallDelta.code_interpreter.outputs.forEach((output) => {
+                            if (output.type === 'logs') {
+                                process.stdout.write(`\n${output.logs}\n`);
+                            }
+                        });
+                    }
+                }
+            });
 
-    //         let index = 0;
-    //         for (let annotation of annotations) {
-    //             text.value = text.value.replace(
-    //                 annotation.text,
-    //                 '[' + index + ']'
-    //             );
-    //             const { file_citation } = annotation;
-    //             if (file_citation) {
-    //                 const citedFile = await openai.files.retrieve(
-    //                     file_citation.file_id
-    //                 );
-    //                 citations.push('[' + index + ']' + citedFile.filename);
-    //             }
-    //             index++;
-    //         }
-    //         // console.log(text);
-    //         // console.log(text.value);
-    //         // Checking if it is using file search feature
-    //         console.log(citations.join('\n'));
-    //     }
-    // });
-    return run;
+        return run;
+    } catch (error) {
+        console.error('Error in createRunStream:', error);
+        socket.emit('error', error);
+        return null;
+    }
 }
 
 /**
@@ -698,6 +693,7 @@ async function saveTokenUsage(userId, tokenCount) {
 
         await query(queryString);
     } catch (error) {
+        console.error('Error in saveTokenUsage:', error);
         throw error;
     }
 }

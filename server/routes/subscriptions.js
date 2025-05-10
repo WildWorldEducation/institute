@@ -25,20 +25,42 @@ const query = util.promisify(conn.query).bind(conn);
 Routes
 --------------------------------------------
 --------------------------------------------*/
-router.get('/subscription-id/:userId', async (req, res, next) => {
-    // Save the new Stripe customer ID and subscription ID to the user table
+router.get('/get-sub/:userId', async (req, res, next) => {
     let queryString = `
-            SELECT stripe_subscription_id
+            SELECT stripe_customer_id
             FROM users            
             WHERE id = ${conn.escape(req.params.userId)};
             `;
 
     let result = await query(queryString);
 
-    if (result[0].stripe_subscription_id != null) {
-        let subId = result[0].stripe_subscription_id;
-        const subscription = await stripe.subscriptions.retrieve(subId);
-        res.json({ subscription: subscription });
+    // If the user has a Stripe ID.
+    if (
+        result[0].stripe_customer_id != null &&
+        result[0].stripe_customer_id != ''
+    ) {
+        const subscriptions = await stripe.subscriptions.list({
+            customer: result[0].stripe_customer_id
+        });
+
+        // If a subscription is found.
+        if (subscriptions.data.length > 0) {
+            const subscriptionId = subscriptions.data[0].id;
+            const subscription = await stripe.subscriptions.retrieve(
+                subscriptionId
+            );
+
+            let subSchedule = null;
+            if (subscription.schedule != null) {
+                subSchedule = await stripe.subscriptionSchedules.retrieve(
+                    subscription.schedule
+                );
+            }
+
+            res.json({ subscription: subscription, subSchedule: subSchedule });
+        } else {
+            res.json({ subscription: null });
+        }
     } else {
         res.json({ subscription: null });
     }
@@ -50,9 +72,9 @@ router.post('/create-checkout-session', async (req, res) => {
         userId = req.body.userId;
         let priceId = '';
         if (req.body.planType == 'basic') {
-            priceId = process.env.BASIC_PLAN_PRICE_ID;
+            priceId = process.env.VITE_BASIC_PLAN_PRICE_ID;
         } else {
-            priceId = process.env.INFINITE_PLAN_PRICE_ID;
+            priceId = process.env.VITE_INFINITE_PLAN_PRICE_ID;
         }
 
         const session = await stripe.checkout.sessions.create({
@@ -92,8 +114,7 @@ router.get('/success', async (req, res, next) => {
     let usersTableQueryString = `
             UPDATE users
             SET stripe_customer_id = ${conn.escape(session.customer)},
-            subscription_tier = '${subscriptionTier}',
-            stripe_subscription_id = ${conn.escape(session.subscription)}
+            subscription_tier = '${subscriptionTier}'            
             WHERE id = ${conn.escape(userId)};
             `;
 
@@ -154,19 +175,20 @@ router.post(
                     const previousPlan = result[0].subscription_tier;
                     let previousPriceId = '';
                     if (previousPlan == 'basic') {
-                        previousPriceId = process.env.BASIC_PLAN_PRICE_ID;
+                        previousPriceId = process.env.VITE_BASIC_PLAN_PRICE_ID;
                     } else if (previousPlan == 'infinite') {
-                        previousPriceId = process.env.INFINITE_PLAN_PRICE_ID;
+                        previousPriceId =
+                            process.env.VITE_INFINITE_PLAN_PRICE_ID;
                     }
 
                     priceId = subscriptionUpdated.plan.id;
                     // If it has, update it in the DB, otherwise, ignore this event.
                     if (priceId != previousPriceId) {
                         let planType = '';
-                        if (priceId == process.env.BASIC_PLAN_PRICE_ID) {
+                        if (priceId == process.env.VITE_BASIC_PLAN_PRICE_ID) {
                             planType = 'basic';
                         } else if (
-                            priceId == process.env.INFINITE_PLAN_PRICE_ID
+                            priceId == process.env.VITE_INFINITE_PLAN_PRICE_ID
                         ) {
                             planType = 'infinite';
                         }
@@ -188,7 +210,7 @@ router.post(
 
                     let endSubQueryString = `
                         UPDATE users
-                        SET subscription_tier = 'free'
+                        SET subscription_tier = 'free'                                            
                         WHERE stripe_customer_id = ${conn.escape(
                             stripeCustomerId
                         )};                         
@@ -209,8 +231,127 @@ router.post(
 );
 
 // Cancel subscription
-// (Subscription tier changes to "Free plan" at the end of the billing cycle.
+// (Subscription tier changes to "Free plan" at the end of the billing cycle.)
 router.post('/cancel', async (req, res) => {
+    try {
+        let userId = req.body.userId;
+
+        // Get Stripe customer ID of user
+        let queryString = `
+            SELECT stripe_customer_id
+            FROM users            
+            WHERE id = ${conn.escape(userId)};
+            `;
+
+        let result = await query(queryString);
+
+        // If the user has a Stripe ID.
+        if (
+            result[0].stripe_customer_id != null &&
+            result[0].stripe_customer_id != ''
+        ) {
+            const subscriptions = await stripe.subscriptions.list({
+                customer: result[0].stripe_customer_id
+            });
+
+            // If a subscription is found.
+            if (subscriptions.data.length > 0) {
+                const subscriptionId = subscriptions.data[0].id;
+                const subscription = await stripe.subscriptions.update(
+                    subscriptionId,
+                    {
+                        cancel_at_period_end: true
+                    }
+                );
+            } else {
+                // In case there is no subscription, update it on our side
+                let endSubQueryString = `
+                UPDATE users
+                SET subscription_tier = 'free'                                            
+                WHERE id = ${conn.escape(userId)};                         
+            `;
+
+                await query(endSubQueryString);
+            }
+        } else {
+            // In case there is no subscription, update it on our side
+            let endSubQueryString = `
+           UPDATE users
+           SET subscription_tier = 'free'                                            
+           WHERE id = ${conn.escape(userId)};                         
+       `;
+
+            await query(endSubQueryString);
+        }
+
+        res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Downgrade subscription
+// (Subscription tier changes from "Infinite plan" to "Basic plan" at end of billing cycle)
+router.post('/downgrade', async (req, res) => {
+    try {
+        let subscriptionId = req.body.subscriptionId;
+        let subScheduleId = req.body.subScheduleId;
+
+        const subscription = await stripe.subscriptions.retrieve(
+            subscriptionId
+        );
+
+        // Get the start and end dates of the current billing cycle.
+        let subItemCurrentPeriodStart =
+            subscription.items.data[0].current_period_start;
+        let subItemCurrentPeriodEnd =
+            subscription.items.data[0].current_period_end;
+
+        // If there is no subscription schedule yet
+        if (subScheduleId == null || subScheduleId == '') {
+            // Create a subscription schedule with the existing subscription
+            const schedule = await stripe.subscriptionSchedules.create({
+                from_subscription: subscriptionId
+            });
+            subScheduleId = schedule.id;
+        }
+
+        // Update the schedule with the new phase
+        const subscriptionSchedule = await stripe.subscriptionSchedules.update(
+            subScheduleId,
+            {
+                phases: [
+                    {
+                        start_date: subItemCurrentPeriodStart,
+                        end_date: subItemCurrentPeriodEnd,
+                        items: [
+                            {
+                                price: process.env.VITE_INFINITE_PLAN_PRICE_ID
+                            }
+                        ]
+                    },
+                    {
+                        start_date: subItemCurrentPeriodEnd,
+                        items: [
+                            {
+                                price: process.env.VITE_BASIC_PLAN_PRICE_ID
+                            }
+                        ]
+                    }
+                ]
+            }
+        );
+
+        res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Unfinished!!
+// Upgrade subscription
+// (Subscription tier changes from "Basic plan" to "Infinite plan" immmediately.)
+router.post('/upgrade', async (req, res) => {
     try {
         userId = req.body.userId;
 
@@ -222,10 +363,23 @@ router.post('/cancel', async (req, res) => {
             `;
         const result = await query(queryString);
 
-        const subscription = await stripe.subscriptions.update(
-            result[0].stripe_subscription_id,
+        const subscriptionToBeUpdated = await stripe.subscriptions.retrieve(
+            result[0].stripe_subscription_id
+        );
+
+        //console.log(subscription.items.data);
+        let itemId = subscriptionToBeUpdated.items.data[0].id;
+        let priceId = process.env.VITE_INFINITE_PLAN_PRICE_ID;
+
+        subscription = await stripe.subscriptions.update(
+            subscriptionToBeUpdated.id,
             {
-                cancel_at_period_end: true
+                items: [
+                    {
+                        id: itemId,
+                        price: priceId
+                    }
+                ]
             }
         );
 
