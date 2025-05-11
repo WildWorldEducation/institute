@@ -461,7 +461,7 @@ export default {
                     @click="upgradePlan()"
                     class="btn primary-btn mt-1"
                 >
-                    upgrade (incomplete)
+                    upgrade
                 </button>
                 <button
                     v-else-if="
