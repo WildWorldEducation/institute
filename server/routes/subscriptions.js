@@ -348,30 +348,36 @@ router.post('/downgrade', async (req, res) => {
     }
 });
 
-// Unfinished!!
 // Upgrade subscription
 // (Subscription tier changes from "Basic plan" to "Infinite plan" immmediately.)
 router.post('/upgrade', async (req, res) => {
     try {
-        userId = req.body.userId;
+        const userId = req.body.userId;
+        const subscriptionId = req.body.subscriptionId;
 
         // Get Stripe customer ID of user
-        let queryString = `
-            SELECT stripe_subscription_id
-            FROM users            
-            WHERE id = ${conn.escape(userId)};
-            `;
-        const result = await query(queryString);
+        // let queryString = `
+        //     SELECT stripe_customer_id
+        //     FROM users
+        //     WHERE id = ${conn.escape(userId)};
+        //     `;
+        // const result = await query(queryString);
+
+        // console.log(result[0].stripe_customer_id);
 
         const subscriptionToBeUpdated = await stripe.subscriptions.retrieve(
-            result[0].stripe_subscription_id
+            subscriptionId
         );
+
+        console.log(subscriptionToBeUpdated);
+        console.log(subscriptionToBeUpdated.items.data[0].id);
 
         //console.log(subscription.items.data);
         let itemId = subscriptionToBeUpdated.items.data[0].id;
         let priceId = process.env.VITE_INFINITE_PLAN_PRICE_ID;
+        console.log(priceId);
 
-        subscription = await stripe.subscriptions.update(
+        let subscription = await stripe.subscriptions.update(
             subscriptionToBeUpdated.id,
             {
                 items: [
@@ -379,7 +385,8 @@ router.post('/upgrade', async (req, res) => {
                         id: itemId,
                         price: priceId
                     }
-                ]
+                ],
+                proration_behavior: 'always_invoice'
             }
         );
 
