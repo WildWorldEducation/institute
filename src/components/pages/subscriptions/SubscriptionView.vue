@@ -26,8 +26,8 @@ export default {
             basicPlanPriceId: import.meta.env.VITE_BASIC_PLAN_PRICE_ID,
             infinitePlanPriceId: import.meta.env.VITE_INFINITE_PLAN_PRICE_ID,
             nextSubSchedulePhasePlan: '',
-            isTryingUpgrade: false,
-            isTryingDowngrade: false
+            // For the loading animation.
+            isLoading: false
         };
     },
     async created() {
@@ -210,7 +210,7 @@ export default {
             if (
                 confirm('Are you sure you want to downgrade to the Basic plan?')
             ) {
-                this.isTryingDowngrade = true;
+                this.isLoading = true;
                 fetch('/subscriptions/downgrade', {
                     method: 'POST',
                     headers: {
@@ -234,7 +234,7 @@ export default {
                                 'Downgrade did not work. Please try again later.'
                             );
                         }
-                        this.isTryingDowngrade = false;
+                        this.isLoading = false;
                     });
             } else {
                 return;
@@ -247,7 +247,7 @@ export default {
                     `Are you sure you want to upgrade to the Infinite plan? (You will be billed immediately)`
                 )
             ) {
-                this.isTryingUpgrade = true;
+                this.isLoading = true;
                 fetch('/subscriptions/upgrade', {
                     method: 'POST',
                     headers: {
@@ -262,14 +262,14 @@ export default {
                     })
                     .then(async (data) => {
                         if (data.status == 'succeeded') {
-                            await this.getSubscription();
+                            await this.userDetailsStore.getUserDetails();
                             this.$router.push('/subscriptions/success/view');
                         } else {
                             alert(
                                 'Upgrade did not work. Please try again later.'
                             );
                         }
-                        this.isTryingUpgrade = false;
+                        this.isLoading = false;
                     });
             } else {
                 return;
@@ -390,7 +390,14 @@ export default {
             </div>
         </div>
         <hr />
-        <div class="row mt-4">
+        <!-- Loading animation -->
+        <div
+            v-if="isLoading == true"
+            class="d-flex justify-content-center align-items-center py-4"
+        >
+            <span class="subscription-loader"></span>
+        </div>
+        <div v-else class="row mt-4">
             <!-- Free plan -->
             <div
                 class="col-md mb-3"
@@ -449,7 +456,6 @@ export default {
                     "
                     @click="downgradePlan()"
                     class="btn primary-btn mt-1"
-                    :disabled="isTryingDowngrade"
                 >
                     downgrade
                 </button>
@@ -486,7 +492,6 @@ export default {
                     v-else-if="userDetailsStore.subscriptionTier == 'basic'"
                     @click="upgradePlan()"
                     class="btn primary-btn mt-1"
-                    :disabled="isTryingUpgrade"
                 >
                     upgrade
                 </button>
@@ -505,6 +510,28 @@ export default {
 </template>
 
 <style scoped>
+/* Loading animation */
+.subscription-loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    100% {
+        transform: rotate(0deg);
+    }
+    0% {
+        transform: rotate(360deg);
+    }
+}
+/* End of loading animation */
+
 /* Modals */
 .modal {
     display: block;
