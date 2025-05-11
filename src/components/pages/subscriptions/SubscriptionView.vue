@@ -241,7 +241,8 @@ export default {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        userId: this.userDetailsStore.userId
+                        userId: this.userDetailsStore.userId,
+                        subscriptionId: this.subscription.id
                     })
                 }).then(() => {
                     this.getSubscription();
