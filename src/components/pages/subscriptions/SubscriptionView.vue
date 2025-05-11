@@ -26,7 +26,8 @@ export default {
             basicPlanPriceId: import.meta.env.VITE_BASIC_PLAN_PRICE_ID,
             infinitePlanPriceId: import.meta.env.VITE_INFINITE_PLAN_PRICE_ID,
             nextSubSchedulePhasePlan: '',
-            isTryingUpgrade: false
+            isTryingUpgrade: false,
+            isTryingDowngrade: false
         };
     },
     async created() {
@@ -137,7 +138,6 @@ export default {
                     this.nextSubSchedulePhasePlan = 'Infinite';
                 }
             }
-            console.log(subscriptionData);
         },
         // Purchase subscription
         checkout(planType) {
@@ -210,6 +210,7 @@ export default {
             if (
                 confirm('Are you sure you want to downgrade to the Basic plan?')
             ) {
+                this.isTryingDowngrade = true;
                 fetch('/subscriptions/downgrade', {
                     method: 'POST',
                     headers: {
@@ -221,9 +222,20 @@ export default {
                             ? this.subSchedule.id
                             : null
                     })
-                }).then(() => {
-                    this.getSubscription();
-                });
+                })
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(async (data) => {
+                        if (data.status == 'succeeded') {
+                            await this.getSubscription();
+                        } else {
+                            alert(
+                                'Downgrade did not work. Please try again later.'
+                            );
+                        }
+                        this.isTryingDowngrade = false;
+                    });
             } else {
                 return;
             }
@@ -437,6 +449,7 @@ export default {
                     "
                     @click="downgradePlan()"
                     class="btn primary-btn mt-1"
+                    :disabled="isTryingDowngrade"
                 >
                     downgrade
                 </button>

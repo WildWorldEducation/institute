@@ -342,9 +342,9 @@ router.post('/downgrade', async (req, res) => {
             }
         );
 
-        res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
+        res.json({ status: 'succeeded' });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ status: 'failed', error: e.message });
     }
 });
 
