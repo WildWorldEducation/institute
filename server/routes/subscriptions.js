@@ -352,30 +352,15 @@ router.post('/downgrade', async (req, res) => {
 // (Subscription tier changes from "Basic plan" to "Infinite plan" immmediately.)
 router.post('/upgrade', async (req, res) => {
     try {
-        const userId = req.body.userId;
         const subscriptionId = req.body.subscriptionId;
-
-        // Get Stripe customer ID of user
-        // let queryString = `
-        //     SELECT stripe_customer_id
-        //     FROM users
-        //     WHERE id = ${conn.escape(userId)};
-        //     `;
-        // const result = await query(queryString);
-
-        // console.log(result[0].stripe_customer_id);
 
         const subscriptionToBeUpdated = await stripe.subscriptions.retrieve(
             subscriptionId
         );
 
-        console.log(subscriptionToBeUpdated);
-        console.log(subscriptionToBeUpdated.items.data[0].id);
-
         //console.log(subscription.items.data);
         let itemId = subscriptionToBeUpdated.items.data[0].id;
         let priceId = process.env.VITE_INFINITE_PLAN_PRICE_ID;
-        console.log(priceId);
 
         let subscription = await stripe.subscriptions.update(
             subscriptionToBeUpdated.id,
