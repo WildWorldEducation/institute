@@ -160,48 +160,20 @@ router.post(
             switch (event.type) {
                 case 'customer.subscription.updated':
                     const subscriptionUpdated = event.data.object;
-                    stripeCustomerId = subscriptionUpdated.customer;
+                    const stripeCustomerId = subscriptionUpdated.customer;
+                    const priceId = subscriptionUpdated.plan.id;
 
-                    // Check if the subscription plan type has changed
-                    let checkPlanQueryString = `
-                            SELECT subscription_tier
-                            FROM users
-                            WHERE stripe_customer_id = ${conn.escape(
-                                stripeCustomerId
-                            )};                         
-                        `;
-
-                    let result = await query(checkPlanQueryString);
-                    const previousPlan = result[0].subscription_tier;
-                    let previousPriceId = '';
-                    if (previousPlan == 'basic') {
-                        previousPriceId = process.env.VITE_BASIC_PLAN_PRICE_ID;
-                    } else if (previousPlan == 'infinite') {
-                        previousPriceId =
-                            process.env.VITE_INFINITE_PLAN_PRICE_ID;
-                    }
-
-                    priceId = subscriptionUpdated.plan.id;
-                    // If it has, update it in the DB, otherwise, ignore this event.
-                    if (priceId != previousPriceId) {
-                        let planType = '';
-                        if (priceId == process.env.VITE_BASIC_PLAN_PRICE_ID) {
-                            planType = 'basic';
-                        } else if (
-                            priceId == process.env.VITE_INFINITE_PLAN_PRICE_ID
-                        ) {
-                            planType = 'infinite';
-                        }
-                        // change tier to relevant one
-                        let updateSubQueryString = `
+                    // Only change if plan has been downgraded
+                    if (priceId == process.env.VITE_BASIC_PLAN_PRICE_ID) {
+                        let downgradeSubQueryString = `
                             UPDATE users
-                            SET subscription_tier = '${planType}'
+                            SET subscription_tier = 'basic'
                             WHERE stripe_customer_id = ${conn.escape(
                                 stripeCustomerId
                             )};                         
                         `;
 
-                        await query(updateSubQueryString);
+                        await query(downgradeSubQueryString);
                     }
                     break;
                 case 'customer.subscription.deleted':
@@ -358,6 +330,7 @@ router.post('/upgrade', async (req, res) => {
         const subscriptionToBeUpdated = await stripe.subscriptions.retrieve(
             subscriptionId
         );
+        const stripeCustomerId = subscriptionToBeUpdated.customer;
 
         // Get the subscription item id.
         let itemId = subscriptionToBeUpdated.items.data[0].id;
@@ -379,6 +352,16 @@ router.post('/upgrade', async (req, res) => {
                 payment_behavior: 'error_if_incomplete'
             }
         );
+
+        let upgradeSubQueryString = `
+                            UPDATE users
+                            SET subscription_tier = 'infinite'
+                            WHERE stripe_customer_id = ${conn.escape(
+                                stripeCustomerId
+                            )};                         
+                        `;
+
+        await query(upgradeSubQueryString);
 
         res.json({ status: 'succeeded' });
     } catch (e) {
