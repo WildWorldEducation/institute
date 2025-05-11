@@ -354,12 +354,14 @@ router.post('/upgrade', async (req, res) => {
     try {
         const subscriptionId = req.body.subscriptionId;
 
+        // Get the subscription object from Stripe.
         const subscriptionToBeUpdated = await stripe.subscriptions.retrieve(
             subscriptionId
         );
 
-        //console.log(subscription.items.data);
+        // Get the subscription item id.
         let itemId = subscriptionToBeUpdated.items.data[0].id;
+        // Get the price id for the new plan
         let priceId = process.env.VITE_INFINITE_PLAN_PRICE_ID;
 
         let subscription = await stripe.subscriptions.update(
@@ -368,16 +370,18 @@ router.post('/upgrade', async (req, res) => {
                 items: [
                     {
                         id: itemId,
+                        // New plan id
                         price: priceId
                     }
                 ],
+                // Bill and invoice immediately
                 proration_behavior: 'always_invoice'
             }
         );
 
-        res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
+        res.json({ status: 'succeeded' });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ status: 'failed', error: e.message });
     }
 });
 

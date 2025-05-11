@@ -135,7 +135,6 @@ export default {
                 } else if (nextPhasePlan == this.infinitePlanPriceId) {
                     this.nextSubSchedulePhasePlan = 'Infinite';
                 }
-                console.log(this.nextSubSchedulePhasePlan);
             }
             console.log(subscriptionData);
         },
@@ -232,7 +231,8 @@ export default {
         upgradePlan() {
             if (
                 confirm(
-                    'Are you sure you want to upgrade to the Infinite plan?'
+                    `Are you sure you want to upgrade to the Infinite plan?
+                    (You will be billed immediately).`
                 )
             ) {
                 fetch('/subscriptions/upgrade', {
@@ -243,9 +243,20 @@ export default {
                     body: JSON.stringify({
                         subscriptionId: this.subscription.id
                     })
-                }).then(() => {
-                    this.getSubscription();
-                });
+                })
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(async (data) => {
+                        if (data.status == 'succeeded') {
+                            await this.getSubscription();
+                            this.$router.push('/subscriptions/success/view');
+                        } else {
+                            alert(
+                                'Upgrade did not work. Please try again later.'
+                            );
+                        }
+                    });
             } else {
                 return;
             }
