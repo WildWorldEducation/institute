@@ -25,7 +25,8 @@ export default {
             subSchedule: {},
             basicPlanPriceId: import.meta.env.VITE_BASIC_PLAN_PRICE_ID,
             infinitePlanPriceId: import.meta.env.VITE_INFINITE_PLAN_PRICE_ID,
-            nextSubSchedulePhasePlan: ''
+            nextSubSchedulePhasePlan: '',
+            isTryingUpgrade: false
         };
     },
     async created() {
@@ -231,10 +232,10 @@ export default {
         upgradePlan() {
             if (
                 confirm(
-                    `Are you sure you want to upgrade to the Infinite plan?
-                    (You will be billed immediately).`
+                    `Are you sure you want to upgrade to the Infinite plan? (You will be billed immediately)`
                 )
             ) {
+                this.isTryingUpgrade = true;
                 fetch('/subscriptions/upgrade', {
                     method: 'POST',
                     headers: {
@@ -256,6 +257,7 @@ export default {
                                 'Upgrade did not work. Please try again later.'
                             );
                         }
+                        this.isTryingUpgrade = false;
                     });
             } else {
                 return;
@@ -471,6 +473,7 @@ export default {
                     v-else-if="userDetailsStore.subscriptionTier == 'basic'"
                     @click="upgradePlan()"
                     class="btn primary-btn mt-1"
+                    :disabled="isTryingUpgrade"
                 >
                     upgrade
                 </button>
