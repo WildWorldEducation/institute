@@ -375,7 +375,8 @@ router.post('/upgrade', async (req, res) => {
                     }
                 ],
                 // Bill and invoice immediately
-                proration_behavior: 'always_invoice'
+                proration_behavior: 'always_invoice',
+                payment_behavior: 'error_if_incomplete'
             }
         );
 
