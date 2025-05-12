@@ -198,9 +198,19 @@ export default {
                     body: JSON.stringify({
                         userId: this.userDetailsStore.userId
                     })
-                }).then(() => {
-                    this.getSubscription();
-                });
+                })
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(async (data) => {
+                        if (data.status == 'succeeded') {
+                            this.getSubscription();
+                        } else {
+                            alert(
+                                'Downgrade did not work. Please try again later.'
+                            );
+                        }
+                    });
             } else {
                 return;
             }
