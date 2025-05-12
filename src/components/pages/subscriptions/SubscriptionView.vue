@@ -273,7 +273,7 @@ export default {
                     .then(async (data) => {
                         if (data.status == 'succeeded') {
                             await this.userDetailsStore.getUserDetails();
-                            this.$router.push('/subscriptions/success/view');
+                            this.$router.push('/subscriptions/completed');
                         } else {
                             alert(
                                 'Upgrade did not work. Please try again later.'
