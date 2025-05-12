@@ -374,13 +374,13 @@ export default {
                         : 'justify-content-center'
                 "
             >
-                <!-- Manage  billing -->
+                <!-- Manage subscription -->
                 <button
                     v-if="userDetailsStore.subscriptionTier != 'free'"
                     class="btn primary-btn"
                     @click="loadPortal()"
                 >
-                    Manage billing
+                    Manage subscription
                 </button>
                 <!-- Info button -->
                 <button class="btn info-btn ms-1" @click="openTooltip">
@@ -500,7 +500,11 @@ export default {
                     buy
                 </button>
                 <button
-                    v-else-if="userDetailsStore.subscriptionTier == 'basic'"
+                    v-else-if="
+                        subscription &&
+                        userDetailsStore.subscriptionTier == 'basic' &&
+                        subscription.cancel_at_period_end == false
+                    "
                     @click="upgradePlan()"
                     class="btn primary-btn mt-1"
                 >
