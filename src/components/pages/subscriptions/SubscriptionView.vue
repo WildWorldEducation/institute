@@ -298,26 +298,8 @@ export default {
 
 <template>
     <div class="container">
-        <div class="d-flex justify-content-end w-100">
-            <!-- Tutorial button -->
-            <button class="btn mb-2" @click="openTooltip">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 192 512"
-                    width="20"
-                    height="20"
-                    class="primary-icon"
-                >
-                    <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                    <path
-                        d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
-                    />
-                </svg>
-            </button>
-        </div>
-
         <div class="row mt-4">
-            <div class="col-md mb-3">
+            <div class="col-md">
                 <!-- Token usage stats -->
                 <h2
                     class="secondary-heading h4 mb-4"
@@ -342,6 +324,7 @@ export default {
                 <div
                     v-if="isAITokenLimitReached"
                     class="alert alert-warning"
+                    :class="{ 'mb-0': isMobileCheck >= 576 }"
                     role="alert"
                 >
                     You are over the monthly free limit. You can't use the AI
@@ -350,6 +333,7 @@ export default {
                 <div
                     v-if="subscription && subscription.cancel_at_period_end"
                     class="alert alert-warning"
+                    :class="{ 'mb-0': isMobileCheck >= 576 }"
                     role="alert"
                 >
                     Your plan will downgrade to the Free plan on
@@ -358,6 +342,7 @@ export default {
                 <div
                     v-if="nextSubSchedulePhasePlan != ''"
                     class="alert alert-warning"
+                    :class="{ 'mb-0': isMobileCheck >= 576 }"
                     role="alert"
                 >
                     Your plan will downgrade to the
@@ -382,7 +367,7 @@ export default {
                 </div>
             </div>
             <div
-                class="col-md mb-3 d-flex"
+                class="col-md d-flex"
                 :class="
                     isMobileCheck > 576
                         ? 'justify-content-end'
@@ -396,6 +381,21 @@ export default {
                     @click="loadPortal()"
                 >
                     Manage billing
+                </button>
+                <!-- Info button -->
+                <button class="btn info-btn ms-1" @click="openTooltip">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 192 512"
+                        width="20"
+                        height="20"
+                        class="primary-icon"
+                    >
+                        <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                        <path
+                            d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                        />
+                    </svg>
                 </button>
             </div>
         </div>
@@ -521,6 +521,10 @@ export default {
 </template>
 
 <style scoped>
+.info-btn {
+    max-height: 40px;
+}
+
 /* Loading animation */
 .subscription-loader {
     width: 48px;
