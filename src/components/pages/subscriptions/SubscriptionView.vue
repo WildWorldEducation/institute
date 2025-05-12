@@ -27,7 +27,9 @@ export default {
             infinitePlanPriceId: import.meta.env.VITE_INFINITE_PLAN_PRICE_ID,
             nextSubSchedulePhasePlan: '',
             // For the loading animation.
-            isLoading: false
+            isLoading: false,
+            // For downloading invoices from Stripe
+            receipts: []
         };
     },
     async created() {
@@ -138,6 +140,12 @@ export default {
                     this.nextSubSchedulePhasePlan = 'Infinite';
                 }
             }
+
+            for (let i = 0; i < subscriptionData.charges.data.length; i++) {
+                this.receipts.push(subscriptionData.charges.data[i]);
+            }
+
+            console.log(this.receipts);
         },
         // Purchase subscription
         checkout(planType) {
@@ -284,6 +292,23 @@ export default {
             } else {
                 return;
             }
+        },
+        formattedStripeReceiptDate(receipt) {
+            let dateObj = new Date(receipt.created * 1000);
+            const month = dateObj.getUTCMonth() + 1; // months from 1-12
+            const day = dateObj.getUTCDate();
+            const year = dateObj.getUTCFullYear();
+            const formattedDate = year + '/' + month + '/' + day;
+            return formattedDate;
+        },
+        formattedStripeReceiptAmount(receipt) {
+            const formattedAmount = (
+                receipt.amount_captured / 100
+            ).toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            });
+            return formattedAmount;
         },
         // Tutorial tooltips
         openTooltip() {
@@ -521,6 +546,21 @@ export default {
                     current plan
                 </button>
             </div>
+        </div>
+        <hr />
+        <div
+            :class="{
+                'text-center': isMobileCheck < 576
+            }"
+        >
+            <h2 class="secondary-heading h4">Receipts</h2>
+            <div v-for="receipt in receipts">
+                <a :href="receipt.receipt_url" target="_blank">
+                    {{ formattedStripeReceiptAmount(receipt) }}
+                    {{ formattedStripeReceiptDate(receipt) }}</a
+                >
+            </div>
+            <p v-if="isMobileCheck < 576">&nbsp;</p>
         </div>
     </div>
 </template>

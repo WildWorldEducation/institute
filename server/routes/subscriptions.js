@@ -39,6 +39,13 @@ router.get('/get-sub/:userId', async (req, res, next) => {
         result[0].stripe_customer_id != null &&
         result[0].stripe_customer_id != ''
     ) {
+        // Get invoices
+        const charges = await stripe.charges.list({
+            limit: 3,
+            customer: result[0].stripe_customer_id
+        });
+
+        // Get the subscription
         const subscriptions = await stripe.subscriptions.list({
             customer: result[0].stripe_customer_id
         });
@@ -57,9 +64,13 @@ router.get('/get-sub/:userId', async (req, res, next) => {
                 );
             }
 
-            res.json({ subscription: subscription, subSchedule: subSchedule });
+            res.json({
+                subscription: subscription,
+                subSchedule: subSchedule,
+                charges: charges
+            });
         } else {
-            res.json({ subscription: null });
+            res.json({ subscription: null, charges: charges });
         }
     } else {
         res.json({ subscription: null });
