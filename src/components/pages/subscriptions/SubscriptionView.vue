@@ -462,7 +462,8 @@ export default {
                     v-else-if="
                         subscription &&
                         userDetailsStore.subscriptionTier == 'infinite' &&
-                        nextSubSchedulePhasePlan != 'Basic'
+                        nextSubSchedulePhasePlan != 'Basic' &&
+                        subscription.cancel_at_period_end == false
                     "
                     @click="downgradePlan()"
                     class="btn primary-btn mt-1"
