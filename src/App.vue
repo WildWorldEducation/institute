@@ -480,7 +480,7 @@ export default {
             </div>
         </nav>
     </header>
-    <div class="router-view-padding router-view">
+    <div class="router-view-padding">
         <RouterView />
     </div>
 </template>
