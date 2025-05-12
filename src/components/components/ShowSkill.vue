@@ -100,6 +100,15 @@ export default {
             thumbnailURL: ''
         };
     },
+    computed: {
+        calculatedSkillName() {
+            if (!this.skillUrl) return '';
+            return this.skillUrl
+                .split('_')
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+        }
+    },
     components: {
         Forum,
         FlagModals,
@@ -111,34 +120,46 @@ export default {
             // Set to false at the beginning to be safe
             this.isSkillLoaded = false;
 
-            // Needed for token limit
+            document.title = this.calculatedSkillName + ' - Parrhesia';
+
+            // Set the thumbnail URL early to start loading
+            this.thumbnailURL = this.thumbnailCDN + '/' + this.skillUrl;
+
+            // Create promises array
+            const promises = [this.getSkill()];
+
+            // Add token check if user is logged in
             if (this.sessionDetailsStore.isLoggedIn) {
-                await this.checkTokenUsage();
+                promises.push(this.checkTokenUsage());
             }
 
-            // Get the skill data
-            await this.getSkill();
+            // Execute critical promises in parallel
+            await Promise.all(promises);
 
             // Only set isSkillLoaded to true if getSkill completes successfully
             this.isSkillLoaded = true;
 
+            // Handle user-specific data
             if (this.sessionDetailsStore.isLoggedIn) {
-                await this.getUserSkills();
-                // Check for subskill mastery directly here
+                // Run these in parallel
+                const userPromises = [this.getUserSkills()];
+
+                // Add tutorial check
+                userPromises.push(this.checkIfTutorialComplete());
+
+                await Promise.all(userPromises);
+
+                // Handle subskill mastery check
                 if (this.skill.type === 'super') {
                     await this.checkSubskillMastery();
                 } else {
                     this.areAllSubskillsMastered = true;
                 }
-            }
 
-            // Turn this on only if user is logged in.
-            if (this.sessionDetailsStore.isLoggedIn) {
-                this.checkIfTutorialComplete();
-            }
-
-            if (!this.isUnlocked) {
-                this.nearestAccessibleAncestor(this.skill);
+                // Check for unlocked ancestors if needed
+                if (!this.isUnlocked) {
+                    this.nearestAccessibleAncestor(this.skill);
+                }
             }
         } catch (error) {
             console.error('Error in created hook:', error);
@@ -198,21 +219,18 @@ export default {
         },
         async getSkill() {
             // solution for image to be changed when we change it from AWS
+            this.thumbnailURL = this.thumbnailCDN + '/' + this.skillUrl;
             this.randomNum = Math.random();
-            /* 
+            /*
              / Load the skill data
              / Split into 2 parts, for SEO
             */
             // Load the first part of the skill data - above the fold for mobile view
             await this.showSkillStore.getSkillFirstPart(this.skillUrl);
-            this.skill.name = this.showSkillStore.skill.name;
             this.skill.intro_sentence =
                 this.showSkillStore.skill.intro_sentence;
             this.skill.type = this.showSkillStore.skill.type;
             this.skill.level = this.showSkillStore.skill.level;
-            // this.skill.image_thumbnail_url =
-            //     this.showSkillStore.skill.image_thumbnail_url;
-            // console.log(this.showSkillStore.skill.image_thumbnail_url);
             this.skill.is_human_edited =
                 this.showSkillStore.skill.is_human_edited;
 
@@ -227,7 +245,7 @@ export default {
              * Learning Objectives
              */
             // Hide learning objectives for certain skills
-            if (this.skill.name.includes('Vocabulary Test')) {
+            if (this.calculatedSkillName.includes('Vocabulary Test')) {
                 this.showLearningObjectives = false;
             }
 
@@ -237,7 +255,6 @@ export default {
             await this.getLearningObjectives();
 
             // Meta title and description for browser tab, Google Search snippet and SEO
-            document.title = this.skill.name + ' - Parrhesia';
             document
                 .querySelector('meta[name="description"]')
                 .setAttribute('content', this.skill.intro_sentence);
@@ -565,7 +582,7 @@ export default {
                 this.skillId;
             fetch(url, requestOptions).then(() => {
                 alert(
-                    `You've created a goal for ${this.skill.name}, you can view your goals in the drop-down menu.`
+                    `You've created a goal for ${this.calculatedSkillName}, you can view your goals in the drop-down menu.`
                 );
                 this.$router.push(
                     `/goals/${this.userDetailsStore.userId}/${this.skillId}`
@@ -802,7 +819,7 @@ export default {
                         class="heading"
                         :class="{ 'text-center': isMobileCheck < 576 }"
                     >
-                        {{ skill.name }}
+                        {{ calculatedSkillName }}
                     </h1>
                     <!-- Take assessment btn-->
                     <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
@@ -1178,7 +1195,7 @@ export default {
                                 <p>
                                     Are you sure you want to create a goal for
                                     <span style="color: var(--primary-color)">
-                                        {{ selectedSkill?.name }} </span
+                                        {{ calculatedSkillName }} </span
                                     >?
                                 </p>
                                 <div
@@ -1472,7 +1489,10 @@ export default {
                     <!-- Introduction -->
                     <div class="">
                         <h2 class="h4 secondary-heading">Introduction</h2>
-                        <div class="bg-white rounded p-2">
+                        <div
+                            class="bg-white rounded p-2"
+                            style="min-height: 60px"
+                        >
                             <p>{{ skill.intro_sentence }}</p>
                         </div>
                     </div>
@@ -1485,6 +1505,7 @@ export default {
                         <div
                             class="bg-white rounded p-2 mastery-requirements-section"
                             v-html="skill.mastery_requirements"
+                            style="min-height: 100px"
                         ></div>
                     </div>
                 </div>
@@ -1496,16 +1517,22 @@ export default {
                         <a
                             :href="skill.image_url"
                             :aria-label="
-                                'full size image representing ' + skill.name
+                                'full size image representing ' +
+                                calculatedSkillName
                             "
                         >
                             <img
                                 :src="thumbnailURL"
                                 @error="imageUrlAlternative"
                                 class="rounded img-fluid"
-                                :alt="'image representing ' + skill.name"
+                                :alt="
+                                    'image representing ' + calculatedSkillName
+                                "
                                 width="294.4"
                                 height="294.4"
+                                loading="lazy"
+                                fetchpriority="high"
+                                style="aspect-ratio: 1/1; object-fit: cover"
                             />
                         </a>
                         <!-- Grade level -->
@@ -1637,7 +1664,7 @@ export default {
                                         learningObjective.objective
                                     "
                                     :learningObjectiveId="learningObjective.id"
-                                    :skillName="skill.name"
+                                    :skillName="calculatedSkillName"
                                     :skillUrl="skill.url"
                                     :skillLevel="skill.level"
                                 />
@@ -1749,7 +1776,7 @@ export default {
                         <h2 class="heading">Congratulations!</h2>
                         <p class="mb-3">
                             You have mastered the skill
-                            <strong>{{ skill.name }}</strong
+                            <strong>{{ calculatedSkillName }}</strong
                             >!
                         </p>
 
@@ -1835,7 +1862,9 @@ export default {
     <!-- Category skill completed, and next skills in branch modal -->
     <div v-if="showCategoryCompletedModal" class="modal">
         <div class="modal-content">
-            <h1 class="heading h5">You have completed {{ skill.name }}!</h1>
+            <h1 class="heading h5">
+                You have completed {{ calculatedSkillName }}!
+            </h1>
             <p>The next skills in this branch are:</p>
             <div v-for="nextSkill in nextSkillsInBranch">
                 <router-link
