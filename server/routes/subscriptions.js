@@ -120,7 +120,7 @@ router.get('/success', async (req, res, next) => {
 
     await query(usersTableQueryString);
 
-    res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
+    res.redirect(`${process.env.BASE_URL}/subscriptions/completed`);
 });
 
 // Allow customer to make changes to subscription and billing
