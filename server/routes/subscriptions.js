@@ -160,7 +160,7 @@ router.post(
             switch (event.type) {
                 case 'customer.subscription.updated':
                     const subscriptionUpdated = event.data.object;
-                    const stripeCustomerId = subscriptionUpdated.customer;
+                    stripeCustomerId = subscriptionUpdated.customer;
                     const priceId = subscriptionUpdated.plan.id;
 
                     // Only change if plan has been downgraded
@@ -177,8 +177,7 @@ router.post(
                     }
                     break;
                 case 'customer.subscription.deleted':
-                    const subscriptionEnded = event.data.object;
-                    stripeCustomerId = subscriptionEnded.customer;
+                    stripeCustomerId = event.data.object.customer;
 
                     let endSubQueryString = `
                         UPDATE users
