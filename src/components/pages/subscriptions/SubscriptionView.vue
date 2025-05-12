@@ -428,7 +428,8 @@ export default {
                 <button
                     v-else-if="
                         subscription &&
-                        subscription.cancel_at_period_end == false
+                        subscription.cancel_at_period_end == false &&
+                        nextSubSchedulePhasePlan != 'Basic'
                     "
                     @click="cancelPlan()"
                     class="btn primary-btn mt-1 mb-3"
