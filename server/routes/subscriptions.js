@@ -120,7 +120,7 @@ router.get('/success', async (req, res, next) => {
 
     await query(usersTableQueryString);
 
-    res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
+    res.redirect(`${process.env.BASE_URL}/subscriptions/completed`);
 });
 
 // Allow customer to make changes to subscription and billing
@@ -256,9 +256,9 @@ router.post('/cancel', async (req, res) => {
             await query(endSubQueryString);
         }
 
-        res.redirect(`${process.env.BASE_URL}/subscriptions/success/view`);
+        res.json({ status: 'succeeded' });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ status: 'failed', error: e.message });
     }
 });
 

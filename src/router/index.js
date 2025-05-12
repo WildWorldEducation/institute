@@ -463,7 +463,7 @@ const router = createRouter({
                 import('../components/pages/subscriptions/SubscriptionView.vue')
         },
         {
-            path: '/subscriptions/success/view',
+            path: '/subscriptions/completed',
             name: 'subscription-success',
             component: () =>
                 import(

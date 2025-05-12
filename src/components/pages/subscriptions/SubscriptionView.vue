@@ -198,9 +198,19 @@ export default {
                     body: JSON.stringify({
                         userId: this.userDetailsStore.userId
                     })
-                }).then(() => {
-                    this.getSubscription();
-                });
+                })
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(async (data) => {
+                        if (data.status == 'succeeded') {
+                            this.getSubscription();
+                        } else {
+                            alert(
+                                'Downgrade did not work. Please try again later.'
+                            );
+                        }
+                    });
             } else {
                 return;
             }
@@ -263,7 +273,7 @@ export default {
                     .then(async (data) => {
                         if (data.status == 'succeeded') {
                             await this.userDetailsStore.getUserDetails();
-                            this.$router.push('/subscriptions/success/view');
+                            this.$router.push('/subscriptions/completed');
                         } else {
                             alert(
                                 'Upgrade did not work. Please try again later.'
