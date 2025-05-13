@@ -167,8 +167,6 @@ export default {
             for (let i = 0; i < subscriptionData.charges.data.length; i++) {
                 this.receipts.push(subscriptionData.charges.data[i]);
             }
-
-            console.log(this.receipts);
         },
         // Purchase subscription
         checkout(planType) {
