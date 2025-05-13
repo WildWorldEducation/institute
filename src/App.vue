@@ -480,7 +480,7 @@ export default {
             </div>
         </nav>
     </header>
-    <div class="router-view-padding router-view">
+    <div id="router-view" class="router-view-padding">
         <RouterView />
     </div>
 </template>
@@ -723,7 +723,7 @@ p {
     border: 2px solid var(--fourth-colour);
 }
 .router-view {
-    height: 100vh;
+    height: calc(100% - 88px);
 }
 
 .signin-btn {
