@@ -630,8 +630,14 @@ router.beforeEach(async (to, from, next) => {
         to.name == 'login'
     ) {
         document.getElementById('app').style.overflow = 'hidden';
+        document
+            .getElementById('router-view')
+            .setAttribute('style', 'height:100%');
     } else {
         document.getElementById('app').style.overflow = 'auto';
+        document
+            .getElementById('router-view')
+            .setAttribute('style', 'height:calc(100%-88px)');
     }
 });
 
