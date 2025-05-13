@@ -139,6 +139,9 @@ export default {
                     this.chatHistory = this.assessingTutorChatHistory;
                 }
 
+                // Remove loading spinner
+                this.isLoading = false;
+
                 if (!this.$parent.isAITokenLimitReached) {
                     this.mode = 'modal';
                     this.hasTutorButtonBeenClicked = false;
@@ -146,12 +149,8 @@ export default {
                 } else {
                     this.mode = 'docked';
                 }
-
-                // Successfully completed
-                return Promise.resolve();
             } catch (error) {
                 console.error('Error in showTutorModal:', error);
-                return Promise.reject(error);
             }
         },
         async hideTutorModal(type) {
@@ -571,25 +570,7 @@ export default {
 
                 // Disable tutor button
                 this.hasTutorButtonBeenClicked = true;
-
-                // Slight delay to ensure loading is visible
-                setTimeout(() => {
-                    this.showTutorModal(type)
-                        .then(() => {
-                            // Reset loading state
-                            this.isLoading = false;
-                        })
-                        .catch((error) => {
-                            console.error('Error loading tutor:', error);
-                            this.isLoading = false;
-                            this.hasTutorButtonBeenClicked = false;
-                        });
-
-                    // Safety timeout
-                    setTimeout(() => {
-                        this.isLoading = false;
-                    }, 10000);
-                }, 50);
+                this.showTutorModal(type);
             }
         },
         navigateToAssessment() {
