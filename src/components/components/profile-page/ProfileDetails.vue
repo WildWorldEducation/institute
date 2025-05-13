@@ -169,6 +169,19 @@ export default {
                     />
                 </div>
             </div>
+            <h2 class="secondary-heading h4 mt-3">Referral link</h2>
+            <p>
+                <a
+                    target="_blank"
+                    :href="
+                        'https://parrhesia.io/student-signup?ref=' +
+                        userDetailsStore.userName
+                    "
+                    >https://parrhesia.io/student-signup?ref={{
+                        userDetailsStore.userName
+                    }}</a
+                >
+            </p>
         </div>
     </div>
 </template>
