@@ -1404,14 +1404,10 @@ export default {
                 ></div>
             </div>
             <!-- User input (modal mode) -->
-            <div
-                :class="'modal-user-chat-div'"
-                class="mt-auto"
-                v-if="mode === 'modal'"
-            >
+            <div class="modal-user-chat-div mt-auto" v-if="mode === 'modal'">
                 <textarea
                     ref="modalMessageInput"
-                    class="chat-text-area modal-chat-text-area rounded border border-dark me-1"
+                    class="chat-text-area modal-chat-text-area rounded border border-dark"
                     v-model="message"
                     type="text"
                     @keydown.enter="handleKeyDown"
@@ -1615,6 +1611,8 @@ export default {
 .modal-user-chat-div {
     display: flex;
     flex-direction: row;
+    padding: 2px 0;
+    gap: 10px;
     background-color: white;
     width: 100%;
 }
