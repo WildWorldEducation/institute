@@ -1290,9 +1290,9 @@ export default {
             <!-- Message thread -->
             <div
                 v-if="showChat && mode != 'hide'"
-                class="d-flex flex-column mx-auto chat-history"
+                class="d-flex flex-column mx-auto"
                 :class="{
-                    'chat-history': mode === 'docked',
+                    'docked-chat-history': mode === 'docked',
                     'modal-chat-history': mode === 'modal',
                     'socratic-chat': tutorType === 'socratic',
                     'assessing-chat': tutorType === 'assessing'
@@ -1608,17 +1608,19 @@ export default {
     color: white;
 }
 
-.chat-history {
+.docked-chat-history {
     overflow-x: hidden;
     padding: 5px 10px;
     border-radius: 15px;
     min-height: 50px;
+    width: 100%;
 }
 
 .modal-chat-history {
     height: 95%;
+    width: 100%;
     overflow-y: auto;
-    padding-bottom: 5px;
+    padding: 5px 10px;
     margin-bottom: 5px;
 }
 
@@ -1692,20 +1694,7 @@ export default {
 .tutor-chatting-waiting-response-section {
     height: 94% !important;
 }
-/* ************************* */
-/* Tablet Styling */
-@media (min-width: 577px) and (max-width: 1023px) {
-    .chat-history {
-        width: 100%;
-    }
-}
 
-/* Small devices (portrait phones) */
-@media (max-width: 480px) {
-    .chat-history {
-        width: 100%;
-    }
-}
 .loading-overlay {
     position: fixed;
     top: 0;
