@@ -716,7 +716,7 @@ router.get('/url/:skillUrl', (req, res, next) => {
 router.get('/first/url/:skillUrl', (req, res, next) => {
     let skill;
     // Get skill.
-    const sqlQuery = `SELECT name, intro_sentence, type, level, image_thumbnail_url, is_human_edited
+    const sqlQuery = `SELECT intro_sentence, type, level, image_thumbnail_url, is_human_edited
                     FROM 
                         skills
                     WHERE url = ${conn.escape(
@@ -768,7 +768,7 @@ router.get('/first/url/:skillUrl', (req, res, next) => {
 router.get('/second/url/:skillUrl', (req, res, next) => {
     let skill;
     // Get skill.
-    const sqlQuery = `SELECT s.id, s.url, s.parent, s.image_url, s.mastery_requirements,
+    const sqlQuery = `SELECT s.name, s.id, s.url, s.parent, s.image_url, s.mastery_requirements,
                         s.version_number, s.order, parent_skill.type AS parent_type
                     FROM 
                         skills AS s
