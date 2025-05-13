@@ -1,1 +1,0 @@
-import{_ as o,o as s,c as t,a as e}from"./main-1e01188a.js";const c={name:"Error"},n={class:"container"},r=e("h1",{class:"heading"},"Payment Error",-1),a=e("p",null,"Payment cancelled.",-1),_=[r,a];function i(d,l,p,h,m,f){return s(),t("div",n,_)}const E=o(c,[["render",i]]);export{E as default};
