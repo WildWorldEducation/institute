@@ -298,7 +298,7 @@ export default {
 
 <template>
     <div class="container">
-        <div class="row mt-4">
+        <div class="row">
             <div class="col-md">
                 <!-- Token usage stats -->
                 <h2
