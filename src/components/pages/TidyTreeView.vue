@@ -204,10 +204,12 @@ export default {
         // Filters
         async updateSubjectFilters(subject) {
             const rightSubjectName = this.transformToOriginalName(subject);
-            // get full list of skill for student
-            if (!this.skillTreeStore.studentSkills.length) {
-                await this.skillTreeStore.getStudentSkills();
-            }
+
+            // get full list of skill for guest
+            // if (this.skillTreeStore.fullSkillList.length === 0) {
+            // }
+            await this.skillTreeStore.getFullSkillList();
+
             // Flag to determine if the click is to filtered the skill NOT un-filter it
             let isSkillGetShowing = false;
 
@@ -244,7 +246,7 @@ export default {
                     const subjectNodeData =
                         this.skillTreeStore.findSkillBaseOnName(
                             rightSubjectName,
-                            this.skillTreeStore.studentSkills
+                            this.skillTreeStore.fullSkillList
                         );
 
                     this.userDetailsStore.removeSkillFromFilter(
@@ -305,11 +307,8 @@ export default {
                     this.userDetailsStore.subjectFilters.push(subject);
 
                     // Also we have to add all of it children to subject filter (for now may need change when we update to store filter object in db)
-                    if (!this.skillTreeStore.userSkills.length) {
-                        await this.skillTreeStore.getUserSkills();
-                    }
 
-                    const nodeData = this.skillTreeStore.studentSkills.find(
+                    const nodeData = this.skillTreeStore.fullSkillList.find(
                         (node) => node.skill_name === rightSubjectName
                     );
                     const filterObject = {
@@ -322,7 +321,7 @@ export default {
                     nodeData.children.forEach((childNode) => {
                         const parent = this.skillTreeStore.findSkillBaseOnId(
                             childNode.parent,
-                            this.skillTreeStore.studentSkills
+                            this.skillTreeStore.fullSkillList
                         );
                         const filterObject = {
                             skillName: childNode.skill_name,
@@ -347,11 +346,10 @@ export default {
             );
 
             if (isSkillGetShowing && isSkillNeedAdditionalFilter) {
-                if (this.skillTreeStore.fullSkillList.length == 0) {
-                    await this.skillTreeStore.getFullSkillList(
-                        this.userDetailsStore.userId
-                    );
-                }
+                console.log(
+                    'full skill list is: ',
+                    this.skillTreeStore.fullSkillList
+                );
 
                 // using guest mode skill tree to get the skill node because it have all the skill user can see
                 this.activeFilteredSubject =
@@ -377,7 +375,7 @@ export default {
                     this.activeFilteredSubject.children.forEach((skillNode) => {
                         const parent = this.skillTreeStore.findSkillBaseOnId(
                             childNode.parent,
-                            this.skillsStore.guestModeVerticalTreeSkills
+                            this.skillTreeStore.fullSkillList
                         );
                         const filterObject = {
                             skillName: skillNode.skill_name,
@@ -848,11 +846,10 @@ export default {
                 this.userDetailsStore.subjectFilters.includes(subject)
             ) {
                 this.openSubFilterMenu = true;
-                if (this.skillTreeStore.fullSkillList.length == 0) {
-                    await this.skillTreeStore.getFullSkillList(
-                        this.userDetailsStore.userId
-                    );
-                }
+
+                await this.skillTreeStore.getFullSkillList(
+                    this.userDetailsStore.userId
+                );
                 // also update active filter object and sub-menu position
                 this.activeFilteredSubject =
                     this.skillTreeStore.fullSkillList.find(

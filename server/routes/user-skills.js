@@ -551,10 +551,10 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                                                     ) {
                                                         if (
                                                             results[k].type ==
-                                                                'sub' &&
+                                                            'sub' &&
                                                             results[k]
                                                                 .is_accessible ==
-                                                                1
+                                                            1
                                                         ) {
                                                             results[
                                                                 j
@@ -1112,10 +1112,10 @@ router.get(
                                                             if (
                                                                 results[k]
                                                                     .type ==
-                                                                    'sub' &&
+                                                                'sub' &&
                                                                 results[k]
                                                                     .is_accessible ==
-                                                                    1
+                                                                1
                                                             ) {
                                                                 results[
                                                                     j
@@ -1604,7 +1604,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                         ) {
                                             if (
                                                 childSkills[i].type ==
-                                                    'regular' ||
+                                                'regular' ||
                                                 childSkills[i].type == 'domain'
                                             ) {
                                                 makeAccessible(
@@ -1623,7 +1623,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                                 ) {
                                                     if (
                                                         skills[j].parent ==
-                                                            childSkills[i].id &&
+                                                        childSkills[i].id &&
                                                         skills[j].type == 'sub'
                                                     ) {
                                                         subSkills.push(
@@ -1655,7 +1655,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                         ) {
                                             if (
                                                 skills[i].parent ==
-                                                    skill.parent &&
+                                                skill.parent &&
                                                 skills[i].id != skill.id
                                             ) {
                                                 if (skills[i].type == 'sub') {
@@ -1907,6 +1907,61 @@ router.get('/:userId/:skillId/goal-steps/list', (req, res, next) => {
     }
 });
 
+router.get('/fullSkillList', (req, res) => {
+
+    res.setHeader('Content-Type', 'application/json');
+    let sqlQuery = `
+    SELECT id, name as skill_name, parent, type, level, is_filtered, skills.order as skillorder, display_name, url
+    FROM skills
+    WHERE is_deleted = 0
+    ORDER BY skillorder;`;
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+
+            // Create the 'children' array.
+            for (var i = 0; i < results.length; i++) {
+                results[i].children = [];
+            }
+
+            // Deal with skills that have multiple parents.
+            // These skills have secret copies in the table.
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].display_name != null) {
+                    results[i].skill_name = results[i].display_name;
+                }
+            }
+
+            // Add children to the parents.
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].parent != null && results[i].parent != 0) {
+                    var parentId = results[i].parent;
+                    // go through all rows again, add children
+                    for (let j = 0; j < results.length; j++) {
+                        if (results[j].id == parentId) {
+                            results[j].children.push(results[i]);
+                        }
+                    }
+                }
+            }
+
+            // Create first level of array.
+            let nestedSkills = [];
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].parent == null || results[i].parent == 0) {
+                    nestedSkills.push(results[i]);
+                }
+            }
+
+            res.json(nestedSkills);
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
 /**
  * Delete Item
  */
@@ -1949,6 +2004,8 @@ router.delete('/:userId/:skillId', (req, res, next) => {
         res.redirect('/login');
     }
 });
+
+
 
 router.get('*', (req, res) => {
     res.redirect('/');

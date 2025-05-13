@@ -35,9 +35,12 @@ export const useSkillTreeStore = defineStore('skillTree', {
             );
             this.userSkills = await result.json();
         },
-        async getFullSkillList(userId) {
-            const result = await fetch('/user-skills/' + userId);
-            this.fullSkillList = await result.json();
+        async getFullSkillList() {
+            const result = await fetch('/user-skills/fullSkillList');
+            console.log('Mega list');
+            const resultData = await result.json();
+            this.fullSkillList = resultData;
+            console.log(this.fullSkillList);
         },
         // API call for Full skill tree.
         async getVerticalTreeUserSkills(level, subjects, isUnlockedOnly) {
@@ -102,7 +105,6 @@ export const useSkillTreeStore = defineStore('skillTree', {
             const result = await fetch(
                 '/user-skills/filter-by-cohort/' + studentId
             );
-
             this.studentSkills = await result.json();
         },
         // API call for student tree that instructor uses to monitor progress.
