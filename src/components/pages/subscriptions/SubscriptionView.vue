@@ -93,11 +93,34 @@ export default {
     computed: {
         formattedStripeCurrentPeriodEndDate() {
             let dateObj = new Date(this.subscription.current_period_end * 1000);
-            const month = dateObj.getUTCMonth() + 1; // months from 1-12
-            const day = dateObj.getUTCDate();
-            const year = dateObj.getUTCFullYear();
-            const formattedDate = year + '/' + month + '/' + day;
-            return formattedDate;
+
+            // You could get this from a store or user preferences
+            const locale = 'en-US'; // Default to English
+
+            // Get day name using Intl.DateTimeFormat
+            const dayName = new Intl.DateTimeFormat(locale, {
+                weekday: 'long'
+            }).format(dateObj);
+
+            // Get day number
+            const day = dateObj.getDate();
+
+            // Get day suffix (note: this is English-specific, would need adaptation for other languages)
+            let daySuffix = 'th';
+            if (day % 10 === 1 && day !== 11) daySuffix = 'st';
+            if (day % 10 === 2 && day !== 12) daySuffix = 'nd';
+            if (day % 10 === 3 && day !== 13) daySuffix = 'rd';
+
+            // Get month name using Intl.DateTimeFormat
+            const monthName = new Intl.DateTimeFormat(locale, {
+                month: 'long'
+            }).format(dateObj);
+
+            // Get year
+            const year = dateObj.getFullYear();
+
+            // Format template (this would also need to be translated for other languages)
+            return `${dayName} the ${day}${daySuffix} of ${monthName}, ${year}`;
         },
         formattedMonthlyTokenUsage() {
             return this.userDetailsStore.monthlyTokenUsage
@@ -144,8 +167,6 @@ export default {
             for (let i = 0; i < subscriptionData.charges.data.length; i++) {
                 this.receipts.push(subscriptionData.charges.data[i]);
             }
-
-            console.log(this.receipts);
         },
         // Purchase subscription
         checkout(planType) {

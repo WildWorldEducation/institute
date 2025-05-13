@@ -66,7 +66,8 @@ export default {
             hasTutorButtonBeenClicked: false,
             modalTextAreaHeigh: '60px',
             modalChatHistoryHeigh: '80%',
-            isNavigatingToAssessment: false
+            isLoading: false,
+            loadingMessage: ''
         };
     },
     async created() {
@@ -127,26 +128,30 @@ export default {
         },
         // Open tutor modal and load messages
         async showTutorModal(type) {
-            // Socratic or Testing
-            this.tutorType = type;
+            try {
+                // Existing implementation
+                this.tutorType = type;
+                await this.getChatHistory();
 
-            // Load messages
-            await this.getChatHistory();
+                if (type == 'socratic')
+                    this.chatHistory = this.socraticTutorChatHistory;
+                else if (type == 'assessing') {
+                    this.chatHistory = this.assessingTutorChatHistory;
+                }
 
-            if (type == 'socratic')
-                this.chatHistory = this.socraticTutorChatHistory;
-            else if (type == 'assessing') {
-                this.chatHistory = this.assessingTutorChatHistory;
-            }
+                if (!this.$parent.isAITokenLimitReached) {
+                    this.mode = 'modal';
+                    this.hasTutorButtonBeenClicked = false;
+                    await this.askQuestion();
+                } else {
+                    this.mode = 'docked';
+                }
 
-            if (!this.$parent.isAITokenLimitReached) {
-                // Display modal tutor
-                this.mode = 'modal';
-                // Re-enable tutor button
-                this.hasTutorButtonBeenClicked = false;
-                this.askQuestion();
-            } else {
-                this.mode = 'docked';
+                // Successfully completed
+                return Promise.resolve();
+            } catch (error) {
+                console.error('Error in showTutorModal:', error);
+                return Promise.reject(error);
             }
         },
         async hideTutorModal(type) {
@@ -556,9 +561,35 @@ export default {
             if (!this.userDetailsStore.userId) {
                 this.$router.push('/login');
             } else {
+                // Set loading state with appropriate message
+                this.isLoading = true;
+                this.loadingMessage = `Loading ${
+                    type === 'socratic'
+                        ? 'Socratic Tutor'
+                        : 'Conversational Test'
+                }...`;
+
                 // Disable tutor button
                 this.hasTutorButtonBeenClicked = true;
-                this.showTutorModal(type);
+
+                // Slight delay to ensure loading is visible
+                setTimeout(() => {
+                    this.showTutorModal(type)
+                        .then(() => {
+                            // Reset loading state
+                            this.isLoading = false;
+                        })
+                        .catch((error) => {
+                            console.error('Error loading tutor:', error);
+                            this.isLoading = false;
+                            this.hasTutorButtonBeenClicked = false;
+                        });
+
+                    // Safety timeout
+                    setTimeout(() => {
+                        this.isLoading = false;
+                    }, 10000);
+                }, 50);
             }
         },
         navigateToAssessment() {
@@ -572,8 +603,9 @@ export default {
                 this.$router.push('/login');
                 return;
             }
-            // Set loading state immediately for visual feedback
-            this.isNavigatingToAssessment = true;
+            // Set loading state with appropriate message
+            this.isLoading = true;
+            this.loadingMessage = 'Loading assessment...';
 
             // Navigate after a short delay to ensure loading is visible
             setTimeout(() => {
@@ -581,7 +613,7 @@ export default {
 
                 // Safety timeout to reset state if navigation fails
                 setTimeout(() => {
-                    this.isNavigatingToAssessment = false;
+                    this.isLoading = false;
                 }, 5000);
             }, 50);
         },
@@ -1149,11 +1181,11 @@ export default {
                     </div>
                 </div>
             </div>
-            <!-- Loading animation for assessment navigation -->
-            <div v-if="isNavigatingToAssessment" class="loading-overlay">
+            <!-- Unified loading overlay for all loading states -->
+            <div v-if="isLoading" class="loading-overlay">
                 <div class="loading-container">
                     <span class="assessment-loader"></span>
-                    <div class="loading-text mt-3">Loading assessment...</div>
+                    <div class="loading-text mt-3">{{ loadingMessage }}</div>
                 </div>
             </div>
 
