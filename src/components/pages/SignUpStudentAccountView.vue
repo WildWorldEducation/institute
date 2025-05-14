@@ -30,10 +30,14 @@ export default {
             isProduction: import.meta.env.PROD,
             showVideoModal: true,
             showModalVideo: true,
-            isMobileCheck: window.innerWidth
+            isMobileCheck: window.innerWidth,
+            referrer: ''
         };
     },
-    async created() {},
+    async created() {
+        const urlParams = new URLSearchParams(window.location.search);
+        this.referrer = urlParams.get('ref');
+    },
     mounted() {
         // Load Google login button.
         let script = document.createElement('script');
@@ -67,7 +71,6 @@ export default {
                 this.Submit();
             }
         },
-
         ValidateEmail() {
             if (
                 /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
@@ -90,7 +93,8 @@ export default {
                     email: this.newUser.email,
                     password: this.newUser.password,
                     account_type: this.newUser.accountType,
-                    grade_filter: this.newUser.skillTreeGradeLevel
+                    grade_filter: this.newUser.skillTreeGradeLevel,
+                    referrer_id: this.referrer
                 })
             };
             var url = '/users/new-user/add';
