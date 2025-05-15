@@ -403,6 +403,13 @@ export default {
                                     >
                                         Subscription
                                     </RouterLink>
+                                    <RouterLink
+                                        v-if="userDetailsStore.role == 'admin'"
+                                        to="/referrals"
+                                        class="dropdown-item"
+                                    >
+                                        Referrals
+                                    </RouterLink>
                                     <div class="dropdown-divider"></div>
                                     <a
                                         v-if="sessionDetailsStore.isLoggedIn"
@@ -443,6 +450,13 @@ export default {
                                     class="nav-link"
                                 >
                                     Subscription
+                                </RouterLink>
+                                <RouterLink
+                                    v-if="userDetailsStore.role == 'admin'"
+                                    to="/referrers"
+                                    class="nav-link"
+                                >
+                                    Referrers
                                 </RouterLink>
                                 <a
                                     v-if="sessionDetailsStore.isLoggedIn"

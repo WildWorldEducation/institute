@@ -124,6 +124,8 @@ const skillLearningObjectives = require('./routes/skill-learning-objectives');
 app.use('/skill-learning-objectives', skillLearningObjectives);
 const subscriptions = require('./routes/subscriptions');
 app.use('/subscriptions', subscriptions);
+const referrals = require('./routes/referrals');
+app.use('/referrals', referrals);
 
 // error handling middleware
 const errorHandlingMiddleware = require('./middlewares/errorHandlingMiddleWare');
