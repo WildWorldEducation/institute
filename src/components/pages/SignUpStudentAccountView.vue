@@ -94,7 +94,7 @@ export default {
                     password: this.newUser.password,
                     account_type: this.newUser.accountType,
                     grade_filter: this.newUser.skillTreeGradeLevel,
-                    referrer_id: this.referrer
+                    referrer_username: this.referrer
                 })
             };
             var url = '/users/new-user/add';
@@ -156,7 +156,7 @@ export default {
                     : 'http://localhost:3000'
             }/google-student-signup-attempt?accountType=${
                 this.newUser.accountType
-            }&deviceType=${deviceType}&referrerId=${this.referrer}`;
+            }&deviceType=${deviceType}&referrerUsername=${this.referrer}`;
 
             const input = document.createElement('input');
             input.type = 'hidden';

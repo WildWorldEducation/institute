@@ -26,8 +26,13 @@ export default {
             },
             passwordVisible: false,
             // For Google sign up absolute API url.
-            isProduction: import.meta.env.PROD
+            isProduction: import.meta.env.PROD,
+            referrer: ''
         };
+    },
+    async created() {
+        const urlParams = new URLSearchParams(window.location.search);
+        this.referrer = urlParams.get('ref');
     },
     mounted() {
         // Load Google login button.
@@ -58,7 +63,6 @@ export default {
                 this.Submit();
             }
         },
-
         ValidateEmail() {
             if (
                 /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
@@ -80,9 +84,12 @@ export default {
                     last_name: '',
                     email: this.newUser.email,
                     password: this.newUser.password,
-                    account_type: this.newUser.accountType
+                    account_type: this.newUser.accountType,
+                    referrer_username: this.referrer
                 })
             };
+            console.log(this.referrer);
+
             var url = '/users/new-instructor/add';
             fetch(url, requestOptions)
                 .then(function (response) {
@@ -132,7 +139,7 @@ export default {
                     : 'http://localhost:3000'
             }/google-student-signup-attempt?accountType=${
                 this.newUser.accountType
-            }`;
+            }&referrerUsername=${this.referrer}`;
 
             const input = document.createElement('input');
             input.type = 'hidden';

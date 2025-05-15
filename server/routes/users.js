@@ -118,22 +118,6 @@ router.post('/new-user/add', async (req, res, next) => {
                                     req.session.userName = req.body.username;
                                     req.session.role = 'student';
 
-                                    if (req.body.referrer_id != '') {
-                                        let referrerSQLQuery = `
-                                INSERT INTO referrals (referred_user_id, referrer_user_id)
-                                VALUES (${conn.escape(
-                                    req.session.userId
-                                )}, ${conn.escape(req.body.referrer_id)})
-                                    ON DUPLICATE KEY UPDATE referred_user_id = ${
-                                        req.session.userId
-                                    }, referrer_user_id= ${conn.escape(
-                                            req.body.referrer_id
-                                        )};
-                                    `;
-
-                                        await query(referrerSQLQuery);
-                                    }
-
                                     // OPTIMIZATION 2: Send the response immediately, run unlockInitialSkills afterward
                                     res.json({
                                         account: 'authorized',
@@ -167,16 +151,29 @@ router.post('/new-user/add', async (req, res, next) => {
                                 return next(err);
                             }
 
-                            if (req.body.referrer_id != '') {
-                                let referrerSQLQuery = `
+                            // If referred by another user
+                            if (
+                                req.body.referrer_username != '' &&
+                                req.body.referrer_username != null
+                            ) {
+                                const getReferrerSQLIDQuery = `SELECT id
+                                FROM users
+                                WHERE username = ${conn.escape(
+                                    req.body.referrer_username
+                                )};`;
+
+                                const res = await query(getReferrerSQLIDQuery);
+                                const referrerId = res[0].id;
+
+                                const referrerSQLQuery = `
                                 INSERT INTO referrals (referred_user_id, referrer_user_id)
-                                VALUES (${conn.escape(
-                                    req.session.userId
-                                )}, ${conn.escape(req.body.referrer_id)})
-                                    ON DUPLICATE KEY UPDATE referred_user_id = ${
-                                        req.session.userId
-                                    }, referrer_user_id= ${conn.escape(
-                                    req.body.referrer_id
+                                VALUES (${conn.escape(data.id)}, ${conn.escape(
+                                    referrerId
+                                )})
+                                    ON DUPLICATE KEY UPDATE referred_user_id = ${conn.escape(
+                                        data.id
+                                    )}, referrer_user_id= ${conn.escape(
+                                    referrerId
                                 )};
                                     `;
 
@@ -285,22 +282,6 @@ router.post('/new-instructor/add', async (req, res, next) => {
                                     req.session.userName = req.body.username;
                                     req.session.role = 'instructor';
 
-                                    if (req.body.referrer_id != '') {
-                                        let referrerSQLQuery = `
-                                INSERT INTO referrals (referred_user_id, referrer_user_id)
-                                VALUES (${conn.escape(
-                                    req.session.userId
-                                )}, ${conn.escape(req.body.referrer_id)})
-                                    ON DUPLICATE KEY UPDATE referred_user_id = ${
-                                        req.session.userId
-                                    }, referrer_user_id= ${conn.escape(
-                                            req.body.referrer_id
-                                        )};
-                                    `;
-
-                                        await query(referrerSQLQuery);
-                                    }
-
                                     // OPTIMIZATION 2: Send response before unlocking skills
                                     res.json({
                                         account: 'authorized',
@@ -339,16 +320,30 @@ router.post('/new-instructor/add', async (req, res, next) => {
                             req.session.userName = data.username;
                             req.session.role = 'instructor';
 
-                            if (req.body.referrer_id != '') {
+                            // If referred
+                            if (
+                                req.body.referrer_username != '' &&
+                                req.body.referrer_username != null
+                            ) {
+                                console.log(req.body.referrer_username);
+                                const getReferrerSQLIDQuery = `SELECT id
+                                        FROM users
+                                        WHERE username = ${conn.escape(
+                                            req.body.referrer_username
+                                        )};`;
+
+                                const res = await query(getReferrerSQLIDQuery);
+                                const referrerId = res[0].id;
+
                                 let referrerSQLQuery = `
-                                INSERT INTO referrals (referred_user_id, referrer_user_id)
-                                VALUES (${conn.escape(
-                                    req.session.userId
-                                )}, ${conn.escape(req.body.referrer_id)})
-                                    ON DUPLICATE KEY UPDATE referred_user_id = ${
-                                        req.session.userId
-                                    }, referrer_user_id= ${conn.escape(
-                                    req.body.referrer_id
+                                    INSERT INTO referrals (referred_user_id, referrer_user_id)
+                                    VALUES (${conn.escape(
+                                        data.id
+                                    )}, ${conn.escape(referrerId)})
+                                    ON DUPLICATE KEY UPDATE referred_user_id = ${conn.escape(
+                                        data.id
+                                    )}, referrer_user_id= ${conn.escape(
+                                    referrerId
                                 )};
                                     `;
 

@@ -17,6 +17,9 @@ const isAuthenticated = require('./middlewares/authMiddleware');
 // Database Connection
 const conn = require('./config/db');
 const xmlbuilder = require('xmlbuilder');
+// for querying DB
+const util = require('util');
+const query = util.promisify(conn.query).bind(conn);
 
 // Initiate Socket IO connection
 const http = require('http');
@@ -199,24 +202,22 @@ app.post('/google-student-signup-attempt', (req, res) => {
     googleUserDetails = jwt.decode(req.body.credential);
     googleUserDetails.role = req.query.accountType;
     const deviceType = req.query.deviceType;
-    const referrerId = req.query.referrerId;
+    const referrerUsername = req.query.referrerUsername;
     res.redirect(
-        `/google-student-signup-attempt?deviceType=${deviceType}&referrerId=${referrerId}`
+        `/google-student-signup-attempt?deviceType=${deviceType}&referrerUsername=${referrerUsername}`
     );
 });
 
 const { unlockInitialSkills } = require('./utilities/unlock-initial-skills');
-app.get('/google-student-signup-attempt', (req, res, next) => {
+app.get('/google-student-signup-attempt', async (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     let deviceType = req.query.deviceType;
-
-    // Left off here!!!
-    let referrerId = req.query.referrerId;
+    let referrerUsername = req.query.referrerUsername;
     // Check if user already exists.
     let sqlQuery1 = `SELECT * 
         FROM users 
         WHERE email = ${conn.escape(googleUserDetails.email)};`;
-    conn.query(sqlQuery1, (err, results) => {
+    conn.query(sqlQuery1, async (err, results) => {
         try {
             if (err) {
                 throw err;
@@ -279,16 +280,29 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                         if (err) {
                             throw err;
                         } else {
-                            if (req.body.referrer_id != '') {
+                            // Record user that referred this user
+                            if (
+                                referrerUsername != '' &&
+                                referrerUsername != null
+                            ) {
+                                const getReferrerSQLIDQuery = `SELECT id
+                                        FROM users
+                                        WHERE username = ${conn.escape(
+                                            referrerUsername
+                                        )};`;
+
+                                const res = await query(getReferrerSQLIDQuery);
+                                const referrerId = res[0].id;
+
                                 let referrerSQLQuery = `
                                     INSERT INTO referrals (referred_user_id, referrer_user_id)
                                     VALUES (${conn.escape(
-                                        req.session.userId
-                                    )}, ${conn.escape(req.body.referrer_id)})
-                                    ON DUPLICATE KEY UPDATE referred_user_id = ${
-                                        req.session.userId
-                                    }, referrer_user_id= ${conn.escape(
-                                    req.body.referrer_id
+                                        newStudentId
+                                    )}, ${conn.escape(referrerId)})
+                                    ON DUPLICATE KEY UPDATE referred_user_id = ${conn.escape(
+                                        newStudentId
+                                    )}, referrer_user_id= ${conn.escape(
+                                    referrerId
                                 )};
                                 `;
 
