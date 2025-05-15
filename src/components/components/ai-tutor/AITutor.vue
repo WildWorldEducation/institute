@@ -64,8 +64,8 @@ export default {
             currentIndexAudioPlaying: null,
             isMobileCheck: window.innerWidth,
             hasTutorButtonBeenClicked: false,
-            modalTextAreaHeigh: '60px',
-            modalChatHistoryHeigh: '80%',
+            modalTextAreaHeight: '40px',
+            modalChatHistoryHeight: '80%',
             isLoading: false,
             loadingMessage: ''
         };
@@ -139,12 +139,11 @@ export default {
                     this.chatHistory = this.assessingTutorChatHistory;
                 }
 
-                // Remove loading spinner
-                this.isLoading = false;
-
                 if (!this.$parent.isAITokenLimitReached) {
                     this.mode = 'modal';
                     this.hasTutorButtonBeenClicked = false;
+                    // Remove loading spinner
+                    this.isLoading = false;
                     await this.askQuestion();
                 } else {
                     this.mode = 'docked';
@@ -162,7 +161,7 @@ export default {
                 this.chatHistory = this.assessingTutorChatHistory;
             }
             // reset chat input height
-            this.modalTextAreaHeigh = '60px';
+            this.modalTextAreaHeight = '60px';
             this.mode = 'docked';
         },
         // For both tutors
@@ -601,7 +600,7 @@ export default {
         changeTextAreaHeigh() {
             const el = this.$refs.modalMessageInput;
             if (el.scrollHeight <= el.clientHeight) {
-                this.modalTextAreaHeigh = '60px';
+                this.modalTextAreaHeight = '60px';
                 return;
             }
             // Set the new height of the text area
@@ -609,16 +608,16 @@ export default {
 
             // If the text area is empty, set it to 60px
             if (this.message.length === 0) {
-                this.modalChatHistoryHeigh = '60px';
+                this.modalChatHistoryHeight = '60px';
                 return;
             }
             // If the text area is too big, set it to 400px
             if (el.scrollHeight > 400) {
-                this.modalTextAreaHeigh = '400px';
+                this.modalTextAreaHeight = '400px';
                 return;
             }
             // set the new height of the text area
-            this.modalTextAreaHeigh = newTextAreaHeigh;
+            this.modalTextAreaHeight = newTextAreaHeigh;
         },
         // Get all latex string in a message
         getLatexStrings(message) {
@@ -909,7 +908,7 @@ export default {
                                 d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
                             />
                         </svg>
-                        Thinking
+                        <span v-if="isMobileCheck > 576">Thinking</span>
                         <TutorLoadingSymbol />
                     </div>
                     <TooltipBtn
@@ -1405,13 +1404,12 @@ export default {
             </div>
             <!-- User input (modal mode) -->
             <div
-                :class="'modal-user-chat-div'"
-                class="mt-auto"
+                class="modal-user-chat-div mt-auto mb-1"
                 v-if="mode === 'modal'"
             >
                 <textarea
                     ref="modalMessageInput"
-                    class="chat-text-area modal-chat-text-area rounded border border-dark me-1"
+                    class="chat-text-area modal-chat-text-area rounded border border-dark"
                     v-model="message"
                     type="text"
                     @keydown.enter="handleKeyDown"
@@ -1471,8 +1469,9 @@ export default {
     border-radius: 15px;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
         rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
-    padding-top: 15px;
+    padding-top: 10px;
     padding-bottom: 10px;
+    /* overflow: hidden; */
 }
 
 /* Increase text size for the popup modal mode */
@@ -1615,12 +1614,14 @@ export default {
 .modal-user-chat-div {
     display: flex;
     flex-direction: row;
-    background-color: white;
+    padding: 2px 0;
+    gap: 10px;
+    background-color: transparent;
     width: 100%;
 }
 
 .modal-chat-text-area {
-    height: v-bind(modalTextAreaHeigh);
+    height: v-bind(modalTextAreaHeight);
     min-height: 60px;
     overflow-y: auto;
     word-wrap: break-word;
