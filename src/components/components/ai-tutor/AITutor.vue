@@ -139,12 +139,11 @@ export default {
                     this.chatHistory = this.assessingTutorChatHistory;
                 }
 
-                // Remove loading spinner
-                this.isLoading = false;
-
                 if (!this.$parent.isAITokenLimitReached) {
                     this.mode = 'modal';
                     this.hasTutorButtonBeenClicked = false;
+                    // Remove loading spinner
+                    this.isLoading = false;
                     await this.askQuestion();
                 } else {
                     this.mode = 'docked';
