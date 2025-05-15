@@ -198,14 +198,20 @@ app.get('/google-login-result', (req, res) => {
 app.post('/google-student-signup-attempt', (req, res) => {
     googleUserDetails = jwt.decode(req.body.credential);
     googleUserDetails.role = req.query.accountType;
-    let deviceType = req.query.deviceType;
-    res.redirect('/google-student-signup-attempt?deviceType=' + deviceType);
+    const deviceType = req.query.deviceType;
+    const referrerId = req.query.referrerId;
+    res.redirect(
+        `/google-student-signup-attempt?deviceType=${deviceType}&referrerId=${referrerId}`
+    );
 });
 
 const { unlockInitialSkills } = require('./utilities/unlock-initial-skills');
 app.get('/google-student-signup-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     let deviceType = req.query.deviceType;
+
+    // Left off here!!!
+    let referrerId = req.query.referrerId;
     // Check if user already exists.
     let sqlQuery1 = `SELECT * 
         FROM users 
@@ -273,6 +279,21 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                         if (err) {
                             throw err;
                         } else {
+                            if (req.body.referrer_id != '') {
+                                let referrerSQLQuery = `
+                                    INSERT INTO referrals (referred_user_id, referrer_user_id)
+                                    VALUES (${conn.escape(
+                                        req.session.userId
+                                    )}, ${conn.escape(req.body.referrer_id)})
+                                    ON DUPLICATE KEY UPDATE referred_user_id = ${
+                                        req.session.userId
+                                    }, referrer_user_id= ${conn.escape(
+                                    req.body.referrer_id
+                                )};
+                                `;
+
+                                await query(referrerSQLQuery);
+                            }
                             // Upload avatar to AWS
                             await saveUserAvatarToAWS(data.id, defaultAvatar);
                             // Create session to log the user in.

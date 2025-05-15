@@ -141,7 +141,6 @@ export default {
                 }
             );
         },
-
         handleCredentialResponse(response) {
             // Check if mobile device
             // (Different landing page for mobile)
@@ -157,7 +156,7 @@ export default {
                     : 'http://localhost:3000'
             }/google-student-signup-attempt?accountType=${
                 this.newUser.accountType
-            }&deviceType=${deviceType}`;
+            }&deviceType=${deviceType}&referrerId=${this.referrer}`;
 
             const input = document.createElement('input');
             input.type = 'hidden';
