@@ -169,11 +169,10 @@ export default {
                     />
                 </div>
             </div>
-            <!-- Only for Instructors -->
-            <div v-if="userDetailsStore.role == 'instructor'">
+            <!-- Only for Partners -->
+            <div v-if="userDetailsStore.role == 'partner'">
                 <h2 class="secondary-heading h4 mt-3">Referral links</h2>
                 <p>
-                    Student:
                     <a
                         target="_blank"
                         :href="
@@ -181,19 +180,6 @@ export default {
                             userDetailsStore.userName
                         "
                         >https://parrhesia.io/student-signup?ref={{
-                            userDetailsStore.userName
-                        }}</a
-                    >
-                </p>
-                <p>
-                    Instructor:
-                    <a
-                        target="_blank"
-                        :href="
-                            'https://parrhesia.io/instructor-signup?ref=' +
-                            userDetailsStore.userName
-                        "
-                        >https://parrhesia.io/instructor-signup?ref={{
                             userDetailsStore.userName
                         }}</a
                     >
