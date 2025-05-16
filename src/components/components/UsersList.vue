@@ -75,7 +75,10 @@ export default {
 
         <!-- Instructors -->
         <div
-            v-else-if="userDetailsStore.role == 'instructor'"
+            v-else-if="
+                userDetailsStore.role == 'instructor' ||
+                userDetailsStore.role == 'partner'
+            "
             v-for="student in $parent.students"
             :key="student.id"
         >
@@ -100,7 +103,10 @@ export default {
 
         <!-- Add Student Link -->
         <RouterLink
-            v-if="userDetailsStore.role == 'instructor'"
+            v-if="
+                userDetailsStore.role == 'instructor' ||
+                userDetailsStore.role == 'partner'
+            "
             to="/users/add-student"
             class="d-block mb-4 btn primary-btn"
         >

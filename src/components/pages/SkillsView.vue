@@ -165,7 +165,10 @@ export default {
                     this.showMobileTutorialTip4 = false;
                     this.showMobileTutorialTip5 = true;
                 }
-                if (this.userDetailsStore.role == 'instructor') {
+                if (
+                    this.userDetailsStore.role == 'instructor' ||
+                    this.userDetailsStore.role == 'partner'
+                ) {
                     this.showTutorialTip5 = true;
                 }
                 if (this.userDetailsStore.role == 'editor') {
@@ -177,7 +180,10 @@ export default {
                 } else {
                     this.showMobileTutorialTip5 = false;
                 }
-                if (this.userDetailsStore.role == 'instructor') {
+                if (
+                    this.userDetailsStore.role == 'instructor' ||
+                    this.userDetailsStore.role == 'partner'
+                ) {
                     this.showTutorialTip5 = false;
                 }
                 this.markTutorialComplete();
@@ -248,7 +254,10 @@ export default {
                 this.isTutorialComplete = true;
                 this.markTutorialComplete();
             }
-            if (this.userDetailsStore.role == 'instructor') {
+            if (
+                this.userDetailsStore.role == 'instructor' ||
+                this.userDetailsStore.role == 'partner'
+            ) {
                 this.showTutorialTip1 = false;
                 this.showTutorialTip2 = false;
                 this.showTutorialTip3 = false;
@@ -526,7 +535,8 @@ export default {
                 <!-- Instructor Tooltips -->
                 <div
                     v-if="
-                        userDetailsStore.role == 'instructor' &&
+                        (userDetailsStore.role == 'instructor' ||
+                            this.userDetailsStore.role == 'partner') &&
                         (showTutorialTip2 ||
                             showTutorialTip3 ||
                             showTutorialTip4 ||
@@ -839,7 +849,8 @@ export default {
     <!-- Instructor Introduction modal -->
     <div
         v-if="
-            userDetailsStore.role == 'instructor' &&
+            (userDetailsStore.role == 'instructor' ||
+                this.userDetailsStore.role == 'partner') &&
             (showTutorialTip1 ||
                 showMobileTutorialTip2 ||
                 showMobileTutorialTip3 ||

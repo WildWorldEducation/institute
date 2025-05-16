@@ -59,7 +59,8 @@ export default {
         // Load data
         if (
             this.userDetailsStore.role === 'admin' ||
-            this.userDetailsStore.role === 'instructor'
+            this.userDetailsStore.role === 'instructor' ||
+            this.userDetailsStore.role === 'partner'
         ) {
             if (this.usersStore.users.length < 1) {
                 await this.usersStore.getUsers();
@@ -74,7 +75,10 @@ export default {
             await this.instructorStudentsStore.getInstructorStudentsList();
         }
 
-        if (this.userDetailsStore.role === 'instructor') {
+        if (
+            this.userDetailsStore.role === 'instructor' ||
+            this.userDetailsStore.role === 'partner'
+        ) {
             await this.getStudents();
         }
 
@@ -103,7 +107,10 @@ export default {
                         userFound = true;
                         this.updateUserDetails(selectedUser, true);
                     }
-                } else if (this.userDetailsStore.role === 'instructor') {
+                } else if (
+                    this.userDetailsStore.role === 'instructor' ||
+                    this.userDetailsStore.role === 'partner'
+                ) {
                     const selectedStudent = this.students.find(
                         (student) => student.id === selectedId
                     );
@@ -134,7 +141,8 @@ export default {
                             this.usersStore.users[0].id;
                     }
                 } else if (
-                    this.userDetailsStore.role === 'instructor' &&
+                    (this.userDetailsStore.role === 'instructor' ||
+                        this.userDetailsStore.role === 'partner') &&
                     this.students.length > 0
                 ) {
                     this.updateUserDetails(this.students[0], true);
@@ -186,7 +194,8 @@ export default {
             // Get instructor info if needed
             if (
                 this.user.role === 'student' ||
-                this.userDetailsStore.role === 'instructor'
+                this.userDetailsStore.role === 'instructor' ||
+                this.userDetailsStore.role === 'partner'
             ) {
                 this.getInstructor();
             }
@@ -359,7 +368,8 @@ export default {
         <div
             v-if="
                 userDetailsStore.role === 'editor' ||
-                userDetailsStore.role === 'instructor'
+                userDetailsStore.role === 'instructor' ||
+                userDetailsStore.role === 'partner'
             "
             class="d-flex mt-2 justify-content-end"
         >
@@ -405,14 +415,18 @@ export default {
                     />
                     <UserDetails
                         v-else-if="
-                            userDetailsStore.role == 'instructor' &&
+                            (userDetailsStore.role == 'instructor' ||
+                                userDetailsStore.role === 'partner') &&
                             students.length > 0
                         "
                         :userId="user.id"
                     />
                     <div v-else>
                         <h1
-                            v-if="userDetailsStore.role == 'instructor'"
+                            v-if="
+                                userDetailsStore.role == 'instructor' ||
+                                userDetailsStore.role === 'partner'
+                            "
                             class="text-muted py-5"
                         >
                             You have no students
@@ -442,7 +456,8 @@ export default {
     <!-- Instructor Introduction modal -->
     <div
         v-if="
-            userDetailsStore.role == 'instructor' &&
+            (userDetailsStore.role == 'instructor' ||
+                userDetailsStore.role === 'partner') &&
             (showTutorialTip1 || showTutorialTip2)
         "
         class="modal"

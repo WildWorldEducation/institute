@@ -339,7 +339,8 @@ export default {
     <SkillsListChildNonStudent
         v-if="
             (showSubskills && role == 'instructor') ||
-            (showSubskills && role == 'editor')
+            (showSubskills && role == 'editor') ||
+            (showSubskills && role == 'partner')
         "
         v-for="subSkill in subSkills"
         :id="subSkill.id"
@@ -393,7 +394,8 @@ export default {
     <SkillsListChildNonStudent
         v-if="
             (showChildren && role == 'instructor') ||
-            (showChildren && role == 'editor')
+            (showChildren && role == 'editor') ||
+            (showChildren && role == 'partner')
         "
         v-for="child in childrenNotSubskills"
         :id="child.id"
