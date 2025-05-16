@@ -66,7 +66,6 @@ export default {
             isMobileCheck: window.innerWidth,
             showConfirmModal: false,
             isSkillLoaded: false,
-            randomNum: 0,
             goalSteps: [],
             goals: [],
             toggleModal: false, // Controls the modal visibility
@@ -124,6 +123,7 @@ export default {
 
             // Set the thumbnail URL early to start loading
             this.thumbnailURL = this.thumbnailCDN + '/' + this.skillUrl;
+            console.log(this.thumbnailURL);
 
             // Create promises array
             const promises = [this.getSkill()];
@@ -218,9 +218,6 @@ export default {
             }
         },
         async getSkill() {
-            // solution for image to be changed when we change it from AWS
-            this.thumbnailURL = this.thumbnailCDN + '/' + this.skillUrl;
-            this.randomNum = Math.random();
             /*
              / Load the skill data
              / Split into 2 parts, for SEO
@@ -234,7 +231,11 @@ export default {
             this.skill.is_human_edited =
                 this.showSkillStore.skill.is_human_edited;
 
-            this.thumbnailURL = this.thumbnailCDN + '/' + this.skillUrl;
+            const parts =
+                this.showSkillStore.skill.image_thumbnail_url.split('/');
+
+            this.thumbnailURL =
+                this.thumbnailCDN + '/' + parts[parts.length - 1];
 
             // Load the rest of the skill data
             await this.showSkillStore.getSkillSecondPart(this.skillUrl);
