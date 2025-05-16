@@ -25,7 +25,10 @@ export default {
         await this.userDetailsStore.getUserDetails();
 
         // Instructor theme
-        if (this.userDetailsStore.theme == 'instructor') {
+        if (
+            this.userDetailsStore.theme == 'instructor' ||
+            this.userDetailsStore.theme == 'partner'
+        ) {
             document.body.classList.remove('editor-theme');
             document.body.classList.add('instructor-theme');
             // Editor theme.
@@ -193,6 +196,7 @@ export default {
                             v-if="
                                 userDetailsStore.role == 'student' ||
                                 userDetailsStore.role == 'instructor' ||
+                                userDetailsStore.role == 'partner' ||
                                 userDetailsStore.role == 'editor'
                             "
                             class="nav-item"
@@ -262,7 +266,10 @@ export default {
                             </RouterLink>
                         </li>
                         <li
-                            v-if="userDetailsStore.role == 'instructor'"
+                            v-if="
+                                userDetailsStore.role == 'instructor' ||
+                                userDetailsStore.role == 'partner'
+                            "
                             class="nav-item dropdown"
                         >
                             <div class="d-flex align-items-center">
@@ -309,7 +316,10 @@ export default {
                         </li>
 
                         <li
-                            v-if="userDetailsStore.role == 'instructor'"
+                            v-if="
+                                userDetailsStore.role == 'instructor' ||
+                                userDetailsStore.role == 'partner'
+                            "
                             class="nav-item"
                         >
                             <RouterLink
@@ -387,7 +397,8 @@ export default {
                                             userDetailsStore.role ==
                                                 'student' ||
                                             userDetailsStore.role ==
-                                                'instructor'
+                                                'instructor' ||
+                                            userDetailsStore.role == 'partner'
                                         "
                                         to="/reputation"
                                         class="dropdown-item"

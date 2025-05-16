@@ -93,6 +93,8 @@ export default {
                             router.push({ name: 'students' });
                         } else if (data.role == 'editor') {
                             router.push({ name: 'todo' });
+                        } else if (data.role == 'partner') {
+                            router.push({ name: 'students' });
                         } else router.push({ name: 'skills' });
                     } else if (data.account == 'wrong-password') {
                         alert('Wrong password');
