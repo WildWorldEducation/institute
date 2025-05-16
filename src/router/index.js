@@ -491,6 +491,12 @@ const router = createRouter({
                 )
         },
         {
+            path: '/referrals',
+            name: 'referrals',
+            component: () =>
+                import('../components/pages/dropdown-menu-pages/Referrals.vue')
+        },
+        {
             path: '/partners',
             name: 'partners',
             component: () =>

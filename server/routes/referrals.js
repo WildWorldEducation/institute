@@ -38,5 +38,29 @@ router.get('/list', (req, res, next) => {
     }
 });
 
+/**
+ * List Referrals by Partner
+ *
+ * @return response:
+ */
+router.get('/:partner/list', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `SELECT * 
+            FROM referrals
+            WHERE referrer_user_id = ${conn.escape(req.params.partner)};`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;

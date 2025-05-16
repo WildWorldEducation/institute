@@ -415,7 +415,9 @@ export default {
                                         Subscription
                                     </RouterLink>
                                     <RouterLink
-                                        v-if="userDetailsStore.role == 'admin'"
+                                        v-if="
+                                            userDetailsStore.role == 'partner'
+                                        "
                                         to="/referrals"
                                         class="dropdown-item"
                                     >

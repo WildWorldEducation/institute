@@ -1,24 +1,30 @@
 <script>
 import { useUsersStore } from '../../../stores/UsersStore';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 
 export default {
     setup() {
-         const usersStore = useUsersStore();
+        const usersStore = useUsersStore();
+        const usersDetailsStore = useUserDetailsStore();
         return {
-            usersStore
+            usersStore, usersDetailsStore
         };
     },
-    data() { 
-        return {
-            referrals: []
-        };       
+    data() {  
+         return {
+                referrals: []      
+         }
     },
-    created() {
-        this.getPartners();
+    async created() {        
+        if (typeof this.usersDetailsStore.userId == 'undefined')
+        {
+            await this.usersDetailsStore.getUserDetails()
+        }
+        this.getReferrals();
     },
     methods: {
-        getPartners() {
-            fetch('/referrals/list')
+        getReferrals() {
+            fetch(`/referrals/${this.usersDetailsStore.userId}/list`)
                 .then(function (response) {
                     return response.json();
                 })
@@ -45,8 +51,6 @@ export default {
                             }
                         }
                     }
-
-                    console.log(this.referrals);
                 });
         }
     }
@@ -58,7 +62,7 @@ export default {
         <h1>Partners</h1>
         <ul>
             <li v-for="referral in referrals">
-                <p><strong>{{ referral.referringUser }}</strong> referred
+                <p>You referred
                 <strong>{{ referral.referredUser }}</strong>
                 <ul>
                     <li>status: {{ referral.status }}</li>
