@@ -491,10 +491,10 @@ const router = createRouter({
                 )
         },
         {
-            path: '/referrals',
-            name: 'referrals',
+            path: '/partners',
+            name: 'partners',
             component: () =>
-                import('../components/pages/dropdown-menu-pages/Referrals.vue')
+                import('../components/pages/dropdown-menu-pages/Partners.vue')
         },
         {
             path: '/:pathMatch(.*)*',

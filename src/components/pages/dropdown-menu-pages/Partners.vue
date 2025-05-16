@@ -10,10 +10,10 @@ export default {
         };
     },
     created() {
-        this.getReferrals();
+        this.getPartners();
     },
     methods: {
-        getReferrals() {
+        getPartners() {
             fetch('/referrals/list')
                 .then(function (response) {
                     return response.json();
@@ -51,7 +51,7 @@ export default {
 
 <template>
     <div class="container bg-light rounded">
-        <h1>Referrals</h1>
+        <h1>Partners</h1>
         <ul>
             <li v-for="referral in referrals">
                 <p><strong>{{ referral.referringUser }}</strong> referred

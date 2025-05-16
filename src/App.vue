@@ -421,6 +421,13 @@ export default {
                                     >
                                         Referrals
                                     </RouterLink>
+                                    <RouterLink
+                                        v-if="userDetailsStore.role == 'admin'"
+                                        to="/partners"
+                                        class="dropdown-item"
+                                    >
+                                        Partners
+                                    </RouterLink>
                                     <div class="dropdown-divider"></div>
                                     <a
                                         v-if="sessionDetailsStore.isLoggedIn"
