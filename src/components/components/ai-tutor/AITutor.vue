@@ -323,6 +323,12 @@ export default {
         },
         // Auto play audio after streaming from Open AI
         playNewMessageAudio(index, url) {
+            // If playing, pause
+            if (this.isAudioPlaying == true) {
+                this.isAudioPlaying = false;
+                this.audio.pause();
+                this.currentIndexAudioPlaying = null;
+            }
             this.audio.pause(); // Stop previous audio
             this.audio.src = url;
             this.audio.load(); // Important when changing src dynamically
