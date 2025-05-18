@@ -179,6 +179,7 @@ export default {
             usersResult.length > 0 && 'have-results',
             userDetailsStore.role === 'editor' && 'editor-search-bar'
         ]"
+        class="me-1"
     >
         <div class="d-flex align-items-center p-1 my-auto">
             <svg
@@ -240,8 +241,6 @@ export default {
     flex-direction: column;
     border: 1px solid #8c6ce4;
     border-radius: 8px;
-    width: 450px;
-    margin-right: 45px;
     background-color: white;
 }
 
@@ -307,20 +306,6 @@ export default {
 
 .loading-spinner-div {
     height: fit-content !important;
-}
-
-/* Bigger devices ( Tablet ) */
-@media (min-width: 481px) and (max-width: 1024px) {
-    .search-bar {
-        width: 45%;
-        margin-left: auto;
-        margin-right: 3%;
-    }
-
-    .editor-search-bar {
-        margin-left: auto;
-        margin-right: 6%;
-    }
 }
 
 /* Phone view style */

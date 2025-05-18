@@ -371,10 +371,10 @@ export default {
                 userDetailsStore.role === 'instructor' ||
                 userDetailsStore.role === 'partner'
             "
-            class="d-flex mt-2 justify-content-end"
+            class="d-flex justify-content-end"
         >
             <SearchUserBar :updateUserDetails="updateShowUserDetails" />
-            <button class="btn primary-btn me-1" @click="restartTutorial">
+            <button class="btn primary-btn" @click="restartTutorial">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 192 512"

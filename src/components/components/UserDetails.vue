@@ -25,7 +25,8 @@ export default {
             showModal: false,
             showRemoveStudentModal: false,
             localIsSkillsLocked: null,
-            mode: 'big'
+            mode: 'big',
+            isMobileCheck: window.innerWidth
         };
     },
     created() {
@@ -40,8 +41,11 @@ export default {
         updateSkillsLock() {
             this.$parent.updateSkillsLock();
         },
-        removeStudentFromInstructor(){
-            this.usersStore.removeStudentFromInstructor(this.userId, this.userDetailsStore.userId);
+        removeStudentFromInstructor() {
+            this.usersStore.removeStudentFromInstructor(
+                this.userId,
+                this.userDetailsStore.userId
+            );
             this.showRemoveStudentModal = false;
             this.$parent.showDetails = false;
             this.$parent.students = this.$parent.students.filter((u) => {
@@ -54,7 +58,7 @@ export default {
 </script>
 
 <template>
-    <div id="user-information" class="container mt-4 bg-light">
+    <div id="user-information" class="container mt-1 bg-light p-2">
         <!-- The X for turn off the user details popup windows when on phone view -->
         <div
             class="flex-row-reverse d-flex d-md-none align-items-end mb-2"
@@ -75,13 +79,33 @@ export default {
                 </svg>
             </div>
         </div>
+        <!-- Row: Avatar, name and basic details -->
         <div class="row">
+            <!-- Name and basic details -->
+            <div class="col-12 col-md-7">
+                <h1 v-if="isMobileCheck < 576" class="secondary-heading h3">
+                    {{ this.$parent.user.username }}
+                </h1>
+
+                <!-- Role (admins only) -->
+                <div v-if="userDetailsStore.role == 'admin'" class="mb-3">
+                    <label class="form-label">Role</label>
+                    <input
+                        class="form-control user-input-information"
+                        type="text"
+                        v-model="this.$parent.user.role"
+                        disabled
+                    />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <!-- Student Progress -->
             <div class="col-12 col-md-5">
-                <img class="img-fluid" :src="this.$parent.user.avatar" />
-                <!-- Edit button -->
+                <!-- Admin -->
                 <div
                     id="user-function-btns-row"
-                    class="d-flex justify-content-center mt-3"
+                    class="d-flex justify-content-center"
                 >
                     <router-link
                         v-if="userDetailsStore.role == 'admin'"
@@ -137,99 +161,45 @@ export default {
                 </div>
                 <!-- Instructors -->
                 <h2
-                    v-if="this.userDetailsStore.role == 'instructor'"
+                    v-if="
+                        this.userDetailsStore.role == 'instructor' ||
+                        this.userDetailsStore.role == 'partner'
+                    "
                     class="secondary-heading h4"
                 >
                     Progress
                 </h2>
                 <div
-                    v-if="this.userDetailsStore.role == 'instructor'"
+                    v-if="
+                        this.userDetailsStore.role == 'instructor' ||
+                        this.userDetailsStore.role == 'partner'
+                    "
                     class="d-flex flex-column"
                 >
                     <!-- Skill Tree -->
                     <router-link
                         :to="`/student/${this.$parent.user.id}/skill-tree`"
-                        class="btn primary-btn mt-2"
+                        class="mt-2"
                         target="_blank"
                     >
-                        {{
-                            studentName
-                                ? `${studentName}'s Skill Tree`
-                                : 'Skill Tree'
-                        }}
+                        Skill Tree
                     </router-link>
                     <!-- Collapsible skill tree -->
                     <router-link
                         :to="'/student/' + this.$parent.user.id + '/skills'"
-                        class="btn primary-btn mt-2"
+                        class="mt-2"
                         target="_blank"
                     >
-                        {{
-                            studentName
-                                ? `${studentName}'s Collapsible Tree`
-                                : 'Collapsible Tree'
-                        }}
+                        Collapsible Tree
                     </router-link>
                     <!-- Goals -->
                     <router-link
                         :to="'/student/' + this.$parent.user.id + '/goals'"
-                        class="btn primary-btn mt-2"
+                        class="mt-2"
                         target="_blank"
                     >
-                        {{ studentName ? `${studentName}'s Goals` : 'Goals' }}
+                        Goals
                     </router-link>
-                    <div class="mt-4">
-                        <div class="d-flex gap-1">
-                            <h3
-                                v-if="
-                                    this.userDetailsStore.role == 'instructor'
-                                "
-                                class="secondary-heading h6"
-                            >
-                                Lock skill progress?
-                            </h3>
-                            <div class="tooltip-wrapper">
-                                <TooltipBtn
-                                    v-if="mode === 'big'"
-                                    class="d-none d-md-block"
-                                    toolTipText="This will prevent the student from being able to
-                                master skills in the case that they have not
-                                already mastered the skills that come before
-                                them."
-                                    bubbleWidth="350px"
-                                    trianglePosition="left"
-                                    absoluteTop="37px"
-                                />
-                                <!-- Mobile tooltip have smaller width -->
-                                <TooltipBtn
-                                    v-if="mode === 'big'"
-                                    class="d-md-none"
-                                    toolTipText="This will prevent the student from being able to
-                                master skills in the case that they have not
-                                already mastered the skills that come before
-                                them."
-                                    bubbleWidth="100px"
-                                    trianglePosition="left"
-                                    absoluteTop="37px"
-                                />
-                            </div>
-                        </div>
-                        <input
-                            type="radio"
-                            value="0"
-                            v-model="$parent.user.isSkillsLocked"
-                            @change="updateSkillsLock()"
-                        />
-                        <label for="one">No</label>
-                        &nbsp;
-                        <input
-                            type="radio"
-                            value="1"
-                            v-model="$parent.user.isSkillsLocked"
-                            @change="updateSkillsLock()"
-                        />
-                        <label for="two">Yes</label>
-                    </div>
                 </div>
                 <!-- Editors -->
                 <div class="mt-2">
@@ -248,81 +218,49 @@ export default {
             </div>
             <!-- Right column -->
             <div class="col-12 col-md-7">
-                <!-- Name -->
-                <div class="mb-3">
-                    <h2 class="secondary-heading h4">Name</h2>
-                    <input
-                        class="form-control user-input-information"
-                        type="text"
-                        :value="
-                            `${this.$parent.user.firstName || ''} ${
-                                this.$parent.user.lastName || ''
-                            }`.trim()
-                        "
-                        disabled
-                    />
-                </div>
-                <!-- Username -->
-                <div class="mb-3">
-                    <h2 class="secondary-heading h4">Username</h2>
-                    <input
-                        class="form-control user-input-information"
-                        type="text"
-                        v-model="this.$parent.user.username"
-                        disabled
-                    />
-                </div>
-                <!-- Email (not for instructors, as their students will share their emails) -->
-                <div v-if="userDetailsStore.role != 'instructor'" class="mb-3">
-                    <h2 class="secondary-heading h4">Email</h2>
-                    <input
-                        class="form-control user-input-information"
-                        type="text"
-                        v-model="this.$parent.user.email"
-                        disabled
-                    />
-                </div>
-                <!-- Role (admins only) -->
-                <div v-if="userDetailsStore.role == 'admin'" class="mb-3">
-                    <label class="form-label">Role</label>
-                    <input
-                        class="form-control user-input-information"
-                        type="text"
-                        v-model="this.$parent.user.role"
-                        disabled
-                    />
-                </div>
-                <div class="d-flex justify-content-end">
-                    <!-- Edit User -->
-                    <router-link
-                        v-if="userDetailsStore.role == 'instructor'"
-                        :to="`/edit/student/${this.$parent.user.id}`"
-                        class="btn primary-btn mt-2"
+                <h2
+                    v-if="
+                        this.userDetailsStore.role == 'instructor' ||
+                        this.userDetailsStore.role == 'partner'
+                    "
+                    class="secondary-heading h4"
+                >
+                    Account
+                </h2>
+
+                <!-- Edit User -->
+                <router-link
+                    v-if="
+                        userDetailsStore.role == 'instructor' ||
+                        this.userDetailsStore.role == 'partner'
+                    "
+                    :to="`/edit/student/${this.$parent.user.id}`"
+                    class="btn primary-btn mt-1"
+                >
+                    Edit Profile&nbsp;
+                    <!-- Pencil icon -->
+                    <svg
+                        width="19"
+                        height="20"
+                        viewBox="0 0 19 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
                     >
-                        Edit&nbsp;
-                        <!-- Pencil icon -->
-                        <svg
-                            width="19"
-                            height="20"
-                            viewBox="0 0 19 20"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
-                                fill="white"
-                            />
-                            <path
-                                d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
-                                fill="white"
-                            />
-                            <path
-                                d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
-                                fill="white"
-                            />
-                        </svg>
-                    </router-link>
-                </div>
+                        <path
+                            d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
+                            fill="white"
+                        />
+                        <path
+                            d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
+                            fill="white"
+                        />
+                        <path
+                            d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
+                            fill="white"
+                        />
+                    </svg>
+                </router-link>
+
                 <div
                     v-if="
                         this.$parent.user.role == 'student' &&
@@ -339,8 +277,11 @@ export default {
                     />
                 </div>
                 <div
-                    v-if="userDetailsStore.role == 'instructor'"
-                    class="d-flex flex-column align-items-end mt-3"
+                    v-if="
+                        userDetailsStore.role == 'instructor' ||
+                        this.userDetailsStore.role == 'partner'
+                    "
+                    class="mt-1 d-flex flex-column"
                 >
                     <router-link
                         :to="'/edit-student-password/' + this.$parent.user.id"
@@ -348,11 +289,75 @@ export default {
                     >
                         Change password
                     </router-link>
-                    <div 
-                        class="btn btn-danger d-inline-block mt-2"
+                    <button
+                        class="btn btn-danger mt-1"
                         @click="showRemoveStudentModal = true"
-                    >Remove Student</div>
+                    >
+                        Remove Student
+                    </button>
                 </div>
+                <!-- Lock skill progress -->
+                <div class="mt-4">
+                    <div class="d-flex gap-1">
+                        <h3
+                            v-if="
+                                this.userDetailsStore.role == 'instructor' ||
+                                this.userDetailsStore.role == 'partner'
+                            "
+                            class="secondary-heading h6"
+                        >
+                            Lock skill progress?
+                        </h3>
+                        <div class="tooltip-wrapper">
+                            <TooltipBtn
+                                v-if="mode === 'big'"
+                                class="d-none d-md-block"
+                                toolTipText="This will prevent the student from being able to
+                                master skills in the case that they have not
+                                already mastered the skills that come before
+                                them."
+                                bubbleWidth="350px"
+                                trianglePosition="left"
+                                absoluteTop="37px"
+                            />
+                            <!-- Mobile tooltip have smaller width -->
+                            <TooltipBtn
+                                v-if="mode === 'big'"
+                                class="d-md-none"
+                                toolTipText="This will prevent the student from being able to
+                                master skills in the case that they have not
+                                already mastered the skills that come before
+                                them."
+                                bubbleWidth="100px"
+                                trianglePosition="left"
+                                absoluteTop="37px"
+                            />
+                        </div>
+                    </div>
+                    <input
+                        type="radio"
+                        value="0"
+                        v-model="$parent.user.isSkillsLocked"
+                        @change="updateSkillsLock()"
+                    />
+                    <label for="one">No</label>
+                    &nbsp;
+                    <input
+                        type="radio"
+                        value="1"
+                        v-model="$parent.user.isSkillsLocked"
+                        @change="updateSkillsLock()"
+                    />
+                    <label for="two">Yes</label>
+                </div>
+
+                <h2
+                    v-if="this.userDetailsStore.role == 'partner'"
+                    class="secondary-heading h4 mt-2"
+                >
+                    Subscription
+                </h2>
+                Subscription history
             </div>
         </div>
     </div>
@@ -416,7 +421,6 @@ export default {
 #user-information {
     border: 1px solid var(--primary-color);
     border-radius: 12px;
-    padding: 33px 28px;
 }
 
 .user-input-information {
@@ -534,7 +538,6 @@ export default {
     #user-information {
         margin-left: auto;
         margin-right: auto;
-        width: 90%;
     }
 }
 </style>

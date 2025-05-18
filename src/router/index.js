@@ -503,6 +503,14 @@ const router = createRouter({
                 import('../components/pages/dropdown-menu-pages/Partners.vue')
         },
         {
+            path: '/student-subscriptions',
+            name: 'student-subscriptions',
+            component: () =>
+                import(
+                    '../components/pages/subscriptions/StudentSubscriptions.vue'
+                )
+        },
+        {
             path: '/:pathMatch(.*)*',
             name: 'not-found',
             component: () => import('../components/pages/PageNotFoundView.vue')
