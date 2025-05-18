@@ -495,6 +495,7 @@ export default {
         // Format response for audio
         convertLatexToPlainText(message) {
             let string = message;
+
             // handle exponent square case
             string = string.replaceAll('^2', 'squared');
             // handle exponent cube case
@@ -513,6 +514,7 @@ export default {
 
             return string;
         },
+
         scrollToMessageInput() {
             let inputMessage = this.$refs.messageInputDiv;
             inputMessage.scrollTop = inputMessage.scrollHeight;

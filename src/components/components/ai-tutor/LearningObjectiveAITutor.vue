@@ -70,6 +70,10 @@ export default {
         this.englishSkillLevel = this.skillLevel.replace('_', ' ');
         // load message thread.
         await this.getMessages();
+
+        this.convertFractionToPlainText(
+            this.messageList[0].content[0].text.value
+        );
     },
     async created() {
         this.connectToSocketSever();
@@ -311,6 +315,30 @@ export default {
             string = string.replaceAll('$', '');
 
             return string;
+        },
+
+        convertFractionToPlainText(message) {
+            let resultString = message;
+            // handle fraction in latex
+            console.log('message', message);
+            const regex = /{([^}]+)}/g;
+
+            const matches = message.match(regex);
+            for (let index = 0; index < matches.length; index++) {
+                const element = matches[index];
+                const nextElement = matches[index + 1];
+                const latexFracString = '\\frac' + element + nextElement;
+                console.log('ha ha ha ');
+                console.log(latexFracString);
+                resultString = resultString.replace(
+                    latexFracString,
+                    element + ' over ' + nextElement
+                );
+                index = index + 1;
+            }
+            console.log('The Final result string: ');
+            console.log(resultString);
+            return message;
         },
         // Formatting the message to render correctly with KaTeX
         formatTextForDisplay(message) {
