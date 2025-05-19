@@ -139,7 +139,7 @@ export default {
             this.messageList[0].isAudioGenerating = false;
 
             this.getMessages();
-            this.playNewMessageAudio(index, responseData.speechUrl);
+            //this.playNewMessageAudio(index, responseData.speechUrl);
         },
         playAudio(index) {
             if (this.isAudioPlaying == true) {
