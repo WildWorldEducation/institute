@@ -291,10 +291,13 @@ export default {
                 }
             }
 
-            // We are no longer auto playing audio. This will become a setting
-            // the user can choose manual or auto.
-            this.getChatHistory();
-            //this.playNewMessageAudio(index, responseData.speechUrl);
+            // Update chat history after generating audio
+            await this.getChatHistory();
+
+            // Auto-play the audio if the user has this setting enabled
+            if (this.userDetailsStore.isAudioAutoPlay) {
+                this.playNewMessageAudio(index, responseData.speechUrl);
+            }
         },
         // Press play button
         playAudio(index) {

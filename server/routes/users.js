@@ -777,7 +777,7 @@ router.get('/show/:id', (req, res, next) => {
     SELECT users.id, first_name, last_name, username, 
     CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', users.id, '?v=', UNIX_TIMESTAMP()) AS avatar, 
     email, role, is_deleted, is_google_auth, grade_filter, theme,
-    is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter, reputation_score, is_unlocked_skills_only_filter, cohort_id, subscription_tier
+    is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter, reputation_score, is_unlocked_skills_only_filter, cohort_id, subscription_tier, is_audio_auto_play
     FROM users           
     WHERE users.id = ${conn.escape(req.params.id)} 
     AND is_deleted = 0
@@ -1269,6 +1269,33 @@ router.get('/:id/profile-settings', isAuthenticated, isAdmin, (req, res) => {
         res.redirect('/login');
     }
 });
+
+// Update the user's auto-play preference
+router.put(
+    '/update-audio-auto-play/:userId',
+    isAuthenticated,
+    (req, res, next) => {
+        try {
+            const { isAudioAutoPlay } = req.body;
+
+            // Update the user's auto-play preference
+            const sqlQuery = `UPDATE users 
+                          SET is_audio_auto_play = ${conn.escape(
+                              isAudioAutoPlay
+                          )} 
+                          WHERE id = ${conn.escape(req.params.userId)};`;
+
+            conn.query(sqlQuery, (err) => {
+                if (err) {
+                    return next(err);
+                }
+                res.json({ success: true });
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
+);
 
 // User choose skill tree filters
 router.put('/:userId/skill-tree-filters', isAuthenticated, (req, res, next) => {
