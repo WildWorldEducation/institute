@@ -523,7 +523,6 @@ export default {
                         message.isAudioGenerating &&
                         message.role === 'assistant'
                     "
-                    class="d-flex w-100 justify-content-end"
                 >
                     <span class="speech-loader"></span>
                 </div>
@@ -613,6 +612,11 @@ export default {
 .speechButton {
     max-height: fit-content;
     color: yellow;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* End of Generate / Play speech */
