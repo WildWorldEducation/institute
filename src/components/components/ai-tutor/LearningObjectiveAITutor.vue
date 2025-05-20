@@ -611,9 +611,7 @@ export default {
 
 .speechButton {
     max-height: fit-content;
-    color: yellow;
-    width: 40px;
-    height: 40px;
+    color: yellow; 
     display: flex;
     justify-content: center;
     align-items: center;
