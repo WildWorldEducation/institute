@@ -138,8 +138,13 @@ export default {
             this.waitForGenerateAudio = false;
             this.messageList[0].isAudioGenerating = false;
 
-            this.getMessages();
-            //this.playNewMessageAudio(index, responseData.speechUrl);
+            // Update the message list to include the audio URL
+            await this.getMessages();
+
+            // Auto-play the audio if the user has this setting enabled
+            if (this.userDetailsStore.isAudioAutoPlay) {
+                this.playNewMessageAudio(index, responseData.speechUrl);
+            }
         },
         playAudio(index) {
             if (this.isAudioPlaying == true) {
@@ -611,7 +616,7 @@ export default {
 
 .speechButton {
     max-height: fit-content;
-    color: yellow; 
+    color: yellow;
     display: flex;
     justify-content: center;
     align-items: center;

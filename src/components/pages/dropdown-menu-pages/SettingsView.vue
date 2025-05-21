@@ -22,7 +22,8 @@ export default {
             instructorID: this.userDetailsStore.instructorId,
             selectedInstructorName: '',
             showWarnModal: false,
-            isEditing: false
+            isEditing: false,
+            isAudioAutoPlay: Boolean(this.userDetailsStore.isAudioAutoPlay)
         };
     },
     components: {
@@ -67,6 +68,21 @@ export default {
             this.instructorID = e.target.value;
             this.selectedInstructorName =
                 e.target.options[e.target.selectedIndex].text;
+        },
+        async toggleAutoPlay() {
+            // Toggle the auto-play setting
+            await this.userDetailsStore.updateAudioAutoPlay(
+                this.isAudioAutoPlay
+            );
+        }
+    },
+    mounted() {
+        // Initialize isAudioAutoPlay from the user details store
+        this.isAudioAutoPlay = Boolean(this.userDetailsStore.isAudioAutoPlay);
+    },
+    watch: {
+        'userDetailsStore.isAudioAutoPlay': function (newValue) {
+            this.isAudioAutoPlay = Boolean(newValue);
         }
     }
 };
@@ -79,7 +95,9 @@ export default {
                 <!-- Instructor -->
                 <div class="profile-input">
                     <div>
-                        <h2 class="secondary-heading h4">Instructor</h2>
+                        <h2 class="secondary-heading h4 white-heading">
+                            Instructor
+                        </h2>
                         <div v-if="!isEditing">
                             <input
                                 type="text"
@@ -134,6 +152,32 @@ export default {
                 </div>
             </div>
             <ThemeDetails />
+            <!-- Auto-Play Setting -->
+            <div class="profile-input">
+                <h2 class="secondary-heading h4 mb-3 white-heading">
+                    AI Assistant Settings
+                </h2>
+                <div class="setting-container d-flex align-items-center">
+                    <!-- Custom Toggle Switch -->
+                    <div class="toggle-switch-container me-3">
+                        <label class="toggle-switch">
+                            <input
+                                type="checkbox"
+                                v-model="isAudioAutoPlay"
+                                @change="toggleAutoPlay"
+                                class="toggle-input"
+                            />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <span class="setting-label">
+                            Auto-play AI tutor speech
+                        </span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <!-- Modal to show student if they are sure with they decision -->
@@ -201,6 +245,69 @@ export default {
     letter-spacing: 0.03em;
     text-align: left;
     color: black;
+}
+
+/* Custom toggle switch styling */
+.toggle-switch-container {
+    display: inline-block;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+    margin: 0;
+}
+
+.toggle-switch .toggle-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: '';
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+.toggle-input:checked + .toggle-slider {
+    background-color: #1f57c3; /* Default theme color */
+}
+
+.toggle-input:checked + .toggle-slider:before {
+    transform: translateX(30px);
+}
+
+/* Theme-specific toggle colors */
+.instructor-theme .toggle-input:checked + .toggle-slider {
+    background-color: #31315f; /* Instructor theme color */
+}
+
+.editor-theme .toggle-input:checked + .toggle-slider {
+    background-color: #7f1e1e; /* Editor theme color */
+}
+.editor-theme .setting-label {
+    color: white;
 }
 
 #instructor-name-text {

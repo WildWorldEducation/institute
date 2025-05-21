@@ -26,7 +26,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
             cohortId: null,
             isSkillsLocked: 0,
             subscriptionTier: '',
-            monthlyTokenUsage: 0
+            monthlyTokenUsage: 0,
+            isAudioAutoPlay: 0
         };
     },
     actions: {
@@ -59,6 +60,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
                     data.is_unlocked_skills_only_filter;
                 this.subscriptionTier = data.subscription_tier;
                 this.monthlyTokenUsage = data.monthly_token_usage;
+                this.isAudioAutoPlay = data.is_audio_auto_play || 0;
 
                 if (this.role == 'student') {
                     await this.getInstructor();
@@ -133,6 +135,28 @@ export const useUserDetailsStore = defineStore('userDetails', {
 
             var url = '/users/theme/' + this.userId + '/edit';
             fetch(url, requestOptions);
+        },
+        async updateAudioAutoPlay(isAutoPlay) {
+            // Update local state
+            this.isAudioAutoPlay = isAutoPlay ? 1 : 0;
+
+            // Update the database
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    isAudioAutoPlay: this.isAudioAutoPlay
+                })
+            };
+
+            const url = `/users/update-audio-auto-play/${this.userId}`;
+            try {
+                const response = await fetch(url, requestOptions);
+                return await response.json();
+            } catch (error) {
+                console.error('Error updating audio auto-play setting:', error);
+                return { success: false };
+            }
         }
     }
 });
