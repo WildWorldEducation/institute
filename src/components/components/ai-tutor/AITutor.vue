@@ -291,10 +291,13 @@ export default {
                 }
             }
 
-            // We are no longer auto playing audio. This will become a setting
-            // the user can choose manual or auto.
-            this.getChatHistory();
-            //this.playNewMessageAudio(index, responseData.speechUrl);
+            // Update chat history after generating audio
+            await this.getChatHistory();
+
+            // Auto-play the audio if the user has this setting enabled
+            if (this.userDetailsStore.isAudioAutoPlay) {
+                this.playNewMessageAudio(index, responseData.speechUrl);
+            }
         },
         // Press play button
         playAudio(index) {
@@ -323,6 +326,12 @@ export default {
         },
         // Auto play audio after streaming from Open AI
         playNewMessageAudio(index, url) {
+            // If playing, pause
+            if (this.isAudioPlaying == true) {
+                this.isAudioPlaying = false;
+                this.audio.pause();
+                this.currentIndexAudioPlaying = null;
+            }
             this.audio.pause(); // Stop previous audio
             this.audio.src = url;
             this.audio.load(); // Important when changing src dynamically

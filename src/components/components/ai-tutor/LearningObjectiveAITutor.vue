@@ -114,40 +114,6 @@ export default {
             }
         },
 
-        // async generateAudio(index, message) {
-        //     // Loading animation on
-        //     for (let i = 0; i < this.messageList.length; i++) {
-        //         if (this.messageList[i].index == index) {
-        //             this.messageList[i].isAudioGenerating = true;
-        //         }
-        //     }
-
-        //     const requestOptions = {
-        //         method: 'POST',
-        //         headers: { 'Content-Type': 'application/json' },
-        //         body: JSON.stringify({
-        //             message: message,
-        //             messageNumber: index,
-        //             threadID: this.threadID
-        //         })
-        //     };
-
-        //     let url = `/ai-tutor/learning-objective/generate-tts`;
-
-        //     const response = await fetch(url, requestOptions);
-        //     const resData = await response.json();
-        //     console.log(resData.status);
-
-        //     // Loading animation off
-        //     for (let i = 0; i < this.messageList.length; i++) {
-        //         if (this.messageList[i].index == index) {
-        //             this.messageList[i].isAudioGenerating = false;
-        //             this.messageList[i].hasAudio = true;
-        //         }
-        //     }
-
-        //     this.getMessages();
-        // },
         async generateAudio(index, message) {
             this.waitForGenerateAudio = true;
             this.messageList[0].isAudioGenerating = true;
@@ -172,8 +138,13 @@ export default {
             this.waitForGenerateAudio = false;
             this.messageList[0].isAudioGenerating = false;
 
-            this.getMessages();
-            //  this.playNewMessageAudio(index, responseData.speechUrl);
+            // Update the message list to include the audio URL
+            await this.getMessages();
+
+            // Auto-play the audio if the user has this setting enabled
+            if (this.userDetailsStore.isAudioAutoPlay) {
+                this.playNewMessageAudio(index, responseData.speechUrl);
+            }
         },
         playAudio(index) {
             if (this.isAudioPlaying == true) {
@@ -197,6 +168,11 @@ export default {
             }
         },
         playNewMessageAudio(index, url) {
+            // pausing the previous audio if it is playing
+            if (this.isAudioPlaying == true) {
+                this.isAudioPlaying = false;
+                this.audio.pause();
+            }
             this.audio = new Audio(url);
             this.audio.addEventListener('ended', () => {
                 this.isAudioPlaying = false;
@@ -552,7 +528,6 @@ export default {
                         message.isAudioGenerating &&
                         message.role === 'assistant'
                     "
-                    class="d-flex w-100 justify-content-end"
                 >
                     <span class="speech-loader"></span>
                 </div>
@@ -642,6 +617,9 @@ export default {
 .speechButton {
     max-height: fit-content;
     color: yellow;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* End of Generate / Play speech */

@@ -130,28 +130,30 @@ export default {
                     $route.name == 'pathways' ||
                     $route.name == 'radial-tree' ||
                     $route.name == 'student-vertical-tree'
-                // $route.name == 'learning-tracks'
             }"
         >
-            <div class="container-fluid">
-                <RouterLink to="/" class="nav-link logo">
-                    <img
-                        v-if="userDetailsStore.theme == 'editor'"
-                        src="/images/logo-white.png"
-                        alt=""
-                        width="50"
-                        height="50"
-                        aria-label="Collins Institute logo"
-                    />
-                    <img
-                        v-else
-                        src="/images/logo-red.png"
-                        alt=""
-                        width="50"
-                        height="50"
-                        aria-label="Collins Institute logo"
-                    />
-                </RouterLink>
+            <div class="container-fluid justify-content-between">
+                <div class="d-flex align-items-center">
+                    <RouterLink to="/" class="nav-link logo">
+                        <img
+                            v-if="userDetailsStore.theme == 'editor'"
+                            src="/images/logo-white.png"
+                            alt=""
+                            width="50"
+                            height="50"
+                            aria-label="Collins Institute logo"
+                        />
+                        <img
+                            v-else
+                            src="/images/logo-red.png"
+                            alt=""
+                            width="50"
+                            height="50"
+                            aria-label="Collins Institute logo"
+                        />
+                    </RouterLink>
+                </div>
+
                 <button
                     class="navbar-toggler"
                     type="button"
@@ -164,10 +166,9 @@ export default {
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div
-                    class="collapse navbar-collapse"
+                    class="collapse navbar-collapse flex-grow-0"
                     id="navbarSupportedContent"
                 >
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
                     <ul class="navbar-nav d-flex bg-white rounded pt-2 pb-2">
                         <li
                             v-if="
@@ -943,5 +944,56 @@ p {
     border-right: 10px solid transparent;
     right: 15px;
     bottom: -9px;
+}
+.navbar.fixed-top {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.navbar.fixed-top .container-fluid {
+  max-width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.navbar.fixed-top .navbar-collapse {
+  background-color: white;
+  border-radius: 8px;
+  padding: 0 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive pointer-events behavior - only for tablets and up */
+@media (min-width: 768px) {
+  /* Ensure the navbar doesn't block clicks when fixed-top on larger screens */
+  .navbar.fixed-top {
+    pointer-events: none;
+  }
+
+  /* But allow clicks on the actual navbar elements */
+  .navbar.fixed-top .logo,
+  .navbar.fixed-top .navbar-toggler,
+  .navbar.fixed-top .navbar-collapse,
+  .navbar.fixed-top .navbar-nav,
+  .navbar.fixed-top a,
+  .navbar.fixed-top button,
+  .navbar.fixed-top .dropdown-menu,
+  .navbar.fixed-top .container-fluid > div {
+    pointer-events: auto;
+  }
+}
+
+/* Mobile-specific styles - make navbar fully interactive on small screens */
+@media (max-width: 767.98px) {
+  .navbar.fixed-top {
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .navbar.fixed-top .navbar-collapse {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
 }
 </style>
