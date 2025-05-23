@@ -59,7 +59,7 @@ export default {
 
 <template>
     <div class="container bg-light rounded">
-        <h1>Partners</h1>
+        <h1>Referrals</h1>
         <ul>
             <li v-for="referral in referrals">
                 <p>You referred
