@@ -64,10 +64,10 @@ export default {
             currentIndexAudioPlaying: null,
             isMobileCheck: window.innerWidth,
             hasTutorButtonBeenClicked: false,
-            modalTextAreaHeight: '40px',
-            modalChatHistoryHeight: '80%',
+            modalTextAreaHeight: '',
             isLoading: false,
-            loadingMessage: ''
+            loadingMessage: '',
+            isRecording: false
         };
     },
     async created() {
@@ -704,11 +704,12 @@ export default {
         },
         onRecordingStarted() {
             this.message = '';
+            this.isRecording = true; // Set recording state
             // Update placeholder for the active textarea
             const activeTextarea =
                 this.$refs.messageInput || this.$refs.modalMessageInput;
             if (activeTextarea) {
-                activeTextarea.placeholder = 'Listening...';
+                activeTextarea.placeholder = 'Recording in progress...';
             }
             this.waitForAIresponse = true;
         },
@@ -721,6 +722,7 @@ export default {
             }
         },
         onVoiceMessageSent() {
+            this.isRecording = false; // Reset recording state
             // Reset placeholder for the active textarea
             const activeTextarea =
                 this.$refs.messageInput || this.$refs.modalMessageInput;
@@ -738,18 +740,37 @@ export default {
         autoResizeTextarea() {
             const textarea = this.$refs.messageInput;
             if (textarea) {
+                // Reset height to auto to get the natural scrollHeight
                 textarea.style.height = 'auto';
-                textarea.style.height =
-                    Math.min(textarea.scrollHeight, 120) + 'px';
+
+                // Calculate new height based on content, with proper min/max bounds
+                const scrollHeight = textarea.scrollHeight;
+                const minHeight = 18;
+                const maxHeight = 120;
+                const newHeight = Math.min(
+                    Math.max(scrollHeight, minHeight),
+                    maxHeight
+                );
+
+                textarea.style.height = newHeight + 'px';
             }
         },
-
         autoResizeModalTextarea() {
             const textarea = this.$refs.modalMessageInput;
             if (textarea) {
+                // Reset height to auto to get the natural scrollHeight
                 textarea.style.height = 'auto';
-                textarea.style.height =
-                    Math.min(textarea.scrollHeight, 120) + 'px';
+
+                // Calculate new height based on content, with proper min/max bounds
+                const scrollHeight = textarea.scrollHeight;
+                const minHeight = 18;
+                const maxHeight = 120;
+                const newHeight = Math.min(
+                    Math.max(scrollHeight, minHeight),
+                    maxHeight
+                );
+
+                textarea.style.height = newHeight + 'px';
             }
         }
     },
@@ -1215,7 +1236,10 @@ export default {
         </div>
         <!-- User input (docked mode) -->
         <div class="input-container" v-if="mode === 'docked'">
-            <div class="input-wrapper">
+            <div
+                class="input-wrapper"
+                :class="{ 'recording-mode': isRecording }"
+            >
                 <textarea
                     ref="messageInput"
                     class="chat-text-area"
@@ -1223,6 +1247,7 @@ export default {
                     placeholder="Type your message or use voice input..."
                     @keydown.enter="handleKeyDown"
                     @input="autoResizeTextarea"
+                    :disabled="isRecording || $parent.isAITokenLimitReached"
                 ></textarea>
 
                 <!-- Integrated Speech Recorder -->
@@ -1237,7 +1262,6 @@ export default {
                     @recording-stopped="onRecordingStopped"
                     @message-sent="onVoiceMessageSent"
                 />
-
                 <!-- Send button -->
                 <button
                     class="btn send-btn"
@@ -1246,7 +1270,7 @@ export default {
                         'assessing-btn': tutorType === 'assessing'
                     }"
                     @click="sendMessage()"
-                    :disabled="$parent.isAITokenLimitReached"
+                    :disabled="isRecording || $parent.isAITokenLimitReached"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -1423,7 +1447,10 @@ export default {
             </div>
             <!-- User input (modal mode) -->
             <div class="modal-input" v-if="mode === 'modal'">
-                <div class="input-row">
+                <div
+                    class="input-row"
+                    :class="{ 'recording-mode': isRecording }"
+                >
                     <textarea
                         ref="modalMessageInput"
                         class="modal-textarea"
@@ -1431,6 +1458,7 @@ export default {
                         placeholder="Type your message or use voice input..."
                         @keydown.enter="handleKeyDown"
                         @input="autoResizeModalTextarea"
+                        :disabled="isRecording || $parent.isAITokenLimitReached"
                     ></textarea>
 
                     <SpeechRecorder
@@ -1447,7 +1475,7 @@ export default {
                     <button
                         class="send-btn"
                         @click="sendMessage()"
-                        :disabled="$parent.isAITokenLimitReached"
+                        :disabled="isRecording || $parent.isAITokenLimitReached"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -1490,17 +1518,16 @@ export default {
         rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
     padding-top: 10px;
     padding-bottom: 10px;
-    /* overflow: hidden; */
 }
 
 /* Increase text size for the popup modal mode */
 .modal-mode-container .tutor-conversation {
-    font-size: 1.1rem; /* Increase from default */
+    font-size: 1.1rem;
     line-height: 1.5;
 }
 
 .modal-mode-container .user-conversation {
-    font-size: 1.1rem; /* Increase from default */
+    font-size: 1.1rem;
 }
 
 /* Increase the headings for better hierarchy */
@@ -1508,23 +1535,21 @@ export default {
     font-size: 1.75rem;
 }
 
-/* Make sure the chat text area has larger text too for consistency */
 .last-message {
     border-bottom: 1px solid #e0e0e0;
     padding-bottom: 20px;
-    /* margin-bottom: 20px; */
 }
 .hovering-info-panel {
     position: absolute;
-    z-index: 1000; /* Higher than before to ensure it's above other elements */
+    z-index: 1000;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     width: fit-content;
-    max-width: 300px; /* Limit tooltip width */
+    max-width: 300px;
     margin-bottom: 0 !important;
-    background-color: white; /* Ensure the background is solid */
+    background-color: white;
     border-radius: 4px;
     padding: 10px;
-    pointer-events: auto; /* Ensure buttons in tooltip are clickable */
+    pointer-events: auto;
 }
 
 /* Loading animation for generating speech audio*/
@@ -1547,7 +1572,6 @@ export default {
         transform: rotate(360deg);
     }
 }
-/* End of loading animation */
 
 .speechButton {
     max-height: fit-content;
@@ -1586,20 +1610,6 @@ export default {
     margin-bottom: 10px;
 }
 
-.chat-text-area {
-    flex: 1;
-    border: none;
-    outline: none;
-    resize: none;
-    font-size: 16px;
-    line-height: 1.4;
-    min-height: 20px;
-    max-height: 120px;
-    padding: 0;
-    font-family: inherit;
-    background: transparent;
-}
-
 .user-conversation {
     padding: 10px 15px;
     border-radius: 50px;
@@ -1630,7 +1640,7 @@ export default {
     width: 100%;
     overflow-y: auto;
     padding: 5px 10px;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
 }
 
 .modal-mode-waiting-response-chat {
@@ -1742,23 +1752,15 @@ export default {
     animation: rotation 1s linear infinite;
 }
 
-@keyframes rotation {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
 .input-container {
     margin-top: 16px;
 }
 
 .input-wrapper {
     display: flex;
-    align-items: flex-end;
+    align-items: flex-start;
     gap: 12px;
-    padding: 12px;
+    padding: 8px 12px;
     border: 2px solid #e0e0e0;
     border-radius: 12px;
     background: white;
@@ -1769,42 +1771,7 @@ export default {
     border-color: var(--primary-color);
 }
 
-.chat-text-area {
-    flex: 1;
-    border: none;
-    outline: none;
-    resize: none;
-    font-size: 16px;
-    line-height: 1.4;
-    min-height: 20px;
-    max-height: 120px;
-    padding: 8px 0;
-    font-family: inherit;
-    background: transparent;
-}
-
-/* Modal mode input */
-.modal-input {
-    padding: 10px 0;
-    width: 100%;
-    border-top: 1px solid #e0e0e0;
-}
-
-.input-row {
-    display: flex;
-    align-items: flex-end;
-    gap: 12px;
-    padding: 12px;
-    border: 2px solid #e0e0e0;
-    border-radius: 12px;
-    background: white;
-    transition: border-color 0.3s ease;
-}
-
-.input-row:focus-within {
-    border-color: var(--primary-color);
-}
-
+.chat-text-area,
 .modal-textarea {
     flex: 1;
     border: none;
@@ -1812,11 +1779,37 @@ export default {
     resize: none;
     font-size: 16px;
     line-height: 1.4;
-    min-height: 20px;
+    min-height: 18px;
     max-height: 120px;
-    padding: 8px 0;
+    padding: 4px 0;
     font-family: inherit;
     background: transparent;
+    vertical-align: top;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+/* Modal mode input */
+.modal-input {
+    padding: 8px 0;
+    width: 100%;
+    border-top: 1px solid #e0e0e0;
+}
+
+.input-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 8px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    background: white;
+    transition: border-color 0.3s ease;
+    min-height: 44px;
+}
+
+.input-row:focus-within {
+    border-color: var(--primary-color);
 }
 
 /* Send button - unified for both modes */
@@ -1834,6 +1827,10 @@ export default {
     transition: all 0.2s ease;
     flex-shrink: 0;
 }
+.send-btn:hover:not(:disabled) {
+    background: #5145e4;
+    transform: scale(1.05);
+}
 .send-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -1850,35 +1847,20 @@ export default {
 /* Responsive adjustments */
 @media (max-width: 767px) {
     .modal-input {
-        padding: 12px;
+        padding: 6px 0;
     }
 
     .input-wrapper,
     .input-row {
-        padding: 10px;
+        padding: 6px 10px;
         gap: 10px;
+        min-height: 40px;
     }
 
-    .send-btn {
-        width: 36px;
-        height: 36px;
-    }
-
-    .send-btn svg {
-        width: 16px;
-        height: 16px;
-    }
-}
-
-@media (min-width: 768px) {
-    .send-btn {
-        width: 44px;
-        height: 44px;
-    }
-
-    .send-btn svg {
-        width: 20px;
-        height: 20px;
+    .modal-textarea,
+    .chat-text-area {
+        min-height: 16px;
+        padding: 2px 0;
     }
 }
 </style>

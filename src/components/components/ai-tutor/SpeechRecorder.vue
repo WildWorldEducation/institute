@@ -10,7 +10,6 @@ export default {
     emits: ['recording-started', 'recording-stopped', 'message-sent'],
     data() {
         return {
-            constraints: { audio: true },
             chunks: [],
             micAllowed: false,
             mediaRecorder: null,
@@ -18,20 +17,18 @@ export default {
             recording: false,
             isLoading: false,
             recordingTimer: null,
-            audioLevel: 0
+            recordingDuration: 0
         };
     },
     methods: {
         async allowMic() {
             try {
                 if (navigator.mediaDevices) {
-                    const stream = await navigator.mediaDevices.getUserMedia(
-                        this.constraints
-                    );
-                    this.stream = stream;
-                    this.mediaRecorder = new MediaRecorder(stream);
+                    this.stream = await navigator.mediaDevices.getUserMedia({
+                        audio: true
+                    });
+                    this.mediaRecorder = new MediaRecorder(this.stream);
                     this.setupMediaRecorder();
-                    this.setupAudioLevelDetection(stream);
                     this.micAllowed = true;
                 }
             } catch (error) {
@@ -42,37 +39,11 @@ export default {
             }
         },
 
-        setupAudioLevelDetection(stream) {
-            const audioContext = new (window.AudioContext ||
-                window.webkitAudioContext)();
-            const analyser = audioContext.createAnalyser();
-            const microphone = audioContext.createMediaStreamSource(stream);
-            const dataArray = new Uint8Array(analyser.frequencyBinCount);
-
-            microphone.connect(analyser);
-            analyser.fftSize = 256;
-
-            const updateAudioLevel = () => {
-                if (this.recording) {
-                    analyser.getByteFrequencyData(dataArray);
-                    const average =
-                        dataArray.reduce((a, b) => a + b) / dataArray.length;
-                    this.audioLevel = Math.min(100, (average / 128) * 100);
-                    requestAnimationFrame(updateAudioLevel);
-                } else {
-                    this.audioLevel = 0;
-                }
-            };
-            updateAudioLevel();
-        },
-
         setupMediaRecorder() {
             if (!this.mediaRecorder) return;
 
             this.mediaRecorder.ondataavailable = (e) => {
-                if (e.data.size > 0) {
-                    this.chunks.push(e.data);
-                }
+                if (e.data.size > 0) this.chunks.push(e.data);
             };
 
             this.mediaRecorder.onstop = () => {
@@ -80,12 +51,10 @@ export default {
                     type: 'audio/webm; codecs=opus'
                 });
                 this.chunks = [];
-
                 const reader = new FileReader();
                 reader.readAsDataURL(blob);
-                reader.onloadend = () => {
+                reader.onloadend = () =>
                     this.sendAudioDataToServer(reader.result);
-                };
             };
         },
 
@@ -98,6 +67,11 @@ export default {
             try {
                 this.mediaRecorder.start();
                 this.recording = true;
+                this.recordingDuration = 0;
+                this.recordingTimer = setInterval(
+                    () => this.recordingDuration++,
+                    1000
+                );
                 this.$emit('recording-started');
             } catch (error) {
                 console.error('Error starting recording:', error);
@@ -111,6 +85,10 @@ export default {
             try {
                 this.mediaRecorder.stop();
                 this.recording = false;
+                if (this.recordingTimer) {
+                    clearInterval(this.recordingTimer);
+                    this.recordingTimer = null;
+                }
                 this.isLoading = true;
                 this.$emit('recording-stopped');
             } catch (error) {
@@ -129,7 +107,7 @@ export default {
 
         async sendAudioDataToServer(base64data) {
             try {
-                const requestOptions = {
+                const response = await fetch('/ai-tutor/stt/convert', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -140,17 +118,13 @@ export default {
                         audioData: base64data,
                         tutorType: this.tutorType
                     })
-                };
-
-                let url = '/ai-tutor/stt/convert';
-                let res = await fetch(url, requestOptions);
+                });
 
                 this.isLoading = false;
 
-                if (res.ok) {
+                if (response.ok) {
                     await this.$parent.getChatHistory();
                     this.$emit('message-sent');
-
                     this.$nextTick(() => {
                         if (this.$parent.scrollToMessageInput) {
                             this.$parent.scrollToMessageInput();
@@ -170,9 +144,16 @@ export default {
             this.recording = false;
             this.isLoading = false;
             this.chunks = [];
+            this.recordingDuration = 0;
+            if (this.recordingTimer) {
+                clearInterval(this.recordingTimer);
+                this.recordingTimer = null;
+            }
         },
 
         cleanupResources() {
+            if (this.recordingTimer) clearInterval(this.recordingTimer);
+
             if (this.mediaRecorder && this.recording) {
                 try {
                     this.mediaRecorder.stop();
@@ -185,9 +166,7 @@ export default {
             }
 
             if (this.stream) {
-                this.stream.getTracks().forEach((track) => {
-                    track.stop();
-                });
+                this.stream.getTracks().forEach((track) => track.stop());
                 this.stream = null;
             }
 
@@ -196,6 +175,12 @@ export default {
             this.recording = false;
             this.isLoading = false;
             this.chunks = [];
+        },
+
+        formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
     },
 
@@ -207,12 +192,12 @@ export default {
         };
         document.addEventListener('visibilitychange', this.visibilityHandler);
     },
+
     beforeUnmount() {
         document.removeEventListener(
             'visibilitychange',
             this.visibilityHandler
         );
-        window.removeEventListener('beforeunload', this.cleanupResources);
         this.cleanupResources();
     }
 };
@@ -235,14 +220,11 @@ export default {
             </svg>
         </button>
 
-        <!-- Recording/Processing Button with Audio Visualization -->
+        <!-- Recording/Processing Button with Timer -->
         <div v-else class="recording-container">
             <button
                 class="voice-btn"
-                :class="{
-                    recording: recording,
-                    processing: isLoading
-                }"
+                :class="{ recording, processing: isLoading }"
                 @click="recordSpeech()"
                 :disabled="isAITokenLimitReached || isLoading"
                 :title="recording ? 'Stop recording' : 'Start recording'"
@@ -275,14 +257,12 @@ export default {
                 <div v-else-if="isLoading" class="spinner"></div>
             </button>
 
-            <!-- Audio Visualization (only when recording) -->
-            <div v-if="recording" class="audio-viz">
-                <div
-                    v-for="i in 4"
-                    :key="i"
-                    class="audio-bar"
-                    :class="{ active: audioLevel > i * 25 }"
-                ></div>
+            <!-- Recording Timer and Pulse Effect -->
+            <div v-if="recording" class="recording-indicator">
+                <div class="recording-pulse"></div>
+                <span class="recording-timer">{{
+                    formatTime(recordingDuration)
+                }}</span>
             </div>
         </div>
     </div>
@@ -300,18 +280,20 @@ export default {
     height: 40px;
     border: none;
     border-radius: 50%;
-    background: #f5f5f5;
-    color: #666;
+    background: #f8fafc;
+    color: #64748b;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .voice-btn:hover:not(:disabled) {
     background: #e0e0e0;
     transform: scale(1.05);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .voice-btn:disabled {
@@ -320,8 +302,8 @@ export default {
 }
 
 .voice-btn.permission {
-    background: #e3f2fd;
-    color: #1976d2;
+    background: #dbeafe;
+    color: #3b82f6;
 }
 
 .voice-btn.permission:hover {
@@ -329,51 +311,47 @@ export default {
 }
 
 .voice-btn.recording {
-    background: #ff4444;
-    color: white;
-    animation: pulse 1.5s infinite;
+    background: #fef2f2;
+    color: #ef4444;
+    border: 2px solid #fecaca;
 }
 
 .voice-btn.processing {
-    background: #ffa726;
-    color: white;
+    background: #fef3c7;
+    color: #f59e0b;
+    border: 2px solid #fed7aa;
 }
 
 .recording-container {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
 }
 
-.audio-viz {
+.recording-indicator {
     display: flex;
-    align-items: flex-end;
-    gap: 2px;
-    height: 20px;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-.audio-bar {
-    width: 3px;
-    background: #ddd;
-    border-radius: 2px;
-    transition: all 0.1s ease;
-}
-
-.audio-bar:nth-child(1) {
+.recording-pulse {
+    width: 8px;
     height: 8px;
-}
-.audio-bar:nth-child(2) {
-    height: 14px;
-}
-.audio-bar:nth-child(3) {
-    height: 20px;
-}
-.audio-bar:nth-child(4) {
-    height: 14px;
+    background: #ef4444;
+    border-radius: 50%;
+    animation: pulse 1s ease-in-out infinite;
 }
 
-.audio-bar.active {
-    background: #4caf50;
+.recording-timer {
+    font-size: 12px;
+    font-weight: 600;
+    color: #ef4444;
+    font-family: monospace;
+    min-width: 35px;
 }
 
 .spinner {
@@ -386,14 +364,14 @@ export default {
 }
 
 @keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.4);
-    }
-    70% {
-        box-shadow: 0 0 0 6px rgba(255, 68, 68, 0);
-    }
+    0%,
     100% {
-        box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.4;
+        transform: scale(1.2);
     }
 }
 
@@ -406,33 +384,18 @@ export default {
     }
 }
 
-/* Responsive sizing */
 @media (max-width: 767px) {
     .voice-btn {
         width: 36px;
         height: 36px;
     }
-
     .voice-btn svg {
         width: 18px;
         height: 18px;
     }
-
-    .audio-viz {
-        height: 18px;
-    }
-
-    .audio-bar:nth-child(1) {
-        height: 6px;
-    }
-    .audio-bar:nth-child(2) {
-        height: 12px;
-    }
-    .audio-bar:nth-child(3) {
-        height: 18px;
-    }
-    .audio-bar:nth-child(4) {
-        height: 12px;
+    .recording-timer {
+        font-size: 11px;
+        min-width: 30px;
     }
 }
 
@@ -441,7 +404,6 @@ export default {
         width: 44px;
         height: 44px;
     }
-
     .voice-btn svg {
         width: 22px;
         height: 22px;
