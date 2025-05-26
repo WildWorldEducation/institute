@@ -495,30 +495,15 @@ export default {
             let formattedMessage = md.render(formattedString);
             return formattedMessage;
         },
-        // Format response for audio
-        convertLatexToPlainText(message) {
-            let string = message;
-            // handle exponent square case
-            string = string.replaceAll('^2', 'squared');
-            // handle exponent cube case
-            string = string.replaceAll('^3', 'cubed');
-            // handle other exponent case
-            string = string.replaceAll('^', 'to the power of');
-            // transform inequalities symbol to text
-            string = string.replaceAll('<', 'is smaller than');
-            string = string.replaceAll('>', 'is greater than');
-            string = string.replaceAll('leq', 'is smaller than or equal to');
-            string = string.replaceAll('geq', 'is greater than or equal to');
-            // handle square root in latex
-            string = string.replaceAll('sqrt', 'square root of');
-            // At last we remove all $ sign
-            string = string.replaceAll('$', '');
-
-            return string;
-        },
         scrollToMessageInput() {
-            let inputMessage = this.$refs.messageInputDiv;
-            inputMessage.scrollTop = inputMessage.scrollHeight;
+            const inputDiv = this.$refs.messageInputDiv;
+            if (inputDiv) {
+                // Smooth scroll to bottom
+                inputDiv.scrollTo({
+                    top: inputDiv.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
         },
         // smoothScrollToMessageInput() {
         //     let inputMessage = this.$refs.messageInputDiv;
@@ -605,28 +590,6 @@ export default {
                     this.isLoading = false;
                 }, 5000);
             }, 50);
-        },
-        changeTextAreaHeigh() {
-            const el = this.$refs.modalMessageInput;
-            if (el.scrollHeight <= el.clientHeight) {
-                this.modalTextAreaHeight = '60px';
-                return;
-            }
-            // Set the new height of the text area
-            const newTextAreaHeigh = el.scrollHeight + 'px';
-
-            // If the text area is empty, set it to 60px
-            if (this.message.length === 0) {
-                this.modalChatHistoryHeight = '60px';
-                return;
-            }
-            // If the text area is too big, set it to 400px
-            if (el.scrollHeight > 400) {
-                this.modalTextAreaHeight = '400px';
-                return;
-            }
-            // set the new height of the text area
-            this.modalTextAreaHeight = newTextAreaHeigh;
         },
         // Get all latex string in a message
         getLatexStrings(message) {
@@ -738,6 +701,56 @@ export default {
                 );
             });
             return localMessage;
+        },
+        onRecordingStarted() {
+            this.message = '';
+            // Update placeholder for the active textarea
+            const activeTextarea =
+                this.$refs.messageInput || this.$refs.modalMessageInput;
+            if (activeTextarea) {
+                activeTextarea.placeholder = 'Listening...';
+            }
+            this.waitForAIresponse = true;
+        },
+        onRecordingStopped() {
+            // Update placeholder for the active textarea
+            const activeTextarea =
+                this.$refs.messageInput || this.$refs.modalMessageInput;
+            if (activeTextarea) {
+                activeTextarea.placeholder = 'Converting speech to text...';
+            }
+        },
+        onVoiceMessageSent() {
+            // Reset placeholder for the active textarea
+            const activeTextarea =
+                this.$refs.messageInput || this.$refs.modalMessageInput;
+            if (activeTextarea) {
+                activeTextarea.placeholder =
+                    'Type your message or use voice input...';
+            }
+
+            this.waitForAIresponse = false;
+
+            this.$nextTick(() => {
+                this.scrollToMessageInput();
+            });
+        },
+        autoResizeTextarea() {
+            const textarea = this.$refs.messageInput;
+            if (textarea) {
+                textarea.style.height = 'auto';
+                textarea.style.height =
+                    Math.min(textarea.scrollHeight, 120) + 'px';
+            }
+        },
+
+        autoResizeModalTextarea() {
+            const textarea = this.$refs.modalMessageInput;
+            if (textarea) {
+                textarea.style.height = 'auto';
+                textarea.style.height =
+                    Math.min(textarea.scrollHeight, 120) + 'px';
+            }
         }
     },
     computed: {
@@ -932,15 +945,6 @@ export default {
                 </div>
 
                 <div class="d-flex">
-                    <!-- For speech to text -->
-                    <SpeechRecorder
-                        v-if="mode != 'hide'"
-                        :tutorType="tutorType"
-                        :skill="skill"
-                        :skillLevel="englishSkillLevel"
-                        :learningObjectives="learningObjectives"
-                        :isAITokenLimitReached="$parent.isAITokenLimitReached"
-                    />
                     <!-- Dock button -->
                     <div title="Dock AI tutor" b-tooltip.hover>
                         <button
@@ -1210,21 +1214,31 @@ export default {
             </div>
         </div>
         <!-- User input (docked mode) -->
-        <div class="d-flex mt-1" v-if="mode === 'docked'">
-            <textarea
-                ref="messageInput"
-                class="chat-text-area rounded border border-dark me-1"
-                v-model="message"
-                type="text"
-                @keydown.enter="handleKeyDown"
-            >
-            </textarea>
-            <!-- Send button -->
-            <div
-                b-tooltip.hover
-                tile="send message"
-                class="d-flex flex-row-reverse"
-            >
+        <div class="input-container" v-if="mode === 'docked'">
+            <div class="input-wrapper">
+                <textarea
+                    ref="messageInput"
+                    class="chat-text-area"
+                    v-model="message"
+                    placeholder="Type your message or use voice input..."
+                    @keydown.enter="handleKeyDown"
+                    @input="autoResizeTextarea"
+                ></textarea>
+
+                <!-- Integrated Speech Recorder -->
+                <SpeechRecorder
+                    class="voice-input-button"
+                    :tutorType="tutorType"
+                    :skill="skill"
+                    :skillLevel="englishSkillLevel"
+                    :learningObjectives="learningObjectives"
+                    :isAITokenLimitReached="$parent.isAITokenLimitReached"
+                    @recording-started="onRecordingStarted"
+                    @recording-stopped="onRecordingStopped"
+                    @message-sent="onVoiceMessageSent"
+                />
+
+                <!-- Send button -->
                 <button
                     class="btn send-btn"
                     :class="{
@@ -1234,18 +1248,14 @@ export default {
                     @click="sendMessage()"
                     :disabled="$parent.isAITokenLimitReached"
                 >
-                    <!-- Speech bubble icon -->
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
+                        viewBox="0 0 24 24"
                         width="18"
                         height="18"
                         fill="white"
                     >
-                        <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                        <path
-                            d="M256 448c141.4 0 256-93.1 256-208S397.4 32 256 32S0 125.1 0 240c0 45.1 17.7 86.8 47.7 120.9c-1.9 24.5-11.4 46.3-21.4 62.9c-5.5 9.2-11.1 16.6-15.2 21.6c-2.1 2.5-3.7 4.4-4.9 5.7c-.6 .6-1 1.1-1.3 1.4l-.3 .3c0 0 0 0 0 0c0 0 0 0 0 0s0 0 0 0s0 0 0 0c-4.6 4.6-5.9 11.4-3.4 17.4c2.5 6 8.3 9.9 14.8 9.9c28.7 0 57.6-8.9 81.6-19.3c22.9-10 42.4-21.9 54.3-30.6c31.8 11.5 67 17.9 104.1 17.9zM128 208a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm128 0a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm96 32a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
-                        />
+                        <path d="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
                     </svg>
                 </button>
             </div>
@@ -1412,41 +1422,41 @@ export default {
                 ></div>
             </div>
             <!-- User input (modal mode) -->
-            <div
-                class="modal-user-chat-div mt-auto mb-1"
-                v-if="mode === 'modal'"
-            >
-                <textarea
-                    ref="modalMessageInput"
-                    class="chat-text-area modal-chat-text-area rounded border border-dark"
-                    v-model="message"
-                    type="text"
-                    @keydown.enter="handleKeyDown"
-                    @input="changeTextAreaHeigh()"
-                >
-                </textarea>
-                <!-- Send button -->
-                <div
-                    b-tooltip.hover
-                    tile="send message"
-                    class="d-flex flex-row-reverse"
-                    :disabled="$parent.isAITokenLimitReached"
-                >
+            <div class="modal-input" v-if="mode === 'modal'">
+                <div class="input-row">
+                    <textarea
+                        ref="modalMessageInput"
+                        class="modal-textarea"
+                        v-model="message"
+                        placeholder="Type your message or use voice input..."
+                        @keydown.enter="handleKeyDown"
+                        @input="autoResizeModalTextarea"
+                    ></textarea>
+
+                    <SpeechRecorder
+                        :tutorType="tutorType"
+                        :skill="skill"
+                        :skillLevel="englishSkillLevel"
+                        :learningObjectives="learningObjectives"
+                        :isAITokenLimitReached="$parent.isAITokenLimitReached"
+                        @recording-started="onRecordingStarted"
+                        @recording-stopped="onRecordingStopped"
+                        @message-sent="onVoiceMessageSent"
+                    />
+
                     <button
-                        class="btn primary-btn send-btn"
+                        class="send-btn"
                         @click="sendMessage()"
+                        :disabled="$parent.isAITokenLimitReached"
                     >
-                        <!-- Speech bubble icon -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
+                            viewBox="0 0 24 24"
                             width="18"
                             height="18"
                             fill="white"
                         >
-                            <path
-                                d="M256 448c141.4 0 256-93.1 256-208S397.4 32 256 32S0 125.1 0 240c0 45.1 17.7 86.8 47.7 120.9c-1.9 24.5-11.4 46.3-21.4 62.9c-5.5 9.2-11.1 16.6-15.2 21.6c-2.1 2.5-3.7 4.4-4.9 5.7c-.6 .6-1 1.1-1.3 1.4l-.3 .3c0 0 0 0 0 0c0 0 0 0 0 0s0 0 0 0s0 0 0 0c-4.6 4.6-5.9 11.4-3.4 17.4c2.5 6 8.3 9.9 14.8 9.9c28.7 0 57.6-8.9 81.6-19.3c22.9-10 42.4-21.9 54.3-30.6c31.8 11.5 67 17.9 104.1 17.9zM128 208a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm128 0a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm96 32a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
-                            />
+                            <path d="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
                         </svg>
                     </button>
                 </div>
@@ -1577,7 +1587,17 @@ export default {
 }
 
 .chat-text-area {
-    width: 100%;
+    flex: 1;
+    border: none;
+    outline: none;
+    resize: none;
+    font-size: 16px;
+    line-height: 1.4;
+    min-height: 20px;
+    max-height: 120px;
+    padding: 0;
+    font-family: inherit;
+    background: transparent;
 }
 
 .user-conversation {
@@ -1730,5 +1750,135 @@ export default {
         transform: rotate(360deg);
     }
 }
-/* End of loading animation */
+.input-container {
+    margin-top: 16px;
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    background: white;
+    transition: border-color 0.3s ease;
+}
+
+.input-wrapper:focus-within {
+    border-color: var(--primary-color);
+}
+
+.chat-text-area {
+    flex: 1;
+    border: none;
+    outline: none;
+    resize: none;
+    font-size: 16px;
+    line-height: 1.4;
+    min-height: 20px;
+    max-height: 120px;
+    padding: 8px 0;
+    font-family: inherit;
+    background: transparent;
+}
+
+/* Modal mode input */
+.modal-input {
+    padding: 10px 0;
+    width: 100%;
+    border-top: 1px solid #e0e0e0;
+}
+
+.input-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    background: white;
+    transition: border-color 0.3s ease;
+}
+
+.input-row:focus-within {
+    border-color: var(--primary-color);
+}
+
+.modal-textarea {
+    flex: 1;
+    border: none;
+    outline: none;
+    resize: none;
+    font-size: 16px;
+    line-height: 1.4;
+    min-height: 20px;
+    max-height: 120px;
+    padding: 8px 0;
+    font-family: inherit;
+    background: transparent;
+}
+
+/* Send button - unified for both modes */
+.send-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+.send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.send-btn.socratic-btn {
+    background: #31315f;
+}
+
+.send-btn.assessing-btn {
+    background: #7f1e1e;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+    .modal-input {
+        padding: 12px;
+    }
+
+    .input-wrapper,
+    .input-row {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .send-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .send-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+@media (min-width: 768px) {
+    .send-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .send-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+}
 </style>
