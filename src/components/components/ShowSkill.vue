@@ -822,184 +822,111 @@ export default {
                     >
                         {{ calculatedSkillName }}
                     </h1>
-                    <!-- Take assessment btn-->
-                    <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
-                    <router-link
-                        v-if="
-                            userDetailsStore.isSkillsLocked == 1 &&
-                            userDetailsStore.role == 'student' &&
-                            !isUnlocked &&
-                            !isMastered &&
-                            showAncestorLink
-                        "
-                        :to="'/skills/' + ancestor"
-                        class="btn assessment-btn me-1"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 448 512"
-                            width="20"
-                            fill="white"
+                    <div class="d-flex flex-column">
+                        <button class="btn socratic-btn">Socratic Tutor</button>
+                        <!-- Take assessment btn-->
+                        <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
+                        <router-link
+                            v-if="
+                                userDetailsStore.isSkillsLocked == 1 &&
+                                userDetailsStore.role == 'student' &&
+                                !isUnlocked &&
+                                !isMastered &&
+                                showAncestorLink
+                            "
+                            :to="'/skills/' + ancestor"
+                            class="btn assessment-btn me-1"
                         >
-                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"
-                            />
-                        </svg>
-                        &nbsp; Go to Nearest Unlocked Skill
-                    </router-link>
-                    <!-- Assessment -->
-                    <button
-                        v-if="
-                            userDetailsStore.role == 'student' &&
-                            !isMastered &&
-                            skill.type != 'domain' &&
-                            skill.id &&
-                            (skill.type !== 'super' || areAllSubskillsMastered)
-                        "
-                        class="btn me-1 assessment-btn"
-                        @click="scrollToAITutor()"
-                    >
-                        <span>
-                            <!-- Half star icon -->
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 576 512"
-                                width="22"
+                                viewBox="0 0 448 512"
+                                width="20"
                                 fill="white"
                             >
                                 <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                 <path
-                                    d="M288 0c-12.2 .1-23.3 7-28.6 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3L288 439.8 288 0zM429.9 512c1.1 .1 2.1 .1 3.2 0l-3.2 0z"
+                                    d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"
                                 />
                             </svg>
+                            &nbsp; Go to Nearest Unlocked Skill
+                        </router-link>
+                        <!-- Assessment -->
+                        <button
+                            v-if="
+                                userDetailsStore.role == 'student' &&
+                                !isMastered &&
+                                skill.type != 'domain' &&
+                                skill.id &&
+                                (skill.type !== 'super' ||
+                                    areAllSubskillsMastered)
+                            "
+                            class="btn me-1 assessment-btn"
+                            @click="scrollToAITutor()"
+                        >
                             Take the Test
-                            <!-- Half star icon -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 576 512"
-                                width="22"
-                                fill="white"
-                            >
-                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                <path
-                                    d="m 169.24356,0 c 12.2,0.1 23.3,7 28.6,18 l 64.4,132.3 143.6,21.2 c 12,1.8 22,10.2 25.7,21.7 3.7,11.5 0.7,24.2 -7.9,32.7 l -104.2,103.1 24.6,145.7 c 2,12 -3,24.2 -12.9,31.3 -9.9,7.1 -23,8 -33.8,2.3 l -128.1,-68.5 z M 27.343555,512 c -1.1,0.1 -2.1,0.1 -3.2,0 z"
-                                    id="path17"
-                                />
-                            </svg>
-                        </span>
-                    </button>
-                    <!-- Unmastered Subskills Modal -->
-                    <div
-                        v-if="showUnmasteredModal"
-                        class="modal"
-                        @click.self="showUnmasteredModal = false"
-                    >
-                        <div class="modal-content">
-                            <h1 class="heading h5">
-                                Complete these cluster skills first:
-                            </h1>
-                            <div v-for="subskill in unmasteredSubskills">
-                                <router-link
-                                    :class="{
-                                        'grade-school':
-                                            skill.level == 'grade_school',
-                                        'middle-school':
-                                            skill.level == 'middle_school',
-                                        'high-school':
-                                            skill.level == 'high_school',
-                                        college: skill.level == 'college',
-                                        phd: skill.level == 'phd'
-                                    }"
-                                    class="skill-link btn mb-1 text-start"
-                                    :to="`/skills/${subskill.url}`"
+                        </button>
+                        <!-- Unmastered Subskills Modal -->
+                        <div
+                            v-if="showUnmasteredModal"
+                            class="modal"
+                            @click.self="showUnmasteredModal = false"
+                        >
+                            <div class="modal-content">
+                                <h1 class="heading h5">
+                                    Complete these cluster skills first:
+                                </h1>
+                                <div v-for="subskill in unmasteredSubskills">
+                                    <router-link
+                                        :class="{
+                                            'grade-school':
+                                                skill.level == 'grade_school',
+                                            'middle-school':
+                                                skill.level == 'middle_school',
+                                            'high-school':
+                                                skill.level == 'high_school',
+                                            college: skill.level == 'college',
+                                            phd: skill.level == 'phd'
+                                        }"
+                                        class="skill-link btn mb-1 text-start"
+                                        :to="`/skills/${subskill.url}`"
+                                        @click="showUnmasteredModal = false"
+                                    >
+                                        {{ subskill.name }}
+                                    </router-link>
+                                </div>
+                                <button
+                                    class="btn primary-btn ms-auto me-0"
                                     @click="showUnmasteredModal = false"
                                 >
-                                    {{ subskill.name }}
-                                </router-link>
+                                    Close
+                                </button>
                             </div>
-                            <button
-                                class="btn primary-btn ms-auto me-0"
-                                @click="showUnmasteredModal = false"
-                            >
-                                Close
-                            </button>
                         </div>
+                        <button
+                            v-if="
+                                userDetailsStore.role == 'student' &&
+                                !isMastered &&
+                                skill.type === 'super' &&
+                                !areAllSubskillsMastered
+                            "
+                            class="btn me-1 assessment-btn"
+                            style="opacity: 0.7"
+                            @click="showUnmasteredSubskillsModal"
+                            title="Click to see which subskills need to be mastered"
+                        >
+                            Master Subskills First
+                        </button>
+                        <button
+                            v-if="
+                                userDetailsStore.role == 'student' &&
+                                skill.type == 'domain'
+                            "
+                            @click="MakeMastered()"
+                            class="btn me-1 assessment-btn"
+                        >
+                            Go To Child Skill
+                        </button>
                     </div>
-                    <button
-                        v-if="
-                            userDetailsStore.role == 'student' &&
-                            !isMastered &&
-                            skill.type === 'super' &&
-                            !areAllSubskillsMastered
-                        "
-                        class="btn me-1 assessment-btn"
-                        style="opacity: 0.7"
-                        @click="showUnmasteredSubskillsModal"
-                        title="Click to see which subskills need to be mastered"
-                    >
-                        <!-- Half star icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 576 512"
-                            width="22"
-                            fill="white"
-                        >
-                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="M288 0c-12.2 .1-23.3 7-28.6 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3L288 439.8 288 0zM429.9 512c1.1 .1 2.1 .1 3.2 0l-3.2 0z"
-                            />
-                        </svg>
-                        Master Subskills First
-                        <!-- Half star icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 576 512"
-                            width="22"
-                            fill="white"
-                        >
-                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="m 169.24356,0 c 12.2,0.1 23.3,7 28.6,18 l 64.4,132.3 143.6,21.2 c 12,1.8 22,10.2 25.7,21.7 3.7,11.5 0.7,24.2 -7.9,32.7 l -104.2,103.1 24.6,145.7 c 2,12 -3,24.2 -12.9,31.3 -9.9,7.1 -23,8 -33.8,2.3 l -128.1,-68.5 z M 27.343555,512 c -1.1,0.1 -2.1,0.1 -3.2,0 z"
-                                id="path17"
-                            />
-                        </svg>
-                    </button>
-                    <button
-                        v-if="
-                            userDetailsStore.role == 'student' &&
-                            skill.type == 'domain'
-                        "
-                        @click="MakeMastered()"
-                        class="btn me-1 assessment-btn"
-                    >
-                        <!-- Half star icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 576 512"
-                            width="22"
-                            fill="white"
-                        >
-                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="M288 0c-12.2 .1-23.3 7-28.6 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3L288 439.8 288 0zM429.9 512c1.1 .1 2.1 .1 3.2 0l-3.2 0z"
-                            />
-                        </svg>
-                        Go To Child Skill
-                        <!-- Half star icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 576 512"
-                            width="22"
-                            fill="white"
-                        >
-                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="m 169.24356,0 c 12.2,0.1 23.3,7 28.6,18 l 64.4,132.3 143.6,21.2 c 12,1.8 22,10.2 25.7,21.7 3.7,11.5 0.7,24.2 -7.9,32.7 l -104.2,103.1 24.6,145.7 c 2,12 -3,24.2 -12.9,31.3 -9.9,7.1 -23,8 -33.8,2.3 l -128.1,-68.5 z M 27.343555,512 c -1.1,0.1 -2.1,0.1 -3.2,0 z"
-                                id="path17"
-                            />
-                        </svg>
-                    </button>
                 </div>
                 <!-- Student tooltip -->
                 <div
@@ -2168,6 +2095,22 @@ p {
     background-color: #7f1e1e;
     color: white; /* Matching the text color used by both buttons */
     justify-content: center;
+}
+.socratic-btn {
+    height: auto;
+    max-height: 48px;
+    border: 3px solid var(--secondary-contrast-color);
+    font-weight: 500;
+    padding: 5px;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+    text-wrap: nowrap;
+    border-style: solid;
+    background-color: #31315f;
+    color: white;
 }
 
 .info-box {
