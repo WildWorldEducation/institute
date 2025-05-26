@@ -35,21 +35,12 @@ export default {
         };
     },
     async created() {
-        // // Get free monthly AI token limit
-        // if (!this.settingsStore.freePlanTokenLimit) {
-        //     await this.settingsStore.getSettings();
-        // }
         // Get free monthly AI token limit
-        console.log(
-            'Free monthly token limit: ' +
-                this.settingsStore.freeTokenMonthlyLimit
-        );
         if (this.settingsStore.freeTokenMonthlyLimit == 0) {
             await this.settingsStore.getSettings();
         }
 
         await this.userDetailsStore.getUserDetails();
-        //await this.getSubscription();
     },
     async mounted() {
         //Stripe external script
