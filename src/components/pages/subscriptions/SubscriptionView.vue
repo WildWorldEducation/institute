@@ -121,16 +121,6 @@ export default {
             return this.settingsStore.freePlanTokenLimit
                 ? this.settingsStore.freePlanTokenLimit.toLocaleString()
                 : '0';
-        },
-        formattedBasicPlanTokenLimit() {
-            return this.settingsStore.basicPlanTokenLimit
-                ? this.settingsStore.basicPlanTokenLimit.toLocaleString()
-                : '0';
-        },
-        subscriptionTierFormatted() {
-            return this.userDetailsStore.subscriptionTier
-                ? this.userDetailsStore.subscriptionTier.toLocaleString()
-                : 'free';
         }
     },
     methods: {
@@ -158,8 +148,9 @@ export default {
                 this.receipts.push(subscriptionData.charges.data[i]);
             }
         },
-        // Purchase subscription
-        checkout(planType) {
+        // Purchase tokens
+        checkout() {
+            this.amountOfTokens = this.dollars * this.settingsStore.tokensPerDollar;
             fetch('/subscriptions/create-checkout-session', {
                 method: 'POST',
                 headers: {
