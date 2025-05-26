@@ -14,10 +14,7 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Payment Successful!</h1>
-        <p>
-            You are now subscribed to the
-            <strong>{{ userDetailsStore.subscriptionTier }}</strong> plan.
-        </p>
+        <p>You now have {{ userDetailsStore.tokens }} tokens</p>
         <p>
             Continue your journey now! Jump to the
             <router-link to="/skill-tree">skill tree</router-link>,
