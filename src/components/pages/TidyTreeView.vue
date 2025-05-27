@@ -1262,159 +1262,208 @@ export default {
                 class="d-flex flex-column"
             >
                 <!-- Subject buttons -->
-                <button
-                    v-if="
-                        !cohortsStore.cohortFilteredSubjects.includes(
-                            'Language'
-                        )
-                    "
-                    class="btn"
-                    :class="{
-                        'chosen-subject':
-                            userDetailsStore.subjectFilters.includes(
-                                'Language'
-                            ),
-                        'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes(
+                <div v-if="isSubjectFilter" class="d-flex flex-column">
+                    <button
+                        v-if="
+                            !cohortsStore.cohortFilteredSubjects.includes(
                                 'Language'
                             )
-                    }"
-                    @click="
-                        this.updateSubjectFilters('Language');
-                        $refs.childComponent.filter();
-                    "
-                >
-                    Language
-                </button>
+                        "
+                        class="btn"
+                        :class="{
+                            'chosen-subject':
+                                userDetailsStore.subjectFilters.includes(
+                                    'Language'
+                                ),
+                            'hidden-subject':
+                                !userDetailsStore.subjectFilters.includes(
+                                    'Language'
+                                )
+                        }"
+                        @click="
+                            this.updateSubjectFilters('Language');
+                            $refs.childComponent.filter();
+                        "
+                    >
+                        Language
+                    </button>
+                    <button
+                        v-if="
+                            !cohortsStore.cohortFilteredSubjects.includes(
+                                'Mathematics'
+                            )
+                        "
+                        class="btn"
+                        :class="{
+                            'chosen-subject':
+                                userDetailsStore.subjectFilters.includes(
+                                    'Mathematics'
+                                ),
+                            'hidden-subject':
+                                !userDetailsStore.subjectFilters.includes(
+                                    'Mathematics'
+                                )
+                        }"
+                        @click="
+                            this.updateSubjectFilters('Mathematics');
+                            $refs.childComponent.filter();
+                        "
+                    >
+                        Math
+                    </button>
+                    <button
+                        v-if="
+                            !cohortsStore.cohortFilteredSubjects.includes(
+                                'History'
+                            )
+                        "
+                        class="btn"
+                        :class="{
+                            'chosen-subject':
+                                userDetailsStore.subjectFilters.includes(
+                                    'History'
+                                ),
+                            'hidden-subject':
+                                !userDetailsStore.subjectFilters.includes(
+                                    'History'
+                                )
+                        }"
+                        @click="
+                            this.updateSubjectFilters('History');
+                            $refs.childComponent.filter();
+                        "
+                    >
+                        History
+                    </button>
+                    <button
+                        v-if="
+                            !cohortsStore.cohortFilteredSubjects.includes(
+                                'Life'
+                            )
+                        "
+                        class="btn"
+                        :class="{
+                            'chosen-subject':
+                                userDetailsStore.subjectFilters.includes(
+                                    'Life'
+                                ),
+                            'hidden-subject':
+                                !userDetailsStore.subjectFilters.includes(
+                                    'Life'
+                                )
+                        }"
+                        @click="
+                            this.updateSubjectFilters('Life');
+                            $refs.childComponent.filter();
+                        "
+                    >
+                        Life
+                    </button>
+                    <button
+                        v-if="
+                            !cohortsStore.cohortFilteredSubjects.includes(
+                                'Computer Science'
+                            )
+                        "
+                        class="btn"
+                        :class="{
+                            'chosen-subject':
+                                userDetailsStore.subjectFilters.includes(
+                                    'Computer Science'
+                                ),
+                            'hidden-subject':
+                                !userDetailsStore.subjectFilters.includes(
+                                    'Computer Science'
+                                )
+                        }"
+                        @click="
+                            this.updateSubjectFilters('Computer Science');
+                            $refs.childComponent.filter();
+                        "
+                    >
+                        Computer Science
+                    </button>
+                    <button
+                        v-if="
+                            !cohortsStore.cohortFilteredSubjects.includes(
+                                'Science & Invention'
+                            )
+                        "
+                        class="btn"
+                        :class="{
+                            'chosen-subject':
+                                userDetailsStore.subjectFilters.includes(
+                                    'Science and Invention'
+                                ),
+                            'hidden-subject':
+                                !userDetailsStore.subjectFilters.includes(
+                                    'Science and Invention'
+                                )
+                        }"
+                        @click="
+                            this.updateSubjectFilters('Science and Invention');
+                            $refs.childComponent.filter();
+                        "
+                    >
+                        Science & Invention
+                    </button>
+                    <button
+                        v-if="
+                            !cohortsStore.cohortFilteredSubjects.includes(
+                                'Dangerous Ideas'
+                            )
+                        "
+                        class="btn"
+                        :class="{
+                            'chosen-subject':
+                                userDetailsStore.subjectFilters.includes(
+                                    'Dangerous Ideas'
+                                ),
+                            'hidden-subject':
+                                !userDetailsStore.subjectFilters.includes(
+                                    'Dangerous Ideas'
+                                )
+                        }"
+                        @click="
+                            this.updateSubjectFilters('Dangerous Ideas');
+                            $refs.childComponent.filter();
+                        "
+                    >
+                        Dangerous Ideas
+                    </button>
+                </div>
                 <button
-                    v-if="
-                        !cohortsStore.cohortFilteredSubjects.includes(
-                            'Mathematics'
-                        )
-                    "
-                    class="btn"
+                    class="btn switch-btn w-100 mb-2"
                     :class="{
-                        'chosen-subject':
+                        'active-grade-filter':
+                            userDetailsStore.subjectFilters.includes(
+                                'Language'
+                            ) &&
                             userDetailsStore.subjectFilters.includes(
                                 'Mathematics'
-                            ),
-                        'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes(
-                                'Mathematics'
-                            )
-                    }"
-                    @click="
-                        this.updateSubjectFilters('Mathematics');
-                        $refs.childComponent.filter();
-                    "
-                >
-                    Math
-                </button>
-                <button
-                    v-if="
-                        !cohortsStore.cohortFilteredSubjects.includes('History')
-                    "
-                    class="btn"
-                    :class="{
-                        'chosen-subject':
-                            userDetailsStore.subjectFilters.includes('History'),
-                        'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes('History')
-                    }"
-                    @click="
-                        this.updateSubjectFilters('History');
-                        $refs.childComponent.filter();
-                    "
-                >
-                    History
-                </button>
-                <button
-                    v-if="!cohortsStore.cohortFilteredSubjects.includes('Life')"
-                    class="btn"
-                    :class="{
-                        'chosen-subject':
-                            userDetailsStore.subjectFilters.includes('Life'),
-                        'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes('Life')
-                    }"
-                    @click="
-                        this.updateSubjectFilters('Life');
-                        $refs.childComponent.filter();
-                    "
-                >
-                    Life
-                </button>
-                <button
-                    v-if="
-                        !cohortsStore.cohortFilteredSubjects.includes(
-                            'Computer Science'
-                        )
-                    "
-                    class="btn"
-                    :class="{
-                        'chosen-subject':
+                            ) &&
+                            userDetailsStore.subjectFilters.includes(
+                                'History'
+                            ) &&
+                            userDetailsStore.subjectFilters.includes('Life') &&
                             userDetailsStore.subjectFilters.includes(
                                 'Computer Science'
-                            ),
-                        'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes(
-                                'Computer Science'
-                            )
-                    }"
-                    @click="
-                        this.updateSubjectFilters('Computer Science');
-                        $refs.childComponent.filter();
-                    "
-                >
-                    Computer Science
-                </button>
-                <button
-                    v-if="
-                        !cohortsStore.cohortFilteredSubjects.includes(
-                            'Science & Invention'
-                        )
-                    "
-                    class="btn"
-                    :class="{
-                        'chosen-subject':
+                            ) &&
                             userDetailsStore.subjectFilters.includes(
                                 'Science and Invention'
-                            ),
-                        'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes(
-                                'Science and Invention'
-                            )
-                    }"
-                    @click="
-                        this.updateSubjectFilters('Science and Invention');
-                        $refs.childComponent.filter();
-                    "
-                >
-                    Science & Invention
-                </button>
-                <button
-                    v-if="
-                        !cohortsStore.cohortFilteredSubjects.includes(
-                            'Dangerous Ideas'
-                        )
-                    "
-                    class="btn mb-2"
-                    :class="{
-                        'chosen-subject':
+                            ) &&
                             userDetailsStore.subjectFilters.includes(
-                                'Dangerous Ideas'
-                            ),
-                        'hidden-subject':
-                            !userDetailsStore.subjectFilters.includes(
                                 'Dangerous Ideas'
                             )
                     }"
                     @click="
-                        this.updateSubjectFilters('Dangerous Ideas');
+                        isSubjectFilter = !isSubjectFilter;
+                        this.updateSubjectFilters('All');
                         $refs.childComponent.filter();
                     "
                 >
-                    Dangerous Ideas
+                    <span v-if="!isSubjectFilter">Show subject filters</span>
+                    <span v-else>All</span>
                 </button>
                 <!-- Grade buttons -->
                 <div v-if="isGradeFilter" class="d-flex flex-column">
