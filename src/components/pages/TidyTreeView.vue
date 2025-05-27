@@ -232,8 +232,20 @@ export default {
             }
             // If not logged in.
             else {
+                if (subject == 'All') {
+                    this.subjectFilters = [];
+                    this.subjectFilters.push(
+                        'Language',
+                        'Mathematics',
+                        'Science and Invention',
+                        'Computer Science',
+                        'History',
+                        'Life',
+                        'Dangerous Ideas'
+                    );
+                }
                 // if all subjects are selected, show only the clicked subject
-                if (this.subjectFilters.length == 7) {
+                else if (this.subjectFilters.length == 7) {
                     this.subjectFilters = [];
                     this.subjectFilters.push(subject);
                 }
@@ -260,7 +272,6 @@ export default {
                     this.subjectFilters.push(subject);
                 }
             }
-            console.log(this.userDetailsStore.subjectFilters);
         },
         toggleisUnlockedSkillsFilter() {
             if (this.userDetailsStore.isUnlockedSkillsOnlyFilter == 1) {
