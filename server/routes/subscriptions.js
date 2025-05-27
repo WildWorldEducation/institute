@@ -45,48 +45,29 @@ router.get('/get-sub/:userId', async (req, res, next) => {
             customer: result[0].stripe_customer_id
         });
 
-        // Get the subscription
-        const subscriptions = await stripe.subscriptions.list({
-            customer: result[0].stripe_customer_id
-        });
-
-        // If a subscription is found.
-        if (subscriptions.data.length > 0) {
-            const subscriptionId = subscriptions.data[0].id;
-            const subscription = await stripe.subscriptions.retrieve(
-                subscriptionId
-            );
-
-            let subSchedule = null;
-            if (subscription.schedule != null) {
-                subSchedule = await stripe.subscriptionSchedules.retrieve(
-                    subscription.schedule
-                );
-            }
-
-            res.json({
-                subscription: subscription,
-                subSchedule: subSchedule,
-                charges: charges
-            });
-        } else {
-            res.json({ subscription: null, charges: charges });
-        }
+        res.json({ charges: charges });
     } else {
         res.json({ subscription: null });
     }
 });
 
 let userId;
-let tokensPerDollar;
 router.post('/create-checkout-session', async (req, res) => {
     try {
         userId = req.body.userId;
-        tokensPerDollar = req.body.tokensPerDollar;
+        const numberOfTokens = req.body.numberOfTokens;
+        let priceId = '';
+        if (numberOfTokens == 200000) {
+            priceId = process.env.STRIPE_200000_TOKENS_PRICE_ID;
+        } else if (numberOfTokens == 400000) {
+            priceId = process.env.STRIPE_400000_TOKENS_PRICE_ID;
+        } else if (numberOfTokens == 1000000) {
+            priceId = process.env.STRIPE_1000000_TOKENS_PRICE_ID;
+        }
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
-            mode: 'subscription',
+            mode: 'payment',
             line_items: [
                 {
                     price: priceId,
@@ -109,9 +90,14 @@ router.get('/success', async (req, res, next) => {
         req.query.session_id
     );
 
-    // Convert from cents
-    const amountOfDollars = session.amount_total / 100;
-    const amountOfTokens = amountOfDollars * tokensPerDollar;
+    let amountOfTokens = 0;
+    if (session.amount_total == 1000) {
+        amountOfTokens = 200000;
+    } else if (session.amount_total == 2000) {
+        amountOfTokens = 400000;
+    } else if (session.amount_total == 5000) {
+        amountOfTokens = 1000000;
+    }
 
     // Save the new tokens to the DB
     let queryString = `

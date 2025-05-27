@@ -21,9 +21,6 @@ export default {
             isAITokenLimitReached: false,
             isMobileCheck: window.innerWidth,
             showTooltip: false,
-            //subscription: {},
-            //subSchedule: {},
-            //nextSubSchedulePhasePlan: '',
             // For the loading animation.
             isLoading: false,
             // For downloading invoices from Stripe
@@ -131,34 +128,20 @@ export default {
             const subscriptionData = await result.json();
             // Load the subscription, if there is one
             this.subscription = subscriptionData.subscription;
-            // Check if there is a subscription schedule
-            // This would have been created in the case of a downgrade or upgrade,
-            // but not cancellation (downgrade to free plan).
-            this.subSchedule = subscriptionData.subSchedule;
-            if (this.subSchedule) {
-                let nextPhasePlan = this.subSchedule.phases[1].items[0].price;
-                if (nextPhasePlan == this.basicPlanPriceId) {
-                    this.nextSubSchedulePhasePlan = 'Basic';
-                } else if (nextPhasePlan == this.infinitePlanPriceId) {
-                    this.nextSubSchedulePhasePlan = 'Infinite';
-                }
-            }
-
             for (let i = 0; i < subscriptionData.charges.data.length; i++) {
                 this.receipts.push(subscriptionData.charges.data[i]);
             }
         },
         // Purchase tokens
-        checkout() {
-            this.amountOfTokens = this.dollars * this.settingsStore.tokensPerDollar;
+        checkout(numberOfTokens) {
             fetch('/subscriptions/create-checkout-session', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    userId: this.userDetailsStore.userId
-                    // planType: planType
+                    userId: this.userDetailsStore.userId,
+                    numberOfTokens: numberOfTokens
                 })
             })
                 .then((res) => {
@@ -423,9 +406,9 @@ export default {
                 class="col-md mb-3"
                 :class="{ 'text-center': isMobileCheck < 576 }"
             >
-                <h2 class="secondary-heading h4">100,000 tokens</h2>
+                <h2 class="secondary-heading h4">$10: 200,000 tokens</h2>
                 <!-- Buy tokens -->
-                <button @click="checkout('basic')" class="btn primary-btn mt-1">
+                <button @click="checkout(200000)" class="btn primary-btn mt-1">
                     buy
                 </button>
             </div>
@@ -436,9 +419,9 @@ export default {
                     'text-center': isMobileCheck < 576
                 }"
             >
-                <h2 class="secondary-heading h4">200,000 tokens</h2>
+                <h2 class="secondary-heading h4">$20: 400,000 tokens</h2>
                 <!-- Buy tokens -->
-                <button @click="checkout('basic')" class="btn primary-btn mt-1">
+                <button @click="checkout(400000)" class="btn primary-btn mt-1">
                     buy
                 </button>
             </div>
@@ -447,11 +430,8 @@ export default {
                 class="col-md mb-3"
                 :class="{ 'text-center': isMobileCheck < 576 }"
             >
-                <h2 class="secondary-heading h4">500,000 tokens</h2>
-                <button
-                    @click="checkout('infinite')"
-                    class="btn primary-btn mt-1"
-                >
+                <h2 class="secondary-heading h4">$50: 1000,000 tokens</h2>
+                <button @click="checkout(1000000)" class="btn primary-btn mt-1">
                     buy
                 </button>
             </div>
