@@ -25,10 +25,8 @@ export default {
             isLoading: false,
             // For downloading invoices from Stripe
             receipts: [],
-            dollars: 10,
             isAITokenLimitReached: false,
-            assistantsModelPrice: { input: 75, output: 150 },
-            amountOfTokens: 0
+            assistantsModelPrice: { input: 75, output: 150 }
         };
     },
     async created() {
@@ -330,6 +328,12 @@ export default {
                         <p>
                             <strong>Current token usage:</strong>
                             {{ formattedMonthlyTokenUsage }}
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            <strong>Your tokens:</strong>
+                            {{ userDetailsStore.tokens.toLocaleString() }}
                         </p>
                     </li>
                 </ul>
