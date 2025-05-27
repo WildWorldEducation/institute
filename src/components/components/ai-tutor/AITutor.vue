@@ -324,6 +324,15 @@ export default {
                 this.currentIndexAudioPlaying = index;
             }
         },
+        onVoiceMessageError() {
+            this.isRecording = false;
+            const activeTextarea =
+                this.$refs.messageInput || this.$refs.modalMessageInput;
+            if (activeTextarea) {
+                activeTextarea.placeholder =
+                    'Type your message or use voice input...';
+            }
+        },
         // Auto play audio after streaming from Open AI
         playNewMessageAudio(index, url) {
             // If playing, pause
@@ -355,6 +364,7 @@ export default {
                 return;
             }
 
+            // Set thinking state ONLY when actually sending to AI
             this.waitForAIresponse = true;
 
             try {
@@ -390,12 +400,13 @@ export default {
                 socket.emit(socketChannel, messageData);
             } catch (error) {
                 console.error(error);
-                this.waitForAIresponse = false;
+                this.waitForAIresponse = false; // Reset on error
             }
             this.$nextTick(() => {
                 this.scrollToMessageInput();
             });
         },
+
         async askQuestion() {
             if (this.waitForAIresponse) {
                 return;
@@ -704,14 +715,13 @@ export default {
         },
         onRecordingStarted() {
             this.message = '';
-            this.isRecording = true; // Set recording state
+            this.isRecording = true;
             // Update placeholder for the active textarea
             const activeTextarea =
                 this.$refs.messageInput || this.$refs.modalMessageInput;
             if (activeTextarea) {
                 activeTextarea.placeholder = 'Recording in progress...';
             }
-            this.waitForAIresponse = true;
         },
         onRecordingStopped() {
             // Update placeholder for the active textarea
@@ -722,7 +732,7 @@ export default {
             }
         },
         onVoiceMessageSent() {
-            this.isRecording = false; // Reset recording state
+            this.isRecording = false;
             // Reset placeholder for the active textarea
             const activeTextarea =
                 this.$refs.messageInput || this.$refs.modalMessageInput;
@@ -730,9 +740,6 @@ export default {
                 activeTextarea.placeholder =
                     'Type your message or use voice input...';
             }
-
-            this.waitForAIresponse = false;
-
             this.$nextTick(() => {
                 this.scrollToMessageInput();
             });
@@ -799,7 +806,9 @@ export default {
                 if (newItem.streamType !== 'aiTutor') {
                     return;
                 }
+
                 if (newItem.isStreaming) {
+                    // AI has started responding, stop thinking animation
                     this.waitForAIresponse = false;
                     this.$nextTick(() => {
                         this.scrollToMessageInput();
@@ -807,6 +816,8 @@ export default {
                 }
 
                 if (!newItem.isStreaming && newItem.isRunJustEnded) {
+                    // AI has completely finished responding
+                    this.waitForAIresponse = false;
                     // "index" is for generating and playing audio, and order in chat
                     let index = 0;
                     if (
@@ -849,29 +860,6 @@ export default {
                 }
             },
             deep: true
-        },
-        mode: {
-            modeHandler(newItem, oldItem) {
-                if (
-                    newItem === 'modal' &&
-                    (oldItem === 'hide' || oldItem === 'docked')
-                ) {
-                    if (this.chatHistory.length > 0) {
-                        // reverse the chat history
-                        this.chatHistory.reverse();
-                    }
-                }
-                if (
-                    oldItem === 'modal' &&
-                    (newItem === 'hide' || newItem === 'docked')
-                ) {
-                    if (this.chatHistory.length > 0) {
-                        // reverse the chat history
-                        this.chatHistory.reverse();
-                    }
-                }
-                console.log('in node watch');
-            }
         }
     }
 };
@@ -1235,11 +1223,11 @@ export default {
             </div>
         </div>
         <!-- User input (docked mode) -->
-        <div class="input-container" v-if="mode === 'docked'">
-            <div
-                class="input-wrapper"
-                :class="{ 'recording-mode': isRecording }"
-            >
+        <div
+            class="input-container"
+            v-if="mode === 'docked' && !$parent.isAITokenLimitReached"
+        >
+            <div class="input-wrapper">
                 <textarea
                     ref="messageInput"
                     class="chat-text-area"
@@ -1247,7 +1235,7 @@ export default {
                     placeholder="Type your message or use voice input..."
                     @keydown.enter="handleKeyDown"
                     @input="autoResizeTextarea"
-                    :disabled="isRecording || $parent.isAITokenLimitReached"
+                    :disabled="isRecording"
                 ></textarea>
 
                 <!-- Integrated Speech Recorder -->
@@ -1261,7 +1249,9 @@ export default {
                     @recording-started="onRecordingStarted"
                     @recording-stopped="onRecordingStopped"
                     @message-sent="onVoiceMessageSent"
+                    @message-error="onVoiceMessageError"
                 />
+
                 <!-- Send button -->
                 <button
                     class="btn send-btn"
@@ -1270,7 +1260,7 @@ export default {
                         'assessing-btn': tutorType === 'assessing'
                     }"
                     @click="sendMessage()"
-                    :disabled="isRecording || $parent.isAITokenLimitReached"
+                    :disabled="isRecording"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -1284,6 +1274,7 @@ export default {
                 </button>
             </div>
         </div>
+
         <!-- Tutor loading animation (docked mode) -->
         <div
             v-if="mode === 'docked' && waitForAIresponse"
@@ -1446,11 +1437,11 @@ export default {
                 ></div>
             </div>
             <!-- User input (modal mode) -->
-            <div class="modal-input" v-if="mode === 'modal'">
-                <div
-                    class="input-row"
-                    :class="{ 'recording-mode': isRecording }"
-                >
+            <div
+                class="modal-input"
+                v-if="mode === 'modal' && !$parent.isAITokenLimitReached"
+            >
+                <div class="input-row">
                     <textarea
                         ref="modalMessageInput"
                         class="modal-textarea"
@@ -1458,7 +1449,7 @@ export default {
                         placeholder="Type your message or use voice input..."
                         @keydown.enter="handleKeyDown"
                         @input="autoResizeModalTextarea"
-                        :disabled="isRecording || $parent.isAITokenLimitReached"
+                        :disabled="isRecording"
                     ></textarea>
 
                     <SpeechRecorder
@@ -1470,12 +1461,13 @@ export default {
                         @recording-started="onRecordingStarted"
                         @recording-stopped="onRecordingStopped"
                         @message-sent="onVoiceMessageSent"
+                        @message-error="onVoiceMessageError"
                     />
 
                     <button
                         class="send-btn"
                         @click="sendMessage()"
-                        :disabled="isRecording || $parent.isAITokenLimitReached"
+                        :disabled="isRecording"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -1761,7 +1753,7 @@ export default {
     align-items: flex-start;
     gap: 12px;
     padding: 8px 12px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid #9ca3af;
     border-radius: 12px;
     background: white;
     transition: border-color 0.3s ease;
@@ -1793,7 +1785,7 @@ export default {
 .modal-input {
     padding: 8px 0;
     width: 100%;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid #9ca3af;
 }
 
 .input-row {
@@ -1801,7 +1793,7 @@ export default {
     align-items: flex-start;
     gap: 12px;
     padding: 8px 12px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid #9ca3af;
     border-radius: 12px;
     background: white;
     transition: border-color 0.3s ease;
@@ -1810,6 +1802,14 @@ export default {
 
 .input-row:focus-within {
     border-color: var(--primary-color);
+}
+
+.chat-text-area:disabled,
+.modal-textarea:disabled {
+    opacity: 0.6; /* Slightly more transparent */
+    cursor: not-allowed;
+    background: rgba(156, 163, 175, 0.1); /* Subtle gray background */
+    color: #6b7280; /* Gray text */
 }
 
 /* Send button - unified for both modes */
@@ -1827,13 +1827,21 @@ export default {
     transition: all 0.2s ease;
     flex-shrink: 0;
 }
+
 .send-btn:hover:not(:disabled) {
     background: #5145e4;
     transform: scale(1.05);
 }
+
 .send-btn:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
+    transform: none;
+}
+
+.send-btn:disabled:hover {
+    transform: none;
+    background: var(--primary-color);
 }
 
 .send-btn.socratic-btn {
@@ -1841,6 +1849,14 @@ export default {
 }
 
 .send-btn.assessing-btn {
+    background: #7f1e1e;
+}
+
+.send-btn.socratic-btn:disabled:hover {
+    background: #31315f;
+}
+
+.send-btn.assessing-btn:disabled:hover {
     background: #7f1e1e;
 }
 
@@ -1861,6 +1877,18 @@ export default {
     .chat-text-area {
         min-height: 16px;
         padding: 2px 0;
+    }
+
+    .send-btn {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+@media (min-width: 768px) {
+    .send-btn {
+        width: 44px;
+        height: 44px;
     }
 }
 </style>

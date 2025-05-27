@@ -123,6 +123,8 @@ export default {
                 this.isLoading = false;
 
                 if (response.ok) {
+                    // This will trigger the normal message sending flow in the parent
+                    // which will properly handle the AI thinking state
                     await this.$parent.getChatHistory();
                     this.$emit('message-sent');
                     this.$nextTick(() => {
@@ -136,6 +138,7 @@ export default {
             } catch (error) {
                 console.error('Error sending audio data:', error);
                 this.isLoading = false;
+                this.$emit('message-error');
                 alert('Failed to send your recording. Please try again.');
             }
         },
@@ -213,9 +216,15 @@ export default {
             :disabled="isAITokenLimitReached"
             title="Allow microphone access"
         >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <!-- FontAwesome Microphone Icon (Solid) -->
+            <svg
+                width="20"
+                height="20"
+                viewBox="0 0 384 512"
+                fill="currentColor"
+            >
                 <path
-                    d="M12 2C13.1 2 14 2.9 14 4V12C14 13.1 13.1 14 12 14C10.9 14 10 13.1 10 12V4C10 2.9 10.9 2 12 2M19 11C19 15.4 15.4 19 11 19V21H13C13.6 21 14 21.4 14 22S13.6 23 13 23H11C10.4 23 10 22.6 10 22S10.4 21 11 21V19C6.6 19 3 15.4 3 11H5C5 14.3 7.7 17 11 17S17 14.3 17 11H19Z"
+                    d="M192 0C139 0 96 43 96 96l0 160c0 53 43 96 96 96s96-43 96-96l0-160c0-53-43-96-96-96zM64 216c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c0 89.1 66.2 162.7 152 174.4l0 33.6-48 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l72 0 72 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-48 0 0-33.6C321.8 418.7 384 345.1 384 256l0-40c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c0 70.7-57.3 128-128 128s-128-57.3-128-128l0-40z"
                 />
             </svg>
         </button>
@@ -229,16 +238,16 @@ export default {
                 :disabled="isAITokenLimitReached || isLoading"
                 :title="recording ? 'Stop recording' : 'Start recording'"
             >
-                <!-- Microphone Icon -->
+                <!-- FontAwesome Microphone Icon (Solid) -->
                 <svg
                     v-if="!recording && !isLoading"
                     width="20"
                     height="20"
-                    viewBox="0 0 24 24"
+                    viewBox="0 0 384 512"
                     fill="currentColor"
                 >
                     <path
-                        d="M12 2C13.1 2 14 2.9 14 4V12C14 13.1 13.1 14 12 14C10.9 14 10 13.1 10 12V4C10 2.9 10.9 2 12 2M19 11C19 15.4 15.4 19 11 19V21H13C13.6 21 14 21.4 14 22S13.6 23 13 23H11C10.4 23 10 22.6 10 22S10.4 21 11 21V19C6.6 19 3 15.4 3 11H5C5 14.3 7.7 17 11 17S17 14.3 17 11H19Z"
+                        d="M192 0C139 0 96 43 96 96l0 160c0 53 43 96 96 96s96-43 96-96l0-160c0-53-43-96-96-96zM64 216c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c0 89.1 66.2 162.7 152 174.4l0 33.6-48 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l72 0 72 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-48 0 0-33.6C321.8 418.7 384 345.1 384 256l0-40c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c0 70.7-57.3 128-128 128s-128-57.3-128-128l0-40z"
                     />
                 </svg>
 
@@ -288,6 +297,7 @@ export default {
     align-items: center;
     justify-content: center;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
 }
 
 .voice-btn:hover:not(:disabled) {
@@ -318,7 +328,7 @@ export default {
 
 .voice-btn.processing {
     background: #fef3c7;
-    color: #f59e0b;
+    color: #d97706;
     border: 2px solid #fed7aa;
 }
 
@@ -333,15 +343,15 @@ export default {
     align-items: center;
     gap: 8px;
     padding: 4px 8px;
-    background: rgba(239, 68, 68, 0.1);
+    background: rgba(239, 68, 68, 0.15);
     border-radius: 12px;
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    border: 1px solid rgba(239, 68, 68, 0.4);
 }
 
 .recording-pulse {
     width: 8px;
     height: 8px;
-    background: #ef4444;
+    background: #b91c1c; /* Darker red for better contrast */
     border-radius: 50%;
     animation: pulse 1s ease-in-out infinite;
 }
@@ -349,7 +359,7 @@ export default {
 .recording-timer {
     font-size: 12px;
     font-weight: 600;
-    color: #ef4444;
+    color: #dc2626;
     font-family: monospace;
     min-width: 35px;
 }
@@ -357,8 +367,8 @@ export default {
 .spinner {
     width: 16px;
     height: 16px;
-    border: 2px solid transparent;
-    border-top: 2px solid currentColor;
+    border: 3px solid #fed7aa;
+    border-top: 3px solid #d97706;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -368,10 +378,12 @@ export default {
     100% {
         opacity: 1;
         transform: scale(1);
+        background: #b91c1c; /* Dark red */
     }
     50% {
-        opacity: 0.4;
-        transform: scale(1.2);
+        opacity: 0.85; /* Much higher opacity - still visible */
+        transform: scale(1.3);
+        background: #dc2626; /* Slightly lighter red but still dark */
     }
 }
 
