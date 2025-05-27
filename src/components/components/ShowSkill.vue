@@ -15,6 +15,7 @@ import FlagModals from './FlagModals.vue';
 import Forum from './forum/Forum.vue';
 import AITutor from './ai-tutor/AITutor.vue';
 import LearningObjectiveAITutor from './ai-tutor/LearningObjectiveAITutor.vue';
+import { treemapSquarify } from 'd3';
 
 export default {
     setup() {
@@ -263,10 +264,10 @@ export default {
             //Load skill filters
             this.getSkillFilters();
 
-            const icon = document.getElementsByTagName('svg');
-            if (icon.length > 0) {
-                icon[0].style.height = '50px';
-            }
+            // const icon = document.getElementsByTagName('svg');
+            // if (icon.length > 0) {
+            //     icon[0].style.height = '50px';
+            // }
 
             // Record that the user visited this skill.
             if (this.userDetailsStore.role == 'student')
@@ -718,13 +719,17 @@ export default {
                 }
             });
         },
-        scrollToAITutor() {
+        scrollToAITutor(isOpenTutor) {
             if (this.$refs.aiTutorSection) {
                 // Scroll to the AITutor section
                 this.$refs.aiTutorSection.scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
                 });
+            }
+            if (isOpenTutor) {
+                // Open the AITutor modal if requested
+                this.$refs.aiTutor.showTutorModal('socratic');
             }
         },
         async checkSubskillMastery() {
@@ -822,184 +827,6 @@ export default {
                     >
                         {{ calculatedSkillName }}
                     </h1>
-                    <!-- Take assessment btn-->
-                    <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
-                    <router-link
-                        v-if="
-                            userDetailsStore.isSkillsLocked == 1 &&
-                            userDetailsStore.role == 'student' &&
-                            !isUnlocked &&
-                            !isMastered &&
-                            showAncestorLink
-                        "
-                        :to="'/skills/' + ancestor"
-                        class="btn assessment-btn me-1"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 448 512"
-                            width="20"
-                            fill="white"
-                        >
-                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"
-                            />
-                        </svg>
-                        &nbsp; Go to Nearest Unlocked Skill
-                    </router-link>
-                    <!-- Assessment -->
-                    <button
-                        v-if="
-                            userDetailsStore.role == 'student' &&
-                            !isMastered &&
-                            skill.type != 'domain' &&
-                            skill.id &&
-                            (skill.type !== 'super' || areAllSubskillsMastered)
-                        "
-                        class="btn me-1 assessment-btn"
-                        @click="scrollToAITutor()"
-                    >
-                        <span>
-                            <!-- Half star icon -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 576 512"
-                                width="22"
-                                fill="white"
-                            >
-                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                <path
-                                    d="M288 0c-12.2 .1-23.3 7-28.6 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3L288 439.8 288 0zM429.9 512c1.1 .1 2.1 .1 3.2 0l-3.2 0z"
-                                />
-                            </svg>
-                            Take the Test
-                            <!-- Half star icon -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 576 512"
-                                width="22"
-                                fill="white"
-                            >
-                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                <path
-                                    d="m 169.24356,0 c 12.2,0.1 23.3,7 28.6,18 l 64.4,132.3 143.6,21.2 c 12,1.8 22,10.2 25.7,21.7 3.7,11.5 0.7,24.2 -7.9,32.7 l -104.2,103.1 24.6,145.7 c 2,12 -3,24.2 -12.9,31.3 -9.9,7.1 -23,8 -33.8,2.3 l -128.1,-68.5 z M 27.343555,512 c -1.1,0.1 -2.1,0.1 -3.2,0 z"
-                                    id="path17"
-                                />
-                            </svg>
-                        </span>
-                    </button>
-                    <!-- Unmastered Subskills Modal -->
-                    <div
-                        v-if="showUnmasteredModal"
-                        class="modal"
-                        @click.self="showUnmasteredModal = false"
-                    >
-                        <div class="modal-content">
-                            <h1 class="heading h5">
-                                Complete these cluster skills first:
-                            </h1>
-                            <div v-for="subskill in unmasteredSubskills">
-                                <router-link
-                                    :class="{
-                                        'grade-school':
-                                            skill.level == 'grade_school',
-                                        'middle-school':
-                                            skill.level == 'middle_school',
-                                        'high-school':
-                                            skill.level == 'high_school',
-                                        college: skill.level == 'college',
-                                        phd: skill.level == 'phd'
-                                    }"
-                                    class="skill-link btn mb-1 text-start"
-                                    :to="`/skills/${subskill.url}`"
-                                    @click="showUnmasteredModal = false"
-                                >
-                                    {{ subskill.name }}
-                                </router-link>
-                            </div>
-                            <button
-                                class="btn primary-btn ms-auto me-0"
-                                @click="showUnmasteredModal = false"
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                    <button
-                        v-if="
-                            userDetailsStore.role == 'student' &&
-                            !isMastered &&
-                            skill.type === 'super' &&
-                            !areAllSubskillsMastered
-                        "
-                        class="btn me-1 assessment-btn"
-                        style="opacity: 0.7"
-                        @click="showUnmasteredSubskillsModal"
-                        title="Click to see which subskills need to be mastered"
-                    >
-                        <!-- Half star icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 576 512"
-                            width="22"
-                            fill="white"
-                        >
-                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="M288 0c-12.2 .1-23.3 7-28.6 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3L288 439.8 288 0zM429.9 512c1.1 .1 2.1 .1 3.2 0l-3.2 0z"
-                            />
-                        </svg>
-                        Master Subskills First
-                        <!-- Half star icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 576 512"
-                            width="22"
-                            fill="white"
-                        >
-                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="m 169.24356,0 c 12.2,0.1 23.3,7 28.6,18 l 64.4,132.3 143.6,21.2 c 12,1.8 22,10.2 25.7,21.7 3.7,11.5 0.7,24.2 -7.9,32.7 l -104.2,103.1 24.6,145.7 c 2,12 -3,24.2 -12.9,31.3 -9.9,7.1 -23,8 -33.8,2.3 l -128.1,-68.5 z M 27.343555,512 c -1.1,0.1 -2.1,0.1 -3.2,0 z"
-                                id="path17"
-                            />
-                        </svg>
-                    </button>
-                    <button
-                        v-if="
-                            userDetailsStore.role == 'student' &&
-                            skill.type == 'domain'
-                        "
-                        @click="MakeMastered()"
-                        class="btn me-1 assessment-btn"
-                    >
-                        <!-- Half star icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 576 512"
-                            width="22"
-                            fill="white"
-                        >
-                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="M288 0c-12.2 .1-23.3 7-28.6 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3L288 439.8 288 0zM429.9 512c1.1 .1 2.1 .1 3.2 0l-3.2 0z"
-                            />
-                        </svg>
-                        Go To Child Skill
-                        <!-- Half star icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 576 512"
-                            width="22"
-                            fill="white"
-                        >
-                            <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="m 169.24356,0 c 12.2,0.1 23.3,7 28.6,18 l 64.4,132.3 143.6,21.2 c 12,1.8 22,10.2 25.7,21.7 3.7,11.5 0.7,24.2 -7.9,32.7 l -104.2,103.1 24.6,145.7 c 2,12 -3,24.2 -12.9,31.3 -9.9,7.1 -23,8 -33.8,2.3 l -128.1,-68.5 z M 27.343555,512 c -1.1,0.1 -2.1,0.1 -3.2,0 z"
-                                id="path17"
-                            />
-                        </svg>
-                    </button>
                 </div>
                 <!-- Student tooltip -->
                 <div
@@ -1044,148 +871,239 @@ export default {
                 </div>
                 <!-- A line divide -->
                 <hr
-                    class="border border-2 opacity-100 hr"
+                    class="border border-2 opacity-100 hr mb-2"
                     v-if="isMobileCheck > 576"
                 />
             </div>
             <!-- Buttons -->
-            <div class="row mb-2 mt-2">
-                <div class="col d-flex justify-content-between">
-                    <!-- Guest mode -->
-                    <span
-                        v-if="!sessionDetailsStore.isLoggedIn"
-                        class="d-flex justify-content-between w-100"
+            <div
+                class="row"
+                :class="{
+                    'mb-0':
+                        !sessionDetailsStore.isLoggedIn && isMobileCheck < 576,
+                    'mb-2':
+                        sessionDetailsStore.isLoggedIn || isMobileCheck >= 576
+                }"
+            >
+                <div
+                    class="col d-flex justify-content-between"
+                    :class="{ 'flex-column': isMobileCheck < 576 }"
+                >
+                    <!-- Left side buttons -->
+                    <!-- Tutor and Test buttons -->
+                    <div
+                        class="d-flex gap-1 w-100"
+                        :class="{
+                            'justify-content-between': isMobileCheck < 576
+                        }"
                     >
                         <!-- If not logged in, go to Login page -->
                         <router-link
-                            class="btn me-1 assessment-btn"
+                            v-if="!sessionDetailsStore.isLoggedIn"
                             to="/login"
+                            class="btn socratic-btn"
                         >
-                            <!-- Half star icon -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 576 512"
-                                width="22"
-                                fill="white"
-                            >
-                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                <path
-                                    d="M288 0c-12.2 .1-23.3 7-28.6 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3L288 439.8 288 0zM429.9 512c1.1 .1 2.1 .1 3.2 0l-3.2 0z"
-                                />
-                            </svg>
-                            <span v-if="skill.type != 'domain'"
-                                >Take the Test</span
-                            ><span v-else>Mark Complete</span>
-                            <!-- Half star icon -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 576 512"
-                                width="22"
-                                fill="white"
-                            >
-                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                <path
-                                    d="m 169.24356,0 c 12.2,0.1 23.3,7 28.6,18 l 64.4,132.3 143.6,21.2 c 12,1.8 22,10.2 25.7,21.7 3.7,11.5 0.7,24.2 -7.9,32.7 l -104.2,103.1 24.6,145.7 c 2,12 -3,24.2 -12.9,31.3 -9.9,7.1 -23,8 -33.8,2.3 l -128.1,-68.5 z M 27.343555,512 c -1.1,0.1 -2.1,0.1 -3.2,0 z"
-                                    id="path17"
-                                />
-                            </svg>
+                            Socratic Tutor
                         </router-link>
-                        <!-- Sharable URL -->
                         <button
+                            @click="scrollToAITutor(true)"
+                            v-else
+                            class="btn socratic-btn"
+                        >
+                            Socratic Tutor
+                        </button>
+                        <!-- Take assessment btn-->
+                        <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
+                        <router-link
                             v-if="
-                                !sessionDetailsStore.isLoggedIn &&
-                                isMobileCheck < 576
+                                userDetailsStore.isSkillsLocked == 1 &&
+                                userDetailsStore.role == 'student' &&
+                                !isUnlocked &&
+                                !isMastered &&
+                                showAncestorLink
                             "
-                            @click="copyShareableURLToClipBoard"
-                            class="btn me-1"
-                            aria-label="share"
+                            :to="'/skills/' + ancestor"
+                            class="btn assessment-btn me-1"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 448 512"
                                 width="20"
-                                heigth="20"
-                            >
-                                <path
-                                    class="primary-icon"
-                                    d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"
-                                />
-                            </svg>
-                        </button>
-                    </span>
-
-                    <div class="d-flex">
-                        <!-- Edit skill btn-->
-                        <router-link
-                            v-if="sessionDetailsStore.isLoggedIn"
-                            :to="'/skills/edit/' + skillUrl"
-                            class="edit-btn btn primary-btn me-1"
-                            ><span v-if="isMobileCheck > 576">Edit &nbsp;</span>
-                            <!-- Pencil icon -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="20"
-                                height="20"
                                 fill="white"
                             >
+                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                 <path
-                                    d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z"
+                                    d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"
                                 />
                             </svg>
+                            &nbsp; Go to Nearest Unlocked Skill
                         </router-link>
-                        <!-- Show version history -->
-                        <router-link
-                            v-if="
-                                userDetailsStore.role == 'admin' ||
-                                userDetailsStore.role == 'editor'
-                            "
-                            :to="'/skills/history/' + this.skillUrl"
-                            class="btn primary-btn me-1"
-                            ><span v-if="isMobileCheck > 576"
-                                >History&nbsp;</span
-                            >
-                            <!-- History icon -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="18"
-                                height="20"
-                                fill="white"
-                            >
-                                <path
-                                    d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9L0 168c0 13.3 10.7 24 24 24l110.1 0c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65 0-94.1c0-13.3-10.7-24-24-24z"
-                                />
-                            </svg>
-                        </router-link>
-                        <!-- Create goal button -->
+                        <!-- Assessment -->
                         <button
                             v-if="
+                                userDetailsStore.role == 'student' &&
+                                !isMastered &&
                                 skill.type != 'domain' &&
-                                sessionDetailsStore.isLoggedIn &&
-                                isMastered == false &&
-                                isUnlocked == false &&
-                                isGoal == false &&
-                                userDetailsStore.role == 'student'
+                                skill.id &&
+                                (skill.type !== 'super' ||
+                                    areAllSubskillsMastered)
                             "
-                            class="btn primary-btn"
-                            @click="openModal(skill)"
+                            class="btn me-1 assessment-btn"
+                            @click="scrollToAITutor(false)"
                         >
-                            <span v-if="isMobileCheck > 576"
-                                >Create goal&nbsp;</span
-                            >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                fill="white"
-                                width="20"
-                                height="20"
-                            >
-                                <path
-                                    d="M448 256A192 192 0 1 0 64 256a192 192 0 1 0 384 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm0-224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zM224 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
-                                />
-                            </svg>
+                            Take the Test
                         </button>
+                        <!-- Unmastered Subskills Modal -->
+                        <div
+                            v-if="showUnmasteredModal"
+                            class="modal"
+                            @click.self="showUnmasteredModal = false"
+                        >
+                            <div class="modal-content">
+                                <h1 class="heading h5">
+                                    Complete these cluster skills first:
+                                </h1>
+                                <div v-for="subskill in unmasteredSubskills">
+                                    <router-link
+                                        :class="{
+                                            'grade-school':
+                                                skill.level == 'grade_school',
+                                            'middle-school':
+                                                skill.level == 'middle_school',
+                                            'high-school':
+                                                skill.level == 'high_school',
+                                            college: skill.level == 'college',
+                                            phd: skill.level == 'phd'
+                                        }"
+                                        class="skill-link btn mb-1 text-start"
+                                        :to="`/skills/${subskill.url}`"
+                                        @click="showUnmasteredModal = false"
+                                    >
+                                        {{ subskill.name }}
+                                    </router-link>
+                                </div>
+                                <button
+                                    class="btn primary-btn ms-auto me-0"
+                                    @click="showUnmasteredModal = false"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                        <button
+                            v-if="
+                                userDetailsStore.role == 'student' &&
+                                !isMastered &&
+                                skill.type === 'super' &&
+                                !areAllSubskillsMastered
+                            "
+                            class="btn me-1 assessment-btn"
+                            style="opacity: 0.7"
+                            @click="showUnmasteredSubskillsModal"
+                            title="Click to see which subskills need to be mastered"
+                        >
+                            Master Subskills First
+                        </button>
+                        <button
+                            v-if="
+                                userDetailsStore.role == 'student' &&
+                                skill.type == 'domain'
+                            "
+                            @click="MakeMastered()"
+                            class="btn me-1 assessment-btn"
+                        >
+                            Go To Child Skill
+                        </button>
+                        <!-- If not logged in, go to Login page -->
+                        <router-link
+                            v-if="!sessionDetailsStore.isLoggedIn"
+                            class="btn me-1 assessment-btn"
+                            to="/login"
+                        >
+                            <span v-if="skill.type != 'domain'"
+                                >Take the Test</span
+                            ><span v-else>Mark Complete</span>
+                        </router-link>
+                    </div>
+
+                    <!-- Right hand buttons -->
+                    <div
+                        class="d-flex"
+                        :class="{
+                            'justify-content-between': isMobileCheck < 576,
+                            'mt-2': isMobileCheck < 576
+                        }"
+                    >
+                        <span class="d-flex">
+                            <!-- Edit skill btn-->
+                            <router-link
+                                v-if="sessionDetailsStore.isLoggedIn"
+                                :to="'/skills/edit/' + skillUrl"
+                                class="edit-btn btn primary-btn me-1"
+                            >
+                                <!-- Pencil icon -->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="20"
+                                    height="20"
+                                    fill="white"
+                                >
+                                    <path
+                                        d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z"
+                                    />
+                                </svg>
+                            </router-link>
+                            <!-- Show version history -->
+                            <router-link
+                                v-if="
+                                    userDetailsStore.role == 'admin' ||
+                                    userDetailsStore.role == 'editor'
+                                "
+                                :to="'/skills/history/' + this.skillUrl"
+                                class="btn primary-btn me-1"
+                                ><span v-if="isMobileCheck > 576"
+                                    >History&nbsp;</span
+                                >
+                                <!-- History icon -->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="18"
+                                    height="20"
+                                    fill="white"
+                                >
+                                    <path
+                                        d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9L0 168c0 13.3 10.7 24 24 24l110.1 0c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65 0-94.1c0-13.3-10.7-24-24-24z"
+                                    />
+                                </svg>
+                            </router-link>
+                            <!-- Create goal button -->
+                            <button
+                                v-if="
+                                    skill.type != 'domain' &&
+                                    sessionDetailsStore.isLoggedIn &&
+                                    isMastered == false &&
+                                    isUnlocked == false &&
+                                    isGoal == false &&
+                                    userDetailsStore.role == 'student'
+                                "
+                                class="btn primary-btn"
+                                @click="openModal(skill)"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    fill="white"
+                                    width="20"
+                                    height="20"
+                                >
+                                    <path
+                                        d="M448 256A192 192 0 1 0 64 256a192 192 0 1 0 384 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm0-224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zM224 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
+                                    />
+                                </svg>
+                            </button>
+                        </span>
                         <!-- Modal -->
                         <div
                             v-if="toggleModal"
@@ -1217,71 +1135,69 @@ export default {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div
-                        class="d-flex"
-                        v-if="
-                            isMobileCheck > 576 ||
-                            sessionDetailsStore.isLoggedIn
-                        "
-                    >
-                        <!-- Sharable URL -->
-                        <button
-                            @click="copyShareableURLToClipBoard"
-                            class="btn me-1"
-                            aria-label="share"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
-                                width="20"
-                                heigth="20"
+                        <span class="d-flex">
+                            <!-- Sharable URL -->
+                            <button
+                                v-if="
+                                    sessionDetailsStore.isLoggedIn ||
+                                    isMobileCheck >= 576
+                                "
+                                @click="copyShareableURLToClipBoard"
+                                class="btn me-1"
+                                aria-label="share"
                             >
-                                <path
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 448 512"
+                                    width="20"
+                                    heigth="20"
+                                >
+                                    <path
+                                        class="primary-icon"
+                                        d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"
+                                    />
+                                </svg>
+                            </button>
+                            <!-- Flag button -->
+                            <button
+                                v-if="sessionDetailsStore.isLoggedIn"
+                                @click="showFlaggingModal = true"
+                                class="btn"
+                                b-tooltip.hover
+                                title="Report this skill to the admin if it has errors"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 448 512"
+                                    class="flag-icon"
+                                >
+                                    <path
+                                        class="primary-icon"
+                                        d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
+                                    />
+                                </svg>
+                            </button>
+                            <!-- Tutorial button -->
+                            <button
+                                v-if="sessionDetailsStore.isLoggedIn"
+                                class="btn me-1"
+                                @click="restartTutorial"
+                                aria-label="info"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 192 512"
+                                    width="20"
+                                    height="23"
                                     class="primary-icon"
-                                    d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"
-                                />
-                            </svg>
-                        </button>
-                        <!-- Flag button -->
-                        <button
-                            v-if="sessionDetailsStore.isLoggedIn"
-                            @click="showFlaggingModal = true"
-                            class="btn"
-                            b-tooltip.hover
-                            title="Report this skill to the admin if it has errors"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
-                                class="flag-icon"
-                            >
-                                <path
-                                    class="primary-icon"
-                                    d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
-                                />
-                            </svg>
-                        </button>
-                        <!-- Tutorial button -->
-                        <button
-                            v-if="sessionDetailsStore.isLoggedIn"
-                            class="btn me-1"
-                            @click="restartTutorial"
-                            aria-label="info"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 192 512"
-                                width="20"
-                                height="23"
-                                class="primary-icon"
-                            >
-                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                <path
-                                    d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
-                                />
-                            </svg>
-                        </button>
+                                >
+                                    <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                    <path
+                                        d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                                    />
+                                </svg>
+                            </button>
+                        </span>
                     </div>
                 </div>
                 <!-- Student tooltips -->
@@ -1480,7 +1396,7 @@ export default {
 
                 <!-- A line divide -->
                 <hr
-                    class="border border-1 opacity-100 hr mt-2"
+                    class="border border-1 opacity-100 hr mt-2 mb-0"
                     v-if="isMobileCheck > 576"
                 />
             </div>
@@ -1536,8 +1452,39 @@ export default {
                                 style="aspect-ratio: 1/1; object-fit: cover"
                             />
                         </a>
+                        <!-- Sharable URL -->
+                        <button
+                            v-if="
+                                !sessionDetailsStore.isLoggedIn &&
+                                isMobileCheck < 576
+                            "
+                            @click="copyShareableURLToClipBoard"
+                            class="btn"
+                            aria-label="share"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                width="20"
+                                heigth="20"
+                            >
+                                <path
+                                    class="primary-icon"
+                                    d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"
+                                />
+                            </svg>
+                        </button>
                         <!-- Grade level -->
-                        <div class="mt-2">
+                        <div
+                            :class="{
+                                'mt-0':
+                                    !sessionDetailsStore.isLoggedIn &&
+                                    isMobileCheck < 576,
+                                'mt-2':
+                                    sessionDetailsStore.isLoggedIn ||
+                                    isMobileCheck >= 576
+                            }"
+                        >
                             <h2 class="h4 secondary-heading">Level</h2>
                             <span v-if="skill.level == 'grade_school'"
                                 >Grade School</span
@@ -1742,6 +1689,7 @@ export default {
             <!-- Only show AI tutor for Student -->
             <!-- Not show AI tutor for domain type of skill-->
             <AITutor
+                ref="aiTutor"
                 v-if="
                     isSkillLoaded &&
                     (userDetailsStore.role === 'student' ||
@@ -2157,7 +2105,6 @@ p {
     max-height: 48px;
     border: 3px solid var(--secondary-contrast-color);
     font-weight: 500;
-    padding: 5px;
     font-size: 16px;
     line-height: 24px;
     display: flex;
@@ -2168,6 +2115,21 @@ p {
     background-color: #7f1e1e;
     color: white; /* Matching the text color used by both buttons */
     justify-content: center;
+}
+.socratic-btn {
+    height: auto;
+    max-height: 48px;
+    border: 3px solid var(--secondary-contrast-color);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+    text-wrap: nowrap;
+    border-style: solid;
+    background-color: #31315f;
+    color: white;
 }
 
 .info-box {
@@ -2259,6 +2221,12 @@ p {
     .assessment-btn {
         width: 100%;
         max-width: 100%;
+        max-height: 38px;
+    }
+    .socratic-btn {
+        max-height: 38px;
+    }
+    .share-button {
         max-height: 38px;
     }
 }
