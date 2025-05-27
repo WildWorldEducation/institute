@@ -42,11 +42,15 @@ export default {
         document.head.appendChild(stripeScript);
 
         // Check if user is over free monthly AI token limit
-        if (this.userDetailsStore.tokens <= 0) {
-            if (
-                this.settingsStore.freeTokenMonthlyLimit <=
-                this.userDetailsStore.monthlyTokenUsage
-            ) {
+        let tokenBalance =
+            this.userDetailsStore.monthlyTokenUsage -
+            this.settingsStore.freeTokenMonthlyLimit;
+
+        if (
+            this.settingsStore.freeTokenMonthlyLimit <=
+            this.userDetailsStore.monthlyTokenUsage
+        ) {
+            if (tokenBalance > this.userDetailsStore.tokens) {
                 this.isAITokenLimitReached = true;
             }
         }

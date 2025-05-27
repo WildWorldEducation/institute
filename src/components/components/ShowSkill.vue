@@ -15,7 +15,6 @@ import FlagModals from './FlagModals.vue';
 import Forum from './forum/Forum.vue';
 import AITutor from './ai-tutor/AITutor.vue';
 import LearningObjectiveAITutor from './ai-tutor/LearningObjectiveAITutor.vue';
-import { treemapSquarify } from 'd3';
 
 export default {
     setup() {
@@ -187,7 +186,7 @@ export default {
                     typeof this.settingsStore.getSettings === 'function'
                 ) {
                     // Only get settings if free monthly tokens are 0 or not set
-                    if (this.settingsStore.freePlanTokenLimit === 0) {
+                    if (this.settingsStore.freeTokenMonthlyLimit === 0) {
                         await this.settingsStore.getSettings();
                     }
                 } else {
@@ -197,18 +196,15 @@ export default {
                 }
 
                 // Check if user is over free monthly AI token limit
-                if (this.userDetailsStore.subscriptionTier == 'free') {
-                    if (
-                        this.settingsStore.freePlanTokenLimit <=
-                        this.userDetailsStore.monthlyTokenUsage
-                    ) {
-                        this.isAITokenLimitReached = true;
-                    }
-                } else if (this.userDetailsStore.subscriptionTier == 'basic') {
-                    if (
-                        this.settingsStore.basicPlanTokenLimit <=
-                        this.userDetailsStore.monthlyTokenUsage
-                    ) {
+                let tokenBalance =
+                    this.userDetailsStore.monthlyTokenUsage -
+                    this.settingsStore.freeTokenMonthlyLimit;
+
+                if (
+                    this.settingsStore.freeTokenMonthlyLimit <=
+                    this.userDetailsStore.monthlyTokenUsage
+                ) {
+                    if (tokenBalance > this.userDetailsStore.tokens) {
                         this.isAITokenLimitReached = true;
                     }
                 }

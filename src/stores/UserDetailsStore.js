@@ -58,7 +58,6 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.cohortId = data.cohort_id;
                 this.isUnlockedSkillsOnlyFilter =
                     data.is_unlocked_skills_only_filter;
-                this.subscriptionTier = data.subscription_tier;
                 this.monthlyTokenUsage = data.monthly_token_usage;
                 this.tokens = data.tokens;
                 this.isAudioAutoPlay = data.is_audio_auto_play || 0;
