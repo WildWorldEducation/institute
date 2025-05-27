@@ -263,10 +263,10 @@ export default {
             //Load skill filters
             this.getSkillFilters();
 
-            const icon = document.getElementsByTagName('svg');
-            if (icon.length > 0) {
-                icon[0].style.height = '50px';
-            }
+            // const icon = document.getElementsByTagName('svg');
+            // if (icon.length > 0) {
+            //     icon[0].style.height = '50px';
+            // }
 
             // Record that the user visited this skill.
             if (this.userDetailsStore.role == 'student')
@@ -823,7 +823,12 @@ export default {
                         {{ calculatedSkillName }}
                     </h1>
                     <div class="d-flex flex-column">
-                        <button class="btn socratic-btn">Socratic Tutor</button>
+                        <button
+                            v-if="userDetailsStore.role == 'student'"
+                            class="btn socratic-btn"
+                        >
+                            Socratic Tutor
+                        </button>
                         <!-- Take assessment btn-->
                         <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
                         <router-link
@@ -976,47 +981,27 @@ export default {
                 />
             </div>
             <!-- Buttons -->
-            <div class="row mb-2 mt-2">
+            <div class="row mb-3">
                 <div class="col d-flex justify-content-between">
                     <!-- Guest mode -->
                     <span
                         v-if="!sessionDetailsStore.isLoggedIn"
                         class="d-flex justify-content-between w-100"
                     >
-                        <!-- If not logged in, go to Login page -->
-                        <router-link
-                            class="btn me-1 assessment-btn"
-                            to="/login"
-                        >
-                            <!-- Half star icon -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 576 512"
-                                width="22"
-                                fill="white"
+                        <div class="d-flex gap-1">
+                            <router-link to="/login" class="btn socratic-btn">
+                                Socratic Tutor
+                            </router-link>
+                            <!-- If not logged in, go to Login page -->
+                            <router-link
+                                class="btn me-1 assessment-btn"
+                                to="/login"
                             >
-                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                <path
-                                    d="M288 0c-12.2 .1-23.3 7-28.6 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3L288 439.8 288 0zM429.9 512c1.1 .1 2.1 .1 3.2 0l-3.2 0z"
-                                />
-                            </svg>
-                            <span v-if="skill.type != 'domain'"
-                                >Take the Test</span
-                            ><span v-else>Mark Complete</span>
-                            <!-- Half star icon -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 576 512"
-                                width="22"
-                                fill="white"
-                            >
-                                <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                <path
-                                    d="m 169.24356,0 c 12.2,0.1 23.3,7 28.6,18 l 64.4,132.3 143.6,21.2 c 12,1.8 22,10.2 25.7,21.7 3.7,11.5 0.7,24.2 -7.9,32.7 l -104.2,103.1 24.6,145.7 c 2,12 -3,24.2 -12.9,31.3 -9.9,7.1 -23,8 -33.8,2.3 l -128.1,-68.5 z M 27.343555,512 c -1.1,0.1 -2.1,0.1 -3.2,0 z"
-                                    id="path17"
-                                />
-                            </svg>
-                        </router-link>
+                                <span v-if="skill.type != 'domain'"
+                                    >Take the Test</span
+                                ><span v-else>Mark Complete</span>
+                            </router-link>
+                        </div>
                         <!-- Sharable URL -->
                         <button
                             v-if="
@@ -1024,14 +1009,14 @@ export default {
                                 isMobileCheck < 576
                             "
                             @click="copyShareableURLToClipBoard"
-                            class="btn me-1"
+                            class="btn me-1 share-button"
                             aria-label="share"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 448 512"
                                 width="20"
-                                heigth="20"
+                                height="20"
                             >
                                 <path
                                     class="primary-icon"
@@ -1407,7 +1392,7 @@ export default {
 
                 <!-- A line divide -->
                 <hr
-                    class="border border-1 opacity-100 hr mt-2"
+                    class="border border-1 opacity-100 hr mt-2 mb-0"
                     v-if="isMobileCheck > 576"
                 />
             </div>
@@ -2084,7 +2069,6 @@ p {
     max-height: 48px;
     border: 3px solid var(--secondary-contrast-color);
     font-weight: 500;
-    padding: 5px;
     font-size: 16px;
     line-height: 24px;
     display: flex;
@@ -2101,7 +2085,6 @@ p {
     max-height: 48px;
     border: 3px solid var(--secondary-contrast-color);
     font-weight: 500;
-    padding: 5px;
     font-size: 16px;
     line-height: 24px;
     display: flex;
@@ -2202,6 +2185,12 @@ p {
     .assessment-btn {
         width: 100%;
         max-width: 100%;
+        max-height: 38px;
+    }
+    .socratic-btn {
+        max-height: 38px;
+    }
+    .share-button {
         max-height: 38px;
     }
 }
