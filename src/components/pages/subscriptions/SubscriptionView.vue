@@ -21,8 +21,6 @@ export default {
             isAITokenLimitReached: false,
             isMobileCheck: window.innerWidth,
             showTooltip: false,
-            // For the loading animation.
-            isLoading: false,
             // For downloading invoices from Stripe
             receipts: [],
             isAITokenLimitReached: false,
@@ -77,49 +75,7 @@ export default {
 
         this.getReceipts();
     },
-    computed: {
-        formattedStripeCurrentPeriodEndDate() {
-            let dateObj = new Date(this.subscription.current_period_end * 1000);
-
-            // You could get this from a store or user preferences
-            const locale = 'en-US'; // Default to English
-
-            // Get day name using Intl.DateTimeFormat
-            const dayName = new Intl.DateTimeFormat(locale, {
-                weekday: 'long'
-            }).format(dateObj);
-
-            // Get day number
-            const day = dateObj.getDate();
-
-            // Get day suffix (note: this is English-specific, would need adaptation for other languages)
-            let daySuffix = 'th';
-            if (day % 10 === 1 && day !== 11) daySuffix = 'st';
-            if (day % 10 === 2 && day !== 12) daySuffix = 'nd';
-            if (day % 10 === 3 && day !== 13) daySuffix = 'rd';
-
-            // Get month name using Intl.DateTimeFormat
-            const monthName = new Intl.DateTimeFormat(locale, {
-                month: 'long'
-            }).format(dateObj);
-
-            // Get year
-            const year = dateObj.getFullYear();
-
-            // Format template (this would also need to be translated for other languages)
-            return `${dayName} the ${day}${daySuffix} of ${monthName}, ${year}`;
-        },
-        formattedMonthlyTokenUsage() {
-            return this.userDetailsStore.monthlyTokenUsage
-                ? this.userDetailsStore.monthlyTokenUsage.toLocaleString()
-                : '0';
-        },
-        formattedFreePlanTokenLimit() {
-            return this.settingsStore.freePlanTokenLimit
-                ? this.settingsStore.freePlanTokenLimit.toLocaleString()
-                : '0';
-        }
-    },
+    computed: {},
     methods: {
         async getReceipts() {
             const result = await fetch(
@@ -176,106 +132,6 @@ export default {
                     console.error(e.error);
                 });
         },
-        // Cancel subscription at end of billing cycle.
-        // cancelPlan() {
-        //     if (
-        //         confirm('Are you sure you want to downgrade to the Free plan?')
-        //     ) {
-        //         fetch('/subscriptions/cancel', {
-        //             method: 'POST',
-        //             headers: {
-        //                 'Content-Type': 'application/json'
-        //             },
-        //             body: JSON.stringify({
-        //                 userId: this.userDetailsStore.userId
-        //             })
-        //         })
-        //             .then(function (response) {
-        //                 return response.json();
-        //             })
-        //             .then(async (data) => {
-        //                 if (data.status == 'succeeded') {
-        //                     this.getSubscription();
-        //                 } else {
-        //                     alert(
-        //                         'Downgrade did not work. Please try again later.'
-        //                     );
-        //                 }
-        //             });
-        //     } else {
-        //         return;
-        //     }
-        // },
-        // // Downgrade subscription from Infinite to Basic.
-        // downgradePlan() {
-        //     if (
-        //         confirm('Are you sure you want to downgrade to the Basic plan?')
-        //     ) {
-        //         this.isLoading = true;
-        //         fetch('/subscriptions/downgrade', {
-        //             method: 'POST',
-        //             headers: {
-        //                 'Content-Type': 'application/json'
-        //             },
-        //             body: JSON.stringify({
-        //                 subscriptionId: this.subscription.id,
-        //                 subScheduleId: this.subSchedule
-        //                     ? this.subSchedule.id
-        //                     : null
-        //             })
-        //         })
-        //             .then(function (response) {
-        //                 return response.json();
-        //             })
-        //             .then(async (data) => {
-        //                 if (data.status == 'succeeded') {
-        //                     await this.getSubscription();
-        //                 } else {
-        //                     alert(
-        //                         'Downgrade did not work. Please try again later.'
-        //                     );
-        //                 }
-        //                 this.isLoading = false;
-        //             });
-        //     } else {
-        //         return;
-        //     }
-        // },
-        // // Upgrade subscription from Basic to Infinite.
-        // upgradePlan() {
-        //     if (
-        //         confirm(
-        //             `Are you sure you want to upgrade to the Infinite plan? (You will be billed immediately)`
-        //         )
-        //     ) {
-        //         this.isLoading = true;
-        //         fetch('/subscriptions/upgrade', {
-        //             method: 'POST',
-        //             headers: {
-        //                 'Content-Type': 'application/json'
-        //             },
-        //             body: JSON.stringify({
-        //                 subscriptionId: this.subscription.id
-        //             })
-        //         })
-        //             .then(function (response) {
-        //                 return response.json();
-        //             })
-        //             .then(async (data) => {
-        //                 if (data.status == 'succeeded') {
-        //                     await this.userDetailsStore.getUserDetails();
-        //                     this.$router.push('/subscriptions/completed');
-        //                 } else {
-        //                     alert(
-        //                         'Upgrade did not work. Please try again later.'
-        //                     );
-        //                 }
-        //                 this.isLoading = false;
-        //             });
-        //     } else {
-        //         return;
-        //     }
-        // },
         formattedStripeReceiptDate(receipt) {
             let dateObj = new Date(receipt.created * 1000);
             const month = dateObj.getUTCMonth() + 1; // months from 1-12
@@ -397,14 +253,8 @@ export default {
             </div>
         </div>
         <hr />
-        <!-- Loading animation -->
-        <div
-            v-if="isLoading == true"
-            class="d-flex justify-content-center align-items-center py-4"
-        >
-            <span class="subscription-loader"></span>
-        </div>
-        <div v-else class="row mt-4">
+
+        <div class="row mt-4">
             <!-- 200,000 tokens -->
             <div
                 class="col-md mb-3"
@@ -465,28 +315,6 @@ export default {
 .info-btn {
     max-height: 40px;
 }
-
-/* Loading animation */
-.subscription-loader {
-    width: 48px;
-    height: 48px;
-    border: 5px solid var(--primary-color);
-    border-bottom-color: transparent;
-    border-radius: 50%;
-    display: inline-block;
-    box-sizing: border-box;
-    animation: rotation 1s linear infinite;
-}
-
-@keyframes rotation {
-    100% {
-        transform: rotate(0deg);
-    }
-    0% {
-        transform: rotate(360deg);
-    }
-}
-/* End of loading animation */
 
 /* Modals */
 .modal {
