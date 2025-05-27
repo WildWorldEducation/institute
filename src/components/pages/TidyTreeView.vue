@@ -179,8 +179,20 @@ export default {
                 this.sessionDetailsStore.isLoggedIn == true &&
                 this.userDetailsStore.role == 'student'
             ) {
+                if (subject == 'All') {
+                    this.userDetailsStore.subjectFilters = [];
+                    this.userDetailsStore.subjectFilters.push(
+                        'Language',
+                        'Mathematics',
+                        'Science and Invention',
+                        'Computer Science',
+                        'History',
+                        'Life',
+                        'Dangerous Ideas'
+                    );
+                }
                 // if all subjects are selected, show only the clicked subject
-                if (this.userDetailsStore.subjectFilters.length == 7) {
+                else if (this.userDetailsStore.subjectFilters.length == 7) {
                     this.userDetailsStore.subjectFilters = [];
                     this.userDetailsStore.subjectFilters.push(subject);
                 }
@@ -248,6 +260,7 @@ export default {
                     this.subjectFilters.push(subject);
                 }
             }
+            console.log(this.userDetailsStore.subjectFilters);
         },
         toggleisUnlockedSkillsFilter() {
             if (this.userDetailsStore.isUnlockedSkillsOnlyFilter == 1) {
@@ -1133,37 +1146,25 @@ export default {
                 </button>
             </div>
             <button
+                v-if="isSubjectFilter"
+                class="btn switch-btn"
+                @click="
+                    isSubjectFilter = !isSubjectFilter;
+                    this.updateSubjectFilters('All');
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                All
+            </button>
+            <button
                 class="btn switch-btn"
                 @click="isSubjectFilter = !isSubjectFilter"
+                v-if="!isSubjectFilter"
             >
-                <!-- Plus sign -->
-                <svg
-                    v-if="!isSubjectFilter"
-                    width="18"
-                    height="18"
-                    fill="white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 448 512"
-                >
-                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                    <path
-                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
-                    />
-                </svg>
-                <!-- Minus sign -->
-                <svg
-                    v-else
-                    width="18"
-                    height="18"
-                    fill="white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 448 512"
-                >
-                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                    <path
-                        d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                    />
-                </svg>
+                Show subject filters
             </button>
         </div>
         <!-- Tooltip -->
