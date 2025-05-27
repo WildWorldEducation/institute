@@ -822,13 +822,79 @@ export default {
                     >
                         {{ calculatedSkillName }}
                     </h1>
-                    <div class="d-flex flex-column">
-                        <button
-                            v-if="userDetailsStore.role == 'student'"
-                            class="btn socratic-btn"
-                        >
+                </div>
+                <!-- Student tooltip -->
+                <div
+                    v-if="
+                        userDetailsStore.role == 'student' && showTutorialTip2
+                    "
+                    class="tool-tip-base d-flex justify-content-end"
+                >
+                    <div
+                        class="explain-tool-tip hovering-info-panel"
+                        :class="
+                            isMobileCheck > 576
+                                ? 'triangle-top-right'
+                                : 'triangle-top-left'
+                        "
+                    >
+                        <div class="tool-tip-text">
+                            <p>
+                                This is where you can take an assessment for
+                                this skill, if it is unlocked.
+                            </p>
+                            <p>
+                                If it's locked, this button will instead take
+                                you to the closest unlocked skill.
+                            </p>
+                            <div class="d-flex justify-content-between">
+                                <button
+                                    class="btn primary-btn"
+                                    @click="progressTutorial(2)"
+                                >
+                                    next
+                                </button>
+                                <button
+                                    class="btn red-btn"
+                                    @click="skipTutorial"
+                                >
+                                    exit tutorial
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- A line divide -->
+                <hr
+                    class="border border-2 opacity-100 hr mb-2"
+                    v-if="isMobileCheck > 576"
+                />
+            </div>
+            <!-- Buttons -->
+            <div
+                class="row"
+                :class="{
+                    'mb-0':
+                        !sessionDetailsStore.isLoggedIn && isMobileCheck < 576,
+                    'mb-2':
+                        sessionDetailsStore.isLoggedIn || isMobileCheck >= 576
+                }"
+            >
+                <div
+                    class="col d-flex justify-content-between"
+                    :class="{ 'flex-column': isMobileCheck < 576 }"
+                >
+                    <!-- Left side buttons -->
+                    <!-- Tutor and Test buttons -->
+                    <div
+                        class="d-flex gap-1 w-100"
+                        :class="{
+                            'justify-content-between': isMobileCheck < 576
+                        }"
+                    >
+                        <router-link to="/login" class="btn socratic-btn">
                             Socratic Tutor
-                        </button>
+                        </router-link>
                         <!-- Take assessment btn-->
                         <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
                         <router-link
@@ -931,173 +997,96 @@ export default {
                         >
                             Go To Child Skill
                         </button>
-                    </div>
-                </div>
-                <!-- Student tooltip -->
-                <div
-                    v-if="
-                        userDetailsStore.role == 'student' && showTutorialTip2
-                    "
-                    class="tool-tip-base d-flex justify-content-end"
-                >
-                    <div
-                        class="explain-tool-tip hovering-info-panel"
-                        :class="
-                            isMobileCheck > 576
-                                ? 'triangle-top-right'
-                                : 'triangle-top-left'
-                        "
-                    >
-                        <div class="tool-tip-text">
-                            <p>
-                                This is where you can take an assessment for
-                                this skill, if it is unlocked.
-                            </p>
-                            <p>
-                                If it's locked, this button will instead take
-                                you to the closest unlocked skill.
-                            </p>
-                            <div class="d-flex justify-content-between">
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(2)"
-                                >
-                                    next
-                                </button>
-                                <button
-                                    class="btn red-btn"
-                                    @click="skipTutorial"
-                                >
-                                    exit tutorial
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- A line divide -->
-                <hr
-                    class="border border-2 opacity-100 hr"
-                    v-if="isMobileCheck > 576"
-                />
-            </div>
-            <!-- Buttons -->
-            <div class="row mb-3">
-                <div class="col d-flex justify-content-between">
-                    <!-- Guest mode -->
-                    <span
-                        v-if="!sessionDetailsStore.isLoggedIn"
-                        class="d-flex justify-content-between w-100"
-                    >
-                        <div class="d-flex gap-1">
-                            <router-link to="/login" class="btn socratic-btn">
-                                Socratic Tutor
-                            </router-link>
-                            <!-- If not logged in, go to Login page -->
-                            <router-link
-                                class="btn me-1 assessment-btn"
-                                to="/login"
-                            >
-                                <span v-if="skill.type != 'domain'"
-                                    >Take the Test</span
-                                ><span v-else>Mark Complete</span>
-                            </router-link>
-                        </div>
-                        <!-- Sharable URL -->
-                        <button
-                            v-if="
-                                !sessionDetailsStore.isLoggedIn &&
-                                isMobileCheck < 576
-                            "
-                            @click="copyShareableURLToClipBoard"
-                            class="btn me-1 share-button"
-                            aria-label="share"
+                        <!-- If not logged in, go to Login page -->
+                        <router-link
+                            v-if="!sessionDetailsStore.isLoggedIn"
+                            class="btn me-1 assessment-btn"
+                            to="/login"
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
-                                width="20"
-                                height="20"
-                            >
-                                <path
-                                    class="primary-icon"
-                                    d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"
-                                />
-                            </svg>
-                        </button>
-                    </span>
+                            <span v-if="skill.type != 'domain'"
+                                >Take the Test</span
+                            ><span v-else>Mark Complete</span>
+                        </router-link>
+                    </div>
 
-                    <div class="d-flex">
-                        <!-- Edit skill btn-->
-                        <router-link
-                            v-if="sessionDetailsStore.isLoggedIn"
-                            :to="'/skills/edit/' + skillUrl"
-                            class="edit-btn btn primary-btn me-1"
-                            ><span v-if="isMobileCheck > 576">Edit &nbsp;</span>
-                            <!-- Pencil icon -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="20"
-                                height="20"
-                                fill="white"
+                    <!-- Right hand buttons -->
+                    <div
+                        class="d-flex"
+                        :class="{
+                            'justify-content-between': isMobileCheck < 576,
+                            'mt-2': isMobileCheck < 576
+                        }"
+                    >
+                        <span class="d-flex">
+                            <!-- Edit skill btn-->
+                            <router-link
+                                v-if="sessionDetailsStore.isLoggedIn"
+                                :to="'/skills/edit/' + skillUrl"
+                                class="edit-btn btn primary-btn me-1"
                             >
-                                <path
-                                    d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z"
-                                />
-                            </svg>
-                        </router-link>
-                        <!-- Show version history -->
-                        <router-link
-                            v-if="
-                                userDetailsStore.role == 'admin' ||
-                                userDetailsStore.role == 'editor'
-                            "
-                            :to="'/skills/history/' + this.skillUrl"
-                            class="btn primary-btn me-1"
-                            ><span v-if="isMobileCheck > 576"
-                                >History&nbsp;</span
+                                <!-- Pencil icon -->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="20"
+                                    height="20"
+                                    fill="white"
+                                >
+                                    <path
+                                        d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z"
+                                    />
+                                </svg>
+                            </router-link>
+                            <!-- Show version history -->
+                            <router-link
+                                v-if="
+                                    userDetailsStore.role == 'admin' ||
+                                    userDetailsStore.role == 'editor'
+                                "
+                                :to="'/skills/history/' + this.skillUrl"
+                                class="btn primary-btn me-1"
+                                ><span v-if="isMobileCheck > 576"
+                                    >History&nbsp;</span
+                                >
+                                <!-- History icon -->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="18"
+                                    height="20"
+                                    fill="white"
+                                >
+                                    <path
+                                        d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9L0 168c0 13.3 10.7 24 24 24l110.1 0c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65 0-94.1c0-13.3-10.7-24-24-24z"
+                                    />
+                                </svg>
+                            </router-link>
+                            <!-- Create goal button -->
+                            <button
+                                v-if="
+                                    skill.type != 'domain' &&
+                                    sessionDetailsStore.isLoggedIn &&
+                                    isMastered == false &&
+                                    isUnlocked == false &&
+                                    isGoal == false &&
+                                    userDetailsStore.role == 'student'
+                                "
+                                class="btn primary-btn"
+                                @click="openModal(skill)"
                             >
-                            <!-- History icon -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="18"
-                                height="20"
-                                fill="white"
-                            >
-                                <path
-                                    d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9L0 168c0 13.3 10.7 24 24 24l110.1 0c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65 0-94.1c0-13.3-10.7-24-24-24z"
-                                />
-                            </svg>
-                        </router-link>
-                        <!-- Create goal button -->
-                        <button
-                            v-if="
-                                skill.type != 'domain' &&
-                                sessionDetailsStore.isLoggedIn &&
-                                isMastered == false &&
-                                isUnlocked == false &&
-                                isGoal == false &&
-                                userDetailsStore.role == 'student'
-                            "
-                            class="btn primary-btn"
-                            @click="openModal(skill)"
-                        >
-                            <span v-if="isMobileCheck > 576"
-                                >Create goal&nbsp;</span
-                            >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                fill="white"
-                                width="20"
-                                height="20"
-                            >
-                                <path
-                                    d="M448 256A192 192 0 1 0 64 256a192 192 0 1 0 384 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm0-224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zM224 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
-                                />
-                            </svg>
-                        </button>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    fill="white"
+                                    width="20"
+                                    height="20"
+                                >
+                                    <path
+                                        d="M448 256A192 192 0 1 0 64 256a192 192 0 1 0 384 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm0-224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zM224 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
+                                    />
+                                </svg>
+                            </button>
+                        </span>
                         <!-- Modal -->
                         <div
                             v-if="toggleModal"
@@ -1129,71 +1118,69 @@ export default {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div
-                        class="d-flex"
-                        v-if="
-                            isMobileCheck > 576 ||
-                            sessionDetailsStore.isLoggedIn
-                        "
-                    >
-                        <!-- Sharable URL -->
-                        <button
-                            @click="copyShareableURLToClipBoard"
-                            class="btn me-1"
-                            aria-label="share"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
-                                width="20"
-                                heigth="20"
+                        <span class="d-flex">
+                            <!-- Sharable URL -->
+                            <button
+                                v-if="
+                                    sessionDetailsStore.isLoggedIn ||
+                                    isMobileCheck >= 576
+                                "
+                                @click="copyShareableURLToClipBoard"
+                                class="btn me-1"
+                                aria-label="share"
                             >
-                                <path
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 448 512"
+                                    width="20"
+                                    heigth="20"
+                                >
+                                    <path
+                                        class="primary-icon"
+                                        d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"
+                                    />
+                                </svg>
+                            </button>
+                            <!-- Flag button -->
+                            <button
+                                v-if="sessionDetailsStore.isLoggedIn"
+                                @click="showFlaggingModal = true"
+                                class="btn"
+                                b-tooltip.hover
+                                title="Report this skill to the admin if it has errors"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 448 512"
+                                    class="flag-icon"
+                                >
+                                    <path
+                                        class="primary-icon"
+                                        d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
+                                    />
+                                </svg>
+                            </button>
+                            <!-- Tutorial button -->
+                            <button
+                                v-if="sessionDetailsStore.isLoggedIn"
+                                class="btn me-1"
+                                @click="restartTutorial"
+                                aria-label="info"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 192 512"
+                                    width="20"
+                                    height="23"
                                     class="primary-icon"
-                                    d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"
-                                />
-                            </svg>
-                        </button>
-                        <!-- Flag button -->
-                        <button
-                            v-if="sessionDetailsStore.isLoggedIn"
-                            @click="showFlaggingModal = true"
-                            class="btn"
-                            b-tooltip.hover
-                            title="Report this skill to the admin if it has errors"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
-                                class="flag-icon"
-                            >
-                                <path
-                                    class="primary-icon"
-                                    d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
-                                />
-                            </svg>
-                        </button>
-                        <!-- Tutorial button -->
-                        <button
-                            v-if="sessionDetailsStore.isLoggedIn"
-                            class="btn me-1"
-                            @click="restartTutorial"
-                            aria-label="info"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 192 512"
-                                width="20"
-                                height="23"
-                                class="primary-icon"
-                            >
-                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                <path
-                                    d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
-                                />
-                            </svg>
-                        </button>
+                                >
+                                    <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                    <path
+                                        d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                                    />
+                                </svg>
+                            </button>
+                        </span>
                     </div>
                 </div>
                 <!-- Student tooltips -->
@@ -1448,8 +1435,39 @@ export default {
                                 style="aspect-ratio: 1/1; object-fit: cover"
                             />
                         </a>
+                        <!-- Sharable URL -->
+                        <button
+                            v-if="
+                                !sessionDetailsStore.isLoggedIn &&
+                                isMobileCheck < 576
+                            "
+                            @click="copyShareableURLToClipBoard"
+                            class="btn"
+                            aria-label="share"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                width="20"
+                                heigth="20"
+                            >
+                                <path
+                                    class="primary-icon"
+                                    d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"
+                                />
+                            </svg>
+                        </button>
                         <!-- Grade level -->
-                        <div class="mt-2">
+                        <div
+                            :class="{
+                                'mt-0':
+                                    !sessionDetailsStore.isLoggedIn &&
+                                    isMobileCheck < 576,
+                                'mt-2':
+                                    sessionDetailsStore.isLoggedIn ||
+                                    isMobileCheck >= 576
+                            }"
+                        >
                             <h2 class="h4 secondary-heading">Level</h2>
                             <span v-if="skill.level == 'grade_school'"
                                 >Grade School</span
