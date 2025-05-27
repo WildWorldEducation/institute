@@ -15,6 +15,7 @@ import FlagModals from './FlagModals.vue';
 import Forum from './forum/Forum.vue';
 import AITutor from './ai-tutor/AITutor.vue';
 import LearningObjectiveAITutor from './ai-tutor/LearningObjectiveAITutor.vue';
+import { treemapSquarify } from 'd3';
 
 export default {
     setup() {
@@ -718,13 +719,17 @@ export default {
                 }
             });
         },
-        scrollToAITutor() {
+        scrollToAITutor(isOpenTutor) {
             if (this.$refs.aiTutorSection) {
                 // Scroll to the AITutor section
                 this.$refs.aiTutorSection.scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
                 });
+            }
+            if (isOpenTutor) {
+                // Open the AITutor modal if requested
+                this.$refs.aiTutor.showTutorModal('socratic');
             }
         },
         async checkSubskillMastery() {
@@ -900,7 +905,11 @@ export default {
                         >
                             Socratic Tutor
                         </router-link>
-                        <button v-else class="btn socratic-btn">
+                        <button
+                            @click="scrollToAITutor(true)"
+                            v-else
+                            class="btn socratic-btn"
+                        >
                             Socratic Tutor
                         </button>
                         <!-- Take assessment btn-->
@@ -940,7 +949,7 @@ export default {
                                     areAllSubskillsMastered)
                             "
                             class="btn me-1 assessment-btn"
-                            @click="scrollToAITutor()"
+                            @click="scrollToAITutor(false)"
                         >
                             Take the Test
                         </button>
@@ -1680,6 +1689,7 @@ export default {
             <!-- Only show AI tutor for Student -->
             <!-- Not show AI tutor for domain type of skill-->
             <AITutor
+                ref="aiTutor"
                 v-if="
                     isSkillLoaded &&
                     (userDetailsStore.role === 'student' ||
