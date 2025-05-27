@@ -1,8 +1,8 @@
 <script>
-import { useSessionDetailsStore } from '../../../../stores/SessionDetailsStore.js';
+import { useSessionDetailsStore } from '../../../stores/SessionDetailsStore.js';
 
-import ResourcePostCard from '../source-post/ResourcePostCard.vue';
-import TutorPostCard from '../tutor-post/TutorPostCard.vue';
+import SourcePostCard from './SourcePostCard.vue';
+import TutorPostCard from './TutorPostCard.vue';
 
 export default {
     setup() {
@@ -29,7 +29,7 @@ export default {
     },
     components: {
         TutorPostCard,
-        ResourcePostCard
+        SourcePostCard
     },
     mounted() {
         if (this.showTutorialTip10) {
@@ -130,7 +130,7 @@ export default {
 </script>
 
 <template>
-    <div v-if="sessionDetailsStore.isLoggedIn" class="d-flex flex-column mt-4">
+    <div v-if="sessionDetailsStore.isLoggedIn" class="d-flex flex-column">
         <div class="d-flex flex-column w-100">
             <div class="d-flex justify-content-xl-end justify-content-between">
                 <router-link
@@ -208,7 +208,7 @@ export default {
     </div>
     <div id="posts-big-container">
         <div v-for="post in orderedAndNamedPosts">
-            <ResourcePostCard
+            <SourcePostCard
                 v-if="post.type === 'source'"
                 :post="post"
                 :user="user"
