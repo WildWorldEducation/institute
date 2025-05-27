@@ -1505,127 +1505,157 @@ export default {
             </div>
             <div v-else class="d-flex flex-column">
                 <!-- Subject buttons -->
+                <div v-if="isSubjectFilter" class="d-flex flex-column">
+                    <button
+                        class="btn"
+                        :class="{
+                            'chosen-subject':
+                                subjectFilters.includes('Language'),
+                            'hidden-subject':
+                                !subjectFilters.includes('Language')
+                        }"
+                        @click="
+                            this.updateSubjectFilters('Language');
+                            $refs.childComponent.filter(
+                                this.gradeFilter,
+                                this.subjectFilters
+                            );
+                        "
+                    >
+                        Language
+                    </button>
+                    <button
+                        class="btn"
+                        :class="{
+                            'chosen-subject':
+                                subjectFilters.includes('Mathematics'),
+                            'hidden-subject':
+                                !subjectFilters.includes('Mathematics')
+                        }"
+                        @click="
+                            this.updateSubjectFilters('Mathematics');
+                            $refs.childComponent.filter(
+                                this.gradeFilter,
+                                this.subjectFilters
+                            );
+                        "
+                    >
+                        Math
+                    </button>
+                    <button
+                        class="btn"
+                        :class="{
+                            'chosen-subject':
+                                subjectFilters.includes('History'),
+                            'hidden-subject':
+                                !subjectFilters.includes('History')
+                        }"
+                        @click="
+                            this.updateSubjectFilters('History');
+                            $refs.childComponent.filter(
+                                this.gradeFilter,
+                                this.subjectFilters
+                            );
+                        "
+                    >
+                        History
+                    </button>
+                    <button
+                        class="btn"
+                        :class="{
+                            'chosen-subject': subjectFilters.includes('Life'),
+                            'hidden-subject': !subjectFilters.includes('Life')
+                        }"
+                        @click="
+                            this.updateSubjectFilters('Life');
+                            $refs.childComponent.filter(
+                                this.gradeFilter,
+                                this.subjectFilters
+                            );
+                        "
+                    >
+                        Life
+                    </button>
+                    <button
+                        class="btn"
+                        :class="{
+                            'chosen-subject':
+                                subjectFilters.includes('Computer Science'),
+                            'hidden-subject':
+                                !subjectFilters.includes('Computer Science')
+                        }"
+                        @click="
+                            this.updateSubjectFilters('Computer Science');
+                            $refs.childComponent.filter(
+                                this.gradeFilter,
+                                this.subjectFilters
+                            );
+                        "
+                    >
+                        Computer Science
+                    </button>
+                    <button
+                        class="btn"
+                        :class="{
+                            'chosen-subject': subjectFilters.includes(
+                                'Science and Invention'
+                            ),
+                            'hidden-subject': !subjectFilters.includes(
+                                'Science and Invention'
+                            )
+                        }"
+                        @click="
+                            this.updateSubjectFilters('Science and Invention');
+                            $refs.childComponent.filter(
+                                this.gradeFilter,
+                                this.subjectFilters
+                            );
+                        "
+                    >
+                        Science & Invention
+                    </button>
+                    <button
+                        class="btn"
+                        :class="{
+                            'chosen-subject':
+                                subjectFilters.includes('Dangerous Ideas'),
+                            'hidden-subject':
+                                !subjectFilters.includes('Dangerous Ideas')
+                        }"
+                        @click="
+                            this.updateSubjectFilters('Dangerous Ideas');
+                            $refs.childComponent.filter(
+                                this.gradeFilter,
+                                this.subjectFilters
+                            );
+                        "
+                    >
+                        Dangerous Ideas
+                    </button>
+                </div>
                 <button
-                    class="btn"
+                    class="btn switch-btn w-100 mb-2"
                     :class="{
-                        'chosen-subject': subjectFilters.includes('Language'),
-                        'hidden-subject': !subjectFilters.includes('Language')
+                        'active-grade-filter':
+                            subjectFilters.includes('Language') &&
+                            subjectFilters.includes('Mathematics') &&
+                            subjectFilters.includes('History') &&
+                            subjectFilters.includes('Life') &&
+                            subjectFilters.includes('Computer Science') &&
+                            subjectFilters.includes('Science and Invention') &&
+                            subjectFilters.includes('Dangerous Ideas')
                     }"
                     @click="
-                        this.updateSubjectFilters('Language');
+                        isSubjectFilter = !isSubjectFilter;
+                        this.updateSubjectFilters('All');
                         $refs.childComponent.filter(
                             this.gradeFilter,
                             this.subjectFilters
                         );
                     "
                 >
-                    Language
-                </button>
-                <button
-                    class="btn"
-                    :class="{
-                        'chosen-subject':
-                            subjectFilters.includes('Mathematics'),
-                        'hidden-subject':
-                            !subjectFilters.includes('Mathematics')
-                    }"
-                    @click="
-                        this.updateSubjectFilters('Mathematics');
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
-                >
-                    Math
-                </button>
-                <button
-                    class="btn"
-                    :class="{
-                        'chosen-subject': subjectFilters.includes('History'),
-                        'hidden-subject': !subjectFilters.includes('History')
-                    }"
-                    @click="
-                        this.updateSubjectFilters('History');
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
-                >
-                    History
-                </button>
-                <button
-                    class="btn"
-                    :class="{
-                        'chosen-subject': subjectFilters.includes('Life'),
-                        'hidden-subject': !subjectFilters.includes('Life')
-                    }"
-                    @click="
-                        this.updateSubjectFilters('Life');
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
-                >
-                    Life
-                </button>
-                <button
-                    class="btn"
-                    :class="{
-                        'chosen-subject':
-                            subjectFilters.includes('Computer Science'),
-                        'hidden-subject':
-                            !subjectFilters.includes('Computer Science')
-                    }"
-                    @click="
-                        this.updateSubjectFilters('Computer Science');
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
-                >
-                    Computer Science
-                </button>
-                <button
-                    class="btn"
-                    :class="{
-                        'chosen-subject': subjectFilters.includes(
-                            'Science and Invention'
-                        ),
-                        'hidden-subject': !subjectFilters.includes(
-                            'Science and Invention'
-                        )
-                    }"
-                    @click="
-                        this.updateSubjectFilters('Science and Invention');
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
-                >
-                    Science & Invention
-                </button>
-                <button
-                    class="btn mb-2"
-                    :class="{
-                        'chosen-subject':
-                            subjectFilters.includes('Dangerous Ideas'),
-                        'hidden-subject':
-                            !subjectFilters.includes('Dangerous Ideas')
-                    }"
-                    @click="
-                        this.updateSubjectFilters('Dangerous Ideas');
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
-                >
-                    Dangerous Ideas
+                    <span v-if="!isSubjectFilter">Show subject filters</span>
+                    <span v-else>All</span>
                 </button>
                 <!-- Grade buttons -->
                 <div v-if="isGradeFilter" class="d-flex flex-column">
