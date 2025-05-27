@@ -84,6 +84,7 @@ export default {
             showTutorialTip9: false,
             showTutorialTip10: false,
             showTutorialTip11: false,
+            showGuestLoginTooltip: false,
             showCategoryCompletedModal: false,
             nextSkillsInBranch: [],
             // Defaults to true. False only for certain skills.
@@ -781,6 +782,9 @@ export default {
         handleSkillMastered() {
             this.isMastered = true;
             this.showMasteryModal = true;
+        },
+        showGuestTooltip() {
+            this.showGuestLoginTooltip = true;
         }
     },
     /**
@@ -898,13 +902,13 @@ export default {
                         }"
                     >
                         <!-- If not logged in, go to Login page -->
-                        <router-link
+                        <button
                             v-if="!sessionDetailsStore.isLoggedIn"
-                            to="/login"
+                            @click="showGuestTooltip"
                             class="btn socratic-btn"
                         >
                             Socratic Tutor
-                        </router-link>
+                        </button>
                         <button
                             @click="scrollToAITutor(true)"
                             v-else
@@ -1015,15 +1019,16 @@ export default {
                             Go To Child Skill
                         </button>
                         <!-- If not logged in, go to Login page -->
-                        <router-link
+                        <button
                             v-if="!sessionDetailsStore.isLoggedIn"
+                            @click="showGuestTooltip"
                             class="btn me-1 assessment-btn"
-                            to="/login"
                         >
                             <span v-if="skill.type != 'domain'"
                                 >Take the Test</span
-                            ><span v-else>Mark Complete</span>
-                        </router-link>
+                            >
+                            <span v-else>Mark Complete</span>
+                        </button>
                     </div>
 
                     <!-- Right hand buttons -->
@@ -1848,6 +1853,34 @@ export default {
         :contentId="skillId"
     />
 
+    <!-- Guest Login Tooltip -->
+    <div
+        v-if="showGuestLoginTooltip"
+        class="modal"
+        @click="showGuestLoginTooltip = false"
+    >
+        <div class="modal-content" @click.stop>
+            <p>
+                Please login to access this feature and track your learning
+                progress.
+            </p>
+            <div class="d-flex justify-content-between">
+                <router-link
+                    class="btn primary-btn"
+                    to="/login"
+                    @click="showGuestLoginTooltip = false"
+                >
+                    Login
+                </router-link>
+                <button
+                    class="btn red-btn"
+                    @click="showGuestLoginTooltip = false"
+                >
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
     <!-- Tooltip modals -->
     <!-- Student -->
     <div

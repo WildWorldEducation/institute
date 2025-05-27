@@ -566,17 +566,15 @@ export default {
         },
         handleTutorClick(type) {
             if (!this.userDetailsStore.userId) {
-                this.$router.push('/login');
+                // Show guest tooltip instead of redirecting
+                this.$parent.showGuestTooltip();
             } else {
-                // Set loading state with appropriate message
                 this.isLoading = true;
                 this.loadingMessage = `Loading ${
                     type === 'socratic'
                         ? 'Socratic Tutor'
                         : 'Conversational Test'
                 }...`;
-
-                // Disable tutor button
                 this.hasTutorButtonBeenClicked = true;
                 this.showTutorModal(type);
             }
@@ -586,21 +584,15 @@ export default {
             if (this.skill.type === 'super' && !this.areAllSubskillsMastered) {
                 return;
             }
-
-            // If user not logged in, send to login page immediately
+            // If user not logged in, show tooltip instead of redirecting
             if (!this.userDetailsStore.userId) {
-                this.$router.push('/login');
+                this.$parent.showGuestTooltip();
                 return;
             }
-            // Set loading state with appropriate message
             this.isLoading = true;
             this.loadingMessage = 'Loading assessment...';
-
-            // Navigate after a short delay to ensure loading is visible
             setTimeout(() => {
                 this.$router.push(`${this.skill.id}/assessment`);
-
-                // Safety timeout to reset state if navigation fails
                 setTimeout(() => {
                     this.isLoading = false;
                 }, 5000);
