@@ -130,7 +130,7 @@ export default {
 </script>
 
 <template>
-    <div v-if="sessionDetailsStore.isLoggedIn" class="d-flex flex-column mt-4">
+    <div v-if="sessionDetailsStore.isLoggedIn" class="d-flex flex-column">
         <div class="d-flex flex-column w-100">
             <div class="d-flex justify-content-xl-end justify-content-between">
                 <router-link
