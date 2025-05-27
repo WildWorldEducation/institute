@@ -25,7 +25,7 @@ const query = util.promisify(conn.query).bind(conn);
 Routes
 --------------------------------------------
 --------------------------------------------*/
-router.get('/get-sub/:userId', async (req, res, next) => {
+router.get('/get-receipts/:userId', async (req, res, next) => {
     let queryString = `
             SELECT stripe_customer_id
             FROM users            
