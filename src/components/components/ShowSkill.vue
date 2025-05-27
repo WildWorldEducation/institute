@@ -892,9 +892,17 @@ export default {
                             'justify-content-between': isMobileCheck < 576
                         }"
                     >
-                        <router-link to="/login" class="btn socratic-btn">
+                        <!-- If not logged in, go to Login page -->
+                        <router-link
+                            v-if="!sessionDetailsStore.isLoggedIn"
+                            to="/login"
+                            class="btn socratic-btn"
+                        >
                             Socratic Tutor
                         </router-link>
+                        <button v-else class="btn socratic-btn">
+                            Socratic Tutor
+                        </button>
                         <!-- Take assessment btn-->
                         <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
                         <router-link
