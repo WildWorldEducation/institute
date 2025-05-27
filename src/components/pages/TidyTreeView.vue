@@ -705,37 +705,19 @@ export default {
                 </button>
             </div>
             <button
-                class="btn switch-btn me-2"
-                @click="isGradeFilter = !isGradeFilter"
+                class="btn me-2 switch-btn"
+                :class="{
+                    'active-grade-filter':
+                        this.userDetailsStore.gradeFilter == 'phd'
+                }"
+                @click="
+                    isGradeFilter = !isGradeFilter;
+                    this.userDetailsStore.gradeFilter = 'phd';
+                    $refs.childComponent.filter();
+                "
             >
-                <!-- Plus sign -->
-                <svg
-                    v-if="!isGradeFilter"
-                    width="18"
-                    height="18"
-                    fill="white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 448 512"
-                >
-                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                    <path
-                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
-                    />
-                </svg>
-                <!-- Minus sign -->
-                <svg
-                    v-else
-                    width="18"
-                    height="18"
-                    fill="white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 448 512"
-                >
-                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                    <path
-                        d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                    />
-                </svg>
+                <span v-if="!isGradeFilter">Show grade filters</span>
+                <span v-else>All</span>
             </button>
         </div>
         <!-- If user is not logged in -->
@@ -821,36 +803,20 @@ export default {
             </div>
             <button
                 class="btn switch-btn me-2"
-                @click="isGradeFilter = !isGradeFilter"
+                :class="{
+                    'active-grade-filter': this.gradeFilter == 'phd'
+                }"
+                @click="
+                    isGradeFilter = !isGradeFilter;
+                    this.gradeFilter = 'phd';
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
             >
-                <!-- Plus sign -->
-                <svg
-                    v-if="!isGradeFilter"
-                    width="18"
-                    height="18"
-                    fill="white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 448 512"
-                >
-                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                    <path
-                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
-                    />
-                </svg>
-                <!-- Minus sign -->
-                <svg
-                    v-else
-                    width="18"
-                    height="18"
-                    fill="white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 448 512"
-                >
-                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                    <path
-                        d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                    />
-                </svg>
+                <span v-if="!isGradeFilter">Show grade filters</span>
+                <span v-else>All</span>
             </button>
         </div>
     </div>
@@ -1439,70 +1405,90 @@ export default {
                     Dangerous Ideas
                 </button>
                 <!-- Grade buttons -->
+                <div v-if="isGradeFilter" class="d-flex flex-column">
+                    <button
+                        class="btn grade-school"
+                        :class="{
+                            'active-grade-filter':
+                                this.userDetailsStore.gradeFilter ==
+                                'grade_school'
+                        }"
+                        @click="
+                            this.userDetailsStore.gradeFilter = 'grade_school';
+                            $refs.childComponent.filter();
+                        "
+                    >
+                        Grade school
+                    </button>
+                    <button
+                        class="btn middle-school"
+                        :class="{
+                            'active-grade-filter':
+                                this.userDetailsStore.gradeFilter ==
+                                'middle_school'
+                        }"
+                        @click="
+                            this.userDetailsStore.gradeFilter = 'middle_school';
+                            $refs.childComponent.filter();
+                        "
+                    >
+                        Middle school
+                    </button>
+                    <button
+                        class="btn high-school"
+                        :class="{
+                            'active-grade-filter':
+                                this.userDetailsStore.gradeFilter ==
+                                'high_school'
+                        }"
+                        @click="
+                            this.userDetailsStore.gradeFilter = 'high_school';
+                            $refs.childComponent.filter();
+                        "
+                    >
+                        High school
+                    </button>
+                    <button
+                        class="btn college"
+                        :class="{
+                            'active-grade-filter':
+                                this.userDetailsStore.gradeFilter == 'college'
+                        }"
+                        @click="
+                            this.userDetailsStore.gradeFilter = 'college';
+                            $refs.childComponent.filter();
+                        "
+                    >
+                        College
+                    </button>
+                    <button
+                        class="btn phd"
+                        :class="{
+                            'active-grade-filter':
+                                this.userDetailsStore.gradeFilter == 'phd'
+                        }"
+                        @click="
+                            this.userDetailsStore.gradeFilter = 'phd';
+                            $refs.childComponent.filter();
+                        "
+                    >
+                        PHD
+                    </button>
+                </div>
                 <button
-                    class="btn grade-school"
-                    :class="{
-                        'active-grade-filter':
-                            this.userDetailsStore.gradeFilter == 'grade_school'
-                    }"
-                    @click="
-                        this.userDetailsStore.gradeFilter = 'grade_school';
-                        $refs.childComponent.filter();
-                    "
-                >
-                    Grade school
-                </button>
-                <button
-                    class="btn middle-school"
-                    :class="{
-                        'active-grade-filter':
-                            this.userDetailsStore.gradeFilter == 'middle_school'
-                    }"
-                    @click="
-                        this.userDetailsStore.gradeFilter = 'middle_school';
-                        $refs.childComponent.filter();
-                    "
-                >
-                    Middle school
-                </button>
-                <button
-                    class="btn high-school"
-                    :class="{
-                        'active-grade-filter':
-                            this.userDetailsStore.gradeFilter == 'high_school'
-                    }"
-                    @click="
-                        this.userDetailsStore.gradeFilter = 'high_school';
-                        $refs.childComponent.filter();
-                    "
-                >
-                    High school
-                </button>
-                <button
-                    class="btn college"
-                    :class="{
-                        'active-grade-filter':
-                            this.userDetailsStore.gradeFilter == 'college'
-                    }"
-                    @click="
-                        this.userDetailsStore.gradeFilter = 'college';
-                        $refs.childComponent.filter();
-                    "
-                >
-                    College
-                </button>
-                <button
-                    class="btn phd"
+                    class="btn switch-btn me-2 w-100"
                     :class="{
                         'active-grade-filter':
                             this.userDetailsStore.gradeFilter == 'phd'
                     }"
                     @click="
+                        isGradeFilter = !isGradeFilter;
                         this.userDetailsStore.gradeFilter = 'phd';
                         $refs.childComponent.filter();
                     "
                 >
-                    PHD
+                    <span v-if="!isGradeFilter">Show grade filters</span>
+                    <span v-else>All</span>
                 </button>
             </div>
             <div v-else class="d-flex flex-column">
@@ -1630,74 +1616,93 @@ export default {
                     Dangerous Ideas
                 </button>
                 <!-- Grade buttons -->
+                <div v-if="isGradeFilter" class="d-flex flex-column">
+                    <button
+                        class="btn grade-school"
+                        :class="{
+                            'active-grade-filter':
+                                this.gradeFilter == 'grade_school'
+                        }"
+                        @click="
+                            this.gradeFilter = 'grade_school';
+                            $refs.childComponent.filter(
+                                this.gradeFilter,
+                                this.subjectFilters
+                            );
+                        "
+                    >
+                        Grade school
+                    </button>
+                    <button
+                        class="btn middle-school"
+                        :class="{
+                            'active-grade-filter':
+                                this.gradeFilter == 'middle_school'
+                        }"
+                        @click="
+                            this.gradeFilter = 'middle_school';
+                            $refs.childComponent.filter(
+                                this.gradeFilter,
+                                this.subjectFilters
+                            );
+                        "
+                    >
+                        Middle school
+                    </button>
+                    <button
+                        class="btn high-school"
+                        :class="{
+                            'active-grade-filter':
+                                this.gradeFilter == 'high_school'
+                        }"
+                        @click="
+                            this.gradeFilter = 'high_school';
+                            $refs.childComponent.filter(
+                                this.gradeFilter,
+                                this.subjectFilters
+                            );
+                        "
+                    >
+                        High school
+                    </button>
+                    <button
+                        class="btn college"
+                        :class="{
+                            'active-grade-filter': this.gradeFilter == 'college'
+                        }"
+                        @click="
+                            this.gradeFilter = 'college';
+                            $refs.childComponent.filter(
+                                this.gradeFilter,
+                                this.subjectFilters
+                            );
+                        "
+                    >
+                        College
+                    </button>
+                    <button
+                        class="btn phd"
+                        :class="{
+                            'active-grade-filter': this.gradeFilter == 'phd'
+                        }"
+                        @click="
+                            this.gradeFilter = 'phd';
+                            $refs.childComponent.filter(
+                                this.gradeFilter,
+                                this.subjectFilters
+                            );
+                        "
+                    >
+                        PHD
+                    </button>
+                </div>
                 <button
-                    class="btn grade-school"
-                    :class="{
-                        'active-grade-filter':
-                            this.gradeFilter == 'grade_school'
-                    }"
-                    @click="
-                        this.gradeFilter = 'grade_school';
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
-                >
-                    Grade school
-                </button>
-                <button
-                    class="btn middle-school"
-                    :class="{
-                        'active-grade-filter':
-                            this.gradeFilter == 'middle_school'
-                    }"
-                    @click="
-                        this.gradeFilter = 'middle_school';
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
-                >
-                    Middle school
-                </button>
-                <button
-                    class="btn high-school"
-                    :class="{
-                        'active-grade-filter': this.gradeFilter == 'high_school'
-                    }"
-                    @click="
-                        this.gradeFilter = 'high_school';
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
-                >
-                    High school
-                </button>
-                <button
-                    class="btn college"
-                    :class="{
-                        'active-grade-filter': this.gradeFilter == 'college'
-                    }"
-                    @click="
-                        this.gradeFilter = 'college';
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
-                >
-                    College
-                </button>
-                <button
-                    class="btn phd"
+                    class="btn switch-btn me-2 w-100"
                     :class="{
                         'active-grade-filter': this.gradeFilter == 'phd'
                     }"
                     @click="
+                        isGradeFilter = !isGradeFilter;
                         this.gradeFilter = 'phd';
                         $refs.childComponent.filter(
                             this.gradeFilter,
@@ -1705,7 +1710,8 @@ export default {
                         );
                     "
                 >
-                    PHD
+                    <span v-if="!isGradeFilter">Show grade filters</span>
+                    <span v-else>All</span>
                 </button>
             </div>
         </div>
@@ -2037,6 +2043,11 @@ export default {
 .switch-btn {
     max-height: 38px;
     margin: auto;
+    opacity: 0.5;
+}
+
+.switch-btn.active-grade-filter {
+    opacity: 1;
 }
 
 /* Root subject filters */
@@ -2044,7 +2055,6 @@ export default {
 .switch-btn {
     background-color: var(--primary-color) !important;
     color: var(--primary-contrast-color) !important;
-    opacity: 1;
 }
 
 .chosen-subject:active,
