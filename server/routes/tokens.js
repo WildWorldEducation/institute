@@ -75,8 +75,8 @@ router.post('/create-checkout-session', async (req, res) => {
                 }
             ],
 
-            success_url: `${process.env.BASE_URL}/subscriptions/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.BASE_URL}/subscriptions/error`
+            success_url: `${process.env.BASE_URL}/tokens/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.BASE_URL}/tokens/error`
         });
 
         res.json({ url: session.url });
@@ -107,10 +107,10 @@ router.get('/success', async (req, res, next) => {
             `;
     await query(queryString);
 
-    res.redirect(`${process.env.BASE_URL}/subscriptions/completed`);
+    res.redirect(`${process.env.BASE_URL}/tokens/completed`);
 });
 
-// Allow customer to make changes to subscription and billing
+// Allow customer to make changes to billing
 router.post('/create-customer-portal-session', async (req, res) => {
     try {
         userId = req.body.userId;
@@ -125,7 +125,7 @@ router.post('/create-customer-portal-session', async (req, res) => {
 
         const session = await stripe.billingPortal.sessions.create({
             customer: result[0].stripe_customer_id,
-            return_url: process.env.BASE_URL + '/subscriptions'
+            return_url: process.env.BASE_URL + '/tokens'
         });
 
         res.json({ url: session.url });

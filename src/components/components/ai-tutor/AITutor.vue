@@ -1007,7 +1007,7 @@ export default {
             v-if="$parent.isAITokenLimitReached"
         >
             You have reached your monthly AI token limit. Please recharge your
-            subscription to use more.
+            tokens to use more.
         </div>
         <!--Tutor types and STT-->
         <div

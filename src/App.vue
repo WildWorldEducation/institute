@@ -399,10 +399,10 @@ export default {
                                         v-if="
                                             userDetailsStore.role == 'student'
                                         "
-                                        to="/subscriptions"
+                                        to="/tokens"
                                         class="dropdown-item"
                                     >
-                                        Subscription
+                                        Tokens
                                     </RouterLink>
                                     <div class="dropdown-divider"></div>
                                     <a
@@ -440,10 +440,10 @@ export default {
                                 </RouterLink>
                                 <RouterLink
                                     v-if="userDetailsStore.role == 'student'"
-                                    to="/subscriptions"
+                                    to="/tokens"
                                     class="nav-link"
                                 >
-                                    Subscription
+                                    Tokens
                                 </RouterLink>
                                 <a
                                     v-if="sessionDetailsStore.isLoggedIn"
