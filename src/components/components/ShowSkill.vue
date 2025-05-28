@@ -903,6 +903,13 @@ export default {
                         </router-link>
                         <button
                             @click="scrollToAITutor(true)"
+                            v-else-if="isAITokenLimitReached == false"
+                            class="btn socratic-btn"
+                        >
+                            Socratic Tutor
+                        </button>
+                        <button
+                            @click="scrollToAITutor(false)"
                             v-else
                             class="btn socratic-btn"
                         >
@@ -1683,7 +1690,6 @@ export default {
         <!-- AI Tutor -->
         <div class="row mt-3 mb-3 position-relative" ref="aiTutorSection">
             <!-- Only show AI tutor for Student -->
-            <!-- Not show AI tutor for domain type of skill-->
             <AITutor
                 ref="aiTutor"
                 v-if="
