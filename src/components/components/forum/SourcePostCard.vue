@@ -1,5 +1,5 @@
 <script>
-import { useSessionDetailsStore } from '../../../../stores/SessionDetailsStore.js';
+import { useSessionDetailsStore } from '../../../stores/SessionDetailsStore.js';
 
 export default {
     setup() {

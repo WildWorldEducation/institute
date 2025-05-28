@@ -3,9 +3,7 @@
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 // Import Custom Components
 import FlagModals from '../FlagModals.vue';
-import ForumResource from './source-post/ForumResource.vue';
-import ForumTutorPost from './tutor-post/ForumTutorPost.vue';
-import ForumAllPost from './all-post/ForumAllPost.vue';
+import ForumAllPost from './ForumAllPost.vue';
 
 export default {
     setup() {
@@ -37,8 +35,6 @@ export default {
     },
     components: {
         FlagModals,
-        ForumResource,
-        ForumTutorPost,
         ForumAllPost
     },
     computed: {
@@ -249,74 +245,8 @@ export default {
     <div class="container-fluid mt-4">
         <div class="forum-header">
             <h2 class="secondary-heading">Other Places To Learn This</h2>
-
-            <!-- Navigation Tabs -->
-            <!-- If guest account, we dont show tutors, only sources -->
-            <ul
-                v-if="$parent.sessionDetailsStore.isLoggedIn"
-                class="nav nav-tabs border-3"
-            >
-                <li
-                    b-on-hover
-                    title="All posts related to this skill"
-                    @click="handleTabClick('allPost')"
-                >
-                    <div
-                        :class="[
-                            'nav-link',
-                            activeTab === 'allPost' && 'active'
-                        ]"
-                    >
-                        All
-                    </div>
-                </li>
-                <li
-                    b-on-hover
-                    title="Only sources"
-                    @click="handleTabClick('resource')"
-                >
-                    <div
-                        :class="[
-                            'nav-link',
-                            activeTab === 'resource' && 'active'
-                        ]"
-                    >
-                        Sources
-                    </div>
-                </li>
-                <li
-                    b-on-hover
-                    title="Only potential tutors"
-                    @click="handleTabClick('tutorPost')"
-                >
-                    <div
-                        :class="[
-                            'nav-link',
-                            activeTab === 'tutorPost' && 'active'
-                        ]"
-                    >
-                        Tutors
-                    </div>
-                </li>
-            </ul>
         </div>
-
-        <!-- ---- | Post List In This Forum | ---- -->
-
-        <ForumResource
-            v-if="activeTab === 'resource'"
-            :resourcePosts="sourcePosts"
-            :user="user"
-            :skillId="skillId"
-        />
-        <ForumTutorPost
-            v-if="activeTab === 'tutorPost'"
-            :tutorPosts="tutorPosts"
-            :user="user"
-            :skillId="skillId"
-        />
         <ForumAllPost
-            v-if="activeTab === 'allPost'"
             :posts="posts"
             :user="user"
             :skillId="skillId"
