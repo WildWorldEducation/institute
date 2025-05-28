@@ -1,7 +1,7 @@
 <script>
-import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import { useSettingsStore } from '../../../stores/SettingsStore.js';
-import { useSessionDetailsStore } from '../../../stores/SessionDetailsStore';
+import { useSessionDetailsStore } from '../../../stores/SessionDetailsStore.js';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
