@@ -21,25 +21,19 @@ export default {
             isAITokenLimitReached: false,
             isMobileCheck: window.innerWidth,
             showTooltip: false,
-            subscription: {},
-            subSchedule: {},
-            basicPlanPriceId: import.meta.env.VITE_BASIC_PLAN_PRICE_ID,
-            infinitePlanPriceId: import.meta.env.VITE_INFINITE_PLAN_PRICE_ID,
-            nextSubSchedulePhasePlan: '',
-            // For the loading animation.
-            isLoading: false,
             // For downloading invoices from Stripe
-            receipts: []
+            receipts: [],
+            isAITokenLimitReached: false,
+            assistantsModelPrice: { input: 75, output: 150 }
         };
     },
     async created() {
         // Get free monthly AI token limit
-        if (!this.settingsStore.freePlanTokenLimit) {
+        if (this.settingsStore.freeTokenMonthlyLimit == 0) {
             await this.settingsStore.getSettings();
         }
 
         await this.userDetailsStore.getUserDetails();
-        await this.getSubscription();
     },
     async mounted() {
         //Stripe external script
@@ -48,22 +42,15 @@ export default {
         document.head.appendChild(stripeScript);
 
         // Check if user is over free monthly AI token limit
-        if (this.userDetailsStore.subscriptionTier == 'free') {
-            if (
-                this.settingsStore.freePlanTokenLimit &&
-                this.userDetailsStore.monthlyTokenUsage &&
-                this.settingsStore.freePlanTokenLimit <=
-                    this.userDetailsStore.monthlyTokenUsage
-            ) {
-                this.isAITokenLimitReached = true;
-            }
-        } else if (this.userDetailsStore.subscriptionTier == 'basic') {
-            if (
-                this.settingsStore.basicPlanTokenLimit &&
-                this.userDetailsStore.monthlyTokenUsage &&
-                this.settingsStore.basicPlanTokenLimit <=
-                    this.userDetailsStore.monthlyTokenUsage
-            ) {
+        let tokenBalance =
+            this.userDetailsStore.monthlyTokenUsage -
+            this.settingsStore.freeTokenMonthlyLimit;
+
+        if (
+            this.settingsStore.freeTokenMonthlyLimit <=
+            this.userDetailsStore.monthlyTokenUsage
+        ) {
+            if (tokenBalance > this.userDetailsStore.tokens) {
                 this.isAITokenLimitReached = true;
             }
         }
@@ -89,6 +76,8 @@ export default {
 
         const d = new Date();
         this.month = month[d.getMonth()];
+
+        this.getReceipts();
     },
     computed: {
         formattedStripeCurrentPeriodEndDate() {
@@ -126,50 +115,20 @@ export default {
             return this.userDetailsStore.monthlyTokenUsage
                 ? this.userDetailsStore.monthlyTokenUsage.toLocaleString()
                 : '0';
-        },
-        formattedFreePlanTokenLimit() {
-            return this.settingsStore.freePlanTokenLimit
-                ? this.settingsStore.freePlanTokenLimit.toLocaleString()
-                : '0';
-        },
-        formattedBasicPlanTokenLimit() {
-            return this.settingsStore.basicPlanTokenLimit
-                ? this.settingsStore.basicPlanTokenLimit.toLocaleString()
-                : '0';
-        },
-        subscriptionTierFormatted() {
-            return this.userDetailsStore.subscriptionTier
-                ? this.userDetailsStore.subscriptionTier.toLocaleString()
-                : 'free';
         }
     },
     methods: {
-        async getSubscription() {
+        async getReceipts() {
             const result = await fetch(
-                '/subscriptions/get-sub/' + this.userDetailsStore.userId
+                '/subscriptions/get-receipts/' + this.userDetailsStore.userId
             );
-            const subscriptionData = await result.json();
-            // Load the subscription, if there is one
-            this.subscription = subscriptionData.subscription;
-            // Check if there is a subscription schedule
-            // This would have been created in the case of a downgrade or upgrade,
-            // but not cancellation (downgrade to free plan).
-            this.subSchedule = subscriptionData.subSchedule;
-            if (this.subSchedule) {
-                let nextPhasePlan = this.subSchedule.phases[1].items[0].price;
-                if (nextPhasePlan == this.basicPlanPriceId) {
-                    this.nextSubSchedulePhasePlan = 'Basic';
-                } else if (nextPhasePlan == this.infinitePlanPriceId) {
-                    this.nextSubSchedulePhasePlan = 'Infinite';
-                }
-            }
-
-            for (let i = 0; i < subscriptionData.charges.data.length; i++) {
-                this.receipts.push(subscriptionData.charges.data[i]);
+            const receiptsData = await result.json();
+            for (let i = 0; i < receiptsData.charges.data.length; i++) {
+                this.receipts.push(receiptsData.charges.data[i]);
             }
         },
-        // Purchase subscription
-        checkout(planType) {
+        // Purchase tokens
+        checkout(numberOfTokens) {
             fetch('/subscriptions/create-checkout-session', {
                 method: 'POST',
                 headers: {
@@ -177,7 +136,7 @@ export default {
                 },
                 body: JSON.stringify({
                     userId: this.userDetailsStore.userId,
-                    planType: planType
+                    numberOfTokens: numberOfTokens
                 })
             })
                 .then((res) => {
@@ -213,106 +172,6 @@ export default {
                 .catch((e) => {
                     console.error(e.error);
                 });
-        },
-        // Cancel subscription at end of billing cycle.
-        cancelPlan() {
-            if (
-                confirm('Are you sure you want to downgrade to the Free plan?')
-            ) {
-                fetch('/subscriptions/cancel', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        userId: this.userDetailsStore.userId
-                    })
-                })
-                    .then(function (response) {
-                        return response.json();
-                    })
-                    .then(async (data) => {
-                        if (data.status == 'succeeded') {
-                            this.getSubscription();
-                        } else {
-                            alert(
-                                'Downgrade did not work. Please try again later.'
-                            );
-                        }
-                    });
-            } else {
-                return;
-            }
-        },
-        // Downgrade subscription from Infinite to Basic.
-        downgradePlan() {
-            if (
-                confirm('Are you sure you want to downgrade to the Basic plan?')
-            ) {
-                this.isLoading = true;
-                fetch('/subscriptions/downgrade', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        subscriptionId: this.subscription.id,
-                        subScheduleId: this.subSchedule
-                            ? this.subSchedule.id
-                            : null
-                    })
-                })
-                    .then(function (response) {
-                        return response.json();
-                    })
-                    .then(async (data) => {
-                        if (data.status == 'succeeded') {
-                            await this.getSubscription();
-                        } else {
-                            alert(
-                                'Downgrade did not work. Please try again later.'
-                            );
-                        }
-                        this.isLoading = false;
-                    });
-            } else {
-                return;
-            }
-        },
-        // Upgrade subscription from Basic to Infinite.
-        upgradePlan() {
-            if (
-                confirm(
-                    `Are you sure you want to upgrade to the Infinite plan? (You will be billed immediately)`
-                )
-            ) {
-                this.isLoading = true;
-                fetch('/subscriptions/upgrade', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        subscriptionId: this.subscription.id
-                    })
-                })
-                    .then(function (response) {
-                        return response.json();
-                    })
-                    .then(async (data) => {
-                        if (data.status == 'succeeded') {
-                            await this.userDetailsStore.getUserDetails();
-                            this.$router.push('/subscriptions/completed');
-                        } else {
-                            alert(
-                                'Upgrade did not work. Please try again later.'
-                            );
-                        }
-                        this.isLoading = false;
-                    });
-            } else {
-                return;
-            }
         },
         formattedStripeReceiptDate(receipt) {
             let dateObj = new Date(receipt.created * 1000);
@@ -356,14 +215,22 @@ export default {
                 <ul>
                     <li>
                         <p>
-                            <strong>Your subscription tier:</strong>
-                            {{ subscriptionTierFormatted }}
+                            <strong>Free limit:</strong>
+                            {{
+                                settingsStore.freeTokenMonthlyLimit.toLocaleString()
+                            }}
                         </p>
                     </li>
                     <li>
                         <p>
                             <strong>Current token usage:</strong>
                             {{ formattedMonthlyTokenUsage }}
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            <strong>Your tokens:</strong>
+                            {{ userDetailsStore.tokens.toLocaleString() }}
                         </p>
                     </li>
                 </ul>
@@ -375,25 +242,6 @@ export default {
                 >
                     You are over the monthly free limit. You can't use the AI
                     features until next month.
-                </div>
-                <div
-                    v-if="subscription && subscription.cancel_at_period_end"
-                    class="alert alert-warning"
-                    :class="{ 'mb-0': isMobileCheck >= 576 }"
-                    role="alert"
-                >
-                    Your plan will downgrade to the Free plan on
-                    {{ formattedStripeCurrentPeriodEndDate }}
-                </div>
-                <div
-                    v-if="nextSubSchedulePhasePlan != ''"
-                    class="alert alert-warning"
-                    :class="{ 'mb-0': isMobileCheck >= 576 }"
-                    role="alert"
-                >
-                    Your plan will downgrade to the
-                    {{ nextSubSchedulePhasePlan }} plan on
-                    {{ formattedStripeCurrentPeriodEndDate }}
                 </div>
             </div>
 
@@ -420,13 +268,9 @@ export default {
                         : 'justify-content-center'
                 "
             >
-                <!-- Manage subscription -->
-                <button
-                    v-if="userDetailsStore.subscriptionTier != 'free'"
-                    class="btn primary-btn"
-                    @click="loadPortal()"
-                >
-                    Manage subscription
+                <!-- Manage billing -->
+                <button class="btn primary-btn" @click="loadPortal()">
+                    Manage billing
                 </button>
                 <!-- Info button -->
                 <button class="btn info-btn ms-1" @click="openTooltip">
@@ -446,125 +290,43 @@ export default {
             </div>
         </div>
         <hr />
-        <!-- Loading animation -->
-        <div
-            v-if="isLoading == true"
-            class="d-flex justify-content-center align-items-center py-4"
-        >
-            <span class="subscription-loader"></span>
-        </div>
-        <div v-else class="row mt-4">
-            <!-- Free plan -->
+
+        <div class="row mt-4">
+            <!-- 200,000 tokens -->
             <div
                 class="col-md mb-3"
                 :class="{ 'text-center': isMobileCheck < 576 }"
             >
-                <h2 class="secondary-heading h4">Free</h2>
-                <p>
-                    <strong>Token limit:</strong>
-                    {{ formattedFreePlanTokenLimit }}
-                </p>
-                <button
-                    v-if="userDetailsStore.subscriptionTier == 'free'"
-                    disabled
-                    class="btn primary-btn mt-1"
-                >
-                    current plan
-                </button>
-                <button
-                    v-else-if="
-                        subscription &&
-                        subscription.cancel_at_period_end == false &&
-                        nextSubSchedulePhasePlan != 'Basic'
-                    "
-                    @click="cancelPlan()"
-                    class="btn primary-btn mt-1 mb-3"
-                >
-                    downgrade
+                <h2 class="secondary-heading h4">200,000 tokens</h2>
+                <p>$10</p>
+                <!-- Buy tokens -->
+                <button @click="checkout(200000)" class="btn primary-btn mt-1">
+                    buy
                 </button>
             </div>
-            <!-- Basic plan -->
+            <!-- 400,000 tokens -->
             <div
                 class="col-md mb-3"
                 :class="{
                     'text-center': isMobileCheck < 576
                 }"
             >
-                <h2 class="secondary-heading h4">Basic</h2>
-                <p>Ideal for moderate use</p>
-                <p>$20 / month</p>
-                <p>
-                    <strong>Token limit:</strong>
-                    {{ formattedBasicPlanTokenLimit }}
-                </p>
-                <!-- Buy subscription -->
-                <button
-                    v-if="userDetailsStore.subscriptionTier == 'free'"
-                    @click="checkout('basic')"
-                    class="btn primary-btn mt-1"
-                >
+                <h2 class="secondary-heading h4">400,000 tokens</h2>
+                <p>$20</p>
+                <!-- Buy tokens -->
+                <button @click="checkout(400000)" class="btn primary-btn mt-1">
                     buy
                 </button>
-                <button
-                    v-else-if="
-                        subscription &&
-                        userDetailsStore.subscriptionTier == 'infinite' &&
-                        nextSubSchedulePhasePlan != 'Basic' &&
-                        subscription.cancel_at_period_end == false
-                    "
-                    @click="downgradePlan()"
-                    class="btn primary-btn mt-1"
-                >
-                    downgrade
-                </button>
-                <button
-                    v-else-if="
-                        this.userDetailsStore.subscriptionTier == 'basic'
-                    "
-                    disabled
-                    class="btn primary-btn mt-1 mb-3"
-                >
-                    current plan
-                </button>
             </div>
-            <!-- Infinite plan -->
+            <!-- 1000,000 tokens -->
             <div
                 class="col-md mb-3"
                 :class="{ 'text-center': isMobileCheck < 576 }"
             >
-                <h2 class="secondary-heading h4">Infinite</h2>
-                <p>Ideal for daily use</p>
-                <p>$100 / month</p>
-                <p>
-                    <strong>Token limit:</strong>
-                    Infinite
-                </p>
-                <button
-                    v-if="userDetailsStore.subscriptionTier == 'free'"
-                    @click="checkout('infinite')"
-                    class="btn primary-btn mt-1"
-                >
+                <h2 class="secondary-heading h4">1000,000 tokens</h2>
+                <p>$50</p>
+                <button @click="checkout(1000000)" class="btn primary-btn mt-1">
                     buy
-                </button>
-                <button
-                    v-else-if="
-                        subscription &&
-                        userDetailsStore.subscriptionTier == 'basic' &&
-                        subscription.cancel_at_period_end == false
-                    "
-                    @click="upgradePlan()"
-                    class="btn primary-btn mt-1"
-                >
-                    upgrade
-                </button>
-                <button
-                    v-else-if="
-                        this.userDetailsStore.subscriptionTier == 'infinite'
-                    "
-                    disabled
-                    class="btn primary-btn mt-1"
-                >
-                    current plan
                 </button>
             </div>
         </div>
@@ -590,28 +352,6 @@ export default {
 .info-btn {
     max-height: 40px;
 }
-
-/* Loading animation */
-.subscription-loader {
-    width: 48px;
-    height: 48px;
-    border: 5px solid var(--primary-color);
-    border-bottom-color: transparent;
-    border-radius: 50%;
-    display: inline-block;
-    box-sizing: border-box;
-    animation: rotation 1s linear infinite;
-}
-
-@keyframes rotation {
-    100% {
-        transform: rotate(0deg);
-    }
-    0% {
-        transform: rotate(360deg);
-    }
-}
-/* End of loading animation */
 
 /* Modals */
 .modal {

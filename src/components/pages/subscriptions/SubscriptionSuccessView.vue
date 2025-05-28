@@ -8,6 +8,10 @@ export default {
         return {
             userDetailsStore
         };
+    },
+    created() {
+        // Ensure the user details are loaded when the component is created
+        this.userDetailsStore.getUserDetails();
     }
 };
 </script>
@@ -15,8 +19,9 @@ export default {
     <div class="container">
         <h1 class="heading">Payment Successful!</h1>
         <p>
-            You are now subscribed to the
-            <strong>{{ userDetailsStore.subscriptionTier }}</strong> plan.
+            You now have
+            <strong>{{ userDetailsStore.tokens.toLocaleString() }}</strong>
+            tokens.
         </p>
         <p>
             Continue your journey now! Jump to the
