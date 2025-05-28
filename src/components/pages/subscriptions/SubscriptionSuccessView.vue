@@ -8,13 +8,21 @@ export default {
         return {
             userDetailsStore
         };
+    },
+    created() {
+        // Ensure the user details are loaded when the component is created
+        this.userDetailsStore.getUserDetails();
     }
 };
 </script>
 <template>
     <div class="container">
         <h1 class="heading">Payment Successful!</h1>
-        <p>You now have {{ userDetailsStore.tokens }} tokens</p>
+        <p>
+            You now have
+            <strong>{{ userDetailsStore.tokens.toLocaleString() }}</strong>
+            tokens.
+        </p>
         <p>
             Continue your journey now! Jump to the
             <router-link to="/skill-tree">skill tree</router-link>,
