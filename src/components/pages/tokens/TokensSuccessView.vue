@@ -29,9 +29,6 @@ export default {
             <router-link to="/goals">revisit your goals</router-link>, or
             <router-link to="/search"
                 >search for a new skill to explore</router-link
-            >. Subscribed by mistake? You can
-            <router-link to="/subscriptions"
-                >change your subscription here</router-link
             >.
         </p>
     </div>

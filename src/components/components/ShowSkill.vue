@@ -1741,7 +1741,7 @@ export default {
             >
                 <em
                     >You have reached your monthly AI token limit. Please
-                    recharge your subscription to use more.</em
+                    recharge your tokens to use more.</em
                 >
             </div>
             <!-- Skill Mastered Modal -->

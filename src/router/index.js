@@ -455,28 +455,23 @@ const router = createRouter({
                 roles: ['instructor', 'admin']
             }
         },
-        // Subscriptions
+        // Tokens
         {
-            path: '/subscriptions',
-            name: 'subscription',
-            component: () =>
-                import('../components/pages/subscriptions/SubscriptionView.vue')
+            path: '/tokens',
+            name: 'tokens',
+            component: () => import('../components/pages/tokens/TokensView.vue')
         },
         {
-            path: '/subscriptions/completed',
-            name: 'subscription-success',
+            path: '/tokens/completed',
+            name: 'tokens-success',
             component: () =>
-                import(
-                    '../components/pages/subscriptions/SubscriptionSuccessView.vue'
-                )
+                import('../components/pages/tokens/TokensSuccessView.vue')
         },
         {
-            path: '/subscriptions/error',
-            name: 'subscription-error',
+            path: '/tokens/error',
+            name: 'tokens-error',
             component: () =>
-                import(
-                    '../components/pages/subscriptions/SubscriptionErrorView.vue'
-                )
+                import('../components/pages/tokens/TokensErrorView.vue')
         },
         {
             path: '/:pathMatch(.*)*',
