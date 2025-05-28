@@ -84,6 +84,7 @@ export default {
             showTutorialTip9: false,
             showTutorialTip10: false,
             showTutorialTip11: false,
+            showGuestLoginTooltip: false,
             showCategoryCompletedModal: false,
             nextSkillsInBranch: [],
             // Defaults to true. False only for certain skills.
@@ -781,6 +782,9 @@ export default {
         handleSkillMastered() {
             this.isMastered = true;
             this.showMasteryModal = true;
+        },
+        showGuestTooltip() {
+            this.showGuestLoginTooltip = true;
         }
     },
     /**
@@ -828,47 +832,7 @@ export default {
                         {{ calculatedSkillName }}
                     </h1>
                 </div>
-                <!-- Student tooltip -->
-                <div
-                    v-if="
-                        userDetailsStore.role == 'student' && showTutorialTip2
-                    "
-                    class="tool-tip-base d-flex justify-content-end"
-                >
-                    <div
-                        class="explain-tool-tip hovering-info-panel"
-                        :class="
-                            isMobileCheck > 576
-                                ? 'triangle-top-right'
-                                : 'triangle-top-left'
-                        "
-                    >
-                        <div class="tool-tip-text">
-                            <p>
-                                This is where you can take an assessment for
-                                this skill, if it is unlocked.
-                            </p>
-                            <p>
-                                If it's locked, this button will instead take
-                                you to the closest unlocked skill.
-                            </p>
-                            <div class="d-flex justify-content-between">
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(2)"
-                                >
-                                    next
-                                </button>
-                                <button
-                                    class="btn red-btn"
-                                    @click="skipTutorial"
-                                >
-                                    exit tutorial
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
                 <!-- A line divide -->
                 <hr
                     class="border border-2 opacity-100 hr mb-2"
@@ -898,20 +862,21 @@ export default {
                         }"
                     >
                         <!-- If not logged in, go to Login page -->
-                        <router-link
-                            v-if="!sessionDetailsStore.isLoggedIn"
-                            to="/login"
-                            class="btn socratic-btn"
-                        >
-                            Socratic Tutor
-                        </router-link>
                         <button
-                            @click="scrollToAITutor(true)"
-                            v-else
+                            v-if="!sessionDetailsStore.isLoggedIn"
+                            @click="showGuestTooltip"
                             class="btn socratic-btn"
                         >
                             Socratic Tutor
                         </button>
+                        <button
+                            v-else-if="userDetailsStore.role == 'student'"
+                            @click="scrollToAITutor(true)"
+                            class="btn socratic-btn"
+                        >
+                            Socratic Tutor
+                        </button>
+
                         <!-- Take assessment btn-->
                         <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
                         <router-link
@@ -1015,15 +980,16 @@ export default {
                             Go To Child Skill
                         </button>
                         <!-- If not logged in, go to Login page -->
-                        <router-link
+                        <button
                             v-if="!sessionDetailsStore.isLoggedIn"
+                            @click="showGuestTooltip"
                             class="btn me-1 assessment-btn"
-                            to="/login"
                         >
                             <span v-if="skill.type != 'domain'"
                                 >Take the Test</span
-                            ><span v-else>Mark Complete</span>
-                        </router-link>
+                            >
+                            <span v-else>Mark Complete</span>
+                        </button>
                     </div>
 
                     <!-- Right hand buttons -->
@@ -1200,15 +1166,60 @@ export default {
                         </span>
                     </div>
                 </div>
-                <!-- Student tooltips -->
+                <!-- Student tooltip -->
                 <div
                     v-if="
-                        userDetailsStore.role == 'student' && showTutorialTip3
+                        userDetailsStore.role == 'student' && showTutorialTip2
                     "
                     class="tool-tip-base"
                 >
                     <div
                         class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel"
+                    >
+                        <div class="tool-tip-text">
+                            <div class="tool-tip-text">
+                                <p>
+                                    Use "Take the Test" to assess your mastery,
+                                    or "Socratic Tutor" to learn through guided
+                                    questions.
+                                </p>
+                                <p>
+                                    If locked, the test button will redirect you
+                                    to the nearest unlocked skill.
+                                </p>
+                                <div class="d-flex justify-content-between">
+                                    <button
+                                        class="btn primary-btn"
+                                        @click="progressTutorial(2)"
+                                    >
+                                        next
+                                    </button>
+                                    <button
+                                        class="btn red-btn"
+                                        @click="skipTutorial"
+                                    >
+                                        exit tutorial
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Student tooltips -->
+                <div
+                    v-if="
+                        userDetailsStore.role == 'student' && showTutorialTip3
+                    "
+                    class="tool-tip-base d-flex justify-content-start"
+                    :class="{
+                        'justify-content-end': isMobileCheck > 576
+                    }"
+                >
+                    <div
+                        class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel"
+                        :class="{
+                            'triangle-top-middle': isMobileCheck > 576
+                        }"
                     >
                         <div class="tool-tip-text">
                             <p>
@@ -1271,15 +1282,19 @@ export default {
                 <!-- Editor tooltips -->
                 <div
                     v-if="userDetailsStore.role == 'editor' && showTutorialTip2"
-                    class="tool-tip-base"
+                    class="tool-tip-base d-flex justify-content-start"
+                    :class="{
+                        'justify-content-end': isMobileCheck > 576
+                    }"
                 >
                     <div
-                        class="explain-tool-tip triangle-top-left hovering-info-panel"
+                        class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel"
                     >
                         <div class="tool-tip-text">
                             <p>
                                 The "Edit" button allows you to edit this skill
-                                page or its assessment.
+                                page or its assessment. The "History" button
+                                shows all previous versions and changes.
                             </p>
                             <div class="d-flex justify-content-between">
                                 <button
@@ -1334,10 +1349,16 @@ export default {
                         userDetailsStore.role == 'instructor' &&
                         showTutorialTip2
                     "
-                    class="tool-tip-base"
+                    class="tool-tip-base d-flex justify-content-start"
+                    :class="{
+                        'justify-content-end': isMobileCheck > 576
+                    }"
                 >
                     <div
-                        class="explain-tool-tip triangle-top-left narrow-info-panel hovering-info-panel"
+                        class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel"
+                        :class="{
+                            'triangle-top-middle': isMobileCheck > 576
+                        }"
                     >
                         <div class="tool-tip-text">
                             <p>
@@ -1848,6 +1869,34 @@ export default {
         :contentId="skillId"
     />
 
+    <!-- Guest Login Tooltip -->
+    <div
+        v-if="showGuestLoginTooltip"
+        class="modal"
+        @click="showGuestLoginTooltip = false"
+    >
+        <div class="modal-content" @click.stop>
+            <p>
+                Please login to access this feature and track your learning
+                progress.
+            </p>
+            <div class="d-flex justify-content-between">
+                <router-link
+                    class="btn primary-btn"
+                    to="/login"
+                    @click="showGuestLoginTooltip = false"
+                >
+                    Login
+                </router-link>
+                <button
+                    class="btn red-btn"
+                    @click="showGuestLoginTooltip = false"
+                >
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
     <!-- Tooltip modals -->
     <!-- Student -->
     <div
