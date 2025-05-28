@@ -828,47 +828,7 @@ export default {
                         {{ calculatedSkillName }}
                     </h1>
                 </div>
-                <!-- Student tooltip -->
-                <div
-                    v-if="
-                        userDetailsStore.role == 'student' && showTutorialTip2
-                    "
-                    class="tool-tip-base d-flex justify-content-end"
-                >
-                    <div
-                        class="explain-tool-tip hovering-info-panel"
-                        :class="
-                            isMobileCheck > 576
-                                ? 'triangle-top-right'
-                                : 'triangle-top-left'
-                        "
-                    >
-                        <div class="tool-tip-text">
-                            <p>
-                                This is where you can take an assessment for
-                                this skill, if it is unlocked.
-                            </p>
-                            <p>
-                                If it's locked, this button will instead take
-                                you to the closest unlocked skill.
-                            </p>
-                            <div class="d-flex justify-content-between">
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(2)"
-                                >
-                                    next
-                                </button>
-                                <button
-                                    class="btn red-btn"
-                                    @click="skipTutorial"
-                                >
-                                    exit tutorial
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
                 <!-- A line divide -->
                 <hr
                     class="border border-2 opacity-100 hr mb-2"
@@ -897,21 +857,23 @@ export default {
                             'justify-content-between': isMobileCheck < 576
                         }"
                     >
-                        <!-- If not logged in, go to Login page -->
-                        <router-link
-                            v-if="!sessionDetailsStore.isLoggedIn"
-                            to="/login"
-                            class="btn socratic-btn"
-                        >
-                            Socratic Tutor
-                        </router-link>
-                        <button
-                            @click="scrollToAITutor(true)"
-                            v-else
-                            class="btn socratic-btn"
-                        >
-                            Socratic Tutor
-                        </button>
+                        <div v-if="userDetailsStore.role == 'student'">
+                            <!-- If not logged in, go to Login page -->
+                            <router-link
+                                v-if="!sessionDetailsStore.isLoggedIn"
+                                to="/login"
+                                class="btn socratic-btn"
+                            >
+                                Socratic Tutor
+                            </router-link>
+                            <button
+                                @click="scrollToAITutor(true)"
+                                v-else
+                                class="btn socratic-btn"
+                            >
+                                Socratic Tutor
+                            </button>
+                        </div>
                         <!-- Take assessment btn-->
                         <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
                         <router-link
@@ -1200,15 +1162,60 @@ export default {
                         </span>
                     </div>
                 </div>
-                <!-- Student tooltips -->
+                <!-- Student tooltip -->
                 <div
                     v-if="
-                        userDetailsStore.role == 'student' && showTutorialTip3
+                        userDetailsStore.role == 'student' && showTutorialTip2
                     "
                     class="tool-tip-base"
                 >
                     <div
                         class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel"
+                    >
+                        <div class="tool-tip-text">
+                            <div class="tool-tip-text">
+                                <p>
+                                    Use "Take the Test" to assess your mastery,
+                                    or "Socratic Tutor" to learn through guided
+                                    questions.
+                                </p>
+                                <p>
+                                    If locked, the test button will redirect you
+                                    to the nearest unlocked skill.
+                                </p>
+                                <div class="d-flex justify-content-between">
+                                    <button
+                                        class="btn primary-btn"
+                                        @click="progressTutorial(2)"
+                                    >
+                                        next
+                                    </button>
+                                    <button
+                                        class="btn red-btn"
+                                        @click="skipTutorial"
+                                    >
+                                        exit tutorial
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Student tooltips -->
+                <div
+                    v-if="
+                        userDetailsStore.role == 'student' && showTutorialTip3
+                    "
+                    class="tool-tip-base d-flex justify-content-start"
+                    :class="{
+                        'justify-content-end': isMobileCheck > 576
+                    }"
+                >
+                    <div
+                        class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel"
+                        :class="{
+                            'triangle-top-middle': isMobileCheck > 576
+                        }"
                     >
                         <div class="tool-tip-text">
                             <p>
@@ -1271,15 +1278,19 @@ export default {
                 <!-- Editor tooltips -->
                 <div
                     v-if="userDetailsStore.role == 'editor' && showTutorialTip2"
-                    class="tool-tip-base"
+                    class="tool-tip-base d-flex justify-content-start"
+                    :class="{
+                        'justify-content-end': isMobileCheck > 576
+                    }"
                 >
                     <div
-                        class="explain-tool-tip triangle-top-left hovering-info-panel"
+                        class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel"
                     >
                         <div class="tool-tip-text">
                             <p>
                                 The "Edit" button allows you to edit this skill
-                                page or its assessment.
+                                page or its assessment. The "History" button
+                                shows all previous versions and changes.
                             </p>
                             <div class="d-flex justify-content-between">
                                 <button
@@ -1334,10 +1345,16 @@ export default {
                         userDetailsStore.role == 'instructor' &&
                         showTutorialTip2
                     "
-                    class="tool-tip-base"
+                    class="tool-tip-base d-flex justify-content-start"
+                    :class="{
+                        'justify-content-end': isMobileCheck > 576
+                    }"
                 >
                     <div
-                        class="explain-tool-tip triangle-top-left narrow-info-panel hovering-info-panel"
+                        class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel"
+                        :class="{
+                            'triangle-top-middle': isMobileCheck > 576
+                        }"
                     >
                         <div class="tool-tip-text">
                             <p>
