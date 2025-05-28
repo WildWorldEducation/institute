@@ -866,9 +866,11 @@ export default {
                             Socratic Tutor
                         </button>
                         <button
-                            v-else-if="userDetailsStore.role == 'student'"
+                            v-else-if="
+                                userDetailsStore.role == 'student' &&
+                                isAITokenLimitReached == false
+                            "
                             @click="scrollToAITutor(true)"
-                            v-else-if="isAITokenLimitReached == false"
                             class="btn socratic-btn"
                         >
                             Socratic Tutor
