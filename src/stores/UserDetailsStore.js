@@ -25,7 +25,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
             reputationScore: null,
             cohortId: null,
             isSkillsLocked: 0,
-            subscriptionTier: '',
+            tokens: 0,
             monthlyTokenUsage: 0,
             isAudioAutoPlay: 0
         };
@@ -58,8 +58,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.cohortId = data.cohort_id;
                 this.isUnlockedSkillsOnlyFilter =
                     data.is_unlocked_skills_only_filter;
-                this.subscriptionTier = data.subscription_tier;
                 this.monthlyTokenUsage = data.monthly_token_usage;
+                this.tokens = data.tokens;
                 this.isAudioAutoPlay = data.is_audio_auto_play || 0;
 
                 if (this.role == 'student') {

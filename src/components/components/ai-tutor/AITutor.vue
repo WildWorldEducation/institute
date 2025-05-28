@@ -1024,7 +1024,9 @@ export default {
                             :class="{
                                 'text-decoration-underline':
                                     mode !== 'hide' && tutorType === 'socratic',
-                                disabled: hasTutorButtonBeenClicked
+                                disabled:
+                                    hasTutorButtonBeenClicked ||
+                                    $parent.isAITokenLimitReached
                             }"
                             @click="handleTutorClick('socratic')"
                         >
@@ -1079,7 +1081,8 @@ export default {
                                 disabled:
                                     (skill.type === 'super' &&
                                         !areAllSubskillsMastered) ||
-                                    hasTutorButtonBeenClicked
+                                    hasTutorButtonBeenClicked ||
+                                    $parent.isAITokenLimitReached
                             }"
                             @click="
                                 skill.type === 'super' &&
