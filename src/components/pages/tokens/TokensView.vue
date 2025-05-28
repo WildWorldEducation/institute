@@ -80,37 +80,6 @@ export default {
         this.getReceipts();
     },
     computed: {
-        formattedStripeCurrentPeriodEndDate() {
-            let dateObj = new Date(this.subscription.current_period_end * 1000);
-
-            // You could get this from a store or user preferences
-            const locale = 'en-US'; // Default to English
-
-            // Get day name using Intl.DateTimeFormat
-            const dayName = new Intl.DateTimeFormat(locale, {
-                weekday: 'long'
-            }).format(dateObj);
-
-            // Get day number
-            const day = dateObj.getDate();
-
-            // Get day suffix (note: this is English-specific, would need adaptation for other languages)
-            let daySuffix = 'th';
-            if (day % 10 === 1 && day !== 11) daySuffix = 'st';
-            if (day % 10 === 2 && day !== 12) daySuffix = 'nd';
-            if (day % 10 === 3 && day !== 13) daySuffix = 'rd';
-
-            // Get month name using Intl.DateTimeFormat
-            const monthName = new Intl.DateTimeFormat(locale, {
-                month: 'long'
-            }).format(dateObj);
-
-            // Get year
-            const year = dateObj.getFullYear();
-
-            // Format template (this would also need to be translated for other languages)
-            return `${dayName} the ${day}${daySuffix} of ${monthName}, ${year}`;
-        },
         formattedMonthlyTokenUsage() {
             return this.userDetailsStore.monthlyTokenUsage
                 ? this.userDetailsStore.monthlyTokenUsage.toLocaleString()
@@ -120,7 +89,7 @@ export default {
     methods: {
         async getReceipts() {
             const result = await fetch(
-                '/subscriptions/get-receipts/' + this.userDetailsStore.userId
+                '/tokens/get-receipts/' + this.userDetailsStore.userId
             );
             const receiptsData = await result.json();
             for (let i = 0; i < receiptsData.charges.data.length; i++) {
@@ -129,7 +98,7 @@ export default {
         },
         // Purchase tokens
         checkout(numberOfTokens) {
-            fetch('/subscriptions/create-checkout-session', {
+            fetch('/tokens/create-checkout-session', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -153,7 +122,7 @@ export default {
         // Load the Stripe Customer Portal page
         // (This redirects to Stripe's website)
         loadPortal() {
-            fetch('/subscriptions/create-customer-portal-session', {
+            fetch('/tokens/create-customer-portal-session', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -269,7 +238,14 @@ export default {
                 "
             >
                 <!-- Manage billing -->
-                <button class="btn primary-btn" @click="loadPortal()">
+                <button
+                    v-if="
+                        userDetailsStore.stripeCustomerId &&
+                        userDetailsStore.stripeCustomerId != ''
+                    "
+                    class="btn primary-btn"
+                    @click="loadPortal()"
+                >
                     Manage billing
                 </button>
                 <!-- Info button -->
