@@ -77,7 +77,11 @@ export default {
         const d = new Date();
         this.month = month[d.getMonth()];
 
-        this.getReceipts();
+        if (
+            this.userDetailsStore.stripeCustomerId &&
+            this.userDetailsStore.stripeCustomerId != ''
+        )
+            this.getReceipts();
     },
     computed: {
         formattedMonthlyTokenUsage() {
