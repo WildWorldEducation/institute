@@ -297,7 +297,7 @@ export default {
                 class="col-md mb-3"
                 :class="{ 'text-center': isMobileCheck < 576 }"
             >
-                <h2 class="secondary-heading h4">200,000 tokens</h2>
+                <h2 class="secondary-heading h5">200,000 tokens</h2>
                 <p>$10</p>
                 <!-- Buy tokens -->
                 <button @click="checkout(200000)" class="btn primary-btn mt-1">
@@ -311,7 +311,7 @@ export default {
                     'text-center': isMobileCheck < 576
                 }"
             >
-                <h2 class="secondary-heading h4">400,000 tokens</h2>
+                <h2 class="secondary-heading h5">400,000 tokens</h2>
                 <p>$20</p>
                 <!-- Buy tokens -->
                 <button @click="checkout(400000)" class="btn primary-btn mt-1">
@@ -323,7 +323,7 @@ export default {
                 class="col-md mb-3"
                 :class="{ 'text-center': isMobileCheck < 576 }"
             >
-                <h2 class="secondary-heading h4">1000,000 tokens</h2>
+                <h2 class="secondary-heading h5">1,000,000 tokens</h2>
                 <p>$50</p>
                 <button @click="checkout(1000000)" class="btn primary-btn mt-1">
                     buy
