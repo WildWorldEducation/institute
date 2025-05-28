@@ -132,8 +132,8 @@ async function getSocraticTutorThread(userId, skillUrl) {
         let queryString = `SELECT * 
                            FROM ai_socratic_tutor_threads 
                            WHERE user_id = ${conn.escape(
-            userId
-        )} AND skill_url = ${conn.escape(skillUrl)}`;
+                               userId
+                           )} AND skill_url = ${conn.escape(skillUrl)}`;
 
         const result = await query(queryString);
         return result;
@@ -202,11 +202,11 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
 
             // Save the user's token usage
             // These tokens are priced at $150 per million
-            let outputTokens = runStep.usage.completion_tokens;
+            let outputTokens = run.usage.completion_tokens; // ✅ Changed from runStep to run
             // Work out tts equivalent usage
             // 0.4 is hardcoded at the moment, based on pricing and choice of models
             let ttsTokens = outputTokens * 0.4;
-            let tokenCount = runStep.usage.total_tokens + ttsTokens;
+            let tokenCount = run.usage.total_tokens + ttsTokens; // ✅ Changed from runStep to run
             saveTokenUsage(messageData.userId, tokenCount);
 
             return latestMessage;
@@ -217,7 +217,6 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
         console.error('Error in socraticTutorMessage:', error);
         throw error;
     }
-
 }
 
 // Test the student
@@ -311,8 +310,8 @@ async function getAssessingTutorThread(userId, skillUrl) {
         let queryString = `SELECT * 
                            FROM ai_assessing_tutor_threads 
                            WHERE user_id = ${conn.escape(
-            userId
-        )} AND skill_url = ${conn.escape(skillUrl)}`;
+                               userId
+                           )} AND skill_url = ${conn.escape(skillUrl)}`;
 
         const result = await query(queryString);
         return result;
@@ -382,11 +381,11 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
 
             // Save the user's token usage
             // These tokens are priced at $150 per million
-            let outputTokens = runStep.usage.completion_tokens;
+            let outputTokens = run.usage.completion_tokens;
             // Work out tts equivalent usage
             // 0.4 is hardcoded at the moment, based on pricing and choice of models
             let ttsTokens = outputTokens * 0.4;
-            let tokenCount = runStep.usage.total_tokens + ttsTokens;
+            let tokenCount = run.usage.total_tokens + ttsTokens;
             saveTokenUsage(messageData.userId, tokenCount);
 
             return latestMessage;
@@ -396,7 +395,6 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
     } catch (error) {
         console.error('Error in assessingTutorMessage:', error);
         throw error;
-
     }
 }
 
@@ -485,8 +483,8 @@ async function getLearningObjectiveThread(userId, learningObjectiveId) {
         let queryString = `SELECT * 
                            FROM ai_tutor_learning_objective_threads
                            WHERE user_id = ${conn.escape(
-            userId
-        )} AND learning_objective_id = ${conn.escape(
+                               userId
+                           )} AND learning_objective_id = ${conn.escape(
             learningObjectiveId
         )}`;
 
@@ -596,7 +594,6 @@ async function createRunStream(
                     role: 'user',
                     content: userMessage
                 });
-
             } catch (error) {
                 console.error('Error creating message:', error);
                 throw error;
@@ -633,15 +630,19 @@ async function createRunStream(
             .on('toolCallDelta', (toolCallDelta, snapshot) => {
                 if (toolCallDelta.type === 'code_interpreter') {
                     if (toolCallDelta.code_interpreter.input) {
-                        process.stdout.write(toolCallDelta.code_interpreter.input);
+                        process.stdout.write(
+                            toolCallDelta.code_interpreter.input
+                        );
                     }
                     if (toolCallDelta.code_interpreter.outputs) {
                         process.stdout.write('\noutput >\n');
-                        toolCallDelta.code_interpreter.outputs.forEach((output) => {
-                            if (output.type === 'logs') {
-                                process.stdout.write(`\n${output.logs}\n`);
+                        toolCallDelta.code_interpreter.outputs.forEach(
+                            (output) => {
+                                if (output.type === 'logs') {
+                                    process.stdout.write(`\n${output.logs}\n`);
+                                }
                             }
-                        });
+                        );
                     }
                 }
             });
