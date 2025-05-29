@@ -153,7 +153,10 @@ export default {
             </div>
             <ThemeDetails />
             <!-- Auto-Play Setting -->
-            <div class="profile-input">
+            <div
+                class="profile-input"
+                v-if="userDetailsStore.role === 'student'"
+            >
                 <h2 class="secondary-heading h4 mb-3 white-heading">
                     AI Assistant Settings
                 </h2>
