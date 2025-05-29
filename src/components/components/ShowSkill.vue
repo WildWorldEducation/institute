@@ -877,7 +877,7 @@ export default {
                         </button>
                         <button
                             @click="scrollToAITutor(false)"
-                            v-else
+                            v-else-if="userDetailsStore.role == 'student'"
                             class="btn socratic-btn"
                         >
                             Socratic Tutor
