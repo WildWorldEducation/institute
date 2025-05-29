@@ -347,9 +347,13 @@ export default {
                 <!-- End of custom dropdown -->
             </div>
         </div>
-        <button @click="checkout(product.tokens)" class="btn primary-btn mt-1">
+        <button
+            @click="checkout(chosenProduct.tokens)"
+            class="btn primary-btn mt-2 mb-2"
+        >
             buy
         </button>
+
         <hr />
         <div
             :class="{
