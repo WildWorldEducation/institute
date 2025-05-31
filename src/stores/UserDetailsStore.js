@@ -61,7 +61,6 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.monthlyTokenUsage = data.monthly_token_usage;
                 this.tokens = data.tokens;
                 this.isAudioAutoPlay = data.is_audio_auto_play || 0;
-                this.stripeCustomerId = data.stripe_customer_id;
 
                 if (this.role == 'student') {
                     await this.getInstructor();
