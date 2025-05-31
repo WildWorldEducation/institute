@@ -51,6 +51,7 @@ export default {
         }
 
         await this.userDetailsStore.getUserDetails();
+        this.getReceipts();
     },
     async mounted() {
         //Stripe external script
@@ -93,12 +94,6 @@ export default {
 
         const d = new Date();
         this.month = month[d.getMonth()];
-
-        if (
-            this.userDetailsStore.stripeCustomerId &&
-            this.userDetailsStore.stripeCustomerId != ''
-        )
-            this.getReceipts();
     },
     computed: {
         formattedMonthlyTokenUsage() {
@@ -121,10 +116,7 @@ export default {
             const result = await fetch(
                 '/tokens/get-receipts/' + this.userDetailsStore.userId
             );
-            const receiptsData = await result.json();
-            for (let i = 0; i < receiptsData.charges.data.length; i++) {
-                this.receipts.push(receiptsData.charges.data[i]);
-            }
+            this.receipts = await result.json();
         },
         // Purchase tokens
         checkout(numberOfTokens) {
@@ -149,31 +141,8 @@ export default {
                     console.error(e.error);
                 });
         },
-        // Load the Stripe Customer Portal page
-        // (This redirects to Stripe's website)
-        loadPortal() {
-            fetch('/tokens/create-customer-portal-session', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    userId: this.userDetailsStore.userId
-                })
-            })
-                .then((res) => {
-                    if (res.ok) return res.json();
-                    return res.json().then((json) => Promise.reject(json));
-                })
-                .then(({ url }) => {
-                    window.location = url;
-                })
-                .catch((e) => {
-                    console.error(e.error);
-                });
-        },
         formattedStripeReceiptDate(receipt) {
-            let dateObj = new Date(receipt.created * 1000);
+            let dateObj = new Date(receipt.date);
             const month = dateObj.getUTCMonth() + 1; // months from 1-12
             const day = dateObj.getUTCDate();
             const year = dateObj.getUTCFullYear();
@@ -181,12 +150,13 @@ export default {
             return formattedDate;
         },
         formattedStripeReceiptAmount(receipt) {
-            const formattedAmount = (
-                receipt.amount_captured / 100
-            ).toLocaleString('en-US', {
-                style: 'currency',
-                currency: 'USD'
-            });
+            const formattedAmount = (receipt.amount / 100).toLocaleString(
+                'en-US',
+                {
+                    style: 'currency',
+                    currency: 'USD'
+                }
+            );
             return formattedAmount;
         },
         // Tutorial tooltips
@@ -267,17 +237,6 @@ export default {
                         : 'justify-content-center'
                 "
             >
-                <!-- Manage billing -->
-                <button
-                    v-if="
-                        userDetailsStore.stripeCustomerId &&
-                        userDetailsStore.stripeCustomerId != ''
-                    "
-                    class="btn primary-btn"
-                    @click="loadPortal()"
-                >
-                    Manage billing
-                </button>
                 <!-- Info button -->
                 <button class="btn info-btn ms-1" @click="openTooltip">
                     <svg
@@ -362,7 +321,7 @@ export default {
         >
             <h2 class="secondary-heading h4">Receipts</h2>
             <div v-for="receipt in receipts">
-                <a :href="receipt.receipt_url" target="_blank">
+                <a :href="receipt.url" target="_blank">
                     {{ formattedStripeReceiptAmount(receipt) }}
                     {{ formattedStripeReceiptDate(receipt) }}</a
                 >

@@ -9,9 +9,6 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 
-// // MomentJS
-// const moment = require('moment');
-
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_API_KEY);
 
@@ -27,28 +24,14 @@ Routes
 --------------------------------------------*/
 router.get('/get-receipts/:userId', async (req, res, next) => {
     let queryString = `
-            SELECT stripe_customer_id
-            FROM users            
-            WHERE id = ${conn.escape(req.params.userId)};
+            SELECT url, date, amount
+            FROM user_receipts            
+            WHERE user_id = ${conn.escape(req.params.userId)};
             `;
 
     let result = await query(queryString);
 
-    // If the user has a Stripe ID.
-    if (
-        result[0].stripe_customer_id != null &&
-        result[0].stripe_customer_id != ''
-    ) {
-        // Get invoices
-        const charges = await stripe.charges.list({
-            limit: 3,
-            customer: result[0].stripe_customer_id
-        });
-
-        res.json({ charges: charges });
-    } else {
-        res.json({ charges: null });
-    }
+    res.json(result);
 });
 
 let userId;
@@ -107,31 +90,26 @@ router.get('/success', async (req, res, next) => {
             `;
     await query(queryString);
 
-    res.redirect(`${process.env.BASE_URL}/tokens/completed`);
-});
-
-// Allow customer to make changes to billing
-router.post('/create-customer-portal-session', async (req, res) => {
-    try {
-        userId = req.body.userId;
-
-        // Get Stripe customer ID of user
-        let queryString = `
-            SELECT stripe_customer_id
-            FROM users            
-            WHERE id = ${conn.escape(userId)};
+    // Save the receipt
+    const paymentIntent = await stripe.paymentIntents.retrieve(
+        session.payment_intent
+    );
+    const charge = await stripe.charges.retrieve(paymentIntent.latest_charge);
+    const receipt_id = charge.id;
+    const receipt_url = charge.receipt_url;
+    const amount = charge.amount_captured;
+    const created = new Date(charge.created * 1000); // Convert seconds to JS Date
+    let saveReceiptQuery = `
+            INSERT INTO user_receipts (id, user_id, amount, url, date)
+            VALUES (${conn.escape(receipt_id)}, ${conn.escape(
+        userId
+    )}, ${conn.escape(amount)}, ${conn.escape(receipt_url)}, ${conn.escape(
+        created
+    )});
             `;
-        const result = await query(queryString);
+    await query(saveReceiptQuery);
 
-        const session = await stripe.billingPortal.sessions.create({
-            customer: result[0].stripe_customer_id,
-            return_url: process.env.BASE_URL + '/tokens'
-        });
-
-        res.json({ url: session.url });
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
+    res.redirect(`${process.env.BASE_URL}/tokens/completed`);
 });
 
 // Export the router for app to use.
