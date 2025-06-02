@@ -42,23 +42,33 @@ export default {
     props: ['skill', 'isManualEssayMarking'],
     mounted() {
         this.assessmentResult = this.$parent.assessmentStatus;
-        // Show modal based on  assessment status
-        switch (this.assessmentResult) {
-            case 'You passed':
-                this.passModal = true;
-                break;
-            case 'You failed':
-                this.failsModal = true;
-                break;
-            case 'wait for essay answers to be mark':
-                this.waitForMarkModal = true;
-                break;
-            default:
-                break;
+
+        // Check if modal has already been shown for this assessment
+        const modalShownKey = `modalShown_${this.$route.params.id}`;
+        const modalAlreadyShown = sessionStorage.getItem(modalShownKey);
+
+        // Only show modal if it hasn't been shown before
+        if (!modalAlreadyShown) {
+            // Show modal based on assessment status
+            switch (this.assessmentResult) {
+                case 'You passed':
+                    this.passModal = true;
+                    break;
+                case 'You failed':
+                    this.failsModal = true;
+                    break;
+                case 'wait for essay answers to be mark':
+                    this.waitForMarkModal = true;
+                    break;
+                default:
+                    break;
+            }
+
+            // Mark that modal has been shown
+            sessionStorage.setItem(modalShownKey, 'true');
         }
 
-        // convert the date time string to readable format
-        // pass undefined in first argument to make the function working with all language
+        // Rest of your existing mounted() code stays the same...
         this.finishDate = this.$parent.finishTime.toLocaleString(undefined, {
             weekday: 'long',
             year: 'numeric',
@@ -72,7 +82,7 @@ export default {
         if (this.isManualEssayMarking == 1)
             this.totalScore = this.$parent.numMCQuestions;
         else this.totalScore = this.$parent.questions.length;
-        // not calculate if we divide by 0
+
         if (this.totalScore !== 0) {
             this.scorePercent = Math.floor(
                 (this.score / this.totalScore) * 100
@@ -80,11 +90,9 @@ export default {
         }
 
         if (this.isManualEssayMarking == 1) {
-            // only get mc question
             this.questions = this.$parent.questions.filter(
                 (question) => question.questionType === 'mc'
             );
-            // get essay questions without looping the question array
             this.essayQuestionsLength =
                 this.$parent.questions.length - this.questions.length;
         } else {

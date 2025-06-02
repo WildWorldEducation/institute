@@ -74,6 +74,10 @@ export default {
         };
     },
     async created() {
+        // First check if we should show existing results
+        if (this.checkForExistingResults()) {
+            return; // Exit early if we loaded existing results
+        }
         // Load the max quiz question number setting.
         if (this.settingsStore.quizMaxQuestions == null) {
             await this.settingsStore.getSettings();
@@ -451,11 +455,13 @@ export default {
                         // show result page and hide assessment part
                         this.assessmentStatus = 'You passed';
                         this.showResult = true;
+                        this.saveResultsForResultComponent();
                     } else {
                         // show result page and hide assessment part
                         this.isQuizPassed = true;
                         this.assessmentStatus = 'You failed';
                         this.showResult = true;
+                        this.saveResultsForResultComponent();
                     }
 
                     // Only set isSubmitting to false AFTER showResult is true
@@ -550,6 +556,7 @@ export default {
                             // Only now show the result and remove loading overlay
                             this.isQuizPassed = true;
                             this.showResult = true;
+                            this.saveResultsForResultComponent();
                             this.assessmentStatus =
                                 'please wait for answers to be marked';
                             this.isSubmitting = false;
@@ -602,6 +609,7 @@ export default {
 
                             // Show result page BEFORE removing loading overlay
                             this.showResult = true;
+                            this.saveResultsForResultComponent();
                             // Only now remove the loading overlay
                             this.isSubmitting = false;
                         } catch (error) {
@@ -744,6 +752,72 @@ export default {
             );
             // Reload the skills list for the student.
             await this.skillTreeStore.getUserSkills();
+        },
+        saveResultsForResultComponent() {
+            const resultsData = {
+                assessmentResult: this.assessmentStatus,
+                finishDate: this.finishTime.toLocaleString(undefined, {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }),
+                finishTime: this.finishTime.toLocaleTimeString(),
+                score: this.score,
+                totalScore: this.totalNumOfQuestions,
+                scorePercent: Math.floor(
+                    (this.score / this.totalNumOfQuestions) * 100
+                ),
+                questions: this.questions,
+                essayQuestionsLength:
+                    this.numEssayQuestions + this.numImageQuestions,
+                skill: this.skill,
+                isManualEssayMarking: this.settingsStore.isManualEssayMarking,
+                timestamp: Date.now()
+            };
+
+            sessionStorage.setItem(
+                `assessmentResults_${this.skillId}`,
+                JSON.stringify(resultsData)
+            );
+        },
+        checkForExistingResults() {
+            const stored = sessionStorage.getItem(
+                `assessmentResults_${this.skillId}`
+            );
+            if (stored) {
+                try {
+                    const data = JSON.parse(stored);
+                    // Check if data is fresh (less than 2 hours old)
+                    const twoHours = 2 * 60 * 60 * 1000;
+                    if (
+                        data.timestamp &&
+                        Date.now() - data.timestamp < twoHours
+                    ) {
+                        // Results exist and are fresh, show them
+                        this.showResult = true;
+                        this.isQuizPassed = true;
+                        this.assessmentStatus = data.assessmentResult;
+                        this.score = data.score;
+                        this.totalNumOfQuestions = data.totalScore;
+                        this.finishTime = new Date(); // Approximate since we don't store the actual Date object
+                        this.questions = data.questions;
+                        this.loading = false;
+                        return true;
+                    } else {
+                        // Data is stale, remove it
+                        sessionStorage.removeItem(
+                            `assessmentResults_${this.skillId}`
+                        );
+                    }
+                } catch (error) {
+                    console.error('Error loading stored results:', error);
+                    sessionStorage.removeItem(
+                        `assessmentResults_${this.skillId}`
+                    );
+                }
+            }
+            return false;
         }
     }
 };
