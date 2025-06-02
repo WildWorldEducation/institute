@@ -498,12 +498,10 @@ const router = createRouter({
                 import('../components/pages/dropdown-menu-pages/Partners.vue')
         },
         {
-            path: '/student-subscriptions',
-            name: 'student-subscriptions',
+            path: '/student-payments',
+            name: 'student-payments',
             component: () =>
-                import(
-                    '../components/pages/subscriptions/StudentSubscriptions.vue'
-                )
+                import('../components/pages/toens/StudentPayments.vue')
         },
         {
             path: '/:pathMatch(.*)*',
