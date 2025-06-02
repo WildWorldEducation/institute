@@ -186,10 +186,26 @@ export default {
             }
         },
         // Save the state of the skills list to browser storage.
-        toggleSubSkills() {
+        async toggleSubSkills() {
             if (this.showSubskills == false) {
                 localStorage.setItem(this.id + 'sub', true);
                 this.showSubskills = true;
+
+                // Wait for DOM to update, then scroll to the last subskill
+                await this.$nextTick();
+                if (this.subSkills.length > 0) {
+                    const lastSubskillId =
+                        this.subSkills[this.subSkills.length - 1].id;
+                    const lastSubskillElement = document.getElementById(
+                        `skill${lastSubskillId}`
+                    );
+                    if (lastSubskillElement) {
+                        lastSubskillElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center' // This centers the element in the viewport
+                        });
+                    }
+                }
             } else {
                 localStorage.setItem(this.id + 'sub', false);
                 this.showSubskills = false;
