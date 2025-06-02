@@ -122,8 +122,8 @@ const aiTutor = require('./routes/ai-tutor');
 app.use('/ai-tutor', aiTutor);
 const skillLearningObjectives = require('./routes/skill-learning-objectives');
 app.use('/skill-learning-objectives', skillLearningObjectives);
-const subscriptions = require('./routes/subscriptions');
-app.use('/subscriptions', subscriptions);
+const tokens = require('./routes/tokens');
+app.use('/tokens', tokens);
 const referrals = require('./routes/referrals');
 app.use('/referrals', referrals);
 

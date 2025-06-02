@@ -15,7 +15,6 @@ import FlagModals from './FlagModals.vue';
 import Forum from './forum/Forum.vue';
 import AITutor from './ai-tutor/AITutor.vue';
 import LearningObjectiveAITutor from './ai-tutor/LearningObjectiveAITutor.vue';
-import { treemapSquarify } from 'd3';
 
 export default {
     setup() {
@@ -188,7 +187,7 @@ export default {
                     typeof this.settingsStore.getSettings === 'function'
                 ) {
                     // Only get settings if free monthly tokens are 0 or not set
-                    if (this.settingsStore.freePlanTokenLimit === 0) {
+                    if (this.settingsStore.freeTokenMonthlyLimit === 0) {
                         await this.settingsStore.getSettings();
                     }
                 } else {
@@ -198,18 +197,15 @@ export default {
                 }
 
                 // Check if user is over free monthly AI token limit
-                if (this.userDetailsStore.subscriptionTier == 'free') {
-                    if (
-                        this.settingsStore.freePlanTokenLimit <=
-                        this.userDetailsStore.monthlyTokenUsage
-                    ) {
-                        this.isAITokenLimitReached = true;
-                    }
-                } else if (this.userDetailsStore.subscriptionTier == 'basic') {
-                    if (
-                        this.settingsStore.basicPlanTokenLimit <=
-                        this.userDetailsStore.monthlyTokenUsage
-                    ) {
+                let tokenBalance =
+                    this.userDetailsStore.monthlyTokenUsage -
+                    this.settingsStore.freeTokenMonthlyLimit;
+
+                if (
+                    this.settingsStore.freeTokenMonthlyLimit <=
+                    this.userDetailsStore.monthlyTokenUsage
+                ) {
+                    if (tokenBalance > this.userDetailsStore.tokens) {
                         this.isAITokenLimitReached = true;
                     }
                 }
@@ -870,8 +866,18 @@ export default {
                             Socratic Tutor
                         </button>
                         <button
-                            v-else-if="userDetailsStore.role == 'student'"
+                            v-else-if="
+                                userDetailsStore.role == 'student' &&
+                                isAITokenLimitReached == false
+                            "
                             @click="scrollToAITutor(true)"
+                            class="btn socratic-btn"
+                        >
+                            Socratic Tutor
+                        </button>
+                        <button
+                            @click="scrollToAITutor(false)"
+                            v-else-if="userDetailsStore.role == 'student'"
                             class="btn socratic-btn"
                         >
                             Socratic Tutor
@@ -1708,7 +1714,6 @@ export default {
         <!-- AI Tutor -->
         <div class="row mt-3 mb-3 position-relative" ref="aiTutorSection">
             <!-- Only show AI tutor for Student -->
-            <!-- Not show AI tutor for domain type of skill-->
             <AITutor
                 ref="aiTutor"
                 v-if="
@@ -1736,7 +1741,7 @@ export default {
             >
                 <em
                     >You have reached your monthly AI token limit. Please
-                    recharge your subscription to use more.</em
+                    recharge your tokens to use more.</em
                 >
             </div>
             <!-- Skill Mastered Modal -->
