@@ -395,6 +395,9 @@ export default {
 </template>
 
 <style>
+.source {
+    color: black !important;
+}
 .primary-color {
     color: var(--primary-color);
 }
