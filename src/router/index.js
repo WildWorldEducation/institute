@@ -501,7 +501,7 @@ const router = createRouter({
             path: '/student-payments',
             name: 'student-payments',
             component: () =>
-                import('../components/pages/toens/StudentPayments.vue')
+                import('../components/pages/tokens/StudentPayments.vue')
         },
         {
             path: '/:pathMatch(.*)*',
