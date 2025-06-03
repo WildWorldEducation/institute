@@ -543,7 +543,7 @@ Themes
 
 
 .editor-theme .secondary-heading.white-heading {
-  color: white !important;
+  color: black !important;
 }
 /* Background just for moving between the 2 skill trees */
 .skill-tree-transition {
