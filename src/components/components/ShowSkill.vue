@@ -438,6 +438,10 @@ export default {
          * For now I am using recursive method to traverse the tree nodes. This might be costly and need to test more when the skills number expand
          */
         nearestAccessibleAncestor(node) {
+            // Early return for non-students - they don't need nearest accessible ancestors
+            if (this.userDetailsStore.role !== 'student') {
+                return;
+            }
             const inAccessibleList = this.accessibleSkills.find(
                 (as) => as.id == node.id
             );
@@ -470,13 +474,61 @@ export default {
                 return;
             }
 
+            // Add error handling for the fetch request
             fetch('/skills/show/' + node.parent)
-                .then(function (response) {
-                    return response.json();
+                .then(async (response) => {
+                    // Check if response is ok
+                    if (!response.ok) {
+                        if (response.status === 404) {
+                            console.warn(
+                                `Parent skill not found for skill ID: ${node.parent}`
+                            );
+                            this.showAncestorLink = false;
+                            return null;
+                        }
+                        throw new Error(
+                            `HTTP ${response.status}: ${response.statusText}`
+                        );
+                    }
+
+                    // Check if response has content
+                    const text = await response.text();
+                    if (!text || text.trim() === '') {
+                        console.warn(
+                            `Empty response from /skills/show/${node.parent}`
+                        );
+                        this.showAncestorLink = false;
+                        return null;
+                    }
+
+                    // Try to parse JSON
+                    try {
+                        return JSON.parse(text);
+                    } catch (error) {
+                        console.error(
+                            `JSON Parse Error for /skills/show/${node.parent}:`,
+                            error
+                        );
+                        console.error('Response text:', text);
+                        throw error;
+                    }
                 })
                 .then((data) => {
-                    // recursively call the function with parent node data
-                    return this.nearestAccessibleAncestor(data);
+                    // Only proceed if we have valid data
+                    if (data && !data.error) {
+                        // recursively call the function with parent node data
+                        return this.nearestAccessibleAncestor(data);
+                    } else {
+                        console.warn(
+                            'No valid parent skill data found, stopping ancestor search'
+                        );
+                        this.showAncestorLink = false;
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error in nearestAccessibleAncestor:', error);
+                    // Handle error gracefully - hide the ancestor link
+                    this.showAncestorLink = false;
                 });
         },
         copyShareableURLToClipBoard() {
