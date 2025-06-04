@@ -473,6 +473,13 @@ export default {
                                     Tokens
                                 </RouterLink>
                                 <RouterLink
+                                    v-if="userDetailsStore.role == 'partner'"
+                                    to="/referrals"
+                                    class="nav-link"
+                                >
+                                    Referrals
+                                </RouterLink>
+                                <RouterLink
                                     v-if="userDetailsStore.role == 'admin'"
                                     to="/referrers"
                                     class="nav-link"
