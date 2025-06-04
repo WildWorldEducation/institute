@@ -646,14 +646,15 @@ router.get('/show/:id', (req, res, next) => {
                     res.json(skill);
                 }
             } else {
-                res.end();
+                // FIXED: Return proper JSON instead of empty response
+                res.status(404).json({ error: 'Skill not found' });
+                // Old problematic line: res.end();
             }
         } catch (err) {
             next(err);
         }
     });
 });
-
 router.get('/url/:skillUrl', (req, res, next) => {
     let skill;
     // Not checking if user is logged in, as this is available for guest access.
@@ -702,7 +703,9 @@ router.get('/url/:skillUrl', (req, res, next) => {
                     res.json(skill);
                 }
             } else {
-                res.end();
+                // FIXED: Return proper JSON instead of empty response
+                res.status(404).json({ error: 'Skill not found' });
+                // Old problematic line: res.end();
             }
         } catch (err) {
             next(err);
@@ -756,7 +759,9 @@ router.get('/first/url/:skillUrl', (req, res, next) => {
                     res.json(skill);
                 }
             } else {
-                res.end();
+                // FIXED: Return proper JSON instead of empty response
+                res.status(404).json({ error: 'Skill not found' });
+                // Old problematic line: res.end();
             }
         } catch (err) {
             next(err);
@@ -811,7 +816,9 @@ router.get('/second/url/:skillUrl', (req, res, next) => {
                     res.json(skill);
                 }
             } else {
-                res.end();
+                // FIXED: Return proper JSON instead of empty response
+                res.status(404).json({ error: 'Skill not found' });
+                // Old problematic line: res.end();
             }
         } catch (err) {
             next(err);
