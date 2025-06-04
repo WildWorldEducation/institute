@@ -422,29 +422,39 @@ export default {
                     this.questions[this.questionNumber].userAnswer = answer;
                 }
 
-                // Mark the MC questions (if there are any)
+                // Count question types (but don't score yet)
+                this.numMCQuestions = 0;
+                this.numEssayQuestions = 0;
+                this.numImageQuestions = 0;
+
                 for (let i = 0; i < this.questions.length; i++) {
-                    // Tally the score
                     if (this.questions[i].questionType == 'mc') {
                         this.numMCQuestions++;
-                        if (
-                            this.questions[i].userAnswer ==
-                            this.questions[i].correct_answer
-                        ) {
-                            this.score++;
-                        }
                     } else if (this.questions[i].questionType == 'essay') {
                         this.numEssayQuestions++;
-                    } else {
+                    } else if (this.questions[i].questionType == 'image') {
                         this.numImageQuestions++;
                     }
                 }
 
-                // If no essay questions, we return result
+                // If no essay or image questions, score MC questions only
                 if (
                     this.numEssayQuestions === 0 &&
                     this.numImageQuestions === 0
                 ) {
+                    // Score MC questions
+                    this.score = 0;
+                    for (let i = 0; i < this.questions.length; i++) {
+                        if (this.questions[i].questionType == 'mc') {
+                            if (
+                                this.questions[i].userAnswer ==
+                                this.questions[i].correct_answer
+                            ) {
+                                this.score++;
+                            }
+                        }
+                    }
+
                     // Pass mark from settings store
                     if (
                         (this.score / this.numMCQuestions) * 100 >=
@@ -452,26 +462,34 @@ export default {
                     ) {
                         await this.MakeMastered(this.skill);
                         this.isQuizPassed = true;
-                        // show result page and hide assessment part
                         this.assessmentStatus = 'You passed';
                         this.showResult = true;
                         this.saveResultsForResultComponent();
                     } else {
-                        // show result page and hide assessment part
                         this.isQuizPassed = true;
                         this.assessmentStatus = 'You failed';
                         this.showResult = true;
                         this.saveResultsForResultComponent();
                     }
 
-                    // Only set isSubmitting to false AFTER showResult is true
-                    // This ensures the loading overlay disappears only when results are ready
                     this.isSubmitting = false;
                 }
                 // If there are essay or image questions
                 else {
                     if (this.settingsStore.isManualEssayMarking == 1) {
-                        // Deal with the essay questions
+                        // Deal with manual marking - score only MC questions for now
+                        this.score = 0;
+                        for (let i = 0; i < this.questions.length; i++) {
+                            if (this.questions[i].questionType == 'mc') {
+                                if (
+                                    this.questions[i].userAnswer ==
+                                    this.questions[i].correct_answer
+                                ) {
+                                    this.score++;
+                                }
+                            }
+                        }
+
                         let fetchMethod = 'POST';
                         if (this.oldAssessment !== undefined) {
                             fetchMethod = 'PUT';
@@ -480,7 +498,6 @@ export default {
                         let numUnmarkedQuestions =
                             this.numEssayQuestions + this.numImageQuestions;
 
-                        // create an unmarked assessment record
                         const requestOptions = {
                             method: fetchMethod,
                             headers: { 'Content-Type': 'application/json' },
@@ -550,10 +567,8 @@ export default {
                                 }
                             }
 
-                            // Wait for all requests to complete
                             await Promise.all(promises);
 
-                            // Only now show the result and remove loading overlay
                             this.isQuizPassed = true;
                             this.showResult = true;
                             this.saveResultsForResultComponent();
@@ -571,8 +586,9 @@ export default {
                             this.isSubmitting = false;
                         }
                     } else {
-                        // Submit essay questions to AI for marking
+                        // AI marking - first mark all essay/image questions, then calculate final score
                         try {
+                            // Step 1: Mark essay and image questions with AI (don't score yet)
                             for (let i = 0; i < this.questions.length; i++) {
                                 if (this.questions[i].questionType == 'essay') {
                                     let question = this.questions[i].question;
@@ -594,7 +610,26 @@ export default {
                                     );
                                 }
                             }
+                            // Step 2: Calculate final score after all marking is complete
+                            this.score = 0;
+                            for (let i = 0; i < this.questions.length; i++) {
+                                if (this.questions[i].questionType == 'mc') {
+                                    // Score MC questions
+                                    if (
+                                        this.questions[i].userAnswer ==
+                                        this.questions[i].correct_answer
+                                    ) {
+                                        this.score++;
+                                    }
+                                } else if (
+                                    this.questions[i].isCorrect === true
+                                ) {
+                                    // Score essay/image questions marked as correct
+                                    this.score++;
+                                }
+                            }
 
+                            // Step 3: Determine pass/fail based on final score
                             if (
                                 (this.score / this.questions.length) * 100 >=
                                 this.settingsStore.passMark
@@ -607,10 +642,8 @@ export default {
                                 this.assessmentStatus = 'You failed';
                             }
 
-                            // Show result page BEFORE removing loading overlay
                             this.showResult = true;
                             this.saveResultsForResultComponent();
-                            // Only now remove the loading overlay
                             this.isSubmitting = false;
                         } catch (error) {
                             console.error(
@@ -645,14 +678,11 @@ export default {
                     })
                 };
 
-                // Define the URL properly here
                 const url = '/questions/mark-essay-question';
-
                 const response = await fetch(url, requestOptions);
                 const result = await response.json();
 
                 if (result.isCorrect == true) {
-                    this.score++;
                     this.questions[i].isCorrect = true;
                 } else {
                     this.questions[i].explanation = result.explanation;
@@ -683,9 +713,7 @@ export default {
                     })
                 };
 
-                // Define the URL properly here
                 const url = '/questions/mark-image-question';
-
                 const response = await fetch(url, requestOptions);
                 const result = await response.json();
 
@@ -694,7 +722,6 @@ export default {
                     this.questions[i].explanation =
                         'There was an error grading this question. The file size(s) may be too big.';
                 } else if (result.isCorrect == true) {
-                    this.score++;
                     this.questions[i].isCorrect = true;
                 } else {
                     this.questions[i].explanation = result.explanation;
@@ -702,7 +729,7 @@ export default {
                 }
             } catch (error) {
                 console.error('Error marking image question:', error);
-                throw error; // Let the calling method handle this
+                throw error;
             } finally {
                 if (!this.isSubmitting) {
                     this.aiLoading = false;
