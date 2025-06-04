@@ -492,7 +492,7 @@ const router = createRouter({
                 import('../components/pages/referrals/ListReferrals.vue')
         },
         {
-            path: '/referrals/:referrerId/:referredId',
+            path: '/referrals/:partnerId/:referredUserId',
             name: 'show-referral',
             component: () =>
                 import('../components/pages/referrals/ShowReferral.vue')

@@ -13,44 +13,27 @@ export default {
     },
     data() {
         return {
-            referral: {}
+            partnerId: this.$route.params.partnerId,
+            referredUserId: this.$route.params.referredUserId,
+            receipts: []
         };
     },
     async created() {
-        if (typeof this.usersDetailsStore.userId == 'undefined') {
-            await this.usersDetailsStore.getUserDetails();
-        }
+        console.log(this.$route.params.partnerId);
+        // if (typeof this.usersDetailsStore.userId == 'undefined') {
+        //     await this.usersDetailsStore.getUserDetails();
+        // }
         this.getReferral();
     },
     methods: {
         getReferral() {
-            fetch(`/referrals/${this.usersDetailsStore.userId}/list`)
+            fetch(`/referrals/get-receipts/${this.referredUserId}`)
                 .then(function (response) {
                     return response.json();
                 })
                 .then(async (data) => {
-                    await this.usersStore.getUsers();
-                    this.referrals = data;
-                    for (let i = 0; i < this.referrals.length; i++) {
-                        for (let j = 0; j < this.usersStore.users.length; j++) {
-                            // Get referred user
-                            if (
-                                this.referrals[i].referred_user_id ==
-                                this.usersStore.users[j].id
-                            ) {
-                                this.referrals[i].referredUser =
-                                    this.usersStore.users[j].username;
-                            }
-                            // Get referring user
-                            if (
-                                this.referrals[i].referrer_user_id ==
-                                this.usersStore.users[j].id
-                            ) {
-                                this.referrals[i].referringUser =
-                                    this.usersStore.users[j].username;
-                            }
-                        }
-                    }
+                    this.receipts = data;
+                    console.log(this.receipts);
                 });
         }
     }
@@ -59,7 +42,7 @@ export default {
 
 <template>
     <div class="container bg-light rounded">
-        <h1 class="heading">show</h1>
+        <h1 class="heading">{{ referredUserId }}</h1>
     </div>
 </template>
 

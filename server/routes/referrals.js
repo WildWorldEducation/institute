@@ -10,7 +10,8 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 // DB
 const conn = require('../config/db');
-
+const util = require('util');
+const query = util.promisify(conn.query).bind(conn);
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -45,7 +46,7 @@ router.get('/list', (req, res, next) => {
  */
 router.get('/:partner/list', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = `SELECT * 
+        let sqlQuery = `SELECT referred_user_id, referrer_user_id 
             FROM referrals
             WHERE referrer_user_id = ${conn.escape(req.params.partner)};`;
 
@@ -60,6 +61,23 @@ router.get('/:partner/list', (req, res, next) => {
             }
         });
     }
+});
+
+/**
+ * Fetch Receipts by Partner and Referred User
+ *
+ * @return response:
+ */
+router.get('/get-receipts/:userId', async (req, res, next) => {
+    let queryString = `
+            SELECT url, date, amount
+            FROM user_receipts            
+            WHERE user_id = ${conn.escape(req.params.userId)};
+            `;
+
+    let result = await query(queryString);
+
+    res.json(result);
 });
 
 // Export the router for app to use.

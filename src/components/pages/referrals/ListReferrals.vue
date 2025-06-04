@@ -7,24 +7,23 @@ export default {
         const usersStore = useUsersStore();
         const usersDetailsStore = useUserDetailsStore();
         return {
-            usersStore, usersDetailsStore
+            usersStore,
+            usersDetailsStore
         };
     },
-    data() {  
-         return {
-                referrals: []      
-         }
+    data() {
+        return {
+            referrals: []
+        };
     },
-    async created() {        
-        if (typeof this.usersDetailsStore.userId == 'undefined')
-        {
-            await this.usersDetailsStore.getUserDetails()
+    async created() {
+        if (typeof this.usersDetailsStore.userId == 'undefined') {
+            await this.usersDetailsStore.getUserDetails();
         }
-       await this.getReferrals();
-       
+        await this.getReferrals();
     },
     methods: {
-       async getReferrals() {
+        async getReferrals() {
             fetch(`/referrals/${this.usersDetailsStore.userId}/list`)
                 .then(function (response) {
                     return response.json();
@@ -52,7 +51,7 @@ export default {
                             }
                         }
                     }
-                    console.log(this.referrals)
+                    console.log(this.referrals);
                 });
         }
     }
@@ -65,11 +64,17 @@ export default {
         <ul>
             <li v-for="referral in referrals">
                 <p>
-                <router-link :to="'/referrals/' + referral.referrer_user_id + '/' + referral.referred_user_id"><strong>{{ referral.referredUser }}</strong></router-link>
-                <ul>
-                    <li>status: {{ referral.status }}</li>
-                    <li>referrer paid: {{ referral.is_reward_issued }}</li>
-                </ul>
+                    <router-link
+                        :to="
+                            '/referrals/' +
+                            referral.referrer_user_id +
+                            '/' +
+                            referral.referred_user_id
+                        "
+                        ><strong>{{
+                            referral.referredUser
+                        }}</strong></router-link
+                    >
                 </p>
             </li>
         </ul>
