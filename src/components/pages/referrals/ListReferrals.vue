@@ -20,10 +20,11 @@ export default {
         {
             await this.usersDetailsStore.getUserDetails()
         }
-        this.getReferrals();
+       await this.getReferrals();
+       
     },
     methods: {
-        getReferrals() {
+       async getReferrals() {
             fetch(`/referrals/${this.usersDetailsStore.userId}/list`)
                 .then(function (response) {
                     return response.json();
@@ -51,6 +52,7 @@ export default {
                             }
                         }
                     }
+                    console.log(this.referrals)
                 });
         }
     }
@@ -59,11 +61,11 @@ export default {
 
 <template>
     <div class="container bg-light rounded">
-        <h1>Referrals</h1>
+        <h1 class="heading">Referrals</h1>
         <ul>
             <li v-for="referral in referrals">
-                <p>You referred
-                <strong>{{ referral.referredUser }}</strong>
+                <p>
+                <router-link :to="'/referrals/' + referral.referrer_user_id + '/' + referral.referred_user_id"><strong>{{ referral.referredUser }}</strong></router-link>
                 <ul>
                     <li>status: {{ referral.status }}</li>
                     <li>referrer paid: {{ referral.is_reward_issued }}</li>
