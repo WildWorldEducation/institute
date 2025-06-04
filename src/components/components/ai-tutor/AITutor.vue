@@ -775,21 +775,21 @@ export default {
     },
     computed: {
         sortedChatHistory() {
+            // Always return an array, even if chatHistory is not available
+            if (!this.chatHistory || !Array.isArray(this.chatHistory)) {
+                return [];
+            }
+
             if (this.mode == 'modal') {
-                if (this.chatHistory) {
-                    return [...this.chatHistory].sort(
-                        (a, b) => a.index - b.index
-                    );
-                }
+                return [...this.chatHistory].sort((a, b) => a.index - b.index);
             }
             // Sort by index
             else if (this.mode == 'docked') {
-                if (this.chatHistory) {
-                    return [...this.chatHistory].sort(
-                        (a, b) => b.index - a.index
-                    ); // Sort by index
-                }
+                return [...this.chatHistory].sort((a, b) => b.index - a.index); // Sort by index
             }
+
+            // Fallback: return the original array if mode doesn't match
+            return [...this.chatHistory];
         }
     },
     watch: {
