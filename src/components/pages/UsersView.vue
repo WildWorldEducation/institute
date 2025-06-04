@@ -573,6 +573,9 @@ export default {
     #user-detail-section {
         position: absolute;
         top: -10px;
+        left: 50%;
+        transform: translate(-50%, 0);
+        width: 90%;
     }
 }
 

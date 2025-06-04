@@ -179,7 +179,7 @@ export default {
                     <!-- Skill Tree -->
                     <router-link
                         :to="`/student/${this.$parent.user.id}/skill-tree`"
-                        class="mt-2"
+                        class="mt-2 fit-content"
                         target="_blank"
                     >
                         Skill Tree
@@ -187,7 +187,7 @@ export default {
                     <!-- Collapsible skill tree -->
                     <router-link
                         :to="'/student/' + this.$parent.user.id + '/skills'"
-                        class="mt-2"
+                        class="mt-2 fit-content"
                         target="_blank"
                     >
                         Collapsible Tree
@@ -195,7 +195,7 @@ export default {
                     <!-- Goals -->
                     <router-link
                         :to="'/student/' + this.$parent.user.id + '/goals'"
-                        class="mt-2"
+                        class="mt-2 fit-content"
                         target="_blank"
                     >
                         Goals
@@ -290,7 +290,7 @@ export default {
                         Change password
                     </router-link>
                     <button
-                        class="btn btn-danger mt-1"
+                        class="btn btn-danger mt-1 fit-content"
                         @click="showRemoveStudentModal = true"
                     >
                         Remove Student
@@ -350,14 +350,6 @@ export default {
                     />
                     <label for="two">Yes</label>
                 </div>
-
-                <h2
-                    v-if="this.userDetailsStore.role == 'partner'"
-                    class="secondary-heading h4 mt-2"
-                >
-                    Subscription
-                </h2>
-                Subscription history
             </div>
         </div>
     </div>
@@ -418,6 +410,10 @@ export default {
 </template>
 
 <style scoped>
+.fit-content {
+    max-width: fit-content;
+}
+
 #user-information {
     border: 1px solid var(--primary-color);
     border-radius: 12px;
@@ -506,7 +502,7 @@ export default {
 /* Mobile */
 @media (max-width: 480px) {
     #user-information {
-        border-radius: 0px;
+        border-radius: 10px;
         padding-bottom: 0px;
     }
 }
