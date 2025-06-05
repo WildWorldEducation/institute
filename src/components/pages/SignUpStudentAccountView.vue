@@ -30,10 +30,14 @@ export default {
             isProduction: import.meta.env.PROD,
             showVideoModal: true,
             showModalVideo: true,
-            isMobileCheck: window.innerWidth
+            isMobileCheck: window.innerWidth,
+            referrer: ''
         };
     },
-    async created() {},
+    async created() {
+        const urlParams = new URLSearchParams(window.location.search);
+        this.referrer = urlParams.get('ref');
+    },
     mounted() {
         // Load Google login button.
         let script = document.createElement('script');
@@ -67,7 +71,6 @@ export default {
                 this.Submit();
             }
         },
-
         ValidateEmail() {
             if (
                 /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
@@ -90,7 +93,8 @@ export default {
                     email: this.newUser.email,
                     password: this.newUser.password,
                     account_type: this.newUser.accountType,
-                    grade_filter: this.newUser.skillTreeGradeLevel
+                    grade_filter: this.newUser.skillTreeGradeLevel,
+                    referrer_username: this.referrer
                 })
             };
             var url = '/users/new-user/add';
@@ -137,7 +141,6 @@ export default {
                 }
             );
         },
-
         handleCredentialResponse(response) {
             // Check if mobile device
             // (Different landing page for mobile)
@@ -153,7 +156,7 @@ export default {
                     : 'http://localhost:3000'
             }/google-student-signup-attempt?accountType=${
                 this.newUser.accountType
-            }&deviceType=${deviceType}`;
+            }&deviceType=${deviceType}&referrerUsername=${this.referrer}`;
 
             const input = document.createElement('input');
             input.type = 'hidden';

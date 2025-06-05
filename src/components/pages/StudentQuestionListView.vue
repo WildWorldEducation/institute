@@ -20,7 +20,10 @@ export default {
         StudentQuestionList
     },
     async created() {
-        if (this.userDetailsStore.role == 'instructor') {
+        if (
+            this.userDetailsStore.role == 'instructor' ||
+            this.userDetailsStore.role == 'partner'
+        ) {
             await this.getStudentMCQuestions();
         }
     },
@@ -40,7 +43,10 @@ export default {
     <div class="container">
         <!-- Student Added Questions List -->
         <StudentQuestionList
-            v-if="userDetailsStore.role == 'instructor'"
+            v-if="
+                userDetailsStore.role == 'instructor' ||
+                this.userDetailsStore.role == 'partner'
+            "
             :questions="questions"
         />
     </div>

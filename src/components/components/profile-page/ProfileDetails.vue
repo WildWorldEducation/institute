@@ -169,6 +169,22 @@ export default {
                     />
                 </div>
             </div>
+            <!-- Only for Partners -->
+            <div v-if="userDetailsStore.role == 'partner'">
+                <h2 class="secondary-heading h4 mt-3">Referral links</h2>
+                <p>
+                    <a
+                        target="_blank"
+                        :href="
+                            'https://parrhesia.io/student-signup?ref=' +
+                            userDetailsStore.userName
+                        "
+                        >https://parrhesia.io/student-signup?ref={{
+                            userDetailsStore.userName
+                        }}</a
+                    >
+                </p>
+            </div>
         </div>
     </div>
 </template>

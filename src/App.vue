@@ -25,7 +25,10 @@ export default {
         await this.userDetailsStore.getUserDetails();
 
         // Instructor theme
-        if (this.userDetailsStore.theme == 'instructor') {
+        if (
+            this.userDetailsStore.theme == 'instructor' ||
+            this.userDetailsStore.theme == 'partner'
+        ) {
             document.body.classList.remove('editor-theme');
             document.body.classList.add('instructor-theme');
             // Editor theme.
@@ -194,6 +197,7 @@ export default {
                             v-if="
                                 userDetailsStore.role == 'student' ||
                                 userDetailsStore.role == 'instructor' ||
+                                userDetailsStore.role == 'partner' ||
                                 userDetailsStore.role == 'editor'
                             "
                             class="nav-item"
@@ -263,7 +267,10 @@ export default {
                             </RouterLink>
                         </li>
                         <li
-                            v-if="userDetailsStore.role == 'instructor'"
+                            v-if="
+                                userDetailsStore.role == 'instructor' ||
+                                userDetailsStore.role == 'partner'
+                            "
                             class="nav-item dropdown"
                         >
                             <div class="d-flex align-items-center">
@@ -310,7 +317,10 @@ export default {
                         </li>
 
                         <li
-                            v-if="userDetailsStore.role == 'instructor'"
+                            v-if="
+                                userDetailsStore.role == 'instructor' ||
+                                userDetailsStore.role == 'partner'
+                            "
                             class="nav-item"
                         >
                             <RouterLink
@@ -388,7 +398,8 @@ export default {
                                             userDetailsStore.role ==
                                                 'student' ||
                                             userDetailsStore.role ==
-                                                'instructor'
+                                                'instructor' ||
+                                            userDetailsStore.role == 'partner'
                                         "
                                         to="/reputation"
                                         class="dropdown-item"
@@ -403,6 +414,22 @@ export default {
                                         class="dropdown-item"
                                     >
                                         Tokens
+                                    </RouterLink>
+                                    <RouterLink
+                                        v-if="
+                                            userDetailsStore.role == 'partner'
+                                        "
+                                        to="/referrals"
+                                        class="dropdown-item"
+                                    >
+                                        Referrals
+                                    </RouterLink>
+                                    <RouterLink
+                                        v-if="userDetailsStore.role == 'admin'"
+                                        to="/partners"
+                                        class="dropdown-item"
+                                    >
+                                        Partners
                                     </RouterLink>
                                     <div class="dropdown-divider"></div>
                                     <a
@@ -444,6 +471,20 @@ export default {
                                     class="nav-link"
                                 >
                                     Tokens
+                                </RouterLink>
+                                <RouterLink
+                                    v-if="userDetailsStore.role == 'partner'"
+                                    to="/referrals"
+                                    class="nav-link"
+                                >
+                                    Referrals
+                                </RouterLink>
+                                <RouterLink
+                                    v-if="userDetailsStore.role == 'admin'"
+                                    to="/referrers"
+                                    class="nav-link"
+                                >
+                                    Referrers
                                 </RouterLink>
                                 <a
                                     v-if="sessionDetailsStore.isLoggedIn"

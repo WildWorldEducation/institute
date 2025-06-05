@@ -38,7 +38,7 @@ const router = createRouter({
             meta: {
                 title: 'Student skill tree',
                 requiresAuth: true,
-                roles: ['instructor', 'admin']
+                roles: ['instructor', 'admin', 'partner']
             }
         },
         {
@@ -92,7 +92,7 @@ const router = createRouter({
             meta: {
                 title: 'Student skills',
                 requiresAuth: true,
-                roles: ['instructor', 'admin']
+                roles: ['instructor', 'admin', 'partner']
             }
         },
         {
@@ -233,7 +233,7 @@ const router = createRouter({
             component: () => import('../components/pages/UsersView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['instructor', 'admin']
+                roles: ['instructor', 'admin', 'partner']
             }
         },
         {
@@ -243,7 +243,7 @@ const router = createRouter({
                 import('../components/pages/StudentQuestionListView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['instructor', 'admin']
+                roles: ['instructor', 'admin', 'partner']
             }
         },
         {
@@ -253,7 +253,7 @@ const router = createRouter({
                 import('../components/pages/MarkAssessmentView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['instructor', 'admin']
+                roles: ['instructor', 'admin', 'partner']
             }
         },
         {
@@ -266,19 +266,22 @@ const router = createRouter({
             path: '/users/add-student',
             name: 'add-student',
             component: () => import('../components/pages/AddStudentView.vue'),
-            meta: { requiresAuth: true, roles: ['instructor'] }
+            meta: { requiresAuth: true, roles: ['instructor', 'partner'] }
         },
         {
             path: '/users/edit/:id',
             name: 'edit-user',
             component: () => import('../components/pages/EditUserView.vue'),
-            meta: { requiresAuth: true, roles: ['instructor', 'admin'] }
+            meta: {
+                requiresAuth: true,
+                roles: ['instructor', 'admin', 'partner']
+            }
         },
         {
             path: '/edit/student/:id/',
             name: 'edit-student',
             component: () => import('../components/components/EditStudent.vue'),
-            meta: { requiresAuth: true, roles: ['instructor'] }
+            meta: { requiresAuth: true, roles: ['instructor', 'partner'] }
         },
         {
             path: '/users/activity-report/:id',
@@ -328,7 +331,7 @@ const router = createRouter({
             name: 'edit-student-password',
             component: () =>
                 import('../components/pages/ChangeStudentPasswordView.vue'),
-            meta: { requiresAuth: true, roles: ['instructor'] }
+            meta: { requiresAuth: true, roles: ['instructor', 'partner'] }
         },
         {
             path: '/reputation',
@@ -362,7 +365,7 @@ const router = createRouter({
                 import('../components/pages/CheckStudentQuestionView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['admin', 'editor', 'instructor']
+                roles: ['admin', 'editor', 'instructor', 'partner']
             }
         },
         {
@@ -392,21 +395,30 @@ const router = createRouter({
             name: 'cohorts',
             component: () =>
                 import('../components/pages/cohorts/CohortsListView.vue'),
-            meta: { requiresAuth: true, roles: ['admin', 'instructor'] }
+            meta: {
+                requiresAuth: true,
+                roles: ['admin', 'instructor', 'partner']
+            }
         },
         {
             path: '/cohorts/add',
             name: 'add-cohort',
             component: () =>
                 import('../components/pages/cohorts/AddCohortView.vue'),
-            meta: { requiresAuth: true, roles: ['admin', 'instructor'] }
+            meta: {
+                requiresAuth: true,
+                roles: ['admin', 'instructor', 'partner']
+            }
         },
         {
             path: '/cohort/:cohortId',
             name: 'cohort',
             component: () =>
                 import('../components/pages/cohorts/CohortView.vue'),
-            meta: { requiresAuth: true, roles: ['admin', 'instructor'] }
+            meta: {
+                requiresAuth: true,
+                roles: ['admin', 'instructor', 'partner']
+            }
         },
         {
             path: '/password-reset',
@@ -452,7 +464,7 @@ const router = createRouter({
             meta: {
                 title: 'Student goals',
                 requiresAuth: true,
-                roles: ['instructor', 'admin']
+                roles: ['instructor', 'admin', 'partner']
             }
         },
         // Tokens
@@ -472,6 +484,30 @@ const router = createRouter({
             name: 'tokens-error',
             component: () =>
                 import('../components/pages/tokens/TokensErrorView.vue')
+        },
+        {
+            path: '/referrals',
+            name: 'list-referrals',
+            component: () =>
+                import('../components/pages/referrals/ListReferrals.vue')
+        },
+        {
+            path: '/referrals/:partnerId/:referredUserId',
+            name: 'show-referral',
+            component: () =>
+                import('../components/pages/referrals/ShowReferral.vue')
+        },
+        {
+            path: '/partners',
+            name: 'partners',
+            component: () =>
+                import('../components/pages/dropdown-menu-pages/Partners.vue')
+        },
+        {
+            path: '/student-payments',
+            name: 'student-payments',
+            component: () =>
+                import('../components/pages/tokens/StudentPayments.vue')
         },
         {
             path: '/:pathMatch(.*)*',
@@ -529,7 +565,10 @@ router.beforeEach(async (to, from, next) => {
         from.name == 'editor-signup'
     ) {
         // Instructor theme
-        if (userDetailsStore.theme == 'instructor') {
+        if (
+            userDetailsStore.theme == 'instructor' ||
+            userDetailsStore.theme == 'partner'
+        ) {
             document.body.classList.remove('editor-theme');
             document.body.classList.add('instructor-theme');
         } else if (userDetailsStore.theme == 'editor') {
@@ -600,7 +639,10 @@ router.beforeEach(async (to, from, next) => {
                 if (userDetailsStore.role == 'student') {
                     next({ name: 'skill-tree' });
                 } // Redirect to Home if user doesn't have the required role
-                else if (userDetailsStore.role == 'instructor') {
+                else if (
+                    userDetailsStore.role == 'instructor' ||
+                    userDetailsStore.role == 'partner'
+                ) {
                     next({ name: 'users' });
                 } else if (userDetailsStore.role == 'editor') {
                     next({ name: 'todo' });

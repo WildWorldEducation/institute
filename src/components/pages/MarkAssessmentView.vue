@@ -32,7 +32,10 @@ export default {
         MarkAssessment
     },
     async created() {
-        if (this.userDetailsStore.role == 'instructor') {
+        if (
+            this.userDetailsStore.role == 'instructor' ||
+            this.userDetailsStore.role == 'partner'
+        ) {
             await this.fetchAssessments();
         }
     },
@@ -127,7 +130,10 @@ export default {
 <template>
     <div class="container">
         <MarkAssessment
-            v-if="userDetailsStore.role == 'instructor'"
+            v-if="
+                userDetailsStore.role == 'instructor' ||
+                this.userDetailsStore.role == 'partner'
+            "
             :assessments="assessments"
         />
     </div>

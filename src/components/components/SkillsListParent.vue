@@ -47,7 +47,8 @@ export default {
             // Instructors and Editors.
             else if (
                 this.userDetailsStore.role == 'instructor' ||
-                this.userDetailsStore.role == 'editor'
+                this.userDetailsStore.role == 'editor' ||
+                this.userDetailsStore.role == 'partner'
             )
                 await this.skillsStore.getFilteredNestedSkillsList();
             // Students.
@@ -89,7 +90,8 @@ export default {
                 // Instructor and editor
                 if (
                     this.userDetailsStore.role == 'instructor' ||
-                    this.userDetailsStore.role == 'editor'
+                    this.userDetailsStore.role == 'editor' ||
+                    this.userDetailsStore.role == 'partner'
                 ) {
                     this.path = this.findPathInNestedSkillTree(
                         name,
@@ -229,7 +231,8 @@ export default {
             <div
                 v-else-if="
                     this.userDetailsStore.role == 'instructor' ||
-                    this.userDetailsStore.role == 'editor'
+                    this.userDetailsStore.role == 'editor' ||
+                    this.userDetailsStore.role == 'partner'
                 "
                 v-for="skill in this.skillsStore.filteredNestedSkillsList"
             >

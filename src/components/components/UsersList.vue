@@ -45,7 +45,7 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-4">
+    <div class="container mt-1">
         <!-- Admins -->
         <div
             v-if="userDetailsStore.role == 'admin'"
@@ -75,11 +75,14 @@ export default {
 
         <!-- Instructors -->
         <div
-            v-else-if="userDetailsStore.role == 'instructor'"
+            v-else-if="
+                userDetailsStore.role == 'instructor' ||
+                userDetailsStore.role == 'partner'
+            "
             v-for="student in $parent.students"
             :key="student.id"
         >
-            <div class="d-flex bg-light rounded p-2">
+            <div class="d-flex bg-light rounded mb-2">
                 <img
                     class="user-avatars"
                     v-if="student.avatar != null"
@@ -100,7 +103,10 @@ export default {
 
         <!-- Add Student Link -->
         <RouterLink
-            v-if="userDetailsStore.role == 'instructor'"
+            v-if="
+                userDetailsStore.role == 'instructor' ||
+                userDetailsStore.role == 'partner'
+            "
             to="/users/add-student"
             class="d-block mb-4 btn primary-btn"
         >
