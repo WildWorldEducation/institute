@@ -537,7 +537,7 @@ app.get('/get-session-details', (req, res) => {
  * App settings
  */
 // To get the app settings.
-app.get('/settings', (req, res, next) => {
+app.get('/api/settings', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
@@ -557,7 +557,7 @@ app.get('/settings', (req, res, next) => {
 });
 
 // Edit app settings.
-app.put('/settings/edit', isAuthenticated, isAdmin, (req, res, next) => {
+app.put('/api/settings/edit', isAuthenticated, isAdmin, (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery = `UPDATE settings SET ? WHERE id = 1`;
         const data = req.body;
