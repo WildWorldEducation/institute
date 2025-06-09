@@ -219,26 +219,6 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
     }
 }
 
-// Test the student
-// Commented out as this is now done via streaming/socket.io
-// async function socraticTutorAskQuestion(threadId, assistantId, messageData) {
-//     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-//         assistant_id: assistantId,
-//         instructions: `The user is at a ${messageData.skillLevel} level and age.
-//         Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
-//         Ask the student a question related to the content.
-//         Make sure to have $ delimiters before any science and math strings that can convert to Latex`
-//     });
-
-//     if (run.status === 'completed') {
-//         const messages = await openai.beta.threads.messages.list(threadId);
-//         const latestMessage = messages.data[0];
-//         return latestMessage;
-//     } else {
-//         console.log(run.status);
-//     }
-// }
-
 /**
  * Assessing tutor functions --------------------------------------
  */
