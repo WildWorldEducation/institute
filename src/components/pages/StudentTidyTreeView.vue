@@ -50,6 +50,7 @@ export default {
     async created() {
         if (
             this.userDetailsStore.role == 'instructor' ||
+            this.userDetailsStore.role == 'partner' ||
             this.userDetailsStore.role == 'admin'
         ) {
             this.instructorId = this.userDetailsStore.userId;
