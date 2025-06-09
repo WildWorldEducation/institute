@@ -348,7 +348,7 @@ export default {
                     this.context.strokeStyle = '#000';
                 else if (this.userDetailsStore.theme == 'instructor') {
                     this.context.strokeStyle = '#000';
-                } else this.context.strokeStyle = '#fff';
+                } else this.context.strokeStyle = '#000';
             }
 
             if (

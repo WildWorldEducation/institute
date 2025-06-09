@@ -513,7 +513,7 @@ export default {
                     this.context.strokeStyle = '#000';
                 else if (this.userDetailsStore.theme == 'apprentice') {
                     this.context.strokeStyle = '#000';
-                } else this.context.strokeStyle = '#fff';
+                } else this.context.strokeStyle = '#000';
             }
 
             this.context.stroke();
