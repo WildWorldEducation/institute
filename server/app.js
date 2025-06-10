@@ -537,7 +537,47 @@ app.get('/get-session-details', (req, res) => {
  * App settings
  */
 // To get the app settings.
+function isBrowserRequest(req) {
+    const userAgent = req.get('User-Agent') || '';
+    const acceptHeader = req.get('Accept') || '';
+
+    // Check if it's likely a browser request
+    return (
+        acceptHeader.includes('text/html') &&
+        (userAgent.includes('Mozilla') ||
+            userAgent.includes('Chrome') ||
+            userAgent.includes('Safari') ||
+            userAgent.includes('Firefox'))
+    );
+}
+
+// To get the app settings.
 app.get('/api/settings', (req, res, next) => {
+    // Check if this is a direct browser request
+    if (isBrowserRequest(req)) {
+        // Redirect browser requests to the Vue app, which will show 404
+        const environment = process.env.NODE_ENV;
+
+        parseManifest()
+            .then((manifest) => {
+                const data = {
+                    environment,
+                    manifest
+                };
+                res.status(404).render('index.html.ejs', data);
+            })
+            .catch((err) => {
+                console.error('Error parsing manifest:', err);
+                const data = {
+                    environment,
+                    manifest: {}
+                };
+                res.status(404).render('index.html.ejs', data);
+            });
+        return;
+    }
+
+    // Handle normal API requests
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
@@ -553,11 +593,38 @@ app.get('/api/settings', (req, res, next) => {
                 next(err);
             }
         });
+    } else {
+        res.status(401).json({ error: 'Unauthorized' });
     }
 });
 
 // Edit app settings.
 app.put('/api/settings/edit', isAuthenticated, isAdmin, (req, res, next) => {
+    // Check if this is a direct browser request
+    if (isBrowserRequest(req)) {
+        // Redirect browser requests to the Vue app, which will show 404
+        const environment = process.env.NODE_ENV;
+
+        parseManifest()
+            .then((manifest) => {
+                const data = {
+                    environment,
+                    manifest
+                };
+                res.status(404).render('index.html.ejs', data);
+            })
+            .catch((err) => {
+                console.error('Error parsing manifest:', err);
+                const data = {
+                    environment,
+                    manifest: {}
+                };
+                res.status(404).render('index.html.ejs', data);
+            });
+        return;
+    }
+
+    // Handle normal API requests
     if (req.session.userName) {
         let sqlQuery = `UPDATE settings SET ? WHERE id = 1`;
         const data = req.body;
@@ -571,6 +638,8 @@ app.put('/api/settings/edit', isAuthenticated, isAdmin, (req, res, next) => {
                 next(err);
             }
         });
+    } else {
+        res.status(401).json({ error: 'Unauthorized' });
     }
 });
 

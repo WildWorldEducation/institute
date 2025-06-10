@@ -518,6 +518,12 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+    // Handle API routes - redirect to 404 if someone tries to access them directly
+    if (to.path.startsWith('/api/')) {
+        next({ name: 'not-found' });
+        return;
+    }
+
     // Title tag.
     const baseTitle = 'Parrhesia';
     if (to.meta.title) {
@@ -622,7 +628,8 @@ router.beforeEach(async (to, from, next) => {
         to.name !== 'skill-tree' &&
         to.name !== 'show-skill' &&
         to.name !== 'instructor-signup' &&
-        to.name !== 'search'
+        to.name !== 'search' &&
+        to.name !== 'not-found' // Add this to prevent redirect loops
     ) {
         next({ name: 'skill-tree' });
         return;
