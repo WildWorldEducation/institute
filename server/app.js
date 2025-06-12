@@ -536,10 +536,24 @@ app.get('/get-session-details', (req, res) => {
 /*
  * App settings
  */
+// To prevent the API from being access via the browser
+function isBrowserRequest(req) {
+    const userAgent = req.get('User-Agent') || '';
+    const acceptHeader = req.get('Accept') || '';
+
+    // Check if it's likely a browser request
+    return (
+        acceptHeader.includes('text/html') &&
+        (userAgent.includes('Mozilla') ||
+            userAgent.includes('Chrome') ||
+            userAgent.includes('Safari') ||
+            userAgent.includes('Firefox'))
+    );
+}
+
 // To get the app settings.
 app.get('/api/settings', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
+    if (req.session.userName && !isBrowserRequest) {
         let sqlQuery = `
         SELECT *
         FROM settings;`;
@@ -553,6 +567,8 @@ app.get('/api/settings', (req, res, next) => {
                 next(err);
             }
         });
+    } else {
+        res.redirect('/');
     }
 });
 
