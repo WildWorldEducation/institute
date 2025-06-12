@@ -18,7 +18,7 @@ export default {
         <router-link
             class="btn primary-btn my-3 back-btn"
             :to="{ name: 'search' }"
-            >Back to Hub</router-link
+            >Back to Search</router-link
         >
     </div>
 </template>

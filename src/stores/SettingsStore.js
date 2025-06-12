@@ -17,7 +17,7 @@ export const useSettingsStore = defineStore('settings', {
     }),
     actions: {
         async getSettings() {
-            const result = await fetch('/settings');
+            const result = await fetch('/api/settings');
             const data = await result.json();
             this.skillDegradationDays = data[0].skill_degradation_days;
             this.quizMaxQuestions = data[0].quiz_max_questions;
@@ -59,7 +59,7 @@ export const useSettingsStore = defineStore('settings', {
                 })
             };
 
-            await fetch('/settings/edit', requestOptions);
+            await fetch('/api/settings/edit', requestOptions);
         }
     }
 });
