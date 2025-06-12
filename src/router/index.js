@@ -517,7 +517,7 @@ const router = createRouter({
     ]
 });
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, from, next) => {  
     // Title tag.
     const baseTitle = 'Parrhesia';
     if (to.meta.title) {

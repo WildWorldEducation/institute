@@ -37,7 +37,7 @@ export default {
                     pass_mark: this.settingsStore.passMark
                 })
             };
-            var url = '/settings/edit';
+            var url = '/api/settings/edit';
             fetch(url, requestOptions).then(() => {
                 this.$router.push('/profile-settings');
             });
