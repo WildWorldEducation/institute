@@ -49,6 +49,18 @@ export default {
         if (this.settingsStore.freeTokenMonthlyLimit == 0) {
             await this.settingsStore.getSettings();
         }
+        // Check if user is over free monthly AI token limit
+        let tokenBalance =
+            this.userDetailsStore.monthlyTokenUsage -
+            this.settingsStore.freeTokenMonthlyLimit;
+        if (
+            this.settingsStore.freeTokenMonthlyLimit <=
+            this.userDetailsStore.monthlyTokenUsage
+        ) {
+            if (tokenBalance > this.userDetailsStore.tokens) {
+                this.isAITokenLimitReached = true;
+            }
+        }
 
         await this.userDetailsStore.getUserDetails();
         this.getReceipts();
@@ -58,20 +70,6 @@ export default {
         let stripeScript = document.createElement('script');
         stripeScript.setAttribute('src', 'https://js.stripe.com/v3/');
         document.head.appendChild(stripeScript);
-
-        // Check if user is over free monthly AI token limit
-        let tokenBalance =
-            this.userDetailsStore.monthlyTokenUsage -
-            this.settingsStore.freeTokenMonthlyLimit;
-
-        if (
-            this.settingsStore.freeTokenMonthlyLimit <=
-            this.userDetailsStore.monthlyTokenUsage
-        ) {
-            if (tokenBalance > this.userDetailsStore.tokens) {
-                this.isAITokenLimitReached = true;
-            }
-        }
 
         // Work out date
         // Get current year
