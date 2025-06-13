@@ -49,20 +49,32 @@ export default {
         if (this.settingsStore.freeTokenMonthlyLimit == 0) {
             await this.settingsStore.getSettings();
         }
-        // Check if user is over free monthly AI token limit
-        let tokenBalance =
-            this.userDetailsStore.monthlyTokenUsage -
-            this.settingsStore.freeTokenMonthlyLimit;
+
+        await this.userDetailsStore.getUserDetails();
+        console.log(this.userDetailsStore.email);
+        console.log(this.userDetailsStore.userName);
+
+        // Ensure clients can always access the tutors
         if (
-            this.settingsStore.freeTokenMonthlyLimit <=
-            this.userDetailsStore.monthlyTokenUsage
+            !this.userDetailsStore.email == 'collinsmalcolm@gmail.com' &&
+            !this.userDetailsStore.email == 'simonehcollins@gmail.com' &&
+            !this.userDetailsStore.username == 'malcolm' &&
+            !this.userDetailsStore.username == 'simonehcollins'
         ) {
-            if (tokenBalance > this.userDetailsStore.tokens) {
-                this.isAITokenLimitReached = true;
+            // Check if user is over free monthly AI token limit
+            let tokenBalance =
+                this.userDetailsStore.monthlyTokenUsage -
+                this.settingsStore.freeTokenMonthlyLimit;
+            if (
+                this.settingsStore.freeTokenMonthlyLimit <=
+                this.userDetailsStore.monthlyTokenUsage
+            ) {
+                if (tokenBalance > this.userDetailsStore.tokens) {
+                    this.isAITokenLimitReached = true;
+                }
             }
         }
 
-        await this.userDetailsStore.getUserDetails();
         this.getReceipts();
     },
     async mounted() {
