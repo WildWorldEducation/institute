@@ -124,7 +124,6 @@ export default {
 
             // Set the thumbnail URL early to start loading
             this.thumbnailURL = this.thumbnailCDN + '/' + this.skillUrl;
-            console.log(this.thumbnailURL);
 
             // Create promises array
             const promises = [this.getSkill()];
@@ -181,11 +180,19 @@ export default {
                 // Ensure user details are loaded first
                 await this.userDetailsStore.getUserDetails();
 
-                // Check if settings store exists and has the method
+                // Ensure clients can always access the tutors
                 if (
+                    this.userDetailsStore.email == 'collinsmalcolm@gmail.com' ||
+                    this.userDetailsStore.email == 'simonehcollins@gmail.com' ||
+                    this.userDetailsStore.username == 'malcolm' ||
+                    this.userDetailsStore.username == 'simonehcollins'
+                ) {
+                    return;
+                } else if (
                     this.settingsStore &&
                     typeof this.settingsStore.getSettings === 'function'
                 ) {
+                    // Check if settings store exists and has the method
                     // Only get settings if free monthly tokens are 0 or not set
                     if (this.settingsStore.freeTokenMonthlyLimit === 0) {
                         await this.settingsStore.getSettings();
