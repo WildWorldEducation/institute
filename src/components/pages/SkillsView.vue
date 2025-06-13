@@ -298,7 +298,7 @@ export default {
                 <div v-if="instructorMode" class="col-lg-9">
                     <h1 class="heading h4">{{ studentName }}</h1>
                 </div>
-                <div class="search-mobile-row">
+                <div class="search-mobile-row me-1">
                     <!-- Search feature -->
                     <SkillTreeSearchBar
                         :findNode="findNode"
@@ -306,7 +306,7 @@ export default {
                     />
                 </div>
                 <!-- Add skill button -->
-                <router-link class="btn primary-btn me-2" to="/skills/add"
+                <router-link class="btn primary-btn me-1" to="/skills/add"
                     >New skill&nbsp;
                     <!-- Plus sign -->
                     <svg
@@ -339,13 +339,14 @@ export default {
             </div>
             <!-- Tablet and up -->
             <div id="tablet-and-up-legend">
-                <div class="legend d-flex justify-content-between">
+                <div class="legend d-flex justify-content-end">
                     <!-- Student name -->
                     <div v-if="instructorMode" class="col">
                         <h1 class="heading h4">Student: {{ studentName }}</h1>
                     </div>
                     <!-- Search Feature -->
                     <SkillTreeSearchBar
+                        class="me-1"
                         :findNode="findNode"
                         :clearResults="clearResults"
                     />
@@ -366,7 +367,7 @@ export default {
                         <div>
                             <!-- Add skill button -->
                             <router-link
-                                class="btn primary-btn me-2"
+                                class="btn primary-btn me-1"
                                 to="/skills/add"
                             >
                                 New skill&nbsp;
@@ -1236,18 +1237,11 @@ export default {
 
     .search-mobile-row {
         width: 96%;
-        margin-left: 0px;
-        margin-right: auto;
-        padding-right: 10px;
     }
 }
 
 /* Bigger devices ( Tablet ) */
 @media (min-width: 481px) and (max-width: 1023px) {
-    #legend {
-        height: 90px;
-    }
-
     #mobile-legend {
         display: none;
     }
@@ -1266,9 +1260,6 @@ export default {
 
     .legend span {
         flex-shrink: 0;
-    }
-    #skill-btn-search-bar-container {
-        margin-top: 5px;
     }
 }
 

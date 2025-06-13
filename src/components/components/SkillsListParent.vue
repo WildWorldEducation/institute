@@ -196,14 +196,7 @@ export default {
         </div>
         <div
             v-else
-            style="
-                overflow: auto;
-                position: absolute;
-                height: -webkit-fill-available;
-                width: 100%;
-                height: 100%;
-                left: -5px;
-            "
+            style="position: absolute; width: 100%; left: -5px"
             class="content"
         >
             <!-- Students -->
@@ -294,6 +287,7 @@ export default {
 .content {
     scrollbar-width: auto;
     scrollbar-color: #9f9f9f;
+    overflow-x: auto;
 }
 .content::-webkit-scrollbar-thumb {
     background: #9f9f9f;
