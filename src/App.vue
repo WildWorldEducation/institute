@@ -970,6 +970,10 @@ p {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+#navbarSupportedContent {
+    overflow: visible;
+}
+
 /* Responsive pointer-events behavior - only for tablets and up */
 @media (min-width: 768px) {
   /* Ensure the navbar doesn't block clicks when fixed-top on larger screens */
