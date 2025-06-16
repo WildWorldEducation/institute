@@ -1783,7 +1783,7 @@ router.get(
                 res.json(response);
             });
         } else {
-            res.status(401).json({ error: 'Unauthorized' });
+            res.redirect('/login');
         }
     }
 );
