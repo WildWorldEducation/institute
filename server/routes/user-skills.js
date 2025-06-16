@@ -1739,36 +1739,51 @@ router.post('/make-mastered/:userId', (req, res, next) => {
 
 /*
  * To recommend the next skill after completing one.
- * Shows the next node in the "branch".
+ * For subskills: shows other unmastered subskills within the same super skill
+ * For regular skills: shows other unmastered regular skills within the same parent
+ * EXCLUDES mastered skills and shows only accessible, unmastered ones
  */
 router.get(
     '/get-next-accessible-in-branch/:userId/:skillId',
     (req, res, next) => {
         if (req.session.userName) {
             let sqlQuery = `
-        	SELECT skills.id, name, url, level
-            FROM skills
-            JOIN user_skills
-            ON skills.id = user_skills.skill_id
-            WHERE user_id = '${req.params.userId}'
-            AND skills.parent = ${req.params.skillId}
-            AND is_accessible = 1
-            AND (is_mastered IS NULL OR is_mastered <> 1);
+                SELECT s2.id, s2.name AS skill_name, s2.url, s2.level
+                FROM skills s1
+                JOIN skills s2 ON s1.parent = s2.parent AND s1.type = s2.type
+                LEFT JOIN user_skills us ON s2.id = us.skill_id AND us.user_id = ${conn.escape(
+                    req.params.userId
+                )}
+                WHERE s1.id = ${conn.escape(req.params.skillId)}
+                AND s2.id != ${conn.escape(req.params.skillId)}
+                AND s2.is_filtered = 'available' 
+                AND s2.is_deleted = 0
+                AND (us.is_accessible = 1 OR us.is_accessible IS NULL)
+                AND (us.is_mastered IS NULL OR us.is_mastered = 0)
+                ORDER BY s2.order, s2.id;
             `;
 
             conn.query(sqlQuery, (err, results) => {
-                try {
-                    if (err) {
-                        throw err;
-                    }
-
-                    res.json(results);
-                } catch (err) {
-                    next(err);
+                if (err) {
+                    console.error(
+                        'Database error in get-next-accessible-in-branch:',
+                        err
+                    );
+                    return next(err);
                 }
+
+                // Map to frontend format (skill_name -> name)
+                const response = results.map((skill) => ({
+                    id: skill.id,
+                    name: skill.skill_name,
+                    url: skill.url,
+                    level: skill.level
+                }));
+
+                res.json(response);
             });
         } else {
-            res.redirect('/login');
+            res.status(401).json({ error: 'Unauthorized' });
         }
     }
 );
