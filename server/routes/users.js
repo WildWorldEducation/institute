@@ -163,29 +163,46 @@ router.post('/new-user/add', async (req, res, next) => {
                                     req.body.referrer_username != null
                                 ) {
                                     const getReferrerSQLIDQuery = `SELECT id
-                                FROM users
-                                WHERE username = ${conn.escape(
-                                    req.body.referrer_username
-                                )};`;
+                                    FROM users
+                                    WHERE username = ${conn.escape(
+                                        req.body.referrer_username
+                                    )};`;
 
-                                    const res = await query(
+                                    const referrerResult = await query(
                                         getReferrerSQLIDQuery
                                     );
-                                    const referrerId = res[0].id;
 
-                                    const referrerSQLQuery = `
-                                INSERT INTO referrals (referred_user_id, referrer_user_id)
-                                VALUES (${conn.escape(data.id)}, ${conn.escape(
-                                        referrerId
-                                    )})
-                                    ON DUPLICATE KEY UPDATE referred_user_id = ${conn.escape(
-                                        data.id
-                                    )}, referrer_user_id= ${conn.escape(
-                                        referrerId
-                                    )};
-                                    `;
+                                    if (referrerResult.length > 0) {
+                                        const referrerId = referrerResult[0].id;
 
-                                    await query(referrerSQLQuery);
+                                        // Create referral record
+                                        const referrerSQLQuery = `
+                                        INSERT INTO referrals (referred_user_id, referrer_user_id)
+                                        VALUES (${conn.escape(
+                                            data.id
+                                        )}, ${conn.escape(referrerId)})
+                                            ON DUPLICATE KEY UPDATE referred_user_id = ${conn.escape(
+                                                data.id
+                                            )}, referrer_user_id= ${conn.escape(
+                                            referrerId
+                                        )};
+                                        `;
+                                        await query(referrerSQLQuery);
+
+                                        // Create instructor-student relationship
+                                        const instructorStudentQuery = `
+                                        INSERT INTO instructor_students (instructor_id, student_id)
+                                        VALUES (${conn.escape(
+                                            referrerId
+                                        )}, ${conn.escape(data.id)})
+                                            ON DUPLICATE KEY UPDATE instructor_id = ${conn.escape(
+                                                referrerId
+                                            )}, student_id = ${conn.escape(
+                                            data.id
+                                        )};
+                                        `;
+                                        await query(instructorStudentQuery);
+                                    }
                                 }
 
                                 // Set up session
