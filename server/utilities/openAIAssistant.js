@@ -72,7 +72,8 @@ async function createSocraticAssistantAndThread(
     const assistant = await createSocraticAssistant(
         topic,
         level,
-        learningObjectives
+        learningObjectives,
+        isFileSearchSkill
     );
 
     if (isFileSearchSkill) {
@@ -89,7 +90,12 @@ async function createSocraticAssistantAndThread(
     return result;
 }
 
-async function createSocraticAssistant(topic, level, learningObjectives) {
+async function createSocraticAssistant(
+    topic,
+    level,
+    learningObjectives,
+    isFileSearchSkill
+) {
     const assistant = await openai.beta.assistants.create({
         name: 'Socratic Tutor',
         instructions:
@@ -108,7 +114,10 @@ async function createSocraticAssistant(topic, level, learningObjectives) {
             - Wait for the student's response before asking another question
             - Focus on depth rather than breadth in your questions
 
-            Please keep all messages below 1000 characters.`,
+            Please keep all messages below 1000 characters.` +
+            isFileSearchSkill
+                ? 'Do not mention that a file has been uploaded to the file search tool.'
+                : '',
         tools: [{ type: 'file_search' }],
         model: 'gpt-4.5-preview'
     });
@@ -231,7 +240,8 @@ async function createAssessingAssistantAndThread(
     const assistant = await createAssessingAssistant(
         topic,
         level,
-        learningObjectives
+        learningObjectives,
+        isFileSearchSkill
     );
 
     // Give it access to certain documents
@@ -248,7 +258,12 @@ async function createAssessingAssistantAndThread(
     return result;
 }
 
-async function createAssessingAssistant(topic, level, learningObjectives) {
+async function createAssessingAssistant(
+    topic,
+    level,
+    learningObjectives,
+    isFileSearchSkill
+) {
     const assistant = await openai.beta.assistants.create({
         name: 'Assessment Tutor',
         instructions:
@@ -267,7 +282,10 @@ async function createAssessingAssistant(topic, level, learningObjectives) {
             - After receiving an answer, provide feedback before asking the next question
             - Assess one concept or objective at a time
        
-            Please keep all messages below 1000 characters.`,
+            Please keep all messages below 1000 characters.` +
+            isFileSearchSkill
+                ? 'Do not mention that a file has been uploaded to the file search tool.'
+                : '',
         tools: [],
         model: 'gpt-4.5-preview'
     });
@@ -389,7 +407,8 @@ async function createLearningObjectiveAssistantAndThread(
 ) {
     const assistant = await createLearningObjectiveAssistant(
         level,
-        learningObjective
+        learningObjective,
+        neededFileSearch
     );
 
     // only update the assistant with file search if it is in the list
@@ -424,7 +443,10 @@ async function createLearningObjectiveAssistant(level, learningObjective) {
             - Wait for the student's response before asking a new question
             - Build questions that help the student reach a deeper understanding
             
-            Please keep all messages below 1000 characters.`,
+            Please keep all messages below 1000 characters.` +
+            isFileSearchSkill
+                ? 'Do not mention that a file has been uploaded to the file search tool.'
+                : '',
         tools: [],
         model: 'gpt-4.5-preview'
     });
