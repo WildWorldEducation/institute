@@ -118,7 +118,7 @@ export default {
     },
     methods: {
         mainButtonPress() {
-            window.open('/skills/' + this.url, '_blank');
+            window.open('/skills/' + encodeURIComponent(this.url), '_blank');
         },
         // Save the state of the skills list to DB
         async toggleChildren() {

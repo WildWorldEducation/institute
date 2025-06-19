@@ -31,7 +31,7 @@ export default {
                 phd: skill.level == 'phd'
             }"
             class="skill-link btn m-2 d-flex"
-            :to="`/skills/${skill.url}`"
+            :to="`/skills/${encodeURIComponent(skill.url)}`"
             target="_blank"
         >
             <img class="icons" :src="skill.icon" />&nbsp; {{ skill.name }}

@@ -347,6 +347,10 @@ router.get('/list', (req, res, next) => {
                 throw err;
             }
 
+            for (let i = 0; i < results.length; i++) {
+                results[i].URL = encodeURIComponent(results[i].URL);
+            }
+
             res.json(results);
         } catch (err) {
             next(err);
@@ -866,6 +870,9 @@ router.get('/url-only/:id', (req, res, next) => {
             if (err) {
                 throw err;
             }
+
+            console.log(encodeURIComponent(results[0]));
+            console.log(results[0]);
 
             res.json(results[0]);
         } catch (err) {
