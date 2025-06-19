@@ -47,7 +47,7 @@ export default {
                     phd: nextSkill.level == 'phd'
                 }"
                 class="skill-link btn"
-                :to="`/skills/${nextSkill.url}`"
+                :to="`/skills/${encodeURIComponent(nextSkill.url)}`"
                 target="_blank"
             >
                 {{ nextSkill.name }}

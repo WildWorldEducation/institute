@@ -195,9 +195,11 @@ export default {
                     const result = await fetch(
                         '/skills/url-only/' + this.skill.id
                     );
+
                     const resultData = await result.json();
+                    // Escape the question mark in the URL, if it is there
                     const routeData = this.$router.resolve({
-                        path: '/skills/' + resultData.url
+                        path: '/skills/' + encodeURIComponent(resultData.url)
                     });
                     window.open(routeData.href, '_blank');
                 }

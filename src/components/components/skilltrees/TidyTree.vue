@@ -223,7 +223,7 @@ export default {
                     );
                     const resultData = await result.json();
                     const routeData = this.$router.resolve({
-                        path: '/skills/' + resultData.url
+                        path: '/skills/' + encodeURIComponent(resultData.url)
                     });
                     window.open(routeData.href, '_blank');
                 }

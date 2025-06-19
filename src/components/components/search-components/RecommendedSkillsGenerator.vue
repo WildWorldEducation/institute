@@ -291,7 +291,7 @@ export default {
                     phd: recommendedSkill.level == 'phd'
                 }"
                 class="skill-link btn m-2 d-flex"
-                :to="`/skills/${recommendedSkill.url}`"
+                :to="`/skills/${encodeURIComponent(recommendedSkill.url)}`"
                 target="_blank"
             >
                 <img

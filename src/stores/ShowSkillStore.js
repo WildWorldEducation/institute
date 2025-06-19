@@ -10,11 +10,17 @@ export const useShowSkillStore = defineStore('showSkill', {
             this.skill = await res.json();
         },
         async getSkillFirstPart(url) {
-            const res = await fetch('/skills/first/url/' + url);
+            // Escape the question mark in the URL, if it is there
+            const res = await fetch(
+                '/skills/first/url/' + encodeURIComponent(url)
+            );
             this.skill = await res.json();
         },
         async getSkillSecondPart(url) {
-            const res = await fetch('/skills/second/url/' + url);
+            // Escape the question mark in the URL, if it is there
+            const res = await fetch(
+                '/skills/second/url/' + encodeURIComponent(url)
+            );
             const newSkillContent = await res.json();
             this.skill = { ...this.skill, ...newSkillContent };
         }

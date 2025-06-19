@@ -104,7 +104,10 @@ export default {
     methods: {
         mainButtonPress() {
             if (this.type != 'domain') {
-                window.open('/skills/' + this.url, '_blank');
+                window.open(
+                    '/skills/' + encodeURIComponent(this.url),
+                    '_blank'
+                );
             } else this.toggleChildren();
         },
         openEdit(id) {
