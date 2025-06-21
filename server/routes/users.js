@@ -912,7 +912,7 @@ router.get('/show/:id', (req, res, next) => {
         // Note: avatar has query param to deal with image caching by browser,
         // in case image is changed.
         let sqlQuery = `
-    SELECT users.id, first_name, last_name, username, 
+    SELECT users.id, first_name, last_name, username,
     CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', users.id, '?v=', UNIX_TIMESTAMP()) AS avatar, 
     email, role, is_deleted, is_google_auth, grade_filter, theme,
     is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter, reputation_score, is_unlocked_skills_only_filter, cohort_id, is_audio_auto_play, tokens
@@ -1329,13 +1329,22 @@ router.put(
                 if (err) {
                     throw err;
                 }
-                // Upload avatar to AWS
-                await saveUserAvatarToAWS(req.params.id, req.body.avatar);
                 res.end();
             } catch (err) {
                 next(err);
             }
         });
+    }
+);
+
+// User update their avatar in Profile page
+router.put(
+    '/profile/:id/edit-avatar',
+    isAuthenticated,
+    editSelfPermission,
+    async (req, res, next) => {
+        await saveUserAvatarToAWS(req.params.id, req.body.avatar);
+        res.end();
     }
 );
 

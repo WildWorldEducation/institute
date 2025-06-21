@@ -211,11 +211,11 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
 
             // Save the user's token usage
             // These tokens are priced at $150 per million
-            let outputTokens = run.usage.completion_tokens; // ✅ Changed from runStep to run
+            let outputTokens = run.usage.completion_tokens;
             // Work out tts equivalent usage
             // 0.4 is hardcoded at the moment, based on pricing and choice of models
             let ttsTokens = outputTokens * 0.4;
-            let tokenCount = run.usage.total_tokens + ttsTokens; // ✅ Changed from runStep to run
+            let tokenCount = run.usage.total_tokens + ttsTokens;
             saveTokenUsage(messageData.userId, tokenCount);
 
             return latestMessage;
