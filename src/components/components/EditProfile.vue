@@ -65,6 +65,10 @@ export default {
         Preview,
         CheckPasswordComplexity
     },
+    async created() {
+        // Get user details on component creation
+        await this.userDetailsStore.getUserDetails();
+    },
     methods: {
         ValidateForm() {
             if (this.userName == '' || this.userName == null) {
@@ -99,7 +103,6 @@ export default {
             var url = '/users/profile/' + this.id + '/edit-password';
             fetch(url, requestOptions).then(() => {
                 this.userDetailsStore.getUserDetails();
-                this.$router.push('/profile');
             });
         },
         Submit() {
@@ -143,7 +146,6 @@ export default {
                     this.isImageLoading = false;
                     // refresh user details so the users page will show the updated data
                     this.userDetailsStore.getUserDetails();
-                    //this.$router.push('/profile');
                 });
             } else {
                 this.showWarnModal = true;
@@ -273,7 +275,7 @@ export default {
         </router-link>
         <div class="row mt-2">
             <!-- Avatar section -->
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-6 mb-3">
                 <div class="row mx-0 px-md-0 mb-4 mb-lg-0">
                     <div
                         class="d-flex justify-content-center justify-content-md-start ps-lg-0"
@@ -433,7 +435,7 @@ export default {
                         </div>
                     </div>
                 </div>
-                <button class="btn primary-btn mt-2" @click="SubmitAvatar()">
+                <button class="btn primary-btn" @click="SubmitAvatar()">
                     Update avatar
                 </button>
             </div>
