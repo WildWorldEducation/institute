@@ -51,7 +51,6 @@ export default {
          * Give longer node names smaller font, otherwise they look bad.
          * Do this by checking how many lines they span (by checking height.)
          */
-        console.log(this.$refs.name.offsetHeight);
         if (this.$refs.name.offsetHeight > 90)
             this.$refs.name.classList.add('four-row-domain-name');
         else if (this.$refs.name.offsetHeight > 60)

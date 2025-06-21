@@ -17,8 +17,8 @@ export default {
             students: [],
             unavailableStudents: [],
             members: [],
-            showFilters: false,
-            showMembers: false,
+            showFilters: true,
+            showMembers: true,
             isLoading: false,
             showSuccessModal: false,
             showDeleteModal: false,
@@ -158,7 +158,7 @@ export default {
 </script>
 
 <template>
-    <div class="container cohort-page bg-light rounded p-3">
+    <div class="container cohort-page bg-light rounded p-1">
         <span class="d-flex justify-content-between"
             ><h1 class="heading">{{ cohort.name }}</h1>
             <button class="btn red-btn" @click="openDeleteModal">

@@ -260,7 +260,7 @@ export default {
 <template>
     <div class="container bg-light rounded">
         <!-- Back button -->
-        <router-link class="btn red-btn" to="/profile">
+        <router-link class="btn red-btn mt-1" to="/profile">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"
