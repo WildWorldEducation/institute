@@ -103,6 +103,7 @@ export default {
             var url = '/users/profile/' + this.id + '/edit-password';
             fetch(url, requestOptions).then(() => {
                 this.userDetailsStore.getUserDetails();
+                this.$router.push('/profile');
             });
         },
         Submit() {
@@ -275,7 +276,7 @@ export default {
         </router-link>
         <div class="row mt-2">
             <!-- Avatar section -->
-            <div class="col-12 col-md-6 mb-3">
+            <div class="col-12 col-md-6 mb-2">
                 <div class="row mx-0 px-md-0 mb-4 mb-lg-0">
                     <div
                         class="d-flex justify-content-center justify-content-md-start ps-lg-0"
@@ -435,10 +436,12 @@ export default {
                         </div>
                     </div>
                 </div>
-                <button class="btn primary-btn" @click="SubmitAvatar()">
+                <button class="btn primary-btn mt-2" @click="SubmitAvatar()">
                     Update avatar
                 </button>
+                <hr class="hr-border" />
             </div>
+
             <!-- User info section -->
             <div class="col-12 col-md-6">
                 <div class="d-flex gap-4">
@@ -581,7 +584,6 @@ export default {
                 </div>
             </div>
         </div>
-
         <div class="mb-3 row">
             <div class="d-none">
                 <input
@@ -1081,6 +1083,13 @@ export default {
     .modal-content {
         margin: 15% 0%;
         width: 100%;
+    }
+}
+
+/** Tablet */
+@media (min-width: 786px) {
+    .hr-border {
+        display: none;
     }
 }
 </style>
