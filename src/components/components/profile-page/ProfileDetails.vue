@@ -61,8 +61,8 @@ export default {
                 </svg>
             </router-link>
         </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-6">
+        <div class="row mt-2">
+            <div class="col-12 col-md-6 mb-2">
                 <!-- Avatar -->
                 <img
                     id="img-background"
@@ -125,12 +125,12 @@ export default {
 .profile-background {
     background-color: white;
     border-radius: 10px;
-    padding: 10px;
 }
 
 #img-background {
     border-radius: 12px;
-    width: 50%;
+    max-width: 350px;
+    max-height: 350px;
 }
 
 .form-control {

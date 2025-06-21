@@ -1328,14 +1328,23 @@ router.put(
             try {
                 if (err) {
                     throw err;
-                }
-                // Upload avatar to AWS
-                await saveUserAvatarToAWS(req.params.id, req.body.avatar);
+                }                
                 res.end();
             } catch (err) {
                 next(err);
             }
         });
+    }
+);
+
+// User update their avatar in Profile page
+router.put(
+    '/profile/:id/edit-avatar',
+    isAuthenticated,
+    editSelfPermission,
+    async (req, res, next) => {
+        await saveUserAvatarToAWS(req.params.id, req.body.avatar);
+        res.end();
     }
 );
 

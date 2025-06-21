@@ -14,7 +14,6 @@ export default {
         const userDetailsStore = useUserDetailsStore();
         const userStore = useUsersStore();
         userStore.getInstructors();
-        const showObj = { ...userDetailsStore, avatar: '1' };
         return {
             userDetailsStore,
             userStore
@@ -57,7 +56,8 @@ export default {
             // Zoom relate state data
             lastZoomValue: 0,
             zoomValue: 0,
-            showWarnModal: false
+            showWarnModal: false,
+            isImageLoading: false
         };
     },
     components: {
@@ -65,7 +65,6 @@ export default {
         Preview,
         CheckPasswordComplexity
     },
-    computed: {},
     methods: {
         ValidateForm() {
             if (this.userName == '' || this.userName == null) {
@@ -117,19 +116,39 @@ export default {
                         firstName: this.firstName,
                         lastName: this.lastName,
                         username: this.userName,
-                        email: this.email,
-                        avatar: this.avatar
+                        email: this.email
                     })
                 };
                 var url = '/users/profile/' + this.id + '/edit';
                 fetch(url, requestOptions).then(() => {
                     // refresh user list so the users page will show the update data
                     this.userDetailsStore.getUserDetails();
-                    this.$router.push('/profile-settings');
+                    this.$router.push('/profile');
                 });
             }
         },
-
+        SubmitAvatar() {
+            // If valid, submit.
+            if (!this.validate.notSquareImg) {
+                this.isImageLoading = true;
+                const requestOptions = {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        avatar: this.avatar
+                    })
+                };
+                var url = '/users/profile/' + this.id + '/edit-avatar';
+                fetch(url, requestOptions).then(() => {
+                    this.isImageLoading = false;
+                    // refresh user details so the users page will show the updated data
+                    this.userDetailsStore.getUserDetails();
+                    //this.$router.push('/profile');
+                });
+            } else {
+                this.showWarnModal = true;
+            }
+        },
         // For image upload.
         onFileChange(e) {
             var files = e.target.files || e.dataTransfer.files;
@@ -180,14 +199,15 @@ export default {
             this.cropCanvas = canvas.toDataURL();
         },
         handleCancelCrop() {
-            if (this.validate.notSquareImg) {
-                this.validate.notCropped = true;
-                setTimeout(() => {
-                    this.validate.notCropped = false;
-                }, 2000);
-            } else {
-                this.showCropModal = false;
-            }
+            this.showCropModal = false;
+            // if (this.validate.notSquareImg) {
+            //     this.validate.notCropped = true;
+            //     setTimeout(() => {
+            //         this.validate.notCropped = false;
+            //     }, 2000);
+            // } else {
+            //     this.showCropModal = false;
+            // }
         },
         handleCropImage() {
             var imageFile = new Image();
@@ -259,6 +279,7 @@ export default {
                         class="d-flex justify-content-center justify-content-md-start ps-lg-0"
                     >
                         <div
+                            v-if="!isImageLoading"
                             class="position-relative"
                             style="width: fit-content"
                         >
@@ -403,9 +424,18 @@ export default {
                                 class="d-lg-none"
                             />
                         </div>
+                        <!-- Loading Animation -->
+                        <div
+                            v-else
+                            class="loading-animation d-flex justify-content-center align-items-center py-4"
+                        >
+                            <span class="loader"></span>
+                        </div>
                     </div>
                 </div>
-                <button class="btn primary-btn mt-2">Update avatar</button>
+                <button class="btn primary-btn mt-2" @click="SubmitAvatar()">
+                    Update avatar
+                </button>
             </div>
             <!-- User info section -->
             <div class="col-12 col-md-6">
@@ -637,8 +667,9 @@ export default {
                     class="d-flex flex-row justify-content-between justify-content-lg-end gap-2 mt-5 pb-2 pb-lg-0"
                 >
                     <button class="btn red-btn" @click="handleCancelCrop">
-                        <span class="d-none d-lg-block"> Cancel &nbsp; </span>
-                        <svg
+                        <span class=""> Cancel &nbsp; </span>
+                        <!-- <svg
+                            class="d-none d-sm-block"
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
                             fill="white"
@@ -648,11 +679,11 @@ export default {
                             <path
                                 d="M367.2 412.5L99.5 144.8C77.1 176.1 64 214.5 64 256c0 106 86 192 192 192c41.5 0 79.9-13.1 111.2-35.5zm45.3-45.3C434.9 335.9 448 297.5 448 256c0-106-86-192-192-192c-41.5 0-79.9 13.1-111.2 35.5L412.5 367.2zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"
                             />
-                        </svg>
+                        </svg> -->
                     </button>
                     <button class="btn green-btn" @click="handleCropImage">
-                        <span class="d-none d-lg-block"> Crop &nbsp; </span>
-                        <svg
+                        <span class=""> Crop &nbsp; </span>
+                        <!-- <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
                             fill="white"
@@ -662,7 +693,7 @@ export default {
                             <path
                                 d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
                             />
-                        </svg>
+                        </svg> -->
                     </button>
                 </div>
             </div>
@@ -671,6 +702,35 @@ export default {
 </template>
 
 <style scoped>
+/* Loading animation */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.loading-animation {
+    position: relative;
+    min-height: 100%;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+/* ------------------- */
+
 #plus-svg {
     position: absolute;
     right: 15px;
@@ -703,6 +763,8 @@ export default {
 
 #img-background {
     border-radius: 12px;
+    max-width: 350px;
+    max-height: 350px;
 }
 .password-div {
     position: relative;
