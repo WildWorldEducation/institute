@@ -235,8 +235,23 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-2 bg-light rounded p-2">
-        <div class="row mt-4">
+    <div class="container bg-light rounded">
+        <!-- Back button -->
+        <router-link class="btn red-btn" to="/profile">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+                height="20"
+                width="20"
+                fill="white"
+            >
+                <path
+                    d="M134.1 296H436c6.6 0 12-5.4 12-12v-56c0-6.6-5.4-12-12-12H134.1v-46.1c0-21.4-25.9-32.1-41-17L7 239c-9.4 9.4-9.4 24.6 0 33.9l86.1 86.1c15.1 15.1 41 4.4 41-17V296z"
+                />
+            </svg>
+            Back to Profile
+        </router-link>
+        <div class="row mt-2">
             <!-- Avatar section -->
             <div class="col-12 col-md-6">
                 <div class="row mx-0 px-md-0 mb-4 mb-lg-0">
@@ -390,6 +405,7 @@ export default {
                         </div>
                     </div>
                 </div>
+                <button class="btn primary-btn mt-2">Update avatar</button>
             </div>
             <!-- User info section -->
             <div class="col-12 col-md-6">
@@ -450,17 +466,13 @@ export default {
                         please enter a valid email !
                     </div>
                 </div>
-                <div class="d-flex justify-content-between mb-3 mt-5">
-                    <router-link class="btn red-btn" to="/profile">
-                        Cancel
-                    </router-link>
-                    <button class="btn primary-btn" @click="ValidateForm()">
-                        Submit
-                    </button>
-                </div>
-                <hr class="mt-5 mb-5" />
+                <button class="btn primary-btn" @click="ValidateForm()">
+                    Update details
+                </button>
+
+                <hr class="mt-4 mb-4" />
                 <!-- Password Section -->
-                <h2 class="secondary-heading h4">Update Password</h2>
+                <h2 class="secondary-heading h4">Password</h2>
                 <div class="mb-3">
                     <div class="password-div">
                         <input
@@ -532,7 +544,7 @@ export default {
                 </div>
                 <div class="d-flex justify-content-between mb-3 mt-2">
                     <button class="btn primary-btn" @click="ValidatePassword()">
-                        Update
+                        Update password
                     </button>
                 </div>
             </div>
