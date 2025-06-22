@@ -155,7 +155,8 @@ export default {
     <!-- Instructor Tutorial modal -->
     <div
         v-if="
-            userDetailsStore.role == 'instructor' &&
+            (userDetailsStore.role == 'instructor' ||
+                userDetailsStore.role == 'partner') &&
             (showTutorialTip1 ||
                 showTutorialTip2 ||
                 showTutorialTip3 ||
