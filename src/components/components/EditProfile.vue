@@ -671,33 +671,10 @@ export default {
                     class="d-flex flex-row justify-content-between justify-content-lg-end gap-2 mt-5 pb-2 pb-lg-0"
                 >
                     <button class="btn red-btn" @click="handleCancelCrop">
-                        <span class=""> Cancel &nbsp; </span>
-                        <!-- <svg
-                            class="d-none d-sm-block"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            fill="white"
-                            width="16"
-                            height="16"
-                        >
-                            <path
-                                d="M367.2 412.5L99.5 144.8C77.1 176.1 64 214.5 64 256c0 106 86 192 192 192c41.5 0 79.9-13.1 111.2-35.5zm45.3-45.3C434.9 335.9 448 297.5 448 256c0-106-86-192-192-192c-41.5 0-79.9 13.1-111.2 35.5L412.5 367.2zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"
-                            />
-                        </svg> -->
+                        <span class="">Cancel</span>
                     </button>
                     <button class="btn green-btn" @click="handleCropImage">
-                        <span class=""> Crop &nbsp; </span>
-                        <!-- <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            fill="white"
-                            width="16"
-                            height="16"
-                        >
-                            <path
-                                d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
-                            />
-                        </svg> -->
+                        <span class="">Crop</span>
                     </button>
                 </div>
             </div>
@@ -706,6 +683,21 @@ export default {
 </template>
 
 <style scoped>
+.green-btn {
+    background-color: #36c1af;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    align-items: center;
+    height: auto;
+    width: fit-content;
+}
+
+.green-btn:hover {
+    background-color: #3eb3a3;
+}
+
 /* Loading animation */
 .loader {
     width: 48px;
