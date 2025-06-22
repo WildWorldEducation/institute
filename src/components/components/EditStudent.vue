@@ -134,13 +134,30 @@ export default {
                 console.error(error);
             }
         },
+        async SubmitAvatar() {
+            if (!this.user.avatar) {
+                return;
+            }
+            // If valid, submit.
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    avatar: this.user.avatar
+                })
+            };
+            var url = '/users/' + this.userId + '/instructor/edit-avatar';
+            fetch(url, requestOptions).then(() => {
+                this.isImageLoading = false;
+                // refresh user details so the users page will show the updated data
+                this.userDetailsStore.getUserDetails();
+            });
+        },
+
         // For image upload.
         onFileChange(e) {
             var files = e.target.files || e.dataTransfer.files;
             if (!files.length) return;
-            // delete the old image first
-            this.image = '';
-            this.avatar = this.image;
             this.createImage(files[0]);
         },
         createImage(file) {
@@ -286,7 +303,7 @@ export default {
                         </button>
                     </div>
                 </div>
-                <button class="btn primary-btn mt-1" @click="ValidateForm()">
+                <button class="btn primary-btn mt-1" @click="SubmitAvatar()">
                     Update student details
                 </button>
             </div>
