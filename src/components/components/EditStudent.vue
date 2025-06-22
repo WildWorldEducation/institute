@@ -39,7 +39,8 @@ export default {
             },
             // Zoom relate state data
             lastZoomValue: 0,
-            zoomValue: 0
+            zoomValue: 0,
+            isImageLoading: false
         };
     },
     components: {
@@ -135,6 +136,7 @@ export default {
             }
         },
         async SubmitAvatar() {
+            this.isImageLoading = true;
             if (!this.user.avatar) {
                 return;
             }
@@ -149,8 +151,6 @@ export default {
             var url = '/users/' + this.userId + '/instructor/edit-avatar';
             fetch(url, requestOptions).then(() => {
                 this.isImageLoading = false;
-                // refresh user details so the users page will show the updated data
-                this.userDetailsStore.getUserDetails();
             });
         },
 
@@ -270,15 +270,21 @@ export default {
         <div class="row">
             <!-- Student avatar -->
             <div class="col-12 col-md-6 mb-1">
-                <div
-                    class="justify-content-center justify-content-md-start ps-lg-0"
-                >
+                <div class="">
                     <img
+                        v-if="!isImageLoading"
                         :src="image"
-                        height="300"
-                        width="300"
+                        height="350"
+                        width="350"
                         style="background-color: lightgrey"
                     />
+                    <!-- Loading Animation -->
+                    <div
+                        v-else
+                        class="loading-animation d-flex justify-content-center align-items-center py-4"
+                    >
+                        <span class="loader"></span>
+                    </div>
 
                     <div class="d-flex gap-1 mt-1">
                         <label class="btn green-btn" for="image-input">
@@ -490,6 +496,30 @@ export default {
 </template>
 
 <style scoped>
+/* Loading animation */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: loading-rotation 1s linear infinite;
+}
+@keyframes loading-rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.loading-animation {
+    min-height: 100%;
+}
+/* ------------------- */
+
 #header-tile {
     color: #667085;
     font-family: 'Poppins' sans-serif;
