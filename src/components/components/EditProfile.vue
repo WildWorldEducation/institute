@@ -277,7 +277,7 @@ export default {
             </svg>
             Back to Profile
         </router-link>
-        <div class="row mt-2">
+        <div class="row mt-1">
             <!-- Avatar section -->
             <div class="col-12 col-md-6 mb-2">
                 <div class="row mx-0 px-md-0 mb-4 mb-lg-0">
@@ -442,7 +442,7 @@ export default {
                 </div>
                 <button
                     :disabled="!avatar"
-                    class="btn primary-btn mt-2"
+                    class="btn primary-btn mt-1"
                     @click="SubmitAvatar()"
                 >
                     Update avatar
