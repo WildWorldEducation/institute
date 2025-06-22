@@ -52,10 +52,6 @@ export default {
         this.getUser();
     },
     methods: {
-        openImage() {
-            const input = document.getElementById('image-input');
-            input.click();
-        },
         getUser() {
             fetch('/users/show/' + this.userId)
                 .then(function (response) {
@@ -142,6 +138,9 @@ export default {
         onFileChange(e) {
             var files = e.target.files || e.dataTransfer.files;
             if (!files.length) return;
+            // delete the old image first
+            this.image = '';
+            this.avatar = this.image;
             this.createImage(files[0]);
         },
         createImage(file) {
@@ -257,18 +256,6 @@ export default {
                 <div
                     class="justify-content-center justify-content-md-start ps-lg-0"
                 >
-                    <div v-if="!image">
-                        <input
-                            id="image-input"
-                            type="file"
-                            accept="image/png, image/jpeg"
-                            @change="onFileChange"
-                            hidden
-                        />
-                        <p style="font-size: 14px">
-                            <em>Maximum file size 15mb</em>
-                        </p>
-                    </div>
                     <img
                         :src="image"
                         height="300"
@@ -277,11 +264,7 @@ export default {
                     />
 
                     <div class="d-flex gap-1 mt-1">
-                        <label
-                            class="btn green-btn"
-                            for="image-input"
-                            @click="openImage"
-                        >
+                        <label class="btn green-btn" for="image-input">
                             Change
                         </label>
                         <button
