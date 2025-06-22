@@ -23,7 +23,7 @@ export default {
         return {
             id: this.userDetailsStore.userId,
             userName: this.userDetailsStore.userName,
-            avatar: this.userDetailsStore.avatar,
+            avatar: '',
             email: this.userDetailsStore.email,
             password: this.userDetailsStore.password,
             image: this.userDetailsStore.avatar,
@@ -132,6 +132,10 @@ export default {
             }
         },
         SubmitAvatar() {
+            if (!this.avatar) {
+                console.log(this.avatar);
+                return;
+            }
             // If valid, submit.
             if (!this.validate.notSquareImg) {
                 this.isImageLoading = true;
@@ -222,7 +226,6 @@ export default {
             this.validate.notSquareImg = false;
             this.validate.notCropped = false;
         },
-
         handlePhoneCropper() {
             // Special handle for phone ui
             if (window.innerWidth < 940) {
@@ -372,6 +375,7 @@ export default {
                             <!-- ** The Crop Icon -->
                             <!-- desktop view -->
                             <div
+                                v-if="avatar"
                                 id="crop-icon"
                                 b-tooltip.hover
                                 title="crop image"
@@ -412,7 +416,7 @@ export default {
                             </div>
                             <img
                                 id="img-background"
-                                :src="avatar"
+                                :src="image"
                                 height="428"
                                 width="428"
                                 style="background-color: lightgrey"
@@ -436,7 +440,11 @@ export default {
                         </div>
                     </div>
                 </div>
-                <button class="btn primary-btn mt-2" @click="SubmitAvatar()">
+                <button
+                    :disabled="!avatar"
+                    class="btn primary-btn mt-2"
+                    @click="SubmitAvatar()"
+                >
                     Update avatar
                 </button>
                 <hr class="hr-border" />
