@@ -16,6 +16,7 @@ export default {
             userId: this.$route.params.id,
             user: {},
             image: '',
+            avatar: '',
             // Validate Object flag
             validate: {
                 first_name: false,
@@ -158,9 +159,6 @@ export default {
         onFileChange(e) {
             var files = e.target.files || e.dataTransfer.files;
             if (!files.length) return;
-            // delete the old image first
-
-            this.avatar = this.image;
             this.createImage(files[0]);
         },
         createImage(file) {
@@ -171,6 +169,7 @@ export default {
             reader.onload = (e) => {
                 vm.image = e.target.result;
                 this.image = e.target.result;
+                this.avatar = this.image; // Set avatar to the image for cropping
                 imageFile.src = e.target.result;
                 this.user.avatar = this.image;
             };
@@ -208,14 +207,15 @@ export default {
             this.validate.notCropped = false;
         },
         handleCancelCrop() {
-            if (this.validate.notSquareImg) {
-                this.validate.notCropped = true;
-                setTimeout(() => {
-                    this.validate.notCropped = false;
-                }, 2000);
-            } else {
-                this.showCropModal = false;
-            }
+            this.showCropModal = false;
+            // if (this.validate.notSquareImg) {
+            //     this.validate.notCropped = true;
+            //     setTimeout(() => {
+            //         this.validate.notCropped = false;
+            //     }, 2000);
+            // } else {
+            //     this.showCropModal = false;
+            // }
         },
         stencilSize({ boundaries }) {
             return {
@@ -272,9 +272,10 @@ export default {
         </router-link>
         <div class="row">
             <!-- Student avatar -->
-            <div class="col-12 col-md-6 mb-1">
+            <div class="col-12 col-md-6 mb-3">
                 <div class="">
                     <img
+                        class="rounded"
                         v-if="!isImageLoading"
                         :src="image"
                         height="350"
@@ -294,7 +295,7 @@ export default {
                             Change
                         </label>
                         <button
-                            v-if="image == ''"
+                            v-if="avatar != ''"
                             class="btn green-btn"
                             @click="showCropModal = true"
                         >
@@ -313,8 +314,12 @@ export default {
                         </button>
                     </div>
                 </div>
-                <button class="btn primary-btn mt-1" @click="SubmitAvatar()">
-                    Update student details
+                <button
+                    :disabled="avatar == ''"
+                    class="btn primary-btn mt-1"
+                    @click="SubmitAvatar()"
+                >
+                    Update student avatar
                 </button>
             </div>
 
@@ -372,7 +377,7 @@ export default {
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-end gap-1">
+                <div class="">
                     <button class="btn primary-btn" @click="ValidateForm()">
                         Update student details
                     </button>
