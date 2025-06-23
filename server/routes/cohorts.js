@@ -17,7 +17,7 @@ Routes
 --------------------------------------------
 --------------------------------------------*/
 /**
- * Get All Items
+ * Get All Items per instructor
  *
  * @return response()
  */
