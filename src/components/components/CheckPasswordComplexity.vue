@@ -110,6 +110,8 @@ export default {
                 this.criteriaFlag.predictable = true;
                 // if the password is predictable it strength return to 0
                 strengthScore = 0;
+            } else {
+                this.criteriaFlag.predictable = false;
             }
 
             return strengthScore;
@@ -125,7 +127,8 @@ export default {
         computedObjectToBeWatched: {
             deep: true,
             handler(newVal, oldVal) {
-                if (newVal.password) {
+                // Check if password exists and is not empty/whitespace
+                if (newVal.password && newVal.password.trim() !== '') {
                     if (
                         newVal.password.length > 0 &&
                         newVal.password !== oldVal.password
@@ -198,6 +201,23 @@ export default {
                             this.showCriteria = false;
                         }
                     }
+                } else {
+                    // Password is empty or only whitespace - hide criteria and reset validation
+                    this.showCriteria = false;
+                    this.strengthScore = 0;
+                    this.strength = '';
+                    this.$parent.validate.passwordComplex = false;
+
+                    // Reset all criteria flags
+                    this.criteriaFlag = {
+                        passwordLength: false,
+                        noNumber: false,
+                        noSpecialChar: false,
+                        unique: false,
+                        haveUpperCase: false,
+                        noAlphabet: false,
+                        predictable: false
+                    };
                 }
             }
         }
