@@ -19,11 +19,9 @@ export default {
     },
     computed: {
         name() {
-            return this.userDetailsStore.firstName
-                ? this.userDetailsStore.firstName
-                : '' + ' ' + this.userDetailsStore.lastName
-                ? this.userDetailsStore.lastName
-                : '';
+            const firstName = this.userDetailsStore.firstName || '';
+            const lastName = this.userDetailsStore.lastName || '';
+            return `${firstName} ${lastName}`.trim();
         }
     },
     methods: {}
