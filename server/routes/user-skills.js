@@ -1748,9 +1748,10 @@ router.get(
     (req, res, next) => {
         if (req.session.userName) {
             let sqlQuery = `
-                SELECT s2.id, s2.name AS skill_name, s2.url, s2.level
+                -- Get sibling skills (same parent, different skill)
+                SELECT s2.id, s2.name AS skill_name, s2.url, s2.level, 'sibling' as relationship_type
                 FROM skills s1
-                JOIN skills s2 ON s1.parent = s2.parent AND s1.type = s2.type
+                JOIN skills s2 ON s1.parent = s2.parent
                 LEFT JOIN user_skills us ON s2.id = us.skill_id AND us.user_id = ${conn.escape(
                     req.params.userId
                 )}
@@ -1760,7 +1761,22 @@ router.get(
                 AND s2.is_deleted = 0
                 AND (us.is_accessible = 1 OR us.is_accessible IS NULL)
                 AND (us.is_mastered IS NULL OR us.is_mastered = 0)
-                ORDER BY s2.order, s2.id;
+                
+                UNION
+                
+                -- Get child skills (current skill as parent)
+                SELECT s2.id, s2.name AS skill_name, s2.url, s2.level, 'child' as relationship_type
+                FROM skills s2
+                LEFT JOIN user_skills us ON s2.id = us.skill_id AND us.user_id = ${conn.escape(
+                    req.params.userId
+                )}
+                WHERE s2.parent = ${conn.escape(req.params.skillId)}
+                AND s2.is_filtered = 'available' 
+                AND s2.is_deleted = 0
+                AND (us.is_accessible = 1 OR us.is_accessible IS NULL)
+                AND (us.is_mastered IS NULL OR us.is_mastered = 0)
+                
+                ORDER BY relationship_type DESC, skill_name;
             `;
 
             conn.query(sqlQuery, (err, results) => {
@@ -1783,7 +1799,7 @@ router.get(
                 res.json(response);
             });
         } else {
-            res.redirect('/login');
+            res.status(401).json({ error: 'Unauthorized' });
         }
     }
 );

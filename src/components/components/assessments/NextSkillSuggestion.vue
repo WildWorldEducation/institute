@@ -12,6 +12,7 @@ export default {
         return {
             nextSkillsInBranch: [],
             showNextSkillsInBranch: false,
+            isLoading: true,
             hasLoaded: false
         };
     },
@@ -29,9 +30,11 @@ export default {
             const skillId = this.$route.params.id;
             if (!skillId) {
                 console.error('No skill ID found in route params');
+                this.isLoading = false;
                 return;
             }
             try {
+                this.isLoading = true;
                 const result = await fetch(
                     `/user-skills/get-next-accessible-in-branch/${this.userDetailsStore.userId}/${skillId}`
                 );
@@ -39,9 +42,13 @@ export default {
                     throw new Error(`HTTP error! status: ${result.status}`);
                 }
                 this.nextSkillsInBranch = await result.json();
+                console.log(
+                    `Found ${this.nextSkillsInBranch.length} next skills in branch`
+                );
             } catch (error) {
                 console.error('Error fetching next skills:', error);
             } finally {
+                this.isLoading = false;
                 this.showNextSkillsInBranch = true;
                 this.hasLoaded = true;
             }
@@ -52,10 +59,16 @@ export default {
 
 <template>
     <div>
-        <h2 class="secondary-heading h4">Next skills in this branch</h2>
+        <h2 class="secondary-heading h4">Continue your learning</h2>
+
+        <!-- Loading state -->
+        <div v-if="isLoading" class="wrapper">
+            <p>Loading related skills...</p>
+        </div>
+
         <!-- Skills found -->
         <div
-            v-if="showNextSkillsInBranch && nextSkillsInBranch.length > 0"
+            v-else-if="showNextSkillsInBranch && nextSkillsInBranch.length > 0"
             class="wrapper"
         >
             <div v-for="nextSkill in nextSkillsInBranch" :key="nextSkill.id">
@@ -83,7 +96,10 @@ export default {
             "
             class="wrapper"
         >
-            <p>🎉 Great job! You've mastered all the skills in this area!</p>
+            <p>
+                🎉 Excellent work! You've completed all available skills in this
+                learning path.
+            </p>
         </div>
     </div>
 </template>
