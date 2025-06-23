@@ -696,7 +696,7 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
 });
 
 /**
- * Instructor create new user
+ * Instructor/Partner create new user
  */
 router.post(
     '/instructor-add-student',
