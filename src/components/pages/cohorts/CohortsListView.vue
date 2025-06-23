@@ -46,8 +46,7 @@ export default {
         closeMobileDetail() {
             this.showDetails = false; // Hide the mobile cohort detail modal
         },
-
-        // Tutorial
+        // Tutorials
         async checkIfTutorialComplete() {
             const result = await fetch(
                 '/users/check-tutorial-progress/cohorts/' +
@@ -100,6 +99,7 @@ export default {
 
 <template>
     <div class="container-fluid mobile-container">
+        <!-- Top buttons -->
         <div class="d-flex justify-content-between mb-2">
             <router-link class="btn primary-btn me-2" to="/cohorts/add"
                 >Add&nbsp;
@@ -132,6 +132,7 @@ export default {
                 </svg>
             </button>
         </div>
+        <!-- List of cohorts -->
         <div class="row gx-1">
             <!-- Left Container -->
             <div class="col-lg-3 col-md-4">
@@ -155,7 +156,8 @@ export default {
     <!-- Instructor Tutorial modal -->
     <div
         v-if="
-            userDetailsStore.role == 'instructor' &&
+            (userDetailsStore.role == 'instructor' ||
+                userDetailsStore.role == 'partner') &&
             (showTutorialTip1 ||
                 showTutorialTip2 ||
                 showTutorialTip3 ||

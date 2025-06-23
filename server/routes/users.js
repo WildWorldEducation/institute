@@ -696,7 +696,7 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
 });
 
 /**
- * Instructor create new user
+ * Instructor/Partner create new user
  */
 router.post(
     '/instructor-add-student',
@@ -729,8 +729,7 @@ router.post(
                 // Check if username already exists.
                 let checkUserNameUniqueSQLQuery = `SELECT * 
                 FROM users 
-                WHERE username = ${conn.escape(req.body.username)}
-                AND is_deleted = 0;`;
+                WHERE username = ${conn.escape(req.body.username)};`;
 
                 conn.query(checkUserNameUniqueSQLQuery, (err, results) => {
                     try {
