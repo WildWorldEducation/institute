@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 import { useUsersStore } from '../../stores/UsersStore';
 import { Cropper, Preview } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
@@ -16,6 +16,7 @@ export default {
             userId: this.$route.params.id,
             user: {},
             image: '',
+            avatar: '',
             // Validate Object flag
             validate: {
                 first_name: false,
@@ -39,7 +40,8 @@ export default {
             },
             // Zoom relate state data
             lastZoomValue: 0,
-            zoomValue: 0
+            zoomValue: 0,
+            isImageLoading: false
         };
     },
     components: {
@@ -134,6 +136,25 @@ export default {
                 console.error(error);
             }
         },
+        async SubmitAvatar() {
+            this.isImageLoading = true;
+            if (!this.user.avatar) {
+                return;
+            }
+            // If valid, submit.
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    avatar: this.user.avatar
+                })
+            };
+            var url = '/users/' + this.userId + '/instructor/edit-avatar';
+            fetch(url, requestOptions).then(() => {
+                this.isImageLoading = false;
+            });
+        },
+
         // For image upload.
         onFileChange(e) {
             var files = e.target.files || e.dataTransfer.files;
@@ -148,6 +169,7 @@ export default {
             reader.onload = (e) => {
                 vm.image = e.target.result;
                 this.image = e.target.result;
+                this.avatar = this.image; // Set avatar to the image for cropping
                 imageFile.src = e.target.result;
                 this.user.avatar = this.image;
             };
@@ -165,7 +187,6 @@ export default {
         },
         removeImage: function (e) {
             this.image = '';
-            this.user.avatar = this.image;
         },
         // Cropping image methods
         cropImageChange({ coordinates, canvas, image }) {
@@ -186,14 +207,15 @@ export default {
             this.validate.notCropped = false;
         },
         handleCancelCrop() {
-            if (this.validate.notSquareImg) {
-                this.validate.notCropped = true;
-                setTimeout(() => {
-                    this.validate.notCropped = false;
-                }, 2000);
-            } else {
-                this.showCropModal = false;
-            }
+            this.showCropModal = false;
+            // if (this.validate.notSquareImg) {
+            //     this.validate.notCropped = true;
+            //     setTimeout(() => {
+            //         this.validate.notCropped = false;
+            //     }, 2000);
+            // } else {
+            //     this.showCropModal = false;
+            // }
         },
         stencilSize({ boundaries }) {
             return {
@@ -233,143 +255,149 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3 pb-5">
-        <h1 class="h1-stroke">Edit Student</h1>
-        <div>
-            <label class="form-label">Avatar</label>
-            <div v-if="!image">
-                <input
-                    id="choose-avatar"
-                    type="file"
-                    accept="image/png, image/jpeg"
-                    @change="onFileChange"
-                    hidden
+    <div class="container p-1">
+        <router-link class="btn red-btn mb-1" to="/students">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+                height="20"
+                width="20"
+                fill="white"
+            >
+                <path
+                    d="M134.1 296H436c6.6 0 12-5.4 12-12v-56c0-6.6-5.4-12-12-12H134.1v-46.1c0-21.4-25.9-32.1-41-17L7 239c-9.4 9.4-9.4 24.6 0 33.9l86.1 86.1c15.1 15.1 41 4.4 41-17V296z"
                 />
-                <label class="btn green-btn" for="choose-avatar"
-                    >Add&nbsp;&nbsp;
-                    <!-- Plus sign -->
-                    <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            d="M6.34811 20.0423L6.34811 13.6494L-0.0358702 13.6583C-0.320945 13.6579 -0.594203 13.5444 -0.795782 13.3428C-0.997361 13.1412 -1.11082 12.868 -1.11132 12.5829L-1.11729 7.41477C-1.1168 7.1297 -1.00334 6.85644 -0.801757 6.65486C-0.600179 6.45328 -0.326921 6.33982 -0.0418461 6.33933L6.3481 6.34231L6.3481 -0.0506238C6.34659 -0.193451 6.3736 -0.335145 6.42756 -0.467396C6.48152 -0.599646 6.56134 -0.719794 6.66234 -0.820794C6.76334 -0.921794 6.88349 -1.00161 7.01574 -1.05557C7.14799 -1.10953 7.28969 -1.13655 7.43251 -1.13503L12.5827 -1.12308C12.8678 -1.12259 13.141 -1.00913 13.3426 -0.807549C13.5442 -0.60597 13.6577 -0.332713 13.6582 -0.047637L13.6552 6.34231L20.0481 6.34231C20.3325 6.34248 20.6052 6.45552 20.8063 6.65661C21.0074 6.8577 21.1204 7.13039 21.1206 7.41477L21.1325 12.565C21.1324 12.8494 21.0193 13.122 20.8182 13.3231C20.6171 13.5242 20.3444 13.6373 20.0601 13.6374L13.6552 13.6494L13.6641 20.0334C13.6636 20.3184 13.5502 20.5917 13.3486 20.7933C13.147 20.9948 12.8738 21.1083 12.5887 21.1088L7.43252 21.1267C7.28969 21.1282 7.148 21.1012 7.01575 21.0473C6.88349 20.9933 6.76335 20.9135 6.66235 20.8125C6.56135 20.7115 6.48153 20.5913 6.42757 20.4591C6.37361 20.3268 6.34659 20.1851 6.34811 20.0423Z"
-                            fill="white"
-                        />
-                    </svg>
-                </label>
-                <p style="font-size: 14px">
-                    <em>Maximum file size 15mb</em>
-                </p>
-            </div>
-            <div v-else>
-                <p>
+            </svg>
+            &nbsp;Back to Students
+        </router-link>
+        <div class="row">
+            <!-- Student avatar -->
+            <div class="col-12 col-md-6 mb-3">
+                <div class="">
                     <img
+                        class="rounded"
+                        v-if="!isImageLoading"
                         :src="image"
-                        height="300"
-                        width="300"
+                        height="350"
+                        width="350"
                         style="background-color: lightgrey"
                     />
-                </p>
-                <div class="d-flex flex-row gap-2">
-                    <button class="btn red-btn" @click="removeImage">
-                        Remove &nbsp;
-                        <!-- X icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 448 512"
-                            fill="white"
-                            width="16"
-                            height="16"
+                    <!-- Loading Animation -->
+                    <div
+                        v-else
+                        class="loading-animation d-flex justify-content-center align-items-center py-4"
+                    >
+                        <span class="loader"></span>
+                    </div>
+
+                    <div class="d-flex gap-1 mt-1">
+                        <label class="btn green-btn" for="image-input">
+                            Change
+                        </label>
+                        <button
+                            v-if="avatar != ''"
+                            class="btn green-btn"
+                            @click="showCropModal = true"
                         >
-                            <path
-                                d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
-                            />
-                        </svg>
-                    </button>
-                    <button class="btn green-btn" @click="showCropModal = true">
-                        Crop &nbsp;
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            width="18"
-                            height="18"
-                            fill="white"
-                        >
-                            <path
-                                d="M448 109.3l54.6-54.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L402.7 64 160 64v64l178.7 0L128 338.7V32c0-17.7-14.3-32-32-32S64 14.3 64 32V64H32C14.3 64 0 78.3 0 96s14.3 32 32 32H64V384c0 35.3 28.7 64 64 64H352V384H173.3L384 173.3 384 480c0 17.7 14.3 32 32 32s32-14.3 32-32V448h32c17.7 0 32-14.3 32-32s-14.3-32-32-32H448l0-274.7z"
-                            />
-                        </svg>
+                            Crop &nbsp;
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="18"
+                                height="18"
+                                fill="white"
+                            >
+                                <path
+                                    d="M448 109.3l54.6-54.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L402.7 64 160 64v64l178.7 0L128 338.7V32c0-17.7-14.3-32-32-32S64 14.3 64 32V64H32C14.3 64 0 78.3 0 96s14.3 32 32 32H64V384c0 35.3 28.7 64 64 64H352V384H173.3L384 173.3 384 480c0 17.7 14.3 32 32 32s32-14.3 32-32V448h32c17.7 0 32-14.3 32-32s-14.3-32-32-32H448l0-274.7z"
+                                />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <button
+                    :disabled="avatar == ''"
+                    class="btn primary-btn mt-1"
+                    @click="SubmitAvatar()"
+                >
+                    Update student avatar
+                </button>
+            </div>
+
+            <!-- Student details -->
+            <div class="col-12 col-md-6 mb-2">
+                <div class="mb-3">
+                    <h2 class="secondary-heading h4">First name</h2>
+                    <input
+                        v-model="user.first_name"
+                        type="text"
+                        class="form-control"
+                    />
+                </div>
+                <div class="mb-3">
+                    <h2 class="secondary-heading h4">Last name</h2>
+                    <input
+                        v-model="user.last_name"
+                        type="text"
+                        class="form-control"
+                    />
+                </div>
+                <div class="mb-3">
+                    <h2 class="secondary-heading h4">Username</h2>
+                    <input
+                        v-model="user.username"
+                        type="text"
+                        class="form-control"
+                        @input="clearUsernameError"
+                    />
+                    <div
+                        v-if="
+                            (validate.username &&
+                                (user.username == '' ||
+                                    user.username == null)) ||
+                            errorUsernameMessage
+                        "
+                        class="form-validate"
+                    >
+                        {{ errorUsernameMessage || 'Please enter a username!' }}
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <h2 class="secondary-heading h4">Email address</h2>
+                    <input
+                        v-model="user.email"
+                        type="email"
+                        class="form-control"
+                        @input="clearEmailError"
+                    />
+                    <div v-if="errorEmailMessage" class="form-validate">
+                        {{
+                            errorEmailMessage ||
+                            'Please enter a valid email address!'
+                        }}
+                    </div>
+                </div>
+
+                <div class="">
+                    <button class="btn primary-btn" @click="ValidateForm()">
+                        Update student details
                     </button>
                 </div>
             </div>
         </div>
-
-        <div>
-            <div>
-                <label for="firstname" class="form-label">First name </label>
+        <div class="mb-3 row">
+            <div class="d-none">
                 <input
-                    v-model="user.first_name"
-                    type="text"
+                    id="image-input"
                     class="form-control"
+                    type="file"
+                    accept="image/*"
+                    @change="onFileChange"
                 />
-            </div>
-            <div class="mb-3">
-                <label for="lastname" class="form-label">Last name</label>
-                <input
-                    v-model="user.last_name"
-                    type="text"
-                    class="form-control"
-                />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Username</label>
-                <input
-                    v-model="user.username"
-                    type="text"
-                    class="form-control"
-                    @input="clearUsernameError"
-                />
-                <div
-                    v-if="
-                        (validate.username &&
-                            (user.username == '' || user.username == null)) ||
-                        errorUsernameMessage
-                    "
-                    class="form-validate"
-                >
-                    {{ errorUsernameMessage || 'Please enter a username!' }}
-                </div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Email address</label>
-                <input
-                    v-model="user.email"
-                    type="email"
-                    class="form-control"
-                    @input="clearEmailError"
-                />
-                <div v-if="errorEmailMessage" class="form-validate">
-                    {{
-                        errorEmailMessage ||
-                        'Please enter a valid email address!'
-                    }}
-                </div>
-            </div>
-
-            <div class="d-flex justify-content-end gap-4">
-                <router-link class="btn red-btn" to="/students"
-                    >Cancel
-                </router-link>
-                <button class="btn primary-btn" @click="ValidateForm()">
-                    Submit
-                </button>
+                <p style="font-size: 14px"><em>Maximum file size 15mb</em></p>
             </div>
         </div>
     </div>
+    <!-- Crop modal -->
     <div v-if="showCropModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
@@ -443,32 +471,10 @@ export default {
                     class="d-flex flex-row justify-content-between justify-content-lg-end gap-2 mt-5 pb-2 pb-lg-0"
                 >
                     <button class="btn red-btn" @click="handleCancelCrop">
-                        <span class="d-none d-lg-block"> Cancel &nbsp; </span>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            fill="white"
-                            width="16"
-                            height="16"
-                        >
-                            <path
-                                d="M367.2 412.5L99.5 144.8C77.1 176.1 64 214.5 64 256c0 106 86 192 192 192c41.5 0 79.9-13.1 111.2-35.5zm45.3-45.3C434.9 335.9 448 297.5 448 256c0-106-86-192-192-192c-41.5 0-79.9 13.1-111.2 35.5L412.5 367.2zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"
-                            />
-                        </svg>
+                        <span class="d-none d-lg-block">Cancel</span>
                     </button>
                     <button class="btn green-btn" @click="handleCropImage">
-                        <span class="d-none d-lg-block"> Crop &nbsp; </span>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            fill="white"
-                            width="16"
-                            height="16"
-                        >
-                            <path
-                                d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
-                            />
-                        </svg>
+                        <span class="d-none d-lg-block">Crop</span>
                     </button>
                 </div>
             </div>
@@ -477,6 +483,30 @@ export default {
 </template>
 
 <style scoped>
+/* Loading animation */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: loading-rotation 1s linear infinite;
+}
+@keyframes loading-rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.loading-animation {
+    min-height: 100%;
+}
+/* ------------------- */
+
 #header-tile {
     color: #667085;
     font-family: 'Poppins' sans-serif;
@@ -515,9 +545,6 @@ export default {
     color: white;
     border: 1px solid #2ca695;
     font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 1rem;
-    line-height: 24px;
     display: flex;
     align-items: center;
     height: auto;

@@ -237,7 +237,7 @@ export default {
                     :to="`/edit/student/${this.$parent.user.id}`"
                     class="btn primary-btn mt-1"
                 >
-                    Edit Profile&nbsp;
+                    Edit profile&nbsp;
                     <!-- Pencil icon -->
                     <svg
                         width="19"
@@ -290,7 +290,7 @@ export default {
                         Change password
                     </router-link>
                     <button
-                        class="btn btn-danger mt-1 fit-content"
+                        class="btn btn-danger mt-1 remove-student-btn fit-content"
                         @click="showRemoveStudentModal = true"
                     >
                         Remove Student
@@ -410,6 +410,10 @@ export default {
 </template>
 
 <style scoped>
+.remove-student-btn {
+    font-weight: 500;
+}
+
 .fit-content {
     max-width: fit-content;
 }

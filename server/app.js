@@ -536,7 +536,6 @@ app.get('/get-session-details', (req, res) => {
 /*
  * App settings
  */
-
 // To get the app settings.
 app.get('/api/settings', (req, res, next) => {
     if (req.session.userName) {
