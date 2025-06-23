@@ -424,7 +424,7 @@ export default {
                             />
                             <img
                                 id="img-background"
-                                :src="avatar"
+                                :src="image"
                                 height="240"
                                 width="240"
                                 style="background-color: lightgrey"
