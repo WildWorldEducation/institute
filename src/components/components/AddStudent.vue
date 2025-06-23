@@ -130,7 +130,7 @@ export default {
                         username: this.user.username,
                         avatar: this.user.avatar,
                         password: this.user.password,
-                        role: this.user.role
+                        role: 'student'
                     })
                 });
 

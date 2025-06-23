@@ -59,60 +59,58 @@ export default {
                 </svg>
             </router-link>
         </div>
-        <div class="row mt-2">
-            <div class="col-12 col-md-6 mb-2">
-                <!-- Avatar -->
-                <img
-                    id="img-background"
-                    :src="userDetailsStore.avatar"
-                    style="background-color: lightgrey"
-                    class="d-none d-lg-block img-fluid"
-                />
-                <div class="d-flex justify-content-between">
+        <div class="row mt-3">
+            <!-- Avatar Section -->
+            <div class="col-12 col-lg-4 mb-4 mb-lg-0">
+                <div class="avatar-container">
                     <img
                         id="img-background"
                         :src="userDetailsStore.avatar"
-                        style="background-color: lightgrey"
-                        class="d-lg-none img-fluid"
+                        alt="Profile Avatar"
+                        style="background-color: lightgray"
+                        class="img-fluid profile-avatar"
                     />
                 </div>
             </div>
-            <div class="col-12 col-md-6 form">
-                <div class="mb-3">
-                    <h2 class="secondary-heading h4">Full Name</h2>
-                    <input
-                        v-model="name"
-                        type="text"
-                        class="form-control"
-                        readonly
-                    />
-                </div>
-                <div class="mb-3">
-                    <h2 class="secondary-heading h4">Username</h2>
-                    <input
-                        v-model="userDetailsStore.userName"
-                        type="text"
-                        class="form-control"
-                        readonly
-                    />
-                </div>
-                <div class="mb-3">
-                    <h2 class="secondary-heading h4">Email</h2>
-                    <input
-                        v-model="userDetailsStore.email"
-                        type="email"
-                        class="form-control"
-                        readonly
-                    />
-                </div>
-                <div v-if="userDetailsStore.role != 'student'" class="mb-3">
-                    <h2 class="secondary-heading h4">Role</h2>
-                    <input
-                        v-model="userDetailsStore.role"
-                        type="text"
-                        class="form-control"
-                        readonly
-                    />
+            <!-- Form Section -->
+            <div class="col-12 col-lg-8">
+                <div class="form-container">
+                    <div class="mb-3">
+                        <h2 class="secondary-heading h4">Full Name</h2>
+                        <input
+                            v-model="name"
+                            type="text"
+                            class="form-control"
+                            readonly
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <h2 class="secondary-heading h4">Username</h2>
+                        <input
+                            v-model="userDetailsStore.userName"
+                            type="text"
+                            class="form-control"
+                            readonly
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <h2 class="secondary-heading h4">Email</h2>
+                        <input
+                            v-model="userDetailsStore.email"
+                            type="email"
+                            class="form-control"
+                            readonly
+                        />
+                    </div>
+                    <div v-if="userDetailsStore.role != 'student'" class="mb-3">
+                        <h2 class="secondary-heading h4">Role</h2>
+                        <input
+                            v-model="userDetailsStore.role"
+                            type="text"
+                            class="form-control"
+                            readonly
+                        />
+                    </div>
                 </div>
             </div>
         </div>
@@ -123,30 +121,88 @@ export default {
 .profile-background {
     background-color: white;
     border-radius: 10px;
+    padding: 1.5rem;
 }
 
-#img-background {
+.avatar-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.profile-avatar {
     border-radius: 12px;
-    max-width: 350px;
-    max-height: 350px;
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    object-fit: cover;
+}
+
+.form-container {
+    width: 100%;
 }
 
 .form-control {
     border: 1px solid #f2f4f7;
     box-shadow: 0px 1px 2px 0px #1018280d;
-    font-family: 'Poppins' sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 1rem;
     font-weight: 400;
     line-height: 22px;
     letter-spacing: 0.03em;
     text-align: left;
     color: black;
+    width: 100%;
 }
 
-/* Mobile */
+.secondary-heading {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+/* Tablet screens */
+@media (max-width: 991.98px) {
+    .avatar-container {
+        margin-bottom: 1rem;
+    }
+
+    .profile-avatar {
+        max-width: 250px;
+    }
+}
+
+/* Mobile screens */
+@media (max-width: 768px) {
+    .profile-background {
+        padding: 1rem;
+    }
+
+    .profile-avatar {
+        max-width: 200px;
+    }
+
+    .form-control {
+        font-size: 0.9rem;
+    }
+}
+
+/* Small mobile screens */
 @media (max-width: 480px) {
-    #page-tile {
-        text-align: center;
+    .profile-background {
+        padding: 0.75rem;
+    }
+
+    .profile-avatar {
+        max-width: 150px;
+    }
+
+    .secondary-heading {
+        font-size: 1rem;
+    }
+
+    .form-control {
+        font-size: 0.85rem;
+        padding: 0.5rem;
     }
 }
 </style>
