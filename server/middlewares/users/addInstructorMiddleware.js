@@ -15,6 +15,11 @@ const addInstructorPermission = (req, res, next) => {
         return next();
     }
 
+    // Partner can only add themselves to student
+    else if (userRole === 'partner' && instructor_id === userId) {
+        return next();
+    }
+
     // Student can't change instructor if one already exists, but can add one if they dont have one.
     else if (userRole === 'student') {
         let sqlQuery =
@@ -27,12 +32,10 @@ const addInstructorPermission = (req, res, next) => {
                 if (results[0].count < 1) {
                     return next();
                 } else {
-                    return res
-                        .status(403)
-                        .json({
-                            message:
-                                'Forbidden: You do not have permission to change instructor'
-                        });
+                    return res.status(403).json({
+                        message:
+                            'Forbidden: You do not have permission to change instructor'
+                    });
                 }
             } catch (err) {
                 next(err);
@@ -40,12 +43,10 @@ const addInstructorPermission = (req, res, next) => {
         });
     } else {
         // If the conditions are not met, forbid the action
-        return res
-            .status(403)
-            .json({
-                message:
-                    'Forbidden: You do not have permission to add this instructor!'
-            });
+        return res.status(403).json({
+            message:
+                'Forbidden: You do not have permission to add this instructor!'
+        });
     }
 };
 

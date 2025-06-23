@@ -75,11 +75,24 @@ export default {
         Preview,
         CheckPasswordComplexity
     },
+    computed: {
+        canAddStudents() {
+            return (
+                this.userDetailsStore.role === 'instructor' ||
+                this.userDetailsStore.role === 'partner'
+            );
+        },
+        userRoleText() {
+            return this.userDetailsStore.role === 'instructor'
+                ? 'instructor'
+                : 'partner';
+        }
+    },
     async created() {
-        if (this.userDetailsStore.role == 'instructor') {
+        if (this.canAddStudents) {
             this.instructorId = this.userDetailsStore.userId;
         } else {
-            alert('Only instructors can access this page.');
+            alert('Only instructors and partners can access this page.');
             this.$router.push('/');
         }
         // Load all skills.
@@ -134,7 +147,7 @@ export default {
                     this.userSkillsStore.MakeMastered(this.newUserId, skill)
                 );
 
-                // Assign the instructor
+                // Assign the instructor/partner
                 await fetch('/users/add/instructor', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -446,7 +459,7 @@ export default {
                         <CheckPasswordComplexity :formData="user" />
                     </div>
                     <div class="d-flex justify-content-end gap-4">
-                        <router-link class="btn red-btn" to="/users">
+                        <router-link class="btn red-btn" to="/students">
                             Cancel
                         </router-link>
                         <button class="btn primary-btn" @click="ValidateForm()">

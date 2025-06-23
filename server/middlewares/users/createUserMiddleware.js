@@ -7,13 +7,14 @@ const createUserPermission = (req, res, next) => {
         return next();
     }
 
-    // Instructor can only create student accounts
+    // Instructor and Partner can only create student accounts
     if (
         (userRole === 'instructor' || userRole === 'partner') &&
         role === 'student'
     ) {
         return next();
     }
+
     // If the conditions are not met, forbid the action
     return res.status(403).json({
         message:
