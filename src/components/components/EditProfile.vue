@@ -375,7 +375,7 @@ export default {
                             <!-- ** The Crop Icon -->
                             <!-- desktop view -->
                             <div
-                                v-if="avatar"
+                                v-if="avatar && validate.notSquareImg"
                                 id="crop-icon"
                                 b-tooltip.hover
                                 title="crop image"
@@ -396,6 +396,7 @@ export default {
                             </div>
                             <!-- phone view -->
                             <div
+                                v-if="avatar && validate.notSquareImg"
                                 id="crop-icon"
                                 b-tooltip.hover
                                 title="crop image"
