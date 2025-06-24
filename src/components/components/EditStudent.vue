@@ -15,6 +15,8 @@ export default {
         return {
             userId: this.$route.params.id,
             user: {},
+            // Store original user data to compare changes
+            originalUser: {},
             image: '',
             avatar: '',
             // Validate Object flag
@@ -48,6 +50,27 @@ export default {
         Cropper,
         Preview
     },
+    computed: {
+        hasFormChanges() {
+            // Helper function to normalize null/undefined/empty values
+            const normalize = (value) => {
+                return value === null || value === undefined || value === ''
+                    ? ''
+                    : value;
+            };
+
+            return (
+                normalize(this.user.first_name) !==
+                    normalize(this.originalUser.first_name) ||
+                normalize(this.user.last_name) !==
+                    normalize(this.originalUser.last_name) ||
+                normalize(this.user.username) !==
+                    normalize(this.originalUser.username) ||
+                normalize(this.user.email) !==
+                    normalize(this.originalUser.email)
+            );
+        }
+    },
     async mounted() {
         // Run the GET request.
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
@@ -59,7 +82,11 @@ export default {
                 .then(function (response) {
                     return response.json();
                 })
-                .then((data) => (this.user = data))
+                .then((data) => {
+                    this.user = data;
+                    // Store original data for comparison
+                    this.originalUser = { ...data };
+                })
                 .then(() => {
                     this.image = this.user.avatar;
                 });
@@ -131,6 +158,8 @@ export default {
                 }
 
                 await this.usersStore.getUsers();
+                // Update original user data after successful submission
+                this.originalUser = { ...this.user };
                 this.$router.push('/students');
             } catch (error) {
                 console.error(error);
@@ -378,7 +407,11 @@ export default {
                 </div>
 
                 <div class="">
-                    <button class="btn primary-btn" @click="ValidateForm()">
+                    <button
+                        class="btn primary-btn"
+                        @click="ValidateForm()"
+                        :disabled="!hasFormChanges"
+                    >
                         Update student details
                     </button>
                 </div>
