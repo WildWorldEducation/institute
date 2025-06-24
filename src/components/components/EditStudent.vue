@@ -15,6 +15,8 @@ export default {
         return {
             userId: this.$route.params.id,
             user: {},
+            // Store original user data to compare changes
+            originalUser: {},
             image: '',
             avatar: '',
             // Validate Object flag
@@ -48,6 +50,17 @@ export default {
         Cropper,
         Preview
     },
+    computed: {
+        // Check if any form field has been changed
+        hasFormChanges() {
+            return (
+                this.user.first_name !== this.originalUser.first_name ||
+                this.user.last_name !== this.originalUser.last_name ||
+                this.user.username !== this.originalUser.username ||
+                this.user.email !== this.originalUser.email
+            );
+        }
+    },
     async mounted() {
         // Run the GET request.
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
@@ -59,7 +72,11 @@ export default {
                 .then(function (response) {
                     return response.json();
                 })
-                .then((data) => (this.user = data))
+                .then((data) => {
+                    this.user = data;
+                    // Store original data for comparison
+                    this.originalUser = { ...data };
+                })
                 .then(() => {
                     this.image = this.user.avatar;
                 });
@@ -131,6 +148,8 @@ export default {
                 }
 
                 await this.usersStore.getUsers();
+                // Update original user data after successful submission
+                this.originalUser = { ...this.user };
                 this.$router.push('/students');
             } catch (error) {
                 console.error(error);
@@ -378,7 +397,11 @@ export default {
                 </div>
 
                 <div class="">
-                    <button class="btn primary-btn" @click="ValidateForm()">
+                    <button
+                        class="btn primary-btn"
+                        @click="ValidateForm()"
+                        :disabled="!hasFormChanges"
+                    >
                         Update student details
                     </button>
                 </div>
