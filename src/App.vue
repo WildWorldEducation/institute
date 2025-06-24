@@ -23,6 +23,7 @@ export default {
     },
     async mounted() {
         await this.userDetailsStore.getUserDetails();
+        this.initDropdown();
 
         // Instructor theme
         if (
@@ -48,11 +49,24 @@ export default {
         }
     },
     methods: {
-        toggleDropdown() {
-            this.isDropdownOpen = !this.isDropdownOpen;
-        },
-        closeDropdown() {
-            this.isDropdownOpen = false;
+        initDropdown() {
+            // Single click listener that handles both toggle and outside clicks
+            document.addEventListener('click', (e) => {
+                const dropdown = document.querySelector('.nav-item.dropdown');
+                const dropdownToggle =
+                    dropdown?.querySelector('.dropdown-toggle');
+
+                if (!dropdown) return;
+
+                // If clicking the toggle button, toggle the dropdown
+                if (dropdownToggle && dropdownToggle.contains(e.target)) {
+                    this.isDropdownOpen = !this.isDropdownOpen;
+                }
+                // If clicking outside the dropdown, close it
+                else if (!dropdown.contains(e.target)) {
+                    this.isDropdownOpen = false;
+                }
+            });
         },
         closeNavbarOnClick() {
             const links = document.querySelectorAll('.close-on-click');
@@ -286,7 +300,6 @@ export default {
                                 <!-- Dropdown toggle button -->
                                 <button
                                     class="nav-link dropdown-toggle border-0 bg-transparent"
-                                    @click.stop="toggleDropdown"
                                 ></button>
                             </div>
 
@@ -299,7 +312,7 @@ export default {
                                     <RouterLink
                                         to="/student-questions"
                                         class="dropdown-item close-on-click"
-                                        @click="closeDropdown"
+                                        @click="isDropdownOpen = false"
                                     >
                                         Student Questions
                                     </RouterLink>
@@ -308,7 +321,7 @@ export default {
                                     <RouterLink
                                         to="/student-assessments"
                                         class="dropdown-item close-on-click"
-                                        @click="closeDropdown"
+                                        @click="isDropdownOpen = false"
                                     >
                                         Mark Assessments
                                     </RouterLink>
