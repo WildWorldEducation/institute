@@ -182,7 +182,7 @@ export default {
                         class="mt-2 fit-content"
                         target="_blank"
                     >
-                        Skill Tree
+                        See skill tree
                     </router-link>
                     <!-- Collapsible skill tree -->
                     <router-link
@@ -190,7 +190,7 @@ export default {
                         class="mt-2 fit-content"
                         target="_blank"
                     >
-                        Collapsible Tree
+                        Assign goals
                     </router-link>
                     <!-- Goals -->
                     <router-link
@@ -198,7 +198,7 @@ export default {
                         class="mt-2 fit-content"
                         target="_blank"
                     >
-                        Goals
+                        See current goals
                     </router-link>
                 </div>
                 <!-- Editors -->
