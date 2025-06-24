@@ -8,50 +8,98 @@ export default {
             userDetailsStore
         };
     },
-    components: {},
     data() {
         return {
-            skillId: this.$route.params.id,
             nextSkillsInBranch: [],
-            showNextSkillsInBranch: false
+            showNextSkillsInBranch: false,
+            isLoading: true,
+            hasLoaded: false
         };
     },
-    created() {
-        this.getNextSkillsInBranch();
+    mounted() {
+        if (!this.hasLoaded) {
+            this.getNextSkills();
+        }
     },
     methods: {
-        async getNextSkillsInBranch() {
-            const result = await fetch(
-                '/user-skills/get-next-accessible-in-branch/' +
-                    this.userDetailsStore.userId +
-                    '/' +
-                    this.skillId
-            );
-            this.nextSkillsInBranch = await result.json();
-            this.showNextSkillsInBranch = true;
+        async getNextSkills() {
+            // Prevent multiple API calls
+            if (this.hasLoaded) {
+                return;
+            }
+            const skillId = this.$route.params.id;
+            if (!skillId) {
+                console.error('No skill ID found in route params');
+                this.isLoading = false;
+                return;
+            }
+            try {
+                this.isLoading = true;
+                const result = await fetch(
+                    `/user-skills/get-next-accessible-in-branch/${this.userDetailsStore.userId}/${skillId}`
+                );
+                if (!result.ok) {
+                    throw new Error(`HTTP error! status: ${result.status}`);
+                }
+                this.nextSkillsInBranch = await result.json();
+                console.log(
+                    `Found ${this.nextSkillsInBranch.length} next skills in branch`
+                );
+            } catch (error) {
+                console.error('Error fetching next skills:', error);
+            } finally {
+                this.isLoading = false;
+                this.showNextSkillsInBranch = true;
+                this.hasLoaded = true;
+            }
         }
     }
 };
 </script>
 
 <template>
-    <h2 class="secondary-heading h4">Next skills in this branch</h2>
-    <div v-if="showNextSkillsInBranch" class="wrapper">
-        <div v-for="nextSkill in nextSkillsInBranch">
-            <router-link
-                :class="{
-                    'grade-school': nextSkill.level == 'grade_school',
-                    'middle-school': nextSkill.level == 'middle_school',
-                    'high-school': nextSkill.level == 'high_school',
-                    college: nextSkill.level == 'college',
-                    phd: nextSkill.level == 'phd'
-                }"
-                class="skill-link btn"
-                :to="`/skills/${encodeURIComponent(nextSkill.url)}`"
-                target="_blank"
-            >
-                {{ nextSkill.name }}
-            </router-link>
+    <div>
+        <h2 class="secondary-heading h4">Continue your learning</h2>
+
+        <!-- Loading state -->
+        <div v-if="isLoading" class="wrapper">
+            <p>Loading related skills...</p>
+        </div>
+
+        <!-- Skills found -->
+        <div
+            v-else-if="showNextSkillsInBranch && nextSkillsInBranch.length > 0"
+            class="wrapper"
+        >
+            <div v-for="nextSkill in nextSkillsInBranch" :key="nextSkill.id">
+                <router-link
+                    :class="{
+                        'grade-school': nextSkill.level == 'grade_school',
+                        'middle-school': nextSkill.level == 'middle_school',
+                        'high-school': nextSkill.level == 'high_school',
+                        college: nextSkill.level == 'college',
+                        phd: nextSkill.level == 'phd'
+                    }"
+                    class="skill-link btn"
+                    :to="`/skills/${nextSkill.url}`"
+                    target="_blank"
+                >
+                    {{ nextSkill.name }}
+                </router-link>
+            </div>
+        </div>
+
+        <!-- No skills found -->
+        <div
+            v-else-if="
+                showNextSkillsInBranch && nextSkillsInBranch.length === 0
+            "
+            class="wrapper"
+        >
+            <p>
+                🎉 Excellent work! You've completed all available skills in this
+                learning path.
+            </p>
         </div>
     </div>
 </template>
