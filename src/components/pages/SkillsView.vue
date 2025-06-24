@@ -370,7 +370,7 @@ export default {
                                 class="btn primary-btn me-1"
                                 to="/skills/add"
                             >
-                                New skill&nbsp;
+                                Suggest new skill&nbsp;
                                 <!-- Plus sign -->
                                 <svg
                                     width="18"
