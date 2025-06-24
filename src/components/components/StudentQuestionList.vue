@@ -124,7 +124,7 @@ export default {
 }
 
 .empty-message {
-    color: var(--text-color, #667085);
+    color: #000;
     text-align: center;
     padding: 40px 20px;
     font-style: italic;
@@ -189,6 +189,6 @@ export default {
 .editor-theme .empty-message {
     background: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.1);
-    color: #a0a0a0;
+    color: #fff;
 }
 </style>
