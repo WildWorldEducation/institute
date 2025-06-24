@@ -994,6 +994,11 @@ p {
   }
 }
 
+.dropdown-menu {
+    --bs-dropdown-link-active-bg: var(--primary-color);
+    --bs-dropdown-link-active-color: var(--primary-contrast-color);
+}
+
 /* Mobile-specific styles - make navbar fully interactive on small screens */
 @media (max-width: 767.98px) {
   .navbar.fixed-top {
