@@ -951,17 +951,17 @@ export default {
         </div>
     </div>
 
-    <!-- Instructor Introduction modal for Students Collapsible Tree-->
+    <!-- Instructor Introduction modal for Students Expandable Tree-->
     <div
         v-if="showInstructorModeTutorialTip1 || showInstructorModeTutorialTip2"
         class="modal"
     >
         <div class="modal-content bg-light">
             <div v-if="showInstructorModeTutorialTip1">
-                <p>This is a look at your student's Collapsible Skill Tree.</p>
+                <p>This is a look at your student's expandable Skill Tree.</p>
                 <p>
-                    It is another way to see their progress, and also the place
-                    where you can set goals for your student.
+                    Here you can assign goals, and it serves as another place
+                    you can track their progress through skills.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
@@ -970,8 +970,22 @@ export default {
             </div>
             <div v-else-if="showInstructorModeTutorialTip2">
                 <p>
-                    To create a goal for your student, click on the target icon
-                    on the relevant skill node.
+                    To assign a goal for your student, click on the
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        class="primary-icon"
+                        width="20"
+                        heigth="20"
+                    >
+                        <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                        <path
+                            style="fill: 'primary-icon'"
+                            d="M448 256A192 192 0 1 0 64 256a192 192 0 1 0 384 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm0-224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zM224 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
+                        />
+                    </svg>
+                    icon on the relevant skill node.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(2)">

@@ -85,7 +85,6 @@ export default {
         }
     },
     async created() {
-        console.log(this.isStudentSkillsLocked);
         for (let i = 0; i < this.children.length; i++) {
             if (this.children[i].type == 'sub') {
                 this.subSkills.push(this.children[i]);
@@ -221,7 +220,7 @@ export default {
             this.showChildren = !this.showChildren;
         },
         async confirmCreateGoal() {
-            let text = `Are you sure you want to create a goal for ${this.name}?`;
+            let text = `Are you sure you want to assign a goal for ${this.name}?`;
             if (confirm(text) == true) {
                 this.createGoal(this.skill);
             }
@@ -295,7 +294,7 @@ export default {
             const url =
                 '/user-skills/set-goal/' + this.studentId + '/' + this.skill.id;
             fetch(url, requestOptions).then(() => {
-                alert('Goal created.');
+                alert('Goal assigned.');
             });
         }
     },

@@ -38,6 +38,8 @@ export default {
         await this.userSkillsStore.getFilteredUnnestedList(this.studentId);
         await this.getGoals();
 
+        console.log(this.userSkills);
+
         // Check if tutorial has been seen.
         this.checkIfTutorialComplete();
     },
@@ -162,121 +164,137 @@ export default {
                 </svg>
             </button>
         </div>
-
-        <h2 class="secondary-heading">Goal Progress</h2>
-        <div id="goal-list">
-            <div v-for="userSkill in userSkills">
-                <div class="d-flex">
-                    <h2 class="goal h4">
-                        {{ userSkill.name }}
-                        <!-- Expand/Collapse button -->
-                        <button
-                            class="btn"
-                            @click="userSkill.showSteps = !userSkill.showSteps"
-                        >
-                            <!-- Plus sign -->
-                            <svg
-                                v-if="!userSkill.showSteps"
-                                width="18"
-                                height="18"
-                                class="primary-icon"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
+        <div v-if="userSkills.length > 0">
+            <h2 class="secondary-heading">Goal Progress</h2>
+            <div id="goal-list">
+                <div v-for="userSkill in userSkills">
+                    <div class="d-flex">
+                        <h2 class="goal h4">
+                            {{ userSkill.name }}
+                            <!-- Expand/Collapse button -->
+                            <button
+                                class="btn"
+                                @click="
+                                    userSkill.showSteps = !userSkill.showSteps
+                                "
                             >
-                                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                <path
-                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
-                                />
-                            </svg>
-                            <!-- Minus sign -->
-                            <svg
-                                v-else
-                                width="18"
-                                height="18"
-                                class="primary-icon"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
+                                <!-- Plus sign -->
+                                <svg
+                                    v-if="!userSkill.showSteps"
+                                    width="18"
+                                    height="18"
+                                    class="primary-icon"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 448 512"
+                                >
+                                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                    <path
+                                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                                    />
+                                </svg>
+                                <!-- Minus sign -->
+                                <svg
+                                    v-else
+                                    width="18"
+                                    height="18"
+                                    class="primary-icon"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 448 512"
+                                >
+                                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                    <path
+                                        d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                                    />
+                                </svg>
+                            </button>
+                            <!-- Delete button -->
+                            <button
+                                class="btn"
+                                @click="deleteGoal(userSkill.skill_id)"
                             >
-                                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                <path
-                                    d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                                />
-                            </svg>
-                        </button>
-                        <!-- Delete button -->
-                        <button
-                            class="btn"
-                            @click="deleteGoal(userSkill.skill_id)"
-                        >
-                            <!-- Trash sign -->
+                                <!-- Trash sign -->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 448 512"
+                                    width="18"
+                                    height="18"
+                                    class="primary-icon"
+                                >
+                                    <!-- !Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                    <path
+                                        d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 296.3 0 284.2 0L163.8 0c-12.1 0-23.2 6.8-28.6 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"
+                                    />
+                                </svg>
+                            </button>
+                        </h2>
+                    </div>
+                    <ul v-if="userSkill.showSteps">
+                        <li v-for="step in userSkill.goalSteps">
                             <svg
+                                v-if="step.isMastered != 1"
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 448 512"
-                                width="18"
-                                height="18"
                                 class="primary-icon"
+                                width="20"
+                                height="20"
                             >
                                 <!-- !Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                 <path
-                                    d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 296.3 0 284.2 0L163.8 0c-12.1 0-23.2 6.8-28.6 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"
+                                    d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"
                                 />
                             </svg>
-                        </button>
-                    </h2>
-                </div>
-                <ul v-if="userSkill.showSteps">
-                    <li v-for="step in userSkill.goalSteps">
-                        <svg
-                            v-if="step.isMastered != 1"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 448 512"
-                            class="primary-icon"
-                            width="20"
-                            height="20"
-                        >
-                            <!-- !Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"
-                            />
-                        </svg>
-                        <svg
-                            v-else
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 448 512"
-                            class="primary-icon"
-                            width="20"
-                            height="20"
-                        >
-                            <!-- !Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="M64 80c-8.8 0-16 7.2-16 16l0 320c0 8.8 7.2 16 16 16l320 0c8.8 0 16-7.2 16-16l0-320c0-8.8-7.2-16-16-16L64 80zM0 96C0 60.7 28.7 32 64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
-                            />
-                        </svg>
+                            <svg
+                                v-else
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                class="primary-icon"
+                                width="20"
+                                height="20"
+                            >
+                                <!-- !Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                <path
+                                    d="M64 80c-8.8 0-16 7.2-16 16l0 320c0 8.8 7.2 16 16 16l320 0c8.8 0 16-7.2 16-16l0-320c0-8.8-7.2-16-16-16L64 80zM0 96C0 60.7 28.7 32 64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
+                                />
+                            </svg>
 
-                        <span
-                            class="rounded pe-2"
-                            :class="{
-                                'grade-school': step.level == 'grade_school',
-                                'middle-school': step.level == 'middle_school',
-                                'high-school': step.level == 'high_school',
-                                college: step.level == 'college',
-                                phd: step.level == 'phd'
-                            }"
-                            >&nbsp; {{ step.name }}</span
-                        >
-                    </li>
-                </ul>
+                            <span
+                                class="rounded pe-2"
+                                :class="{
+                                    'grade-school':
+                                        step.level == 'grade_school',
+                                    'middle-school':
+                                        step.level == 'middle_school',
+                                    'high-school': step.level == 'high_school',
+                                    college: step.level == 'college',
+                                    phd: step.level == 'phd'
+                                }"
+                                >&nbsp; {{ step.name }}</span
+                            >
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
-
+        <div v-else>
+            {{ studentName }} does not yet have any goals assigned. Click
+            <router-link
+                :to="'/student/' + this.studentId + '/skills'"
+                target="_blank"
+                >here</router-link
+            >
+            to assign some.
+        </div>
         <!-- Tooltip modal -->
         <div v-if="showTutorialTip1" class="modal">
             <div class="modal-content">
                 <div v-if="showTutorialTip1">
                     <p>
-                        On this page, you can see a list of any goals that
-                        either you have set for your student, or they have set
-                        for themselves.
+                        On this page, you can see a list of any skills that you
+                        have assigned to your student to master.
+                    </p>
+                    <p>
+                        It also includes skills they have assigned to
+                        themselves.
                     </p>
                     <button
                         class="btn primary-btn"
