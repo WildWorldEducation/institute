@@ -1368,31 +1368,92 @@ router.put(
 
 // User update their password from profile page
 router.put('/profile/:id/edit-password', isAuthenticated, (req, res, next) => {
-    // Hash the password.
-    bcrypt.hash(req.body.password, saltRounds, function (err, hashedPassword) {
+    const { currentPassword, newPassword } = req.body;
+
+    // Validate that we have both required fields
+    if (!currentPassword || !newPassword) {
+        return res.status(400).json({
+            error: 'Both current password and new password are required'
+        });
+    }
+
+    // First, get the current hashed password from the database
+    let getCurrentPasswordQuery = `SELECT password FROM users WHERE id = ${conn.escape(
+        req.params.id
+    )} AND is_deleted = 0;`;
+
+    conn.query(getCurrentPasswordQuery, (err, results) => {
         if (err) {
             console.log(err);
+            return res.status(500).json({ error: 'Database error' });
         }
 
-        // Add data.
-        let sqlQuery = `UPDATE users 
-                    SET password = ${conn.escape(hashedPassword)} 
-                    WHERE id = ${conn.escape(req.params.id)};`;
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
 
-        conn.query(sqlQuery, (err, results) => {
-            try {
+        const currentHashedPassword = results[0].password;
+
+        // Compare the provided current password with the stored hash
+        bcrypt.compare(
+            currentPassword,
+            currentHashedPassword,
+            function (err, isMatch) {
                 if (err) {
-                    throw err;
+                    console.log(err);
+                    return res
+                        .status(500)
+                        .json({ error: 'Password verification error' });
                 }
-                res.end();
-            } catch (err) {
-                next(err);
+
+                if (!isMatch) {
+                    return res
+                        .status(400)
+                        .json({ error: 'Current password is incorrect' });
+                }
+
+                // If current password matches, hash the new password
+                bcrypt.hash(
+                    newPassword,
+                    saltRounds,
+                    function (err, hashedNewPassword) {
+                        if (err) {
+                            console.log(err);
+                            return res
+                                .status(500)
+                                .json({ error: 'Password hashing error' });
+                        }
+
+                        // Update the password in the database
+                        let updatePasswordQuery = `UPDATE users 
+                                         SET password = ${conn.escape(
+                                             hashedNewPassword
+                                         )}
+                                         WHERE id = ${conn.escape(
+                                             req.params.id
+                                         )};`;
+
+                        conn.query(updatePasswordQuery, (err, results) => {
+                            try {
+                                if (err) {
+                                    throw err;
+                                }
+                                res.json({
+                                    success: true,
+                                    message: 'Password updated successfully'
+                                });
+                            } catch (err) {
+                                next(err);
+                            }
+                        });
+                    }
+                );
             }
-        });
+        );
     });
 });
 
-// Allow instructor to edit student password
+// Allow instructor to edit student password (no current password needed)
 router.put(
     '/:studentId/edit-student-password',
     isAuthenticated,
@@ -1404,19 +1465,25 @@ router.put(
             function (err, hashedPassword) {
                 if (err) {
                     console.log(err);
+                    return res
+                        .status(500)
+                        .json({ error: 'Password hashing error' });
                 }
 
-                // Add data.
-                let sqlQuery = `UPDATE users 
-                    SET password = ${conn.escape(hashedPassword)} 
-                    WHERE id = ${conn.escape(req.params.studentId)};`;
+                // Update password in database
+                let sqlQuery = `UPDATE users
+                       SET password = ${conn.escape(hashedPassword)}
+                       WHERE id = ${conn.escape(req.params.studentId)};`;
 
                 conn.query(sqlQuery, (err, results) => {
                     try {
                         if (err) {
                             throw err;
                         }
-                        res.end();
+                        res.json({
+                            success: true,
+                            message: 'Student password updated successfully'
+                        });
                     } catch (err) {
                         next(err);
                     }
