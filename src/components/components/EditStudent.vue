@@ -51,13 +51,23 @@ export default {
         Preview
     },
     computed: {
-        // Check if any form field has been changed
         hasFormChanges() {
+            // Helper function to normalize null/undefined/empty values
+            const normalize = (value) => {
+                return value === null || value === undefined || value === ''
+                    ? ''
+                    : value;
+            };
+
             return (
-                this.user.first_name !== this.originalUser.first_name ||
-                this.user.last_name !== this.originalUser.last_name ||
-                this.user.username !== this.originalUser.username ||
-                this.user.email !== this.originalUser.email
+                normalize(this.user.first_name) !==
+                    normalize(this.originalUser.first_name) ||
+                normalize(this.user.last_name) !==
+                    normalize(this.originalUser.last_name) ||
+                normalize(this.user.username) !==
+                    normalize(this.originalUser.username) ||
+                normalize(this.user.email) !==
+                    normalize(this.originalUser.email)
             );
         }
     },
