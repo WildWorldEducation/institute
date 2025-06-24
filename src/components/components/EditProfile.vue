@@ -31,6 +31,14 @@ export default {
             lastName: this.userDetailsStore.lastName,
             instructorID: this.userDetailsStore.instructorId,
             isGoogleAuth: this.userDetailsStore.isGoogleAuth,
+            // Store original values for comparison
+            originalValues: {
+                firstName: this.userDetailsStore.firstName,
+                lastName: this.userDetailsStore.lastName,
+                userName: this.userDetailsStore.userName,
+                email: this.userDetailsStore.email,
+                password: this.userDetailsStore.password
+            },
             validate: {
                 firstName: false,
                 lastName: false,
@@ -65,11 +73,41 @@ export default {
         Preview,
         CheckPasswordComplexity
     },
+    computed: {
+        // Check if user details have changed
+        hasDetailsChanged() {
+            return (
+                this.firstName !== this.originalValues.firstName ||
+                this.lastName !== this.originalValues.lastName ||
+                this.userName !== this.originalValues.userName ||
+                this.email !== this.originalValues.email
+            );
+        },
+        // Check if password has changed
+        hasPasswordChanged() {
+            return (
+                this.password !== this.originalValues.password &&
+                this.password &&
+                this.password.trim() !== ''
+            );
+        }
+    },
     async created() {
         // Get user details on component creation
         await this.userDetailsStore.getUserDetails();
+        // Update original values after getting fresh data
+        this.updateOriginalValues();
     },
     methods: {
+        updateOriginalValues() {
+            this.originalValues = {
+                firstName: this.userDetailsStore.firstName,
+                lastName: this.userDetailsStore.lastName,
+                userName: this.userDetailsStore.userName,
+                email: this.userDetailsStore.email,
+                password: this.userDetailsStore.password
+            };
+        },
         ValidateForm() {
             if (this.userName == '' || this.userName == null) {
                 this.validate.username = true;
@@ -103,6 +141,8 @@ export default {
             var url = '/users/profile/' + this.id + '/edit-password';
             fetch(url, requestOptions).then(() => {
                 this.userDetailsStore.getUserDetails();
+                // Update original password after successful update
+                this.originalValues.password = this.password;
                 this.$router.push('/profile');
             });
         },
@@ -127,6 +167,8 @@ export default {
                 fetch(url, requestOptions).then(() => {
                     // refresh user list so the users page will show the update data
                     this.userDetailsStore.getUserDetails();
+                    // Update original values after successful update
+                    this.updateOriginalValues();
                     this.$router.push('/profile');
                 });
             }
@@ -375,7 +417,7 @@ export default {
                             <!-- ** The Crop Icon -->
                             <!-- desktop view -->
                             <div
-                                v-if="avatar"
+                                v-if="avatar && validate.notSquareImg"
                                 id="crop-icon"
                                 b-tooltip.hover
                                 title="crop image"
@@ -396,6 +438,7 @@ export default {
                             </div>
                             <!-- phone view -->
                             <div
+                                v-if="avatar && validate.notSquareImg"
                                 id="crop-icon"
                                 b-tooltip.hover
                                 title="crop image"
@@ -509,7 +552,11 @@ export default {
                         please enter a valid email !
                     </div>
                 </div>
-                <button class="btn primary-btn" @click="ValidateForm()">
+                <button
+                    class="btn primary-btn"
+                    @click="ValidateForm()"
+                    :disabled="!hasDetailsChanged"
+                >
                     Update details
                 </button>
 
@@ -586,7 +633,11 @@ export default {
                     />
                 </div>
                 <div class="d-flex justify-content-between mb-3 mt-2">
-                    <button class="btn primary-btn" @click="ValidatePassword()">
+                    <button
+                        class="btn primary-btn"
+                        @click="ValidatePassword()"
+                        :disabled="!hasPasswordChanged"
+                    >
                         Update password
                     </button>
                 </div>
@@ -689,7 +740,6 @@ export default {
         </div>
     </div>
 </template>
-
 <style scoped>
 .green-btn {
     background-color: #36c1af;
