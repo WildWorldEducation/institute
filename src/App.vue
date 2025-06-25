@@ -593,6 +593,8 @@ Themes
 
     --stroke-width: 1px;
     --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 
