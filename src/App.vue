@@ -310,6 +310,15 @@ export default {
                             >
                                 <li>
                                     <RouterLink
+                                        to="/cohorts"
+                                        class="dropdown-item close-on-click"
+                                        @click="isDropdownOpen = false"
+                                    >
+                                        Cohorts
+                                    </RouterLink>
+                                </li>
+                                <li>
+                                    <RouterLink
                                         to="/student-questions"
                                         class="dropdown-item close-on-click"
                                         @click="isDropdownOpen = false"
@@ -329,20 +338,6 @@ export default {
                             </ul>
                         </li>
 
-                        <li
-                            v-if="
-                                userDetailsStore.role == 'instructor' ||
-                                userDetailsStore.role == 'partner'
-                            "
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                to="/cohorts"
-                                class="nav-link close-on-click"
-                            >
-                                <span>Cohorts</span>
-                            </RouterLink>
-                        </li>
                         <li
                             v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item"
