@@ -313,8 +313,7 @@ export default {
             this.passwordVisible[field] = !this.passwordVisible[field];
         },
         SubmitAvatar() {
-            if (!this.avatar) {
-                console.log(this.avatar);
+            if (!this.avatar) {                
                 return;
             }
             // If valid, submit.
