@@ -593,6 +593,8 @@ Themes
 
     --stroke-width: 1px;
     --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 
@@ -1005,6 +1007,11 @@ p {
   .navbar.fixed-top .container-fluid > div {
     pointer-events: auto;
   }
+}
+
+.dropdown-menu {
+    --bs-dropdown-link-active-bg: var(--primary-color);
+    --bs-dropdown-link-active-color: var(--primary-contrast-color);
 }
 
 /* Mobile-specific styles - make navbar fully interactive on small screens */
