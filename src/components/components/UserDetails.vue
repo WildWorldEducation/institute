@@ -176,23 +176,38 @@ export default {
                     "
                     class="d-flex flex-column"
                 >
+                    <router-link
+                        :to="`/student/${this.$parent.user.id}/tracking-report`"
+                        class="fit-content"
+                        target="_blank"
+                    >
+                        Tracking report
+                    </router-link>
                     <!-- Skill Tree -->
                     <router-link
                         :to="`/student/${this.$parent.user.id}/skill-tree`"
-                        class="mt-2 fit-content"
+                        class="fit-content mt-2"
                         target="_blank"
                     >
-                        See skill tree
+                        Skill tree
                     </router-link>
-                    <!-- Collapsible skill tree -->
+                    <!-- Goals -->
+                    <h2
+                        v-if="
+                            this.userDetailsStore.role == 'instructor' ||
+                            this.userDetailsStore.role == 'partner'
+                        "
+                        class="secondary-heading h4 mt-4"
+                    >
+                        Assign work
+                    </h2>
                     <router-link
                         :to="'/student/' + this.$parent.user.id + '/skills'"
-                        class="mt-2 fit-content"
+                        class="fit-content"
                         target="_blank"
                     >
                         Assign goals
                     </router-link>
-                    <!-- Goals -->
                     <router-link
                         :to="'/student/' + this.$parent.user.id + '/goals'"
                         class="mt-2 fit-content"

@@ -467,6 +467,19 @@ const router = createRouter({
                 roles: ['instructor', 'admin', 'partner']
             }
         },
+        {
+            path: '/student/:studentId/tracking-report',
+            name: 'tracking-report',
+            component: () =>
+                import(
+                    '../components/pages/teacher-analytics/TrackingReportView.vue'
+                ),
+            meta: {
+                title: 'Tracking Report',
+                requiresAuth: true,
+                roles: ['instructor', 'admin', 'partner']
+            }
+        },
         // Tokens
         {
             path: '/tokens',
