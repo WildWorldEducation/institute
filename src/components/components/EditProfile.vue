@@ -25,7 +25,6 @@ export default {
             userName: this.userDetailsStore.userName,
             avatar: '',
             email: this.userDetailsStore.email,
-            password: this.userDetailsStore.password,
             image: this.userDetailsStore.avatar,
             firstName: this.userDetailsStore.firstName,
             lastName: this.userDetailsStore.lastName,
@@ -36,8 +35,7 @@ export default {
                 firstName: this.userDetailsStore.firstName,
                 lastName: this.userDetailsStore.lastName,
                 userName: this.userDetailsStore.userName,
-                email: this.userDetailsStore.email,
-                password: this.userDetailsStore.password
+                email: this.userDetailsStore.email
             },
             validate: {
                 firstName: false,
@@ -45,15 +43,33 @@ export default {
                 username: false,
                 email: false,
                 emailFormat: false,
-                password: false,
                 // this is fired when image profile upload is not square
                 notSquareImg: false,
                 // flag to show warning when cancel crop
-                notCropped: false,
+                notCropped: false
+            },
+            // Password change section
+            showPasswordSection: false,
+            passwordData: {
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: ''
+            },
+            passwordValidate: {
+                currentPassword: false,
+                newPassword: false,
+                confirmPassword: false,
+                passwordMatch: false,
                 passwordComplex: false
             },
-            // show/hide password flag
-            passwordVisible: false,
+            passwordVisible: {
+                current: false,
+                new: false,
+                confirm: false
+            },
+            passwordChangeMessage: '',
+            passwordChangeSuccess: false,
+            isUpdatingPassword: false,
             // Flag and data of crop image component
             showCropModal: false,
             cropCanvas: '',
@@ -83,13 +99,35 @@ export default {
                 this.email !== this.originalValues.email
             );
         },
-        // Check if password has changed
-        hasPasswordChanged() {
+        // Check if passwords match
+        passwordsMatch() {
             return (
-                this.password !== this.originalValues.password &&
-                this.password &&
-                this.password.trim() !== ''
+                this.passwordData.newPassword ===
+                this.passwordData.confirmPassword
             );
+        },
+        // Check if password form is valid
+        isPasswordFormValid() {
+            const hasAllFields =
+                this.passwordData.currentPassword &&
+                this.passwordData.newPassword &&
+                this.passwordData.confirmPassword;
+
+            const passwordsMatch = this.passwordsMatch;
+
+            // Basic password complexity check as fallback
+            const hasMinLength = this.passwordData.newPassword.length >= 8;
+
+            return hasAllFields && passwordsMatch && hasMinLength;
+        }
+    },
+    watch: {
+        // Watch for password confirmation changes
+        'passwordData.confirmPassword'() {
+            this.validatePasswordMatch();
+        },
+        'passwordData.newPassword'() {
+            this.validatePasswordMatch();
         }
     },
     async created() {
@@ -104,8 +142,7 @@ export default {
                 firstName: this.userDetailsStore.firstName,
                 lastName: this.userDetailsStore.lastName,
                 userName: this.userDetailsStore.userName,
-                email: this.userDetailsStore.email,
-                password: this.userDetailsStore.password
+                email: this.userDetailsStore.email
             };
         },
         ValidateForm() {
@@ -116,11 +153,6 @@ export default {
             }
             this.Submit();
         },
-        ValidatePassword() {
-            if (this.validate.passwordComplex) {
-                this.HandlePasswordUpdate();
-            }
-        },
         ValidateEmail() {
             if (
                 /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.email)
@@ -129,22 +161,6 @@ export default {
             } else {
                 this.validate.emailFormat = true;
             }
-        },
-        HandlePasswordUpdate() {
-            const requestOptions = {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    password: this.password
-                })
-            };
-            var url = '/users/profile/' + this.id + '/edit-password';
-            fetch(url, requestOptions).then(() => {
-                this.userDetailsStore.getUserDetails();
-                // Update original password after successful update
-                this.originalValues.password = this.password;
-                this.$router.push('/profile');
-            });
         },
         Submit() {
             // If valid, submit.
@@ -173,9 +189,131 @@ export default {
                 });
             }
         },
+        // Password change methods
+        togglePasswordSection() {
+            this.showPasswordSection = !this.showPasswordSection;
+            if (!this.showPasswordSection) {
+                this.resetPasswordForm();
+                // Clear messages when cancelling
+                this.passwordChangeMessage = '';
+                this.passwordChangeSuccess = false;
+            }
+        },
+        resetPasswordForm() {
+            this.passwordData = {
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: ''
+            };
+            this.passwordValidate = {
+                currentPassword: false,
+                newPassword: false,
+                confirmPassword: false,
+                passwordMatch: false,
+                passwordComplex: false
+            };
+            this.passwordVisible = {
+                current: false,
+                new: false,
+                confirm: false
+            };
+            this.isUpdatingPassword = false;
+            // Only clear messages when explicitly cancelling, not on successful update
+        },
+        validatePasswordMatch() {
+            if (
+                this.passwordData.confirmPassword &&
+                this.passwordData.newPassword
+            ) {
+                this.passwordValidate.passwordMatch = this.passwordsMatch;
+            }
+        },
+        validatePasswordForm() {
+            let isValid = true;
+
+            // Reset validation
+            this.passwordValidate.currentPassword = false;
+            this.passwordValidate.newPassword = false;
+            this.passwordValidate.confirmPassword = false;
+
+            // Validate current password
+            if (!this.passwordData.currentPassword) {
+                this.passwordValidate.currentPassword = true;
+                isValid = false;
+            }
+
+            // Validate new password
+            if (!this.passwordData.newPassword) {
+                this.passwordValidate.newPassword = true;
+                isValid = false;
+            }
+
+            // Validate confirm password
+            if (!this.passwordData.confirmPassword) {
+                this.passwordValidate.confirmPassword = true;
+                isValid = false;
+            }
+
+            // Check if passwords match
+            if (!this.passwordsMatch) {
+                this.passwordValidate.passwordMatch = false;
+                isValid = false;
+            }
+
+            // For the form submission validation, we'll check complexity in the component
+            return isValid;
+        },
+        async handlePasswordUpdate() {
+            if (!this.validatePasswordForm()) {
+                return;
+            }
+
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    currentPassword: this.passwordData.currentPassword,
+                    newPassword: this.passwordData.newPassword
+                })
+            };
+
+            try {
+                const response = await fetch(
+                    '/users/profile/' + this.id + '/edit-password',
+                    requestOptions
+                );
+                const data = await response.json();
+
+                if (response.ok) {
+                    this.passwordChangeSuccess = true;
+                    this.passwordChangeMessage =
+                        'Password updated successfully!';
+                    this.resetPasswordForm();
+                    this.showPasswordSection = false;
+
+                    // Hide success message after 3 seconds
+                    setTimeout(() => {
+                        this.passwordChangeMessage = '';
+                        this.passwordChangeSuccess = false;
+                    }, 3000);
+                } else {
+                    this.passwordChangeSuccess = false;
+                    this.passwordChangeMessage =
+                        data.error || 'Failed to update password';
+                }
+            } catch (error) {
+                this.passwordChangeSuccess = false;
+                this.passwordChangeMessage =
+                    'An error occurred while updating password';
+                // DO NOT log the error details as they may contain sensitive data
+                console.error('Password update failed');
+            }
+        },
+        togglePasswordVisibility(field) {
+            this.passwordVisible[field] = !this.passwordVisible[field];
+        },
         SubmitAvatar() {
-            if (!this.avatar) {
-                console.log(this.avatar);
+            if (!this.avatar) {                
                 return;
             }
             // If valid, submit.
@@ -249,14 +387,6 @@ export default {
         },
         handleCancelCrop() {
             this.showCropModal = false;
-            // if (this.validate.notSquareImg) {
-            //     this.validate.notCropped = true;
-            //     setTimeout(() => {
-            //         this.validate.notCropped = false;
-            //     }, 2000);
-            // } else {
-            //     this.showCropModal = false;
-            // }
         },
         handleCropImage() {
             var imageFile = new Image();
@@ -319,6 +449,7 @@ export default {
             </svg>
             Back to Profile
         </router-link>
+
         <div class="row mt-1">
             <!-- Avatar section -->
             <div class="col-12 col-md-6 mb-2">
@@ -561,85 +692,275 @@ export default {
                 </button>
 
                 <hr class="mt-4 mb-4" />
+
+                <!-- Success/Error Message for Password (moved here so it's always visible) -->
+                <div
+                    v-if="passwordChangeMessage"
+                    :class="[
+                        'alert',
+                        passwordChangeSuccess
+                            ? 'alert-success'
+                            : 'alert-danger',
+                        'mb-3'
+                    ]"
+                >
+                    {{ passwordChangeMessage }}
+                </div>
+
                 <!-- Password Section -->
-                <h2 class="secondary-heading h4">Password</h2>
-                <div class="mb-3">
-                    <div class="password-div">
-                        <input
-                            v-model="password"
-                            :type="passwordVisible ? 'text' : 'password'"
-                            placeholder="Password"
-                            class="form-control"
-                            id="password-input"
-                            required
-                        />
-                        <!-- Show and Hide Password Section -->
-                        <div
-                            class="eye-icon"
-                            b-tooltip.hover
-                            :title="
-                                passwordVisible
-                                    ? 'hide password'
-                                    : 'show password'
-                            "
+                <div class="password-section">
+                    <div
+                        class="d-flex align-items-center justify-content-between mb-3"
+                    >
+                        <h2 class="secondary-heading h4 mb-0">Password</h2>
+                        <button
+                            class="btn cancel-btn btn-sm"
+                            @click="togglePasswordSection()"
                         >
-                            <!-- Eye Icon -->
-                            <svg
-                                v-if="passwordVisible"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 576 512"
-                                width="20"
-                                height="20"
-                                fill="gray"
-                                @click="passwordVisible = false"
-                            >
-                                <path
-                                    d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"
+                            {{
+                                showPasswordSection
+                                    ? 'Cancel'
+                                    : 'Change Password'
+                            }}
+                        </button>
+                    </div>
+
+                    <!-- Password Change Form (Hidden by default) -->
+                    <div
+                        v-if="showPasswordSection"
+                        class="password-change-form"
+                    >
+                        <!-- Current Password -->
+                        <div class="mb-3">
+                            <label class="form-label">Current Password</label>
+                            <div class="password-div">
+                                <input
+                                    v-model="passwordData.currentPassword"
+                                    :type="
+                                        passwordVisible.current
+                                            ? 'text'
+                                            : 'password'
+                                    "
+                                    placeholder="Enter current password"
+                                    class="form-control"
+                                    :class="{
+                                        'is-invalid':
+                                            passwordValidate.currentPassword
+                                    }"
                                 />
-                            </svg>
-                            <!-- Eye Slash Icon -->
-                            <svg
-                                v-else
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 640 512"
-                                width="20"
-                                height="20"
-                                fill="gray"
-                                @click="passwordVisible = true"
+                                <div
+                                    class="eye-icon"
+                                    b-tooltip.hover
+                                    :title="
+                                        passwordVisible.current
+                                            ? 'hide password'
+                                            : 'show password'
+                                    "
+                                    @click="togglePasswordVisibility('current')"
+                                >
+                                    <!-- Eye Icon -->
+                                    <svg
+                                        v-if="passwordVisible.current"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 576 512"
+                                        width="20"
+                                        height="20"
+                                        fill="gray"
+                                    >
+                                        <path
+                                            d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"
+                                        />
+                                    </svg>
+                                    <!-- Eye Slash Icon -->
+                                    <svg
+                                        v-else
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 640 512"
+                                        width="20"
+                                        height="20"
+                                        fill="gray"
+                                    >
+                                        <path
+                                            d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zm151 118.3C226 97.7 269.5 80 320 80c65.2 0 118.8 29.6 159.9 67.7C518.4 183.5 545 226 558.6 256c-12.6 28-36.6 66.8-70.9 100.9l-53.8-42.2c9.1-17.6 14.2-37.5 14.2-58.7c0-70.7-57.3-128-128-128c-32.2 0-61.7 11.9-84.2 31.5l-46.1-36.1zM394.9 284.2l-81.5-63.9c4.2-8.5 6.6-18.2 6.6-28.3c0-5.5-.7-10.9-2-16c.7 0 1.3 0 2 0c44.2 0 80 35.8 80 80c0 9.9-1.8 19.4-5.1 28.2zm51.3 163.3l-41.9-33C378.8 425.4 350.7 432 320 432c-65.2 0-118.8-29.6-159.9-67.7C121.6 328.5 95 286 81.4 256c8.3-18.4 21.5-41.5 39.4-64.8L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5zm-88-69.3L302 334c-23.5-5.4-43.1-21.2-53.7-42.3l-56.1-44.2c-.2 2.8-.3 5.6-.3 8.5c0 70.7 57.3 128 128 128c13.3 0 26.1-2 38.2-5.8z"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div
+                                v-if="passwordValidate.currentPassword"
+                                class="form-validate"
                             >
-                                <path
-                                    d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zm151 118.3C226 97.7 269.5 80 320 80c65.2 0 118.8 29.6 159.9 67.7C518.4 183.5 545 226 558.6 256c-12.6 28-36.6 66.8-70.9 100.9l-53.8-42.2c9.1-17.6 14.2-37.5 14.2-58.7c0-70.7-57.3-128-128-128c-32.2 0-61.7 11.9-84.2 31.5l-46.1-36.1zM394.9 284.2l-81.5-63.9c4.2-8.5 6.6-18.2 6.6-28.3c0-5.5-.7-10.9-2-16c.7 0 1.3 0 2 0c44.2 0 80 35.8 80 80c0 9.9-1.8 19.4-5.1 28.2zm51.3 163.3l-41.9-33C378.8 425.4 350.7 432 320 432c-65.2 0-118.8-29.6-159.9-67.7C121.6 328.5 95 286 81.4 256c8.3-18.4 21.5-41.5 39.4-64.8L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5zm-88-69.3L302 334c-23.5-5.4-43.1-21.2-53.7-42.3l-56.1-44.2c-.2 2.8-.3 5.6-.3 8.5c0 70.7 57.3 128 128 128c13.3 0 26.1-2 38.2-5.8z"
+                                Please enter your current password
+                            </div>
+                        </div>
+
+                        <!-- New Password -->
+                        <div class="mb-3">
+                            <label class="form-label">New Password</label>
+                            <div class="password-div">
+                                <input
+                                    v-model="passwordData.newPassword"
+                                    :type="
+                                        passwordVisible.new
+                                            ? 'text'
+                                            : 'password'
+                                    "
+                                    placeholder="Enter new password"
+                                    class="form-control"
+                                    :class="{
+                                        'is-invalid':
+                                            passwordValidate.newPassword
+                                    }"
                                 />
-                            </svg>
+                                <div
+                                    class="eye-icon"
+                                    b-tooltip.hover
+                                    :title="
+                                        passwordVisible.new
+                                            ? 'hide password'
+                                            : 'show password'
+                                    "
+                                    @click="togglePasswordVisibility('new')"
+                                >
+                                    <!-- Eye Icon -->
+                                    <svg
+                                        v-if="passwordVisible.new"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 576 512"
+                                        width="20"
+                                        height="20"
+                                        fill="gray"
+                                    >
+                                        <path
+                                            d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"
+                                        />
+                                    </svg>
+                                    <!-- Eye Slash Icon -->
+                                    <svg
+                                        v-else
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 640 512"
+                                        width="20"
+                                        height="20"
+                                        fill="gray"
+                                    >
+                                        <path
+                                            d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zm151 118.3C226 97.7 269.5 80 320 80c65.2 0 118.8 29.6 159.9 67.7C518.4 183.5 545 226 558.6 256c-12.6 28-36.6 66.8-70.9 100.9l-53.8-42.2c9.1-17.6 14.2-37.5 14.2-58.7c0-70.7-57.3-128-128-128c-32.2 0-61.7 11.9-84.2 31.5l-46.1-36.1zM394.9 284.2l-81.5-63.9c4.2-8.5 6.6-18.2 6.6-28.3c0-5.5-.7-10.9-2-16c.7 0 1.3 0 2 0c44.2 0 80 35.8 80 80c0 9.9-1.8 19.4-5.1 28.2zm51.3 163.3l-41.9-33C378.8 425.4 350.7 432 320 432c-65.2 0-118.8-29.6-159.9-67.7C121.6 328.5 95 286 81.4 256c8.3-18.4 21.5-41.5 39.4-64.8L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5zm-88-69.3L302 334c-23.5-5.4-43.1-21.2-53.7-42.3l-56.1-44.2c-.2 2.8-.3 5.6-.3 8.5c0 70.7 57.3 128 128 128c13.3 0 26.1-2 38.2-5.8z"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div
+                                v-if="passwordValidate.newPassword"
+                                class="form-validate"
+                            >
+                                Please enter a new password
+                            </div>
+                            <!-- Password Complexity Check -->
+                            <CheckPasswordComplexity
+                                :formData="{
+                                    username: userName,
+                                    password: passwordData.newPassword,
+                                    firstName: firstName,
+                                    lastName: lastName,
+                                    email: email
+                                }"
+                            />
+                        </div>
+
+                        <!-- Confirm New Password -->
+                        <div class="mb-3">
+                            <label class="form-label"
+                                >Confirm New Password</label
+                            >
+                            <div class="password-div">
+                                <input
+                                    v-model="passwordData.confirmPassword"
+                                    :type="
+                                        passwordVisible.confirm
+                                            ? 'text'
+                                            : 'password'
+                                    "
+                                    placeholder="Confirm new password"
+                                    class="form-control"
+                                    :class="{
+                                        'is-invalid':
+                                            passwordValidate.confirmPassword ||
+                                            (!passwordsMatch &&
+                                                passwordData.confirmPassword)
+                                    }"
+                                />
+                                <div
+                                    class="eye-icon"
+                                    b-tooltip.hover
+                                    :title="
+                                        passwordVisible.confirm
+                                            ? 'hide password'
+                                            : 'show password'
+                                    "
+                                    @click="togglePasswordVisibility('confirm')"
+                                >
+                                    <!-- Eye Icon -->
+                                    <svg
+                                        v-if="passwordVisible.confirm"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 576 512"
+                                        width="20"
+                                        height="20"
+                                        fill="gray"
+                                    >
+                                        <path
+                                            d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"
+                                        />
+                                    </svg>
+                                    <!-- Eye Slash Icon -->
+                                    <svg
+                                        v-else
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 640 512"
+                                        width="20"
+                                        height="20"
+                                        fill="gray"
+                                    >
+                                        <path
+                                            d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zm151 118.3C226 97.7 269.5 80 320 80c65.2 0 118.8 29.6 159.9 67.7C518.4 183.5 545 226 558.6 256c-12.6 28-36.6 66.8-70.9 100.9l-53.8-42.2c9.1-17.6 14.2-37.5 14.2-58.7c0-70.7-57.3-128-128-128c-32.2 0-61.7 11.9-84.2 31.5l-46.1-36.1zM394.9 284.2l-81.5-63.9c4.2-8.5 6.6-18.2 6.6-28.3c0-5.5-.7-10.9-2-16c.7 0 1.3 0 2 0c44.2 0 80 35.8 80 80c0 9.9-1.8 19.4-5.1 28.2zm51.3 163.3l-41.9-33C378.8 425.4 350.7 432 320 432c-65.2 0-118.8-29.6-159.9-67.7C121.6 328.5 95 286 81.4 256c8.3-18.4 21.5-41.5 39.4-64.8L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5zm-88-69.3L302 334c-23.5-5.4-43.1-21.2-53.7-42.3l-56.1-44.2c-.2 2.8-.3 5.6-.3 8.5c0 70.7 57.3 128 128 128c13.3 0 26.1-2 38.2-5.8z"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div
+                                v-if="passwordValidate.confirmPassword"
+                                class="form-validate"
+                            >
+                                Please confirm your new password
+                            </div>
+                            <div
+                                v-if="
+                                    !passwordsMatch &&
+                                    passwordData.confirmPassword
+                                "
+                                class="form-validate"
+                            >
+                                Passwords do not match
+                            </div>
+                        </div>
+
+                        <!-- Update Password Button -->
+                        <div class="d-flex justify-content-end">
+                            <button
+                                class="btn primary-btn"
+                                @click="handlePasswordUpdate()"
+                                :disabled="
+                                    !isPasswordFormValid || isUpdatingPassword
+                                "
+                            >
+                                <span v-if="isUpdatingPassword">
+                                    Updating...
+                                </span>
+                                <span v-else> Update Password </span>
+                            </button>
                         </div>
                     </div>
-                    <div
-                        v-if="
-                            validate.password &&
-                            (password == '' || password == null)
-                        "
-                        class="form-validate"
-                    >
-                        please enter a password!
-                    </div>
-                    <CheckPasswordComplexity
-                        :formData="{
-                            username: userName,
-                            password: password,
-                            firstName: firstName,
-                            lastName: lastName,
-                            email: email
-                        }"
-                    />
-                </div>
-                <div class="d-flex justify-content-between mb-3 mt-2">
-                    <button
-                        class="btn primary-btn"
-                        @click="ValidatePassword()"
-                        :disabled="!hasPasswordChanged"
-                    >
-                        Update password
-                    </button>
                 </div>
             </div>
         </div>
@@ -783,7 +1104,93 @@ export default {
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
 }
-/* ------------------- */
+
+/* Password Section Styles */
+.password-section {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #f9fafb;
+}
+
+.password-change-form {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 16px;
+    border: 1px solid #e5e7eb;
+}
+
+/* Enhanced Alert styles with better visual feedback */
+.alert {
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    border: 2px solid;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    border-color: #10b981;
+    color: #065f46;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border-color: #ef4444;
+    color: #991b1b;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+}
+
+/* Theme-aware cancel button */
+.cancel-btn {
+    background-color: transparent;
+    color: var(--primary-color, #007bff);
+    border: 2px solid var(--primary-color, #007bff);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+    padding: 8px 16px;
+}
+
+.cancel-btn:hover {
+    background-color: var(--primary-color, #007bff);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.cancel-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* Enhanced primary button */
+.primary-btn {
+    background-color: var(--primary-color, #007bff);
+    border-color: var(--primary-color, #007bff);
+    transition: all 0.3s ease;
+}
+
+.primary-btn:hover {
+    background-color: var(--primary-color-dark, #0056b3);
+    border-color: var(--primary-color-dark, #0056b3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.primary-btn:disabled {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    transform: none;
+    box-shadow: none;
+}
 
 #plus-svg {
     position: absolute;
@@ -820,16 +1227,19 @@ export default {
     max-width: 350px;
     max-height: 350px;
 }
+
 .password-div {
     position: relative;
     display: flex;
     flex-direction: row;
     align-items: center;
 }
+
 .eye-icon {
     position: absolute;
     right: 20px;
 }
+
 .eye-icon:hover {
     cursor: pointer;
 }
@@ -846,135 +1256,42 @@ export default {
     color: black;
 }
 
+.form-control.is-invalid {
+    border-color: #dc3545;
+}
+
 .form-validate {
     font-size: 0.75rem;
     color: red;
     font-weight: 300;
-}
-/**-------------------------------------  */
-/* A lot of CSS to styling two radio box */
-.control {
-    font-family: 'Poppins' sans-serif;
-    display: block;
-    position: relative;
-    padding-left: 30px;
-    margin-bottom: 5px;
-    padding-top: 3px;
-    cursor: pointer;
+    margin-top: 4px;
 }
 
-.control > span {
+.form-label {
     font-weight: 500;
-    font-size: 0.938rem;
-    color: #667085;
-    text-align: center;
-}
-.control input {
-    position: absolute;
-    z-index: -1;
-    opacity: 0;
-}
-.control_indicator {
-    position: absolute;
-    top: 2px;
-    left: 0;
-    height: 29.09px;
-    width: 29.09px;
-    background: #f9f5ff;
-    border: 1.45px solid #9c7eec;
-    border-radius: 8.73px;
-}
-.control:hover input ~ .control_indicator,
-.control input:focus ~ .control_indicator {
-    background: #e7ddf6;
+    margin-bottom: 6px;
+    color: #374151;
 }
 
-.control input:checked ~ .control_indicator {
-    background: #f9f5ff;
-}
-.control:hover input:not([disabled]):checked ~ .control_indicator,
-.control input:checked:focus ~ .control_indicator {
-    background: #f9f5ff;
-}
-.control input:disabled ~ .control_indicator {
-    background: #e6e6e6;
-    opacity: 0.6;
-    pointer-events: none;
-}
-.control_indicator:after {
-    box-sizing: unset;
-    content: '';
-    position: absolute;
-    display: none;
-}
-.control input:checked ~ .control_indicator:after {
-    display: block;
-}
-.control-checkbox .control_indicator:after {
-    left: 4px;
-    top: 5px;
-    width: 13.58px;
-    height: 9.33px;
-    border: solid #9c7eec;
-    border-width: 0px 0px 2.9px 2.9px;
-    transform: rotate(-45deg);
-}
-.control-checkbox input:disabled ~ .control_indicator:after {
-    border-color: #7b7b7b;
-}
-.control-checkbox .control_indicator::before {
-    content: '';
-    display: block;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 4.5rem;
-    height: 4.5rem;
-    margin-left: -1.3rem;
-    margin-top: -1.3rem;
-    background: #9c7eec;
-    border-radius: 3rem;
-    opacity: 0.6;
-    z-index: 99999;
-    transform: scale(0);
-}
-
-.control-checkbox input + .control_indicator::before {
-    animation: s-ripple 250ms ease-out;
-}
-.control-checkbox input:checked + .control_indicator::before {
-    animation-name: s-ripple-dup;
-}
-/* End of check box styling */
-
+/* Modal Styles */
 .modal {
     display: block;
-    /* Hidden by default */
     position: fixed;
-    /* Stay in place */
     z-index: 1;
-    /* Sit on top */
     left: 0;
     top: 0;
     width: 100%;
-    /* Full width */
     height: 100%;
-    /* Full height */
     overflow: auto;
-    /* Enable scroll if needed */
     background-color: rgba(255, 255, 255, 0.459);
-    /* Fallback color */
     background-color: rgba(0, 0, 0, 0.4);
-    /* Black w/ opacity */
 }
 
 .modal-content {
     background-color: #fefefe;
     margin: 5% auto;
-    /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
-    /* Could be more or less, depending on screen size */
     width: 80%;
     height: 75%;
 }
@@ -982,11 +1299,9 @@ export default {
 .warn-content {
     background-color: #fefefe;
     margin: 15% auto;
-    /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
     width: 670px;
-    /* Could be more or less, depending on screen size */
 }
 
 .modal-message {
@@ -1056,7 +1371,7 @@ export default {
     color: rgb(218, 180, 13);
 }
 
-/* Shake animation for waring line */
+/* Shake animation for warning line */
 .shake {
     animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
     transform: translate3d(0, 0, 0);
