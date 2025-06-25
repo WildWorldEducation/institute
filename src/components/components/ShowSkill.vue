@@ -918,7 +918,10 @@ export default {
                     >
                         <!-- If not logged in, go to Login page -->
                         <button
-                            v-if="!sessionDetailsStore.isLoggedIn"
+                            v-if="
+                                !sessionDetailsStore.isLoggedIn &&
+                                skill.type != 'domain'
+                            "
                             @click="showGuestTooltip"
                             class="btn socratic-btn"
                         >
@@ -927,7 +930,8 @@ export default {
                         <button
                             v-else-if="
                                 userDetailsStore.role == 'student' &&
-                                isAITokenLimitReached == false
+                                isAITokenLimitReached == false &&
+                                skill.type != 'domain'
                             "
                             @click="scrollToAITutor(true)"
                             class="btn socratic-btn"
@@ -936,7 +940,10 @@ export default {
                         </button>
                         <button
                             @click="scrollToAITutor(false)"
-                            v-else-if="userDetailsStore.role == 'student'"
+                            v-else-if="
+                                userDetailsStore.role == 'student' &&
+                                skill.type != 'domain'
+                            "
                             class="btn socratic-btn"
                         >
                             Socratic Tutor
