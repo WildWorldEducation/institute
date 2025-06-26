@@ -504,10 +504,10 @@ export default {
                     class="d-flex flex-row justify-content-between justify-content-lg-end gap-2 mt-5 pb-2 pb-lg-0"
                 >
                     <button class="btn red-btn" @click="handleCancelCrop">
-                        <span class="d-none d-lg-block">Cancel</span>
+                        <span>Cancel</span>
                     </button>
                     <button class="btn green-btn" @click="handleCropImage">
-                        <span class="d-none d-lg-block">Crop</span>
+                        <span>Crop</span>
                     </button>
                 </div>
             </div>
