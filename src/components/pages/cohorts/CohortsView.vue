@@ -15,7 +15,22 @@ export default {
         };
     },
     data() {
-        return {};
+        return {
+            cohort: {
+                id: null,
+                name: null,
+                isSkillsLocked: null
+            },
+            isLoading: false,
+            // Flag to show user details when in phone view
+            showDetails: false,
+            // Tutorial tooltips
+            isTutorialComplete: false,
+            showTutorialTip1: false,
+            showTutorialTip2: false,
+            showTutorialTip3: false,
+            showTutorialTip4: false
+        };
     },
     components: {
         CohortDetails,
@@ -24,7 +39,12 @@ export default {
     async created() {
         await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
     },
-    methods: {}
+    methods: {
+        updateCohortDetails(cohort) {
+            this.cohort = cohort;
+            console.log(this.cohort);
+        }
+    }
 };
 </script>
 
@@ -74,9 +94,11 @@ export default {
     </div>
     <div v-else id="user-container" class="container-fluid">
         <div class="row position-relative">
+            <!-- Left column -->
             <div class="col-lg-4 col-md-5">
                 <CohortsList />
             </div>
+            <!-- Right column -->
             <!-- User detail view for PC and Tablet View -->
             <div class="col-lg-8 col-md-7 d-none d-md-block">
                 <div class="row user-form-data-row">
@@ -134,6 +156,91 @@ export default {
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(2)">
+                    close
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Instructor Tutorial modal -->
+    <div
+        v-if="
+            (userDetailsStore.role == 'instructor' ||
+                userDetailsStore.role == 'partner') &&
+            (showTutorialTip1 ||
+                showTutorialTip2 ||
+                showTutorialTip3 ||
+                showTutorialTip4)
+        "
+        class="modal"
+    >
+        <div class="modal-content bg-light">
+            <div v-if="showTutorialTip1">
+                <p>This is your Cohorts page.</p>
+
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
+            </div>
+            <div v-if="showTutorialTip2">
+                <p>
+                    Cohorts allow you, as an instructor, to present the same
+                    filtered version of a skill tree to a selective group of
+                    handpicked students.
+                </p>
+                <p>
+                    For example, if you are guiding students through a math
+                    class, each student can create a math-specific account and
+                    you can add those accounts to your math class cohort,
+                    updating the nodes as your instruction progresses.
+                </p>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(2)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
+            </div>
+            <div v-if="showTutorialTip3">
+                <p>
+                    To leverage this feature, create a cohort, add relevant
+                    students, and filter the tree they are to see as desired.
+                </p>
+                <p>
+                    You can update the filtered skill tree nodes in your cohort,
+                    plus the cohort's members, whenever you please.
+                </p>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(3)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
+            </div>
+            <div v-if="showTutorialTip4">
+                <p>
+                    Before adding a student to your cohort, make sure they are
+                    in no other cohorts; students can only be in one cohort at a
+                    time.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(4)">
                     close
                 </button>
             </div>

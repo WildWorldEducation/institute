@@ -61,17 +61,9 @@ export default {
                 <!-- Instructors -->
                 <h2 class="secondary-heading h4">Check Progress</h2>
                 <div class="d-flex flex-column">
-                    <!-- Skill Tree -->
                     <router-link
-                        :to="`/student/${this.$parent.user.id}/skill-tree`"
+                        :to="`/student/${this.$parent.cohort.id}/progress-report`"
                         class="fit-content"
-                        target="_blank"
-                    >
-                        Skill tree
-                    </router-link>
-                    <router-link
-                        :to="`/student/${this.$parent.user.id}/progress-report`"
-                        class="fit-content mt-2"
                         target="_blank"
                     >
                         Progress
@@ -79,21 +71,21 @@ export default {
                     <!-- Tracking Report -->
                     <h2 class="secondary-heading h4 mt-4">Tracking Report</h2>
                     <router-link
-                        :to="`/student/${this.$parent.user.id}/skill-activity`"
+                        :to="`/student/${this.$parent.cohort.id}/skill-activity`"
                         class="fit-content"
                         target="_blank"
                     >
                         Skill activity
                     </router-link>
                     <router-link
-                        :to="`/student/${this.$parent.user.id}/total-time`"
+                        :to="`/student/${this.$parent.cohort.id}/total-time`"
                         class="fit-content mt-2"
                         target="_blank"
                     >
                         Time on platform
                     </router-link>
                     <router-link
-                        :to="`/student/${this.$parent.user.id}/assessment-status`"
+                        :to="`/student/${this.$parent.cohort.id}/assessment-status`"
                         class="fit-content mt-2"
                         target="_blank"
                     >
@@ -102,14 +94,14 @@ export default {
                     <!-- Goals -->
                     <h2 class="secondary-heading h4 mt-4">Assign work</h2>
                     <router-link
-                        :to="'/student/' + this.$parent.user.id + '/skills'"
+                        :to="'/student/' + this.$parent.cohort.id + '/skills'"
                         class="fit-content"
                         target="_blank"
                     >
                         Assign goals
                     </router-link>
                     <router-link
-                        :to="'/student/' + this.$parent.user.id + '/goals'"
+                        :to="'/student/' + this.$parent.cohort.id + '/goals'"
                         class="mt-2 fit-content mb-3"
                         target="_blank"
                     >
@@ -123,10 +115,10 @@ export default {
 
                 <!-- Edit Cohort -->
                 <router-link
-                    :to="`/edit/student/${this.$parent.user.id}`"
+                    :to="`/cohort/edit/${this.$parent.cohort.id}`"
                     class="btn primary-btn mt-1"
                 >
-                    Edit profile&nbsp;
+                    Edit cohort&nbsp;
                     <!-- Pencil icon -->
                     <svg
                         width="19"
@@ -169,7 +161,7 @@ export default {
                     <input
                         type="radio"
                         value="0"
-                        v-model="$parent.user.isSkillsLocked"
+                        v-model="$parent.cohort.isSkillsLocked"
                         @change="updateSkillsLock()"
                     />
                     <label for="one">No</label>
@@ -177,7 +169,7 @@ export default {
                     <input
                         type="radio"
                         value="1"
-                        v-model="$parent.user.isSkillsLocked"
+                        v-model="$parent.cohort.isSkillsLocked"
                         @change="updateSkillsLock()"
                     />
                     <label for="two">Yes</label>

@@ -411,7 +411,7 @@ const router = createRouter({
             }
         },
         {
-            path: '/cohort/:cohortId',
+            path: '/cohort/edit/:cohortId',
             name: 'cohort',
             component: () =>
                 import('../components/pages/cohorts/CohortView.vue'),
