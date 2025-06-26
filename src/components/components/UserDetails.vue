@@ -167,7 +167,7 @@ export default {
                     "
                     class="secondary-heading h4"
                 >
-                    Progress
+                    Check Progress
                 </h2>
                 <div
                     v-if="
@@ -176,17 +176,18 @@ export default {
                     "
                     class="d-flex flex-column"
                 >
-                    <router-link
+                    <!-- Not ready yet     -->
+                    <!-- <router-link
                         :to="`/student/${this.$parent.user.id}/tracking-report`"
                         class="fit-content"
                         target="_blank"
                     >
                         Tracking report
-                    </router-link>
+                    </router-link> -->
                     <!-- Skill Tree -->
                     <router-link
                         :to="`/student/${this.$parent.user.id}/skill-tree`"
-                        class="fit-content mt-2"
+                        class="fit-content"
                         target="_blank"
                     >
                         Skill tree
@@ -240,7 +241,7 @@ export default {
                     "
                     class="secondary-heading h4"
                 >
-                    Account
+                    Edit account
                 </h2>
 
                 <!-- Edit User -->
@@ -312,15 +313,15 @@ export default {
                     </button>
                 </div>
                 <!-- Lock skill progress -->
-                <div class="mt-4">
+                <div
+                    v-if="
+                        this.userDetailsStore.role == 'instructor' ||
+                        this.userDetailsStore.role == 'partner'
+                    "
+                    class="mt-4"
+                >
                     <div class="d-flex gap-1">
-                        <h3
-                            v-if="
-                                this.userDetailsStore.role == 'instructor' ||
-                                this.userDetailsStore.role == 'partner'
-                            "
-                            class="secondary-heading h6"
-                        >
+                        <h3 class="secondary-heading h6">
                             Lock skill progress?
                         </h3>
                         <div class="tooltip-wrapper">
