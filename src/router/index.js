@@ -394,7 +394,7 @@ const router = createRouter({
             path: '/cohorts',
             name: 'cohorts',
             component: () =>
-                import('../components/pages/cohorts/CohortsListView.vue'),
+                import('../components/pages/cohorts/CohortsView.vue'),
             meta: {
                 requiresAuth: true,
                 roles: ['admin', 'instructor', 'partner']
