@@ -176,14 +176,6 @@ export default {
                     "
                     class="d-flex flex-column"
                 >
-                    <!-- Not ready yet     -->
-                    <!-- <router-link
-                        :to="`/student/${this.$parent.user.id}/tracking-report`"
-                        class="fit-content"
-                        target="_blank"
-                    >
-                        Tracking report
-                    </router-link> -->
                     <!-- Skill Tree -->
                     <router-link
                         :to="`/student/${this.$parent.user.id}/skill-tree`"
@@ -192,16 +184,38 @@ export default {
                     >
                         Skill tree
                     </router-link>
-                    <!-- Goals -->
-                    <h2
-                        v-if="
-                            this.userDetailsStore.role == 'instructor' ||
-                            this.userDetailsStore.role == 'partner'
-                        "
-                        class="secondary-heading h4 mt-4"
+                    <router-link
+                        :to="`/student/${this.$parent.user.id}/progress-report`"
+                        class="fit-content mt-2"
+                        target="_blank"
                     >
-                        Assign work
-                    </h2>
+                        Progress
+                    </router-link>
+                    <!-- Tracking Report -->
+                    <h2 class="secondary-heading h4 mt-4">Tracking Report</h2>
+                    <router-link
+                        :to="`/student/${this.$parent.user.id}/skill-activity`"
+                        class="fit-content"
+                        target="_blank"
+                    >
+                        Skill activity
+                    </router-link>
+                    <router-link
+                        :to="`/student/${this.$parent.user.id}/total-time`"
+                        class="fit-content mt-2"
+                        target="_blank"
+                    >
+                        Time on platform
+                    </router-link>
+                    <router-link
+                        :to="`/student/${this.$parent.user.id}/assessment-status`"
+                        class="fit-content mt-2"
+                        target="_blank"
+                    >
+                        Assessment status
+                    </router-link>
+                    <!-- Goals -->
+                    <h2 class="secondary-heading h4 mt-4">Assign work</h2>
                     <router-link
                         :to="'/student/' + this.$parent.user.id + '/skills'"
                         class="fit-content"
@@ -366,6 +380,7 @@ export default {
                     />
                     <label for="two">Yes</label>
                 </div>
+                <h2 class="secondary-heading h4 mt-4">Notifications</h2>
             </div>
         </div>
     </div>
