@@ -181,6 +181,7 @@ export default {
             var url = '/users/' + this.userId + '/instructor/edit-avatar';
             fetch(url, requestOptions).then(() => {
                 this.isImageLoading = false;
+                this.usersStore.getUsers();
             });
         },
 
