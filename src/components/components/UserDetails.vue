@@ -59,7 +59,7 @@ export default {
 
 <template>
     <div id="user-information" class="container mt-1 bg-light p-2">
-        <!-- The X for turn off the user details popup windows when on phone view -->
+        <!-- The X to close the user details popup windows when on phone view -->
         <div
             class="flex-row-reverse d-flex d-md-none align-items-end mb-2"
             @click="this.$parent.showDetails = false"
@@ -211,7 +211,7 @@ export default {
                     </router-link>
                     <router-link
                         :to="'/student/' + this.$parent.user.id + '/goals'"
-                        class="mt-2 fit-content"
+                        class="mt-2 fit-content mb-3"
                         target="_blank"
                     >
                         See current goals
