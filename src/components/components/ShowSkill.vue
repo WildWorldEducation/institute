@@ -916,6 +916,7 @@ export default {
                             'justify-content-between': isMobileCheck < 576
                         }"
                     >
+                        <!-- Socratic Tutor -->
                         <!-- If not logged in, go to Login page -->
                         <button
                             v-if="
@@ -957,7 +958,9 @@ export default {
                                 userDetailsStore.role == 'student' &&
                                 !isUnlocked &&
                                 !isMastered &&
-                                showAncestorLink
+                                showAncestorLink &&
+                                (skill.type != 'super' ||
+                                    areAllSubskillsMastered)
                             "
                             :to="'/skills/' + ancestor"
                             class="btn assessment-btn me-1"
@@ -977,11 +980,10 @@ export default {
                         </router-link>
                         <!-- Assessment -->
                         <button
-                            v-if="
+                            v-else-if="
                                 userDetailsStore.role == 'student' &&
                                 !isMastered &&
                                 skill.type != 'domain' &&
-                                skill.id &&
                                 (skill.type !== 'super' ||
                                     areAllSubskillsMastered)
                             "
@@ -989,6 +991,43 @@ export default {
                             @click="scrollToAITutor(false)"
                         >
                             Take the Test
+                        </button>
+                        <button
+                            v-else-if="
+                                userDetailsStore.role == 'student' &&
+                                !isMastered &&
+                                skill.type === 'super' &&
+                                !areAllSubskillsMastered
+                            "
+                            class="btn me-1 assessment-btn"
+                            style="opacity: 0.7"
+                            @click="showUnmasteredSubskillsModal"
+                            title="Click to see which subskills need to be mastered"
+                        >
+                            Master Subskills First
+                        </button>
+                        <button
+                            v-else-if="
+                                userDetailsStore.role == 'student' &&
+                                skill.type == 'domain'
+                            "
+                            @click="MakeMastered()"
+                            class="btn me-1 assessment-btn"
+                        >
+                            Mark complete and go to next skill
+                        </button>
+                        <!-- If not logged in, go to Login page -->
+                        <button
+                            v-else-if="!sessionDetailsStore.isLoggedIn"
+                            @click="showGuestTooltip"
+                            class="btn me-1 assessment-btn"
+                        >
+                            <span v-if="skill.type != 'domain'"
+                                >Take the Test</span
+                            >
+                            <span v-else
+                                >Mark complete and go to next skill</span
+                            >
                         </button>
                         <!-- Unmastered Subskills Modal -->
                         <div
@@ -1027,41 +1066,6 @@ export default {
                                 </button>
                             </div>
                         </div>
-                        <button
-                            v-if="
-                                userDetailsStore.role == 'student' &&
-                                !isMastered &&
-                                skill.type === 'super' &&
-                                !areAllSubskillsMastered
-                            "
-                            class="btn me-1 assessment-btn"
-                            style="opacity: 0.7"
-                            @click="showUnmasteredSubskillsModal"
-                            title="Click to see which subskills need to be mastered"
-                        >
-                            Master Subskills First
-                        </button>
-                        <button
-                            v-if="
-                                userDetailsStore.role == 'student' &&
-                                skill.type == 'domain'
-                            "
-                            @click="MakeMastered()"
-                            class="btn me-1 assessment-btn"
-                        >
-                            Go To Child Skill
-                        </button>
-                        <!-- If not logged in, go to Login page -->
-                        <button
-                            v-if="!sessionDetailsStore.isLoggedIn"
-                            @click="showGuestTooltip"
-                            class="btn me-1 assessment-btn"
-                        >
-                            <span v-if="skill.type != 'domain'"
-                                >Take the Test</span
-                            >
-                            <span v-else>Mark Complete</span>
-                        </button>
                     </div>
 
                     <!-- Right hand buttons -->

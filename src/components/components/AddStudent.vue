@@ -98,14 +98,6 @@ export default {
         // Load all skills.
         if (this.skillsStore.skillsList.length < 1)
             await this.skillsStore.getSkillsList();
-
-        // Find the first level skills - we will make these mastered.
-        for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-            if (this.skillsStore.skillsList[i].parent == 0) {
-                // Add them to the local array.
-                this.firstLevelSkills.push(this.skillsStore.skillsList[i]);
-            }
-        }
     },
     methods: {
         async ValidateForm() {
@@ -142,10 +134,6 @@ export default {
                 }
                 this.isLoading = true;
                 this.newUserId = data.id;
-                // Make all relevant skills and domains available or mastered if validated
-                this.firstLevelSkills.forEach((skill) =>
-                    this.userSkillsStore.MakeMastered(this.newUserId, skill)
-                );
 
                 // Assign the instructor/partner
                 await fetch('/users/add/instructor', {

@@ -869,10 +869,7 @@ router.get('/url-only/:id', (req, res, next) => {
         try {
             if (err) {
                 throw err;
-            }
-
-            console.log(encodeURIComponent(results[0]));
-            console.log(results[0]);
+            }                        
 
             res.json(results[0]);
         } catch (err) {

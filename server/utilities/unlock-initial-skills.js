@@ -58,12 +58,12 @@ function unlockInitialSkills(userId) {
             function makeAccessible(userId, skill) {
                 // Make this skill accessible.
                 let sqlQuery3 = `
-            INSERT INTO user_skills (user_id, skill_id, is_accessible)
-            VALUES(${conn.escape(userId)},
-            ${conn.escape(skill.id)},
-            1)
-            ON DUPLICATE KEY UPDATE is_accessible=1;
-            `;
+                    INSERT INTO user_skills (user_id, skill_id, is_accessible)
+                    VALUES(${conn.escape(userId)},
+                    ${conn.escape(skill.id)},
+                    1)
+                    ON DUPLICATE KEY UPDATE is_accessible=1;
+                    `;
                 conn.query(sqlQuery3, (err, results) => {
                     try {
                         if (err) {

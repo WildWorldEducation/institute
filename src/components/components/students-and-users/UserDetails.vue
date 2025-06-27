@@ -206,14 +206,14 @@ export default {
                         target="_blank"
                     >
                         Time on platform
-                    </router-link>
+                    </router-link> -->
                     <router-link
                         :to="`/student/${this.$parent.user.id}/assessment-status`"
                         class="fit-content mt-2"
                         target="_blank"
                     >
                         Assessment status
-                    </router-link> -->
+                    </router-link>
                     <!-- Goals -->
                     <h2 class="secondary-heading h4 mt-4">Assign work</h2>
                     <router-link
