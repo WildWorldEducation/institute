@@ -394,7 +394,7 @@ const router = createRouter({
             path: '/cohorts',
             name: 'cohorts',
             component: () =>
-                import('../components/pages/cohorts/CohortsListView.vue'),
+                import('../components/pages/cohorts/CohortsView.vue'),
             meta: {
                 requiresAuth: true,
                 roles: ['admin', 'instructor', 'partner']
@@ -411,7 +411,7 @@ const router = createRouter({
             }
         },
         {
-            path: '/cohort/:cohortId',
+            path: '/cohort/edit/:cohortId',
             name: 'cohort',
             component: () =>
                 import('../components/pages/cohorts/CohortView.vue'),
@@ -467,17 +467,57 @@ const router = createRouter({
                 roles: ['instructor', 'admin', 'partner']
             }
         },
+        // Analytics
         {
-            path: '/student/:studentId/tracking-report',
-            name: 'tracking-report',
+            path: '/student/:studentId/assessment-status',
+            name: 'assessment-status',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/TrackingReportView.vue'
+                    '../components/pages/teacher-analytics/AssessmentStatusReportView.vue'
                 ),
             meta: {
-                title: 'Tracking Report',
+                title: 'Assessment Status',
                 requiresAuth: true,
-                roles: ['instructor', 'admin', 'partner']
+                roles: ['instructor', 'partner']
+            }
+        },
+        {
+            path: '/student/:studentId/progress-report',
+            name: 'progress-report',
+            component: () =>
+                import(
+                    '../components/pages/teacher-analytics/ProgressReportView.vue'
+                ),
+            meta: {
+                title: 'Progress Report',
+                requiresAuth: true,
+                roles: ['instructor', 'partner']
+            }
+        },
+        {
+            path: '/student/:studentId/skill-activity',
+            name: 'skill-activity',
+            component: () =>
+                import(
+                    '../components/pages/teacher-analytics/SkillActivityReportView.vue'
+                ),
+            meta: {
+                title: 'Skill Activity',
+                requiresAuth: true,
+                roles: ['instructor', 'partner']
+            }
+        },
+        {
+            path: '/student/:studentId/total-time',
+            name: 'total-time',
+            component: () =>
+                import(
+                    '../components/pages/teacher-analytics/TotalTimeReportView.vue'
+                ),
+            meta: {
+                title: 'Total Time',
+                requiresAuth: true,
+                roles: ['instructor', 'partner']
             }
         },
         // Tokens

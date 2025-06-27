@@ -1,8 +1,8 @@
 <script>
-import { useCohortsStore } from '../../../stores/CohortsStore.js';
+import CohortsList from '../../components/cohorts/CohortsList.vue';
+import CohortDetails from '../../components/cohorts/CohortDetails.vue';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
-import CohortView from './CohortView.vue';
-import CohortDetail from './CohortDetail.vue';
+import { useCohortsStore } from '../../../stores/CohortsStore.js';
 
 export default {
     setup() {
@@ -14,14 +14,16 @@ export default {
             userDetailsStore
         };
     },
-    components: {
-        CohortView,
-        CohortDetail
-    },
     data() {
         return {
-            showInformationModal: false,
-            selectedCohortId: null,
+            cohort: {
+                id: null,
+                name: null,
+                isSkillsLocked: null
+            },
+            isLoading: false,
+            // Flag to show user details when in phone view
+            showDetails: false,
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false,
@@ -30,75 +32,25 @@ export default {
             showTutorialTip4: false
         };
     },
+    components: {
+        CohortDetails,
+        CohortsList
+    },
     async created() {
         await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
-        // Check if user has visited before
-        this.checkIfTutorialComplete();
     },
-
     methods: {
-        restartTutorial() {
-            this.showTutorialTip2 = false;
-            this.showTutorialTip3 = false;
-            this.showTutorialTip4 = false;
-            this.showTutorialTip1 = true;
-        },
-        closeMobileDetail() {
-            this.showDetails = false; // Hide the mobile cohort detail modal
-        },
-        // Tutorials
-        async checkIfTutorialComplete() {
-            const result = await fetch(
-                '/users/check-tutorial-progress/cohorts/' +
-                    this.userDetailsStore.userId
-            );
-            const data = await result.json();
-            if (data == 0) {
-                this.isTutorialComplete = false;
-                this.showTutorialTip1 = true;
-            } else if (data == 1) {
-                this.isTutorialComplete = true;
-            }
-        },
-        progressTutorial(step) {
-            if (step == 1) {
-                this.showTutorialTip1 = false;
-                this.showTutorialTip2 = true;
-            } else if (step == 2) {
-                this.showTutorialTip2 = false;
-                this.showTutorialTip3 = true;
-            } else if (step == 3) {
-                this.showTutorialTip3 = false;
-                this.showTutorialTip4 = true;
-            } else if (step == 4) {
-                this.showTutorialTip4 = false;
-                this.markTutorialComplete();
-            }
-        },
-        markTutorialComplete() {
-            let url =
-                '/users/mark-tutorial-complete/cohorts/' +
-                this.userDetailsStore.userId;
-            const requestOptions = {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' }
-            };
-            fetch(url, requestOptions);
-        },
-        skipTutorial() {
-            this.showTutorialTip1 = false;
-            this.showTutorialTip2 = false;
-            this.showTutorialTip3 = false;
-            this.showTutorialTip4 = false;
-            this.isTutorialComplete = true;
-            this.markTutorialComplete();
+        updateCohortDetails(cohort) {
+            this.cohort = cohort;
+            console.log(this.cohort);
         }
     }
 };
 </script>
 
 <template>
-    <div class="container-fluid mobile-container">
+    <!-- Top row -->
+    <div class="container-fluid">
         <!-- Top buttons -->
         <div class="d-flex justify-content-between mb-2">
             <router-link class="btn primary-btn me-2" to="/cohorts/add"
@@ -132,27 +84,83 @@ export default {
                 </svg>
             </button>
         </div>
-        <!-- List of cohorts -->
-        <div class="row gx-1">
-            <!-- Left Container -->
-            <div class="col-lg-3 col-md-4">
-                <router-link
-                    v-for="cohort in cohortsStore.cohorts"
-                    :key="cohort.id"
-                    :class="
-                        cohort.id === selectedCohortId
-                            ? 'isCurrentlySelected'
-                            : 'cohort-buttons'
-                    "
-                    class="mb-1"
-                    :to="'/cohort/' + cohort.id"
-                >
-                    {{ cohort.name }}
-                </router-link>
+    </div>
+    <!-- Loading animation -->
+    <div
+        v-if="isLoading == true"
+        class="loading-animation d-flex justify-content-center align-items-center py-4"
+    >
+        <span class="loader"></span>
+    </div>
+    <div v-else id="user-container" class="container-fluid">
+        <div class="row position-relative">
+            <!-- Left column -->
+            <div class="col-lg-4 col-md-5">
+                <CohortsList />
+            </div>
+            <!-- Right column -->
+            <!-- User detail view for PC and Tablet View -->
+            <div class="col-lg-8 col-md-7 d-none d-md-block">
+                <div class="row user-form-data-row">
+                    <CohortDetails v-if="cohortsStore.cohorts.length > 0" />
+                    <div v-else>
+                        <h1 class="text-muted py-5">You have no cohorts</h1>
+                    </div>
+                </div>
+            </div>
+            <!-- User detail view specific for phone -->
+            <div
+                v-if="showDetails"
+                class="col-md-7 d-block d-md-none"
+                id="user-detail-section"
+            >
+                <div class="row">
+                    <CohortDetails :cohortId="cohort.id" />
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Instructor Introduction modal -->
+    <div v-if="showTutorialTip1 || showTutorialTip2" class="modal">
+        <div class="modal-content">
+            <div v-if="showTutorialTip1">
+                <p>This page shows a list of your students.</p>
+                <p>Click on the student's name to see their details.</p>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        next
+                    </button>
+                    <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button>
+                </div>
+            </div>
+            <div v-if="showTutorialTip2">
+                <p>Under the heading "Progress" you will find 3 buttons:</p>
+                <p>
+                    "Vertical Tree" will provide a look at the student's
+                    progress in the full tree view.
+                </p>
+                <p>
+                    "Collapsible Tree" takes you to a page similar to your own
+                    collapsible tree. Here you can see the student's progress
+                    and set goals for students.
+                </p>
+                <p>
+                    "Goals" will navigate to a page that displays all the
+                    students goals and the progress they have made towards them.
+                </p>
+
+                <button class="btn primary-btn" @click="progressTutorial(2)">
+                    close
+                </button>
+            </div>
+        </div>
+    </div>
     <!-- Instructor Tutorial modal -->
     <div
         v-if="
@@ -240,61 +248,85 @@ export default {
     </div>
 </template>
 
-<style>
-.cohort-buttons {
-    font-family: 'Poppins', sans-serif;
-    height: 80px;
-    width: 100%;
-    border-radius: 8px;
-    border: 1px solid var(--primary-color);
-    background-color: #c8d7da;
-    color: black;
-    overflow: hidden;
-    padding: 16px 28px;
-    font-size: 1.25rem;
-    font-weight: 400;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
+<style scoped>
+#first-content-row {
+    margin-top: -10px;
+    padding-left: 46px;
+    padding-top: 16px;
+    padding-bottom: 17px;
+    padding-right: 46px;
+    height: 77px;
 }
 
-.cohort-buttons:hover {
-    background-color: var(--primary-color);
-    color: var(--primary-contrast-color);
-}
-
-.isCurrentlySelected {
-    font-family: 'Poppins', sans-serif;
-    height: 80px;
-    width: 100%;
-    border-radius: 8px;
-    border: 1px solid var(--secondary-contrast-color);
-    background-color: var(--secondary-color);
-    color: var(--secondary-contrast-color);
-    overflow: hidden;
-    padding: 16px 28px;
-    font-size: 1.25rem;
-    font-weight: 400;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-ul li {
-    list-style: none;
+#user-container {
+    padding-left: 35px;
+    padding-right: 46px;
 }
 
 /* Mobile */
 @media (max-width: 480px) {
+    #first-content-row {
+        padding-top: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    #user-container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    #user-detail-section {
+        position: fixed;
+        top: 0px;
+        left: 50%;
+        transform: translate(-50%, 0);
+        width: 95%;
+        height: 95%;
+    }
 }
 
 /* Tablets */
-@media (min-width: 481px) and (max-width: 1023px) {
+@media (min-width: 481px) and (max-width: 1024px) {
+    #user-container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .user-form-data-row {
+        margin-right: 0px;
+    }
 }
 
-/* Desktops/laptops */
-@media (min-width: 1025px) {
+/* Loading animation */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* End of loading animation */
+
+.loading-animation {
+    min-height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 }
 
 /* Modals */

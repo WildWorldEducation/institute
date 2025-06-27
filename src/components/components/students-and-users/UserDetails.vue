@@ -1,8 +1,8 @@
 <script>
 // Import the stores.
-import { useUsersStore } from '../../stores/UsersStore';
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import TooltipBtn from './share-components/TooltipBtn.vue';
+import { useUsersStore } from '../../../stores/UsersStore';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import TooltipBtn from './../share-components/TooltipBtn.vue';
 
 export default {
     props: ['userId'],
@@ -59,7 +59,7 @@ export default {
 
 <template>
     <div id="user-information" class="container mt-1 bg-light p-2">
-        <!-- The X for turn off the user details popup windows when on phone view -->
+        <!-- The X to close the user details popup windows when on phone view -->
         <div
             class="flex-row-reverse d-flex d-md-none align-items-end mb-2"
             @click="this.$parent.showDetails = false"
@@ -176,14 +176,6 @@ export default {
                     "
                     class="d-flex flex-column"
                 >
-                    <!-- Not ready yet     -->
-                    <!-- <router-link
-                        :to="`/student/${this.$parent.user.id}/tracking-report`"
-                        class="fit-content"
-                        target="_blank"
-                    >
-                        Tracking report
-                    </router-link> -->
                     <!-- Skill Tree -->
                     <router-link
                         :to="`/student/${this.$parent.user.id}/skill-tree`"
@@ -192,16 +184,38 @@ export default {
                     >
                         Skill tree
                     </router-link>
-                    <!-- Goals -->
-                    <h2
-                        v-if="
-                            this.userDetailsStore.role == 'instructor' ||
-                            this.userDetailsStore.role == 'partner'
-                        "
-                        class="secondary-heading h4 mt-4"
+                    <!-- <router-link
+                        :to="`/student/${this.$parent.user.id}/progress-report`"
+                        class="fit-content mt-2"
+                        target="_blank"
                     >
-                        Assign work
-                    </h2>
+                        Progress
+                    </router-link> -->
+                    <!-- Tracking Report -->
+                    <!-- <h2 class="secondary-heading h4 mt-4">Tracking Report</h2>
+                    <router-link
+                        :to="`/student/${this.$parent.user.id}/skill-activity`"
+                        class="fit-content"
+                        target="_blank"
+                    >
+                        Skill activity
+                    </router-link>
+                    <router-link
+                        :to="`/student/${this.$parent.user.id}/total-time`"
+                        class="fit-content mt-2"
+                        target="_blank"
+                    >
+                        Time on platform
+                    </router-link>
+                    <router-link
+                        :to="`/student/${this.$parent.user.id}/assessment-status`"
+                        class="fit-content mt-2"
+                        target="_blank"
+                    >
+                        Assessment status
+                    </router-link> -->
+                    <!-- Goals -->
+                    <h2 class="secondary-heading h4 mt-4">Assign work</h2>
                     <router-link
                         :to="'/student/' + this.$parent.user.id + '/skills'"
                         class="fit-content"
@@ -211,7 +225,7 @@ export default {
                     </router-link>
                     <router-link
                         :to="'/student/' + this.$parent.user.id + '/goals'"
-                        class="mt-2 fit-content"
+                        class="mt-2 fit-content mb-3"
                         target="_blank"
                     >
                         See current goals
@@ -366,6 +380,7 @@ export default {
                     />
                     <label for="two">Yes</label>
                 </div>
+                <!-- <h2 class="secondary-heading h4 mt-4">Notifications</h2> -->
             </div>
         </div>
     </div>

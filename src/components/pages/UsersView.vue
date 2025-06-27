@@ -1,6 +1,6 @@
 <script>
-import UsersList from '../components/UsersList.vue';
-import UserDetails from '../components/UserDetails.vue';
+import UsersList from '../components/students-and-users/UsersList.vue';
+import UserDetails from '../components/students-and-users/UserDetails.vue';
 
 // Import the stores.
 import { useUsersStore } from '../../stores/UsersStore';
@@ -569,13 +569,13 @@ export default {
         padding-right: 10px;
     }
 
-    /* In the figma design I think in mobile the use detail will be a popup */
     #user-detail-section {
-        position: absolute;
-        top: -10px;
+        position: fixed;
+        top: 0px;
         left: 50%;
         transform: translate(-50%, 0);
-        width: 90%;
+        width: 95%;
+        height: 95%;
     }
 }
 
