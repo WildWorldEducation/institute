@@ -192,7 +192,7 @@ export default {
                         Progress
                     </router-link> -->
                     <!-- Tracking Report -->
-                    <!-- <h2 class="secondary-heading h4 mt-4">Tracking Report</h2>
+                    <h2 class="secondary-heading h4 mt-4">Tracking Report</h2>
                     <router-link
                         :to="`/student/${this.$parent.user.id}/skill-activity`"
                         class="fit-content"
@@ -200,7 +200,7 @@ export default {
                     >
                         Skill activity
                     </router-link>
-                    <router-link
+                    <!-- <router-link
                         :to="`/student/${this.$parent.user.id}/total-time`"
                         class="fit-content mt-2"
                         target="_blank"

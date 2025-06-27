@@ -126,6 +126,8 @@ const tokens = require('./routes/tokens');
 app.use('/tokens', tokens);
 const referrals = require('./routes/referrals');
 app.use('/referrals', referrals);
+const studentAnalytics = require('./routes/student-analytics');
+app.use('/student-analytics', studentAnalytics);
 
 // error handling middleware
 const errorHandlingMiddleware = require('./middlewares/errorHandlingMiddleWare');
