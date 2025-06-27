@@ -1,1 +1,0 @@
-import{_ as t,o as e,c as s,a as o}from"./main-8f0c693c.js";const c={setup(){},components:{},data(){return{}},async created(){},methods:{}},a={class:"container"},n=o("h1",{class:"heading"},"Skill Activity Report",-1),r=[n];function i(_,d,p,l,h,f){return e(),s("div",a,r)}const u=t(c,[["render",i]]);export{u as default};
