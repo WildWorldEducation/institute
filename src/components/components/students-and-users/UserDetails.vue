@@ -184,15 +184,15 @@ export default {
                     >
                         Skill tree
                     </router-link>
-                    <router-link
+                    <!-- <router-link
                         :to="`/student/${this.$parent.user.id}/progress-report`"
                         class="fit-content mt-2"
                         target="_blank"
                     >
                         Progress
-                    </router-link>
+                    </router-link> -->
                     <!-- Tracking Report -->
-                    <h2 class="secondary-heading h4 mt-4">Tracking Report</h2>
+                    <!-- <h2 class="secondary-heading h4 mt-4">Tracking Report</h2>
                     <router-link
                         :to="`/student/${this.$parent.user.id}/skill-activity`"
                         class="fit-content"
@@ -213,7 +213,7 @@ export default {
                         target="_blank"
                     >
                         Assessment status
-                    </router-link>
+                    </router-link> -->
                     <!-- Goals -->
                     <h2 class="secondary-heading h4 mt-4">Assign work</h2>
                     <router-link
@@ -380,7 +380,7 @@ export default {
                     />
                     <label for="two">Yes</label>
                 </div>
-                <h2 class="secondary-heading h4 mt-4">Notifications</h2>
+                <!-- <h2 class="secondary-heading h4 mt-4">Notifications</h2> -->
             </div>
         </div>
     </div>
