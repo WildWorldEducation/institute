@@ -7,7 +7,6 @@ export default {
             usersStore
         };
     },
-    components: {},
     data() {
         return {
             studentId: this.$route.params.studentId,
