@@ -1,6 +1,6 @@
 <script>
-import UsersList from '../components/UsersList.vue';
-import UserDetails from '../components/UserDetails.vue';
+import UsersList from '../components/students-and-users/UsersList.vue';
+import UserDetails from '../components/students-and-users/UserDetails.vue';
 
 // Import the stores.
 import { useUsersStore } from '../../stores/UsersStore';

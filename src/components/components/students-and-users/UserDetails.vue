@@ -1,8 +1,8 @@
 <script>
 // Import the stores.
-import { useUsersStore } from '../../stores/UsersStore';
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import TooltipBtn from './share-components/TooltipBtn.vue';
+import { useUsersStore } from '../../../stores/UsersStore';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import TooltipBtn from './../share-components/TooltipBtn.vue';
 
 export default {
     props: ['userId'],

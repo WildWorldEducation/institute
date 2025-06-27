@@ -1,7 +1,7 @@
 <script>
 // Import the users store.
-import { useUsersStore } from '../../stores/UsersStore';
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import { useUsersStore } from '../../../stores/UsersStore';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 
 export default {
     setup() {
