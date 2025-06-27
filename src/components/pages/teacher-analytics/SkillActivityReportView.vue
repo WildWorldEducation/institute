@@ -42,16 +42,29 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Skill Activity Report</h1>
-        <div class="skill-list">
-            <h2>Last Visited Skills</h2>
-            <ul>
-                <li v-for="skill in visitedSkills" :key="skill.id">
-                    <router-link target="_blank" :to="'/skills/' + skill.url">{{
-                        skill.name
-                    }}</router-link>
-                    {{ visitedDate(skill.visited_at) }}
-                </li>
-            </ul>
+        <div class="mb-4">
+            <table>
+                <tr>
+                    <th>Skill</th>
+                    <th>Date</th>
+                </tr>
+                <tr
+                    v-for="skill in visitedSkills"
+                    :key="skill.id"
+                    class="table-rows"
+                >
+                    <td>
+                        <router-link
+                            target="_blank"
+                            :to="'/skills/' + skill.url"
+                            >{{ skill.name }}</router-link
+                        >
+                    </td>
+                    <td>
+                        {{ visitedDate(skill.visited_at) }}
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 </template>
