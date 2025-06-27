@@ -97,6 +97,7 @@ export default {
 
 <template>
     <div class="container mt-1">
+        <button class="mb-1 cohort-buttons">All students</button>
         <button
             v-for="cohort in cohortsStore.cohorts"
             @click="selectCohort(cohort)"

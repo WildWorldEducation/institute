@@ -58,39 +58,23 @@ export default {
         <div class="row">
             <!-- Cohort Progress -->
             <div class="col-12 col-md-5">
-                <!-- Instructors -->
-                <h2 class="secondary-heading h4">Check Progress</h2>
                 <div class="d-flex flex-column">
+                    <h2 class="secondary-heading h4">Analytics</h2>
                     <router-link
                         :to="`/student/${this.$parent.cohort.id}/progress-report`"
                         class="fit-content"
                         target="_blank"
                     >
-                        Progress
-                    </router-link>
-                    <!-- Tracking Report -->
-                    <h2 class="secondary-heading h4 mt-4">Tracking Report</h2>
-                    <router-link
-                        :to="`/student/${this.$parent.cohort.id}/skill-activity`"
-                        class="fit-content"
-                        target="_blank"
-                    >
-                        Skill activity
+                        Class-wide assessment scores
                     </router-link>
                     <router-link
-                        :to="`/student/${this.$parent.cohort.id}/total-time`"
+                        :to="`/student/${this.$parent.cohort.id}/progress-report`"
                         class="fit-content mt-2"
                         target="_blank"
                     >
-                        Time on platform
+                        Estimated mastery scores
                     </router-link>
-                    <router-link
-                        :to="`/student/${this.$parent.cohort.id}/assessment-status`"
-                        class="fit-content mt-2"
-                        target="_blank"
-                    >
-                        Assessment status
-                    </router-link>
+
                     <!-- Goals -->
                     <h2 class="secondary-heading h4 mt-4">Assign work</h2>
                     <router-link
@@ -175,6 +159,22 @@ export default {
                     <label for="two">Yes</label>
                 </div>
                 <h2 class="secondary-heading h4 mt-4">Notifications</h2>
+                <div class="d-flex flex-column">
+                    <router-link
+                        :to="`/student/${this.$parent.cohort.id}/progress-report`"
+                        class="fit-content mt-2"
+                        target="_blank"
+                    >
+                        Students ahead of estimated progress
+                    </router-link>
+                    <router-link
+                        :to="`/student/${this.$parent.cohort.id}/progress-report`"
+                        class="fit-content mt-2"
+                        target="_blank"
+                    >
+                        Students behind estimated progress
+                    </router-link>
+                </div>
             </div>
         </div>
     </div>
