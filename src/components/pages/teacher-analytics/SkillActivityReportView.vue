@@ -1,14 +1,29 @@
 <script>
+import { useUsersStore } from '../../../stores/UsersStore';
 export default {
-    setup() {},
+    setup() {
+        const usersStore = useUsersStore();
+        return {
+            usersStore
+        };
+    },
     components: {},
     data() {
         return {
             studentId: this.$route.params.studentId,
+            studentName: null,
             visitedSkills: []
         };
     },
     async created() {
+        if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
+        const foundObject = this.usersStore.users.find(
+            (student) => student.id === this.studentId
+        );
+        if (foundObject) {
+            this.studentName = foundObject.username;
+        }
+
         this.getLastVisitedSkills();
     },
 
@@ -41,8 +56,8 @@ export default {
 
 <template>
     <div class="container">
-        <h1 class="heading">Skill Activity Report</h1>
-        <div class="mb-4">
+        <h1 class="heading">Skill Activity Report: {{ studentName }}</h1>
+        <div v-if="this.visitedSkills.length > 0" class="mb-4">
             <table>
                 <tr>
                     <th>Skill</th>
@@ -65,6 +80,9 @@ export default {
                     </td>
                 </tr>
             </table>
+        </div>
+        <div v-else>
+            <p>No skills visited by this student.</p>
         </div>
     </div>
 </template>
