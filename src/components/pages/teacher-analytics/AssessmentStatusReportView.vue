@@ -11,7 +11,8 @@ export default {
     data() {
         return {
             studentId: this.$route.params.studentId,
-            studentName: null
+            studentName: null,
+            startedUnmasteredAssessments: []
         };
     },
     async created() {
@@ -22,8 +23,27 @@ export default {
         if (foundObject) {
             this.studentName = foundObject.username;
         }
+
+        await this.getStartedUnmasteredAssessments();
     },
-    methods: {}
+    methods: {
+        async getStartedUnmasteredAssessments() {
+            fetch(
+                `/student-analytics/started-unmastered-assessments/${this.studentId}`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    this.startedUnmasteredAssessments = data;
+                    console.log(
+                        'Started unmastered assessments:',
+                        this.startedUnmasteredAssessments
+                    );
+                })
+                .catch((error) => {
+                    console.error('Error fetching last visited skills:', error);
+                });
+        }
+    }
 };
 </script>
 
