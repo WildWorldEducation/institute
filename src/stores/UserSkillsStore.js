@@ -33,6 +33,17 @@ export const useUserSkillsStore = defineStore('userSkills', {
 
             // Update user skills if havent been yet.
             await this.getUnnestedList(userId);
+        },
+        async recordAssessmentStarted(userId, skillId) {
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    skillId: skillId
+                })
+            };
+            let url = '/user-skills/record-assessment-started/' + userId;
+            await fetch(url, requestOptions);
         }
     }
 });

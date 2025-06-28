@@ -236,7 +236,7 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-    SELECT skills.id, name, is_accessible, is_mastered, is_goal, type, parent, url, level
+    SELECT skills.id, name, is_accessible, is_mastered, is_assessment_started, is_goal, type, parent, url, level
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
@@ -244,7 +244,7 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
     AND is_filtered = 'available'
 
     UNION
-    SELECT skills.id, name, "", "", "", type, parent, url, level
+    SELECT skills.id, name, "", "", "", "", type, parent, url, level
     FROM skills
     WHERE skills.id NOT IN 
 
@@ -1727,6 +1727,36 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                     }
                 });
 
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Record that teh student has started the assessment.
+ * Used for analytics, by comparing with which skills they have mastered (completed the assessment)
+ *
+ * @return response()
+ */
+router.post('/record-assessment-started/:userId', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `
+        INSERT INTO user_skills (user_id, skill_id, is_assessment_started) 
+        VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
+            req.body.skillId
+        )}, 1) 
+        ON DUPLICATE KEY UPDATE is_assessment_started=1;`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
                 res.end();
             } catch (err) {
                 next(err);
