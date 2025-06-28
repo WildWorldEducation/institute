@@ -36,7 +36,9 @@ export default {
             lower levels of activity or low levels of progress)
         </p>
         <h2 class="secondary-heading">Completed</h2>
+        <p>All mastered skills, except categories</p>
         <h2 class="secondary-heading">In Progress</h2>
+        <p></p>
         <h2 class="secondary-heading">Has failed multiple times</h2>
     </div>
 </template>
