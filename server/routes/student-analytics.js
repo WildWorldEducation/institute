@@ -54,6 +54,8 @@ router.get(
             ON skills.id = user_skills.skill_id
             WHERE user_id = ${conn.escape(req.params.studentId)}
             AND is_assessment_started = 1
+            AND (is_mastered IS NULL
+            OR is_mastered <> 1)  
             AND skills.is_deleted = 0;            
         `;
 
@@ -61,7 +63,9 @@ router.get(
                 if (err) return next(err); // Pass error to error handler
 
                 if (results.length === 0) {
-                    return res.status(404).json({ error: 'No recent skills' });
+                    return res.status(404).json({
+                        error: 'No started unmastered assessments'
+                    });
                 }
 
                 res.json(results);
