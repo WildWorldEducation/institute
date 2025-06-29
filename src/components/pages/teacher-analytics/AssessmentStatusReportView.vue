@@ -62,6 +62,28 @@ export default {
         </p>
         <h2 class="secondary-heading">Completed</h2>
         <p>All mastered skills, except categories</p>
+        <div v-if="this.userSkillsStore.masteredSkills.length > 0" class="mb-4">
+            <table>
+                <tr>
+                    <th>Skill</th>
+                    <th>Attempts</th>
+                </tr>
+                <tr
+                    v-for="skill in userSkillsStore.masteredSkills"
+                    :key="skill.id"
+                    class="table-rows"
+                >
+                    <td>
+                        <router-link
+                            target="_blank"
+                            :to="'/skills/' + skill.url"
+                            >{{ skill.name }}</router-link
+                        >
+                    </td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
         <h2 class="secondary-heading">In Progress</h2>
         <div v-if="this.startedUnmasteredAssessments.length > 0" class="mb-4">
             <table>
