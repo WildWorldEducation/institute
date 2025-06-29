@@ -140,5 +140,36 @@ router.get('/multiple-fails/:studentId', (req, res, next) => {
     }
 });
 
+/**
+ * Record time per skill
+ *
+ */
+router.post('/record-duration/:userId/:skillId', (req, res, next) => {
+    if (req.session.userName) {
+        const duration = req.body.duration;
+
+        let sqlQuery = `
+        INSERT INTO user_skills (user_id, skill_id, duration) 
+        VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
+            req.params.skillId
+        )}, ${conn.escape(duration)}) 
+        ON DUPLICATE KEY UPDATE duration= duration + ${conn.escape(duration)};
+        `;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;
