@@ -57,7 +57,7 @@ export default {
     <div class="container">
         <h1 class="heading">Skill Activity Report: {{ studentName }}</h1>
         <div v-if="this.visitedSkills.length > 0" class="mb-4">
-            <table>
+            <table class="table">
                 <tr>
                     <th>Skill</th>
                     <th>Date</th>

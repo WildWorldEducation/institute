@@ -406,7 +406,6 @@ export default {
                 this.scrollToMessageInput();
             });
         },
-
         async askQuestion() {
             if (this.waitForAIresponse) {
                 return;
@@ -565,6 +564,17 @@ export default {
                 // Show guest tooltip instead of redirecting
                 this.$parent.showGuestTooltip();
             } else {
+                // If this is the first time the user starts the assessment,
+                // record that the user has started the assessment.
+                if (type == 'assessing') {
+                    if (this.$parent.isAssessmentStarted == false) {
+                        this.userSkillsStore.recordAssessmentAttempt(
+                            this.userDetailsStore.userId,
+                            this.skill.id
+                        );
+                    }
+                }
+
                 this.isLoading = true;
                 this.loadingMessage = `Loading ${
                     type === 'socratic'
@@ -585,14 +595,17 @@ export default {
                 this.$parent.showGuestTooltip();
                 return;
             }
-            this.isLoading = true;
             this.loadingMessage = 'Loading assessment...';
-            setTimeout(() => {
-                this.$router.push(`${this.skill.id}/assessment`);
-                setTimeout(() => {
-                    this.isLoading = false;
-                }, 5000);
-            }, 50);
+
+            // If this is the first time the user starts the assessment,
+            // record that the user has started the assessment.
+            if (this.$parent.isAssessmentStarted == false) {
+                this.userSkillsStore.recordAssessmentAttempt(
+                    this.userDetailsStore.userId,
+                    this.skill.id
+                );
+            }
+            this.$router.push(`${this.skill.id}/assessment`);
         },
         // Get all latex string in a message
         getLatexStrings(message) {

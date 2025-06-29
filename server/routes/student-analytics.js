@@ -19,6 +19,8 @@ const query = util.promisify(conn.query).bind(conn);
 Routes
 --------------------------------------------
 --------------------------------------------*/
+
+/* Get the skill activity of the student */
 router.get('/last-visited-skills/:studentId', async (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery = `
@@ -39,6 +41,101 @@ router.get('/last-visited-skills/:studentId', async (req, res, next) => {
             }
 
             res.json(results);
+        });
+    }
+});
+
+/* Get skills whose assessments have been started, but are not yet mastered */
+router.get(
+    '/started-unmastered-assessments/:studentId',
+    async (req, res, next) => {
+        if (req.session.userName) {
+            let sqlQuery = `            
+                SELECT *
+                    FROM assessment_attempts
+                    JOIN skills ON skills.id = assessment_attempts.skill_id
+                    WHERE assessment_attempts.user_id = ${conn.escape(
+                        req.params.studentId
+                    )};                      
+           `;
+
+            conn.query(sqlQuery, (err, results) => {
+                if (err) return next(err); // Pass error to error handler
+
+                if (results.length === 0) {
+                    return res.status(404).json({
+                        error: 'No started unmastered assessments'
+                    });
+                }
+
+                res.json(results);
+            });
+        }
+    }
+);
+
+/* Get mastered skills, though not domains/categories */
+router.get('/mastered-skills/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT skills.id, name, url, level, icon, type, is_mastered
+            FROM skills
+            LEFT OUTER JOIN user_skills
+            ON skills.id = user_skills.skill_id
+            WHERE user_skills.user_id = ${conn.escape(req.params.studentId)}
+            AND is_mastered = 1
+            AND type <> 'domain'
+            ORDER BY id;`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Get assessments that have been failed multiple times, and not yet passed */
+router.get('/multiple-fails/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT skills.id, skills.name, COUNT(*) AS times
+                    FROM assessment_attempts
+                    JOIN skills ON skills.id = assessment_attempts.skill_id
+                    WHERE assessment_attempts.user_id = ${conn.escape(
+                        req.params.studentId
+                    )}
+					AND assessment_attempts.skill_id NOT IN 
+                    (SELECT skill_id
+                    FROM user_skills
+                    WHERE user_skills.user_id = ${conn.escape(
+                        req.params.studentId
+                    )}
+                    AND is_mastered = 1)  
+                    HAVING COUNT(*) > 1;`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
         });
     }
 });

@@ -56,6 +56,7 @@ export default {
             userSkills: [],
             isMastered: false,
             isUnlocked: false,
+            isAssessmentStarted: false,
             isGoal: false,
             filters: [],
             showFlaggingModal: false,
@@ -317,6 +318,7 @@ export default {
             this.isMastered = false;
             this.isUnlocked = false;
             this.isGoal = false;
+            this.isAssessmentStarted = false;
 
             for (let i = 0; i < this.userSkills.length; i++) {
                 if (this.userSkills[i].id == this.skill.id) {
@@ -334,6 +336,8 @@ export default {
                         }
                         if (this.userSkills[i].is_accessible == 1)
                             this.isUnlocked = true;
+                        if (this.userSkills[i].is_assessment_started == 1)
+                            this.isAssessmentStarted = true;
                         if (this.userSkills[i].is_goal == 1) this.isGoal = true;
                     }
                 }

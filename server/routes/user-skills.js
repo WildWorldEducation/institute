@@ -1737,6 +1737,35 @@ router.post('/make-mastered/:userId', (req, res, next) => {
     }
 });
 
+/**
+ * Record that teh student has started the assessment.
+ * Used for analytics, by comparing with which skills they have mastered (completed the assessment)
+ *
+ * @return response()
+ */
+router.post('/record-assessment-attempt/:userId', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `
+        INSERT INTO assessment_attempts (user_id, skill_id) 
+        VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
+            req.body.skillId
+        )});`;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 /*
  * To recommend the next skill after completing one.
  * For subskills: shows other unmastered subskills within the same super skill

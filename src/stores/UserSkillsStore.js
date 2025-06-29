@@ -3,7 +3,8 @@ import { defineStore } from 'pinia';
 export const useUserSkillsStore = defineStore('userSkills', {
     state: () => ({
         unnestedList: [],
-        filteredUnnestedList: []
+        filteredUnnestedList: [],
+        masteredSkills: []
     }),
     actions: {
         async getUnnestedList(userId) {
@@ -33,6 +34,23 @@ export const useUserSkillsStore = defineStore('userSkills', {
 
             // Update user skills if havent been yet.
             await this.getUnnestedList(userId);
+        },
+        async recordAssessmentAttempt(userId, skillId) {
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    skillId: skillId
+                })
+            };
+            let url = '/user-skills/record-assessment-attempt/' + userId;
+            await fetch(url, requestOptions);
+        },
+        async getMasteredSkills(userId) {
+            const result = await fetch(
+                '/student-analytics/mastered-skills/' + userId
+            );
+            this.masteredSkills = await result.json();
         }
     }
 });
