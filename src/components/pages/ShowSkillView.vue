@@ -25,7 +25,10 @@ export default {
         console.log(this.userDetailsStore.userId);
     },
     beforeRouteLeave(to, from, next) {
-        if (!this.userDetailsStore.userId) {
+        if (
+            !this.userDetailsStore.userId ||
+            this.$refs.childComponent.skill.type == 'domain'
+        ) {
             next();
             return;
         }

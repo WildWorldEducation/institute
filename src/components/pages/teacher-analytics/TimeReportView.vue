@@ -1,12 +1,28 @@
 <script>
 export default {
     setup() {},
-    components: {},
     data() {
-        return {};
+        return {
+            studentId: this.$route.params.studentId,
+            skillDurations: []
+        };
     },
-    async created() {},
-    methods: {}
+    async created() {
+        this.getSkillDuration();
+    },
+    methods: {
+        getSkillDuration() {
+            fetch(`/student-analytics/skill-durations/${this.studentId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    this.skillDurations = data;
+                    console.log('Skill durations:', this.skillDurations);
+                })
+                .catch((error) => {
+                    console.error('Error fetching last visited skills:', error);
+                });
+        }
+    }
 };
 </script>
 
