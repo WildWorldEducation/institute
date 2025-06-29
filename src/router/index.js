@@ -512,7 +512,7 @@ const router = createRouter({
             name: 'total-time',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/TotalTimeReportView.vue'
+                    '../components/pages/teacher-analytics/TimeReportView.vue'
                 ),
             meta: {
                 title: 'Total Time',

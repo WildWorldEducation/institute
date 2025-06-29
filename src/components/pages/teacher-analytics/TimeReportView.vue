@@ -12,7 +12,7 @@ export default {
 
 <template>
     <div class="container">
-        <h1 class="heading">Total Time Report</h1>
+        <h1 class="heading">Time Report</h1>
     </div>
 </template>
 

@@ -200,19 +200,20 @@ export default {
                     >
                         Skill activity
                     </router-link>
-                    <!-- <router-link
-                        :to="`/student/${this.$parent.user.id}/total-time`"
-                        class="fit-content mt-2"
-                        target="_blank"
-                    >
-                        Time on platform
-                    </router-link> -->
                     <router-link
                         :to="`/student/${this.$parent.user.id}/assessment-status`"
                         class="fit-content mt-2"
                         target="_blank"
                     >
                         Assessment status
+                    </router-link>
+                    <!-- Time on Platform -->
+                    <router-link
+                        :to="`/student/${this.$parent.user.id}/total-time`"
+                        class="fit-content mt-2"
+                        target="_blank"
+                    >
+                        Time on platform
                     </router-link>
                     <!-- Goals -->
                     <h2 class="secondary-heading h4 mt-4">Assign work</h2>
