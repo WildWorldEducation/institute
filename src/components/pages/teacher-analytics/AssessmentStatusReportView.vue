@@ -27,12 +27,11 @@ export default {
             this.studentName = foundObject.username;
         }
 
-        await this.getStartedUnmasteredAssessments();
+        await this.getAssessmentAttempts();
         await this.userSkillsStore.getMasteredSkills(this.studentId);
-        console.log('Mastered skills:', this.userSkillsStore.masteredSkills);
     },
     methods: {
-        async getStartedUnmasteredAssessments() {
+        async getAssessmentAttempts() {
             fetch(
                 `/student-analytics/started-unmastered-assessments/${this.studentId}`
             )
@@ -47,6 +46,17 @@ export default {
                 .catch((error) => {
                     console.error('Error fetching last visited skills:', error);
                 });
+        },
+        assessmentDate(date) {
+            let jsDate = new Date(date);
+            return jsDate.toLocaleString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
         }
     }
 };
@@ -63,10 +73,9 @@ export default {
         <h2 class="secondary-heading">Completed</h2>
         <p>All mastered skills, except categories</p>
         <div v-if="this.userSkillsStore.masteredSkills.length > 0" class="mb-4">
-            <table>
+            <table class="table">
                 <tr>
                     <th>Skill</th>
-                    <th>Attempts</th>
                 </tr>
                 <tr
                     v-for="skill in userSkillsStore.masteredSkills"
@@ -80,30 +89,31 @@ export default {
                             >{{ skill.name }}</router-link
                         >
                     </td>
-                    <td></td>
                 </tr>
             </table>
         </div>
-        <h2 class="secondary-heading">In Progress</h2>
+        <h2 class="secondary-heading">Attempted</h2>
         <div v-if="this.startedUnmasteredAssessments.length > 0" class="mb-4">
-            <table>
+            <table class="table">
                 <tr>
                     <th>Skill</th>
-                    <th>Attempts</th>
+                    <th>Date</th>
                 </tr>
                 <tr
-                    v-for="skill in startedUnmasteredAssessments"
-                    :key="skill.id"
+                    v-for="assessmentAttempt in startedUnmasteredAssessments"
+                    :key="assessmentAttempt.id"
                     class="table-rows"
                 >
                     <td>
                         <router-link
                             target="_blank"
-                            :to="'/skills/' + skill.url"
-                            >{{ skill.name }}</router-link
+                            :to="'/skills/' + assessmentAttempt.url"
+                            >{{ assessmentAttempt.name }}</router-link
                         >
                     </td>
-                    <td></td>
+                    <td>
+                        {{ assessmentDate(assessmentAttempt.date) }}
+                    </td>
                 </tr>
             </table>
         </div>

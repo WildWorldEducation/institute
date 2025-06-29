@@ -50,17 +50,14 @@ router.get(
     '/started-unmastered-assessments/:studentId',
     async (req, res, next) => {
         if (req.session.userName) {
-            let sqlQuery = `
-            SELECT skills.id, name, skills.url, level, icon
-            FROM user_skills
-            INNER JOIN skills 
-            ON skills.id = user_skills.skill_id
-            WHERE user_id = ${conn.escape(req.params.studentId)}
-            AND is_assessment_started = 1
-            AND (is_mastered IS NULL
-            OR is_mastered <> 1)  
-            AND skills.is_deleted = 0;            
-        `;
+            let sqlQuery = `            
+                SELECT *
+                    FROM assessment_attempts
+                    JOIN skills ON skills.id = assessment_attempts.skill_id
+                    WHERE assessment_attempts.user_id = ${conn.escape(
+                        req.params.studentId
+                    )};                      
+           `;
 
             conn.query(sqlQuery, (err, results) => {
                 if (err) return next(err); // Pass error to error handler
