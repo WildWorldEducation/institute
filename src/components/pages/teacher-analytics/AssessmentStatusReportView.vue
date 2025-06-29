@@ -1,10 +1,13 @@
 <script>
 import { useUsersStore } from '../../../stores/UsersStore';
+import { useUserSkillsStore } from '../../../stores/UserSkillsStore';
 export default {
     setup() {
         const usersStore = useUsersStore();
+        const userSkillsStore = useUserSkillsStore();
         return {
-            usersStore
+            usersStore,
+            userSkillsStore
         };
     },
     components: {},
@@ -25,6 +28,8 @@ export default {
         }
 
         await this.getStartedUnmasteredAssessments();
+        await this.userSkillsStore.getMasteredSkills(this.studentId);
+        console.log('Mastered skills:', this.userSkillsStore.masteredSkills);
     },
     methods: {
         async getStartedUnmasteredAssessments() {
@@ -58,6 +63,28 @@ export default {
         <h2 class="secondary-heading">Completed</h2>
         <p>All mastered skills, except categories</p>
         <h2 class="secondary-heading">In Progress</h2>
+        <div v-if="this.startedUnmasteredAssessments.length > 0" class="mb-4">
+            <table>
+                <tr>
+                    <th>Skill</th>
+                    <th>Attempts</th>
+                </tr>
+                <tr
+                    v-for="skill in startedUnmasteredAssessments"
+                    :key="skill.id"
+                    class="table-rows"
+                >
+                    <td>
+                        <router-link
+                            target="_blank"
+                            :to="'/skills/' + skill.url"
+                            >{{ skill.name }}</router-link
+                        >
+                    </td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
         <p></p>
         <h2 class="secondary-heading">Has failed multiple times</h2>
     </div>

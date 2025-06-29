@@ -19,6 +19,8 @@ const query = util.promisify(conn.query).bind(conn);
 Routes
 --------------------------------------------
 --------------------------------------------*/
+
+/* Get the skill activity of the student */
 router.get('/last-visited-skills/:studentId', async (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery = `
@@ -43,6 +45,7 @@ router.get('/last-visited-skills/:studentId', async (req, res, next) => {
     }
 });
 
+/* Get skills whose assessments have been started, but are not yet mastered */
 router.get(
     '/started-unmastered-assessments/:studentId',
     async (req, res, next) => {
@@ -73,6 +76,36 @@ router.get(
         }
     }
 );
+
+/* Get mastered skills, though not domains/categories */
+router.get('/mastered-skills/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT skills.id, name, url, level, icon, type, is_mastered
+            FROM skills
+            LEFT OUTER JOIN user_skills
+            ON skills.id = user_skills.skill_id
+            WHERE user_skills.user_id = ${conn.escape(req.params.studentId)}
+            AND is_mastered = 1
+            AND type <> 'domain'
+            ORDER BY id;`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
 
 // Export the router for app to use.
 module.exports = router;
