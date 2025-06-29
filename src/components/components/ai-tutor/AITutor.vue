@@ -568,7 +568,7 @@ export default {
                 // record that the user has started the assessment.
                 if (type == 'assessing') {
                     if (this.$parent.isAssessmentStarted == false) {
-                        this.userSkillsStore.recordAssessmentStarted(
+                        this.userSkillsStore.recordAssessmentAttempt(
                             this.userDetailsStore.userId,
                             this.skill.id
                         );
@@ -600,7 +600,7 @@ export default {
             // If this is the first time the user starts the assessment,
             // record that the user has started the assessment.
             if (this.$parent.isAssessmentStarted == false) {
-                this.userSkillsStore.recordAssessmentStarted(
+                this.userSkillsStore.recordAssessmentAttempt(
                     this.userDetailsStore.userId,
                     this.skill.id
                 );

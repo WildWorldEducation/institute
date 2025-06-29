@@ -35,7 +35,7 @@ export const useUserSkillsStore = defineStore('userSkills', {
             // Update user skills if havent been yet.
             await this.getUnnestedList(userId);
         },
-        async recordAssessmentStarted(userId, skillId) {
+        async recordAssessmentAttempt(userId, skillId) {
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -43,7 +43,7 @@ export const useUserSkillsStore = defineStore('userSkills', {
                     skillId: skillId
                 })
             };
-            let url = '/user-skills/record-assessment-started/' + userId;
+            let url = '/user-skills/record-assessment-attempt/' + userId;
             await fetch(url, requestOptions);
         },
         async getMasteredSkills(userId) {
