@@ -104,5 +104,41 @@ router.get('/mastered-skills/:studentId', (req, res, next) => {
     }
 });
 
+/* Get assessments that have been failed multiple times, and not yet passed */
+router.get('/multiple-fails/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT skills.id, skills.name, COUNT(*) AS times
+                    FROM assessment_attempts
+                    JOIN skills ON skills.id = assessment_attempts.skill_id
+                    WHERE assessment_attempts.user_id = ${conn.escape(
+                        req.params.studentId
+                    )}
+					AND assessment_attempts.skill_id NOT IN 
+                    (SELECT skill_id
+                    FROM user_skills
+                    WHERE user_skills.user_id = ${conn.escape(
+                        req.params.studentId
+                    )}
+                    AND is_mastered = 1)  
+                    HAVING COUNT(*) > 1;`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;

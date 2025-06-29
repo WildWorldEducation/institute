@@ -15,7 +15,8 @@ export default {
         return {
             studentId: this.$route.params.studentId,
             studentName: null,
-            startedUnmasteredAssessments: []
+            startedUnmasteredAssessments: [],
+            multipleFails: []
         };
     },
     async created() {
@@ -29,6 +30,7 @@ export default {
 
         await this.getAssessmentAttempts();
         await this.userSkillsStore.getMasteredSkills(this.studentId);
+        await this.getMultipleFails();
     },
     methods: {
         async getAssessmentAttempts() {
@@ -38,10 +40,6 @@ export default {
                 .then((response) => response.json())
                 .then((data) => {
                     this.startedUnmasteredAssessments = data;
-                    console.log(
-                        'Started unmastered assessments:',
-                        this.startedUnmasteredAssessments
-                    );
                 })
                 .catch((error) => {
                     console.error('Error fetching last visited skills:', error);
@@ -57,6 +55,17 @@ export default {
                 minute: '2-digit',
                 second: '2-digit'
             });
+        },
+        async getMultipleFails() {
+            fetch(`/student-analytics/multiple-fails/${this.studentId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    this.multipleFails = data;
+                    console.log('multipleFails:', this.multipleFails);
+                })
+                .catch((error) => {
+                    console.error('Error fetching last visited skills:', error);
+                });
         }
     }
 };
@@ -119,6 +128,30 @@ export default {
         </div>
         <p></p>
         <h2 class="secondary-heading">Has failed multiple times</h2>
+        <div v-if="this.multipleFails.length > 0" class="mb-4">
+            <table class="table">
+                <tr>
+                    <th>Skill</th>
+                    <th>Times</th>
+                </tr>
+                <tr
+                    v-for="failedAssessment in multipleFails"
+                    :key="failedAssessment.id"
+                    class="table-rows"
+                >
+                    <td>
+                        <router-link
+                            target="_blank"
+                            :to="'/skills/' + failedAssessment.url"
+                            >{{ failedAssessment.name }}</router-link
+                        >
+                    </td>
+                    <td>
+                        {{ failedAssessment.times }}
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
 </template>
 
