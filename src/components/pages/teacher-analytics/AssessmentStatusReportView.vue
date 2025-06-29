@@ -15,7 +15,7 @@ export default {
         return {
             studentId: this.$route.params.studentId,
             studentName: null,
-            startedUnmasteredAssessments: [],
+            assessmentAttempts: [],
             multipleFails: []
         };
     },
@@ -39,7 +39,7 @@ export default {
             )
                 .then((response) => response.json())
                 .then((data) => {
-                    this.startedUnmasteredAssessments = data;
+                    this.assessmentAttempts = data;
                 })
                 .catch((error) => {
                     console.error('Error fetching last visited skills:', error);
@@ -61,7 +61,6 @@ export default {
                 .then((response) => response.json())
                 .then((data) => {
                     this.multipleFails = data;
-                    console.log('multipleFails:', this.multipleFails);
                 })
                 .catch((error) => {
                     console.error('Error fetching last visited skills:', error);
@@ -74,13 +73,8 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Assessment Status Report: {{ studentName }}</h1>
-        <p>
-            Teachers can see which students have completed assessments, are in
-            progress, or in need of additional support (which we can gauge by
-            lower levels of activity or low levels of progress)
-        </p>
         <h2 class="secondary-heading">Completed</h2>
-        <p>All mastered skills, except categories</p>
+
         <div v-if="this.userSkillsStore.masteredSkills.length > 0" class="mb-4">
             <table class="table">
                 <tr>
@@ -101,15 +95,16 @@ export default {
                 </tr>
             </table>
         </div>
+        <p v-else>This student has not completed any assessments yet.</p>
         <h2 class="secondary-heading">Attempted</h2>
-        <div v-if="this.startedUnmasteredAssessments.length > 0" class="mb-4">
+        <div v-if="this.assessmentAttempts.length > 0" class="mb-4">
             <table class="table">
                 <tr>
                     <th>Skill</th>
                     <th>Date</th>
                 </tr>
                 <tr
-                    v-for="assessmentAttempt in startedUnmasteredAssessments"
+                    v-for="assessmentAttempt in assessmentAttempts"
                     :key="assessmentAttempt.id"
                     class="table-rows"
                 >
@@ -126,6 +121,7 @@ export default {
                 </tr>
             </table>
         </div>
+        <p v-else>This student has attempted any assessments yet.</p>
         <p></p>
         <h2 class="secondary-heading">Has failed multiple times</h2>
         <div v-if="this.multipleFails.length > 0" class="mb-4">
@@ -152,6 +148,9 @@ export default {
                 </tr>
             </table>
         </div>
+        <p v-else>
+            This student has not failed any assessments more than once yet.
+        </p>
     </div>
 </template>
 
