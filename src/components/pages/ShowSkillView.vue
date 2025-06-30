@@ -12,9 +12,14 @@ export default {
     data() {
         return {
             skillUrl: this.$route.params.skillUrl,
+            // Record time spent on the skill
             userStartTime: null,
             userEndTime: null,
-            duration: null
+            duration: null,
+            // Check for inactivity, and dont record time if inactive
+            lastActivityTime: Date.now(),
+            inactivityThreshold: 30000, // 30 seconds
+            isActive: true
         };
     },
     components: {
@@ -22,7 +27,21 @@ export default {
     },
     mounted() {
         this.userStartTime = Date.now();
-        console.log(this.userDetailsStore.userId);
+
+        // Events that signal activity
+        ['mousemove', 'keydown', 'scroll', 'click', 'touchstart'].forEach(
+            (event) => window.addEventListener(event, this.resetTimer)
+        );
+        // Inactivity check every second
+        setInterval(() => {
+            const now = Date.now();
+            if (now - this.lastActivityTime > this.inactivityThreshold) {
+                if (this.isActive) {
+                    this.isActive = false;
+                    console.log('User is inactive');
+                }
+            }
+        }, 1000);
     },
     beforeRouteLeave(to, from, next) {
         if (
@@ -51,7 +70,16 @@ export default {
         );
         next();
     },
-    saveDuration() {}
+    methods: {
+        resetTimer() {
+            console.log('Action');
+            this.lastActivityTime = Date.now();
+            if (!this.isActive) {
+                this.isActive = true;
+                console.log('User became active again');
+            }
+        }
+    }
 };
 </script>
 
