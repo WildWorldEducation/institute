@@ -195,7 +195,7 @@ export default {
 <template>
     <div class="signup-page">
         <!-- The video -->
-        <!-- <div
+        <div
             v-if="!showVideoModal"
             class="embed-responsive embed-responsive-16by9"
         >
@@ -208,7 +208,7 @@ export default {
                 referrerpolicy="strict-origin-when-cross-origin"
                 allowfullscreen
             ></iframe>
-        </div> -->
+        </div>
         <!-- The form -->
         <div class="form-signin mt-3">
             <div>
@@ -356,7 +356,7 @@ export default {
             <!-- Modal content -->
             <div class="modal-content">
                 <!-- The video -->
-                <!-- <div
+                <div
                     v-if="showModalVideo"
                     id="modal-iframe"
                     class="embed-responsive embed-responsive-16by9"
@@ -370,13 +370,7 @@ export default {
                         referrerpolicy="strict-origin-when-cross-origin"
                         allowfullscreen
                     ></iframe>
-                </div> -->
-                <!-- Image -->
-                <img
-                    class=""
-                    src="/images/app-logo.jpg"
-                    alt="icon of a skill tree"
-                />
+                </div>
                 <button
                     class="btn primary-btn mx-auto mt-2 border border-dark"
                     @click="selectRole('student')"
