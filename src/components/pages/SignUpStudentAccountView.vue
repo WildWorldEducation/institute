@@ -195,7 +195,7 @@ export default {
 <template>
     <div class="signup-page">
         <!-- The video -->
-        <div
+        <!-- <div
             v-if="!showVideoModal"
             class="embed-responsive embed-responsive-16by9"
         >
@@ -208,7 +208,7 @@ export default {
                 referrerpolicy="strict-origin-when-cross-origin"
                 allowfullscreen
             ></iframe>
-        </div>
+        </div> -->
         <!-- The form -->
         <div class="form-signin mt-3">
             <div>
@@ -356,7 +356,7 @@ export default {
             <!-- Modal content -->
             <div class="modal-content">
                 <!-- The video -->
-                <div
+                <!-- <div
                     v-if="showModalVideo"
                     id="modal-iframe"
                     class="embed-responsive embed-responsive-16by9"
@@ -370,7 +370,13 @@ export default {
                         referrerpolicy="strict-origin-when-cross-origin"
                         allowfullscreen
                     ></iframe>
-                </div>
+                </div> -->
+                <!-- Image -->
+                <img
+                    class=""
+                    src="/images/app-logo.jpg"
+                    alt="icon of a skill tree"
+                />
                 <button
                     class="btn primary-btn mx-auto mt-2 border border-dark"
                     @click="selectRole('student')"
@@ -389,6 +395,12 @@ export default {
 </template>
 
 <style scoped>
+img {
+    margin: auto;
+    max-height: 200px;
+    max-width: 100%;
+}
+
 /* The Warning Modal */
 .modal {
     display: block;
@@ -414,11 +426,18 @@ export default {
 /* Modal Content/Box */
 .modal-content {
     background-color: #fefefe;
-    margin: 5% auto;
-    /* 5% from the top and centered */
+    /* margin: 5% auto;
+     5% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
     width: 600px;
+    height: fit-content;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 20%;
+    margin: auto;
     font-size: 18px;
     /* Could be more or less, depending on screen size */
 }
@@ -438,8 +457,8 @@ export default {
 
     /* Modal Content/Box */
     .modal-content {
-        margin: 40% auto;
-        /* 40% from the top and centered */
+        /* margin: 40% auto;
+         40% from the top and centered */
         width: 90%;
     }
 }
