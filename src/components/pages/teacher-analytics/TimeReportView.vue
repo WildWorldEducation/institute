@@ -50,6 +50,11 @@ export default {
                 .catch((error) => {
                     console.error('Error fetching last visited skills:', error);
                 });
+        },
+        millisToMinutesAndSeconds(millis) {
+            var minutes = Math.floor(millis / 60000);
+            var seconds = ((millis % 60000) / 1000).toFixed(0);
+            return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
         }
     }
 };
@@ -61,7 +66,7 @@ export default {
         <h2 class="secondary-heading">Total time on platform</h2>
         <div v-if="isDataLoaded">
             <h2 class="secondary-heading">All skills</h2>
-            <p>{{ this.allSkillsDuration }}</p>
+            <p>{{ millisToMinutesAndSeconds(this.allSkillsDuration) }}</p>
             <h2 class="secondary-heading">Per skill</h2>
             <div v-if="this.skillDurations.length > 0" class="mb-4">
                 <table class="table">
@@ -82,7 +87,11 @@ export default {
                             >
                         </td>
                         <td>
-                            {{ skillDuration.duration }}
+                            {{
+                                millisToMinutesAndSeconds(
+                                    skillDuration.duration
+                                )
+                            }}
                         </td>
                     </tr>
                 </table>
