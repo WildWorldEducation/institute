@@ -36,6 +36,17 @@ export default {
                 .catch((error) => {
                     console.error('Error fetching last visited skills:', error);
                 });
+        },
+        getAllSkillsDuration() {
+            fetch(`/student-analytics/all-skills-duration/${this.studentId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    this.skillDurations = data;
+                    console.log('Skill durations:', this.skillDurations);
+                })
+                .catch((error) => {
+                    console.error('Error fetching last visited skills:', error);
+                });
         }
     }
 };
@@ -44,6 +55,9 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Time Report: {{ studentName }}</h1>
+        <h2 class="secondary-heading">Total time on platform</h2>
+        <h2 class="secondary-heading">All skills</h2>
+        <h2 class="secondary-heading">Per skill</h2>
         <div v-if="this.skillDurations.length > 0" class="mb-4">
             <table class="table">
                 <tr>

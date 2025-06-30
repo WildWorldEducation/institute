@@ -171,8 +171,40 @@ router.post('/record-duration/:userId/:skillId', (req, res, next) => {
     }
 });
 
-/* Get skill durations per student */
+/* Get time spent on each skill per student */
 router.get('/skill-durations/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT skills.id, name, url, level, icon, type, duration
+            FROM skills
+            LEFT OUTER JOIN user_skills
+            ON skills.id = user_skills.skill_id
+            WHERE user_skills.user_id = ${conn.escape(
+                req.params.studentId
+            )}            
+            AND type <> 'domain'
+            AND duration > 0
+            ORDER BY id;`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Get time spent on all skills per student */
+router.get('/all-skills-duration/:studentId', (req, res, next) => {
     // Check if logged in.
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
