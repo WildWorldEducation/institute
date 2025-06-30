@@ -210,7 +210,7 @@ router.get('/all-skills-duration/:studentId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT skills.id, name, url, level, icon, type, duration
+            SELECT SUM(duration) as duration
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id
@@ -221,13 +221,13 @@ router.get('/all-skills-duration/:studentId', (req, res, next) => {
             AND duration > 0
             ORDER BY id;`;
 
-        conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, result) => {
             try {
                 if (err) {
                     throw err;
                 }
 
-                res.json(results);
+                res.json(result[0]);
             } catch (err) {
                 next(err);
             }

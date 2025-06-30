@@ -11,7 +11,9 @@ export default {
         return {
             studentId: this.$route.params.studentId,
             studentName: null,
-            skillDurations: []
+            skillDurations: [],
+            allSkillsDuration: 0,
+            isDataLoaded: false
         };
     },
     async created() {
@@ -23,26 +25,27 @@ export default {
             this.studentName = foundObject.username;
         }
 
-        this.getSkillDuration();
+        await this.getSkillDuration();
+        await this.getAllSkillsDuration();
+        this.isDataLoaded = true;
     },
     methods: {
-        getSkillDuration() {
+        async getSkillDuration() {
             fetch(`/student-analytics/skill-durations/${this.studentId}`)
                 .then((response) => response.json())
                 .then((data) => {
                     this.skillDurations = data;
-                    console.log('Skill durations:', this.skillDurations);
                 })
                 .catch((error) => {
                     console.error('Error fetching last visited skills:', error);
                 });
         },
-        getAllSkillsDuration() {
+        async getAllSkillsDuration() {
             fetch(`/student-analytics/all-skills-duration/${this.studentId}`)
                 .then((response) => response.json())
                 .then((data) => {
-                    this.skillDurations = data;
-                    console.log('Skill durations:', this.skillDurations);
+                    this.allSkillsDuration = data.duration;
+                    console.log(this.allSkillsDuration);
                 })
                 .catch((error) => {
                     console.error('Error fetching last visited skills:', error);
@@ -56,34 +59,37 @@ export default {
     <div class="container">
         <h1 class="heading">Time Report: {{ studentName }}</h1>
         <h2 class="secondary-heading">Total time on platform</h2>
-        <h2 class="secondary-heading">All skills</h2>
-        <h2 class="secondary-heading">Per skill</h2>
-        <div v-if="this.skillDurations.length > 0" class="mb-4">
-            <table class="table">
-                <tr>
-                    <th>Skill</th>
-                    <th>Duration</th>
-                </tr>
-                <tr
-                    v-for="skillDuration in skillDurations"
-                    :key="skillDuration.id"
-                    class="table-rows"
-                >
-                    <td>
-                        <router-link
-                            target="_blank"
-                            :to="'/skills/' + skillDuration.url"
-                            >{{ skillDuration.name }}</router-link
-                        >
-                    </td>
-                    <td>
-                        {{ skillDuration.duration }}
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div v-else>
-            <p>No skills visited by this student.</p>
+        <div v-if="isDataLoaded">
+            <h2 class="secondary-heading">All skills</h2>
+            <p>{{ this.allSkillsDuration }}</p>
+            <h2 class="secondary-heading">Per skill</h2>
+            <div v-if="this.skillDurations.length > 0" class="mb-4">
+                <table class="table">
+                    <tr>
+                        <th>Skill</th>
+                        <th>Duration</th>
+                    </tr>
+                    <tr
+                        v-for="skillDuration in skillDurations"
+                        :key="skillDuration.id"
+                        class="table-rows"
+                    >
+                        <td>
+                            <router-link
+                                target="_blank"
+                                :to="'/skills/' + skillDuration.url"
+                                >{{ skillDuration.name }}</router-link
+                            >
+                        </td>
+                        <td>
+                            {{ skillDuration.duration }}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div v-else>
+                <p>No skills visited by this student.</p>
+            </div>
         </div>
     </div>
 </template>
