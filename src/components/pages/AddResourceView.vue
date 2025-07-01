@@ -2,7 +2,6 @@
 import AddResource from '../components/AddResource.vue';
 import SkillTimeTracker from '../components/student-analytics/SkillTimeTracker.vue';
 export default {
-    setup() {},
     data() {
         return {};
     },
