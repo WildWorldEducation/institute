@@ -177,7 +177,7 @@ const router = createRouter({
                 import('../components/pages/EditImageQuestionView.vue')
         },
         {
-            path: '/skills/:id/assessment',
+            path: '/skills/:skillId/assessment',
             name: 'assessment',
             component: () => import('../components/pages/AssessmentView.vue')
         },
@@ -209,7 +209,7 @@ const router = createRouter({
             component: () => import('../components/pages/SelectFiltersView.vue')
         },
         {
-            path: '/resources/add/:id',
+            path: '/resources/add/:skillId',
             name: 'add-resource',
             component: () => import('../components/pages/AddResourceView.vue')
         },
@@ -640,7 +640,7 @@ router.beforeEach(async (to, from, next) => {
 
         await userSkillsStore.getUnnestedList(userDetailsStore.userId);
         const currentSkill = userSkillsStore.unnestedList.find(
-            (item) => item.id == to.params.id
+            (item) => item.id == to.params.skillId
         );
 
         // Only block them if their instructor enforced locking.
