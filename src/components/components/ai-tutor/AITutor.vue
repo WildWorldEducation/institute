@@ -1303,6 +1303,11 @@ export default {
             <TutorLoadingSymbol />
         </div>
         <div
+            v-if="
+                showChat &&
+                mode !== 'hide' &&
+                (chatHistory.length > 0 || waitForAIresponse)
+            "
             class="d-flex flex-column align-items-start tutor-chatting-section"
             :class="{
                 'tutor-chatting-waiting-response-section':
@@ -1709,6 +1714,10 @@ export default {
 }
 
 .tutor-chatting-section {
+    height: auto;
+}
+
+.tutor-chatting-section.active-chat {
     height: 95%;
 }
 
