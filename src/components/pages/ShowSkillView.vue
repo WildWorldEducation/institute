@@ -27,7 +27,6 @@ export default {
     },
     mounted() {
         this.userStartTime = Date.now();
-
         // Events that signal activity
         ['mousemove', 'keydown', 'scroll', 'click', 'touchstart'].forEach(
             (event) => window.addEventListener(event, this.resetTimer)

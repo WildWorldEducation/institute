@@ -63,6 +63,12 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Time Report: {{ studentName }}</h1>
+        <p>
+            <em>
+                Please note that time spent on external sources (e.g. websites)
+                related to skills is not measured.</em
+            >
+        </p>
         <h2 class="secondary-heading">Total time on platform</h2>
         <div v-if="isDataLoaded">
             <h2 class="secondary-heading">All skills</h2>
