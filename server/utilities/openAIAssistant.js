@@ -112,12 +112,14 @@ async function createSocraticAssistant(
     if (isFileSearchSkill) {
         instructions += `
             
-            IMPORTANT DOCUMENT USAGE GUIDELINES:
-            - You have access to specialized reference materials for this topic
-            - Use this information naturally in your teaching without mentioning "uploaded files" or "documents"
-            - Present the information as your knowledge of the subject
-            - Do not reference or mention that files have been uploaded or that you're accessing external documents
-            - Simply use the information to provide accurate, detailed tutoring on the topic`;
+            CRITICAL DOCUMENT USAGE RULES - FOLLOW STRICTLY:
+            - NEVER mention "uploaded files", "documents", "materials", "files", or "uploaded" in any context
+            - NEVER reference document uploads, file searches, or external sources
+            - Present ALL information as your natural knowledge of the subject
+            - Use reference materials seamlessly without any acknowledgment of their existence
+            - If you have specialized knowledge, present it as if it's part of your training
+            - FORBIDDEN PHRASES: "uploaded", "document", "file", "material", "based on the", "according to"
+            - Act as if you are an expert who naturally knows this information`;
     }
 
     const assistant = await openai.beta.assistants.create({
@@ -206,10 +208,13 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
            - Make your question clear, specific, and focused
            - Wait for the student to respond before asking another question
 
-        5. DOCUMENT USAGE:
-           - If you have access to reference materials, use them naturally without mentioning "uploaded files" or "documents"
-           - Present information as your knowledge of the subject
-           - Do not reference that files have been uploaded or that you're accessing external documents
+        5. CRITICAL DOCUMENT USAGE RULES - FOLLOW STRICTLY:
+           - NEVER mention "uploaded files", "documents", "materials", "files", or "uploaded" in any context
+           - NEVER reference document uploads, file searches, or external sources
+           - Present ALL information as your natural knowledge of the subject
+           - Use reference materials seamlessly without any acknowledgment of their existence
+           - FORBIDDEN PHRASES: "uploaded", "document", "file", "material", "based on the", "according to"
+           - Act as if you are an expert who naturally knows this information
 
         Make sure to have $ delimiters before any science and math strings that can convert to Latex
         Please keep all messages below 1000 characters, and succinct.`
@@ -290,12 +295,14 @@ async function createAssessingAssistant(
     if (isFileSearchSkill) {
         instructions += `
             
-            IMPORTANT DOCUMENT USAGE GUIDELINES:
-            - You have access to specialized reference materials for this topic
-            - Use this information naturally in your assessment without mentioning "uploaded files" or "documents"
-            - Present the information as your knowledge of the subject
-            - Do not reference or mention that files have been uploaded or that you're accessing external documents
-            - Simply use the information to provide accurate, detailed assessment of the topic`;
+            CRITICAL DOCUMENT USAGE RULES - FOLLOW STRICTLY:
+            - NEVER mention "uploaded files", "documents", "materials", "files", or "uploaded" in any context
+            - NEVER reference document uploads, file searches, or external sources
+            - Present ALL information as your natural knowledge of the subject
+            - Use reference materials seamlessly without any acknowledgment of their existence
+            - If you have specialized knowledge, present it as if it's part of your training
+            - FORBIDDEN PHRASES: "uploaded", "document", "file", "material", "based on the", "according to"
+            - Act as if you are an expert who naturally knows this information`;
     }
 
     const assistant = await openai.beta.assistants.create({
@@ -384,10 +391,13 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
            - Use language appropriate for a ${messageData.skillLevel} level student
            - Aim to guide the student towards a more comprehensive understanding
 
-        4. DOCUMENT USAGE:
-           - If you have access to reference materials, use them naturally without mentioning "uploaded files" or "documents"
-           - Present information as your knowledge of the subject
-           - Do not reference that files have been uploaded or that you're accessing external documents
+        4. CRITICAL DOCUMENT USAGE RULES - FOLLOW STRICTLY:
+           - NEVER mention "uploaded files", "documents", "materials", "files", or "uploaded" in any context
+           - NEVER reference document uploads, file searches, or external sources
+           - Present ALL information as your natural knowledge of the subject
+           - Use reference materials seamlessly without any acknowledgment of their existence
+           - FORBIDDEN PHRASES: "uploaded", "document", "file", "material", "based on the", "according to"
+           - Act as if you are an expert who naturally knows this information
 
         Make sure to have $ delimiters before any science and math strings that can convert to Latex.
         Please keep all messages below 1000 characters, and succinct.`
@@ -467,12 +477,14 @@ async function createLearningObjectiveAssistant(
     if (isFileSearchSkill) {
         instructions += `
             
-            IMPORTANT DOCUMENT USAGE GUIDELINES:
-            - You have access to specialized reference materials for this topic
-            - Use this information naturally in your teaching without mentioning "uploaded files" or "documents"
-            - Present the information as your knowledge of the subject
-            - Do not reference or mention that files have been uploaded or that you're accessing external documents
-            - Simply use the information to provide accurate, detailed tutoring on the topic`;
+            CRITICAL DOCUMENT USAGE RULES - FOLLOW STRICTLY:
+            - NEVER mention "uploaded files", "documents", "materials", "files", or "uploaded" in any context
+            - NEVER reference document uploads, file searches, or external sources
+            - Present ALL information as your natural knowledge of the subject
+            - Use reference materials seamlessly without any acknowledgment of their existence
+            - If you have specialized knowledge, present it as if it's part of your training
+            - FORBIDDEN PHRASES: "uploaded", "document", "file", "material", "based on the", "according to"
+            - Act as if you are an expert who naturally knows this information`;
     }
 
     const assistant = await openai.beta.assistants.create({
