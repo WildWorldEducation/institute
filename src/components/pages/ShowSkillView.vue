@@ -1,83 +1,35 @@
 <script>
-import ShowSkill from '../components/ShowSkill.vue';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
-
+import { useShowSkillStore } from '../../stores/ShowSkillStore.js';
+import ShowSkill from '../components/ShowSkill.vue';
+import SkillTimeTracker from '../components/student-analytics/SkillTimeTracker.vue';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const showSkillStore = useShowSkillStore();
+
         return {
-            userDetailsStore
+            userDetailsStore,
+            showSkillStore
         };
     },
     data() {
-        return {
-            skillUrl: this.$route.params.skillUrl,
-            // Record time spent on the skill
-            userStartTime: null,
-            userEndTime: null,
-            duration: null,
-            // Check for inactivity, and dont record time if inactive
-            lastActivityTime: Date.now(),
-            inactivityThreshold: 30000, // 30 seconds
-            isActive: true
-        };
+        return {};
     },
     components: {
-        ShowSkill
-    },
-    mounted() {
-        this.userStartTime = Date.now();
-        // Events that signal activity
-        ['mousemove', 'keydown', 'scroll', 'click', 'touchstart'].forEach(
-            (event) => window.addEventListener(event, this.resetTimer)
-        );
-        // Inactivity check every second
-        setInterval(() => {
-            const now = Date.now();
-            if (now - this.lastActivityTime > this.inactivityThreshold) {
-                if (this.isActive) {
-                    this.isActive = false;
-                    console.log('User is inactive');
-                }
-            }
-        }, 1000);
+        ShowSkill,
+        SkillTimeTracker
     },
     beforeRouteLeave(to, from, next) {
         if (
             !this.userDetailsStore.userId ||
-            this.$refs.childComponent.skill.type == 'domain'
+            this.showSkillStore.skill.type == 'domain'
         ) {
             next();
             return;
         }
-        // Record the end time and calculate the duration
-        this.userEndTime = Date.now();
-        this.duration = this.userEndTime - this.userStartTime;
-        const skillId = this.$refs.childComponent.skillId;
-        fetch(
-            '/student-analytics/record-duration/' +
-                this.userDetailsStore.userId +
-                '/' +
-                skillId,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    duration: this.duration
-                })
-            }
-        );
+        this.$refs.skillTimeTracker.saveDuration();
         next();
-    },
-    methods: {
-        resetTimer() {
-            console.log('Action');
-            this.lastActivityTime = Date.now();
-            if (!this.isActive) {
-                this.isActive = true;
-                console.log('User became active again');
-            }
-        }
     }
 };
 </script>
@@ -88,6 +40,8 @@ export default {
             <ShowSkill ref="childComponent" />
         </div>
     </div>
+    <!-- To track student time for this skill -->
+    <SkillTimeTracker v-if="showSkillStore.skill" ref="skillTimeTracker" />
 </template>
 
 <style scoped></style>
