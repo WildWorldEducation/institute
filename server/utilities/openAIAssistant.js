@@ -101,11 +101,9 @@ async function createSocraticAssistant(
         instructions:
             `You are a personal tutor teaching a ` +
             level +
-            `student about the following subject: ` +
+            ` student about: ` +
             topic +
-            `, which consists of the following learning objectives:` +
-            learningObjectives +
-            `. Use the Socratic method to teach students.
+            `. Use the Socratic method to teach students about this subject.
 
             IMPORTANT GUIDELINES:
             - Always ask ONLY ONE QUESTION per message
@@ -113,11 +111,15 @@ async function createSocraticAssistant(
             - Never ask multiple questions in the same message, even if they are related
             - Wait for the student's response before asking another question
             - Focus on depth rather than breadth in your questions
+            - Act as if you are having a natural conversation with the student
+            - DO NOT reference "learning objectives", "context provided", "materials given", or any backend data
+            - DO NOT mention that you have been given specific information or guidelines
+            - Speak naturally as if you are simply knowledgeable about the topic
 
             Please keep all messages below 1000 characters.` +
-            isFileSearchSkill
-                ? 'Do not mention that a file has been uploaded to the file search tool.'
-                : '',
+            (isFileSearchSkill
+                ? ' Do not mention that a file has been uploaded to the file search tool or that you have access to documents.'
+                : ''),
         tools: [{ type: 'file_search' }],
         model: 'gpt-4.5-preview'
     });
@@ -267,34 +269,31 @@ async function createAssessingAssistant(
     const assistant = await openai.beta.assistants.create({
         name: 'Assessment Tutor',
         instructions:
-            `You are responsible for asking questions to assess whether the user understands the following subject:` +
+            `You are responsible for asking questions to assess whether the user understands: ` +
             topic +
-            `, which consists of the following learning objectives: ` +
-            learningObjectives +
-            `, at the following level:` +
+            ` at a ` +
             level +
-            `.
+            ` level.
 
             IMPORTANT ASSESSMENT GUIDELINES:
             - Always ask ONLY ONE QUESTION at a time
             - Never combine multiple questions in a single message
             - Make your questions clear, specific, and focused
             - After receiving an answer, provide feedback before asking the next question
-            - Assess one concept or objective at a time
+            - Assess one concept at a time
+            - Act as if you are having a natural conversation with the student
+            - DO NOT reference "learning objectives", "context provided", "materials given", or any backend data
+            - DO NOT mention that you have been given specific information or guidelines
+            - Speak naturally as if you are simply knowledgeable about the topic
        
             Please keep all messages below 1000 characters.` +
-            isFileSearchSkill
-                ? 'Do not mention that a file has been uploaded to the file search tool.'
-                : '',
+            (isFileSearchSkill
+                ? ' Do not mention that a file has been uploaded to the file search tool or that you have access to documents.'
+                : ''),
         tools: [],
         model: 'gpt-4.5-preview'
     });
     return assistant;
-}
-
-async function createAssessingAssistantThread() {
-    const thread = await openai.beta.threads.create();
-    return thread;
 }
 
 /**
@@ -426,13 +425,17 @@ async function createLearningObjectiveAssistantAndThread(
     return result;
 }
 
-async function createLearningObjectiveAssistant(level, learningObjective) {
+async function createLearningObjectiveAssistant(
+    level,
+    learningObjective,
+    neededFileSearch
+) {
     const assistant = await openai.beta.assistants.create({
         name: 'Learning Objective Tutor',
         instructions:
             `You are a personal tutor teaching a ` +
             level +
-            `student about the following subject: ` +
+            ` student about: ` +
             learningObjective +
             `.
             
@@ -442,11 +445,15 @@ async function createLearningObjectiveAssistant(level, learningObjective) {
             - Never combine multiple questions in a single message, even if they are related
             - Wait for the student's response before asking a new question
             - Build questions that help the student reach a deeper understanding
+            - Act as if you are having a natural conversation with the student
+            - DO NOT reference "learning objectives", "context provided", "materials given", or any backend data
+            - DO NOT mention that you have been given specific information or guidelines
+            - Speak naturally as if you are simply knowledgeable about the topic
             
             Please keep all messages below 1000 characters.` +
-            isFileSearchSkill
-                ? 'Do not mention that a file has been uploaded to the file search tool.'
-                : '',
+            (neededFileSearch
+                ? ' Do not mention that a file has been uploaded to the file search tool or that you have access to documents.'
+                : ''),
         tools: [],
         model: 'gpt-4.5-preview'
     });
