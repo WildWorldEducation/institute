@@ -26,7 +26,6 @@ export default {
         };
     },
     mounted() {
-        console.log(this.$route.params.skillId);
         this.userStartTime = Date.now();
         // Events that signal activity
         ['mousemove', 'keydown', 'scroll', 'click', 'touchstart'].forEach(
@@ -58,7 +57,9 @@ export default {
             let skillId;
             if (this.showSkillStore.skill) {
                 skillId = this.showSkillStore.skill.id;
-            } else {
+            } else if (this.$parent.skillId) {
+                skillId = this.$parent.skillId;
+            } else if (this.$route.params.skillId) {
                 skillId = this.$route.params.skillId;
             }
             fetch(
