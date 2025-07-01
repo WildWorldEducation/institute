@@ -26,7 +26,7 @@ export default {
         };
     },
     mounted() {
-        console.log('SkillTimeTracker mounted');
+        console.log(this.$route.params.id);
         this.userStartTime = Date.now();
         // Events that signal activity
         ['mousemove', 'keydown', 'scroll', 'click', 'touchstart'].forEach(
@@ -43,18 +43,6 @@ export default {
             }
         }, 1000);
     },
-    beforeRouteLeave(to, from, next) {
-        console.log('leave');
-        if (
-            !this.userDetailsStore.userId ||
-            this.showSkillStore.skill.type == 'domain'
-        ) {
-            next();
-            return;
-        }
-
-        next();
-    },
     methods: {
         resetTimer() {
             this.lastActivityTime = Date.now();
@@ -67,7 +55,12 @@ export default {
             // Record the end time and calculate the duration
             this.userEndTime = Date.now();
             this.duration = this.userEndTime - this.userStartTime;
-            const skillId = this.showSkillStore.skill.id;
+            let skillId;
+            if (this.showSkillStore.skill) {
+                skillId = this.showSkillStore.skill.id;
+            } else {
+                skillId = this.$route.params.id;
+            }
             fetch(
                 '/student-analytics/record-duration/' +
                     this.userDetailsStore.userId +
