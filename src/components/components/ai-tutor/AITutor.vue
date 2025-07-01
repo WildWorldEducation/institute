@@ -1717,10 +1717,6 @@ export default {
     height: auto;
 }
 
-.tutor-chatting-section.active-chat {
-    height: 95%;
-}
-
 .tutor-chatting-waiting-response-section {
     height: 94% !important;
 }
