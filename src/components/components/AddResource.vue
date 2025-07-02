@@ -5,7 +5,7 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 export default {
     data() {
         return {
-            skillId: this.$route.params.id
+            skillId: this.$route.params.skillId
         };
     },
     setup() {

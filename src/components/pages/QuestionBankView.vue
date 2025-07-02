@@ -1,15 +1,16 @@
 <script>
-import QuestionsBankQuestionList from '../components/QuestionsBankQuestionList.vue';
-import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import { useShowSkillStore } from '../../stores/ShowSkillStore.js';
+import QuestionsBankQuestionList from '../components/QuestionsBankQuestionList.vue';
+import SkillTimeTracker from '../components/student-analytics/SkillTimeTracker.vue';
 
 export default {
     setup() {
-        const skillsStore = useSkillsStore();
         const userDetailsStore = useUserDetailsStore();
+        const showSkillStore = useShowSkillStore();
         return {
-            skillsStore,
-            userDetailsStore
+            userDetailsStore,
+            showSkillStore
         };
     },
     data() {
@@ -18,22 +19,26 @@ export default {
             isMultipleChoice: true,
             isEssay: true,
             isImage: true,
-            skill: {}
+            skill: {},
+            isLoaded: false
         };
     },
     async created() {
-        if (this.skillsStore.skillsList.length == 0) {
-            await this.skillsStore.getSkillsList();
-        }
-
-        for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-            if (this.skillUrl == this.skillsStore.skillsList[i].URL) {
-                this.skill = this.skillsStore.skillsList[i];
-            }
-        }
+        await this.showSkillStore.findSkill(this.skillUrl);
+        this.skill = this.showSkillStore.skill;
+        this.isLoaded = true;
     },
     components: {
-        QuestionsBankQuestionList
+        QuestionsBankQuestionList,
+        SkillTimeTracker
+    },
+    beforeRouteLeave(to, from, next) {
+        if (!this.userDetailsStore.userId) {
+            next();
+            return;
+        }
+        this.$refs.skillTimeTracker.saveDuration();
+        next();
     }
 };
 </script>
@@ -133,6 +138,7 @@ export default {
         <div class="row mt-4">
             <div class="col">
                 <QuestionsBankQuestionList
+                    v-if="isLoaded"
                     :isMultipleChoice="isMultipleChoice"
                     :isEssay="isEssay"
                     :isImage="isImage"
@@ -141,6 +147,8 @@ export default {
             </div>
         </div>
     </div>
+    <!-- To track student time for this skill -->
+    <SkillTimeTracker v-if="skill" ref="skillTimeTracker" />
 </template>
 
 <style scoped>

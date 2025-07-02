@@ -1,5 +1,6 @@
 <script>
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import SkillTimeTracker from '../components/student-analytics/SkillTimeTracker.vue';
 
 export default {
     setup() {
@@ -11,7 +12,7 @@ export default {
     },
     data() {
         return {
-            questionId: this.$route.params.id,
+            questionId: this.$route.params.questionId,
             question: {},
             // validate object
             validate: {
@@ -20,11 +21,26 @@ export default {
                 question: false
             },
             comment: '',
-            originalQuestion: {}
+            originalQuestion: {},
+            skillId: null
         };
     },
-    created() {
+    components: {
+        SkillTimeTracker
+    },
+    async created() {
+        // get skill id, for time tracker
+        const res = await fetch(
+            '/questions/image/' + this.questionId + '/get-skill-id/'
+        );
+        const question = await res.json();
+        this.skillId = question.skillId;
+
         this.getQuestion();
+    },
+    beforeRouteLeave(to, from, next) {
+        this.$refs.skillTimeTracker.saveDuration();
+        next();
     },
     methods: {
         getQuestion() {
@@ -247,6 +263,8 @@ export default {
             </div>
         </div>
     </div>
+    <!-- To track student time for this skill -->
+    <SkillTimeTracker ref="skillTimeTracker" v-if="skillId" />
 </template>
 
 <style>

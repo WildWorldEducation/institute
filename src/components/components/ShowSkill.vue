@@ -269,11 +269,6 @@ export default {
             //Load skill filters
             this.getSkillFilters();
 
-            // const icon = document.getElementsByTagName('svg');
-            // if (icon.length > 0) {
-            //     icon[0].style.height = '50px';
-            // }
-
             // Record that the user visited this skill.
             if (this.userDetailsStore.role == 'student')
                 this.recordSkillVisit(this.skillId);

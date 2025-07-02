@@ -60,7 +60,7 @@ export default {
             <table class="table">
                 <tr>
                     <th>Skill</th>
-                    <th>Date</th>
+                    <th>Date last visited</th>
                 </tr>
                 <tr
                     v-for="skill in visitedSkills"
