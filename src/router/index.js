@@ -142,7 +142,7 @@ const router = createRouter({
             component: () => import('../components/pages/QuestionBankView.vue')
         },
         {
-            path: '/mc-questions/edit/:id',
+            path: '/mc-questions/edit/:questionId',
             name: 'edit-mc-question',
             component: () =>
                 import('../components/pages/EditMCQuestionView.vue')
@@ -159,7 +159,7 @@ const router = createRouter({
                 import('../components/pages/AddEssayQuestionView.vue')
         },
         {
-            path: '/essay-questions/edit/:id',
+            path: '/essay-questions/edit/:questionId',
             name: 'edit-essay-question',
             component: () =>
                 import('../components/pages/EditEssayQuestionView.vue')
@@ -171,7 +171,7 @@ const router = createRouter({
                 import('../components/pages/AddImageQuestionView.vue')
         },
         {
-            path: '/image-questions/edit/:id',
+            path: '/image-questions/edit/:questionId',
             name: 'edit-image-question',
             component: () =>
                 import('../components/pages/EditImageQuestionView.vue')
