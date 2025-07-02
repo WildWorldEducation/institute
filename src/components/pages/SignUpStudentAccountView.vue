@@ -389,6 +389,12 @@ export default {
 </template>
 
 <style scoped>
+img {
+    margin: auto;
+    max-height: 200px;
+    max-width: 100%;
+}
+
 /* The Warning Modal */
 .modal {
     display: block;
@@ -414,11 +420,18 @@ export default {
 /* Modal Content/Box */
 .modal-content {
     background-color: #fefefe;
-    margin: 5% auto;
-    /* 5% from the top and centered */
+    /* margin: 5% auto;
+     5% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
     width: 600px;
+    height: fit-content;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 20%;
+    margin: auto;
     font-size: 18px;
     /* Could be more or less, depending on screen size */
 }
@@ -438,8 +451,8 @@ export default {
 
     /* Modal Content/Box */
     .modal-content {
-        margin: 40% auto;
-        /* 40% from the top and centered */
+        /* margin: 40% auto;
+         40% from the top and centered */
         width: 90%;
     }
 }
