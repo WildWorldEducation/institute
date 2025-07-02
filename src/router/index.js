@@ -214,7 +214,7 @@ const router = createRouter({
             component: () => import('../components/pages/AddResourceView.vue')
         },
         {
-            path: '/resources/edit/:id',
+            path: '/resources/edit/:resourceId',
             name: 'edit-resource',
             component: () => import('../components/pages/EditResourceView.vue')
         },
