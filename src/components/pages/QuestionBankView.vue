@@ -1,7 +1,8 @@
 <script>
-import QuestionsBankQuestionList from '../components/QuestionsBankQuestionList.vue';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import QuestionsBankQuestionList from '../components/QuestionsBankQuestionList.vue';
+import SkillTimeTracker from '../components/student-analytics/SkillTimeTracker.vue';
 
 export default {
     setup() {
@@ -33,7 +34,16 @@ export default {
         }
     },
     components: {
-        QuestionsBankQuestionList
+        QuestionsBankQuestionList,
+        SkillTimeTracker
+    },
+    beforeRouteLeave(to, from, next) {
+        if (!this.userDetailsStore.userId) {
+            next();
+            return;
+        }
+        this.$refs.skillTimeTracker.saveDuration();
+        next();
     }
 };
 </script>
@@ -141,6 +151,8 @@ export default {
             </div>
         </div>
     </div>
+    <!-- To track student time for this skill -->
+    <SkillTimeTracker v-if="skill" ref="skillTimeTracker" />
 </template>
 
 <style scoped>
