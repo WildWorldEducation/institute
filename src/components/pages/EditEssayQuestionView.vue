@@ -20,6 +20,7 @@ export default {
         SkillTimeTracker
     },
     async created() {
+        // get skill id, for time tracker
         const res = await fetch(
             '/questions/essay/' + this.questionId + '/get-skill-id/'
         );

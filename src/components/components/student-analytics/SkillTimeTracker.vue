@@ -26,7 +26,6 @@ export default {
         };
     },
     mounted() {
-        console.log('test');
         this.userStartTime = Date.now();
         // Events that signal activity
         ['mousemove', 'keydown', 'scroll', 'click', 'touchstart'].forEach(
@@ -65,9 +64,6 @@ export default {
             } else if (this.$parent.skill.id) {
                 skillId = this.$parent.skill.id;
             }
-            console.log(skillId);
-            console.log(this.duration);
-            console.log(this.userDetailsStore.userId);
             fetch(
                 '/student-analytics/record-duration/' +
                     this.userDetailsStore.userId +
