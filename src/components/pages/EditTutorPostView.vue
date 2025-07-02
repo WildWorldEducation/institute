@@ -1,15 +1,30 @@
 <script>
+import SkillTimeTracker from '../components/student-analytics/SkillTimeTracker.vue';
+
 export default {
     data() {
         return {
             tutorPostId: this.$route.params.tutorPostId,
             tutorPost: {},
             validateDescription: true,
-            validateContact: true
+            validateContact: true,
+            skillId: null
         };
     },
-    created() {
+    components: {
+        SkillTimeTracker
+    },
+    async created() {
+        // get skill id, for time tracker
+        const res = await fetch('/tutor-posts/show/' + this.tutorPostId);
+        const tutorPost = await res.json();
+        this.skillId = tutorPost.skill_id;
+
         this.getTutorPost();
+    },
+    beforeRouteLeave(to, from, next) {
+        this.$refs.skillTimeTracker.saveDuration();
+        next();
     },
     methods: {
         async getTutorPost() {
@@ -132,6 +147,8 @@ export default {
             </div>
         </div>
     </div>
+    <!-- To track student time for this skill -->
+    <SkillTimeTracker ref="skillTimeTracker" v-if="skillId" />
 </template>
 
 <style>
