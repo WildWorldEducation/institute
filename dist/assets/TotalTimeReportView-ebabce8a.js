@@ -1,1 +1,0 @@
-import{_ as e,o as t,c as o,a as s}from"./main-591963f7.js";const a={setup(){},components:{},data(){return{}},async created(){},methods:{}},c={class:"container"},n=s("h1",{class:"heading"},"Total Time Report",-1),r=[n];function _(d,i,p,l,m,h){return t(),o("div",c,r)}const u=e(a,[["render",_]]);export{u as default};
