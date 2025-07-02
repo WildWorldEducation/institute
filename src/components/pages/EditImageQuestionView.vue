@@ -11,7 +11,7 @@ export default {
     },
     data() {
         return {
-            questionId: this.$route.params.id,
+            questionId: this.$route.params.questionId,
             question: {},
             // validate object
             validate: {
