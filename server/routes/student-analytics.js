@@ -51,7 +51,7 @@ router.get(
     async (req, res, next) => {
         if (req.session.userName) {
             let sqlQuery = `            
-                SELECT *
+                SELECT url, name, date
                     FROM assessment_attempts
                     JOIN skills ON skills.id = assessment_attempts.skill_id
                     WHERE assessment_attempts.user_id = ${conn.escape(
