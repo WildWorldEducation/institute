@@ -79,6 +79,7 @@ export default {
             <table class="table">
                 <tr>
                     <th>Skill</th>
+                    <th>Date</th>
                 </tr>
                 <tr
                     v-for="skill in userSkillsStore.masteredSkills"
@@ -91,6 +92,9 @@ export default {
                             :to="'/skills/' + skill.url"
                             >{{ skill.name }}</router-link
                         >
+                    </td>
+                    <td>
+                        {{ assessmentDate(skill.date) }}
                     </td>
                 </tr>
             </table>

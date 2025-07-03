@@ -1567,13 +1567,14 @@ router.post('/make-mastered/:userId', (req, res, next) => {
 
                         function makeMastered(userId, skill) {
                             let sqlQuery = `
-                            INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible, is_goal) 
+                            INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible, is_goal, date) 
                             VALUES(${conn.escape(req.params.userId)},
                             ${conn.escape(skill.id)},
                             1,
                             1,
-                            0) 
-                            ON DUPLICATE KEY UPDATE is_mastered= 1, is_accessible=1, is_goal=0;
+                            0,
+                            CURRENT_TIMESTAMP()) 
+                            ON DUPLICATE KEY UPDATE is_mastered= 1, is_accessible=1, is_goal=0, date=CURRENT_TIMESTAMP();
                             `;
 
                             conn.query(sqlQuery, (err) => {
