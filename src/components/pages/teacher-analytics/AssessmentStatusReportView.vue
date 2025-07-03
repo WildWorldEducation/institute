@@ -74,7 +74,12 @@ export default {
     <div class="container">
         <h1 class="heading">Assessment Status Report: {{ studentName }}</h1>
         <h2 class="secondary-heading">Completed</h2>
-
+        <p>
+            <em
+                >line chart, over time period. Skill names on hover or
+                permanently</em
+            >
+        </p>
         <div v-if="this.userSkillsStore.masteredSkills.length > 0" class="mb-4">
             <table class="table">
                 <tr>
@@ -101,6 +106,12 @@ export default {
         </div>
         <p v-else>This student has not completed any assessments yet.</p>
         <h2 class="secondary-heading">Attempted</h2>
+        <p>
+            <em
+                >line chart, over time period. Skill names on hover or
+                permanently. Show number of attempts</em
+            >
+        </p>
         <div v-if="this.assessmentAttempts.length > 0" class="mb-4">
             <table class="table">
                 <tr>
@@ -128,6 +139,7 @@ export default {
         <p v-else>This student has attempted any assessments yet.</p>
         <p></p>
         <h2 class="secondary-heading">Has failed multiple times</h2>
+        <p><em>horizontal bar chart</em></p>
         <div v-if="this.multipleFails.length > 0" class="mb-4">
             <table class="table">
                 <tr>
