@@ -105,6 +105,7 @@ export default {
                 </tr>
                 <tr
                     v-for="assessmentAttempt in assessmentAttempts"
+                    :key="assessmentAttempt.id"
                     class="table-rows"
                 >
                     <td>
