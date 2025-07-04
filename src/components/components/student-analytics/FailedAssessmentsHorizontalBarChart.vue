@@ -3,12 +3,7 @@ import * as d3 from 'd3';
 
 export default {
     name: 'BarChart',
-    props: {
-        data: {
-            required: true,
-            type: Array
-        }
-    },
+    props: ['data', 'colour'],
     data() {
         return {
             padding: 60
@@ -16,13 +11,14 @@ export default {
     },
     mounted() {
         const container = d3.select('#chart-container');
+        //console.log(this.data);
 
         // Specify the chart’s dimensions, based on a bar’s height.
         const barHeight = 25;
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
-        const marginLeft = 150;
+        const marginLeft = 200;
         const width = 1000;
         const height =
             Math.ceil((this.data.length + 0.1) * barHeight) +
@@ -32,12 +28,12 @@ export default {
         // Create the scales.
         const x = d3
             .scaleLinear()
-            .domain([0, d3.max(this.data, (d) => d.times)])
+            .domain([0, d3.max(this.data, (d) => d.quantity)])
             .range([marginLeft, width - marginRight]);
 
         const y = d3
             .scaleBand()
-            .domain(d3.sort(this.data, (d) => -d.times).map((d) => d.name))
+            .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
             .padding(0.1);
 
@@ -56,15 +52,15 @@ export default {
                 'max-width: 100%; height: 100%; font: 14px sans-serif;'
             );
 
-        // Append a rect for each name.
+        // Append a rect for each skill.
         svg.append('g')
-            .attr('fill', 'darkred')
+            .attr('fill', this.colour)
             .selectAll()
             .data(this.data)
             .join('rect')
             .attr('x', x(0))
             .attr('y', (d) => y(d.name))
-            .attr('width', (d) => x(d.times) - x(0))
+            .attr('width', (d) => x(d.quantity) - x(0))
             .attr('height', y.bandwidth());
 
         // Append a label for each name.
@@ -74,14 +70,14 @@ export default {
             .selectAll()
             .data(this.data)
             .join('text')
-            .attr('x', (d) => x(d.times))
+            .attr('x', (d) => x(d.quantity))
             .attr('y', (d) => y(d.name) + y.bandwidth() / 2)
             .attr('dy', '0.35em')
             .attr('dx', -4)
-            .text((d) => format(d.times))
+            .text((d) => format(d.quantity))
             .call((text) =>
                 text
-                    .filter((d) => x(d.times) - x(0) < 20) // short bars
+                    .filter((d) => x(d.quantity) - x(0) < 20) // short bars
                     .attr('dx', +4)
                     .attr('fill', 'black')
                     .attr('text-anchor', 'start')
@@ -97,18 +93,7 @@ export default {
             .attr('transform', `translate(${marginLeft},0)`)
             .call(d3.axisLeft(y).tickSizeOuter(0));
     },
-    computed: {
-        formattedData() {
-            const newData = this.data.map((data) => ({
-                ...data, // Spread operator to copy existing properties
-                newDate: new Date(data.date),
-                close: 1
-            }));
-
-            console.log(newData);
-            return newData;
-        }
-    }
+    computed: {}
 };
 </script>
 
