@@ -73,6 +73,16 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Assessment Status Report: {{ studentName }}</h1>
+        <h2 class="secondary-heading">Combined</h2>
+        <p>
+            <em
+                >line chart, over time period. Skill names on hover or
+                permanently</em
+            >
+        </p>
+        <p>
+            <em>different colour line for passed, attempted, and failed</em>
+        </p>
         <h2 class="secondary-heading">Completed</h2>
         <p>
             <em

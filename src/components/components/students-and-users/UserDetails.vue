@@ -192,7 +192,7 @@ export default {
                         Progress
                     </router-link> -->
                     <!-- Tracking Report -->
-                    <h2 class="secondary-heading h4 mt-4">Tracking Report</h2>
+                    <h2 class="secondary-heading h4 mt-4">Student analytics</h2>
                     <router-link
                         :to="`/student/${this.$parent.user.id}/skill-activity`"
                         class="fit-content"
@@ -207,6 +207,17 @@ export default {
                     >
                         Assessment status
                     </router-link>
+                    <p>Possible others</p>
+                    <ul>
+                        <li>
+                            animated skill tree, that grows over time, showing
+                            student mastering new skills
+                        </li>
+                        <li>
+                            timeline of student skill activity:
+                            https://observablehq.com/@tezzutezzu/world-history-timeline
+                        </li>
+                    </ul>
                     <!-- Time on Platform -->
                     <router-link
                         :to="`/student/${this.$parent.user.id}/total-time`"
@@ -381,7 +392,14 @@ export default {
                     />
                     <label for="two">Yes</label>
                 </div>
-                <!-- <h2 class="secondary-heading h4 mt-4">Notifications</h2> -->
+                <h2 class="secondary-heading h4 mt-4">Notifications</h2>
+                <p><em>have a square for icons next to the student name</em></p>
+                <ul>
+                    <li>Low activity</li>
+                    <li>Behind the curve</li>
+                    <li>Ahead of the curve</li>
+                    <li>Struggling with a particular skill</li>
+                </ul>
             </div>
         </div>
     </div>

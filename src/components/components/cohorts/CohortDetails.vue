@@ -57,9 +57,67 @@ export default {
         </div>
         <div class="row">
             <!-- Cohort Progress -->
-            <!-- <div class="col-12 col-md-5">
-                <div class="d-flex flex-column"> -->
-            <!-- <h2 class="secondary-heading h4">Analytics</h2>
+            <div class="col-12 col-md-8">
+                <div class="d-flex flex-column">
+                    <h2 class="secondary-heading h4">Cohort Analytics</h2>
+                    <h3>Time</h3>
+                    <ul>
+                        <li><em>Time on platform, comparing students</em></li>
+                        <li><em>Choose by day, week etc</em></li>
+                        <li><em>bar chart</em></li>
+                        <li><em>allow change of order</em></li>
+                    </ul>
+                    <h3>Assessments</h3>
+                    <ul>
+                        <li><em>number of passes, comparing students</em></li>
+                        <li><em>number of attempts, comparing students</em></li>
+                        <li><em>number of fails, comparing students</em></li>
+                        <li><em>bar charts</em></li>
+                        <li><em>allow change of order</em></li>
+                    </ul>
+                    <h3>Skills</h3>
+                    <ul>
+                        <li>
+                            <em>over a given time</em>
+                        </li>
+                        <li>
+                            <em
+                                >number of students that have mastered,
+                                comparing skills</em
+                            >
+                        </li>
+                        <li>
+                            <em
+                                >number of students that have attempted,
+                                comparing skills</em
+                            >
+                        </li>
+                        <li>
+                            <em
+                                >number of students that have failed, comparing
+                                skills</em
+                            >
+                        </li>
+                        <li>
+                            <em
+                                >number of students that have visited, comparing
+                                skills</em
+                            >
+                        </li>
+                        <li><em>bar charts</em></li>
+                        <li><em>allow change of order</em></li>
+                    </ul>
+                    <h3>Possibly: Skills -> Learning Objectives</h3>
+                    <ul>
+                        <li><em>which are students struggling with</em></li>
+                        <li>
+                            <em
+                                >Calendar showing: passing assessments, taking
+                                them, failing them:
+                                https://observablehq.com/@d3/calendar/2</em
+                            >
+                        </li>
+                    </ul>
                     <router-link
                         :to="`/student/${this.$parent.cohort.id}/progress-report`"
                         class="fit-content"
@@ -73,10 +131,10 @@ export default {
                         target="_blank"
                     >
                         Estimated mastery scores
-                    </router-link> -->
+                    </router-link>
 
-            <!-- Goals -->
-            <!-- <h2 class="secondary-heading h4 mt-4">Assign work</h2>
+                    <!-- Goals -->
+                    <!-- <h2 class="secondary-heading h4 mt-4">Assign work</h2>
                     <router-link
                         :to="'/student/' + this.$parent.cohort.id + '/skills'"
                         class="fit-content"
@@ -91,10 +149,10 @@ export default {
                     >
                         See current goals
                     </router-link> -->
-            <!-- </div>
-            </div> -->
+                </div>
+            </div>
             <!-- Right column -->
-            <div class="col-12 col-md-7">
+            <div class="col-12 col-md-4">
                 <!-- <h2 class="secondary-heading h4">Edit</h2> -->
                 <div class="d-flex flex-column">
                     <!-- Edit Cohort -->
