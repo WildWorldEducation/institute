@@ -111,7 +111,7 @@ router.get('/multiple-fails/:studentId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT skills.id, skills.name, COUNT(name) AS times
+            SELECT skills.id, skills.name, COUNT(name) AS quantity
                     FROM assessment_attempts
                     JOIN skills ON skills.id = assessment_attempts.skill_id
                     WHERE assessment_attempts.user_id = ${conn.escape(
@@ -179,7 +179,7 @@ router.get('/skill-durations/:studentId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT skills.id, name, url, level, icon, type, duration
+            SELECT skills.id, name, url, level, icon, type, duration AS quantity
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id

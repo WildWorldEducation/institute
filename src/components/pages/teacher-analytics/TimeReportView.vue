@@ -1,11 +1,16 @@
 <script>
 import { useUsersStore } from '../../../stores/UsersStore';
+import HorizontalBarChart from '../../components/student-analytics/HorizontalBarChart.vue';
+
 export default {
     setup() {
         const usersStore = useUsersStore();
         return {
             usersStore
         };
+    },
+    components: {
+        HorizontalBarChart
     },
     data() {
         return {
@@ -35,6 +40,7 @@ export default {
                 .then((response) => response.json())
                 .then((data) => {
                     this.skillDurations = data;
+                    console.log(this.skillDurations);
                 })
                 .catch((error) => {
                     console.error('Error fetching last visited skills:', error);
@@ -82,7 +88,11 @@ export default {
             <!-- <p><em>line chart, over days / hours</em></p> -->
             <p>{{ millisToMinutesAndSeconds(this.allSkillsDuration) }}</p>
             <h2 class="secondary-heading">Per skill</h2>
-            <!-- <p><em>horizontal bar chart</em></p> -->
+            <HorizontalBarChart
+                v-if="skillDurations.length > 0"
+                :data="skillDurations"
+                colour="darkblue"
+            />
             <div v-if="this.skillDurations.length > 0" class="mb-4">
                 <table class="table">
                     <tr>

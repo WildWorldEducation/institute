@@ -3,18 +3,15 @@ import * as d3 from 'd3';
 
 export default {
     name: 'BarChart',
-    props: {
-        data: {
-            required: true,
-            type: Array
-        }
-    },
+    props: ['data', 'colour'],
     data() {
         return {
             padding: 60
         };
     },
     mounted() {
+        console.log(this.colour);
+
         const container = d3.select('#chart-container');
 
         // Specify the chart’s dimensions, based on a bar’s height.
@@ -32,12 +29,12 @@ export default {
         // Create the scales.
         const x = d3
             .scaleLinear()
-            .domain([0, d3.max(this.data, (d) => d.times)])
+            .domain([0, d3.max(this.data, (d) => d.quantity)])
             .range([marginLeft, width - marginRight]);
 
         const y = d3
             .scaleBand()
-            .domain(d3.sort(this.data, (d) => -d.times).map((d) => d.name))
+            .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
             .padding(0.1);
 
@@ -58,13 +55,13 @@ export default {
 
         // Append a rect for each name.
         svg.append('g')
-            .attr('fill', 'darkred')
+            .attr('fill', this.colour)
             .selectAll()
             .data(this.data)
             .join('rect')
             .attr('x', x(0))
             .attr('y', (d) => y(d.name))
-            .attr('width', (d) => x(d.times) - x(0))
+            .attr('width', (d) => x(d.quantity) - x(0))
             .attr('height', y.bandwidth());
 
         // Append a label for each name.
@@ -74,14 +71,14 @@ export default {
             .selectAll()
             .data(this.data)
             .join('text')
-            .attr('x', (d) => x(d.times))
+            .attr('x', (d) => x(d.quantity))
             .attr('y', (d) => y(d.name) + y.bandwidth() / 2)
             .attr('dy', '0.35em')
             .attr('dx', -4)
-            .text((d) => format(d.times))
+            .text((d) => format(d.quantity))
             .call((text) =>
                 text
-                    .filter((d) => x(d.times) - x(0) < 20) // short bars
+                    .filter((d) => x(d.quantity) - x(0) < 20) // short bars
                     .attr('dx', +4)
                     .attr('fill', 'black')
                     .attr('text-anchor', 'start')

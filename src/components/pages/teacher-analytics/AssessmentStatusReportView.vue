@@ -155,6 +155,7 @@ export default {
         <HorizontalBarChart
             v-if="multipleFails.length > 0"
             :data="multipleFails"
+            colour="darkred"
         />
         <div v-if="this.multipleFails.length > 0" class="mb-4">
             <table class="table">
@@ -175,7 +176,7 @@ export default {
                         >
                     </td>
                     <td>
-                        {{ failedAssessment.times }}
+                        {{ failedAssessment.quantity }}
                     </td>
                 </tr>
             </table>
