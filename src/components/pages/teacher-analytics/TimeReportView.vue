@@ -1,6 +1,6 @@
 <script>
 import { useUsersStore } from '../../../stores/UsersStore';
-import HorizontalBarChart from '../../components/student-analytics/HorizontalBarChart.vue';
+import TimePerSkillHorizontalBarChart from '../../components/student-analytics/TimePerSkillHorizontalBarChart.vue';
 
 export default {
     setup() {
@@ -10,7 +10,7 @@ export default {
         };
     },
     components: {
-        HorizontalBarChart
+        TimePerSkillHorizontalBarChart
     },
     data() {
         return {
@@ -40,7 +40,12 @@ export default {
                 .then((response) => response.json())
                 .then((data) => {
                     this.skillDurations = data;
-                    console.log(this.skillDurations);
+                    for (let i = 0; i < this.skillDurations.length; i++) {
+                        this.skillDurations[i].formattedQuantity =
+                            this.millisToMinutesAndSeconds(
+                                this.skillDurations[i].quantity
+                            );
+                    }
                 })
                 .catch((error) => {
                     console.error('Error fetching last visited skills:', error);
@@ -51,7 +56,6 @@ export default {
                 .then((response) => response.json())
                 .then((data) => {
                     this.allSkillsDuration = data.duration;
-                    console.log(this.allSkillsDuration);
                 })
                 .catch((error) => {
                     console.error('Error fetching last visited skills:', error);
@@ -87,11 +91,11 @@ export default {
             <h2 class="secondary-heading">All skills</h2>
             <!-- <p><em>line chart, over days / hours</em></p> -->
             <p>{{ millisToMinutesAndSeconds(this.allSkillsDuration) }}</p>
-            <h2 class="secondary-heading">Per skill</h2>
-            <HorizontalBarChart
+            <h2 class="secondary-heading">Minutes per skill</h2>
+            <TimePerSkillHorizontalBarChart
                 v-if="skillDurations.length > 0"
                 :data="skillDurations"
-                colour="darkblue"
+                colour="darkgreen"
             />
             <div v-if="this.skillDurations.length > 0" class="mb-4">
                 <table class="table">
@@ -114,7 +118,7 @@ export default {
                         <td>
                             {{
                                 millisToMinutesAndSeconds(
-                                    skillDuration.duration
+                                    skillDuration.quantity
                                 )
                             }}
                         </td>

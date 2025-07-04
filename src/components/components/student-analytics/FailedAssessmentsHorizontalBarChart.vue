@@ -10,16 +10,15 @@ export default {
         };
     },
     mounted() {
-        console.log(this.colour);
-
         const container = d3.select('#chart-container');
+        //console.log(this.data);
 
         // Specify the chart’s dimensions, based on a bar’s height.
         const barHeight = 25;
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
-        const marginLeft = 150;
+        const marginLeft = 200;
         const width = 1000;
         const height =
             Math.ceil((this.data.length + 0.1) * barHeight) +
@@ -53,7 +52,7 @@ export default {
                 'max-width: 100%; height: 100%; font: 14px sans-serif;'
             );
 
-        // Append a rect for each name.
+        // Append a rect for each skill.
         svg.append('g')
             .attr('fill', this.colour)
             .selectAll()
@@ -94,18 +93,7 @@ export default {
             .attr('transform', `translate(${marginLeft},0)`)
             .call(d3.axisLeft(y).tickSizeOuter(0));
     },
-    computed: {
-        formattedData() {
-            const newData = this.data.map((data) => ({
-                ...data, // Spread operator to copy existing properties
-                newDate: new Date(data.date),
-                close: 1
-            }));
-
-            console.log(newData);
-            return newData;
-        }
-    }
+    computed: {}
 };
 </script>
 

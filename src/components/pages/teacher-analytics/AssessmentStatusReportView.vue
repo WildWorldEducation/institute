@@ -1,7 +1,7 @@
 <script>
 import { useUsersStore } from '../../../stores/UsersStore';
 import { useUserSkillsStore } from '../../../stores/UserSkillsStore';
-import HorizontalBarChart from '../../components/student-analytics/HorizontalBarChart.vue';
+import FailedAssessmentsHorizontalBarChart from '../../components/student-analytics/FailedAssessmentsHorizontalBarChart.vue';
 
 export default {
     setup() {
@@ -13,7 +13,7 @@ export default {
         };
     },
     components: {
-        HorizontalBarChart
+        FailedAssessmentsHorizontalBarChart
     },
     data() {
         return {
@@ -152,7 +152,7 @@ export default {
         <p v-else>This student has attempted any assessments yet.</p>
         <p></p>
         <h2 class="secondary-heading">Has failed multiple times</h2>
-        <HorizontalBarChart
+        <FailedAssessmentsHorizontalBarChart
             v-if="multipleFails.length > 0"
             :data="multipleFails"
             colour="darkred"
