@@ -51,7 +51,7 @@ router.get(
     async (req, res, next) => {
         if (req.session.userName) {
             let sqlQuery = `            
-                SELECT *
+                SELECT assessment_attempts.id, url, name, date
                     FROM assessment_attempts
                     JOIN skills ON skills.id = assessment_attempts.skill_id
                     WHERE assessment_attempts.user_id = ${conn.escape(
@@ -81,10 +81,10 @@ router.get('/mastered-skills/:studentId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT skills.id, name, url, level, icon, type, is_mastered
+            SELECT skills.id, name, url, level, user_skills.date
             FROM skills
             LEFT OUTER JOIN user_skills
-            ON skills.id = user_skills.skill_id
+            ON skills.id = user_skills.skill_id            
             WHERE user_skills.user_id = ${conn.escape(req.params.studentId)}
             AND is_mastered = 1
             AND type <> 'domain'
@@ -111,7 +111,7 @@ router.get('/multiple-fails/:studentId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT skills.id, skills.name, COUNT(*) AS times
+            SELECT skills.id, skills.name, COUNT(name) AS times
                     FROM assessment_attempts
                     JOIN skills ON skills.id = assessment_attempts.skill_id
                     WHERE assessment_attempts.user_id = ${conn.escape(
@@ -124,6 +124,7 @@ router.get('/multiple-fails/:studentId', (req, res, next) => {
                         req.params.studentId
                     )}
                     AND is_mastered = 1)  
+                    group by id, name
                     HAVING COUNT(*) > 1;`;
 
         conn.query(sqlQuery, (err, results) => {

@@ -56,6 +56,12 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Skill Activity Report: {{ studentName }}</h1>
+        <!-- <p>
+            <em>
+                try this one:
+                https://observablehq.com/@tezzutezzu/world-history-timeline</em
+            >
+        </p> -->
         <div v-if="this.visitedSkills.length > 0" class="mb-4">
             <table class="table">
                 <tr>
