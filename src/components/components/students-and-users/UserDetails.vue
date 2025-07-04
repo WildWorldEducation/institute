@@ -207,7 +207,7 @@ export default {
                     >
                         Assessment status
                     </router-link>
-                    <p>Possible others</p>
+                    <!-- <p>Possible others</p>
                     <ul>
                         <li>
                             animated skill tree, that grows over time, showing
@@ -217,7 +217,7 @@ export default {
                             timeline of student skill activity:
                             https://observablehq.com/@tezzutezzu/world-history-timeline
                         </li>
-                    </ul>
+                    </ul> -->
                     <!-- Time on Platform -->
                     <router-link
                         :to="`/student/${this.$parent.user.id}/total-time`"
@@ -392,14 +392,14 @@ export default {
                     />
                     <label for="two">Yes</label>
                 </div>
-                <h2 class="secondary-heading h4 mt-4">Notifications</h2>
-                <p><em>have a square for icons next to the student name</em></p>
+                <!-- <h2 class="secondary-heading h4 mt-4">Notifications</h2> -->
+                <!-- <p><em>have a square for icons next to the student name</em></p>
                 <ul>
                     <li>Low activity</li>
                     <li>Behind the curve</li>
                     <li>Ahead of the curve</li>
                     <li>Struggling with a particular skill</li>
-                </ul>
+                </ul> -->
             </div>
         </div>
     </div>
