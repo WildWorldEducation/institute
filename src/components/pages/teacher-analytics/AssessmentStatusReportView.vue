@@ -1,6 +1,8 @@
 <script>
 import { useUsersStore } from '../../../stores/UsersStore';
 import { useUserSkillsStore } from '../../../stores/UserSkillsStore';
+import LineChart from '../../components/student-analytics/LineChart.vue';
+
 export default {
     setup() {
         const usersStore = useUsersStore();
@@ -10,13 +12,16 @@ export default {
             userSkillsStore
         };
     },
-    components: {},
+    components: {
+        LineChart
+    },
     data() {
         return {
             studentId: this.$route.params.studentId,
             studentName: null,
             assessmentAttempts: [],
-            multipleFails: []
+            multipleFails: [],
+            testData: [1, 2, 3]
         };
     },
     async created() {
@@ -73,6 +78,7 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Assessment Status Report: {{ studentName }}</h1>
+        <LineChart />
         <h2 class="secondary-heading">Combined</h2>
         <p>
             <em
