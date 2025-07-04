@@ -15,23 +15,22 @@ export default {
         };
     },
     mounted() {
-        // Create a parser for the format "YYYY-MM-DD"
-        const parseDate = d3.timeParse('%Y-%m-%d');
+        // console.log(this.formattedData);
 
-        const data = [
-            {
-                date: parseDate('2007-04-23'),
-                close: 93.24
-            },
-            {
-                date: parseDate('2007-04-24'),
-                close: 50
-            },
-            {
-                date: parseDate('2007-04-25'),
-                close: 98.84
-            }
-        ];
+        // const data = [
+        //     {
+        //         date: parseDate('2007-04-23'),
+        //         close: 93.24
+        //     },
+        //     {
+        //         date: parseDate('2007-04-24'),
+        //         close: 50
+        //     },
+        //     {
+        //         date: parseDate('2007-04-25'),
+        //         close: 98.84
+        //     }
+        // ];
 
         const container = d3.select('#chart-container');
 
@@ -45,20 +44,20 @@ export default {
 
         // Declare the x (horizontal position) scale.
         const x = d3.scaleUtc(
-            d3.extent(data, (d) => d.date),
+            d3.extent(this.formattedData, (d) => d.newDate),
             [marginLeft, width - marginRight]
         );
 
         // Declare the y (vertical position) scale.
         const y = d3.scaleLinear(
-            [0, d3.max(data, (d) => d.close)],
+            [0, d3.max(this.formattedData, (d) => 1)],
             [height - marginBottom, marginTop]
         );
 
         // Declare the line generator.
         const line = d3
             .line()
-            .x((d) => x(d.date))
+            .x((d) => x(d.newDate))
             .y((d) => y(d.close));
 
         const createPath = d3
@@ -104,48 +103,26 @@ export default {
                     .attr('y', 10)
                     .attr('fill', 'currentColor')
                     .attr('text-anchor', 'start')
-                    .text('↑ Daily close ($)')
+                    .text('Number of assessments passed')
             );
 
         // Append a path for the line.
         svg.append('path')
             .attr('fill', 'none')
-            .attr('stroke', 'steelblue')
+            .attr('stroke', 'green')
             .attr('stroke-width', 1.5)
-            .attr('d', line(data));
-
-        console.log(svg.node());
-        console.log(container._groups[0]);
-
-        //  container._groups[0].append(svg.node());
-        //return svg.node();
+            .attr('d', line(this.formattedData));
     },
     computed: {
-        rangeX() {
-            const width = this.width - this.padding;
-            return [0, width];
-        },
-        rangeY() {
-            const height = this.height - this.padding;
-            return [0, height];
-        },
-        path() {
-            const x = d3.scaleLinear().range(this.rangeX);
-            const y = d3.scaleLinear().range(this.rangeY);
-            d3.axisLeft().scale(x);
-            d3.axisTop().scale(y);
-            x.domain(d3.extent(this.data, (d, i) => i));
-            y.domain([0, d3.max(this.data, (d) => d)]);
-            return d3
-                .line()
-                .x((d, i) => x(i))
-                .y((d) => y(d));
-        },
-        line() {
-            return this.path(this.data);
-        },
-        viewBox() {
-            return `0 0 ${this.width} ${this.height}`;
+        formattedData() {
+            const newData = this.data.map((data) => ({
+                ...data, // Spread operator to copy existing properties
+                newDate: new Date(data.date),
+                close: 1
+            }));
+
+            console.log(newData);
+            return newData;
         }
     }
 };
