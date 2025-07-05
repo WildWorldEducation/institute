@@ -132,8 +132,4 @@ export default {
     <div id="chart-container"></div>
 </template>
 
-<style scoped>
-.demo-chart {
-    height: 500px;
-}
-</style>
+<style scoped></style>
