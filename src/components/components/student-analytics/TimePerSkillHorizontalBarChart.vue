@@ -2,7 +2,7 @@
 import * as d3 from 'd3';
 
 export default {
-    name: 'BarChart',
+    name: 'TimePerSkillHorizontalBarChart',
     props: ['data', 'colour'],
     data() {
         return {
@@ -10,7 +10,7 @@ export default {
         };
     },
     mounted() {
-        const container = d3.select('#chart-container');
+        const container = d3.select('#time-per-skill-chart-container');
         //console.log(this.data);
 
         // Specify the chart’s dimensions, based on a bar’s height.
@@ -42,7 +42,7 @@ export default {
 
         // Create the SVG container.
         const svg = d3
-            .select('#chart-container')
+            .select('#time-per-skill-chart-container')
             .append('svg')
             .attr('width', width)
             .attr('height', height)
@@ -98,11 +98,7 @@ export default {
 </script>
 
 <template>
-    <div id="chart-container"></div>
+    <div id="time-per-skill-chart-container"></div>
 </template>
 
-<style scoped>
-.demo-chart {
-    height: 500px;
-}
-</style>
+<style scoped></style>
