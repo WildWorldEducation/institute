@@ -57,7 +57,7 @@ export default {
         </div>
         <div class="row">
             <!-- Cohort Progress -->
-            <!-- <div class="col-12 col-md-8">
+            <div class="col-12 col-md-8">
                 <div class="d-flex flex-column">
                     <h2 class="secondary-heading h4">Cohort Analytics</h2>
                     <h3>Time</h3>
@@ -131,10 +131,10 @@ export default {
                         target="_blank"
                     >
                         Estimated mastery scores
-                    </router-link>-->
+                    </router-link>
 
             <!-- Goals -->
-            <!-- <h2 class="secondary-heading h4 mt-4">Assign work</h2>
+            <h2 class="secondary-heading h4 mt-4">Assign work</h2>
                     <router-link
                         :to="'/student/' + this.$parent.cohort.id + '/skills'"
                         class="fit-content"
@@ -150,7 +150,7 @@ export default {
                         See current goals
                     </router-link>
                 </div>
-            </div> -->
+            </div> 
             <!-- Right column -->
             <div class="col-12 col-md-4">
                 <h2 class="secondary-heading h4">Edit</h2>
