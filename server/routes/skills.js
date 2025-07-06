@@ -869,7 +869,7 @@ router.get('/url-only/:id', (req, res, next) => {
         try {
             if (err) {
                 throw err;
-            }                        
+            }
 
             res.json(results[0]);
         } catch (err) {
@@ -907,12 +907,12 @@ router.get('/record-visit/:id', (req, res, next) => {
 
         //Register visit datetime.
         let visitSqlQuery = `
- INSERT INTO user_visited_skills (user_id, skill_id, visited_at)
- VALUES (${conn.escape(req.session.userId)}, ${conn.escape(
+            INSERT INTO user_visited_skills (user_id, skill_id, visited_at)
+            VALUES (${conn.escape(req.session.userId)}, ${conn.escape(
             req.params.id
         )}, NOW())
- ON DUPLICATE KEY UPDATE visited_at = NOW();
-`;
+            ON DUPLICATE KEY UPDATE visited_at = NOW();
+        `;
         conn.query(visitSqlQuery, (err) => {
             try {
                 if (err) {
