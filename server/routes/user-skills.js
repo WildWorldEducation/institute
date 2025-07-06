@@ -24,6 +24,60 @@ Routes
 --------------------------------------------
 --------------------------------------------*/
 
+// Last visited date --------------------------------------------------------------------------
+// Record last visited date
+router.get('/record-visit/:id', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        //Register visit datetime.
+        let visitSqlQuery = `
+            INSERT INTO user_skills (user_id, skill_id, last_visited_date)
+            VALUES (${conn.escape(req.session.userId)}, ${conn.escape(
+            req.params.id
+        )}, NOW())
+            ON DUPLICATE KEY UPDATE last_visited_date = NOW();
+        `;
+        conn.query(visitSqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+router.get('/last-visited-skills', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        //Get last visited.
+        let sqlQuery = `
+            SELECT skills.id, name, skills.url, level, icon
+            FROM user_skills
+            INNER JOIN skills
+            ON skills.id = user_skills.skill_id
+            WHERE user_id = ${conn.escape(req.session.userId)}
+            AND skills.is_deleted = 0
+            ORDER BY last_visited_date DESC
+            LIMIT 5;
+        `;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                console.log(results);
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /* Nested list of user-skills*/
 // For Collapsible Tree and Linear Tree
 // And Student Collapsible Tree

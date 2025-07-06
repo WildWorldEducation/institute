@@ -285,7 +285,7 @@ export default {
             }
         },
         recordSkillVisit(skillId) {
-            fetch('/skills/record-visit/' + skillId);
+            fetch('/user-skills/record-visit/' + skillId);
         },
         async getSkillFilters() {
             if (this.skillTagsStore.skillTagsList.length == 0)
