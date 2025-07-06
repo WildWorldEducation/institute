@@ -24,13 +24,13 @@ Routes
 router.get('/last-visited-skills/:studentId', async (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery = `
-            SELECT skills.id, name, skills.url, level, icon, visited_at
-            FROM user_visited_skills
+            SELECT skills.id, name, skills.url, level, icon, last_visited_date
+            FROM user_skills
             INNER JOIN skills 
-            ON skills.id = user_visited_skills.skill_id
+            ON skills.id = user_skills.skill_id
             WHERE user_id = ${conn.escape(req.params.studentId)}
             AND skills.is_deleted = 0
-            ORDER BY visited_at DESC;
+            ORDER BY last_visited_date DESC;
         `;
 
         conn.query(sqlQuery, (err, results) => {
