@@ -50,7 +50,6 @@ export default {
             // hide / show chat
             showChat: true,
             isTextToSpeech: true,
-            threadID: '',
             audio: null,
             isAudioPlaying: false,
             assistantData: {
@@ -212,7 +211,7 @@ export default {
                 }
 
                 if (this.chatHistory.length > 0) {
-                    this.threadID = this.chatHistory[0].thread_id;
+                    this.assistantData.threadId = this.chatHistory[0].thread_id;
                     if (this.tutorType == 'socratic')
                         this.isNewSocraticChat = false;
                     else if (this.tutorType == 'assessing')
