@@ -31,11 +31,13 @@ router.get('/record-visit/:id', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         //Register visit datetime.
         let visitSqlQuery = `
-            INSERT INTO user_skills (user_id, skill_id, last_visited_date)
+            INSERT INTO user_skills (user_id, skill_id, first_visited_date, last_visited_date)
             VALUES (${conn.escape(req.session.userId)}, ${conn.escape(
             req.params.id
-        )}, NOW())
-            ON DUPLICATE KEY UPDATE last_visited_date = NOW();
+        )}, NOW(), NOW())
+            ON DUPLICATE KEY UPDATE 
+            last_visited_date = NOW(),
+            first_visited_date = IF(first_visited_date IS NULL, NOW(), first_visited_date);
         `;
         conn.query(visitSqlQuery, (err) => {
             try {
