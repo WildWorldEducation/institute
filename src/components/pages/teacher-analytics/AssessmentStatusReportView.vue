@@ -77,7 +77,7 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Assessment Status Report: {{ studentName }}</h1>
-        <h2 class="secondary-heading">Combined</h2>
+        <!-- <h2 class="secondary-heading">Combined</h2> -->
         <!-- <p>
             <em
                 >line chart, over time period. Skill names on hover or
@@ -87,12 +87,7 @@ export default {
         <p>
             <em>different colour line for passed, attempted, and failed</em>
         </p> -->
-        <h2 class="secondary-heading">Completed</h2>
-        <!-- <p>
-            <em
-                >Ganntt chart</em
-            >
-        </p> -->
+        <h2 class="secondary-heading">Passed</h2>
         <div v-if="this.userSkillsStore.masteredSkills.length > 0" class="mb-4">
             <table class="table">
                 <tr>
@@ -151,7 +146,7 @@ export default {
         </div>
         <p v-else>This student has attempted any assessments yet.</p>
         <p></p>
-        <h2 class="secondary-heading">Has failed multiple times</h2>
+        <h2 class="secondary-heading">Failed multiple times</h2>
         <FailedAssessmentsHorizontalBarChart
             v-if="multipleFails.length > 0"
             :data="multipleFails"

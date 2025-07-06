@@ -86,7 +86,8 @@ export default {
             >
         </p> -->
         <h2 class="secondary-heading">Total time on platform</h2>
-        <!-- <p><em>line chart, over days / hours</em></p> -->
+        <p><em>line chart, over days / hours</em></p>
+        <p><em>Would have to record the time each day</em></p>
         <div v-if="isDataLoaded">
             <h2 class="secondary-heading">All skills</h2>
             <!-- <p><em>line chart, over days / hours</em></p> -->

@@ -56,12 +56,19 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Skill Activity Report: {{ studentName }}</h1>
-        <!-- <p>
+        <p>
             <em>
                 try this one:
                 https://observablehq.com/@tezzutezzu/world-history-timeline</em
             >
-        </p> -->
+        </p>
+        <p>
+            <em>
+                Will have to record more data. Which days teh student goes on
+                the skill.</em
+            >
+            <em> Would need to create a new table</em>
+        </p>
         <div v-if="this.visitedSkills.length > 0" class="mb-4">
             <table class="table">
                 <tr>

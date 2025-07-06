@@ -184,13 +184,13 @@ export default {
                     >
                         Skill tree
                     </router-link>
-                    <!-- <router-link
+                    <router-link
                         :to="`/student/${this.$parent.user.id}/progress-report`"
                         class="fit-content mt-2"
                         target="_blank"
                     >
                         Progress
-                    </router-link> -->
+                    </router-link>
                     <!-- Tracking Report -->
                     <h2 class="secondary-heading h4 mt-4">Student analytics</h2>
                     <router-link
