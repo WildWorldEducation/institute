@@ -111,10 +111,10 @@ export default {
                         >
                     </td>
                     <td>
-                        {{ visitedDate(skill.first_visited_date) }}
+                        {{ visitedDate(skill.startDate) }}
                     </td>
                     <td>
-                        {{ visitedDate(skill.last_visited_date) }}
+                        {{ visitedDate(skill.endDate) }}
                     </td>
                 </tr>
             </table>

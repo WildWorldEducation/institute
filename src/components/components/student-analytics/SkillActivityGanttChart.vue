@@ -15,7 +15,7 @@ export default {
 
         const prepareDataElement = ({
             id,
-            label,
+            name,
             startDate,
             endDate,
             duration,
@@ -27,9 +27,15 @@ export default {
                 );
             }
 
-            if (startDate) startDate = moment(startDate);
+            if (startDate) {
+                startDate = startDate.slice(0, 10);
+                startDate = moment(startDate);
+            }
 
-            if (endDate) endDate = moment(endDate);
+            if (endDate) {
+                endDate = endDate.slice(0, 10);
+                endDate = moment(endDate);
+            }
 
             if (startDate && !endDate && duration) {
                 endDate = moment(startDate);
@@ -45,7 +51,7 @@ export default {
 
             return {
                 id,
-                label,
+                name,
                 startDate,
                 endDate,
                 duration,
@@ -198,7 +204,9 @@ export default {
         const createElementData = (data, elementHeight, xScale, fontSize) =>
             data.map((d, i) => {
                 const x = xScale(d.startDate.toDate());
+                console.log(x);
                 const xEnd = xScale(d.endDate.toDate());
+                console.log(xEnd);
                 const y = i * elementHeight * 1.5;
                 const width = xEnd - x;
                 const height = elementHeight;
@@ -207,12 +215,12 @@ export default {
                 const dependsOn = d.dependsOn;
                 const id = d.id;
 
-                const tooltip = d.label;
+                const tooltip = d.name;
 
                 const singleCharWidth = fontSize * 0.5;
                 const singleCharHeight = fontSize * 0.45;
 
-                let label = d.label;
+                let label = d.name;
 
                 if (label.length > charWidth) {
                     label =
@@ -276,6 +284,8 @@ export default {
                 xScale,
                 fontSize
             );
+
+            console.log(data);
 
             // create data describing connections' lines
             const polylineData = createPolylineData(
@@ -368,8 +378,9 @@ export default {
             if (typeof showRelations === 'undefined') showRelations = true;
 
             data = parseUserData(data); // transform raw user data to valid values
-            data = sortElements(data, sortMode);
 
+            data = sortElements(data, sortMode);
+            console.log(data);
             const { minStartDate, maxEndDate } = findDateBoundaries(data);
 
             // add some padding to axes
@@ -430,7 +441,7 @@ export default {
 
         createGanttChart(
             document.getElementById('skill-activity-chart-container'),
-            data,
+            this.data,
             {
                 elementHeight: 20,
                 sortMode: 'date', // alternatively, 'childrenCount'
@@ -443,7 +454,11 @@ export default {
             }
         );
     },
-    methods: {},
+    methods: {
+        assessmentDate(date) {
+            console.log(date);
+        }
+    },
     computed: {}
 };
 </script>
