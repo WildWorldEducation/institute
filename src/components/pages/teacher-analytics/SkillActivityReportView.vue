@@ -1,5 +1,7 @@
 <script>
 import { useUsersStore } from '../../../stores/UsersStore';
+import SkillActivityGanttChart from '../../components/student-analytics/SkillActivityGanttChart.vue';
+
 export default {
     setup() {
         const usersStore = useUsersStore();
@@ -14,6 +16,9 @@ export default {
             visitedSkills: [],
             skillActivities: []
         };
+    },
+    components: {
+        SkillActivityGanttChart
     },
     async created() {
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
@@ -68,6 +73,11 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Skill Activity Report: {{ studentName }}</h1>
+        <SkillActivityGanttChart
+            v-if="skillActivities.length > 0"
+            :data="skillActivities"
+            colour="darkred"
+        />
         <p>
             <em>
                 try this one:
