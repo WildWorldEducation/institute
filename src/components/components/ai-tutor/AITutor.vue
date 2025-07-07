@@ -116,6 +116,14 @@ export default {
         });
 
         // ========================================================================================
+        console.log(
+            'AI Tutor component mounted. Local storage:',
+            localStorage.getItem('showModalTutor'),
+            localStorage.getItem('tutorType')
+        );
+        if (localStorage.getItem('showModalTutor')) {
+            this.showTutorModal(localStorage.getItem('tutorType'));
+        }
     },
     methods: {
         // Setting this method to allow the user to be able to create a new line with shift+enter
@@ -163,6 +171,8 @@ export default {
             // reset chat input height
             this.modalTextAreaHeight = '60px';
             this.mode = 'docked';
+            localStorage.removeItem('showModalTutor');
+            localStorage.removeItem('tutorType');
         },
         // For both tutors
         async getChatHistory() {
@@ -583,6 +593,9 @@ export default {
                 }...`;
                 this.hasTutorButtonBeenClicked = true;
                 this.showTutorModal(type);
+                localStorage.setItem('showModalTutor', true);
+
+                localStorage.setItem('tutorType', type);
             }
         },
         navigateToAssessment() {
