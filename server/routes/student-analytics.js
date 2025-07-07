@@ -245,7 +245,7 @@ router.get('/skill-activity-report/:studentId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT name, mastered_date, first_visited_date, last_visited_date
+            SELECT name, url, mastered_date, first_visited_date, last_visited_date
             FROM user_skills
             JOIN skills
             ON user_skills.skill_id = skills.id

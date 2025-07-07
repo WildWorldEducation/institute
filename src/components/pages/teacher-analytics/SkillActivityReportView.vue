@@ -81,14 +81,15 @@ export default {
             >
             <em> Would need to create a new table</em>
         </p>
-        <div v-if="this.visitedSkills.length > 0" class="mb-4">
+        <div v-if="this.skillActivities.length > 0" class="mb-4">
             <table class="table">
                 <tr>
                     <th>Skill</th>
+                    <th>Date first visited</th>
                     <th>Date last visited</th>
                 </tr>
                 <tr
-                    v-for="skill in visitedSkills"
+                    v-for="skill in skillActivities"
                     :key="skill.id"
                     class="table-rows"
                 >
@@ -100,7 +101,10 @@ export default {
                         >
                     </td>
                     <td>
-                        {{ visitedDate(skill.visited_at) }}
+                        {{ visitedDate(skill.first_visited_date) }}
+                    </td>
+                    <td>
+                        {{ visitedDate(skill.last_visited_date) }}
                     </td>
                 </tr>
             </table>
