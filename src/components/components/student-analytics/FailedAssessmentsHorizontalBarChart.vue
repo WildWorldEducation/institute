@@ -101,7 +101,4 @@ export default {
 </template>
 
 <style scoped>
-.demo-chart {
-    height: 500px;
-}
 </style>

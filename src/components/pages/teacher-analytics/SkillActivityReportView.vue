@@ -11,7 +11,8 @@ export default {
         return {
             studentId: this.$route.params.studentId,
             studentName: null,
-            visitedSkills: []
+            visitedSkills: [],
+            skillActivities: []
         };
     },
     async created() {
@@ -23,19 +24,30 @@ export default {
             this.studentName = foundObject.username;
         }
 
-        this.getLastVisitedSkills();
+        this.getSkillActivityReport();
     },
 
     methods: {
-        getLastVisitedSkills() {
-            // Fetch last visited skills for the student
-            fetch(`/student-analytics/last-visited-skills/${this.studentId}`)
+        // getLastVisitedSkills() {
+        //     // Fetch last visited skills for the student
+        //     fetch(`/student-analytics/last-visited-skills/${this.studentId}`)
+        //         .then((response) => response.json())
+        //         .then((data) => {
+        //             this.visitedSkills = data;
+        //         })
+        //         .catch((error) => {
+        //             console.error('Error fetching last visited skills:', error);
+        //         });
+        // },
+        getSkillActivityReport() {
+            fetch(`/student-analytics/skill-activity-report/${this.studentId}`)
                 .then((response) => response.json())
                 .then((data) => {
-                    this.visitedSkills = data;
+                    this.skillActivities = data;
+                    console.log(this.skillActivities);
                 })
                 .catch((error) => {
-                    console.error('Error fetching last visited skills:', error);
+                    console.error('Error fetching skill activities:', error);
                 });
         },
         visitedDate(date) {
