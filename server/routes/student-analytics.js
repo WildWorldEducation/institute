@@ -245,12 +245,13 @@ router.get('/skill-activity-report/:studentId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT name, url, mastered_date, first_visited_date, last_visited_date
+            SELECT skills.id AS id, name, url, mastered_date, first_visited_date AS startDate, last_visited_date AS endDate
             FROM user_skills
             JOIN skills
             ON user_skills.skill_id = skills.id
             WHERE user_id = ${conn.escape(req.params.studentId)}
             AND first_visited_date IS NOT NULL    
+            AND skills.type <> 'domain'
         ;`;
 
         conn.query(sqlQuery, (err, results) => {
