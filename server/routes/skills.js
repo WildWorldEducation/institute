@@ -869,7 +869,7 @@ router.get('/url-only/:id', (req, res, next) => {
         try {
             if (err) {
                 throw err;
-            }                        
+            }
 
             res.json(results[0]);
         } catch (err) {
@@ -899,58 +899,6 @@ router.get('/sub-skills/:id', (req, res, next) => {
             next(err);
         }
     });
-});
-
-router.get('/record-visit/:id', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-
-        //Register visit datetime.
-        let visitSqlQuery = `
- INSERT INTO user_visited_skills (user_id, skill_id, visited_at)
- VALUES (${conn.escape(req.session.userId)}, ${conn.escape(
-            req.params.id
-        )}, NOW())
- ON DUPLICATE KEY UPDATE visited_at = NOW();
-`;
-        conn.query(visitSqlQuery, (err) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-            } catch (err) {
-                next(err);
-            }
-        });
-    }
-});
-
-router.get('/last-visited', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        //Get last visited.
-        let sqlQuery = `
-            SELECT skills.id, name, skills.url, level, icon
-            FROM user_visited_skills
-            INNER JOIN skills 
-            ON skills.id = user_visited_skills.skill_id
-            WHERE user_id = ${conn.escape(req.session.userId)}
-            AND skills.is_deleted = 0
-            ORDER BY visited_at DESC
-            LIMIT 5;
-        `;
-
-        conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.json(results);
-            } catch (err) {
-                next(err);
-            }
-        });
-    }
 });
 
 router.get('/get-first-child-skill/:id', (req, res, next) => {

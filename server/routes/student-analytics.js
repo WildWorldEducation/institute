@@ -24,13 +24,13 @@ Routes
 router.get('/last-visited-skills/:studentId', async (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery = `
-            SELECT skills.id, name, skills.url, level, icon, visited_at
-            FROM user_visited_skills
+            SELECT skills.id, name, skills.url, level, icon, last_visited_date
+            FROM user_skills
             INNER JOIN skills 
-            ON skills.id = user_visited_skills.skill_id
+            ON skills.id = user_skills.skill_id
             WHERE user_id = ${conn.escape(req.params.studentId)}
             AND skills.is_deleted = 0
-            ORDER BY visited_at DESC;
+            ORDER BY last_visited_date DESC;
         `;
 
         conn.query(sqlQuery, (err, results) => {
@@ -51,7 +51,7 @@ router.get(
     async (req, res, next) => {
         if (req.session.userName) {
             let sqlQuery = `            
-                SELECT *
+                SELECT assessment_attempts.id, url, name, date
                     FROM assessment_attempts
                     JOIN skills ON skills.id = assessment_attempts.skill_id
                     WHERE assessment_attempts.user_id = ${conn.escape(
@@ -81,10 +81,10 @@ router.get('/mastered-skills/:studentId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT skills.id, name, url, level, icon, type, is_mastered
+            SELECT skills.id, name, url, level, user_skills.last_visited_date
             FROM skills
             LEFT OUTER JOIN user_skills
-            ON skills.id = user_skills.skill_id
+            ON skills.id = user_skills.skill_id            
             WHERE user_skills.user_id = ${conn.escape(req.params.studentId)}
             AND is_mastered = 1
             AND type <> 'domain'
@@ -111,7 +111,7 @@ router.get('/multiple-fails/:studentId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT skills.id, skills.name, COUNT(*) AS times
+            SELECT skills.id, skills.name, COUNT(name) AS quantity
                     FROM assessment_attempts
                     JOIN skills ON skills.id = assessment_attempts.skill_id
                     WHERE assessment_attempts.user_id = ${conn.escape(
@@ -124,6 +124,7 @@ router.get('/multiple-fails/:studentId', (req, res, next) => {
                         req.params.studentId
                     )}
                     AND is_mastered = 1)  
+                    group by id, name
                     HAVING COUNT(*) > 1;`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -133,6 +134,101 @@ router.get('/multiple-fails/:studentId', (req, res, next) => {
                 }
 
                 res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
+ * Record time per skill
+ *
+ */
+router.post('/record-duration/:userId/:skillId', (req, res, next) => {
+    if (req.session.userName) {
+        const duration = req.body.duration;
+
+        let sqlQuery = `
+        INSERT INTO user_skills (user_id, skill_id, duration) 
+        VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
+            req.params.skillId
+        )}, ${conn.escape(duration)}) 
+        ON DUPLICATE KEY UPDATE duration= duration + ${conn.escape(duration)};
+        `;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/* Get time spent on each skill per student */
+router.get('/skill-durations/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT skills.id, name, url, level, icon, type, duration AS quantity
+            FROM skills
+            LEFT OUTER JOIN user_skills
+            ON skills.id = user_skills.skill_id
+            WHERE user_skills.user_id = ${conn.escape(
+                req.params.studentId
+            )}            
+            AND type <> 'domain'
+            AND duration > 0
+            ORDER BY id;`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Get time spent on all skills per student */
+router.get('/all-skills-duration/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT SUM(duration) as duration
+            FROM skills
+            LEFT OUTER JOIN user_skills
+            ON skills.id = user_skills.skill_id
+            WHERE user_skills.user_id = ${conn.escape(
+                req.params.studentId
+            )}            
+            AND type <> 'domain'
+            AND duration > 0
+            ORDER BY id;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result[0]);
             } catch (err) {
                 next(err);
             }

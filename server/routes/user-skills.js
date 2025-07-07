@@ -24,6 +24,62 @@ Routes
 --------------------------------------------
 --------------------------------------------*/
 
+// Last visited date --------------------------------------------------------------------------
+// Record last visited date
+router.get('/record-visit/:id', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        //Register visit datetime.
+        let visitSqlQuery = `
+            INSERT INTO user_skills (user_id, skill_id, first_visited_date, last_visited_date)
+            VALUES (${conn.escape(req.session.userId)}, ${conn.escape(
+            req.params.id
+        )}, NOW(), NOW())
+            ON DUPLICATE KEY UPDATE 
+            last_visited_date = NOW(),
+            first_visited_date = IF(first_visited_date IS NULL, NOW(), first_visited_date);
+        `;
+        conn.query(visitSqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+router.get('/last-visited-skills', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        //Get last visited.
+        let sqlQuery = `
+            SELECT skills.id, name, skills.url, level, icon
+            FROM user_skills
+            INNER JOIN skills
+            ON skills.id = user_skills.skill_id
+            WHERE user_id = ${conn.escape(req.session.userId)}
+            AND skills.is_deleted = 0
+            ORDER BY last_visited_date DESC
+            LIMIT 5;
+        `;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                console.log(results);
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /* Nested list of user-skills*/
 // For Collapsible Tree and Linear Tree
 // And Student Collapsible Tree
@@ -1567,13 +1623,14 @@ router.post('/make-mastered/:userId', (req, res, next) => {
 
                         function makeMastered(userId, skill) {
                             let sqlQuery = `
-                            INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible, is_goal) 
+                            INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible, is_goal, mastered_date) 
                             VALUES(${conn.escape(req.params.userId)},
                             ${conn.escape(skill.id)},
                             1,
                             1,
-                            0) 
-                            ON DUPLICATE KEY UPDATE is_mastered= 1, is_accessible=1, is_goal=0;
+                            0,
+                            CURRENT_TIMESTAMP()) 
+                            ON DUPLICATE KEY UPDATE is_mastered= 1, is_accessible=1, is_goal=0, mastered_date=CURRENT_TIMESTAMP();
                             `;
 
                             conn.query(sqlQuery, (err) => {

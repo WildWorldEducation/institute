@@ -1,4 +1,5 @@
 <script>
+import SkillTimeTracker from '../components/student-analytics/SkillTimeTracker.vue';
 export default {
     data() {
         return {
@@ -8,7 +9,9 @@ export default {
             validateContact: true
         };
     },
-
+    components: {
+        SkillTimeTracker
+    },
     mounted() {
         // Calculate summer note height base on window height
         let summernoteHeight;
@@ -52,6 +55,10 @@ export default {
             ]
         });
         $('.note-editor .note-editable').css('background-color', '#ffffff');
+    },
+    beforeRouteLeave(to, from, next) {
+        this.$refs.skillTimeTracker.saveDuration();
+        next();
     },
     methods: {
         async Submit() {
@@ -142,6 +149,8 @@ export default {
             </div>
         </div>
     </div>
+    <!-- To track student time for this skill -->
+    <SkillTimeTracker ref="skillTimeTracker" />
 </template>
 
 <style>

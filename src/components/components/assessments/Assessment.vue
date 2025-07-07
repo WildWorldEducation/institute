@@ -34,7 +34,7 @@ export default {
     data() {
         return {
             loading: true,
-            skillId: this.$route.params.id,
+            skillId: this.$route.params.skillId,
             skill: {},
             mcQuestions: [],
             // list of mc question and user answer of that question

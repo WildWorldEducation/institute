@@ -126,6 +126,31 @@ router.delete('/image/:id', (req, res, next) => {
     }
 });
 
+// Get skill id based on question id
+// For tracking student time on skill
+// When on page to edit MC questions
+router.get('/mc/:id/get-skill-id', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `SELECT mc_questions.skill_id
+            FROM mc_questions                         
+            WHERE mc_questions.id=${conn.escape(req.params.id)};`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                let skillId = results[0].skill_id;
+                res.json({
+                    skillId
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * Show Item
  *
@@ -152,7 +177,8 @@ router.get('/mc/show/:id', (req, res, next) => {
                     text: results[0].question,
                     explanation: results[0].explanation,
                     correct_answer: results[0].correct_answer,
-                    is_random: results[0].is_random ? true : false
+                    is_random: results[0].is_random ? true : false,
+                    skill_id: results[0].skill_id
                 };
 
                 let answers = [
@@ -185,6 +211,31 @@ router.get('/mc/show/:id', (req, res, next) => {
     }
 });
 
+// Get skill id based on question id
+// For tracking student time on skill
+// When on page to edit MC questions
+router.get('/essay/:id/get-skill-id', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `SELECT essay_questions.skill_id
+            FROM essay_questions                         
+            WHERE essay_questions.id=${conn.escape(req.params.id)};`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                let skillId = results[0].skill_id;
+                res.json({
+                    skillId
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 // Show essay question.
 router.get('/essay/show/:id', (req, res) => {
     if (req.session.userName) {
@@ -201,6 +252,31 @@ router.get('/essay/show/:id', (req, res) => {
                     throw err;
                 }
                 res.json(results[0]);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+// Get skill id based on question id
+// For tracking student time on skill
+// When on page to edit MC questions
+router.get('/image/:id/get-skill-id', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `SELECT image_questions.skill_id
+            FROM image_questions                         
+            WHERE image_questions.id=${conn.escape(req.params.id)};`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                let skillId = results[0].skill_id;
+                res.json({
+                    skillId
+                });
             } catch (err) {
                 next(err);
             }

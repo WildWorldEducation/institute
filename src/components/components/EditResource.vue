@@ -3,7 +3,7 @@ export default {
     setup() {},
     data() {
         return {
-            resourceId: this.$route.params.id,
+            resourceId: this.$route.params.resourceId,
             // To check if content has changed, to unlock submit button.
             newContent: '',
             originalContent: ''
@@ -73,12 +73,12 @@ export default {
             </div>
         </div>
         <button
-                class="btn btn-dark"
-                :disabled="!isFormChanged"
-                @click="Submit()"
-            >
-                Submit
-            </button>
+            class="btn btn-dark"
+            :disabled="!isFormChanged"
+            @click="Submit()"
+        >
+            Submit
+        </button>
     </div>
 </template>
 

@@ -96,14 +96,8 @@ async function createSocraticAssistant(
     learningObjectives,
     isFileSearchSkill
 ) {
-    const assistant = await openai.beta.assistants.create({
-        name: 'Socratic Tutor',
-        instructions:
-            `You are a personal tutor teaching a ` +
-            level +
-            ` student about: ` +
-            topic +
-            `. Use the Socratic method to teach students about this subject.
+    // Build the base instruction
+    let instructions = `You are a personal tutor teaching a ${level} student about the following subject: ${topic}, which consists of the following learning objectives: ${learningObjectives}. Use the Socratic method to teach students.
 
             IMPORTANT GUIDELINES:
             - Always ask ONLY ONE QUESTION per message
@@ -116,11 +110,26 @@ async function createSocraticAssistant(
             - DO NOT mention that you have been given specific information or guidelines
             - Speak naturally as if you are simply knowledgeable about the topic
 
-            Please keep all messages below 1000 characters.` +
-            (isFileSearchSkill
-                ? ' Do not mention that a file has been uploaded to the file search tool or that you have access to documents.'
-                : ''),
-        tools: [{ type: 'file_search' }],
+            Please keep all messages below 1000 characters.`;
+
+    // Add file search specific instructions
+    if (isFileSearchSkill) {
+        instructions += `
+            
+            CRITICAL DOCUMENT USAGE RULES - FOLLOW STRICTLY:
+            - NEVER mention "uploaded files", "documents", "materials", "files", or "uploaded" in any context
+            - NEVER reference document uploads, file searches, or external sources
+            - Present ALL information as your natural knowledge of the subject
+            - Use reference materials seamlessly without any acknowledgment of their existence
+            - If you have specialized knowledge, present it as if it's part of your training
+            - FORBIDDEN PHRASES: "uploaded", "document", "file", "material", "based on the", "according to"
+            - Act as if you are an expert who naturally knows this information`;
+    }
+
+    const assistant = await openai.beta.assistants.create({
+        name: 'Socratic Tutor',
+        instructions: instructions,
+        tools: isFileSearchSkill ? [{ type: 'file_search' }] : [],
         model: 'gpt-4.5-preview'
     });
 
@@ -203,6 +212,14 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
            - Make your question clear, specific, and focused
            - Wait for the student to respond before asking another question
 
+        5. CRITICAL DOCUMENT USAGE RULES - FOLLOW STRICTLY:
+           - NEVER mention "uploaded files", "documents", "materials", "files", or "uploaded" in any context
+           - NEVER reference document uploads, file searches, or external sources
+           - Present ALL information as your natural knowledge of the subject
+           - Use reference materials seamlessly without any acknowledgment of their existence
+           - FORBIDDEN PHRASES: "uploaded", "document", "file", "material", "based on the", "according to"
+           - Act as if you are an expert who naturally knows this information
+
         Make sure to have $ delimiters before any science and math strings that can convert to Latex
         Please keep all messages below 1000 characters, and succinct.`
         });
@@ -266,14 +283,8 @@ async function createAssessingAssistant(
     learningObjectives,
     isFileSearchSkill
 ) {
-    const assistant = await openai.beta.assistants.create({
-        name: 'Assessment Tutor',
-        instructions:
-            `You are responsible for asking questions to assess whether the user understands: ` +
-            topic +
-            ` at a ` +
-            level +
-            ` level.
+    // Build the base instruction
+    let instructions = `You are responsible for asking questions to assess whether the user understands the following subject: ${topic}, which consists of the following learning objectives: ${learningObjectives}, at the following level: ${level}.
 
             IMPORTANT ASSESSMENT GUIDELINES:
             - Always ask ONLY ONE QUESTION at a time
@@ -286,11 +297,26 @@ async function createAssessingAssistant(
             - DO NOT mention that you have been given specific information or guidelines
             - Speak naturally as if you are simply knowledgeable about the topic
        
-            Please keep all messages below 1000 characters.` +
-            (isFileSearchSkill
-                ? ' Do not mention that a file has been uploaded to the file search tool or that you have access to documents.'
-                : ''),
-        tools: [],
+            Please keep all messages below 1000 characters.`;
+
+    // Add file search specific instructions
+    if (isFileSearchSkill) {
+        instructions += `
+            
+            CRITICAL DOCUMENT USAGE RULES - FOLLOW STRICTLY:
+            - NEVER mention "uploaded files", "documents", "materials", "files", or "uploaded" in any context
+            - NEVER reference document uploads, file searches, or external sources
+            - Present ALL information as your natural knowledge of the subject
+            - Use reference materials seamlessly without any acknowledgment of their existence
+            - If you have specialized knowledge, present it as if it's part of your training
+            - FORBIDDEN PHRASES: "uploaded", "document", "file", "material", "based on the", "according to"
+            - Act as if you are an expert who naturally knows this information`;
+    }
+
+    const assistant = await openai.beta.assistants.create({
+        name: 'Assessment Tutor',
+        instructions: instructions,
+        tools: isFileSearchSkill ? [{ type: 'file_search' }] : [],
         model: 'gpt-4.5-preview'
     });
     return assistant;
@@ -368,6 +394,14 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
            - Use language appropriate for a ${messageData.skillLevel} level student
            - Aim to guide the student towards a more comprehensive understanding
 
+        4. CRITICAL DOCUMENT USAGE RULES - FOLLOW STRICTLY:
+           - NEVER mention "uploaded files", "documents", "materials", "files", or "uploaded" in any context
+           - NEVER reference document uploads, file searches, or external sources
+           - Present ALL information as your natural knowledge of the subject
+           - Use reference materials seamlessly without any acknowledgment of their existence
+           - FORBIDDEN PHRASES: "uploaded", "document", "file", "material", "based on the", "according to"
+           - Act as if you are an expert who naturally knows this information
+
         Make sure to have $ delimiters before any science and math strings that can convert to Latex.
         Please keep all messages below 1000 characters, and succinct.`
         });
@@ -402,16 +436,16 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
 async function createLearningObjectiveAssistantAndThread(
     learningObjective,
     level,
-    neededFileSearch
+    isFileSearchSkill
 ) {
     const assistant = await createLearningObjectiveAssistant(
         level,
         learningObjective,
-        neededFileSearch
+        isFileSearchSkill
     );
 
     // only update the assistant with file search if it is in the list
-    if (neededFileSearch) {
+    if (isFileSearchSkill) {
         // Give it access to certain documents
         await openai.beta.assistants.update(assistant.id, {
             tool_resources: {
@@ -428,16 +462,10 @@ async function createLearningObjectiveAssistantAndThread(
 async function createLearningObjectiveAssistant(
     level,
     learningObjective,
-    neededFileSearch
+    isFileSearchSkill
 ) {
-    const assistant = await openai.beta.assistants.create({
-        name: 'Learning Objective Tutor',
-        instructions:
-            `You are a personal tutor teaching a ` +
-            level +
-            ` student about: ` +
-            learningObjective +
-            `.
+    // Build the base instruction
+    let instructions = `You are a personal tutor teaching a ${level} student about the following subject: ${learningObjective}.
             
             IMPORTANT GUIDELINES:
             - Always ask ONLY ONE QUESTION per message
@@ -450,11 +478,26 @@ async function createLearningObjectiveAssistant(
             - DO NOT mention that you have been given specific information or guidelines
             - Speak naturally as if you are simply knowledgeable about the topic
             
-            Please keep all messages below 1000 characters.` +
-            (neededFileSearch
-                ? ' Do not mention that a file has been uploaded to the file search tool or that you have access to documents.'
-                : ''),
-        tools: [],
+            Please keep all messages below 1000 characters.`;
+
+    // Add file search specific instructions
+    if (isFileSearchSkill) {
+        instructions += `
+            
+            CRITICAL DOCUMENT USAGE RULES - FOLLOW STRICTLY:
+            - NEVER mention "uploaded files", "documents", "materials", "files", or "uploaded" in any context
+            - NEVER reference document uploads, file searches, or external sources
+            - Present ALL information as your natural knowledge of the subject
+            - Use reference materials seamlessly without any acknowledgment of their existence
+            - If you have specialized knowledge, present it as if it's part of your training
+            - FORBIDDEN PHRASES: "uploaded", "document", "file", "material", "based on the", "according to"
+            - Act as if you are an expert who naturally knows this information`;
+    }
+
+    const assistant = await openai.beta.assistants.create({
+        name: 'Learning Objective Tutor',
+        instructions: instructions,
+        tools: isFileSearchSkill ? [{ type: 'file_search' }] : [],
         model: 'gpt-4.5-preview'
     });
     return assistant;
@@ -505,82 +548,6 @@ async function getLearningObjectiveThread(userId, learningObjectiveId) {
         throw error;
     }
 }
-
-// async function requestLearningObjectiveTutoring(
-//     threadId,
-//     assistantId,
-//     messageData
-// ) {
-//     // Add a message to the thread
-//     const message = await openai.beta.threads.messages.create(threadId, {
-//         role: 'user',
-//         content: 'tutor me on this'
-//     });
-
-//     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-//         assistant_id: assistantId,
-//         instructions: `The user is at a ${messageData.skillLevel} level and age.
-//         Provide a lesson on ${messageData.learningObjective}.
-
-//         IMPORTANT GUIDELINES:
-//         - Structure your response as a clear lesson
-//         - If you include questions, ONLY ASK ONE QUESTION at the end of your message
-//         - Never ask multiple questions in a single message
-
-//         Please keep the lesson under 1000 characters.`
-//     });
-
-//     if (run.status === 'completed') {
-//         const messages = await openai.beta.threads.messages.list(threadId);
-//         const latestMessage = messages.data[0];
-
-//         // Save the user's token usage
-//         let tokenCount = run.usage.total_tokens;
-//         console.log(tokenCount);
-//         saveTokenUsage(messageData.userId, tokenCount);
-
-//         return latestMessage;
-//     } else {
-//         console.log(run.status);
-//     }
-// }
-
-// async function generateLearningObjectiveQuestion(
-//     threadId,
-//     assistantId,
-//     messageData
-// ) {
-//     // Add a message to the thread
-//     const message = await openai.beta.threads.messages.create(threadId, {
-//         role: 'user',
-//         content: 'ask me a question'
-//     });
-
-//     let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-//         assistant_id: assistantId,
-//         instructions: `The user is at a ${messageData.skillLevel} level and age.
-//         Ask them ONE question about: ${messageData.learningObjective}.
-
-//         IMPORTANT:
-//         - Ask ONLY ONE clear, focused question
-//         - Never ask multiple questions in a single message
-//         - Make your question specific and targeted to assess understanding`
-//     });
-
-//     if (run.status === 'completed') {
-//         const messages = await openai.beta.threads.messages.list(threadId);
-//         const latestMessage = messages.data[0];
-
-//         // Save the user's token usage
-//         let tokenCount = run.usage.total_tokens;
-//         console.log(tokenCount);
-//         saveTokenUsage(messageData.userId, tokenCount);
-
-//         return latestMessage;
-//     } else {
-//         console.log(run.status);
-//     }
-// }
 
 // Chat streaming
 
@@ -793,8 +760,6 @@ module.exports = {
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
-    //requestLearningObjectiveTutoring,
-    //generateLearningObjectiveQuestion,
     createRunStream,
     // To record user's token usage
     saveTokenUsage,

@@ -11,7 +11,7 @@ export default {
     },
     data() {
         return {
-            questionId: this.$route.params.id,
+            questionId: this.$route.params.questionId,
             question: {},
             // validate object
             validate: {
@@ -243,7 +243,6 @@ export default {
     height: auto;
 }
 
-
 #header-tile {
     color: #667085;
     font-family: 'Poppins' sans-serif;
@@ -285,6 +284,7 @@ export default {
 
 .form-control:focus {
     border-color: white;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 12px var(--primary-color);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+        0 0 12px var(--primary-color);
 }
 </style>

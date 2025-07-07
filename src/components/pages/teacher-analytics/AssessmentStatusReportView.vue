@@ -1,6 +1,8 @@
 <script>
 import { useUsersStore } from '../../../stores/UsersStore';
 import { useUserSkillsStore } from '../../../stores/UserSkillsStore';
+import FailedAssessmentsHorizontalBarChart from '../../components/student-analytics/FailedAssessmentsHorizontalBarChart.vue';
+
 export default {
     setup() {
         const usersStore = useUsersStore();
@@ -10,7 +12,9 @@ export default {
             userSkillsStore
         };
     },
-    components: {},
+    components: {
+        FailedAssessmentsHorizontalBarChart
+    },
     data() {
         return {
             studentId: this.$route.params.studentId,
@@ -28,8 +32,8 @@ export default {
             this.studentName = foundObject.username;
         }
 
-        await this.getAssessmentAttempts();
         await this.userSkillsStore.getMasteredSkills(this.studentId);
+        await this.getAssessmentAttempts();
         await this.getMultipleFails();
     },
     methods: {
@@ -73,12 +77,22 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Assessment Status Report: {{ studentName }}</h1>
-        <h2 class="secondary-heading">Completed</h2>
-
+        <!-- <h2 class="secondary-heading">Combined</h2> -->
+        <!-- <p>
+            <em
+                >line chart, over time period. Skill names on hover or
+                permanently</em
+            >
+        </p>
+        <p>
+            <em>different colour line for passed, attempted, and failed</em>
+        </p> -->
+        <h2 class="secondary-heading">Passed</h2>
         <div v-if="this.userSkillsStore.masteredSkills.length > 0" class="mb-4">
             <table class="table">
                 <tr>
                     <th>Skill</th>
+                    <th>Date</th>
                 </tr>
                 <tr
                     v-for="skill in userSkillsStore.masteredSkills"
@@ -92,11 +106,20 @@ export default {
                             >{{ skill.name }}</router-link
                         >
                     </td>
+                    <td>
+                        {{ assessmentDate(skill.date) }}
+                    </td>
                 </tr>
             </table>
         </div>
         <p v-else>This student has not completed any assessments yet.</p>
         <h2 class="secondary-heading">Attempted</h2>
+        <!-- <p>
+            <em
+                >line chart, over time period. Skill names on hover or
+                permanently. Show number of attempts</em
+            >
+        </p> -->
         <div v-if="this.assessmentAttempts.length > 0" class="mb-4">
             <table class="table">
                 <tr>
@@ -123,7 +146,12 @@ export default {
         </div>
         <p v-else>This student has attempted any assessments yet.</p>
         <p></p>
-        <h2 class="secondary-heading">Has failed multiple times</h2>
+        <h2 class="secondary-heading">Failed multiple times</h2>
+        <FailedAssessmentsHorizontalBarChart
+            v-if="multipleFails.length > 0"
+            :data="multipleFails"
+            colour="darkred"
+        />
         <div v-if="this.multipleFails.length > 0" class="mb-4">
             <table class="table">
                 <tr>
@@ -143,7 +171,7 @@ export default {
                         >
                     </td>
                     <td>
-                        {{ failedAssessment.times }}
+                        {{ failedAssessment.quantity }}
                     </td>
                 </tr>
             </table>

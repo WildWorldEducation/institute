@@ -142,7 +142,7 @@ const router = createRouter({
             component: () => import('../components/pages/QuestionBankView.vue')
         },
         {
-            path: '/mc-questions/edit/:id',
+            path: '/mc-questions/edit/:questionId',
             name: 'edit-mc-question',
             component: () =>
                 import('../components/pages/EditMCQuestionView.vue')
@@ -159,7 +159,7 @@ const router = createRouter({
                 import('../components/pages/AddEssayQuestionView.vue')
         },
         {
-            path: '/essay-questions/edit/:id',
+            path: '/essay-questions/edit/:questionId',
             name: 'edit-essay-question',
             component: () =>
                 import('../components/pages/EditEssayQuestionView.vue')
@@ -171,13 +171,13 @@ const router = createRouter({
                 import('../components/pages/AddImageQuestionView.vue')
         },
         {
-            path: '/image-questions/edit/:id',
+            path: '/image-questions/edit/:questionId',
             name: 'edit-image-question',
             component: () =>
                 import('../components/pages/EditImageQuestionView.vue')
         },
         {
-            path: '/skills/:id/assessment',
+            path: '/skills/:skillId/assessment',
             name: 'assessment',
             component: () => import('../components/pages/AssessmentView.vue')
         },
@@ -209,12 +209,12 @@ const router = createRouter({
             component: () => import('../components/pages/SelectFiltersView.vue')
         },
         {
-            path: '/resources/add/:id',
+            path: '/resources/add/:skillId',
             name: 'add-resource',
             component: () => import('../components/pages/AddResourceView.vue')
         },
         {
-            path: '/resources/edit/:id',
+            path: '/resources/edit/:resourceId',
             name: 'edit-resource',
             component: () => import('../components/pages/EditResourceView.vue')
         },
@@ -512,7 +512,7 @@ const router = createRouter({
             name: 'total-time',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/TotalTimeReportView.vue'
+                    '../components/pages/teacher-analytics/TimeReportView.vue'
                 ),
             meta: {
                 title: 'Total Time',
@@ -640,7 +640,7 @@ router.beforeEach(async (to, from, next) => {
 
         await userSkillsStore.getUnnestedList(userDetailsStore.userId);
         const currentSkill = userSkillsStore.unnestedList.find(
-            (item) => item.id == to.params.id
+            (item) => item.id == to.params.skillId
         );
 
         // Only block them if their instructor enforced locking.

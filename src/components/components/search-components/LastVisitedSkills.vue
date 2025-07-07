@@ -8,7 +8,7 @@ export default {
     },
     props: ['userId'],
     async created() {
-        const result = await fetch('/skills/last-visited/');
+        const result = await fetch('/user-skills/last-visited-skills/');
         this.visitedSkills = await result.json();
         if (this.visitedSkills.length > 0) {
             this.noSkills = false;
