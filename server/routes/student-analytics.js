@@ -81,7 +81,7 @@ router.get('/mastered-skills/:studentId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT skills.id, name, url, level, user_skills.last_visited_date
+            SELECT skills.id, name, url, level, user_skills.mastered_date AS date
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id            
