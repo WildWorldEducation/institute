@@ -1309,7 +1309,9 @@ export default {
             v-if="
                 showChat &&
                 mode !== 'hide' &&
-                (chatHistory.length > 0 || waitForAIresponse)
+                (chatHistory.length > 0 ||
+                    waitForAIresponse ||
+                    stateOfSocket.isStreaming)
             "
             class="d-flex flex-column align-items-start tutor-chatting-section"
             :class="{
