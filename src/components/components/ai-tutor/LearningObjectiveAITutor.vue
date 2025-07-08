@@ -96,10 +96,24 @@ export default {
                 )}&skillLevel=${encodeURIComponent(this.englishSkillLevel)}`;
 
                 const response = await fetch(url);
+
+                // Check if response is ok before trying to parse JSON
+                if (!response.ok) {
+                    console.error(
+                        `HTTP Error ${response.status}: ${response.statusText}`
+                    );
+                    // Initialize with empty data to prevent undefined errors
+                    this.messageList = [];
+                    this.assistantData = null;
+                    this.isGotMessages = true;
+                    return;
+                }
+
                 const resData = await response.json();
 
-                this.messageList = resData.messages;
-                this.assistantData = resData.assistantData;
+                // Ensure messageList is always an array
+                this.messageList = resData.messages || [];
+                this.assistantData = resData.assistantData || null;
 
                 // Close loading animation
                 this.isGotMessages = true;
@@ -110,7 +124,11 @@ export default {
 
                 this.$parent.checkTokenUsage();
             } catch (error) {
-                console.error(error);
+                console.error('Error in getMessages:', error);
+                // Initialize with safe defaults to prevent undefined errors
+                this.messageList = [];
+                this.assistantData = null;
+                this.isGotMessages = true;
             }
         },
 
@@ -207,7 +225,19 @@ export default {
                     content: [{ text: { value: this.message } }]
                 };
 
+                // Ensure messageList is initialized before trying to use it
+                if (!this.messageList) {
+                    this.messageList = [];
+                }
+
                 this.messageList.unshift(userMessage);
+
+                // Ensure assistantData exists before using its properties
+                if (!this.assistantData) {
+                    console.error('Assistant data not available');
+                    this.waitForAIresponse = false;
+                    return;
+                }
 
                 const messageData = {
                     threadId: this.assistantData.threadId,
@@ -222,7 +252,7 @@ export default {
                 socket.emit('new-learning-objective-message', messageData);
                 this.message = '';
             } catch (error) {
-                console.error(error);
+                console.error('Error in sendMessage:', error);
                 this.waitForAIresponse = false;
             }
         },

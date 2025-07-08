@@ -1,5 +1,7 @@
 <script>
 import { useUsersStore } from '../../../stores/UsersStore';
+import SkillActivityGanttChart from '../../components/student-analytics/SkillActivityGanttChart.vue';
+
 export default {
     setup() {
         const usersStore = useUsersStore();
@@ -11,8 +13,12 @@ export default {
         return {
             studentId: this.$route.params.studentId,
             studentName: null,
-            visitedSkills: []
+            visitedSkills: [],
+            skillActivities: []
         };
+    },
+    components: {
+        SkillActivityGanttChart
     },
     async created() {
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
@@ -23,19 +29,30 @@ export default {
             this.studentName = foundObject.username;
         }
 
-        this.getLastVisitedSkills();
+        this.getSkillActivityReport();
     },
 
     methods: {
-        getLastVisitedSkills() {
-            // Fetch last visited skills for the student
-            fetch(`/student-analytics/last-visited-skills/${this.studentId}`)
+        // getLastVisitedSkills() {
+        //     // Fetch last visited skills for the student
+        //     fetch(`/student-analytics/last-visited-skills/${this.studentId}`)
+        //         .then((response) => response.json())
+        //         .then((data) => {
+        //             this.visitedSkills = data;
+        //         })
+        //         .catch((error) => {
+        //             console.error('Error fetching last visited skills:', error);
+        //         });
+        // },
+        getSkillActivityReport() {
+            fetch(`/student-analytics/skill-activity-report/${this.studentId}`)
                 .then((response) => response.json())
                 .then((data) => {
-                    this.visitedSkills = data;
+                    this.skillActivities = data;
+                    console.log(this.skillActivities);
                 })
                 .catch((error) => {
-                    console.error('Error fetching last visited skills:', error);
+                    console.error('Error fetching skill activities:', error);
                 });
         },
         visitedDate(date) {
@@ -56,6 +73,11 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Skill Activity Report: {{ studentName }}</h1>
+        <SkillActivityGanttChart
+            v-if="skillActivities.length > 0"
+            :data="skillActivities"
+            colour="darkred"
+        />
         <p>
             <em>
                 try this one:
@@ -69,14 +91,15 @@ export default {
             >
             <em> Would need to create a new table</em>
         </p>
-        <div v-if="this.visitedSkills.length > 0" class="mb-4">
+        <div v-if="this.skillActivities.length > 0" class="mb-4">
             <table class="table">
                 <tr>
                     <th>Skill</th>
+                    <th>Date first visited</th>
                     <th>Date last visited</th>
                 </tr>
                 <tr
-                    v-for="skill in visitedSkills"
+                    v-for="skill in skillActivities"
                     :key="skill.id"
                     class="table-rows"
                 >
@@ -88,7 +111,10 @@ export default {
                         >
                     </td>
                     <td>
-                        {{ visitedDate(skill.visited_at) }}
+                        {{ visitedDate(skill.startDate) }}
+                    </td>
+                    <td>
+                        {{ visitedDate(skill.endDate) }}
                     </td>
                 </tr>
             </table>

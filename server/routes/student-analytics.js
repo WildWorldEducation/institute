@@ -20,30 +20,30 @@ Routes
 --------------------------------------------
 --------------------------------------------*/
 
-/* Get the skill activity of the student */
-router.get('/last-visited-skills/:studentId', async (req, res, next) => {
-    if (req.session.userName) {
-        let sqlQuery = `
-            SELECT skills.id, name, skills.url, level, icon, last_visited_date
-            FROM user_skills
-            INNER JOIN skills 
-            ON skills.id = user_skills.skill_id
-            WHERE user_id = ${conn.escape(req.params.studentId)}
-            AND skills.is_deleted = 0
-            ORDER BY last_visited_date DESC;
-        `;
+// /* Get the skill activity of the student */
+// router.get('/last-visited-skills/:studentId', async (req, res, next) => {
+//     if (req.session.userName) {
+//         let sqlQuery = `
+//             SELECT skills.id, name, skills.url, level, icon, last_visited_date
+//             FROM user_skills
+//             INNER JOIN skills
+//             ON skills.id = user_skills.skill_id
+//             WHERE user_id = ${conn.escape(req.params.studentId)}
+//             AND skills.is_deleted = 0
+//             ORDER BY last_visited_date DESC;
+//         `;
 
-        conn.query(sqlQuery, (err, results) => {
-            if (err) return next(err); // Pass error to error handler
+//         conn.query(sqlQuery, (err, results) => {
+//             if (err) return next(err); // Pass error to error handler
 
-            if (results.length === 0) {
-                return res.status(404).json({ error: 'No recent skills' });
-            }
+//             if (results.length === 0) {
+//                 return res.status(404).json({ error: 'No recent skills' });
+//             }
 
-            res.json(results);
-        });
-    }
-});
+//             res.json(results);
+//         });
+//     }
+// });
 
 /* Get skills whose assessments have been started, but are not yet mastered */
 router.get(
@@ -229,6 +229,44 @@ router.get('/all-skills-duration/:studentId', (req, res, next) => {
                 }
 
                 res.json(result[0]);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Skill Activity report 
+   Get the start and end time for each skill per user 
+*/
+router.get('/skill-activity-report/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT skills.id AS id, name, url, mastered_date, first_visited_date AS startDate, last_visited_date AS endDate
+            FROM user_skills
+            JOIN skills
+            ON user_skills.skill_id = skills.id
+            WHERE user_id = ${conn.escape(req.params.studentId)}
+            AND first_visited_date IS NOT NULL    
+            AND skills.type <> 'domain'
+        ;`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                if (results.length === 0) {
+                    return res.status(404).json({
+                        error: 'No skill activity'
+                    });
+                }
+
+                res.json(results);
             } catch (err) {
                 next(err);
             }

@@ -395,6 +395,9 @@ export default {
                     message: this.message,
                     userId: this.userDetailsStore.userId
                 };
+
+                console.log(messageData);
+
                 this.message = '';
                 socket.emit(socketChannel, messageData);
             } catch (error) {
@@ -417,6 +420,7 @@ export default {
                     tutorType: this.tutorType,
                     skillLevel: this.skill.level,
                     learningObjectives: this.learningObjectives,
+                    skillName: this.skill.name,
                     threadId: this.assistantData.threadId,
                     assistantId: this.assistantData.assistantId,
                     message: '',
@@ -1713,7 +1717,7 @@ export default {
 }
 
 .tutor-chatting-section {
-    height: auto;
+    height: 94% !important;
 }
 
 .tutor-chatting-waiting-response-section {
