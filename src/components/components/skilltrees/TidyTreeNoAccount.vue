@@ -1436,17 +1436,64 @@ export default {
             if (node.data.type != 'domain') {
                 this.drawSkillName(node, ctx1, isSearched);
             } else {
-                ctx1.beginPath();
-                ctx1.strokeStyle = '#FFF';
-                ctx1.lineWidth = 4;
-                // Updated domain text color to be darker gray
-                ctx1.fillStyle = isSearched ? '#ff0000' : '#546673';
-                ctx1.direction = 'ltr';
+                // Use domain-specific text drawing that handles wrapping
+                this.drawDomainText(node, ctx1, isSearched);
+            }
+        },
 
-                let xPosition = node.y - 140;
+        drawDomainText(node, ctx, isSearched) {
+            const ctx1 = ctx;
 
-                ctx1.strokeText(node.data.name, xPosition, node.x + 2);
-                ctx1.fillText(node.data.name, xPosition, node.x + 2);
+            // Domain node styling
+            ctx1.strokeStyle = '#FFF';
+            ctx1.lineWidth = 4;
+            ctx1.fillStyle = isSearched ? '#ff0000' : '#546673';
+            ctx1.direction = 'ltr';
+            ctx1.font = '11px Verdana';
+
+            // Same positioning logic as other nodes
+            let xPosition = node.y + 45;
+            if (node.data.children.length > 0) {
+                xPosition = xPosition - 180;
+            }
+
+            // Text wrapping logic
+            if (node.data.skill_name.length < 19) {
+                // Short text
+                ctx1.strokeText(node.data.skill_name, xPosition, node.x + 4);
+                ctx1.fillText(node.data.skill_name, xPosition, node.x + 4);
+            } else if (
+                node.data.skill_name.length >= 19 &&
+                node.data.skill_name.length < 33
+            ) {
+                // Medium text - split into two lines
+                const splitIndex = node.data.skill_name.lastIndexOf(' ', 19);
+                const line1 = node.data.skill_name.substring(0, splitIndex);
+                const line2 = node.data.skill_name.substring(splitIndex + 1);
+
+                ctx1.strokeText(line1, xPosition, node.x - 5);
+                ctx1.fillText(line1, xPosition, node.x - 5);
+
+                ctx1.strokeText(line2, xPosition, node.x + 12);
+                ctx1.fillText(line2, xPosition, node.x + 12);
+            } else {
+                // Long text - with smaller font
+                const splitIndex = node.data.skill_name.lastIndexOf(
+                    ' ',
+                    Math.floor(node.data.skill_name.length / 1.5)
+                );
+                const line1 = node.data.skill_name.substring(0, splitIndex);
+                const line2 = node.data.skill_name.substring(splitIndex + 1);
+
+                const fontSize =
+                    Math.floor(11 / (node.data.skill_name.length / 19)) + 4;
+                ctx1.font = `${fontSize}px Verdana`;
+
+                ctx1.strokeText(line1, xPosition, node.x - 5);
+                ctx1.fillText(line1, xPosition, node.x - 5);
+
+                ctx1.strokeText(line2, xPosition, node.x + 12);
+                ctx1.fillText(line2, xPosition, node.x + 12);
             }
         },
         // check if current mouse position is over any node (return false if not on node)
