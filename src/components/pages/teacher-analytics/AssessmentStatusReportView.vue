@@ -33,7 +33,9 @@ export default {
         }
 
         await this.userSkillsStore.getMasteredSkills(this.studentId);
+
         await this.getAssessmentAttempts();
+
         await this.getMultipleFails();
     },
     methods: {
