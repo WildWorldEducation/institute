@@ -1713,7 +1713,7 @@ export default {
 }
 
 .tutor-chatting-section {
-    height: auto;
+    height: 94% !important;
 }
 
 .tutor-chatting-waiting-response-section {
