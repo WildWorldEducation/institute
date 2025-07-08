@@ -473,7 +473,7 @@ const router = createRouter({
             name: 'assessment-status',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/AssessmentStatusReportView.vue'
+                    '../components/pages/teacher-analytics/student/AssessmentStatusReportView.vue'
                 ),
             meta: {
                 title: 'Assessment Status',
@@ -486,7 +486,7 @@ const router = createRouter({
             name: 'progress-report',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/ProgressReportView.vue'
+                    '../components/pages/teacher-analytics/student/ProgressReportView.vue'
                 ),
             meta: {
                 title: 'Progress Report',
@@ -499,7 +499,7 @@ const router = createRouter({
             name: 'skill-activity',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/SkillActivityReportView.vue'
+                    '../components/pages/teacher-analytics/student/SkillActivityReportView.vue'
                 ),
             meta: {
                 title: 'Skill Activity',
@@ -512,7 +512,7 @@ const router = createRouter({
             name: 'total-time',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/TimeReportView.vue'
+                    '../components/pages/teacher-analytics/student/TimeReportView.vue'
                 ),
             meta: {
                 title: 'Total Time',

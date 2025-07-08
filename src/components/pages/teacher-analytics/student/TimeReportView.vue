@@ -1,6 +1,6 @@
 <script>
-import { useUsersStore } from '../../../stores/UsersStore';
-import TimePerSkillHorizontalBarChart from '../../components/student-analytics/TimePerSkillHorizontalBarChart.vue';
+import { useUsersStore } from '../../../../stores/UsersStore';
+import TimePerSkillHorizontalBarChart from '../../../components/student-analytics/TimePerSkillHorizontalBarChart.vue';
 
 export default {
     setup() {

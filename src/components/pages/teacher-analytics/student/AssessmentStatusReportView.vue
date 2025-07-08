@@ -1,7 +1,7 @@
 <script>
-import { useUsersStore } from '../../../stores/UsersStore';
-import { useUserSkillsStore } from '../../../stores/UserSkillsStore';
-import FailedAssessmentsHorizontalBarChart from '../../components/student-analytics/FailedAssessmentsHorizontalBarChart.vue';
+import { useUsersStore } from '../../../../stores/UsersStore';
+import { useUserSkillsStore } from '../../../../stores/UserSkillsStore';
+import FailedAssessmentsHorizontalBarChart from '../../../components/student-analytics/FailedAssessmentsHorizontalBarChart.vue';
 
 export default {
     setup() {
