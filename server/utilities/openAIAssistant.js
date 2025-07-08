@@ -322,6 +322,11 @@ async function createAssessingAssistant(
     return assistant;
 }
 
+async function createAssessingAssistantThread() {
+    const thread = await openai.beta.threads.create();
+    return thread;
+}
+
 /**
  * Get Assessing tutor thread id
  * @param {string} userId
