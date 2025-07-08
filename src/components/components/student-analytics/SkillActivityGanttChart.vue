@@ -11,19 +11,16 @@ export default {
         };
     },
     mounted() {
-        // kind of https://s3.amazonaws.com/wordpress-production/wp-content/uploads/sites/15/2016/04/gantt-updated-dependencies-1024x578.png
-
         const prepareDataElement = ({
             id,
             name,
             startDate,
             endDate,
-            duration,
             dependsOn
         }) => {
-            if ((!startDate || !endDate) && !duration) {
+            if (!startDate || !endDate) {
                 throw new Exception(
-                    'Wrong element format: should contain either startDate and duration, or endDate and duration or startDate and endDate'
+                    'Wrong element format: should contain startDate and endDate'
                 );
             }
 
@@ -37,16 +34,6 @@ export default {
                 endDate = moment(endDate);
             }
 
-            if (startDate && !endDate && duration) {
-                endDate = moment(startDate);
-                endDate.add(duration[0], duration[1]);
-            }
-
-            if (!startDate && endDate && duration) {
-                startDate = moment(endDate);
-                startDate.subtract(duration[0], duration[1]);
-            }
-
             if (!dependsOn) dependsOn = [];
 
             return {
@@ -54,7 +41,6 @@ export default {
                 name,
                 startDate,
                 endDate,
-                duration,
                 dependsOn
             };
         };
@@ -211,7 +197,6 @@ export default {
                 const width = xEnd - x;
                 const height = elementHeight;
 
-                const charWidth = width / fontSize;
                 const dependsOn = d.dependsOn;
                 const id = d.id;
 
@@ -221,14 +206,6 @@ export default {
                 const singleCharHeight = fontSize * 0.45;
 
                 let label = d.name;
-
-                if (label.length > charWidth) {
-                    label =
-                        label
-                            .split('')
-                            .slice(0, charWidth - 3)
-                            .join('') + '...';
-                }
 
                 const labelX =
                     x + (width / 2 - (label.length / 2) * singleCharWidth);
