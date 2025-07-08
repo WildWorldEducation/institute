@@ -473,7 +473,7 @@ const router = createRouter({
             name: 'assessment-status',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/student/AssessmentStatusReportView.vue'
+                    '../components/pages/teacher-analytics/student/StudentAssessmentStatusReportView.vue'
                 ),
             meta: {
                 title: 'Assessment Status',
