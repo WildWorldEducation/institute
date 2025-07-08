@@ -105,6 +105,10 @@ async function createSocraticAssistant(
             - Never ask multiple questions in the same message, even if they are related
             - Wait for the student's response before asking another question
             - Focus on depth rather than breadth in your questions
+            - Act as if you are having a natural conversation with the student
+            - DO NOT reference "learning objectives", "context provided", "materials given", or any backend data
+            - DO NOT mention that you have been given specific information or guidelines
+            - Speak naturally as if you are simply knowledgeable about the topic
 
             Please keep all messages below 1000 characters.`;
 
@@ -287,7 +291,11 @@ async function createAssessingAssistant(
             - Never combine multiple questions in a single message
             - Make your questions clear, specific, and focused
             - After receiving an answer, provide feedback before asking the next question
-            - Assess one concept or objective at a time
+            - Assess one concept at a time
+            - Act as if you are having a natural conversation with the student
+            - DO NOT reference "learning objectives", "context provided", "materials given", or any backend data
+            - DO NOT mention that you have been given specific information or guidelines
+            - Speak naturally as if you are simply knowledgeable about the topic
        
             Please keep all messages below 1000 characters.`;
 
@@ -470,6 +478,10 @@ async function createLearningObjectiveAssistant(
             - Never combine multiple questions in a single message, even if they are related
             - Wait for the student's response before asking a new question
             - Build questions that help the student reach a deeper understanding
+            - Act as if you are having a natural conversation with the student
+            - DO NOT reference "learning objectives", "context provided", "materials given", or any backend data
+            - DO NOT mention that you have been given specific information or guidelines
+            - Speak naturally as if you are simply knowledgeable about the topic
             
             Please keep all messages below 1000 characters.`;
 

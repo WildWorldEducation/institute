@@ -71,7 +71,6 @@ router.get('/last-visited-skills', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                console.log(results);
                 res.json(results);
             } catch (err) {
                 next(err);
