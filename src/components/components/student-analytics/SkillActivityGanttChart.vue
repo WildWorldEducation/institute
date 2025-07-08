@@ -190,11 +190,11 @@ export default {
         const createElementData = (data, elementHeight, xScale, fontSize) =>
             data.map((d, i) => {
                 const x = xScale(d.startDate.toDate());
-                console.log(x);
                 const xEnd = xScale(d.endDate.toDate());
-                console.log(xEnd);
+
                 const y = i * elementHeight * 1.5;
                 const width = xEnd - x;
+
                 const height = elementHeight;
 
                 const dependsOn = d.dependsOn;
@@ -270,7 +270,8 @@ export default {
                 elementHeight
             );
 
-            const xAxis = d3.axisBottom(xScale);
+            const axisTop = d3.axisBottom(xScale);
+            //const axisBottom = d3.axisTop(xScale);
 
             // create container for the data
             const g1 = svg
@@ -284,7 +285,8 @@ export default {
                 .append('g')
                 .attr('transform', `translate(0,${margin.top})`);
 
-            g1.append('g').call(xAxis);
+            g1.append('g').call(axisTop);
+            //g1.append('g').call(axisBottom);
 
             // create axes
             const bars = barsContainer
@@ -338,6 +340,7 @@ export default {
 
             const scaleWidth =
                 ((svgOptions && svgOptions.width) || 600) - margin.left * 2;
+
             const scaleHeight =
                 Math.max(
                     (svgOptions && svgOptions.height) || 200,
