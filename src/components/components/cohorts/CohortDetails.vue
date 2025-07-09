@@ -1,8 +1,14 @@
 <script>
+import { useCohortsStore } from '../../../stores/CohortsStore.js';
+
 export default {
-    props: ['userId'],
-    components: {},
-    setup() {},
+    setup() {
+        const cohortsStore = useCohortsStore();
+
+        return {
+            cohortsStore
+        };
+    },
     data() {
         return {
             showModal: false,
@@ -13,7 +19,7 @@ export default {
         };
     },
     created() {
-        this.localIsSkillsLocked = this.isSkillsLocked;
+        console.log(this.cohortsStore.selectedCohort);
     },
     computed: {
         studentName() {
@@ -51,7 +57,7 @@ export default {
             <!-- Name and basic details -->
             <div class="col-12 col-md-7">
                 <h1 v-if="isMobileCheck < 576" class="secondary-heading h3">
-                    {{ this.$parent.user.username }}
+                    {{ this.cohortsStore.selectedCohort }}
                 </h1>
             </div>
         </div>
@@ -67,6 +73,13 @@ export default {
                         <li><em>bar chart</em></li>
                         <li><em>allow change of order</em></li>
                     </ul>
+                    <router-link
+                        :to="`/cohort/${this.cohortId}/assessment-status`"
+                        class="fit-content mt-2"
+                        target="_blank"
+                    >
+                        Assessment status
+                    </router-link>
                     <h3>Assessments</h3>
                     <ul>
                         <li><em>number of passes, comparing students</em></li>
@@ -119,45 +132,26 @@ export default {
                         </li>
                     </ul>
                     <router-link
-                        :to="`/student/${this.$parent.cohort.id}/progress-report`"
+                        :to="`/student/${cohortsStore.selectedCohort.id}/progress-report`"
                         class="fit-content"
                         target="_blank"
                     >
                         Class-wide assessment scores
                     </router-link>
-                    <router-link
-                        :to="`/student/${this.$parent.cohort.id}/progress-report`"
-                        class="fit-content mt-2"
-                        target="_blank"
-                    >
-                        Estimated mastery scores
-                    </router-link>
 
-            <!-- Goals -->
-            <h2 class="secondary-heading h4 mt-4">Assign work</h2>
-                    <router-link
-                        :to="'/student/' + this.$parent.cohort.id + '/skills'"
-                        class="fit-content"
-                        target="_blank"
-                    >
-                        Assign goals
-                    </router-link>
-                    <router-link
-                        :to="'/student/' + this.$parent.cohort.id + '/goals'"
-                        class="mt-2 fit-content mb-3"
-                        target="_blank"
-                    >
-                        See current goals
-                    </router-link>
+                    <!-- Goals -->
+                    <h2 class="secondary-heading h4 mt-4">Assign work</h2>
+
+                    Assign goals See current goals
                 </div>
-            </div> 
+            </div>
             <!-- Right column -->
             <div class="col-12 col-md-4">
                 <h2 class="secondary-heading h4">Edit</h2>
                 <div class="d-flex flex-column">
                     <!-- Edit Cohort -->
                     <router-link
-                        :to="`/cohort/edit/${this.$parent.cohort.id}`"
+                        :to="`/cohort/edit/${cohortsStore.selectedCohort.id}`"
                         class="btn primary-btn mt-1"
                     >
                         Edit cohort&nbsp;

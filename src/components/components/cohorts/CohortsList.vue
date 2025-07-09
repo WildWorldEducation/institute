@@ -27,13 +27,7 @@ export default {
 
     methods: {
         selectCohort(cohort) {
-            // Set local value first for immediate UI response
-            this.selectedCohortId = cohort.id;
-
-            // Directly notify parent component without using a watch
-            if (this.$parent && this.$parent.updateCohortDetails) {
-                this.$parent.updateCohortDetails(cohort);
-            }
+            this.cohortsStore.selectedCohort.id = cohort.id;
         },
         restartTutorial() {
             this.showTutorialTip2 = false;

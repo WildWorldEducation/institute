@@ -467,10 +467,10 @@ const router = createRouter({
                 roles: ['instructor', 'admin', 'partner']
             }
         },
-        // Analytics
+        // Analytics - students
         {
             path: '/student/:studentId/assessment-status',
-            name: 'assessment-status',
+            name: 'student-assessment-status',
             component: () =>
                 import(
                     '../components/pages/teacher-analytics/student/StudentAssessmentStatusReportView.vue'
@@ -516,6 +516,20 @@ const router = createRouter({
                 ),
             meta: {
                 title: 'Total Time',
+                requiresAuth: true,
+                roles: ['instructor', 'partner']
+            }
+        },
+        // Analytics - cohorts
+        {
+            path: '/cohort/:cohortId/assessment-status',
+            name: 'cohort-assessment-status',
+            component: () =>
+                import(
+                    '../components/pages/teacher-analytics/cohort/CohortAssessmentStatusReportView.vue'
+                ),
+            meta: {
+                title: 'Assessment Status',
                 requiresAuth: true,
                 roles: ['instructor', 'partner']
             }
