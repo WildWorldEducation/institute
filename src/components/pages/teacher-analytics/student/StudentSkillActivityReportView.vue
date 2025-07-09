@@ -1,6 +1,6 @@
 <script>
 import { useUsersStore } from '../../../../stores/UsersStore';
-import SkillActivityGanttChart from '../../../components/student-analytics/SkillActivityGanttChart.vue';
+import SkillActivityGanttChart from '../../../components/teacher-analytics/students/SkillActivityGanttChart.vue';
 
 export default {
     setup() {
