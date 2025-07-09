@@ -14,8 +14,6 @@ export default {
     },
     data() {
         return {
-            // Local tracking of which item is selected to ensure accurate UI rendering
-            selectedCohortId: null,
             showInformationModal: false
         };
     },
@@ -27,7 +25,7 @@ export default {
 
     methods: {
         selectCohort(cohort) {
-            this.cohortsStore.selectedCohort.id = cohort.id;
+            this.cohortsStore.selectedCohort = cohort;
         },
         restartTutorial() {
             this.showTutorialTip2 = false;
