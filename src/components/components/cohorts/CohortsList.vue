@@ -14,8 +14,6 @@ export default {
     },
     data() {
         return {
-            // Local tracking of which item is selected to ensure accurate UI rendering
-            selectedCohortId: null,
             showInformationModal: false
         };
     },
@@ -27,13 +25,7 @@ export default {
 
     methods: {
         selectCohort(cohort) {
-            // Set local value first for immediate UI response
-            this.selectedCohortId = cohort.id;
-
-            // Directly notify parent component without using a watch
-            if (this.$parent && this.$parent.updateCohortDetails) {
-                this.$parent.updateCohortDetails(cohort);
-            }
+            this.cohortsStore.selectedCohort = cohort;
         },
         restartTutorial() {
             this.showTutorialTip2 = false;
@@ -103,7 +95,7 @@ export default {
             @click="selectCohort(cohort)"
             :key="cohort.id"
             :class="
-                cohort.id === selectedCohortId
+                cohort.id === cohortsStore.selectedCohort.id
                     ? 'isCurrentlySelected'
                     : 'cohort-buttons'
             "
@@ -143,9 +135,9 @@ export default {
     height: 80px;
     width: 100%;
     border-radius: 8px;
-    border: 1px solid var(--secondary-contrast-color);
-    background-color: var(--secondary-color);
-    color: var(--secondary-contrast-color);
+    border: 1px solid var(--primary-color);
+    background-color: var(--primary-color);
+    color: white;
     overflow: hidden;
     padding: 16px 28px;
     font-size: 1.25rem;

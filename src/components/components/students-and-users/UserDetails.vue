@@ -167,7 +167,7 @@ export default {
                     "
                     class="secondary-heading h4"
                 >
-                    Check Progress
+                    Check progress
                 </h2>
                 <div
                     v-if="
@@ -192,7 +192,7 @@ export default {
                         Progress
                     </router-link>
                     <!-- Tracking Report -->
-                    <h2 class="secondary-heading h4 mt-4">Student analytics</h2>
+                    <h2 class="secondary-heading h4 mt-4">Check activity</h2>
                     <router-link
                         :to="`/student/${this.$parent.user.id}/skill-activity`"
                         class="fit-content"

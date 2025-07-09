@@ -1,8 +1,14 @@
 <script>
+import { useCohortsStore } from '../../../stores/CohortsStore.js';
+
 export default {
-    props: ['userId'],
-    components: {},
-    setup() {},
+    setup() {
+        const cohortsStore = useCohortsStore();
+
+        return {
+            cohortsStore
+        };
+    },
     data() {
         return {
             showModal: false,
@@ -12,9 +18,7 @@ export default {
             isMobileCheck: window.innerWidth
         };
     },
-    created() {
-        this.localIsSkillsLocked = this.isSkillsLocked;
-    },
+    created() {},
     computed: {
         studentName() {
             return `${this.$parent.user.username}`.trim();
@@ -47,67 +51,49 @@ export default {
             </div>
         </div>
         <!-- Row: Avatar, name and basic details -->
-        <div class="row">
+        <div class="row" v-if="isMobileCheck < 576">
             <!-- Name and basic details -->
-            <div class="col-12 col-md-7">
-                <h1 v-if="isMobileCheck < 576" class="secondary-heading h3">
-                    {{ this.$parent.user.username }}
-                </h1>
-            </div>
+            <h1 class="secondary-heading h3">
+                {{ this.cohortsStore.selectedCohort.name }}
+            </h1>
         </div>
         <div class="row">
             <!-- Cohort Progress -->
             <div class="col-12 col-md-8">
                 <div class="d-flex flex-column">
-                    <h2 class="secondary-heading h4">Cohort Analytics</h2>
-                    <h3>Time</h3>
-                    <ul>
-                        <li><em>Time on platform, comparing students</em></li>
-                        <li><em>Choose by day, week etc</em></li>
-                        <li><em>bar chart</em></li>
-                        <li><em>allow change of order</em></li>
-                    </ul>
-                    <h3>Assessments</h3>
-                    <ul>
-                        <li><em>number of passes, comparing students</em></li>
-                        <li><em>number of attempts, comparing students</em></li>
-                        <li><em>number of fails, comparing students</em></li>
-                        <li><em>bar charts</em></li>
-                        <li><em>allow change of order</em></li>
-                    </ul>
-                    <h3>Skills</h3>
-                    <ul>
-                        <li>
-                            <em>over a given time</em>
-                        </li>
-                        <li>
-                            <em
-                                >number of students that have mastered,
-                                comparing skills</em
-                            >
-                        </li>
-                        <li>
-                            <em
-                                >number of students that have attempted,
-                                comparing skills</em
-                            >
-                        </li>
-                        <li>
-                            <em
-                                >number of students that have failed, comparing
-                                skills</em
-                            >
-                        </li>
-                        <li>
-                            <em
-                                >number of students that have visited, comparing
-                                skills</em
-                            >
-                        </li>
-                        <li><em>bar charts</em></li>
-                        <li><em>allow change of order</em></li>
-                    </ul>
-                    <h3>Possibly: Skills -> Learning Objectives</h3>
+                    <h2 class="secondary-heading h4">Check progress</h2>
+                    <router-link
+                        :to="`/cohort/${cohortsStore.selectedCohort.id}/progress-report`"
+                        class="fit-content"
+                        target="_blank"
+                    >
+                        Progress
+                    </router-link>
+
+                    <h2 class="secondary-heading h4 mt-4">Check activity</h2>
+                    <router-link
+                        :to="`/cohort/${this.cohortsStore.selectedCohort.id}/skill-activity`"
+                        class="fit-content"
+                        target="_blank"
+                    >
+                        Skill Activity
+                    </router-link>
+                    <router-link
+                        :to="`/cohort/${this.cohortsStore.selectedCohort.id}/assessment-status`"
+                        class="fit-content mt-2"
+                        target="_blank"
+                    >
+                        Assessment status
+                    </router-link>
+                    <router-link
+                        :to="`/cohort/${this.cohortsStore.selectedCohort.id}/total-time`"
+                        class="fit-content mt-2"
+                        target="_blank"
+                    >
+                        Time on platform
+                    </router-link>
+
+                    <!-- <h3>Possibly: Skills -> Learning Objectives</h3>
                     <ul>
                         <li><em>which are students struggling with</em></li>
                         <li>
@@ -117,47 +103,21 @@ export default {
                                 https://observablehq.com/@d3/calendar/2</em
                             >
                         </li>
-                    </ul>
-                    <router-link
-                        :to="`/student/${this.$parent.cohort.id}/progress-report`"
-                        class="fit-content"
-                        target="_blank"
-                    >
-                        Class-wide assessment scores
-                    </router-link>
-                    <router-link
-                        :to="`/student/${this.$parent.cohort.id}/progress-report`"
-                        class="fit-content mt-2"
-                        target="_blank"
-                    >
-                        Estimated mastery scores
-                    </router-link>
+                    </ul> -->
 
-            <!-- Goals -->
-            <h2 class="secondary-heading h4 mt-4">Assign work</h2>
-                    <router-link
-                        :to="'/student/' + this.$parent.cohort.id + '/skills'"
-                        class="fit-content"
-                        target="_blank"
-                    >
-                        Assign goals
-                    </router-link>
-                    <router-link
-                        :to="'/student/' + this.$parent.cohort.id + '/goals'"
-                        class="mt-2 fit-content mb-3"
-                        target="_blank"
-                    >
-                        See current goals
-                    </router-link>
+                    <!-- Goals -->
+                    <h2 class="secondary-heading h4 mt-4">Assign work</h2>
+
+                    Assign goals See current goals
                 </div>
-            </div> 
+            </div>
             <!-- Right column -->
             <div class="col-12 col-md-4">
                 <h2 class="secondary-heading h4">Edit</h2>
                 <div class="d-flex flex-column">
                     <!-- Edit Cohort -->
                     <router-link
-                        :to="`/cohort/edit/${this.$parent.cohort.id}`"
+                        :to="`/cohort/edit/${cohortsStore.selectedCohort.id}`"
                         class="btn primary-btn mt-1"
                     >
                         Edit cohort&nbsp;
