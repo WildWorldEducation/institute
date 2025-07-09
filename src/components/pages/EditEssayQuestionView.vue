@@ -1,6 +1,6 @@
 <script>
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
-import SkillTimeTracker from '../components/student-analytics/SkillTimeTracker.vue';
+import SkillTimeTracker from '../components/teacher-analytics/students/SkillTimeTracker.vue';
 import EditEssayQuestion from '../components/EditEssayQuestion.vue';
 export default {
     setup() {
