@@ -483,10 +483,10 @@ const router = createRouter({
         },
         {
             path: '/student/:studentId/progress-report',
-            name: 'progress-report',
+            name: 'student-progress-report',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/student/ProgressReportView.vue'
+                    '../components/pages/teacher-analytics/student/StudentProgressReportView.vue'
                 ),
             meta: {
                 title: 'Student Progress Report',
@@ -496,10 +496,10 @@ const router = createRouter({
         },
         {
             path: '/student/:studentId/skill-activity',
-            name: 'skill-activity',
+            name: 'student-skill-activity',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/student/SkillActivityReportView.vue'
+                    '../components/pages/teacher-analytics/student/StudentSkillActivityReportView.vue'
                 ),
             meta: {
                 title: 'Student Skill Activity Report',
@@ -543,6 +543,32 @@ const router = createRouter({
                 ),
             meta: {
                 title: 'Cohort Time Report',
+                requiresAuth: true,
+                roles: ['instructor', 'partner']
+            }
+        },
+        {
+            path: '/cohort/:cohortId/skill-activity',
+            name: 'cohort-skill-activity',
+            component: () =>
+                import(
+                    '../components/pages/teacher-analytics/cohort/CohortSkillActivityReportView.vue'
+                ),
+            meta: {
+                title: 'Cohort Skill Activity Report',
+                requiresAuth: true,
+                roles: ['instructor', 'partner']
+            }
+        },
+        {
+            path: '/cohort/:cohortId/progress-report',
+            name: 'cohort-progress-report',
+            component: () =>
+                import(
+                    '../components/pages/teacher-analytics/cohort/CohortProgressReportView.vue'
+                ),
+            meta: {
+                title: 'Cohort Progress Report',
                 requiresAuth: true,
                 roles: ['instructor', 'partner']
             }

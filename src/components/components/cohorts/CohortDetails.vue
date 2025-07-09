@@ -80,40 +80,22 @@ export default {
                     >
                         Time on platform
                     </router-link>
+                    <router-link
+                        :to="`/cohort/${this.cohortsStore.selectedCohort.id}/skill-activity`"
+                        class="fit-content mt-2"
+                        target="_blank"
+                    >
+                        Skill Activity
+                    </router-link>
+                    <router-link
+                        :to="`/cohort/${cohortsStore.selectedCohort.id}/progress-report`"
+                        class="fit-content mt-2"
+                        target="_blank"
+                    >
+                        Progress
+                    </router-link>
 
-                    <h3>Skills</h3>
-                    <ul>
-                        <li>
-                            <em>over a given time</em>
-                        </li>
-                        <li>
-                            <em
-                                >number of students that have mastered,
-                                comparing skills</em
-                            >
-                        </li>
-                        <li>
-                            <em
-                                >number of students that have attempted,
-                                comparing skills</em
-                            >
-                        </li>
-                        <li>
-                            <em
-                                >number of students that have failed, comparing
-                                skills</em
-                            >
-                        </li>
-                        <li>
-                            <em
-                                >number of students that have visited, comparing
-                                skills</em
-                            >
-                        </li>
-                        <li><em>bar charts</em></li>
-                        <li><em>allow change of order</em></li>
-                    </ul>
-                    <h3>Possibly: Skills -> Learning Objectives</h3>
+                    <!-- <h3>Possibly: Skills -> Learning Objectives</h3>
                     <ul>
                         <li><em>which are students struggling with</em></li>
                         <li>
@@ -123,14 +105,7 @@ export default {
                                 https://observablehq.com/@d3/calendar/2</em
                             >
                         </li>
-                    </ul>
-                    <router-link
-                        :to="`/student/${cohortsStore.selectedCohort.id}/progress-report`"
-                        class="fit-content"
-                        target="_blank"
-                    >
-                        Class-wide assessment scores
-                    </router-link>
+                    </ul> -->
 
                     <!-- Goals -->
                     <h2 class="secondary-heading h4 mt-4">Assign work</h2>
