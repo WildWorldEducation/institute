@@ -74,7 +74,7 @@ export default {
                         <li><em>allow change of order</em></li>
                     </ul>
                     <router-link
-                        :to="`/cohort/${this.cohortId}/assessment-status`"
+                        :to="`/cohort/${this.cohortsStore.selectedCohort.id}/assessment-status`"
                         class="fit-content mt-2"
                         target="_blank"
                     >

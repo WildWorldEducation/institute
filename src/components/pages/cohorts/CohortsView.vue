@@ -16,7 +16,7 @@ export default {
     },
     data() {
         return {
-            isLoading: false,
+            isLoading: true,
             // Flag to show user details when in phone view
             showDetails: false,
             // Tutorial tooltips
@@ -35,6 +35,7 @@ export default {
         await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
         this.cohortsStore.selectedCohort = this.cohortsStore.cohorts[0];
         console.log(this.cohortsStore.selectedCohort);
+        this.isLoading = false;
     },
     methods: {
         updateCohortDetails(cohort) {
@@ -99,10 +100,7 @@ export default {
             <!-- User detail view for PC and Tablet View -->
             <div class="col-lg-8 col-md-7 d-none d-md-block">
                 <div class="row user-form-data-row">
-                    <CohortDetails
-                        v-if="cohortsStore.cohorts.length > 0"
-                        :cohortId="cohortsStore.selectedCohort.id"
-                    />
+                    <CohortDetails v-if="!isLoading" />
                     <div v-else>
                         <h1 class="text-muted py-5">You have no cohorts</h1>
                     </div>
@@ -115,7 +113,7 @@ export default {
                 id="user-detail-section"
             >
                 <div class="row">
-                    <CohortDetails />
+                    <CohortDetails v-if="this.cohortsStore.selectedCohort.id" />
                 </div>
             </div>
         </div>
