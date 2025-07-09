@@ -55,17 +55,24 @@ export default {
         <!-- Row: Avatar, name and basic details -->
         <div class="row">
             <!-- Name and basic details -->
-            <div class="col-12 col-md-7">
-                <h1 v-if="isMobileCheck < 576" class="secondary-heading h3">
-                    {{ this.cohortsStore.selectedCohort }}
-                </h1>
-            </div>
+            <h1 class="secondary-heading h3">
+                {{ this.cohortsStore.selectedCohort.name }}
+            </h1>
         </div>
         <div class="row">
             <!-- Cohort Progress -->
             <div class="col-12 col-md-8">
                 <div class="d-flex flex-column">
-                    <h2 class="secondary-heading h4">Cohort Analytics</h2>
+                    <h2 class="secondary-heading h4">Check progress</h2>
+                    <router-link
+                        :to="`/cohort/${cohortsStore.selectedCohort.id}/progress-report`"
+                        class="fit-content"
+                        target="_blank"
+                    >
+                        Progress
+                    </router-link>
+
+                    <h2 class="secondary-heading h4 mt-4">Check activity</h2>
                     <router-link
                         :to="`/cohort/${this.cohortsStore.selectedCohort.id}/assessment-status`"
                         class="fit-content"
@@ -86,13 +93,6 @@ export default {
                         target="_blank"
                     >
                         Skill Activity
-                    </router-link>
-                    <router-link
-                        :to="`/cohort/${cohortsStore.selectedCohort.id}/progress-report`"
-                        class="fit-content mt-2"
-                        target="_blank"
-                    >
-                        Progress
                     </router-link>
 
                     <!-- <h3>Possibly: Skills -> Learning Objectives</h3>

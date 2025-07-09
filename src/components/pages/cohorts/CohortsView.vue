@@ -18,7 +18,7 @@ export default {
         return {
             isLoading: true,
             // Flag to show user details when in phone view
-            showDetails: false,
+            showDetails: true,
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false,
