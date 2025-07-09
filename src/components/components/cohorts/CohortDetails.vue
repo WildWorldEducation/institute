@@ -66,28 +66,21 @@ export default {
             <div class="col-12 col-md-8">
                 <div class="d-flex flex-column">
                     <h2 class="secondary-heading h4">Cohort Analytics</h2>
-                    <h3>Time</h3>
-                    <ul>
-                        <li><em>Time on platform, comparing students</em></li>
-                        <li><em>Choose by day, week etc</em></li>
-                        <li><em>bar chart</em></li>
-                        <li><em>allow change of order</em></li>
-                    </ul>
                     <router-link
                         :to="`/cohort/${this.cohortsStore.selectedCohort.id}/assessment-status`"
-                        class="fit-content mt-2"
+                        class="fit-content"
                         target="_blank"
                     >
                         Assessment status
                     </router-link>
-                    <h3>Assessments</h3>
-                    <ul>
-                        <li><em>number of passes, comparing students</em></li>
-                        <li><em>number of attempts, comparing students</em></li>
-                        <li><em>number of fails, comparing students</em></li>
-                        <li><em>bar charts</em></li>
-                        <li><em>allow change of order</em></li>
-                    </ul>
+                    <router-link
+                        :to="`/cohort/${this.cohortsStore.selectedCohort.id}/total-time`"
+                        class="fit-content mt-2"
+                        target="_blank"
+                    >
+                        Time on platform
+                    </router-link>
+
                     <h3>Skills</h3>
                     <ul>
                         <li>

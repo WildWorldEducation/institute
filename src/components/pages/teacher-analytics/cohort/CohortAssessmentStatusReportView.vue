@@ -48,6 +48,13 @@ export default {
 
 <template>
     <div class="container">
+        <ul>
+            <li><em>number of passes, comparing students</em></li>
+            <li><em>number of attempts, comparing students</em></li>
+            <li><em>number of fails, comparing students</em></li>
+            <li><em>bar charts</em></li>
+            <li><em>allow change of order</em></li>
+        </ul>
         <h1 class="heading">Assessment Status Report: {{ cohortName }}</h1>
         <h2 class="secondary-heading">Passed</h2>
         <h2 class="secondary-heading">Attempted</h2>

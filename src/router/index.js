@@ -476,7 +476,7 @@ const router = createRouter({
                     '../components/pages/teacher-analytics/student/StudentAssessmentStatusReportView.vue'
                 ),
             meta: {
-                title: 'Assessment Status',
+                title: 'Student Assessment Report',
                 requiresAuth: true,
                 roles: ['instructor', 'partner']
             }
@@ -489,7 +489,7 @@ const router = createRouter({
                     '../components/pages/teacher-analytics/student/ProgressReportView.vue'
                 ),
             meta: {
-                title: 'Progress Report',
+                title: 'Student Progress Report',
                 requiresAuth: true,
                 roles: ['instructor', 'partner']
             }
@@ -502,20 +502,20 @@ const router = createRouter({
                     '../components/pages/teacher-analytics/student/SkillActivityReportView.vue'
                 ),
             meta: {
-                title: 'Skill Activity',
+                title: 'Student Skill Activity Report',
                 requiresAuth: true,
                 roles: ['instructor', 'partner']
             }
         },
         {
             path: '/student/:studentId/total-time',
-            name: 'total-time',
+            name: 'student-time-report',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/student/TimeReportView.vue'
+                    '../components/pages/teacher-analytics/student/StudentTimeReportView.vue'
                 ),
             meta: {
-                title: 'Total Time',
+                title: 'Student Time Report',
                 requiresAuth: true,
                 roles: ['instructor', 'partner']
             }
@@ -529,7 +529,20 @@ const router = createRouter({
                     '../components/pages/teacher-analytics/cohort/CohortAssessmentStatusReportView.vue'
                 ),
             meta: {
-                title: 'Assessment Status',
+                title: 'Cohort Assessment Status Report',
+                requiresAuth: true,
+                roles: ['instructor', 'partner']
+            }
+        },
+        {
+            path: '/cohort/:cohortId/total-time',
+            name: 'cohort-time-report',
+            component: () =>
+                import(
+                    '../components/pages/teacher-analytics/cohort/CohortTimeReportView.vue'
+                ),
+            meta: {
+                title: 'Cohort Time Report',
                 requiresAuth: true,
                 roles: ['instructor', 'partner']
             }
