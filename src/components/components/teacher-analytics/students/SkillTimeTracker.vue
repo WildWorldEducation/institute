@@ -1,6 +1,6 @@
 <script>
-import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
-import { useShowSkillStore } from '../../../stores/ShowSkillStore.js';
+import { useUserDetailsStore } from '../../../../stores/UserDetailsStore.js';
+import { useShowSkillStore } from '../../../../stores/ShowSkillStore.js';
 
 export default {
     setup() {
