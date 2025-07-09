@@ -34,13 +34,11 @@ export default {
     async created() {
         await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
         this.cohortsStore.selectedCohort = this.cohortsStore.cohorts[0];
-        console.log(this.cohortsStore.selectedCohort);
         this.isLoading = false;
     },
     methods: {
         updateCohortDetails(cohort) {
             this.cohort = cohort;
-            console.log(this.cohort);
         }
     }
 };

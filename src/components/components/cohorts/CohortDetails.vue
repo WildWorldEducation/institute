@@ -18,9 +18,7 @@ export default {
             isMobileCheck: window.innerWidth
         };
     },
-    created() {
-        console.log(this.cohortsStore.selectedCohort);
-    },
+    created() {},
     computed: {
         studentName() {
             return `${this.$parent.user.username}`.trim();
@@ -53,7 +51,7 @@ export default {
             </div>
         </div>
         <!-- Row: Avatar, name and basic details -->
-        <div class="row">
+        <div class="row" v-if="isMobileCheck < 576">
             <!-- Name and basic details -->
             <h1 class="secondary-heading h3">
                 {{ this.cohortsStore.selectedCohort.name }}
@@ -74,8 +72,15 @@ export default {
 
                     <h2 class="secondary-heading h4 mt-4">Check activity</h2>
                     <router-link
-                        :to="`/cohort/${this.cohortsStore.selectedCohort.id}/assessment-status`"
+                        :to="`/cohort/${this.cohortsStore.selectedCohort.id}/skill-activity`"
                         class="fit-content"
+                        target="_blank"
+                    >
+                        Skill Activity
+                    </router-link>
+                    <router-link
+                        :to="`/cohort/${this.cohortsStore.selectedCohort.id}/assessment-status`"
+                        class="fit-content mt-2"
                         target="_blank"
                     >
                         Assessment status
@@ -86,13 +91,6 @@ export default {
                         target="_blank"
                     >
                         Time on platform
-                    </router-link>
-                    <router-link
-                        :to="`/cohort/${this.cohortsStore.selectedCohort.id}/skill-activity`"
-                        class="fit-content mt-2"
-                        target="_blank"
-                    >
-                        Skill Activity
                     </router-link>
 
                     <!-- <h3>Possibly: Skills -> Learning Objectives</h3>
