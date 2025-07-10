@@ -1,15 +1,18 @@
 <script>
 import { useUsersStore } from '../../../../stores/UsersStore';
 import { useUserSkillsStore } from '../../../../stores/UserSkillsStore';
+import { useTeacherAnalyticsStore } from '../../../../stores/TeacherAnalyticsStore';
 import FailedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/students/FailedAssessmentsHorizontalBarChart.vue';
 
 export default {
     setup() {
         const usersStore = useUsersStore();
         const userSkillsStore = useUserSkillsStore();
+        const teacherAnalyticsStore = useTeacherAnalyticsStore();
         return {
             usersStore,
-            userSkillsStore
+            userSkillsStore,
+            teacherAnalyticsStore
         };
     },
     components: {
@@ -24,6 +27,7 @@ export default {
         };
     },
     async created() {
+        // Get student name
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
         const foundObject = this.usersStore.users.find(
             (student) => student.id === this.studentId
@@ -63,14 +67,9 @@ export default {
             });
         },
         async getMultipleFails() {
-            fetch(`/student-analytics/multiple-fails/${this.studentId}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    this.multipleFails = data;
-                })
-                .catch((error) => {
-                    console.error('Error fetching last visited skills:', error);
-                });
+            await this.teacherAnalyticsStore.getStudentMultipleFails(
+                this.studentId
+            );
         }
     }
 };
@@ -150,18 +149,21 @@ export default {
         <p></p>
         <h2 class="secondary-heading">Failed multiple times</h2>
         <FailedAssessmentsHorizontalBarChart
-            v-if="multipleFails.length > 0"
-            :data="multipleFails"
+            v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
+            :data="teacherAnalyticsStore.studentMultipleFails"
             colour="darkred"
         />
-        <div v-if="this.multipleFails.length > 0" class="mb-4">
+        <div
+            v-if="this.teacherAnalyticsStore.studentMultipleFails.length > 0"
+            class="mb-4"
+        >
             <table class="table">
                 <tr>
                     <th>Skill</th>
                     <th>Times</th>
                 </tr>
                 <tr
-                    v-for="failedAssessment in multipleFails"
+                    v-for="failedAssessment in teacherAnalyticsStore.studentMultipleFails"
                     :key="failedAssessment.id"
                     class="table-rows"
                 >
