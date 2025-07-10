@@ -49,7 +49,6 @@ export default {
                 .then((response) => response.json())
                 .then((data) => {
                     this.skillActivities = data;
-                    console.log(this.skillActivities);
                 })
                 .catch((error) => {
                     console.error('Error fetching skill activities:', error);
