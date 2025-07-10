@@ -1,8 +1,16 @@
 <script>
+import { useCohortsStore } from '../../../../stores/CohortsStore';
+import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import CohortPassedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/cohorts/CohortPassedAssessmentsHorizontalChart.vue';
+
 export default {
     setup() {
-        return {};
+        const cohortsStore = useCohortsStore();
+        const userDetailsStore = useUserDetailsStore();
+        return {
+            cohortsStore,
+            userDetailsStore
+        };
     },
     components: {
         CohortPassedAssessmentsHorizontalBarChart
@@ -10,11 +18,22 @@ export default {
     data() {
         return {
             cohortId: this.$route.params.cohortId,
+            cohortName: '',
             masteredSkillQuantities: []
         };
     },
     async created() {
         this.getCohortMasteredAssessments();
+
+        if (this.cohortsStore.cohorts.length < 1) {
+            await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
+        }
+        const foundObject = this.cohortsStore.cohorts.find(
+            (cohort) => cohort.id == this.cohortId
+        );
+        if (foundObject) {
+            this.cohortName = foundObject.name;
+        }
     },
     methods: {
         async getCohortMasteredAssessments() {

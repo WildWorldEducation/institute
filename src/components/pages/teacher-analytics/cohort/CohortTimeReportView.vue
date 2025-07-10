@@ -1,19 +1,33 @@
 <script>
+import { useCohortsStore } from '../../../../stores/CohortsStore';
+import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 export default {
     setup() {
-        return {};
+        const cohortsStore = useCohortsStore();
+        const userDetailsStore = useUserDetailsStore();
+        return {
+            cohortsStore,
+            userDetailsStore
+        };
     },
     components: {},
     data() {
         return {
-            studentId: this.$route.params.studentId,
-            studentName: null,
-            skillDurations: [],
-            allSkillsDuration: 0,
-            isDataLoaded: false
+            cohortId: this.$route.params.cohortId,
+            cohortName: ''
         };
     },
-    async created() {},
+    async created() {
+        if (this.cohortsStore.cohorts.length < 1) {
+            await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
+        }
+        const foundObject = this.cohortsStore.cohorts.find(
+            (cohort) => cohort.id == this.cohortId
+        );
+        if (foundObject) {
+            this.cohortName = foundObject.name;
+        }
+    },
     methods: {
         millisToMinutesAndSeconds(millis) {
             var minutes = Math.floor(millis / 60000);
@@ -26,7 +40,7 @@ export default {
 
 <template>
     <div class="container">
-        <h1 class="heading">Time Report: {{ studentName }}</h1>
+        <h1 class="heading">Time Report: {{ cohortName }}</h1>
         <ul>
             <li><em>Time on platform, comparing students</em></li>
             <li><em>Choose by day, week etc</em></li>
