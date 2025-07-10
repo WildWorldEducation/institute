@@ -73,21 +73,23 @@ export default {
 <template>
     <div class="container">
         <h1 class="heading">Time Report: {{ studentName }}</h1>
-        <!-- <p>
+        <p>
             <em>
                 Please note that time spent on external sources (e.g. websites)
                 related to skills is not measured.</em
             >
-        </p>
+            <!--         </p>
         <p>
             <em
                 >Ability to choose time period - which will change entire
                 page</em
             >
-        </p> -->
+        </p> 
         <h2 class="secondary-heading">Total time on platform</h2>
         <p><em>line chart, over days / hours</em></p>
-        <p><em>Would have to record the time each day</em></p>
+        <p><em>Would have to record the time each day</em></p> -->
+        </p>
+
         <div v-if="isDataLoaded">
             <h2 class="secondary-heading">All skills</h2>
             <!-- <p><em>line chart, over days / hours</em></p> -->
