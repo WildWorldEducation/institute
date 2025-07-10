@@ -1,5 +1,7 @@
 <script>
 import * as d3 from 'd3';
+import { timelines } from 'd3-timelines';
+
 export default {
     setup() {},
     data() {
@@ -7,7 +9,8 @@ export default {
     },
     computed: {},
     async mounted() {
-        this.drawTimeLineChart();
+        //this.drawTimeLineChart();
+        this.drawTimeLineChartWithCircle();
     },
     methods: {
         drawTimeLineChart() {
@@ -119,6 +122,55 @@ export default {
                 .text((d) => d.label)
                 .attr('fill', 'steelblue')
                 .attr('font-size', '12px');
+        },
+        drawTimeLineChartWithCircle() {
+            const testData = [
+                {
+                    times: [
+                        {
+                            starting_time: 1355752800000,
+                            ending_time: 1355759900000
+                        },
+                        {
+                            starting_time: 1355767900000,
+                            ending_time: 1355774400000
+                        }
+                    ]
+                },
+                {
+                    times: [
+                        {
+                            starting_time: 1355759910000,
+                            ending_time: 1355761900000
+                        }
+                    ]
+                },
+                {
+                    times: [
+                        {
+                            starting_time: 1355761910000,
+                            ending_time: 1355763910000
+                        }
+                    ]
+                }
+            ];
+
+            const chart = timelines()
+                .tickFormat(
+                    //
+                    {
+                        format: d3.utcFormat('%B %d, %Y')
+                    }
+                )
+                .display('circle'); // toggle between rectangles and circles;
+
+            const svg = d3
+                .select('#timelineLibrary')
+                .append('svg')
+                .attr('width', 1800)
+                .attr('height', 400)
+                .datum(testData)
+                .call(chart);
         }
     }
 };
@@ -144,6 +196,14 @@ export default {
                 <div id="timeline"></div>
             </div>
         </div>
+        <div class="row bg-light">
+            <div class="col-12">
+                Time Line Chart with Circle using Timeline library .
+            </div>
+            <div class="col-12">
+                <div id="timelineLibrary"></div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -157,5 +217,19 @@ export default {
     width: 100%;
     height: 400px;
     overflow-x: auto;
+}
+
+#timelineLibrary {
+    width: 100%;
+    height: 400px;
+    overflow-x: auto;
+}
+
+#timelineLibrary .axis {
+    transform: translate(0px, 40px);
+    -ms-transform: translate(0px, 40px); /* IE 9 */
+    -webkit-transform: translate(0px, 40px); /* Safari and Chrome */
+    -o-transform: translate(0px, 40px); /* Opera */
+    -moz-transform: translate(0px, 40px); /* Firefox */
 }
 </style>
