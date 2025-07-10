@@ -3,11 +3,13 @@
 import { useUsersStore } from '../../../stores/UsersStore';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import TooltipBtn from './../share-components/TooltipBtn.vue';
+import StudentNotifications from './../teacher-analytics/students/StudentNotifications.vue';
 
 export default {
     props: ['userId'],
     components: {
-        TooltipBtn
+        TooltipBtn,
+        StudentNotifications
     },
     setup() {
         const usersStore = useUsersStore();
@@ -29,6 +31,7 @@ export default {
             isMobileCheck: window.innerWidth
         };
     },
+
     created() {
         this.localIsSkillsLocked = this.isSkillsLocked;
     },
@@ -392,14 +395,7 @@ export default {
                     />
                     <label for="two">Yes</label>
                 </div>
-                <!-- <h2 class="secondary-heading h4 mt-4">Notifications</h2> -->
-                <!-- <p><em>have a square for icons next to the student name</em></p>
-                <ul>
-                    <li>Low activity</li>
-                    <li>Behind the curve</li>
-                    <li>Ahead of the curve</li>
-                    <li>Struggling with a particular skill</li>
-                </ul> -->
+                <StudentNotifications />
             </div>
         </div>
     </div>
