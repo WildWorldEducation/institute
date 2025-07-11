@@ -40,8 +40,11 @@ export default {
 
         await this.getAssessmentAttempts();
 
-        if (this.teacherAnalyticsStore.studentMultipleFails.length == 0)
-            await this.getMultipleFails();
+        if (this.teacherAnalyticsStore.studentMultipleFails.length == 0) {
+            await this.teacherAnalyticsStore.getStudentMultipleFails(
+                this.studentId
+            );
+        }
     },
     methods: {
         async getAssessmentAttempts() {
@@ -66,11 +69,6 @@ export default {
                 minute: '2-digit',
                 second: '2-digit'
             });
-        },
-        async getMultipleFails() {
-            await this.teacherAnalyticsStore.getStudentMultipleFails(
-                this.studentId
-            );
         }
     }
 };

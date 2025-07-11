@@ -1,4 +1,5 @@
 <script>
+// NOT BEING USED
 import * as d3 from 'd3';
 export default {
     name: 'SkillActivityGanttChart2',

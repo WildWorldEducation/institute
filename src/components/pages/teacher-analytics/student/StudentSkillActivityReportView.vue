@@ -1,20 +1,22 @@
 <script>
 import { useUsersStore } from '../../../../stores/UsersStore';
+import { useTeacherAnalyticsStore } from '../../../../stores/TeacherAnalyticsStore';
 import SkillActivityGanttChart from '../../../components/teacher-analytics/students/SkillActivityGanttChart.vue';
 
 export default {
     setup() {
         const usersStore = useUsersStore();
+        const teacherAnalyticsStore = useTeacherAnalyticsStore();
         return {
-            usersStore
+            usersStore,
+            teacherAnalyticsStore
         };
     },
     data() {
         return {
             studentId: this.$route.params.studentId,
             studentName: null,
-            visitedSkills: [],
-            skillActivities: []
+            visitedSkills: []
         };
     },
     components: {
@@ -29,31 +31,13 @@ export default {
             this.studentName = foundObject.username;
         }
 
-        this.getSkillActivityReport();
+        if (this.teacherAnalyticsStore.skillActivities.length == 0) {
+            await this.teacherAnalyticsStore.getSkillActivityReport(
+                this.studentId
+            );
+        }
     },
-
     methods: {
-        // getLastVisitedSkills() {
-        //     // Fetch last visited skills for the student
-        //     fetch(`/student-analytics/last-visited-skills/${this.studentId}`)
-        //         .then((response) => response.json())
-        //         .then((data) => {
-        //             this.visitedSkills = data;
-        //         })
-        //         .catch((error) => {
-        //             console.error('Error fetching last visited skills:', error);
-        //         });
-        // },
-        getSkillActivityReport() {
-            fetch(`/student-analytics/skill-activity-report/${this.studentId}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    this.skillActivities = data;
-                })
-                .catch((error) => {
-                    console.error('Error fetching skill activities:', error);
-                });
-        },
         visitedDate(date) {
             let jsDate = new Date(date);
             return jsDate.toLocaleString('en-US', {
@@ -73,11 +57,14 @@ export default {
     <div class="container">
         <h1 class="heading">Skill Activity Report: {{ studentName }}</h1>
         <SkillActivityGanttChart
-            v-if="skillActivities.length > 0"
-            :data="skillActivities"
+            v-if="teacherAnalyticsStore.skillActivities.length > 0"
+            :data="teacherAnalyticsStore.skillActivities"
             colour="darkred"
         />
-        <div v-if="this.skillActivities.length > 0" class="mb-4">
+        <div
+            v-if="teacherAnalyticsStore.skillActivities.length > 0"
+            class="mb-4"
+        >
             <table class="table">
                 <tr>
                     <th>Skill</th>
@@ -85,7 +72,7 @@ export default {
                     <th>Date last visited</th>
                 </tr>
                 <tr
-                    v-for="skill in skillActivities"
+                    v-for="skill in teacherAnalyticsStore.skillActivities"
                     :key="skill.id"
                     class="table-rows"
                 >

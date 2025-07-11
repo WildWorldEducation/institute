@@ -262,8 +262,6 @@ export default {
                 fontSize
             );
 
-            console.log(data);
-
             // create data describing connections' lines
             const polylineData = createPolylineData(
                 rectangleData,
@@ -360,7 +358,7 @@ export default {
             data = parseUserData(data); // transform raw user data to valid values
 
             data = sortElements(data, sortMode);
-            console.log(data);
+
             const { minStartDate, maxEndDate } = findDateBoundaries(data);
 
             // add some padding to axes
@@ -381,44 +379,6 @@ export default {
             });
         };
 
-        const data = [
-            {
-                startDate: '2017-02-27',
-                endDate: '2017-03-04',
-                label: 'milestone 01',
-                id: 'm01',
-                dependsOn: []
-            },
-            {
-                startDate: '2017-02-23',
-                endDate: '2017-03-01',
-                label: 'milestone 06',
-                id: 'm06',
-                dependsOn: ['m01']
-            },
-            {
-                duration: [7, 'days'],
-                endDate: '2017-03-24',
-                label: 'milestone 02',
-                id: 'm02',
-                dependsOn: ['m04']
-            },
-            {
-                startDate: '2017-02-27',
-                duration: [12, 'days'],
-                label: 'milestone 03',
-                id: 'm03',
-                dependsOn: ['m01']
-            },
-            {
-                endDate: '2017-03-17',
-                duration: [5, 'days'],
-                label: 'milestone 04',
-                id: 'm04',
-                dependsOn: ['m01']
-            }
-        ];
-
         createGanttChart(
             document.getElementById('skill-activity-chart-container'),
             this.data,
@@ -434,12 +394,7 @@ export default {
             }
         );
     },
-    methods: {
-        assessmentDate(date) {
-            console.log(date);
-        }
-    },
-    computed: {}
+    methods: {}
 };
 </script>
 
