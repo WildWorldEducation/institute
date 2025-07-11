@@ -76,7 +76,10 @@ export default {
 
 <template>
     <div class="container">
-        <h1 class="heading">Assessment Status Report: {{ studentName }}</h1>
+        <span class="d-flex justify-content-between w-100">
+            <h1 class="heading">Assessment Status Report</h1>
+            <h2 class="secondary-heading h3">{{ studentName }}</h2>
+        </span>
         <!-- <h2 class="secondary-heading">Combined</h2> -->
         <!-- <p>
             <em
