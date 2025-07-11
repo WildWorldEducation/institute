@@ -91,8 +91,7 @@ export default {
         svg.append('g')
             .attr('transform', `translate(${marginLeft},0)`)
             .call(d3.axisLeft(y).tickSizeOuter(0));
-    },
-    computed: {}
+    }
 };
 </script>
 
@@ -100,5 +99,4 @@ export default {
     <div id="failed-assessments-chart-container"></div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
