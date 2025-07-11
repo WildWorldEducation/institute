@@ -26,9 +26,15 @@ export default {
     >
         This student is struggling with one or more assessments.
     </div>
+    <div
+        v-if="teacherAnalyticsStore.isLowActivity"
+        class="alert alert-danger"
+        role="alert"
+    >
+        This student has not visited any skills for 3 days of more.
+    </div>
     <p><em>have a square for icons next to the student name</em></p>
     <ul>
-        <li>Low activity</li>
         <li>Behind the curve (compared to cohort)</li>
         <li>Ahead of the curve (compared to cohort)</li>
     </ul>

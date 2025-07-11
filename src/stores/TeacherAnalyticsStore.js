@@ -4,12 +4,13 @@ export const useTeacherAnalyticsStore = defineStore('teacherAnalytics', {
     state: () => {
         return {
             studentMultipleFails: [],
-            skillActivities: []
+            skillActivities: [],
+            isLowActivity: false
         };
     },
     actions: {
         async getStudentMultipleFails(studentId) {
-            fetch(`/student-analytics/multiple-fails/${studentId}`)
+            await fetch(`/student-analytics/multiple-fails/${studentId}`)
                 .then((response) => response.json())
                 .then((data) => {
                     this.studentMultipleFails = data;
@@ -19,7 +20,7 @@ export const useTeacherAnalyticsStore = defineStore('teacherAnalytics', {
                 });
         },
         async getSkillActivityReport(studentId) {
-            fetch(`/student-analytics/skill-activity-report/${studentId}`)
+            await fetch(`/student-analytics/skill-activity-report/${studentId}`)
                 .then((response) => response.json())
                 .then((data) => {
                     this.skillActivities = data;

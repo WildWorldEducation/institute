@@ -31,7 +31,8 @@ export default {
                 username: null,
                 avatar: null,
                 role: null,
-                isSkillsLocked: false
+                isSkillsLocked: false,
+                isLowActivity: false
             },
             // Only for users with the "student" role.
             instructor: null,
@@ -205,6 +206,12 @@ export default {
             await this.teacherAnalyticsStore.getStudentMultipleFails(
                 this.user.id
             );
+
+            await this.teacherAnalyticsStore.getSkillActivityReport(
+                this.user.id
+            );
+
+            this.checkIfLowActivity();
         },
         getInstructor() {
             // Get the instructor's user id.
@@ -329,6 +336,32 @@ export default {
             this.showTutorialTip2 = false;
             this.isTutorialComplete = true;
             this.markTutorialComplete();
+        },
+        checkIfLowActivity() {
+            let lastVisitedDates = [];
+            // Get dates of last visited skills
+            for (
+                let i = 0;
+                i < this.teacherAnalyticsStore.skillActivities.length;
+                i++
+            ) {
+                lastVisitedDates.push(
+                    new Date(
+                        this.teacherAnalyticsStore.skillActivities[i].endDate
+                    )
+                );
+            }
+
+            this.teacherAnalyticsStore.isLowActivity = true;
+            // Get date one week before
+            const daysBefore = new Date();
+            daysBefore.setDate(daysBefore.getDate() - 3);
+            // Check if any dates are more than 3 days ago
+            for (let i = 0; i < lastVisitedDates.length; i++) {
+                if (lastVisitedDates[i].getTime() > daysBefore.getTime()) {
+                    this.teacherAnalyticsStore.isLowActivity = false;
+                }
+            }
         }
     },
     // Only watch for changes after initial setup
