@@ -40,7 +40,8 @@ export default {
 
         await this.getAssessmentAttempts();
 
-        await this.getMultipleFails();
+        if (this.teacherAnalyticsStore.studentMultipleFails.length == 0)
+            await this.getMultipleFails();
     },
     methods: {
         async getAssessmentAttempts() {

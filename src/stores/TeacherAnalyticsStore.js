@@ -12,7 +12,6 @@ export const useTeacherAnalyticsStore = defineStore('teacherAnalytics', {
                 .then((response) => response.json())
                 .then((data) => {
                     this.studentMultipleFails = data;
-                    console.log(this.studentMultipleFails);
                 })
                 .catch((error) => {
                     console.error('Error fetching last visited skills:', error);

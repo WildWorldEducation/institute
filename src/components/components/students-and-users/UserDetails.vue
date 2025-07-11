@@ -395,7 +395,7 @@ export default {
                     />
                     <label for="two">Yes</label>
                 </div>
-                <StudentNotifications />
+                <StudentNotifications :studentId="$parent.user.id" />
             </div>
         </div>
     </div>
