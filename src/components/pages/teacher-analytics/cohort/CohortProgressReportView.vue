@@ -34,7 +34,10 @@ export default {
 
 <template>
     <div class="container">
-        <h1 class="heading">Progress Report: {{ cohortName }}</h1>
+        <span class="d-flex justify-content-between w-100">
+            <h1 class="heading">Progress Report</h1>
+            <h2 class="secondary-heading h3">{{ cohortName }}</h2>
+        </span>
         <p>Number of skills mastered over time</p>
         <p>Line chart</p>
         <p>May have to record when the user started on the platform</p>

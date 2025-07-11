@@ -63,7 +63,10 @@ export default {
 
 <template>
     <div class="container">
-        <h1 class="heading">Assessment Status Report: {{ cohortName }}</h1>
+        <span class="d-flex justify-content-between w-100">
+            <h1 class="heading">Assessment Status Report</h1>
+            <h2 class="secondary-heading h3">{{ cohortName }}</h2>
+        </span>
         <h2 class="secondary-heading">Passed</h2>
         <CohortPassedAssessmentsHorizontalBarChart
             v-if="masteredSkillQuantities.length > 0"

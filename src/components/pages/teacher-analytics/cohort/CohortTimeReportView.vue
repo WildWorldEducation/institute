@@ -40,7 +40,10 @@ export default {
 
 <template>
     <div class="container">
-        <h1 class="heading">Time Report: {{ cohortName }}</h1>
+        <span class="d-flex justify-content-between w-100">
+            <h1 class="heading">Time Report</h1>
+            <h2 class="secondary-heading h3">{{ cohortName }}</h2>
+        </span>
         <ul>
             <li><em>Time on platform, comparing students</em></li>
             <li><em>Choose by day, week etc</em></li>
