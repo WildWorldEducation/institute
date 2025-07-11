@@ -1,8 +1,16 @@
 <script>
+import { useCohortsStore } from '../../../../stores/CohortsStore';
+import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import CohortPassedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/cohorts/CohortPassedAssessmentsHorizontalChart.vue';
+
 export default {
     setup() {
-        return {};
+        const cohortsStore = useCohortsStore();
+        const userDetailsStore = useUserDetailsStore();
+        return {
+            cohortsStore,
+            userDetailsStore
+        };
     },
     components: {
         CohortPassedAssessmentsHorizontalBarChart
@@ -10,11 +18,22 @@ export default {
     data() {
         return {
             cohortId: this.$route.params.cohortId,
+            cohortName: '',
             masteredSkillQuantities: []
         };
     },
     async created() {
         this.getCohortMasteredAssessments();
+
+        if (this.cohortsStore.cohorts.length < 1) {
+            await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
+        }
+        const foundObject = this.cohortsStore.cohorts.find(
+            (cohort) => cohort.id == this.cohortId
+        );
+        if (foundObject) {
+            this.cohortName = foundObject.name;
+        }
     },
     methods: {
         async getCohortMasteredAssessments() {
@@ -44,7 +63,10 @@ export default {
 
 <template>
     <div class="container">
-        <h1 class="heading">Assessment Status Report: {{ cohortName }}</h1>
+        <span class="d-flex justify-content-between w-100">
+            <h1 class="heading">Assessment Status Report</h1>
+            <h2 class="secondary-heading h3">{{ cohortName }}</h2>
+        </span>
         <h2 class="secondary-heading">Passed</h2>
         <CohortPassedAssessmentsHorizontalBarChart
             v-if="masteredSkillQuantities.length > 0"

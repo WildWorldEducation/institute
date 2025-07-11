@@ -1,24 +1,33 @@
 <script>
+import { useCohortsStore } from '../../../../stores/CohortsStore';
+import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 export default {
     setup() {
-        return {};
+        const cohortsStore = useCohortsStore();
+        const userDetailsStore = useUserDetailsStore();
+        return {
+            cohortsStore,
+            userDetailsStore
+        };
     },
     data() {
         return {
-            studentId: this.$route.params.studentId,
-            studentName: null,
+            cohortId: this.$route.params.cohortId,
+            cohortName: '',
             visitedSkills: [],
             skillActivities: []
         };
     },
     components: {},
     async created() {
-        if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
-        const foundObject = this.usersStore.users.find(
-            (student) => student.id === this.studentId
+        if (this.cohortsStore.cohorts.length < 1) {
+            await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
+        }
+        const foundObject = this.cohortsStore.cohorts.find(
+            (cohort) => cohort.id == this.cohortId
         );
         if (foundObject) {
-            this.studentName = foundObject.username;
+            this.cohortName = foundObject.name;
         }
 
         this.getSkillActivityReport();
@@ -64,7 +73,10 @@ export default {
 
 <template>
     <div class="container">
-        <h1 class="heading">Skill Activity Report: {{ studentName }}</h1>
+        <span class="d-flex justify-content-between w-100">
+            <h1 class="heading">Skill Activity Report</h1>
+            <h2 class="secondary-heading h3">{{ cohortName }}</h2>
+        </span>
         <ul>
             <li>
                 <em>over a given time</em>

@@ -72,7 +72,10 @@ export default {
 
 <template>
     <div class="container">
-        <h1 class="heading">Time Report: {{ studentName }}</h1>
+        <span class="d-flex justify-content-between w-100">
+            <h1 class="heading">Time Report</h1>
+            <h2 class="secondary-heading h3">{{ studentName }}</h2>
+        </span>
         <p>
             <em>
                 Please note that time spent on external sources (e.g. websites)
