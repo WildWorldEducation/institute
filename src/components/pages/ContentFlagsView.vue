@@ -1339,11 +1339,11 @@ export default {
                                                     class="custom-dropdown-option"
                                                     @click="
                                                         userRoleCriteria =
-                                                            'admin';
+                                                            'platform_admin';
                                                         showUserRoleDropDown = false;
                                                     "
                                                 >
-                                                    Admin
+                                                    Platform Admin
                                                 </button>
                                             </div>
                                         </Transition>
@@ -2164,11 +2164,11 @@ export default {
                                                     class="custom-dropdown-option"
                                                     @click="
                                                         userRoleCriteria =
-                                                            'admin';
+                                                            'platform_admin';
                                                         showUserRoleDropDown = false;
                                                     "
                                                 >
-                                                    Admin
+                                                    Platform Admin
                                                 </div>
                                             </div>
                                         </Transition>

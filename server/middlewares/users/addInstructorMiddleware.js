@@ -5,8 +5,8 @@ const addInstructorPermission = (req, res, next) => {
     const userId = req.session.userId;
     const { instructor_id } = req.body;
 
-    // Admin can add any instructor to student
-    if (userRole === 'admin') {
+    // Platform admin can add any instructor to student
+    if (userRole === 'platform_admin') {
         return next();
     }
 

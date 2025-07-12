@@ -62,7 +62,7 @@ export default {
 
         // Load data
         if (
-            this.userDetailsStore.role === 'admin' ||
+            this.userDetailsStore.role === 'platform_admin' ||
             this.userDetailsStore.role === 'instructor' ||
             this.userDetailsStore.role === 'partner'
         ) {
@@ -103,7 +103,7 @@ export default {
 
             // Try to use previously selected user if available
             if (selectedId) {
-                if (this.userDetailsStore.role === 'admin') {
+                if (this.userDetailsStore.role === 'platform_admin') {
                     const selectedUser = this.usersStore.users.find(
                         (user) => user.id === selectedId
                     );
@@ -136,7 +136,7 @@ export default {
             // Default to first user if no selection or selected user not found
             if (!userFound) {
                 if (
-                    this.userDetailsStore.role === 'admin' &&
+                    this.userDetailsStore.role === 'platform_admin' &&
                     this.usersStore.users.length > 0
                 ) {
                     this.updateUserDetails(this.usersStore.users[0], true);
@@ -381,7 +381,7 @@ export default {
     <!-- Top row -->
     <div class="container-fluid">
         <div
-            v-if="userDetailsStore.role == 'admin'"
+            v-if="userDetailsStore.role == 'platform_admin'"
             id="first-content-row"
             class="d-flex justify-content-between"
         >
@@ -445,7 +445,7 @@ export default {
                 <div class="row user-form-data-row">
                     <UserDetails
                         v-if="
-                            userDetailsStore.role == 'admin' ||
+                            userDetailsStore.role == 'platform_admin' ||
                             (userDetailsStore.role == 'editor' &&
                                 usersStore.editors.length > 0)
                         "

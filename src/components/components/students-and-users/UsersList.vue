@@ -46,9 +46,9 @@ export default {
 
 <template>
     <div class="container mt-1">
-        <!-- Admins -->
+        <!-- Platform Admins -->
         <div
-            v-if="userDetailsStore.role == 'admin'"
+            v-if="userDetailsStore.role == 'platform_admin'"
             v-for="user in usersStore.users"
             :key="user.id"
         >

@@ -98,7 +98,7 @@ router.delete('/delete/:tutorSourceId', (req, res, next) => {
                     postUserId = results[0].user_id;
                     if (
                         postUserId == req.session.userId ||
-                        req.session.role == 'admin'
+                        req.session.role == 'platform_admin'
                     ) {
                         // Delete the post.
                         let sqlQuery2 = `DELETE FROM tutor_posts 
@@ -175,7 +175,7 @@ router.put('/edit/:id', (req, res, next) => {
                     postUserId = results[0].user_id;
                     if (
                         postUserId == req.session.userId ||
-                        req.session.role == 'admin' ||
+                        req.session.role == 'platform_admin' ||
                         req.session.role == 'editor'
                     ) {
                         // Edit the post.

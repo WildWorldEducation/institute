@@ -356,7 +356,7 @@ export default {
                     >
                         <!-- Skill filters button -->
                         <div
-                            v-if="userDetailsStore.role == 'admin'"
+                            v-if="userDetailsStore.role == 'platform_admin'"
                             class="d-flex gap-2"
                         >
                             <router-link class="btn primary-btn" to="/tags"

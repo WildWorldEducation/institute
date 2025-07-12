@@ -38,7 +38,7 @@ const router = createRouter({
             meta: {
                 title: 'Student skill tree',
                 requiresAuth: true,
-                roles: ['instructor', 'admin', 'partner']
+                roles: ['instructor', 'platform_admin', 'partner']
             }
         },
         {
@@ -47,7 +47,7 @@ const router = createRouter({
             component: () => import('../components/pages/SearchView.vue'),
             meta: {
                 requiresAuth: false,
-                roles: ['student', 'admin'],
+                roles: ['student', 'platform_admin'],
                 title: 'Search'
             }
         },
@@ -92,7 +92,7 @@ const router = createRouter({
             meta: {
                 title: 'Student skills',
                 requiresAuth: true,
-                roles: ['instructor', 'admin', 'partner']
+                roles: ['instructor', 'platform_admin', 'partner']
             }
         },
         {
@@ -224,7 +224,7 @@ const router = createRouter({
             component: () => import('../components/pages/UsersView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['admin', 'editor']
+                roles: ['platform_admin', 'editor']
             }
         },
         {
@@ -233,7 +233,7 @@ const router = createRouter({
             component: () => import('../components/pages/UsersView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['instructor', 'admin', 'partner']
+                roles: ['instructor', 'platform_admin', 'partner']
             }
         },
         {
@@ -243,7 +243,7 @@ const router = createRouter({
                 import('../components/pages/StudentQuestionListView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['instructor', 'admin', 'partner']
+                roles: ['instructor', 'platform_admin', 'partner']
             }
         },
         {
@@ -253,14 +253,14 @@ const router = createRouter({
                 import('../components/pages/MarkAssessmentView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['instructor', 'admin', 'partner']
+                roles: ['instructor', 'platform_admin', 'partner']
             }
         },
         {
             path: '/users/add',
             name: 'add-user',
             component: () => import('../components/pages/AddUserView.vue'),
-            meta: { requiresAuth: true, roles: ['admin'] }
+            meta: { requiresAuth: true, roles: ['platform_admin'] }
         },
         {
             path: '/users/add-student',
@@ -274,7 +274,7 @@ const router = createRouter({
             component: () => import('../components/pages/EditUserView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['instructor', 'admin', 'partner']
+                roles: ['instructor', 'platform_admin', 'partner']
             }
         },
         {
@@ -288,14 +288,14 @@ const router = createRouter({
             name: 'user-activity-report',
             component: () =>
                 import('../components/pages/UserActivityReportPageView.vue'),
-            meta: { requiresAuth: true, roles: ['editor', 'admin'] }
+            meta: { requiresAuth: true, roles: ['editor', 'platform_admin'] }
         },
         {
             path: '/users/:userId/activity-report/source/:sourceId',
             name: 'user-activity-report-source',
             component: () =>
                 import('../components/pages/UserActivityReportSourceView.vue'),
-            meta: { requiresAuth: true, roles: ['editor', 'admin'] }
+            meta: { requiresAuth: true, roles: ['editor', 'platform_admin'] }
         },
         {
             path: '/profile',
@@ -350,13 +350,13 @@ const router = createRouter({
             path: '/settings/edit',
             name: 'edit-settings',
             component: () => import('../components/pages/EditSettingsView.vue'),
-            meta: { requiresAuth: true, roles: ['admin'] }
+            meta: { requiresAuth: true, roles: ['platform_admin'] }
         },
         {
             path: '/content-flags',
             name: 'content-flags',
             component: () => import('../components/pages/ContentFlagsView.vue'),
-            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+            meta: { requiresAuth: true, roles: ['platform_admin', 'editor'] }
         },
         {
             path: '/check-student-question/:id',
@@ -365,7 +365,7 @@ const router = createRouter({
                 import('../components/pages/CheckStudentQuestionView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['admin', 'editor', 'instructor', 'partner']
+                roles: ['platform_admin', 'editor', 'instructor', 'partner']
             }
         },
         {
@@ -388,7 +388,7 @@ const router = createRouter({
             path: '/todo',
             name: 'todo',
             component: () => import('../components/pages/TodoListView.vue'),
-            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+            meta: { requiresAuth: true, roles: ['platform_admin', 'editor'] }
         },
         {
             path: '/cohorts',
@@ -397,7 +397,7 @@ const router = createRouter({
                 import('../components/pages/cohorts/CohortsView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['admin', 'instructor', 'partner']
+                roles: ['platform_admin', 'instructor', 'partner']
             }
         },
         {
@@ -407,7 +407,7 @@ const router = createRouter({
                 import('../components/pages/cohorts/AddCohortView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['admin', 'instructor', 'partner']
+                roles: ['platform_admin', 'instructor', 'partner']
             }
         },
         {
@@ -417,7 +417,7 @@ const router = createRouter({
                 import('../components/pages/cohorts/CohortView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['admin', 'instructor', 'partner']
+                roles: ['platform_admin', 'instructor', 'partner']
             }
         },
         {
@@ -464,7 +464,7 @@ const router = createRouter({
             meta: {
                 title: 'Student goals',
                 requiresAuth: true,
-                roles: ['instructor', 'admin', 'partner']
+                roles: ['instructor', 'platform_admin', 'partner']
             }
         },
         // Analytics - students

@@ -234,7 +234,7 @@ export default {
                 return;
             }
 
-            if (this.userDetailsStore.role == 'admin') {
+            if (this.userDetailsStore.role == 'platform_admin') {
                 this.Submit();
             } else {
                 this.submitNewSkillForReview();
@@ -843,7 +843,7 @@ export default {
                 </div>
             </div>
             <!-- Description  -->
-            <div class="row" v-if="userDetailsStore.role == 'admin'">
+            <div class="row" v-if="userDetailsStore.role == 'platform_admin'">
                 <div class="col">
                     <div class="mb-3">
                         <h2 class="secondary-heading h4">Description</h2>
@@ -888,7 +888,7 @@ export default {
                     </router-link>
                     <button
                         v-if="
-                            userDetailsStore.role == 'admin' &&
+                            userDetailsStore.role == 'platform_admin' &&
                             isAnotherInstanceOfExistingSkill
                         "
                         class="btn primary-btn"
@@ -903,7 +903,7 @@ export default {
                     >
                         <span
                             v-if="
-                                userDetailsStore.role == 'admin' &&
+                                userDetailsStore.role == 'platform_admin' &&
                                 !isAnotherInstanceOfExistingSkill
                             "
                             >Submit</span

@@ -11,7 +11,7 @@ const path = require('path');
 const fs = require('fs').promises;
 const publicPath = path.join(path.resolve(), 'public');
 const distPath = path.join(path.resolve(), 'dist');
-const isAdmin = require('./middlewares/adminMiddleware');
+const isPlatformAdmin = require('./middlewares/platformAdminMiddleware');
 const isAuthenticated = require('./middlewares/authMiddleware');
 
 // Database Connection
@@ -560,22 +560,27 @@ app.get('/api/settings', (req, res, next) => {
 });
 
 // Edit app settings.
-app.put('/api/settings/edit', isAuthenticated, isAdmin, (req, res, next) => {
-    if (req.session.userName) {
-        let sqlQuery = `UPDATE settings SET ? WHERE id = 1`;
-        const data = req.body;
-        conn.query(sqlQuery, data, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
+app.put(
+    '/api/settings/edit',
+    isAuthenticated,
+    isPlatformAdmin,
+    (req, res, next) => {
+        if (req.session.userName) {
+            let sqlQuery = `UPDATE settings SET ? WHERE id = 1`;
+            const data = req.body;
+            conn.query(sqlQuery, data, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    res.end();
+                } catch (err) {
+                    next(err);
                 }
-                res.end();
-            } catch (err) {
-                next(err);
-            }
-        });
+            });
+        }
     }
-});
+);
 
 app.get('/sitemap.xml', (req, res) => {
     const rootUrl = 'https://parrhesia.io';

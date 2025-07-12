@@ -29,7 +29,7 @@ export default {
         };
     },
     computed: {},
-    async created() {     
+    async created() {
         if (this.skillsStore.skillsList.length == 0) {
             await this.skillsStore.getSkillsList();
         }
@@ -146,7 +146,7 @@ export default {
                         </td>
                         <td
                             v-if="
-                                userDetailsStore.role == 'admin' ||
+                                userDetailsStore.role == 'platform_admin' ||
                                 userDetailsStore.role == 'editor'
                             "
                         >
@@ -209,7 +209,7 @@ export default {
                         </td>
                         <td
                             v-if="
-                                userDetailsStore.role == 'admin' ||
+                                userDetailsStore.role == 'platform_admin' ||
                                 userDetailsStore.role == 'editor'
                             "
                         >
@@ -272,7 +272,7 @@ export default {
                         </td>
                         <td
                             v-if="
-                                userDetailsStore.role == 'admin' ||
+                                userDetailsStore.role == 'platform_admin' ||
                                 userDetailsStore.role == 'editor'
                             "
                         >

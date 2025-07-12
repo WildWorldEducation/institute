@@ -41,8 +41,8 @@ export default {
             this.instructorMode = true;
         }
         if (this.instructorMode == false) {
-            // Admins.
-            if (this.userDetailsStore.role == 'admin')
+            // Platform Admins.
+            if (this.userDetailsStore.role == 'platform_admin')
                 await this.skillsStore.getNestedSkillsList();
             // Instructors and Editors.
             else if (
@@ -73,8 +73,8 @@ export default {
         },
         findNode(name) {
             if (this.instructorMode === false) {
-                // Admins.
-                if (this.userDetailsStore.role == 'admin') {
+                // Platform admins.
+                if (this.userDetailsStore.role == 'platform_admin') {
                     this.path = this.findPathInNestedSkillTree(
                         name,
                         this.skillsStore.nestedSkillsList
@@ -106,7 +106,7 @@ export default {
                 );
             }
         },
-        // for finding the path to a specific node in admin nested skill list
+        // for finding the path to a specific node in platform admin nested skill list
         // Implement of DFS algorithm for tree searching
         findPathInNestedSkillTree(name, initialSkillList) {
             this.findNodeLoading = true;
@@ -242,7 +242,7 @@ export default {
                 >
                 </SkillsListChildNonStudent>
             </div>
-            <!-- Admins -->
+            <!-- Platform Admins -->
             <div v-else v-for="skill in this.skillsStore.nestedSkillsList">
                 <SkillsListChildNonStudent
                     :id="skill.id"
