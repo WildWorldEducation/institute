@@ -23,9 +23,8 @@ export default {
         };
     },
     async created() {
-        this.getCohortMasteredAssessments();
-
-        if (this.cohortId == 'all-students') {
+        if (this.cohortId != 'all-students') {
+            this.getCohortMasteredAssessments();
             if (this.cohortsStore.cohorts.length < 1) {
                 await this.cohortsStore.getCohorts(
                     this.userDetailsStore.userId
@@ -37,11 +36,25 @@ export default {
             if (foundObject) {
                 this.cohortName = foundObject.name;
             }
+        } else {
+            this.getAllStudentsAssessments();
         }
     },
     methods: {
         async getCohortMasteredAssessments() {
             fetch(`/student-analytics/mastered-skills/cohort/${this.cohortId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    this.masteredSkillQuantities = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching last visited skills:', error);
+                });
+        },
+        async getAllStudentsAssessments() {
+            fetch(
+                `/student-analytics/mastered-skills/all-students/${this.userDetailsStore.userId}`
+            )
                 .then((response) => response.json())
                 .then((data) => {
                     this.masteredSkillQuantities = data;
