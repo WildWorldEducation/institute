@@ -1,6 +1,6 @@
 <script>
 import FilterParent from '../../components/filter-system/FilterParent.vue';
-import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
