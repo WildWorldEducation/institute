@@ -225,7 +225,7 @@ export default {
                         <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
-                                (userDetailsStore.role == 'admin' ||
+                                (userDetailsStore.role == 'platform_admin' ||
                                     userDetailsStore.role == 'editor')
                             "
                             class="nav-item"
@@ -260,7 +260,7 @@ export default {
                         </li>
                         <li
                             v-if="
-                                userDetailsStore.role == 'admin' ||
+                                userDetailsStore.role == 'platform_admin' ||
                                 userDetailsStore.role == 'editor'
                             "
                             class="nav-item"
@@ -269,7 +269,11 @@ export default {
                                 to="/users"
                                 class="nav-link close-on-click"
                             >
-                                <span v-if="userDetailsStore.role == 'admin'"
+                                <span
+                                    v-if="
+                                        userDetailsStore.role ==
+                                        'platform_admin'
+                                    "
                                     >Users
                                 </span>
                                 <span
@@ -433,7 +437,10 @@ export default {
                                         Referrals
                                     </RouterLink>
                                     <RouterLink
-                                        v-if="userDetailsStore.role == 'admin'"
+                                        v-if="
+                                            userDetailsStore.role ==
+                                            'platform_admin'
+                                        "
                                         to="/partners"
                                         class="dropdown-item"
                                     >
@@ -488,7 +495,10 @@ export default {
                                     Referrals
                                 </RouterLink>
                                 <RouterLink
-                                    v-if="userDetailsStore.role == 'admin'"
+                                    v-if="
+                                        userDetailsStore.role ==
+                                        'platform_admin'
+                                    "
                                     to="/referrers"
                                     class="nav-link"
                                 >

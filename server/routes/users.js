@@ -17,7 +17,7 @@ const isAuthenticated = require('../middlewares/authMiddleware');
 const createUserPermission = require('../middlewares/users/createUserMiddleware');
 const addInstructorPermission = require('../middlewares/users/addInstructorMiddleware');
 const editUserPermission = require('../middlewares/users/editUserMiddleware');
-const isAdmin = require('../middlewares/adminMiddleware');
+const isPlatformAdmin = require('../middlewares/platformAdminMiddleware');
 
 /*------------------------------------------
 --------------------------------------------
@@ -572,7 +572,7 @@ router.post('/new-editor/add', (req, res, next) => {
 });
 
 /**
- * Admin create new user
+ * Platform admin create new user
  */
 router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
     // Providing default avatar.
@@ -1054,7 +1054,7 @@ router.get('/student-of-instructors/:instructorId', (req, res, next) => {
  *
  * @return response()
  */
-router.delete('/:id', isAuthenticated, isAdmin, (req, res, next) => {
+router.delete('/:id', isAuthenticated, isPlatformAdmin, (req, res, next) => {
     if (req.session.userName) {
         const deleteQuery = `UPDATE users 
         SET is_deleted = 1 
@@ -1077,7 +1077,7 @@ router.delete('/:id', isAuthenticated, isAdmin, (req, res, next) => {
 });
 
 /**
- * Admin edit User
+ * Platform admin edit User
  */
 router.put(
     '/:id/edit',
@@ -1493,14 +1493,19 @@ router.put(
     }
 );
 
-// To see the user profile, and edit the app settings (if user is an admin).
-router.get('/:id/profile-settings', isAuthenticated, isAdmin, (req, res) => {
-    if (req.session.userName) {
-        res.render('profile-and-settings', { userId: req.params.id });
-    } else {
-        res.redirect('/login');
+// To see the user profile, and edit the app settings (if user is an platform admin).
+router.get(
+    '/:id/profile-settings',
+    isAuthenticated,
+    isPlatformAdmin,
+    (req, res) => {
+        if (req.session.userName) {
+            res.render('profile-and-settings', { userId: req.params.id });
+        } else {
+            res.redirect('/login');
+        }
     }
-});
+);
 
 // Update the user's auto-play preference
 router.put(

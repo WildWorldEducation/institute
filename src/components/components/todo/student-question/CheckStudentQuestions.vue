@@ -33,7 +33,7 @@ export default {
     },
     async created() {
         this.loadingQuestion = true;
-        // Question list needs to be created for both admins (all questions), and instructors
+        // Question list needs to be created for both platform admin (all questions), and instructors
         // (only their students' questions).
 
         // Create the questions array ---------------------------------

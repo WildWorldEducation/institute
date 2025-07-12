@@ -90,8 +90,11 @@ export default {
                     {{ this.$parent.user.username }}
                 </h1>
 
-                <!-- Role (admins only) -->
-                <div v-if="userDetailsStore.role == 'admin'" class="mb-3">
+                <!-- Role (platform admin only) -->
+                <div
+                    v-if="userDetailsStore.role == 'platform_admin'"
+                    class="mb-3"
+                >
                     <label class="form-label">Role</label>
                     <input
                         class="form-control user-input-information"
@@ -105,13 +108,13 @@ export default {
         <div class="row">
             <!-- Student Progress -->
             <div class="col-12 col-md-5">
-                <!-- Admin -->
+                <!-- Platform Admin -->
                 <div
                     id="user-function-btns-row"
                     class="d-flex justify-content-center"
                 >
                     <router-link
-                        v-if="userDetailsStore.role == 'admin'"
+                        v-if="userDetailsStore.role == 'platform_admin'"
                         :to="'/users/edit/' + this.$parent.user.id"
                         class="btn primary-btn"
                     >
@@ -137,12 +140,12 @@ export default {
                                 fill="white"
                             />
                         </svg> </router-link
-                    ><span v-if="userDetailsStore.role == 'admin'"
+                    ><span v-if="userDetailsStore.role == 'platform_admin'"
                         >&nbsp;&nbsp;</span
                     >
                     <!-- Delete button -->
                     <button
-                        v-if="userDetailsStore.role == 'admin'"
+                        v-if="userDetailsStore.role == 'platform_admin'"
                         class="btn red-btn"
                         @click="showModal = true"
                     >
@@ -250,7 +253,7 @@ export default {
                 <div class="mt-2">
                     <router-link
                         v-if="
-                            userDetailsStore.role == 'admin' ||
+                            userDetailsStore.role == 'platform_admin' ||
                             userDetailsStore.role == 'editor'
                         "
                         target="_blank"
@@ -309,7 +312,7 @@ export default {
                 <div
                     v-if="
                         this.$parent.user.role == 'student' &&
-                        userDetailsStore.role == 'admin'
+                        userDetailsStore.role == 'platform_admin'
                     "
                     class="mb-3"
                 >

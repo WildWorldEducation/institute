@@ -186,7 +186,7 @@ export default {
                         }
                         // There are a chance that the last question is correct but the student still fails
                         else {
-                            // Notify admin that they failed.
+                            // Notify platform admin that they failed.
                             this.modalMessage = 'Student failed';
                             this.showModal = true;
                             this.isFailed = true;
@@ -241,7 +241,7 @@ export default {
                                 100 <
                             90
                         ) {
-                            // Notify admin that they failed.
+                            // Notify platform admin that they failed.
                             this.modalMessage = 'Student failed';
                             this.isFailed = true;
                             this.showModal = true;
@@ -487,7 +487,6 @@ export default {
 .green-btn:hover {
     background-color: #46f7df;
 }
-
 
 /* The Warning Modal */
 .modal {

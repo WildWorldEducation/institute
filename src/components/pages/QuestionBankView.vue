@@ -48,7 +48,7 @@ export default {
         <div class="col d-flex justify-content-between">
             <router-link
                 v-if="
-                    userDetailsStore.role == 'admin' ||
+                    userDetailsStore.role == 'platform_admin' ||
                     userDetailsStore.role == 'editor'
                 "
                 class="primary-btn btn"

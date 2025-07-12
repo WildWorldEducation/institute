@@ -51,7 +51,7 @@ export default {
                     );
                 });
         },
-        // If edit is from an admin or editor.
+        // If edit is from an platform admin or editor.
         Submit() {
             const requestOptions = {
                 method: 'PUT',
@@ -145,7 +145,7 @@ export default {
         },
         addAnswer() {
             if (
-                this.userDetailsStore.role == 'admin' ||
+                this.userDetailsStore.role == 'platform_admin' ||
                 this.userDetailsStore.role == 'editor'
             ) {
                 if (this.answers[2].show == 0) {
@@ -159,7 +159,7 @@ export default {
         },
         removeAnswer() {
             if (
-                this.userDetailsStore.role == 'admin' ||
+                this.userDetailsStore.role == 'platform_admin' ||
                 this.userDetailsStore.role == 'editor'
             ) {
                 if (this.answers[4].show == 1) {
@@ -288,7 +288,7 @@ export default {
                     <div
                         v-if="
                             isLoaded &&
-                            (this.userDetailsStore.role == 'admin' ||
+                            (this.userDetailsStore.role == 'platform_admin' ||
                                 this.userDetailsStore.role == 'editor')
                         "
                         class="mb-3"
@@ -396,7 +396,7 @@ export default {
                         </button>
                         <button
                             v-if="
-                                userDetailsStore.role == 'admin' ||
+                                userDetailsStore.role == 'platform_admin' ||
                                 userDetailsStore.role == 'editor'
                             "
                             class="btn primary-btn"

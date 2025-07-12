@@ -304,7 +304,7 @@ export default {
                                 <router-link
                                     v-if="
                                         post.user_id == user.userId ||
-                                        user.role == 'admin' ||
+                                        user.role == 'platform_admin' ||
                                         user.role == 'editor'
                                     "
                                     :to="'/resources/edit/' + post.id"
@@ -340,7 +340,7 @@ export default {
                                     title="Delete This Source"
                                     v-if="
                                         post.user_id == user.userId ||
-                                        user.role == 'admin' ||
+                                        user.role == 'platform_admin' ||
                                         user.role == 'editor'
                                     "
                                     type="button"

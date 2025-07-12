@@ -53,7 +53,7 @@ export default {
                     this.originalQuestion = { ...data };
                 });
         },
-        // If edit is from an admin or editor.
+        // If edit is from an platform admin or editor.
         Submit() {
             const requestOptions = {
                 method: 'PUT',
@@ -223,7 +223,7 @@ export default {
                     <div class="mb-3 d-flex justify-content-end">
                         <button
                             v-if="
-                                userDetailsStore.role == 'admin' ||
+                                userDetailsStore.role == 'platform_admin' ||
                                 userDetailsStore.role == 'editor'
                             "
                             @click="ValidateForm('submission')"

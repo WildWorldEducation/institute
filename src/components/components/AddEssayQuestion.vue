@@ -183,7 +183,7 @@ export default {
 <template>
     <div class="container mt-3">
         <!-- Drop down zone for csv file input -->
-        <div v-if="userDetailsStore.role == 'admin'">
+        <div v-if="userDetailsStore.role == 'platform_admin'">
             <div class="row mt-5">
                 <div
                     class="dropzone-container"

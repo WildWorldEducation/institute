@@ -132,16 +132,18 @@ export default {
                     aria-describedby="numSourcesPerSkill"
                     onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                 />
-                <button  class="btn green-btn mt-3" @click="GenerateSources">
+                <button class="btn green-btn mt-3" @click="GenerateSources">
                     Generate Sources
                 </button>
                 <div style="font-size: 14px" class="mt-2">
                     <strong>Notes:</strong>
                     <ul>
-                        <li><em>To be done by devs and not admins.</em></li>
+                        <li>
+                            <em>To be done by devs and not platform admin.</em>
+                        </li>
                         <li><em>It can cost a lot each time.</em></li>
-                        <li><em>It runs for all ~3700 relevant skills.</em></li>                        
-                        <li><em>It crashes frequently.</em></li>                        
+                        <li><em>It runs for all ~3700 relevant skills.</em></li>
+                        <li><em>It crashes frequently.</em></li>
                     </ul>
                 </div>
             </div>
@@ -233,9 +235,14 @@ export default {
         </button>
         <div style="font-size: 14px">
             <ul>
-                <li><em>To be done by devs and not admins.</em></li>
-                <li><em>To search for and delete duplicate urls for the same skill.</em></li>
-            </ul>            
+                <li><em>To be done by devs and not platform admin.</em></li>
+                <li>
+                    <em
+                        >To search for and delete duplicate urls for the same
+                        skill.</em
+                    >
+                </li>
+            </ul>
         </div>
         <h2 class="mt-5">Scan For and Delete Sources with Broken Links</h2>
         <button class="btn red-btn mt-3" @click="DeleteBrokenSources">
@@ -244,11 +251,11 @@ export default {
         <div style="font-size: 14px" class="mt-2">
             <strong>Notes:</strong>
             <ul>
-                <li><em>To be done by devs and not admins.</em></li>
-                <li><em>To search for sources containing broken urls.</em></li>                        
-                <li><em>Need to be deleted manually.</em></li>                        
-                <li><em>Need to check them manually first.</em></li>                        
-            </ul>            
+                <li><em>To be done by devs and not platform admin.</em></li>
+                <li><em>To search for sources containing broken urls.</em></li>
+                <li><em>Need to be deleted manually.</em></li>
+                <li><em>Need to check them manually first.</em></li>
+            </ul>
         </div>
     </div>
 </template>

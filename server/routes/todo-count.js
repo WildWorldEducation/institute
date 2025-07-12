@@ -35,8 +35,11 @@ router.get('/total', isAuthenticated, todoPermission, (req, res, next) => {
                         (SELECT COUNT(*) FROM student_mc_questions) as student_question_count,
                         (SELECT COUNT(*) FROM content_flags
                         WHERE is_deleted = 0) as content_flag_count`;
-    // Get new skill awaiting approval count for admin and a special editor account
-    if (req.session.role === 'admin' || isMasterEditor(req.session.userName)) {
+    // Get new skill awaiting approval count for platform admin and a special editor account
+    if (
+        req.session.role === 'platform_admin' ||
+        isMasterEditor(req.session.userName)
+    ) {
         sqlQuery = `${sqlQuery},
                     (SELECT COUNT(*) FROM new_skills_awaiting_approval) as new_skill_add_count`;
     }

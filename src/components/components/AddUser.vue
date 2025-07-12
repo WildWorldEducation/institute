@@ -524,11 +524,11 @@ export default {
                                 <div
                                     class="custom-dropdown-option"
                                     @click="
-                                        user.role = 'admin';
+                                        user.role = 'platform_admin';
                                         showRoleDropDown = false;
                                     "
                                 >
-                                    admin
+                                    platform admin
                                 </div>
                             </div>
                         </div>
@@ -811,7 +811,6 @@ export default {
     letter-spacing: 0em;
     text-align: left;
 }
-
 
 .green-btn {
     background-color: #36c1af;

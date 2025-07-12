@@ -356,7 +356,7 @@ export default {
                 <button
                     v-if="
                         !isCurrentVersion &&
-                        (userDetailsStore.role == 'admin' ||
+                        (userDetailsStore.role == 'platform_admin' ||
                             userDetailsStore.role == 'editor')
                     "
                     class="btn primary-btn mt-4"

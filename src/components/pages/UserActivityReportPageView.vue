@@ -185,7 +185,7 @@ export default {
             </div>
 
             <!-- Questions -->
-            <!-- Only show Questions log if user is admin  -->
+            <!-- Only show Questions log if user is platform admin  -->
             <div class="d-flex flex-column">
                 <div class="d-flex flex-row justify-content-between">
                     <div
@@ -225,7 +225,7 @@ export default {
                     </div>
                 </Transition>
             </div>
-            <hr v-if="user.role === 'admin'" class="mt-5 mb-3" />
+            <hr v-if="user.role === 'platform_admin'" class="mt-5 mb-3" />
 
             <!-- Student Suggested MC Questions -->
             <div class="d-flex flex-column">

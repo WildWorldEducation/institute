@@ -63,7 +63,7 @@ export default {
             }
         },
         async getNameList() {
-            if (this.userDetailsStore.role === 'admin') {
+            if (this.userDetailsStore.role === 'platform_admin') {
                 this.nameList = await this.skillsStore.getNameList();
             } else if (this.userDetailsStore.role === 'student') {
                 await this.skillTreeStore.getStudentSkills(
@@ -159,7 +159,7 @@ export default {
             };
             const res = await fetch(url, requestOption);
             const ResResults = await res.json();
-            // Filter out the result if user is not admin
+            // Filter out the result if user is not platform admin
             const matchedResult = ResResults.filter((skill) => {
                 return this.nameList.some((element) => {
                     return (
