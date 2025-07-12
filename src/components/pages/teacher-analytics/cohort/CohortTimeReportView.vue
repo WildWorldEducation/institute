@@ -44,16 +44,38 @@ export default {
             <h1 class="heading">Time Report</h1>
             <h2 class="secondary-heading h3">{{ cohortName }}</h2>
         </span>
+        <h2 class="secondary-heading">
+            Total time on skills, comparing students
+        </h2>
         <ul>
             <li><em>Time on platform, comparing students</em></li>
-            <li><em>Choose by day, week etc</em></li>
             <li><em>bar chart</em></li>
             <li><em>allow change of order</em></li>
+            <li><em>Choose by day, week etc</em></li>
         </ul>
 
-        <h2 class="secondary-heading">Total time on platform</h2>
-        <p><em>line chart, over days / hours</em></p>
-        <p><em>Would have to record the time each day</em></p>
+        <h2 class="secondary-heading">
+            Total time on platform, comparing students
+        </h2>
+        <ul>
+            <li><em>Time on platform, comparing students</em></li>
+            <li><em>bar chart</em></li>
+            <li><em>allow change of order</em></li>
+            <li><em>Choose by day, week etc</em></li>
+        </ul>
+
+        <h2 class="secondary-heading">
+            Total time on platform, comparing time
+        </h2>
+        <ul>
+            <li><em>Time on platform, comparing students</em></li>
+            <li><em>line chart, over days</em></li>
+            <li>
+                <em>Would have to record the time each day</em>
+            </li>
+            <li><em>Choose by day, week etc</em></li>
+        </ul>
+
         <div v-if="isDataLoaded">
             <h2 class="secondary-heading">All skills</h2>
             <!-- <p><em>line chart, over days / hours</em></p> -->

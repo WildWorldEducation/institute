@@ -150,9 +150,8 @@ router.get('/multiple-fails/:studentId', (req, res, next) => {
 });
 
 /**
- * per cohort
+ * Per cohort ------
  */
-
 /* Get mastered skills, though not domains/categories */
 router.get('/mastered-skills/cohort/:cohortId', (req, res, next) => {
     // Check if logged in.
@@ -169,6 +168,47 @@ router.get('/mastered-skills/cohort/:cohortId', (req, res, next) => {
             JOIN users
             ON user_skills.user_id = users.id     
             WHERE cohorts_users.cohort_id = ${conn.escape(req.params.cohortId)}
+            AND is_mastered = 1
+            AND type <> 'domain'
+            GROUP BY user_skills.user_id
+            ORDER BY quantity DESC;`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
+ * ---------------------------------------------------------------
+ */
+
+/**
+ * All students of an instructors ------
+ */
+/* Get mastered skills, though not domains/categories */
+router.get('/mastered-skills/all-students/:userId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT COUNT(*) as quantity, users.username AS name
+            FROM user_skills
+            JOIN skills
+            ON skills.id = user_skills.skill_id            
+            JOIN instructor_students
+            ON user_skills.user_id = instructor_students.student_id
+            JOIN users
+            ON user_skills.user_id = users.id     
+            WHERE instructor_students.instructor_id = ${conn.escape(req.params.userId)}
             AND is_mastered = 1
             AND type <> 'domain'
             GROUP BY user_skills.user_id

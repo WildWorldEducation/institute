@@ -6,7 +6,8 @@ export const useCohortsStore = defineStore('cohorts', {
             cohorts: [],
             cohortSkills: [],
             cohortFilteredSubjects: [],
-            selectedCohort: {}// Add this to track selected cohort
+            selectedCohort: {}, // Track selected cohort
+            isAllStudentsSelected: false // Select all students, instead of a cohort
         };
     },
     actions: {

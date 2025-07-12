@@ -77,28 +77,9 @@ export default {
             <h1 class="heading">Skill Activity Report</h1>
             <h2 class="secondary-heading h3">{{ cohortName }}</h2>
         </span>
-        <ul>
-            <li>
-                <em>over a given time</em>
-            </li>
-            <li>
-                <em>number of students that have mastered, comparing skills</em>
-            </li>
-            <li>
-                <em
-                    >number of students that have attempted, comparing
-                    skills</em
-                >
-            </li>
-            <li>
-                <em>number of students that have failed, comparing skills</em>
-            </li>
-            <li>
-                <em>number of students that have visited, comparing skills</em>
-            </li>
-            <li><em>bar charts</em></li>
-            <li><em>allow change of order</em></li>
-        </ul>
+        <p>
+            Gantt chart, time of all students (summed together), for each skills
+        </p>
         <div v-if="this.skillActivities.length > 0" class="mb-4">
             <table class="table">
                 <tr>
@@ -128,7 +109,7 @@ export default {
             </table>
         </div>
         <div v-else>
-            <p>No skills visited by this student.</p>
+            <p>No skills visited by this cohort.</p>
         </div>
     </div>
 </template>

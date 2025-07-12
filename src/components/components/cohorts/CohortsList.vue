@@ -19,13 +19,19 @@ export default {
     },
     async created() {
         await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
+        console.log(this.cohortsStore.cohorts);
         // Check if user has visited before
         this.checkIfTutorialComplete();
     },
 
     methods: {
+        selectAllStudents() {
+            this.cohortsStore.selectedCohort = {};
+            this.cohortsStore.isAllStudentsSelected = true;
+        },
         selectCohort(cohort) {
             this.cohortsStore.selectedCohort = cohort;
+            this.cohortsStore.isAllStudentsSelected = false;
         },
         restartTutorial() {
             this.showTutorialTip2 = false;
@@ -89,7 +95,17 @@ export default {
 
 <template>
     <div class="container mt-1">
-        <!-- <button class="mb-1 cohort-buttons">All students</button> -->
+        <button
+            @click="selectAllStudents()"
+            class="mb-1 cohort-buttons"
+            :class="
+                cohortsStore.isAllStudentsSelected
+                    ? 'isCurrentlySelected'
+                    : 'cohort-buttons'
+            "
+        >
+            All students
+        </button>
         <button
             v-for="cohort in cohortsStore.cohorts"
             @click="selectCohort(cohort)"
