@@ -62,8 +62,18 @@ export default {
             <div class="col-12 col-md-8">
                 <div class="d-flex flex-column">
                     <h2 class="secondary-heading h4">Check progress</h2>
+                    <!-- Whether all students or cohort selected -->
                     <router-link
+                        v-if="!cohortsStore.isAllStudentsSelected"
                         :to="`/cohort/${cohortsStore.selectedCohort.id}/progress-report`"
+                        class="fit-content"
+                        target="_blank"
+                    >
+                        Progress
+                    </router-link>
+                    <router-link
+                        v-else
+                        :to="`/cohort/all-students/progress-report`"
                         class="fit-content"
                         target="_blank"
                     >
@@ -71,14 +81,27 @@ export default {
                     </router-link>
 
                     <h2 class="secondary-heading h4 mt-4">Check activity</h2>
+                    <!-- Whether all students or cohort selected -->
                     <router-link
-                        :to="`/cohort/${this.cohortsStore.selectedCohort.id}/skill-activity`"
+                        v-if="!cohortsStore.isAllStudentsSelected"
+                        :to="`/cohort/all-students/skill-activity`"
                         class="fit-content"
                         target="_blank"
                     >
                         Skill Activity
                     </router-link>
                     <router-link
+                        v-else
+                        :to="`/cohort/all-students/skill-activity`"
+                        class="fit-content"
+                        target="_blank"
+                    >
+                        Skill Activity
+                    </router-link>
+
+                    <!-- Whether all students or cohort selected -->
+                    <router-link
+                        v-if="!cohortsStore.isAllStudentsSelected"
                         :to="`/cohort/${this.cohortsStore.selectedCohort.id}/assessment-status`"
                         class="fit-content mt-2"
                         target="_blank"
@@ -86,7 +109,26 @@ export default {
                         Assessment status
                     </router-link>
                     <router-link
+                        v-else
+                        :to="`/cohort/all-students/assessment-status`"
+                        class="fit-content mt-2"
+                        target="_blank"
+                    >
+                        Assessment status
+                    </router-link>
+
+                    <!-- Whether all students or cohort selected -->
+                    <router-link
+                        v-if="!cohortsStore.isAllStudentsSelected"
                         :to="`/cohort/${this.cohortsStore.selectedCohort.id}/total-time`"
+                        class="fit-content mt-2"
+                        target="_blank"
+                    >
+                        Time on platform
+                    </router-link>
+                    <router-link
+                        v-else
+                        :to="`/cohort/all-students/total-time`"
                         class="fit-content mt-2"
                         target="_blank"
                     >
@@ -107,12 +149,15 @@ export default {
 
                     <!-- Goals -->
                     <h2 class="secondary-heading h4 mt-4">Assign work</h2>
-
-                    Assign goals See current goals
+                    <p>Assign goals</p>
+                    <p>See current goals</p>
                 </div>
             </div>
             <!-- Right column -->
-            <div class="col-12 col-md-4">
+            <div
+                class="col-12 col-md-4"
+                v-if="cohortsStore.isAllStudentsSelected == false"
+            >
                 <h2 class="secondary-heading h4">Edit</h2>
                 <div class="d-flex flex-column">
                     <!-- Edit Cohort -->

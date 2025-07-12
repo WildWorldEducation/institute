@@ -25,14 +25,18 @@ export default {
     async created() {
         this.getCohortMasteredAssessments();
 
-        if (this.cohortsStore.cohorts.length < 1) {
-            await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
-        }
-        const foundObject = this.cohortsStore.cohorts.find(
-            (cohort) => cohort.id == this.cohortId
-        );
-        if (foundObject) {
-            this.cohortName = foundObject.name;
+        if (this.cohortId == 'all-students') {
+            if (this.cohortsStore.cohorts.length < 1) {
+                await this.cohortsStore.getCohorts(
+                    this.userDetailsStore.userId
+                );
+            }
+            const foundObject = this.cohortsStore.cohorts.find(
+                (cohort) => cohort.id == this.cohortId
+            );
+            if (foundObject) {
+                this.cohortName = foundObject.name;
+            }
         }
     },
     methods: {
