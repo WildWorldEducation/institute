@@ -84,7 +84,7 @@ export default {
                     <!-- Whether all students or cohort selected -->
                     <router-link
                         v-if="!cohortsStore.isAllStudentsSelected"
-                        :to="`/cohort/all-students/skill-activity`"
+                        :to="`/cohort/${this.cohortsStore.selectedCohort.id}/skill-activity`"
                         class="fit-content"
                         target="_blank"
                     >
