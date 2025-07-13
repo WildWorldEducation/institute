@@ -263,6 +263,16 @@ const router = createRouter({
             }
         },
         {
+            path: '/tenants/add',
+            name: 'add-tenant',
+            component: () =>
+                import('../components/pages/tenants/AddTenantView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['platform_admin']
+            }
+        },
+        {
             path: '/student-questions',
             name: 'student-questions',
             component: () =>
