@@ -360,6 +360,18 @@ export default {
                                 Teachers
                             </RouterLink>
                         </li>
+                        <!-- Tenants -->
+                        <li
+                            v-if="userDetailsStore.role == 'platform_admin'"
+                            class="nav-item"
+                        >
+                            <RouterLink
+                                to="/tenants"
+                                class="nav-link close-on-click"
+                            >
+                                Tenants
+                            </RouterLink>
+                        </li>
                         <!-- Skills -->
                         <li
                             v-if="

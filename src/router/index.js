@@ -241,6 +241,7 @@ const router = createRouter({
                 ]
             }
         },
+        // School admins only - teachers from their school only
         {
             path: '/teachers',
             name: 'teachers',
@@ -248,6 +249,16 @@ const router = createRouter({
             meta: {
                 requiresAuth: true,
                 roles: ['school_admin']
+            }
+        },
+        // Platform admin only
+        {
+            path: '/tenants',
+            name: 'tenants',
+            component: () => import('../components/pages/TenantsView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['platform_admin']
             }
         },
         {
