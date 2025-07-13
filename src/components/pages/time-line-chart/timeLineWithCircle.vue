@@ -1,16 +1,95 @@
 <script>
 import * as d3 from 'd3';
 import { timelines } from 'd3-timelines';
+import milestones from 'd3-milestones';
 
 export default {
     setup() {},
     data() {
-        return {};
+        return {
+            chartWidth: '500px',
+            data: []
+        };
     },
     computed: {},
     async mounted() {
+        this.data = [
+            {
+                studentId: 'student_001',
+                date: new Date(2025, 0, 5), // Jan 5, 2025
+                skill: 'Intro to History',
+                note: 'Understood basic Viking timeline concepts.',
+                color: 'orange'
+            },
+            {
+                studentId: 'student_001',
+                date: new Date(2025, 0, 8), // Jan 8, 2025
+                skill: 'Primary Source Analysis',
+                note: 'Analyzed texts about the raid on Lindisfarne.',
+                color: 'red'
+            },
+            {
+                studentId: 'student_001',
+                date: new Date(2025, 0, 11), // Jan 11, 2025
+                skill: 'Geography Skills',
+                note: 'Mapped Viking movement into Scotland.',
+                color: 'yellow'
+            },
+            {
+                studentId: 'student_001',
+                date: new Date(2025, 0, 14), // Jan 14, 2025
+                skill: 'European Expansion',
+                note: 'Studied Viking raids on the Frankish coast.',
+                color: 'green'
+            },
+            {
+                studentId: 'student_001',
+                date: new Date(2025, 0, 17), // Jan 17, 2025
+                skill: 'Settlement Patterns',
+                note: 'Learned how Vikings founded cities like Dublin.',
+                color: 'blue'
+            },
+            {
+                studentId: 'student_001',
+                date: new Date(2025, 0, 20), // Jan 20, 2025
+                skill: 'Military Strategy',
+                note: 'Studied the Great Heathen Army campaigns.',
+                color: 'purple'
+            },
+            {
+                studentId: 'student_001',
+                date: new Date(2025, 0, 23), // Jan 23, 2025
+                skill: 'Migration & Colonization',
+                note: 'Explored Viking settlement in Iceland.',
+                color: 'pink'
+            },
+            {
+                studentId: 'student_001',
+                date: new Date(2025, 0, 26), // Jan 26, 2025
+                skill: 'Exploration',
+                note: 'Learned about Erik the Red and Greenland.',
+                color: 'brown'
+            },
+            {
+                studentId: 'student_001',
+                date: new Date(2025, 0, 29), // Jan 29, 2025
+                skill: 'World Discoveries',
+                note: 'Mastered content on Leif Erikson and Vinland.',
+                color: 'cyan'
+            },
+            {
+                studentId: 'student_001',
+                date: new Date(2025, 1, 1), // Feb 1, 2025
+                skill: 'Major Historical Events',
+                note: 'Completed Battle of Hastings module.',
+                color: 'magenta'
+            }
+        ];
         //this.drawTimeLineChart();
-        this.drawTimeLineChartWithCircle();
+        //this.drawTimeLineChartWithCircle();
+        this.drawTimeLineChartWithMilesStone();
+        this.calculateChartLength(this.data);
+        this.changeBulletColor();
     },
     methods: {
         drawTimeLineChart() {
@@ -128,28 +207,54 @@ export default {
                 {
                     times: [
                         {
-                            starting_time: 1355752800000,
-                            ending_time: 1355759900000
+                            color: 'orange',
+                            starting_time: 1355752800000, // Dec 18, 2012 08:00:00 UTC
+                            ending_time: 1355752860000
                         },
                         {
-                            starting_time: 1355767900000,
-                            ending_time: 1355774400000
-                        }
-                    ]
-                },
-                {
-                    times: [
+                            color: 'red',
+                            starting_time: 1355925600000, // Dec 20, 2012 08:00:00 UTC
+                            ending_time: 1355925660000
+                        },
                         {
-                            starting_time: 1355759910000,
-                            ending_time: 1355761900000
-                        }
-                    ]
-                },
-                {
-                    times: [
+                            color: 'yellow',
+                            starting_time: 1356098400000, // Dec 22, 2012 08:00:00 UTC
+                            ending_time: 1356098460000
+                        },
                         {
-                            starting_time: 1355761910000,
-                            ending_time: 1355763910000
+                            color: 'green',
+                            starting_time: 1356271200000, // Dec 24, 2012 08:00:00 UTC
+                            ending_time: 1356271260000
+                        },
+                        {
+                            color: 'blue',
+                            starting_time: 1356444000000, // Dec 26, 2012 08:00:00 UTC
+                            ending_time: 1356444060000
+                        },
+                        {
+                            color: 'purple',
+                            starting_time: 1356616800000, // Dec 28, 2012 08:00:00 UTC
+                            ending_time: 1356616860000
+                        },
+                        {
+                            color: 'pink',
+                            starting_time: 1356789600000, // Dec 30, 2012 08:00:00 UTC
+                            ending_time: 1356789660000
+                        },
+                        {
+                            color: 'brown',
+                            starting_time: 1356962400000, // Jan 1, 2013 08:00:00 UTC
+                            ending_time: 1356962460000
+                        },
+                        {
+                            color: 'cyan',
+                            starting_time: 1357135200000, // Jan 3, 2013 08:00:00 UTC
+                            ending_time: 1357135260000
+                        },
+                        {
+                            color: 'magenta',
+                            starting_time: 1357308000000, // Jan 5, 2013 08:00:00 UTC
+                            ending_time: 1357308060000
                         }
                     ]
                 }
@@ -159,77 +264,140 @@ export default {
                 .tickFormat(
                     //
                     {
-                        format: d3.utcFormat('%B %d, %Y')
+                        format: d3.timeFormat('%a %d %b %d %Y'),
+                        tickTime: d3.timeYears,
+                        tickSize: 40,
+                        tickInterval: 20
                     }
                 )
-                .display('circle'); // toggle between rectangles and circles;
+                .orient('bottom')
+                .itemHeight(30)
+                .itemMargin(-15)
+                .height(400)
+                .stack()
+                .display('circle');
 
             const svg = d3
                 .select('#timelineLibrary')
                 .append('svg')
-                .attr('width', 1800)
-                .attr('height', 400)
+                .attr('width', 1400)
+                .attr('height', 500)
                 .datum(testData)
                 .call(chart);
+        },
+        drawTimeLineChartWithMilesStone() {
+            milestones('#timeline')
+                .mapping({
+                    timestamp: 'date',
+                    text: 'skill'
+                })
+                .labelFormat('%H:%d-%m-%Y')
+                .render(this.data);
+        },
+        calculateChartLength(dataArray) {
+            const startDate = dataArray[0].date;
+            const endDate = dataArray[dataArray.length - 1].date;
+            console.log(startDate + ' === ' + endDate);
+            const dayDiff = this.getDaysBetweenDates(startDate, endDate);
+            const numberOfItem = dataArray.length;
+            this.chartWidth = dayDiff * 3 + numberOfItem * 50 + 'px';
+        },
+        getDaysBetweenDates(dateString1, dateString2) {
+            const date1 = new Date(dateString1);
+            const date2 = new Date(dateString2);
+
+            const time1 = date1.getTime();
+            const time2 = date2.getTime();
+
+            const diffInMs = Math.abs(time2 - time1);
+
+            const msInDay = 1000 * 60 * 60 * 24;
+            const diffInDays = Math.round(diffInMs / msInDay);
+
+            return diffInDays;
+        },
+        changeBulletColor() {
+            const milestonesDiv = document.getElementsByClassName('milestones');
+            const childDiv =
+                milestonesDiv[0].getElementsByClassName('milestones__group');
+            console.log('----------------------------------');
+            for (let index = 0; index < childDiv.length; index++) {
+                const element = childDiv[index];
+                console.log('|||||||||||||');
+                const skillNameDivs = element.getElementsByClassName(
+                    'milestones-text-label'
+                );
+                const skillName = skillNameDivs[0].textContent;
+                console.log(skillName);
+
+                const bulletDivs = element.getElementsByClassName(
+                    'milestones__group__bullet'
+                );
+                const bulletDiv = bulletDivs[0];
+                const color =
+                    '#' +
+                    ((Math.random() * 0xffffff) << 0)
+                        .toString(16)
+                        .padStart(6, '0');
+                bulletDiv.style.backgroundColor = color;
+                console.log(bulletDivs[0]);
+            }
         }
     }
 };
 </script>
 
 <template>
-    <div class="container bg-dark">
-        <div class="row">
-            <div class="col-12">
-                <h1 class="text-center text-white">
-                    Time Line Chart with Circle
-                </h1>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12 bg-light">
-                <!-- Placeholder for the time line chart with circle -->
-                <p class="text-white text-center">
-                    This is a placeholder for the time line chart with circle
-                    component.
-                </p>
+    <div class="time-chart-big-container">
+        <div class="d-flex flex-column">
+            <h3>Time Line Chart</h3>
+            <!-- Placeholder for the time line chart with circle -->
+            <p class="text-white text-center">
+                This is a placeholder for the time line chart with circle
+                component.
+            </p>
+            <div class="time-chart-parent">
                 <!-- Add a svg shape -->
                 <div id="timeline"></div>
-            </div>
-        </div>
-        <div class="row bg-light">
-            <div class="col-12">
-                Time Line Chart with Circle using Timeline library .
-            </div>
-            <div class="col-12">
-                <div id="timelineLibrary"></div>
             </div>
         </div>
     </div>
 </template>
 
-<style scoped>
+<style>
 #svg {
     background-color: #f0f0f0;
     border: 1px solid #ccc;
 }
 
+.chart-component {
+    width: 500px;
+}
+
 #timeline {
-    width: 100%;
+    width: v-bind(chartWidth);
     height: 400px;
     overflow-x: auto;
 }
 
 #timelineLibrary {
-    width: 100%;
     height: 400px;
+    overflow-x: auto;
+    padding-top: 60px;
+}
+
+.time-chart-parent {
+    overflow: hidden;
+    width: 500px;
+}
+
+.time-chart-children {
+    display: inline-block;
+    white-space: nowrap;
     overflow-x: auto;
 }
 
-#timelineLibrary .axis {
-    transform: translate(0px, 40px);
-    -ms-transform: translate(0px, 40px); /* IE 9 */
-    -webkit-transform: translate(0px, 40px); /* Safari and Chrome */
-    -o-transform: translate(0px, 40px); /* Opera */
-    -moz-transform: translate(0px, 40px); /* Firefox */
+.time-chart-big-container {
+    max-width: 1000px;
 }
 </style>
