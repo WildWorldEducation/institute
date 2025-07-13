@@ -52,10 +52,7 @@ export default {
         <!-- Edit / Delete -->
         <div class="row">
             <div class="col-12 col-md-5">
-                <div
-                    id="user-function-btns-row"
-                    class="d-flex justify-content-center"
-                >
+                <div id="user-function-btns-row" class="d-flex flex-column">
                     <router-link
                         :to="'/tenant/edit/' + this.$parent.selectedTenant.id"
                         class="btn primary-btn mb-2"
