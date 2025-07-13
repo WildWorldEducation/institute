@@ -128,6 +128,8 @@ const referrals = require('./routes/referrals');
 app.use('/referrals', referrals);
 const studentAnalytics = require('./routes/student-analytics');
 app.use('/student-analytics', studentAnalytics);
+const tenants = require('./routes/tenants');
+app.use('/tenants', tenants);
 
 // error handling middleware
 const errorHandlingMiddleware = require('./middlewares/errorHandlingMiddleWare');
