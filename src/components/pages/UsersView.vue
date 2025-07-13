@@ -203,6 +203,7 @@ export default {
                 this.getInstructor();
             }
 
+            // For student analytics
             await this.teacherAnalyticsStore.getStudentMultipleFails(
                 this.user.id
             );

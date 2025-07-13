@@ -255,7 +255,8 @@ const router = createRouter({
         {
             path: '/tenants',
             name: 'tenants',
-            component: () => import('../components/pages/TenantsView.vue'),
+            component: () =>
+                import('../components/pages/tenants/TenantsView.vue'),
             meta: {
                 requiresAuth: true,
                 roles: ['platform_admin']
