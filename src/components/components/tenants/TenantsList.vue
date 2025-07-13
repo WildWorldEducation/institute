@@ -42,10 +42,7 @@ export default {
         </div>
 
         <!-- Add Tenant Link -->
-        <RouterLink
-            to="/users/add-student"
-            class="d-block mb-4 btn primary-btn"
-        >
+        <RouterLink to="/tenants/add" class="d-block mb-2 btn primary-btn">
             Add tenant
         </RouterLink>
     </div>
