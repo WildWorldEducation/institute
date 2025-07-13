@@ -26,7 +26,12 @@ export default {
         this.getTenants();
     },
     methods: {
-        async getTenants() {},
+        async getTenants() {
+            const result = await fetch('/tenants/list');
+            const data = await result.json();
+            this.tenants = data;
+            console.log(this.tenants);
+        },
         // Updated method to handle both initial setup and user selections
         async updateTenantDetails(selectedTenant) {
             if (!selectedUser) return;

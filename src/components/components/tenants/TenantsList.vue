@@ -16,7 +16,7 @@ export default {
     methods: {
         selectTenant(tenant) {
             // Set local value first for immediate UI response
-            this.selectedItemId = tenant.id;
+            this.$parent.selectedItemId = tenant.id;
         }
     }
 };
@@ -26,20 +26,15 @@ export default {
     <div class="container mt-1">
         <div v-for="tenant in $parent.tenants" :key="tenant.id">
             <div class="d-flex bg-light rounded p-2">
-                <img
-                    class="user-avatars"
-                    v-if="user.avatar != null"
-                    :src="user.avatar"
-                />
                 <button
                     :class="
-                        user.id === selectedItemId
+                        tenant.id === $parent.selectedTenant.id
                             ? 'isSelected'
                             : 'user-buttons'
                     "
-                    @click="selectUser(user)"
+                    @click="selectTenant(tenant)"
                 >
-                    {{ user.username }}
+                    {{ tenant.name }}
                 </button>
             </div>
             <hr class="border border-1 opacity-0 w-75 d-none d-md-block" />
