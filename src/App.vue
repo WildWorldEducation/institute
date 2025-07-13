@@ -258,6 +258,7 @@ export default {
                                 >Skill Tree</RouterLink
                             >
                         </li>
+                        <!-- Users / Editors -->
                         <li
                             v-if="
                                 userDetailsStore.role == 'platform_admin' ||
@@ -284,10 +285,12 @@ export default {
                                 >
                             </RouterLink>
                         </li>
+                        <!-- Students -->
                         <li
                             v-if="
                                 userDetailsStore.role == 'instructor' ||
-                                userDetailsStore.role == 'partner'
+                                userDetailsStore.role == 'partner' ||
+                                userDetailsStore.role == 'school_admin'
                             "
                             class="nav-item dropdown"
                         >
@@ -303,6 +306,10 @@ export default {
 
                                 <!-- Dropdown toggle button -->
                                 <button
+                                    v-if="
+                                        userDetailsStore.role == 'instructor' ||
+                                        userDetailsStore.role == 'partner'
+                                    "
                                     class="nav-link dropdown-toggle border-0 bg-transparent"
                                 ></button>
                             </div>
@@ -341,9 +348,24 @@ export default {
                                 </li>
                             </ul>
                         </li>
-
+                        <!-- Teachers -->
                         <li
-                            v-if="sessionDetailsStore.isLoggedIn"
+                            v-if="userDetailsStore.role == 'school_admin'"
+                            class="nav-item"
+                        >
+                            <RouterLink
+                                to="/teachers"
+                                class="nav-link close-on-click"
+                            >
+                                Teachers
+                            </RouterLink>
+                        </li>
+                        <!-- Skills -->
+                        <li
+                            v-if="
+                                sessionDetailsStore.isLoggedIn &&
+                                userDetailsStore.role != 'school_admin'
+                            "
                             class="nav-item"
                         >
                             <RouterLink
@@ -351,6 +373,20 @@ export default {
                                 class="nav-link close-on-click"
                             >
                                 <span>Skills</span>
+                            </RouterLink>
+                        </li>
+                        <li
+                            v-if="
+                                sessionDetailsStore.isLoggedIn &&
+                                userDetailsStore.role == 'school_admin'
+                            "
+                            class="nav-item"
+                        >
+                            <RouterLink
+                                to="/skills"
+                                class="nav-link close-on-click"
+                            >
+                                <span>Reports</span>
                             </RouterLink>
                         </li>
                         <li
