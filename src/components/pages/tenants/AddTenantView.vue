@@ -19,10 +19,13 @@ export default {
                 });
                 const data = await response.json();
 
-                if (data.account === 'name already taken') {
-                    alert(data.account);
+                if (data.tenant === 'name already taken') {
+                    alert(data.tenant);
                     return;
                 }
+
+                alert('tenant created');
+                this.$router.push({ name: 'tenants' });
             } catch (err) {
                 console.error('Error creating tenant ', err);
             }

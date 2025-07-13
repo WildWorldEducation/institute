@@ -37,8 +37,8 @@ export default {
                     {{ tenant.name }}
                 </button>
             </div>
-            <hr class="border border-1 opacity-0 w-75 d-none d-md-block" />
-            <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
+
+            <hr class="border border-1 opacity-1 w-100 d-block" />
         </div>
 
         <!-- Add Tenant Link -->
