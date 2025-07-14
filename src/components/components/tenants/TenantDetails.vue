@@ -100,7 +100,15 @@ export default {
                 </div>
             </div>
             <!-- Right column -->
-            <div class="col-12 col-md-7"></div>
+            <div class="col-12 col-md-7">
+                <router-link
+                    :to="'/tenant/school-admin/add'"
+                    class="btn primary-btn mb-2"
+                >
+                    Add school admin&nbsp;
+                    <!-- Plus icon -->
+                </router-link>
+            </div>
         </div>
     </div>
     <div v-if="showModal">

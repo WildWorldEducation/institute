@@ -69,8 +69,8 @@ export default {
                     {{ user.username }}
                 </button>
             </div>
-            <hr class="border border-1 opacity-0 w-75 d-none d-md-block" />
-            <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
+            <hr class="border border-1 w-100 d-none d-md-block" />
+            <hr class="border border-1 w-100 d-block d-md-none" />
         </div>
 
         <!-- Instructors -->

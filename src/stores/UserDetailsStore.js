@@ -27,7 +27,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
             tokens: 0,
             monthlyTokenUsage: 0,
             isAudioAutoPlay: 0,
-            stripeCustomerId: ''
+            stripeCustomerId: '',
+            tenantId: null
         };
     },
     actions: {
@@ -61,6 +62,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.monthlyTokenUsage = data.monthly_token_usage;
                 this.tokens = data.tokens;
                 this.isAudioAutoPlay = data.is_audio_auto_play || 0;
+                this.tenantId = data.tenant_id;
 
                 if (this.role == 'student') {
                     await this.getInstructor();

@@ -34,11 +34,13 @@ export default {
             newUserId: null,
             isValidated: false,
             instructors: [],
+            tenants: [],
             // Select input bind model
             instructorId: 0,
             instructorName: '',
             // Select showing flag
             showDropDown: false,
+            showTenantDropDown: false,
             showRoleDropDown: false,
             // Validate Object flag
             validate: {
@@ -64,7 +66,8 @@ export default {
             },
             // Zoom relate state data
             lastZoomValue: 0,
-            zoomValue: 0
+            zoomValue: 0,
+            isUserDataLoaded: false
         };
     },
     components: {
@@ -88,10 +91,11 @@ export default {
     async mounted() {
         // Run the GET request.
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
-        this.getInstructors();
+        await this.getInstructors();
+        await this.getTenants();
     },
     methods: {
-        getInstructors() {
+        async getInstructors() {
             for (let i = 0; i < this.usersStore.users.length; i++) {
                 if (this.usersStore.users[i].role == 'instructor') {
                     this.instructors.push(this.usersStore.users[i]);
@@ -102,6 +106,13 @@ export default {
                     }
                 }
             }
+        },
+        async getTenants() {
+            const result = await fetch('/tenants/list');
+            const data = await result.json();
+            this.tenants = data;
+            this.user.tenant = this.tenants[0];
+            this.isUserDataLoaded = true;
         },
         ValidateForm() {
             if (this.user.first_name == '' || this.user.first_name == null) {
@@ -141,7 +152,8 @@ export default {
                     email: this.user.email,
                     avatar: this.user.avatar,
                     password: this.user.password,
-                    role: this.user.role
+                    role: this.user.role,
+                    tenant_id: this.user.tenant.id
                 })
             };
             var url = '/users/add';
@@ -295,7 +307,10 @@ export default {
 <template>
     <div class="container p-3 bg-light rounded">
         <h1 class="heading">Add User</h1>
-        <div class="main-content-container container-fluid mt-2 p-4">
+        <div
+            class="main-content-container container-fluid mt-2 p-4"
+            v-if="isUserDataLoaded"
+        >
             <div class="row">
                 <div class="col-lg-4">
                     <div class="mb-3 row">
@@ -524,11 +539,11 @@ export default {
                                 <div
                                     class="custom-dropdown-option"
                                     @click="
-                                        user.role = 'platform_admin';
+                                        user.role = 'school_admin';
                                         showRoleDropDown = false;
                                     "
                                 >
-                                    platform admin
+                                    school admin
                                 </div>
                             </div>
                         </div>
@@ -576,6 +591,54 @@ export default {
                                     "
                                 >
                                     {{ instructor.username }}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End of custom dropdown -->
+                    </div>
+                    <div class="mb-3">
+                        <h2 class="secondary-heading h4">Tenant</h2>
+                        <!-- Custom Dropdown -->
+                        <div class="d-flex flex-column">
+                            <div
+                                :class="[
+                                    showTenantDropDown
+                                        ? 'custom-select-button-focus'
+                                        : 'custom-select-button'
+                                ]"
+                                @click="
+                                    showTenantDropDown = !showTenantDropDown
+                                "
+                            >
+                                {{ user.tenant.name }}
+                                <span>
+                                    <svg
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 20 20"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                            fill="#344054"
+                                        />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div
+                                v-if="showTenantDropDown"
+                                class="custom-dropdown-base"
+                            >
+                                <div
+                                    v-for="tenant in tenants"
+                                    class="custom-dropdown-option"
+                                    @click="
+                                        user.tenant = tenant;
+                                        showTenantDropDown = false;
+                                    "
+                                >
+                                    {{ tenant.name }}
                                 </div>
                             </div>
                         </div>
