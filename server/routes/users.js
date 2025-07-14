@@ -593,7 +593,8 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
             username: req.body.username,
             email: req.body.email,
             role: req.body.role,
-            password: hashedPassword
+            password: hashedPassword,
+            tenant_id: req.body.tenant_id
         };
 
         // Check if username or email address already exist.
