@@ -724,7 +724,8 @@ router.post(
                     last_name: req.body.lastname,
                     username: req.body.username,
                     role: req.body.role,
-                    password: hashedPassword
+                    password: hashedPassword,
+                    tenant_id: req.body.tenant_id
                 };
 
                 // Check if username already exists.
