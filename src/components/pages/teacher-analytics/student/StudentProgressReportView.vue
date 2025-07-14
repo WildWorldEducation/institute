@@ -1,83 +1,30 @@
 <script>
+import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import * as d3 from 'd3';
+
 export default {
-    setup() {},
+    setup() {
+        const userDetailsStore = useUserDetailsStore();
+        return {
+            userDetailsStore
+        };
+    },
     components: {},
     data() {
         return {
             studentName: '',
             progressData: [],
             startDate: null,
-            isLoading: true,
-            chartDimensions: {
-                width: 800,
-                height: 400,
-                margin: { top: 20, right: 30, bottom: 40, left: 60 }
-            },
-
-            updateChartDimensions() {
-                if (!this.$refs.chartContainer) return;
-
-                const containerElement =
-                    this.$refs.chartContainer.parentElement;
-                const containerWidth = containerElement.offsetWidth;
-                this.containerWidth = containerWidth;
-
-                // Responsive dimensions based on screen size
-                const padding = 32; // Account for container padding
-                const availableWidth = containerWidth - padding;
-
-                // Responsive width and height
-                if (window.innerWidth < 576) {
-                    // Extra small devices
-                    this.chartDimensions = {
-                        width: Math.max(availableWidth, 300),
-                        height: 250,
-                        margin: { top: 15, right: 15, bottom: 50, left: 40 }
-                    };
-                } else if (window.innerWidth < 768) {
-                    // Small devices
-                    this.chartDimensions = {
-                        width: Math.max(availableWidth, 400),
-                        height: 300,
-                        margin: { top: 20, right: 20, bottom: 60, left: 50 }
-                    };
-                } else if (window.innerWidth < 992) {
-                    // Medium devices
-                    this.chartDimensions = {
-                        width: Math.max(availableWidth, 600),
-                        height: 350,
-                        margin: { top: 20, right: 25, bottom: 50, left: 55 }
-                    };
-                } else if (window.innerWidth < 1200) {
-                    // Large devices
-                    this.chartDimensions = {
-                        width: Math.max(availableWidth, 750),
-                        height: 400,
-                        margin: { top: 20, right: 30, bottom: 50, left: 60 }
-                    };
-                } else {
-                    // Extra large devices
-                    this.chartDimensions = {
-                        width: Math.max(availableWidth, 900),
-                        height: 450,
-                        margin: { top: 20, right: 30, bottom: 50, left: 60 }
-                    };
-                }
-            },
-            containerWidth: 0
+            isLoading: true
         };
     },
     async created() {
         await this.initializeData();
     },
-    mounted() {
-        this.updateChartDimensions();
-        this.createChart();
-        window.addEventListener('resize', this.handleResize);
-    },
-    beforeUnmount() {
-        window.removeEventListener('resize', this.handleResize);
+    async mounted() {
+        if (!this.isLoading && this.progressData.length > 0) {
+            this.createChart();
+        }
     },
     methods: {
         async initializeData() {
@@ -91,7 +38,7 @@ export default {
                 // const studentDetails = await this.userDetailsStore.getUserDetails(studentId);
 
                 // Mock student data for now
-                this.studentName = 'Test name';
+                this.studentName = 'Test Student';
                 this.startDate = new Date(
                     Date.now() - 90 * 24 * 60 * 60 * 1000
                 ); // 90 days ago
@@ -102,6 +49,13 @@ export default {
                 console.error('Error initializing data:', error);
             } finally {
                 this.isLoading = false;
+
+                // Create chart after data is loaded
+                this.$nextTick(() => {
+                    if (this.progressData.length > 0) {
+                        this.createChart();
+                    }
+                });
             }
         },
 
@@ -136,141 +90,119 @@ export default {
         },
 
         createChart() {
-            if (!this.progressData.length || this.isLoading) return;
-
-            // Update dimensions first
-            this.updateChartDimensions();
-
             // Clear any existing chart
-            d3.select(this.$refs.chartContainer).selectAll('*').remove();
+            d3.select('#student-progress-chart-container')
+                .selectAll('*')
+                .remove();
 
-            const { width, height, margin } = this.chartDimensions;
-            const innerWidth = width - margin.left - margin.right;
-            const innerHeight = height - margin.top - margin.bottom;
+            // Chart dimensions
+            const marginTop = 20;
+            const marginRight = 30;
+            const marginBottom = 40;
+            const marginLeft = 60;
+            const width = 800;
+            const height = 400;
 
-            // Create responsive SVG
-            const svg = d3
-                .select(this.$refs.chartContainer)
-                .append('svg')
-                .attr('width', '100%')
-                .attr('height', height)
-                .attr('viewBox', `0 0 ${width} ${height}`)
-                .attr('preserveAspectRatio', 'xMidYMid meet');
-
-            const g = svg
-                .append('g')
-                .attr('transform', `translate(${margin.left},${margin.top})`);
-
-            // Set up scales
-            const xScale = d3
+            // Create scales
+            const x = d3
                 .scaleTime()
                 .domain(d3.extent(this.progressData, (d) => d.date))
-                .range([0, innerWidth]);
+                .range([marginLeft, width - marginRight]);
 
-            const yScale = d3
+            const y = d3
                 .scaleLinear()
                 .domain([0, d3.max(this.progressData, (d) => d.skillsCount)])
                 .nice()
-                .range([innerHeight, 0]);
+                .range([height - marginBottom, marginTop]);
 
             // Create line generator
             const line = d3
                 .line()
-                .x((d) => xScale(d.date))
-                .y((d) => yScale(d.skillsCount))
+                .x((d) => x(d.date))
+                .y((d) => y(d.skillsCount))
                 .curve(d3.curveMonotoneX);
 
-            // Responsive tick count
-            const xTickCount = width < 500 ? 4 : width < 800 ? 6 : 8;
-            const yTickCount = height < 300 ? 4 : 6;
+            // Create SVG container
+            const svg = d3
+                .select('#student-progress-chart-container')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('viewBox', [0, 0, width, height])
+                .attr(
+                    'style',
+                    'max-width: 100%; height: auto; font: 12px sans-serif;'
+                );
 
             // Add X axis
-            g.append('g')
-                .attr('transform', `translate(0,${innerHeight})`)
-                .call(
-                    d3
-                        .axisBottom(xScale)
-                        .ticks(xTickCount)
-                        .tickFormat(
-                            d3.timeFormat(width < 500 ? '%m/%d' : '%b %d')
-                        )
-                )
+            svg.append('g')
+                .attr('transform', `translate(0,${height - marginBottom})`)
+                .call(d3.axisBottom(x).tickFormat(d3.timeFormat('%b %d')))
                 .selectAll('text')
                 .style('text-anchor', 'end')
-                .style('font-size', width < 500 ? '10px' : '11px')
                 .attr('dx', '-.8em')
                 .attr('dy', '.15em')
-                .attr('transform', width < 768 ? 'rotate(-45)' : 'rotate(-30)');
+                .attr('transform', 'rotate(-45)');
 
             // Add Y axis
-            g.append('g')
-                .call(d3.axisLeft(yScale).ticks(yTickCount))
-                .selectAll('text')
-                .style('font-size', width < 500 ? '10px' : '11px');
+            svg.append('g')
+                .attr('transform', `translate(${marginLeft},0)`)
+                .call(d3.axisLeft(y));
 
-            // Add axis labels with responsive sizing
-            const labelFontSize = width < 500 ? '10px' : '12px';
-
-            g.append('text')
+            // Add axis labels
+            svg.append('text')
                 .attr('transform', 'rotate(-90)')
-                .attr('y', 0 - margin.left)
-                .attr('x', 0 - innerHeight / 2)
+                .attr('y', 0 - marginLeft)
+                .attr('x', 0 - height / 2)
                 .attr('dy', '1em')
                 .style('text-anchor', 'middle')
-                .style('font-size', labelFontSize)
+                .style('font-size', '12px')
                 .style('fill', '#666')
-                .text(width < 500 ? 'Skills' : 'Skills Mastered');
+                .text('Skills Mastered');
 
-            g.append('text')
-                .attr(
-                    'transform',
-                    `translate(${innerWidth / 2}, ${
-                        innerHeight + margin.bottom - 5
-                    })`
-                )
+            svg.append('text')
+                .attr('transform', `translate(${width / 2}, ${height - 5})`)
                 .style('text-anchor', 'middle')
-                .style('font-size', labelFontSize)
+                .style('font-size', '12px')
                 .style('fill', '#666')
                 .text('Date');
 
-            // Add the line with responsive stroke width
-            const strokeWidth = width < 500 ? 1.5 : 2;
-            g.append('path')
+            // Add the line
+            svg.append('path')
                 .datum(this.progressData)
                 .attr('fill', 'none')
                 .attr('stroke', '#007bff')
-                .attr('stroke-width', strokeWidth)
+                .attr('stroke-width', 2)
                 .attr('d', line);
 
-            // Add data points with responsive radius
-            const dotRadius = width < 500 ? 2.5 : width < 768 ? 3 : 4;
-            g.selectAll('.dot')
+            // Add data points
+            svg.selectAll('.dot')
                 .data(this.progressData)
                 .enter()
                 .append('circle')
                 .attr('class', 'dot')
-                .attr('cx', (d) => xScale(d.date))
-                .attr('cy', (d) => yScale(d.skillsCount))
-                .attr('r', dotRadius)
+                .attr('cx', (d) => x(d.date))
+                .attr('cy', (d) => y(d.skillsCount))
+                .attr('r', 4)
                 .attr('fill', '#007bff')
                 .style('cursor', 'pointer');
 
-            // Add tooltip functionality
+            // Add tooltip
             const tooltip = d3
                 .select('body')
                 .append('div')
-                .attr('class', 'd3-tooltip')
+                .attr('class', 'student-progress-tooltip')
                 .style('opacity', 0)
                 .style('position', 'absolute')
                 .style('background', 'rgba(0,0,0,0.9)')
                 .style('color', 'white')
-                .style('padding', width < 500 ? '6px 8px' : '8px 12px')
+                .style('padding', '8px 12px')
                 .style('border-radius', '4px')
                 .style('pointer-events', 'none')
-                .style('font-size', width < 500 ? '10px' : '12px')
+                .style('font-size', '12px')
                 .style('z-index', '1000');
 
-            g.selectAll('.dot')
+            svg.selectAll('.dot')
                 .on('mouseover', (event, d) => {
                     tooltip.transition().duration(200).style('opacity', 0.9);
                     tooltip
@@ -288,16 +220,6 @@ export default {
                 });
         },
 
-        handleResize() {
-            clearTimeout(this.resizeTimeout);
-            this.resizeTimeout = setTimeout(() => {
-                if (this.$refs.chartContainer) {
-                    this.updateChartDimensions();
-                    this.createChart();
-                }
-            }, 150);
-        },
-
         formatDate(date) {
             if (!date) return '';
             return new Date(date).toLocaleDateString('en-US', {
@@ -312,7 +234,9 @@ export default {
         progressData: {
             handler() {
                 this.$nextTick(() => {
-                    this.createChart();
+                    if (this.progressData.length > 0) {
+                        this.createChart();
+                    }
                 });
             },
             deep: true
@@ -341,57 +265,47 @@ export default {
                         Number of Skills Mastered Over Time
                     </h3>
 
-                    <div class="chart-container">
-                        <div v-if="isLoading" class="loading-state">
-                            <div
-                                class="spinner-border text-primary"
-                                role="status"
-                            >
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                            <p class="mt-2 mb-0 text-muted">
-                                Loading progress data...
-                            </p>
+                    <div v-if="isLoading" class="loading-state">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
-
-                        <div
-                            v-else-if="progressData.length === 0"
-                            class="no-data-state"
-                        >
-                            <i
-                                class="fas fa-chart-line fa-2x text-muted mb-2"
-                            ></i>
-                            <p class="text-muted mb-0">
-                                No progress data available yet.
-                            </p>
-                        </div>
-
-                        <div v-else class="chart-wrapper">
-                            <div ref="chartContainer" class="line-chart"></div>
-                        </div>
+                        <p class="mt-2 mb-0 text-muted">
+                            Loading progress data...
+                        </p>
                     </div>
 
                     <div
-                        v-if="!isLoading && progressData.length > 0"
-                        class="chart-info mt-3 pt-2 border-top"
+                        v-else-if="progressData.length === 0"
+                        class="no-data-state"
                     >
-                        <div class="row">
-                            <div class="col-12 col-md-6">
-                                <small class="text-muted">
-                                    <i class="fas fa-calendar-alt me-1"></i>
-                                    Since {{ formatDate(startDate) }}
-                                </small>
-                            </div>
-                            <div
-                                class="col-12 col-md-6 text-md-end mt-1 mt-md-0"
-                            >
-                                <small class="text-muted">
-                                    Current Skills:
-                                    <strong>{{
-                                        progressData[progressData.length - 1]
-                                            ?.skillsCount || 0
-                                    }}</strong>
-                                </small>
+                        <i class="fas fa-chart-line fa-2x text-muted mb-2"></i>
+                        <p class="text-muted mb-0">
+                            No progress data available yet.
+                        </p>
+                    </div>
+
+                    <div v-else>
+                        <div id="student-progress-chart-container"></div>
+                        <div class="chart-info mt-3 pt-2 border-top">
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar-alt me-1"></i>
+                                        Since {{ formatDate(startDate) }}
+                                    </small>
+                                </div>
+                                <div
+                                    class="col-12 col-md-6 text-md-end mt-1 mt-md-0"
+                                >
+                                    <small class="text-muted">
+                                        Current Skills:
+                                        <strong>{{
+                                            progressData[
+                                                progressData.length - 1
+                                            ]?.skillsCount || 0
+                                        }}</strong>
+                                    </small>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -402,7 +316,6 @@ export default {
 </template>
 
 <style scoped>
-/*Base Styles */
 .container-fluid {
     padding: 1rem;
 }
@@ -430,22 +343,6 @@ export default {
     margin-bottom: 0;
 }
 
-.chart-container {
-    position: relative;
-    min-height: 250px;
-    padding: 1rem 0;
-}
-
-.chart-wrapper {
-    width: 100%;
-    overflow-x: auto;
-}
-
-.line-chart {
-    width: 100%;
-    min-width: 300px;
-}
-
 .loading-state,
 .no-data-state {
     text-align: center;
@@ -461,7 +358,12 @@ export default {
     padding: 0.75rem 0;
 }
 
-/* Extra Small devices (portrait phones, less than 576px) */
+#student-progress-chart-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Responsive styles */
 @media (max-width: 575.98px) {
     .container-fluid {
         padding: 0.75rem;
@@ -470,11 +372,6 @@ export default {
     .chart-section {
         padding: 1rem;
         margin-bottom: 1rem;
-    }
-
-    .chart-container {
-        min-height: 200px;
-        padding: 0.75rem 0;
     }
 
     .loading-state,
@@ -489,47 +386,8 @@ export default {
     }
 }
 
-/* Small devices (landscape phones, 576px and up) */
-@media (min-width: 576px) and (max-width: 767.98px) {
-    .chart-container {
-        min-height: 250px;
-    }
-}
-
-/* Medium devices (tablets, 768px and up) */
-@media (min-width: 768px) and (max-width: 991.98px) {
-    .chart-container {
-        min-height: 300px;
-    }
-}
-
-/* Large devices (desktops, 992px and up) */
-@media (min-width: 992px) and (max-width: 1199.98px) {
-    .chart-container {
-        min-height: 350px;
-    }
-}
-
-/* Extra large devices (large desktops, 1200px and up) */
-@media (min-width: 1200px) {
-    .chart-container {
-        min-height: 400px;
-    }
-
-    .chart-section {
-        padding: 2rem;
-    }
-}
-
-/* Ultra-wide screens (1400px and up) */
-@media (min-width: 1400px) {
-    .chart-container {
-        min-height: 450px;
-    }
-}
-
-/* D3 Chart Responsive Styles */
-:deep(.d3-tooltip) {
+/* Tooltip styles */
+:deep(.student-progress-tooltip) {
     background: rgba(0, 0, 0, 0.9) !important;
     color: white !important;
     border-radius: 4px !important;
@@ -540,102 +398,9 @@ export default {
     word-wrap: break-word !important;
 }
 
-:deep(.dot) {
-    transition: all 0.2s ease !important;
-    cursor: pointer !important;
-}
-
-:deep(.dot:hover) {
-    fill: #0056b3 !important;
-    stroke: #fff !important;
-    stroke-width: 2px !important;
-}
-
-/* Chart axis styling */
-:deep(.line-chart) svg {
-    font-family: inherit;
-}
-
-:deep(.line-chart) .tick text {
-    fill: #6c757d;
-}
-
-:deep(.line-chart) .domain {
-    stroke: #dee2e6;
-}
-
-:deep(.line-chart) .tick line {
-    stroke: #dee2e6;
-}
-
-/* Reduced motion preference */
-@media (prefers-reduced-motion: reduce) {
-    :deep(.dot) {
-        transition: none !important;
-    }
-
-    :deep(.d3-tooltip) {
-        transition: none !important;
-    }
-}
-
-.chart-info i {
-    color: #007bff;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .container {
-        padding: 16px;
-    }
-
-    .chart-section {
-        padding: 16px;
-    }
-
-    .line-chart {
-        height: 300px;
-    }
-
-    .chart-container {
-        min-height: 300px;
-    }
-
-    .heading {
-        font-size: 1.5rem;
-    }
-
-    .secondary-heading {
-        font-size: 1.1rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .d-flex.justify-content-between {
-        flex-direction: column;
-        align-items: flex-start !important;
-    }
-
-    .secondary-heading {
-        margin-top: 8px;
-    }
-}
-
-/* D3 Tooltip Styles */
-:deep(.d3-tooltip) {
-    background: rgba(0, 0, 0, 0.9) !important;
-    color: white !important;
-    padding: 8px 12px !important;
-    border-radius: 4px !important;
-    font-size: 12px !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
-    border: none !important;
-}
-
-/* Chart Dot Hover Effects */
+/* Chart dot hover effects */
 :deep(.dot:hover) {
     r: 6;
     fill: #0056b3;
-    transition: all 0.2s ease;
 }
 </style>
