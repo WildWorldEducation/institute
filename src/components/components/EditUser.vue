@@ -90,7 +90,6 @@ export default {
                             this.user.tenant = this.tenants[i];
                         }
                     }
-                    console.log(this.user);
                     this.isUserDataLoaded = true;
                 });
         },
