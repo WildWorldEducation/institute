@@ -50,7 +50,9 @@ export const useUserSkillsStore = defineStore('userSkills', {
             const result = await fetch(
                 '/student-analytics/mastered-skills/' + userId
             );
+
             this.masteredSkills = await result.json();
+
         }
     }
 });

@@ -2,9 +2,17 @@
 import * as d3 from 'd3';
 import { timelines } from 'd3-timelines';
 import milestones from 'd3-milestones';
-
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
+import { useUserSkillsStore } from '../../../stores/UserSkillsStore.js';
 export default {
-    setup() {},
+    setup() {
+        const userDetailsStore = useUserDetailsStore();
+        const userSkillsStore = useUserSkillsStore();
+        return {
+            userDetailsStore,
+            userSkillsStore
+        };
+    },
     data() {
         return {
             chartWidth: '500px',
@@ -13,78 +21,8 @@ export default {
     },
     computed: {},
     async mounted() {
-        this.data = [
-            {
-                studentId: 'student_001',
-                date: new Date(2025, 0, 5), // Jan 5, 2025
-                skill: 'Intro to History',
-                note: 'Understood basic Viking timeline concepts.',
-                color: 'orange'
-            },
-            {
-                studentId: 'student_001',
-                date: new Date(2025, 0, 8), // Jan 8, 2025
-                skill: 'Primary Source Analysis',
-                note: 'Analyzed texts about the raid on Lindisfarne.',
-                color: 'red'
-            },
-            {
-                studentId: 'student_001',
-                date: new Date(2025, 0, 11), // Jan 11, 2025
-                skill: 'Geography Skills',
-                note: 'Mapped Viking movement into Scotland.',
-                color: 'yellow'
-            },
-            {
-                studentId: 'student_001',
-                date: new Date(2025, 0, 14), // Jan 14, 2025
-                skill: 'European Expansion',
-                note: 'Studied Viking raids on the Frankish coast.',
-                color: 'green'
-            },
-            {
-                studentId: 'student_001',
-                date: new Date(2025, 0, 17), // Jan 17, 2025
-                skill: 'Settlement Patterns',
-                note: 'Learned how Vikings founded cities like Dublin.',
-                color: 'blue'
-            },
-            {
-                studentId: 'student_001',
-                date: new Date(2025, 0, 20), // Jan 20, 2025
-                skill: 'Military Strategy',
-                note: 'Studied the Great Heathen Army campaigns.',
-                color: 'purple'
-            },
-            {
-                studentId: 'student_001',
-                date: new Date(2025, 0, 23), // Jan 23, 2025
-                skill: 'Migration & Colonization',
-                note: 'Explored Viking settlement in Iceland.',
-                color: 'pink'
-            },
-            {
-                studentId: 'student_001',
-                date: new Date(2025, 0, 26), // Jan 26, 2025
-                skill: 'Exploration',
-                note: 'Learned about Erik the Red and Greenland.',
-                color: 'brown'
-            },
-            {
-                studentId: 'student_001',
-                date: new Date(2025, 0, 29), // Jan 29, 2025
-                skill: 'World Discoveries',
-                note: 'Mastered content on Leif Erikson and Vinland.',
-                color: 'cyan'
-            },
-            {
-                studentId: 'student_001',
-                date: new Date(2025, 1, 1), // Feb 1, 2025
-                skill: 'Major Historical Events',
-                note: 'Completed Battle of Hastings module.',
-                color: 'magenta'
-            }
-        ];
+        await this.getUserSkillMasteredHistory();
+
         //this.drawTimeLineChart();
         //this.drawTimeLineChartWithCircle();
         this.drawTimeLineChartWithMilesStone();
@@ -286,12 +224,14 @@ export default {
                 .call(chart);
         },
         drawTimeLineChartWithMilesStone() {
+            console.log('sever data is: ');
+            console.log(this.data);
             milestones('#timeline')
                 .mapping({
-                    timestamp: 'date',
-                    text: 'skill'
+                    timestamp: 'date_mastered',
+                    text: 'name'
                 })
-                .labelFormat('%H:%d-%m-%Y')
+                .labelFormat('%d-%m-%Y')
                 .render(this.data);
         },
         calculateChartLength(dataArray) {
@@ -342,6 +282,14 @@ export default {
                 bulletDiv.style.backgroundColor = color;
                 console.log(bulletDivs[0]);
             }
+        },
+        async getUserSkillMasteredHistory() {
+            await this.userSkillsStore.getMasteredSkills(
+                this.userDetailsStore.userId
+            );
+            this.data = this.userSkillsStore.masteredSkills;
+            console.log('Data is: ');
+            console.log(this.data);
         }
     }
 };
