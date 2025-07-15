@@ -139,6 +139,31 @@ export default {
             <hr class="border border-1 opacity-0 w-75 d-none d-md-block" />
             <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
         </div>
+
+        <!-- School Admins -->
+        <div
+            v-if="userDetailsStore.role == 'school_admin'"
+            v-for="student in usersStore.studentsPerTenant"
+            :key="student.id"
+        >
+            <div class="d-flex bg-light rounded p-2">
+                <img
+                    class="user-avatars"
+                    v-if="student.avatar != null"
+                    :src="student.avatar"
+                />
+                <button
+                    :class="
+                        student.id === selectedItemId
+                            ? 'isCurrentlyChoose'
+                            : 'user-buttons'
+                    "
+                    @click="selectUser(student)"
+                >
+                    {{ student.username }}
+                </button>
+            </div>
+        </div>
     </div>
 </template>
 

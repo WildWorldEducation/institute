@@ -73,6 +73,9 @@ export default {
             if (this.usersStore.editors.length < 1) {
                 await this.usersStore.getEditors();
             }
+        } else if (this.userDetailsStore.role === 'school_admin') {
+            let tenantId = this.userDetailsStore.tenantId;
+            await this.usersStore.getStudentsPerTenant(tenantId);
         }
 
         if (this.userDetailsStore.role !== 'editor') {
