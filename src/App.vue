@@ -387,6 +387,7 @@ export default {
                                 <span>Skills</span>
                             </RouterLink>
                         </li>
+                        <!-- School admin reports -->
                         <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
@@ -395,7 +396,10 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink
-                                to="/skills"
+                                :to="
+                                    '/school-admin-report/' +
+                                    userDetailsStore.tenantId
+                                "
                                 class="nav-link close-on-click"
                             >
                                 <span>Reports</span>

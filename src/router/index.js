@@ -609,6 +609,20 @@ const router = createRouter({
                 roles: ['instructor', 'partner']
             }
         },
+        // School Admin analytics
+        {
+            path: '/school-admin-report/:tenant',
+            name: 'school-admin-report',
+            component: () =>
+                import(
+                    '../components/pages/school-admin-analytics/SchoolAdminReportsView.vue'
+                ),
+            meta: {
+                title: 'School Admin Report',
+                requiresAuth: true,
+                roles: ['school_admin']
+            }
+        },
         // Tokens
         {
             path: '/tokens',
