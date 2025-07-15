@@ -106,8 +106,6 @@ export default {
         this.$nextTick(() => {
             this.isInitializing = false;
         });
-
-        console.log(this.user);
     },
     methods: {
         initializeSelectedUser() {
