@@ -98,6 +98,8 @@ export default {
         this.$nextTick(() => {
             this.isInitializing = false;
         });
+
+        console.log(this.user);
     },
     methods: {
         initializeSelectedUser() {
@@ -133,6 +135,15 @@ export default {
                         userFound = true;
                         this.updateUserDetails(selectedEditor, true);
                     }
+                } else if (this.userDetailsStore.role === 'school_admin') {
+                    const selectedStudent =
+                        this.usersStore.studentsPerTenant.find(
+                            (student) => student.id === selectedId
+                        );
+                    if (selectedStudent) {
+                        userFound = true;
+                        this.updateUserDetails(selectedStudent, true);
+                    }
                 }
             }
 
@@ -165,6 +176,18 @@ export default {
                     if (this.$refs.usersListRef) {
                         this.$refs.usersListRef.selectedItemId =
                             this.usersStore.editors[0].id;
+                    }
+                } else if (
+                    this.userDetailsStore.role === 'school_admin' &&
+                    this.usersStore.studentsPerTenant.length > 0
+                ) {
+                    this.updateUserDetails(
+                        this.usersStore.studentsPerTenant[0],
+                        true
+                    );
+                    if (this.$refs.usersListRef) {
+                        this.$refs.usersListRef.selectedItemId =
+                            this.usersStore.studentsPerTenant[0].id;
                     }
                 }
             }
@@ -206,16 +229,22 @@ export default {
                 this.getInstructor();
             }
 
-            // For student analytics
-            await this.teacherAnalyticsStore.getStudentMultipleFails(
-                this.user.id
-            );
+            // Get student analytics
+            if (
+                this.userDetailsStore.role === 'instructor' ||
+                this.userDetailsStore.role === 'partner'
+            ) {
+                // For student analytics
+                await this.teacherAnalyticsStore.getStudentMultipleFails(
+                    this.user.id
+                );
 
-            await this.teacherAnalyticsStore.getSkillActivityReport(
-                this.user.id
-            );
+                await this.teacherAnalyticsStore.getSkillActivityReport(
+                    this.user.id
+                );
 
-            this.checkIfLowActivity();
+                this.checkIfLowActivity();
+            }
         },
         getInstructor() {
             // Get the instructor's user id.
@@ -456,6 +485,10 @@ export default {
                         :userId="user.id"
                     />
                     <UserDetails
+                        v-else-if="userDetailsStore.role == 'school_admin'"
+                        :userId="user.id"
+                    />
+                    <UserDetails
                         v-else-if="
                             (userDetailsStore.role == 'instructor' ||
                                 userDetailsStore.role === 'partner') &&
@@ -466,8 +499,9 @@ export default {
                     <div v-else>
                         <h1
                             v-if="
-                                userDetailsStore.role == 'instructor' ||
-                                userDetailsStore.role === 'partner'
+                                (userDetailsStore.role == 'instructor' ||
+                                    userDetailsStore.role === 'partner') &&
+                                students.length > 0
                             "
                             class="text-muted py-5"
                         >

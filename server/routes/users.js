@@ -908,16 +908,18 @@ router.get('/instructors/list', (req, res, next) => {
 
 // List all students of a tenant.
 router.get(
-    '/tenant/:tenant/students/list',
+    '/tenant/:tenantId/students/list',
     isAuthenticated,
     (req, res, next) => {
         if (req.session.userName) {
             res.setHeader('Content-Type', 'application/json');
             // Note: avatar has query param to deal with image caching by browser,
             // in case image is changed.
-            let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, reputation_score
-        FROM users
-        WHERE is_deleted = 0;`;
+            let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email,
+                FROM users
+                WHERE is_deleted = 0
+                AND role = 'student'
+                AND tenent_id = ${conn.escape(req.params.tenantId)};`;
 
             conn.query(sqlQuery, (err, results) => {
                 try {
