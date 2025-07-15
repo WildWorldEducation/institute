@@ -397,12 +397,12 @@ export default {
                         >
                             <RouterLink
                                 :to="
-                                    '/school-admin-report/' +
+                                    '/school-report/' +
                                     userDetailsStore.tenantId
                                 "
                                 class="nav-link close-on-click"
                             >
-                                <span>Reports</span>
+                                <span>School</span>
                             </RouterLink>
                         </li>
                         <li

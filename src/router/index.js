@@ -611,14 +611,14 @@ const router = createRouter({
         },
         // School Admin analytics
         {
-            path: '/school-admin-report/:tenant',
-            name: 'school-admin-report',
+            path: '/school-report/:tenant',
+            name: 'school-report',
             component: () =>
                 import(
-                    '../components/pages/school-admin-analytics/SchoolAdminReportsView.vue'
+                    '../components/pages/school-admin-analytics/SchoolReportView.vue'
                 ),
             meta: {
-                title: 'School Admin Report',
+                title: 'School Report',
                 requiresAuth: true,
                 roles: ['school_admin']
             }

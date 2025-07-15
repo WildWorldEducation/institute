@@ -244,6 +244,15 @@ export default {
                         See current goals
                     </router-link>
                 </div>
+                <div
+                    v-if="this.userDetailsStore.role == 'school_admin'"
+                    class="d-flex flex-column"
+                >
+                    <!-- School admins -->
+                    <h2 class="secondary-heading h4">Check progress</h2>
+
+                    <h2 class="secondary-heading h4 mt-4">Check activity</h2>
+                </div>
                 <!-- Editors -->
                 <div class="mt-2">
                     <router-link
