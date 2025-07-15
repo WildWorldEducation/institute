@@ -21,8 +21,7 @@ export default {
             <h2 class="secondary-heading h3">{{ tenantName }}</h2>
         </span>
         <h2 class="secondary-heading">Resource usage</h2>
-        <h3>Per Tenant</h3>
-        <p>"Skill Engagement"</p>
+        <h3>Skill Engagement</h3>
         <ul>
             <li><p>average interaction time per skills</p></li>
             <li>
@@ -35,8 +34,7 @@ export default {
         </ul>
 
         <h2 class="secondary-heading mt-5">Student Progress & Attendance</h2>
-        <h3>Per Tenant</h3>
-        <p>"Usage and Fidelity Reports"</p>
+        <h3>Usage and Fidelity Reports</h3>
         <p>
             Track weekly and cumulative usage, including the percentage of
             students who completed at least one skill, total tutoring time, and
@@ -50,8 +48,7 @@ export default {
         </ul>
 
         <h2 class="secondary-heading mt-5">Academic Performance Overview</h2>
-        <h3>Per Tenant</h3>
-        <h4>Growth Analytics</h4>
+        <h3>Growth Analytics</h3>
         <p>
             (Jonathan, you may be able to determine what would be both easiest
             and most compelling for us to share at this level—e.g. Skills
@@ -63,15 +60,14 @@ export default {
             <li>% progress made within cohorts</li>
         </ul>
 
-        <h4 class="mt-4">Assessment Completion Tracking</h4>
+        <h3>Assessment Completion Tracking</h3>
         <p>
             Visualizes the percentage of students who have completed, are in
             progress, or have not started skills' assessments, with daily and
             weekly updates.
         </p>
 
-        <h4 class="mt-4">Performance by Skill Category</h4>
-        <strong>per tenant</strong>
+        <h3>Performance by Skill Category</h3>
         <p>
             Allows drill-down into skill categories to view where extra help
             might be needed (e.g. with math, science, history, etc.)

@@ -408,9 +408,7 @@ export default {
                 "
                 class="d-flex flex-column"
             >
-                <h2 class="secondary-heading h4">
-                    Academic Performance Overview
-                </h2>
+                <h2 class="secondary-heading">Academic Performance Overview</h2>
                 <h3>Growth Analytics</h3>
                 <p>
                     (Jonathan, you may be able to determine what would be both
@@ -443,9 +441,7 @@ export default {
                 "
                 class="d-flex flex-column"
             >
-                <h2 class="secondary-heading h4">
-                    Student Progress & Attendance
-                </h2>
+                <h2 class="secondary-heading">Student Progress & Attendance</h2>
                 <h3>Usage and Fidelity Reports</h3>
                 <p>
                     Track weekly and cumulative usage, including the percentage
