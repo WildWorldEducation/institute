@@ -400,11 +400,18 @@ export default {
                     "
                 />
             </div>
+            <!-- School admins -->
             <div
-                v-if="this.userDetailsStore.role == 'school_admin'"
+                v-if="
+                    userDetailsStore.role == 'school_admin' &&
+                    $route.name == 'students'
+                "
                 class="d-flex flex-column"
             >
-                <h2 class="secondary-heading h4">Growth Analytics</h2>
+                <h2 class="secondary-heading h4">
+                    Academic Performance Overview
+                </h2>
+                <h3>Growth Analytics</h3>
                 <p>
                     (Jonathan, you may be able to determine what would be both
                     easiest and most compelling for us to share at this
@@ -416,7 +423,7 @@ export default {
                     <li>% progress made within cohorts</li>
                 </ul>
 
-                <h2 class="secondary-heading h4">Estimated Mastery Scores</h2>
+                <h3>Estimated Mastery Scores</h3>
                 <p>
                     Offers the current best estimate of a student’s progress,
                     calculated from all available data (skills completed per
@@ -428,6 +435,33 @@ export default {
                         skills</em
                     >
                 </p>
+            </div>
+            <div
+                v-if="
+                    userDetailsStore.role == 'school_admin' &&
+                    $route.name == 'classes'
+                "
+                class="d-flex flex-column"
+            >
+                <h2 class="secondary-heading h4">
+                    Student Progress & Attendance
+                </h2>
+                <h3>Usage and Fidelity Reports</h3>
+                <p>
+                    Track weekly and cumulative usage, including the percentage
+                    of students who completed at least one skill, total tutoring
+                    time, and engagement by school/class.
+                </p>
+                <ul>
+                    <li>
+                        percentage of students who completed at least one skill
+                    </li>
+                    <li>total tutoring time</li>
+                    <li>engagement by school/class</li>
+                    <li>
+                        percentage of students who completed at least one skill
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

@@ -49,20 +49,6 @@ export default {
             <li>percentage of students who completed at least one skill</li>
         </ul>
 
-        <h3>Per Class</h3>
-        <p>"Usage and Fidelity Reports"</p>
-        <p>
-            Track weekly and cumulative usage, including the percentage of
-            students who completed at least one skill, total tutoring time, and
-            engagement by school/class.
-        </p>
-        <ul>
-            <li>percentage of students who completed at least one skill</li>
-            <li>total tutoring time</li>
-            <li>engagement by school/class</li>
-            <li>percentage of students who completed at least one skill</li>
-        </ul>
-
         <h2 class="secondary-heading mt-5">Academic Performance Overview</h2>
         <h3>Per Tenant</h3>
         <h4>Growth Analytics</h4>
