@@ -1,19 +1,24 @@
 <script>
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
+import { useUserSkillsStore } from '../../../../stores/UserSkillsStore';
 import * as d3 from 'd3';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const userSkillsStore = useUserSkillsStore();
         return {
-            userDetailsStore
+            userDetailsStore,
+            userSkillsStore
         };
     },
     components: {},
     data() {
         return {
+            studentId: this.$route.params.studentId,
             studentName: '',
             progressData: [],
+            masteredSkills: [],
             startDate: null,
             isLoading: true
         };
@@ -34,17 +39,35 @@ export default {
                 // Get student ID from route params
                 const studentId = this.$route.params.studentId;
 
-                // TODO: Replace with actual API call to get student details
-                // const studentDetails = await this.userDetailsStore.getUserDetails(studentId);
+                // Get student name from users store
+                if (
+                    this.userDetailsStore.users &&
+                    this.userDetailsStore.users.length < 1
+                ) {
+                    await this.userDetailsStore.getUsers();
+                }
 
-                // Mock student data for now
-                this.studentName = 'Test Student';
-                this.startDate = new Date(
-                    Date.now() - 90 * 24 * 60 * 60 * 1000
-                ); // 90 days ago
+                // Find student name
+                const foundStudent = this.userDetailsStore.users?.find(
+                    (student) => student.id === studentId
+                );
+                if (foundStudent) {
+                    this.studentName = foundStudent.username;
+                } else {
+                    this.studentName = 'Student'; // Fallback
+                }
 
-                // Generate sample progress data
-                this.progressData = this.generateSampleProgressData();
+                // Get mastered skills data
+                await this.userSkillsStore.getMasteredSkills(studentId);
+
+                // Use mastered skills (already filtered by API to exclude domains)
+                this.masteredSkills = this.userSkillsStore.masteredSkills;
+
+                // Get skill activity data to find the earliest first_visited_date
+                await this.getSkillActivityData(studentId);
+
+                // Generate progress data from mastered skills
+                this.progressData = this.generateProgressData();
             } catch (error) {
                 console.error('Error initializing data:', error);
             } finally {
@@ -59,32 +82,104 @@ export default {
             }
         },
 
-        generateSampleProgressData() {
-            // Sample data showing skills mastered over time
-            const data = [];
-            const startDate = new Date(this.startDate);
-            const currentDate = new Date();
-            const daysDiff = Math.floor(
-                (currentDate - startDate) / (1000 * 60 * 60 * 24)
-            );
+        async getSkillActivityData(studentId) {
+            try {
+                // Use the existing skill-activity-report endpoint to get first_visited_date
+                const response = await fetch(
+                    `/student-analytics/skill-activity-report/${studentId}`
+                );
 
+                if (response.ok) {
+                    const skillActivity = await response.json();
+
+                    // Find the earliest first_visited_date (startDate in the response)
+                    if (skillActivity.length > 0) {
+                        const earliestStartDate = skillActivity.reduce(
+                            (earliest, skill) => {
+                                if (skill.startDate) {
+                                    const skillDate = new Date(skill.startDate);
+                                    return !earliest || skillDate < earliest
+                                        ? skillDate
+                                        : earliest;
+                                }
+                                return earliest;
+                            },
+                            null
+                        );
+
+                        this.startDate =
+                            earliestStartDate || this.getFallbackStartDate();
+                    } else {
+                        this.startDate = this.getFallbackStartDate();
+                    }
+                } else {
+                    // If no skill activity data, fall back to mastered skills approach
+                    this.setStartDateFromMasteredSkills();
+                }
+            } catch (error) {
+                console.error('Error fetching skill activity data:', error);
+                // Fall back to mastered skills approach
+                this.setStartDateFromMasteredSkills();
+            }
+        },
+
+        setStartDateFromMasteredSkills() {
+            if (this.masteredSkills.length > 0) {
+                // Find the earliest mastered date from our data
+                const earliestMasteredDate = this.masteredSkills.reduce(
+                    (earliest, skill) => {
+                        const skillDate = new Date(skill.date);
+                        return !earliest || skillDate < earliest
+                            ? skillDate
+                            : earliest;
+                    },
+                    null
+                );
+
+                // Set start date to a week before the earliest mastered skill
+                if (earliestMasteredDate) {
+                    this.startDate = new Date(
+                        earliestMasteredDate.getTime() - 7 * 24 * 60 * 60 * 1000
+                    );
+                } else {
+                    this.startDate = this.getFallbackStartDate();
+                }
+            } else {
+                this.startDate = this.getFallbackStartDate();
+            }
+        },
+
+        getFallbackStartDate() {
+            return new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+        },
+
+        generateProgressData() {
+            if (this.masteredSkills.length === 0) {
+                return [];
+            }
+
+            // Sort mastered skills by date
+            const sortedSkills = [...this.masteredSkills].sort((a, b) => {
+                return new Date(a.date) - new Date(b.date);
+            });
+
+            const data = [];
             let skillsCount = 0;
 
-            // Generate data points every 3 days
-            for (let i = 0; i <= daysDiff; i += 3) {
-                const date = new Date(startDate);
-                date.setDate(startDate.getDate() + i);
+            // Add starting point
+            data.push({
+                date: this.startDate,
+                skillsCount: 0
+            });
 
-                // Simulate realistic skill progression
-                if (i > 0 && Math.random() > 0.2) {
-                    skillsCount += Math.floor(Math.random() * 4) + 1;
-                }
-
+            // Add data points for each mastered skill
+            sortedSkills.forEach((skill) => {
+                skillsCount++;
                 data.push({
-                    date: date,
+                    date: new Date(skill.date),
                     skillsCount: skillsCount
                 });
-            }
+            });
 
             return data;
         },
@@ -167,11 +262,11 @@ export default {
                 .style('fill', '#666')
                 .text('Date');
 
-            // Add the line
+            // Add the line (dark green color)
             svg.append('path')
                 .datum(this.progressData)
                 .attr('fill', 'none')
-                .attr('stroke', '#007bff')
+                .attr('stroke', '#006400') // Dark green
                 .attr('stroke-width', 2)
                 .attr('d', line);
 
@@ -184,7 +279,7 @@ export default {
                 .attr('cx', (d) => x(d.date))
                 .attr('cy', (d) => y(d.skillsCount))
                 .attr('r', 4)
-                .attr('fill', '#007bff')
+                .attr('fill', '#006400') // Dark green
                 .style('cursor', 'pointer');
 
             // Add tooltip
@@ -226,6 +321,19 @@ export default {
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric'
+            });
+        },
+
+        formatDateTime(date) {
+            if (!date) return '';
+            let jsDate = new Date(date);
+            return jsDate.toLocaleString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
             });
         }
     },
@@ -298,17 +406,65 @@ export default {
                                     class="col-12 col-md-6 text-md-end mt-1 mt-md-0"
                                 >
                                     <small class="text-muted">
-                                        Current Skills:
+                                        Total Skills Mastered:
                                         <strong>{{
-                                            progressData[
-                                                progressData.length - 1
-                                            ]?.skillsCount || 0
+                                            masteredSkills.length
                                         }}</strong>
                                     </small>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skills Mastered Table -->
+        <div class="row" v-if="!isLoading && masteredSkills.length > 0">
+            <div class="col-12">
+                <div class="table-section">
+                    <h3 class="table-title mb-3">Skills Mastered</h3>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Skill</th>
+                                    <th>Date Mastered</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="skill in masteredSkills"
+                                    :key="skill.id"
+                                    class="table-rows"
+                                >
+                                    <td>
+                                        <router-link
+                                            target="_blank"
+                                            :to="'/skills/' + skill.url"
+                                        >
+                                            {{ skill.name }}
+                                        </router-link>
+                                    </td>
+                                    <td>
+                                        {{ formatDateTime(skill.date) }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No skills message -->
+        <div class="row" v-else-if="!isLoading && masteredSkills.length === 0">
+            <div class="col-12">
+                <div class="table-section">
+                    <h3 class="table-title mb-3">Skills Mastered</h3>
+                    <p class="text-muted">
+                        This student has not mastered any skills yet.
+                    </p>
                 </div>
             </div>
         </div>
@@ -343,6 +499,17 @@ export default {
     margin-bottom: 0;
 }
 
+.table-section {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.table-title {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
 .loading-state,
 .no-data-state {
     text-align: center;
@@ -363,13 +530,31 @@ export default {
     overflow-x: auto;
 }
 
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table-rows:hover {
+    background-color: #f8f9fa;
+}
+
+.table-responsive {
+    border-radius: 0.375rem;
+}
+
 /* Responsive styles */
 @media (max-width: 575.98px) {
     .container-fluid {
         padding: 0.75rem;
     }
 
-    .chart-section {
+    .chart-section,
+    .table-section {
         padding: 1rem;
         margin-bottom: 1rem;
     }
@@ -401,6 +586,6 @@ export default {
 /* Chart dot hover effects */
 :deep(.dot:hover) {
     r: 6;
-    fill: #0056b3;
+    fill: #004d00; /* Darker green on hover */
 }
 </style>
