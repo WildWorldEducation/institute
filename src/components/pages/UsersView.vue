@@ -5,6 +5,7 @@ import UserDetails from '../components/students-and-users/UserDetails.vue';
 // Import the stores.
 import { useTeacherAnalyticsStore } from '../../stores/TeacherAnalyticsStore';
 import { useUsersStore } from '../../stores/UsersStore';
+import { useCohortsStore } from '../../stores/CohortsStore';
 import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import SearchUserBar from '../components/users-list/SearchUserBar.vue';
@@ -12,11 +13,13 @@ import SearchUserBar from '../components/users-list/SearchUserBar.vue';
 export default {
     setup() {
         const usersStore = useUsersStore();
+        const cohortsStore = useCohortsStore();
         const instructorStudentsStore = useInstructorStudentsStore();
         const userDetailsStore = useUserDetailsStore();
         const teacherAnalyticsStore = useTeacherAnalyticsStore();
         return {
             usersStore,
+            cohortsStore,
             instructorStudentsStore,
             userDetailsStore,
             teacherAnalyticsStore
@@ -75,7 +78,12 @@ export default {
             }
         } else if (this.userDetailsStore.role === 'school_admin') {
             let tenantId = this.userDetailsStore.tenantId;
-            await this.usersStore.getStudentsPerTenant(tenantId);
+
+            if (this.$route.name == 'students') {
+                await this.usersStore.getStudentsPerTenant(tenantId);
+            } else if (this.$route.name == 'classes') {
+                await this.cohortsStore.getCohortsPerTenant(tenantId);
+            }
         }
 
         if (this.userDetailsStore.role !== 'editor') {

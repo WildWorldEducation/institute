@@ -354,9 +354,7 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink
-                                :to="'/classes/'
-                                +
-                                userDetailsStore.tenantId"
+                                to="/classes"
                                 class="nav-link close-on-click"
                             >
                                 Classes

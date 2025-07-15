@@ -17,6 +17,12 @@ export const useCohortsStore = defineStore('cohorts', {
             this.cohorts = data;
             return this.$state;
         },
+        async getCohortsPerTenant(tenantId) {
+            const result = await fetch('/cohorts/tenant/' + tenantId);
+            const data = await result.json();
+            this.cohortsPerTenant = data;
+            console.log(this.cohortsPerTenant);
+        },
         // WHERE IS THIS USED? CAN IT BE DELETED?
         async getCohortSkillFilters(cohortId) {
             const result = await fetch(

@@ -243,7 +243,7 @@ const router = createRouter({
         },
         // School admins only - classes from their school only
         {
-            path: '/classes/:tenantId',
+            path: '/classes',
             name: 'classes',
             component: () => import('../components/pages/UsersView.vue'),
             meta: {
