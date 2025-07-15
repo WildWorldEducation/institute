@@ -244,15 +244,6 @@ export default {
                         See current goals
                     </router-link>
                 </div>
-                <div
-                    v-if="this.userDetailsStore.role == 'school_admin'"
-                    class="d-flex flex-column"
-                >
-                    <!-- School admins -->
-                    <h2 class="secondary-heading h4">Check progress</h2>
-
-                    <h2 class="secondary-heading h4 mt-4">Check activity</h2>
-                </div>
                 <!-- Editors -->
                 <div class="mt-2">
                     <router-link
@@ -408,6 +399,35 @@ export default {
                         userDetailsStore.role == 'partner'
                     "
                 />
+            </div>
+            <div
+                v-if="this.userDetailsStore.role == 'school_admin'"
+                class="d-flex flex-column"
+            >
+                <h2 class="secondary-heading h4">Growth Analytics</h2>
+                <p>
+                    (Jonathan, you may be able to determine what would be both
+                    easiest and most compelling for us to share at this
+                    level—e.g. Skills mastered, Key Skills mastered by student
+                    grade, progress made, % progress made within cohorts, etc.)
+                </p>
+                <ul>
+                    <li>number of skills mastered</li>
+                    <li>% progress made within cohorts</li>
+                </ul>
+
+                <h2 class="secondary-heading h4">Estimated Mastery Scores</h2>
+                <p>
+                    Offers the current best estimate of a student’s progress,
+                    calculated from all available data (skills completed per
+                    their grade's cohort skills—e.g. "12th grade skills").
+                </p>
+                <p>
+                    <em
+                        >Student skills completed as percentage of grade level
+                        skills</em
+                    >
+                </p>
             </div>
         </div>
     </div>
