@@ -150,6 +150,104 @@ router.get('/multiple-fails/:studentId', (req, res, next) => {
 });
 
 /**
+ * Get failed assessments per student for a specific cohort
+ * Returns students who have multiple failed assessment attempts
+ **/
+router.get('/failed-assessments/cohort/:cohortId', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT COUNT(*) as quantity, users.username AS name
+            FROM assessment_attempts
+            JOIN cohorts_users ON assessment_attempts.user_id = cohorts_users.user_id
+            JOIN users ON assessment_attempts.user_id = users.id
+            WHERE cohorts_users.cohort_id = ${conn.escape(req.params.cohortId)}
+            AND assessment_attempts.skill_id NOT IN 
+                (SELECT skill_id
+                FROM user_skills
+                WHERE user_skills.user_id = assessment_attempts.user_id
+                AND is_mastered = 1)
+            GROUP BY assessment_attempts.user_id, users.username
+            HAVING COUNT(*) > 1
+            ORDER BY quantity DESC;`;
+
+        conn.query(sqlQuery, (err, results) => {
+            if (err) {
+                console.error('SQL Error in cohort failed assessments:', err);
+                return res
+                    .status(500)
+                    .json({ error: 'Database error', details: err.message });
+            }
+
+            if (!results || results.length === 0) {
+            }
+
+            const cleanResults = results.map((row) => ({
+                name: row.name || 'Unknown Student',
+                quantity: parseInt(row.quantity, 10) || 0
+            }));
+
+            res.json(cleanResults);
+        });
+    } else {
+        res.status(401).json({ error: 'Not authenticated' });
+    }
+});
+
+/**
+ * Get failed assessments per student for all students of an instructor
+ * Returns students who have multiple failed assessment attempts across all cohorts
+ **/
+router.get('/failed-assessments/all-students/:userId', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT COUNT(*) as quantity, users.username AS name
+            FROM assessment_attempts
+            JOIN instructor_students ON assessment_attempts.user_id = instructor_students.student_id
+            JOIN users ON assessment_attempts.user_id = users.id
+            WHERE instructor_students.instructor_id = ${conn.escape(
+                req.params.userId
+            )}
+            AND assessment_attempts.skill_id NOT IN 
+                (SELECT skill_id
+                FROM user_skills
+                WHERE user_skills.user_id = assessment_attempts.user_id
+                AND is_mastered = 1)
+            GROUP BY assessment_attempts.user_id, users.username
+            HAVING COUNT(*) > 1
+            ORDER BY quantity DESC;`;
+
+        conn.query(sqlQuery, (err, results) => {
+            if (err) {
+                console.error(
+                    'SQL Error in all students failed assessments:',
+                    err
+                );
+                return res
+                    .status(500)
+                    .json({ error: 'Database error', details: err.message });
+            }
+
+            if (!results || results.length === 0) {
+                return res.json([]);
+            }
+
+            const cleanResults = results.map((row) => ({
+                name: row.name || 'Unknown Student',
+                quantity: parseInt(row.quantity, 10) || 0
+            }));
+
+            res.json(cleanResults);
+        });
+    } else {
+        res.status(401).json({ error: 'Not authenticated' });
+    }
+});
+
+/**
  * Per cohort ------
  */
 /* Get mastered skills, though not domains/categories */
@@ -208,7 +306,9 @@ router.get('/mastered-skills/all-students/:userId', (req, res, next) => {
             ON user_skills.user_id = instructor_students.student_id
             JOIN users
             ON user_skills.user_id = users.id     
-            WHERE instructor_students.instructor_id = ${conn.escape(req.params.userId)}
+            WHERE instructor_students.instructor_id = ${conn.escape(
+                req.params.userId
+            )}
             AND is_mastered = 1
             AND type <> 'domain'
             GROUP BY user_skills.user_id
