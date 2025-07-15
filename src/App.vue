@@ -348,16 +348,18 @@ export default {
                                 </li>
                             </ul>
                         </li>
-                        <!-- Teachers -->
+                        <!-- Tenant Cohorts -->
                         <li
                             v-if="userDetailsStore.role == 'school_admin'"
                             class="nav-item"
                         >
                             <RouterLink
-                                to="/teachers"
+                                :to="'/classes/'
+                                +
+                                userDetailsStore.tenantId"
                                 class="nav-link close-on-click"
                             >
-                                Teachers
+                                Classes
                             </RouterLink>
                         </li>
                         <!-- Tenants -->
