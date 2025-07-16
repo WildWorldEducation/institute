@@ -211,21 +211,24 @@ router.get('/failed-assessments/all-students/:userId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT COUNT(*) as quantity, users.username AS name
+        SELECT name, COUNT(name) AS quantity
+        FROM
+            (SELECT username AS name, COUNT(assessment_attempts.skill_id) AS quantity
             FROM assessment_attempts
-            JOIN instructor_students ON assessment_attempts.user_id = instructor_students.student_id
-            JOIN users ON assessment_attempts.user_id = users.id
-            WHERE instructor_students.instructor_id = ${conn.escape(
-                req.params.userId
-            )}
-            AND assessment_attempts.skill_id NOT IN 
-                (SELECT skill_id
+            JOIN instructor_students
+            ON assessment_attempts.user_id = instructor_students.student_id
+            JOIN users
+            ON users.id = assessment_attempts.user_id
+            WHERE instructor_students.instructor_id = ${conn.escape(req.params.userId)}
+            AND assessment_attempts.skill_id NOT IN
+                (SELECT DISTINCT user_skills.skill_id
                 FROM user_skills
-                WHERE user_skills.user_id = assessment_attempts.user_id
-                AND is_mastered = 1)
-            GROUP BY assessment_attempts.user_id, users.username
-            HAVING COUNT(*) > 1
-            ORDER BY quantity DESC;`;
+                JOIN assessment_attempts
+                ON user_skills.user_id = assessment_attempts.user_id 
+                WHERE is_mastered = 1)
+            GROUP by assessment_attempts.skill_id, users.username
+            HAVING COUNT(assessment_attempts.skill_id) > 1) AS subquery
+        GROUP BY name;`;
 
         conn.query(sqlQuery, (err, results) => {
             if (err) {
