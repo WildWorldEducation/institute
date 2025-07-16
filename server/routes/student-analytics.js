@@ -150,27 +150,34 @@ router.get('/multiple-fails/:studentId', (req, res, next) => {
 });
 
 /**
- * Get failed assessments per student for a specific cohort
- * Returns students who have multiple failed assessment attempts
+ * Get number of skills each student in cohort has failed more than once
+ * and has not mastered.
  **/
 router.get('/failed-assessments/cohort/:cohortId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT COUNT(*) as quantity, users.username AS name
-            FROM assessment_attempts
-            JOIN cohorts_users ON assessment_attempts.user_id = cohorts_users.user_id
-            JOIN users ON assessment_attempts.user_id = users.id
-            WHERE cohorts_users.cohort_id = ${conn.escape(req.params.cohortId)}
-            AND assessment_attempts.skill_id NOT IN 
-                (SELECT skill_id
-                FROM user_skills
-                WHERE user_skills.user_id = assessment_attempts.user_id
-                AND is_mastered = 1)
-            GROUP BY assessment_attempts.user_id, users.username
-            HAVING COUNT(*) > 1
-            ORDER BY quantity DESC;`;
+            SELECT name, COUNT(name) AS quantity
+            FROM
+                (SELECT username AS name, COUNT(assessment_attempts.skill_id) AS quantity
+                FROM assessment_attempts
+                JOIN cohorts_users
+                ON assessment_attempts.user_id = cohorts_users.user_id
+                JOIN users
+                ON users.id = assessment_attempts.user_id
+                WHERE cohorts_users.cohort_id = ${conn.escape(
+                    req.params.cohortId
+                )}
+                AND assessment_attempts.skill_id NOT IN
+                    (SELECT DISTINCT user_skills.skill_id
+                    FROM user_skills
+                    JOIN assessment_attempts
+                    ON user_skills.user_id = assessment_attempts.user_id 
+                    WHERE is_mastered = 1)
+                GROUP by assessment_attempts.skill_id, users.username
+                HAVING COUNT(assessment_attempts.skill_id) > 1) AS subquery
+            GROUP BY name;`;
 
         conn.query(sqlQuery, (err, results) => {
             if (err) {
