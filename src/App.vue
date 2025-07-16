@@ -289,8 +289,7 @@ export default {
                         <li
                             v-if="
                                 userDetailsStore.role == 'instructor' ||
-                                userDetailsStore.role == 'partner' ||
-                                userDetailsStore.role == 'school_admin'
+                                userDetailsStore.role == 'partner'
                             "
                             class="nav-item dropdown"
                         >
@@ -306,10 +305,6 @@ export default {
 
                                 <!-- Dropdown toggle button -->
                                 <button
-                                    v-if="
-                                        userDetailsStore.role == 'instructor' ||
-                                        userDetailsStore.role == 'partner'
-                                    "
                                     class="nav-link dropdown-toggle border-0 bg-transparent"
                                 ></button>
                             </div>
@@ -347,6 +342,16 @@ export default {
                                     </RouterLink>
                                 </li>
                             </ul>
+                        </li>
+                        <li
+                            v-if="userDetailsStore.role == 'school_admin'"
+                            class="nav-item dropdown"
+                        >
+                            <div class="d-flex align-items-center">
+                                <RouterLink to="/students" class="nav-link">
+                                    <span>Students</span>
+                                </RouterLink>
+                            </div>
                         </li>
                         <!-- Tenant Cohorts -->
                         <li
