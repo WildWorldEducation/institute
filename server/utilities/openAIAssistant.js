@@ -130,7 +130,7 @@ async function createSocraticAssistant(
         name: 'Socratic Tutor',
         instructions: instructions,
         tools: isFileSearchSkill ? [{ type: 'file_search' }] : [],
-        model: 'gpt-4.5-preview'
+        model: 'gpt-4.1'
     });
 
     return assistant;
@@ -317,7 +317,7 @@ async function createAssessingAssistant(
         name: 'Assessment Tutor',
         instructions: instructions,
         tools: isFileSearchSkill ? [{ type: 'file_search' }] : [],
-        model: 'gpt-4.5-preview'
+        model: 'gpt-4.1'
     });
     return assistant;
 }
@@ -503,7 +503,7 @@ async function createLearningObjectiveAssistant(
         name: 'Learning Objective Tutor',
         instructions: instructions,
         tools: isFileSearchSkill ? [{ type: 'file_search' }] : [],
-        model: 'gpt-4.5-preview'
+        model: 'gpt-4.1'
     });
     return assistant;
 }
