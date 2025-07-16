@@ -97,6 +97,8 @@ export default {
                             router.push({ name: 'students' });
                         } else if (data.role == 'platform_admin') {
                             router.push({ name: 'tenants' });
+                        } else if (data.role == 'school_admin') {
+                            router.push({ name: 'school-report' });
                         } else router.push({ name: 'skills' });
                     } else if (data.account == 'wrong-password') {
                         alert('Wrong password');
