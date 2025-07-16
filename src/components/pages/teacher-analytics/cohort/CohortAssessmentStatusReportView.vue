@@ -2,6 +2,7 @@
 import { useCohortsStore } from '../../../../stores/CohortsStore';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import CohortPassedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/cohorts/CohortPassedAssessmentsHorizontalChart.vue';
+import CohortAttemptedAssessmentsHorizontalChart from '../../../components/teacher-analytics/cohorts/CohortAttemptedAssessmentsHorizontalChart.vue';
 import FailedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/students/FailedAssessmentsHorizontalBarChart.vue';
 
 export default {
@@ -15,6 +16,7 @@ export default {
     },
     components: {
         CohortPassedAssessmentsHorizontalBarChart,
+        CohortAttemptedAssessmentsHorizontalChart,
         FailedAssessmentsHorizontalBarChart
     },
     data() {
@@ -22,12 +24,14 @@ export default {
             cohortId: this.$route.params.cohortId,
             cohortName: '',
             masteredSkillQuantities: [],
-            failedAssessmentQuantities: []
+            failedAssessmentQuantities: [],
+            attemptedAssessmentQuantities: []
         };
     },
     async created() {
         if (this.cohortId != 'all-students') {
             this.getCohortMasteredAssessments();
+            this.getCohortAttemptedAssessments();
             this.getCohortFailedAssessments();
             if (this.cohortsStore.cohorts.length < 1) {
                 await this.cohortsStore.getCohorts(
@@ -41,7 +45,8 @@ export default {
                 this.cohortName = foundObject.name;
             }
         } else {
-            this.getAllStudentsAssessments();
+            this.getAllStudentsMasteredAssessments();
+            this.getAllStudentsAttemptedAssessments();
             this.getAllStudentsFailedAssessments();
         }
     },
@@ -67,7 +72,7 @@ export default {
             }
         },
 
-        async getAllStudentsAssessments() {
+        async getAllStudentsMasteredAssessments() {
             try {
                 const response = await fetch(
                     `/student-analytics/mastered-skills/all-students/${this.userDetailsStore.userId}`
@@ -85,6 +90,52 @@ export default {
                     error
                 );
                 this.masteredSkillQuantities = [];
+            }
+        },
+
+        async getCohortAttemptedAssessments() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/attempted-assessments/cohort/${this.cohortId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                this.attemptedAssessmentQuantities = Array.isArray(data)
+                    ? data
+                    : [];
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.attemptedAssessmentQuantities = [];
+            }
+        },
+
+        async getAllStudentsAttemptedAssessments() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/attempted-assessments/all-students/${this.userDetailsStore.userId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                this.attemptedAssessmentQuantities = Array.isArray(data)
+                    ? data
+                    : [];
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.attemptedAssessmentQuantities = [];
             }
         },
 
@@ -164,6 +215,11 @@ export default {
         />
 
         <h2 class="secondary-heading">Attempted</h2>
+        <CohortAttemptedAssessmentsHorizontalChart
+            v-if="attemptedAssessmentQuantities.length > 0"
+            :data="attemptedAssessmentQuantities"
+            colour="darkblue"
+        />
 
         <h2 class="secondary-heading">Failed multiple times</h2>
         <FailedAssessmentsHorizontalBarChart
