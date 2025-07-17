@@ -3,8 +3,8 @@ const conn = require('../../config/db');
 const editUserPermission = (req, res, next) => {
     const userRole = req.session.role;
 
-    // Admin can edit any
-    if (userRole === 'admin') {
+    // Platform admin can edit any
+    if (userRole === 'platform_admin') {
         return next();
     } else {
         // If the conditions are not met, forbid the action

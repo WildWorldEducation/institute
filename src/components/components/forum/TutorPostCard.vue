@@ -301,7 +301,7 @@ export default {
                                     <router-link
                                         v-if="
                                             post.user_id == user.userId ||
-                                            user.role == 'admin' ||
+                                            user.role == 'platform_admin' ||
                                             user.role == 'editor'
                                         "
                                         :to="'/tutor/edit/' + post.id"
@@ -337,7 +337,7 @@ export default {
                                         title="'Delete This Tutor Post'"
                                         v-if="
                                             post.user_id == user.userId ||
-                                            user.role == 'admin' ||
+                                            user.role == 'platform_admin' ||
                                             user.role == 'editor'
                                         "
                                         type="button"

@@ -221,7 +221,7 @@ export default {
                             <div class="mt-2 px-2 break-line">
                                 {{
                                     revision.isOrigin
-                                        ? 'Origin created by admin.'
+                                        ? 'Origin created by platform admin.'
                                         : revision.comment
                                         ? revision.comment
                                         : 'No Comment'

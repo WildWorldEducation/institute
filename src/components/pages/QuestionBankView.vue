@@ -2,7 +2,7 @@
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import { useShowSkillStore } from '../../stores/ShowSkillStore.js';
 import QuestionsBankQuestionList from '../components/QuestionsBankQuestionList.vue';
-import SkillTimeTracker from '../components/student-analytics/SkillTimeTracker.vue';
+import SkillTimeTracker from '../components/teacher-analytics/students/SkillTimeTracker.vue';
 
 export default {
     setup() {
@@ -48,7 +48,7 @@ export default {
         <div class="col d-flex justify-content-between">
             <router-link
                 v-if="
-                    userDetailsStore.role == 'admin' ||
+                    userDetailsStore.role == 'platform_admin' ||
                     userDetailsStore.role == 'editor'
                 "
                 class="primary-btn btn"

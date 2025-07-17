@@ -38,7 +38,7 @@ export default {
         if (!this.userDetailsStore.role) {
             this.userDetailsStore.getUserDetails();
         }
-        if (this.userDetailsStore.role === 'admin') {
+        if (this.userDetailsStore.role === 'platform_admin') {
             if (this.usersStore.users.length < 1) {
                 await this.usersStore.getUsers();
             }

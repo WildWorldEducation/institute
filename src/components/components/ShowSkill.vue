@@ -1098,7 +1098,7 @@ export default {
                             <!-- Show version history -->
                             <router-link
                                 v-if="
-                                    userDetailsStore.role == 'admin' ||
+                                    userDetailsStore.role == 'platform_admin' ||
                                     userDetailsStore.role == 'editor'
                                 "
                                 :to="'/skills/history/' + this.skillUrl"
@@ -1755,7 +1755,7 @@ export default {
             </div>
 
             <!-- A line divide -->
-            <div v-if="userDetailsStore.role == 'admin'">
+            <div v-if="userDetailsStore.role == 'platform_admin'">
                 <div class="row">
                     <div class="col col-md-8 p-4 p-md-0">
                         <hr class="border border-2 opacity-100 hr" />

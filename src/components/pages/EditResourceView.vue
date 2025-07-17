@@ -1,6 +1,6 @@
 <script>
 import EditResource from '../components/EditResource.vue';
-import SkillTimeTracker from '../components/student-analytics/SkillTimeTracker.vue';
+import SkillTimeTracker from '../components/teacher-analytics/students/SkillTimeTracker.vue';
 export default {
     data() {
         return {

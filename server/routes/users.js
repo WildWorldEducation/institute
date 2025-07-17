@@ -17,7 +17,7 @@ const isAuthenticated = require('../middlewares/authMiddleware');
 const createUserPermission = require('../middlewares/users/createUserMiddleware');
 const addInstructorPermission = require('../middlewares/users/addInstructorMiddleware');
 const editUserPermission = require('../middlewares/users/editUserMiddleware');
-const isAdmin = require('../middlewares/adminMiddleware');
+const isPlatformAdmin = require('../middlewares/platformAdminMiddleware');
 
 /*------------------------------------------
 --------------------------------------------
@@ -572,7 +572,7 @@ router.post('/new-editor/add', (req, res, next) => {
 });
 
 /**
- * Admin create new user
+ * Platform admin create new user
  */
 router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
     // Providing default avatar.
@@ -593,7 +593,8 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
             username: req.body.username,
             email: req.body.email,
             role: req.body.role,
-            password: hashedPassword
+            password: hashedPassword,
+            tenant_id: req.body.tenant_id
         };
 
         // Check if username or email address already exist.
@@ -723,7 +724,8 @@ router.post(
                     last_name: req.body.lastname,
                     username: req.body.username,
                     role: req.body.role,
-                    password: hashedPassword
+                    password: hashedPassword,
+                    tenant_id: req.body.tenant_id
                 };
 
                 // Check if username already exists.
@@ -911,7 +913,7 @@ router.get('/show/:id', (req, res, next) => {
         // Note: avatar has query param to deal with image caching by browser,
         // in case image is changed.
         let sqlQuery = `
-    SELECT users.id, first_name, last_name, username,
+    SELECT users.id, tenant_id, first_name, last_name, username,
     CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', users.id, '?v=', UNIX_TIMESTAMP()) AS avatar, 
     email, role, is_deleted, is_google_auth, grade_filter, theme,
     is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter, reputation_score, is_unlocked_skills_only_filter, cohort_id, is_audio_auto_play, tokens
@@ -1054,7 +1056,7 @@ router.get('/student-of-instructors/:instructorId', (req, res, next) => {
  *
  * @return response()
  */
-router.delete('/:id', isAuthenticated, isAdmin, (req, res, next) => {
+router.delete('/:id', isAuthenticated, isPlatformAdmin, (req, res, next) => {
     if (req.session.userName) {
         const deleteQuery = `UPDATE users 
         SET is_deleted = 1 
@@ -1077,7 +1079,7 @@ router.delete('/:id', isAuthenticated, isAdmin, (req, res, next) => {
 });
 
 /**
- * Admin edit User
+ * Platform admin edit User
  */
 router.put(
     '/:id/edit',
@@ -1109,7 +1111,8 @@ router.put(
             username = ${conn.escape(req.body.username)}, 
             email = ${conn.escape(req.body.email)}, 
             password = ${conn.escape(req.body.password)},
-            role = ${conn.escape(req.body.role)} 
+            role = ${conn.escape(req.body.role)},
+            tenant_id = ${conn.escape(req.body.tenant_id)}
             WHERE id = ${conn.escape(req.params.id)};`;
 
             conn.query(sqlQuery, async (err) => {
@@ -1493,14 +1496,19 @@ router.put(
     }
 );
 
-// To see the user profile, and edit the app settings (if user is an admin).
-router.get('/:id/profile-settings', isAuthenticated, isAdmin, (req, res) => {
-    if (req.session.userName) {
-        res.render('profile-and-settings', { userId: req.params.id });
-    } else {
-        res.redirect('/login');
+// To see the user profile, and edit the app settings (if user is an platform admin).
+router.get(
+    '/:id/profile-settings',
+    isAuthenticated,
+    isPlatformAdmin,
+    (req, res) => {
+        if (req.session.userName) {
+            res.render('profile-and-settings', { userId: req.params.id });
+        } else {
+            res.redirect('/login');
+        }
     }
-});
+);
 
 // Update the user's auto-play preference
 router.put(

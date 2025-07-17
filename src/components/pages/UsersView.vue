@@ -3,6 +3,7 @@ import UsersList from '../components/students-and-users/UsersList.vue';
 import UserDetails from '../components/students-and-users/UserDetails.vue';
 
 // Import the stores.
+import { useTeacherAnalyticsStore } from '../../stores/TeacherAnalyticsStore';
 import { useUsersStore } from '../../stores/UsersStore';
 import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
@@ -13,10 +14,12 @@ export default {
         const usersStore = useUsersStore();
         const instructorStudentsStore = useInstructorStudentsStore();
         const userDetailsStore = useUserDetailsStore();
+        const teacherAnalyticsStore = useTeacherAnalyticsStore();
         return {
             usersStore,
             instructorStudentsStore,
-            userDetailsStore
+            userDetailsStore,
+            teacherAnalyticsStore
         };
     },
     data() {
@@ -28,7 +31,8 @@ export default {
                 username: null,
                 avatar: null,
                 role: null,
-                isSkillsLocked: null
+                isSkillsLocked: false,
+                isLowActivity: false
             },
             // Only for users with the "student" role.
             instructor: null,
@@ -58,7 +62,7 @@ export default {
 
         // Load data
         if (
-            this.userDetailsStore.role === 'admin' ||
+            this.userDetailsStore.role === 'platform_admin' ||
             this.userDetailsStore.role === 'instructor' ||
             this.userDetailsStore.role === 'partner'
         ) {
@@ -99,7 +103,7 @@ export default {
 
             // Try to use previously selected user if available
             if (selectedId) {
-                if (this.userDetailsStore.role === 'admin') {
+                if (this.userDetailsStore.role === 'platform_admin') {
                     const selectedUser = this.usersStore.users.find(
                         (user) => user.id === selectedId
                     );
@@ -132,7 +136,7 @@ export default {
             // Default to first user if no selection or selected user not found
             if (!userFound) {
                 if (
-                    this.userDetailsStore.role === 'admin' &&
+                    this.userDetailsStore.role === 'platform_admin' &&
                     this.usersStore.users.length > 0
                 ) {
                     this.updateUserDetails(this.usersStore.users[0], true);
@@ -162,9 +166,8 @@ export default {
                 }
             }
         },
-
         // Updated method to handle both initial setup and user selections
-        updateUserDetails(selectedUser, isInitial = false) {
+        async updateUserDetails(selectedUser, isInitial = false) {
             if (!selectedUser) return;
 
             // Update local state
@@ -199,6 +202,17 @@ export default {
             ) {
                 this.getInstructor();
             }
+
+            // For student analytics
+            await this.teacherAnalyticsStore.getStudentMultipleFails(
+                this.user.id
+            );
+
+            await this.teacherAnalyticsStore.getSkillActivityReport(
+                this.user.id
+            );
+
+            this.checkIfLowActivity();
         },
         getInstructor() {
             // Get the instructor's user id.
@@ -264,7 +278,6 @@ export default {
             this.setUserState(newUser);
             this.usersStore.selectedUserId = newUser.id;
         },
-
         // Tutorial methods unchanged
         async checkIfTutorialComplete() {
             const result = await fetch(
@@ -324,6 +337,32 @@ export default {
             this.showTutorialTip2 = false;
             this.isTutorialComplete = true;
             this.markTutorialComplete();
+        },
+        checkIfLowActivity() {
+            let lastVisitedDates = [];
+            // Get dates of last visited skills
+            for (
+                let i = 0;
+                i < this.teacherAnalyticsStore.skillActivities.length;
+                i++
+            ) {
+                lastVisitedDates.push(
+                    new Date(
+                        this.teacherAnalyticsStore.skillActivities[i].endDate
+                    )
+                );
+            }
+
+            this.teacherAnalyticsStore.isLowActivity = true;
+            // Get date one week before
+            const daysBefore = new Date();
+            daysBefore.setDate(daysBefore.getDate() - 3);
+            // Check if any dates are more than 3 days ago
+            for (let i = 0; i < lastVisitedDates.length; i++) {
+                if (lastVisitedDates[i].getTime() > daysBefore.getTime()) {
+                    this.teacherAnalyticsStore.isLowActivity = false;
+                }
+            }
         }
     },
     // Only watch for changes after initial setup
@@ -343,7 +382,7 @@ export default {
     <!-- Top row -->
     <div class="container-fluid">
         <div
-            v-if="userDetailsStore.role == 'admin'"
+            v-if="userDetailsStore.role == 'platform_admin'"
             id="first-content-row"
             class="d-flex justify-content-between"
         >
@@ -407,7 +446,7 @@ export default {
                 <div class="row user-form-data-row">
                     <UserDetails
                         v-if="
-                            userDetailsStore.role == 'admin' ||
+                            userDetailsStore.role == 'platform_admin' ||
                             (userDetailsStore.role == 'editor' &&
                                 usersStore.editors.length > 0)
                         "

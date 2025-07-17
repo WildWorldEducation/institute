@@ -395,6 +395,9 @@ export default {
                     message: this.message,
                     userId: this.userDetailsStore.userId
                 };
+
+                console.log(messageData);
+
                 this.message = '';
                 socket.emit(socketChannel, messageData);
             } catch (error) {
@@ -417,6 +420,7 @@ export default {
                     tutorType: this.tutorType,
                     skillLevel: this.skill.level,
                     learningObjectives: this.learningObjectives,
+                    skillName: this.skill.name,
                     threadId: this.assistantData.threadId,
                     assistantId: this.assistantData.assistantId,
                     message: '',
@@ -1305,7 +1309,9 @@ export default {
             v-if="
                 showChat &&
                 mode !== 'hide' &&
-                (chatHistory.length > 0 || waitForAIresponse)
+                (chatHistory.length > 0 ||
+                    waitForAIresponse ||
+                    stateOfSocket.isStreaming)
             "
             class="d-flex flex-column align-items-start tutor-chatting-section"
             :class="{
@@ -1713,7 +1719,7 @@ export default {
 }
 
 .tutor-chatting-section {
-    height: auto;
+    height: 94% !important;
 }
 
 .tutor-chatting-waiting-response-section {

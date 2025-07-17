@@ -244,7 +244,7 @@ export default {
             </button>
             <button
                 @click.stop="openEdit(id)"
-                v-if="role == 'admin' || role == 'editor'"
+                v-if="role == 'platform_admin' || role == 'editor'"
                 class="btn me-2 ci-btn"
             >
                 <!-- Pencil icon -->
@@ -357,7 +357,7 @@ export default {
         :path="path"
     >
     </SkillsListChildNonStudent>
-    <!-- Admin Role -->
+    <!-- Platform Admin Role -->
     <SkillsListChildNonStudent
         v-else-if="showSubskills && isFiltered == 'filtered'"
         v-for="subSkill in subSkills"
@@ -412,7 +412,7 @@ export default {
         :path="path"
     >
     </SkillsListChildNonStudent>
-    <!-- Admin Role -->
+    <!-- Platform Admin Role -->
     <SkillsListChildNonStudent
         v-else-if="showChildren && isFiltered == 'filtered'"
         v-for="child in childrenNotSubskills"

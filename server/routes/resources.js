@@ -134,7 +134,7 @@ router.delete('/delete/:resourceId', (req, res, next) => {
                     postUserId = results[0].user_id;
                     if (
                         postUserId == req.session.userId ||
-                        req.session.role == 'admin' ||
+                        req.session.role == 'platform_admin' ||
                         req.session.role == 'editor'
                     ) {
                         // Delete the post.
@@ -206,7 +206,7 @@ router.put('/edit/:id', (req, res, next) => {
                     postUserId = results[0].user_id;
                     if (
                         postUserId == req.session.userId ||
-                        req.session.role == 'admin' ||
+                        req.session.role == 'platform_admin' ||
                         req.session.role == 'editor'
                     ) {
                         // Edit the source.
@@ -1017,7 +1017,7 @@ function getSources() {
     });
 }
 // Then check them manually.
-// Run by devs, not admins.
+// Run by devs, not platform admins.
 // Currently makes mistakes, so need to check manually and delete manually.
 const { UrlChecker } = require('broken-link-checker');
 function deleteBrokenSources(sourceLinks) {
@@ -1058,7 +1058,7 @@ router.delete('/delete-broken-sources', (req, res, next) => {
  * Downvoted Sources.
  */
 // Provide number of downvoted sources, for the Settings page
-// For admins, and Daniel (the head editor).
+// For platform admins, and Daniel (the head editor).
 router.get('/downvoted', isAuthenticated, (req, res, next) => {
     // Get all sources.
     let sqlQuery = `SELECT resource_id, SUM(vote) as vote

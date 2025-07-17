@@ -50,7 +50,9 @@ export default {
     <h2 class="secondary-heading white-heading h4">News</h2>
     <div class="table-div row rounded mb-3">
         <div class="p-2 col-lg-3 col-md-6">
-            <p v-if="userDetailsStore.role != 'admin'">{{ news.news_1 }}</p>
+            <p v-if="userDetailsStore.role != 'platform_admin'">
+                {{ news.news_1 }}
+            </p>
             <textarea
                 v-else
                 @change="SaveChange()"
@@ -60,7 +62,9 @@ export default {
             ></textarea>
         </div>
         <div class="p-2 col-lg-3 col-md-6">
-            <p v-if="userDetailsStore.role != 'admin'">{{ news.news_2 }}</p>
+            <p v-if="userDetailsStore.role != 'platform_admin'">
+                {{ news.news_2 }}
+            </p>
             <textarea
                 v-else
                 @change="SaveChange()"
@@ -70,7 +74,9 @@ export default {
             ></textarea>
         </div>
         <div class="p-2 col-lg-3 col-md-6">
-            <p v-if="userDetailsStore.role != 'admin'">{{ news.news_3 }}</p>
+            <p v-if="userDetailsStore.role != 'platform_admin'">
+                {{ news.news_3 }}
+            </p>
             <textarea
                 v-else
                 @change="SaveChange()"
@@ -80,7 +86,9 @@ export default {
             ></textarea>
         </div>
         <div class="p-2 col-lg-3 col-md-6">
-            <p v-if="userDetailsStore.role != 'admin'">{{ news.news_4 }}</p>
+            <p v-if="userDetailsStore.role != 'platform_admin'">
+                {{ news.news_4 }}
+            </p>
             <textarea
                 v-else
                 @change="SaveChange()"

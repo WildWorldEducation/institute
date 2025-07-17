@@ -229,7 +229,7 @@ export default {
             }
         },
 
-        // If edit is from an admin or editor.
+        // If edit is from an platform admin or editor.
         Submit() {
             // Check if this skill was a super skill with skills, and is being changed to another type.
             if (this.skillAwaitingApproval.type != 'super') {

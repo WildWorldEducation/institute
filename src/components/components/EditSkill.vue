@@ -313,7 +313,7 @@ export default {
                 });
             });
         },
-        // If edit is from an admin or editor.
+        // If edit is from an platform admin or editor.
         Submit() {
             // Function to help compare level of parent and new skill.
             // Constraint: Parent cannot be higher level than new skill
@@ -691,7 +691,7 @@ export default {
         <div v-if="!isAnotherInstanceOfExistingSkill">
             <div
                 v-if="
-                    userDetailsStore.role == 'admin' ||
+                    userDetailsStore.role == 'platform_admin' ||
                     userDetailsStore.role == 'editor'
                 "
             >
@@ -769,7 +769,10 @@ export default {
                     </div>
                 </div>
                 <!-- Skill Filter Checker -->
-                <div v-if="userDetailsStore.role == 'admin'" class="row">
+                <div
+                    v-if="userDetailsStore.role == 'platform_admin'"
+                    class="row"
+                >
                     <div class="col col-md-8 col-lg-5 mt-2">
                         <div v-if="skill.type != 'sub'">
                             <h2 class="secondary-heading h4">Filters</h2>
@@ -796,7 +799,7 @@ export default {
         </div>
         <div
             v-if="
-                userDetailsStore.role == 'admin' ||
+                userDetailsStore.role == 'platform_admin' ||
                 userDetailsStore.role == 'editor'
             "
         >
@@ -1173,7 +1176,7 @@ export default {
             </div>
 
             <!-- Description -->
-            <div v-if="userDetailsStore.role == 'admin'" class="row">
+            <div v-if="userDetailsStore.role == 'platform_admin'" class="row">
                 <div class="col">
                     <div class="mb-3">
                         <h2>Description</h2>
@@ -1225,7 +1228,7 @@ export default {
             </div>
 
             <!-- Order dropdown-->
-            <div v-if="userDetailsStore.role == 'admin'" class="row">
+            <div v-if="userDetailsStore.role == 'platform_admin'" class="row">
                 <div class="col col-md-8 col-lg-5 mt-2">
                     <!-- Custom Dropdown -->
                     <label class="form-label"
@@ -1310,7 +1313,7 @@ export default {
             <div class="d-flex justify-content-between">
                 <!-- Delete Button -->
                 <div
-                    v-if="userDetailsStore.role == 'admin'"
+                    v-if="userDetailsStore.role == 'platform_admin'"
                     class="d-flex flex-column"
                 >
                     <div id="danger-label-div">
@@ -1370,7 +1373,7 @@ export default {
                     </button>
                     <button
                         v-if="
-                            userDetailsStore.role == 'admin' ||
+                            userDetailsStore.role == 'platform_admin' ||
                             userDetailsStore.role == 'editor'
                         "
                         :disabled="!isFormChanged"

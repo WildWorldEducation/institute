@@ -2,7 +2,7 @@
 import { useSkillsStore } from '../../stores/skillsStore.js';
 
 import EditSkill from '../components/EditSkill.vue';
-import SkillTimeTracker from '../components/student-analytics/SkillTimeTracker.vue';
+import SkillTimeTracker from '../components/teacher-analytics/students/SkillTimeTracker.vue';
 export default {
     data() {
         return {

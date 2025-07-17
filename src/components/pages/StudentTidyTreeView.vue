@@ -51,11 +51,11 @@ export default {
         if (
             this.userDetailsStore.role == 'instructor' ||
             this.userDetailsStore.role == 'partner' ||
-            this.userDetailsStore.role == 'admin'
+            this.userDetailsStore.role == 'platform_admin'
         ) {
             this.instructorId = this.userDetailsStore.userId;
         } else {
-            alert('Only admin or instructors can access this page.');
+            alert('Only platform admin or instructors can access this page.');
             this.$router.push('/');
         }
         if (this.usersStore.users.length == 0) await this.usersStore.getUsers();

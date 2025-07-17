@@ -38,7 +38,7 @@ const router = createRouter({
             meta: {
                 title: 'Student skill tree',
                 requiresAuth: true,
-                roles: ['instructor', 'admin', 'partner']
+                roles: ['instructor', 'platform_admin', 'partner']
             }
         },
         {
@@ -47,7 +47,7 @@ const router = createRouter({
             component: () => import('../components/pages/SearchView.vue'),
             meta: {
                 requiresAuth: false,
-                roles: ['student', 'admin'],
+                roles: ['student', 'platform_admin'],
                 title: 'Search'
             }
         },
@@ -92,7 +92,7 @@ const router = createRouter({
             meta: {
                 title: 'Student skills',
                 requiresAuth: true,
-                roles: ['instructor', 'admin', 'partner']
+                roles: ['instructor', 'platform_admin', 'partner']
             }
         },
         {
@@ -224,7 +224,7 @@ const router = createRouter({
             component: () => import('../components/pages/UsersView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['admin', 'editor']
+                roles: ['platform_admin', 'editor']
             }
         },
         {
@@ -233,7 +233,43 @@ const router = createRouter({
             component: () => import('../components/pages/UsersView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['instructor', 'admin', 'partner']
+                roles: [
+                    'instructor',
+                    'platform_admin',
+                    'partner',
+                    'school_admin'
+                ]
+            }
+        },
+        // School admins only - teachers from their school only
+        {
+            path: '/teachers',
+            name: 'teachers',
+            component: () => import('../components/pages/UsersView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['school_admin']
+            }
+        },
+        // Platform admin only
+        {
+            path: '/tenants',
+            name: 'tenants',
+            component: () =>
+                import('../components/pages/tenants/TenantsView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['platform_admin']
+            }
+        },
+        {
+            path: '/tenants/add',
+            name: 'add-tenant',
+            component: () =>
+                import('../components/pages/tenants/AddTenantView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['platform_admin']
             }
         },
         {
@@ -243,7 +279,7 @@ const router = createRouter({
                 import('../components/pages/StudentQuestionListView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['instructor', 'admin', 'partner']
+                roles: ['instructor', 'platform_admin', 'partner']
             }
         },
         {
@@ -253,14 +289,14 @@ const router = createRouter({
                 import('../components/pages/MarkAssessmentView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['instructor', 'admin', 'partner']
+                roles: ['instructor', 'platform_admin', 'partner']
             }
         },
         {
             path: '/users/add',
             name: 'add-user',
             component: () => import('../components/pages/AddUserView.vue'),
-            meta: { requiresAuth: true, roles: ['admin'] }
+            meta: { requiresAuth: true, roles: ['platform_admin'] }
         },
         {
             path: '/users/add-student',
@@ -274,7 +310,7 @@ const router = createRouter({
             component: () => import('../components/pages/EditUserView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['instructor', 'admin', 'partner']
+                roles: ['instructor', 'platform_admin', 'partner']
             }
         },
         {
@@ -288,14 +324,14 @@ const router = createRouter({
             name: 'user-activity-report',
             component: () =>
                 import('../components/pages/UserActivityReportPageView.vue'),
-            meta: { requiresAuth: true, roles: ['editor', 'admin'] }
+            meta: { requiresAuth: true, roles: ['editor', 'platform_admin'] }
         },
         {
             path: '/users/:userId/activity-report/source/:sourceId',
             name: 'user-activity-report-source',
             component: () =>
                 import('../components/pages/UserActivityReportSourceView.vue'),
-            meta: { requiresAuth: true, roles: ['editor', 'admin'] }
+            meta: { requiresAuth: true, roles: ['editor', 'platform_admin'] }
         },
         {
             path: '/profile',
@@ -350,13 +386,13 @@ const router = createRouter({
             path: '/settings/edit',
             name: 'edit-settings',
             component: () => import('../components/pages/EditSettingsView.vue'),
-            meta: { requiresAuth: true, roles: ['admin'] }
+            meta: { requiresAuth: true, roles: ['platform_admin'] }
         },
         {
             path: '/content-flags',
             name: 'content-flags',
             component: () => import('../components/pages/ContentFlagsView.vue'),
-            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+            meta: { requiresAuth: true, roles: ['platform_admin', 'editor'] }
         },
         {
             path: '/check-student-question/:id',
@@ -365,7 +401,7 @@ const router = createRouter({
                 import('../components/pages/CheckStudentQuestionView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['admin', 'editor', 'instructor', 'partner']
+                roles: ['platform_admin', 'editor', 'instructor', 'partner']
             }
         },
         {
@@ -388,7 +424,7 @@ const router = createRouter({
             path: '/todo',
             name: 'todo',
             component: () => import('../components/pages/TodoListView.vue'),
-            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+            meta: { requiresAuth: true, roles: ['platform_admin', 'editor'] }
         },
         {
             path: '/cohorts',
@@ -397,7 +433,7 @@ const router = createRouter({
                 import('../components/pages/cohorts/CohortsView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['admin', 'instructor', 'partner']
+                roles: ['platform_admin', 'instructor', 'partner']
             }
         },
         {
@@ -407,7 +443,7 @@ const router = createRouter({
                 import('../components/pages/cohorts/AddCohortView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['admin', 'instructor', 'partner']
+                roles: ['platform_admin', 'instructor', 'partner']
             }
         },
         {
@@ -417,7 +453,7 @@ const router = createRouter({
                 import('../components/pages/cohorts/CohortView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['admin', 'instructor', 'partner']
+                roles: ['platform_admin', 'instructor', 'partner']
             }
         },
         {
@@ -464,58 +500,111 @@ const router = createRouter({
             meta: {
                 title: 'Student goals',
                 requiresAuth: true,
-                roles: ['instructor', 'admin', 'partner']
+                roles: ['instructor', 'platform_admin', 'partner']
             }
         },
-        // Analytics
+        // Analytics - students
         {
             path: '/student/:studentId/assessment-status',
-            name: 'assessment-status',
+            name: 'student-assessment-status',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/AssessmentStatusReportView.vue'
+                    '../components/pages/teacher-analytics/student/StudentAssessmentStatusReportView.vue'
                 ),
             meta: {
-                title: 'Assessment Status',
+                title: 'Student Assessment Report',
                 requiresAuth: true,
                 roles: ['instructor', 'partner']
             }
         },
         {
             path: '/student/:studentId/progress-report',
-            name: 'progress-report',
+            name: 'student-progress-report',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/ProgressReportView.vue'
+                    '../components/pages/teacher-analytics/student/StudentProgressReportView.vue'
                 ),
             meta: {
-                title: 'Progress Report',
+                title: 'Student Progress Report',
                 requiresAuth: true,
                 roles: ['instructor', 'partner']
             }
         },
         {
             path: '/student/:studentId/skill-activity',
-            name: 'skill-activity',
+            name: 'student-skill-activity',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/SkillActivityReportView.vue'
+                    '../components/pages/teacher-analytics/student/StudentSkillActivityReportView.vue'
                 ),
             meta: {
-                title: 'Skill Activity',
+                title: 'Student Skill Activity Report',
                 requiresAuth: true,
                 roles: ['instructor', 'partner']
             }
         },
         {
             path: '/student/:studentId/total-time',
-            name: 'total-time',
+            name: 'student-time-report',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/TimeReportView.vue'
+                    '../components/pages/teacher-analytics/student/StudentTimeReportView.vue'
                 ),
             meta: {
-                title: 'Total Time',
+                title: 'Student Time Report',
+                requiresAuth: true,
+                roles: ['instructor', 'partner']
+            }
+        },
+        // Analytics - cohorts
+        {
+            path: '/cohort/:cohortId/assessment-status',
+            name: 'cohort-assessment-status',
+            component: () =>
+                import(
+                    '../components/pages/teacher-analytics/cohort/CohortAssessmentStatusReportView.vue'
+                ),
+            meta: {
+                title: 'Cohort Assessment Status Report',
+                requiresAuth: true,
+                roles: ['instructor', 'partner']
+            }
+        },
+        {
+            path: '/cohort/:cohortId/total-time',
+            name: 'cohort-time-report',
+            component: () =>
+                import(
+                    '../components/pages/teacher-analytics/cohort/CohortTimeReportView.vue'
+                ),
+            meta: {
+                title: 'Cohort Time Report',
+                requiresAuth: true,
+                roles: ['instructor', 'partner']
+            }
+        },
+        {
+            path: '/cohort/:cohortId/skill-activity',
+            name: 'cohort-skill-activity',
+            component: () =>
+                import(
+                    '../components/pages/teacher-analytics/cohort/CohortSkillActivityReportView.vue'
+                ),
+            meta: {
+                title: 'Cohort Skill Activity Report',
+                requiresAuth: true,
+                roles: ['instructor', 'partner']
+            }
+        },
+        {
+            path: '/cohort/:cohortId/progress-report',
+            name: 'cohort-progress-report',
+            component: () =>
+                import(
+                    '../components/pages/teacher-analytics/cohort/CohortProgressReportView.vue'
+                ),
+            meta: {
+                title: 'Cohort Progress Report',
                 requiresAuth: true,
                 roles: ['instructor', 'partner']
             }

@@ -21,7 +21,7 @@ export const useSkillsStore = defineStore('skills', {
             );
             this.guestModeVerticalTreeSkills = await result.json();
         },
-        // For 'Admin' role
+        // For 'Platform Admin' role
         async getNestedSkillsList() {
             const result = await fetch('/skills/nested-list');
             const data = await result.json();
@@ -124,7 +124,7 @@ export const useSkillsStore = defineStore('skills', {
             const nameList = this.skillsList.map((skill) => {
                 return { name: skill.name };
             });
-            // Filter out all global filtered skill if not admin
+            // Filter out all global filtered skill if not platform admin
             return nameList;
         },
         async getFilteredNameList() {

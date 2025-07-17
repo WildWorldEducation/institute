@@ -25,7 +25,6 @@ Routes
  * @return response()
  */
 router.get('/total', isAuthenticated, todoPermission, (req, res, next) => {
-
     res.setHeader('Content-Type', 'application/json');
     // Counting each table separately and return as one single oject
     let sqlQuery = `SELECT
@@ -34,9 +33,13 @@ router.get('/total', isAuthenticated, todoPermission, (req, res, next) => {
                         (SELECT COUNT(*) FROM essay_questions_awaiting_approval) as essay_question_edit_count,
                         (SELECT COUNT(*) FROM image_questions_awaiting_approval) as image_question_edit_count,
                         (SELECT COUNT(*) FROM student_mc_questions) as student_question_count,
-                        (SELECT COUNT(*) FROM content_flags) as content_flag_count`;
-    // Get new skill awaiting approval count for admin and a special editor account
-    if (req.session.role === 'admin' || isMasterEditor(req.session.userName)) {
+                        (SELECT COUNT(*) FROM content_flags
+                        WHERE is_deleted = 0) as content_flag_count`;
+    // Get new skill awaiting approval count for platform admin and a special editor account
+    if (
+        req.session.role === 'platform_admin' ||
+        isMasterEditor(req.session.userName)
+    ) {
         sqlQuery = `${sqlQuery},
                     (SELECT COUNT(*) FROM new_skills_awaiting_approval) as new_skill_add_count`;
     }
@@ -51,7 +54,6 @@ router.get('/total', isAuthenticated, todoPermission, (req, res, next) => {
             next(err);
         }
     });
-
 });
 
 // Export the router for app to use.

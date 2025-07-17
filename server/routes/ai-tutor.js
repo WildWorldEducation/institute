@@ -201,8 +201,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                    messageNumber
-                )},                       
+                                        messageNumber
+                                    )},                       
                                     ${conn.escape(url)}
                                 )
                                 ON DUPLICATE KEY UPDATE                                 
@@ -375,8 +375,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                    messageNumber
-                )},                       
+                                        messageNumber
+                                    )},                       
                                     ${conn.escape(url)}
                                 )
                                 ON DUPLICATE KEY UPDATE                                 
@@ -426,7 +426,7 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
                     `;
 
         const completion = await openai.chat.completions.create({
-            model: 'gpt-4.5-preview',
+            model: 'gpt-4.1',
             response_format: { type: 'json_object' },
             messages: [
                 { role: 'system', content: 'You are a helpful assistant.' },
@@ -615,8 +615,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                    messageNumber
-                )},                       
+                                        messageNumber
+                                    )},                       
                                     ${conn.escape(url)}
                                 )
                                 ON DUPLICATE KEY UPDATE                                 
@@ -800,7 +800,6 @@ async function sendSpeechToSocraticAI(
             messageData
         );
     } catch (error) {
-
         console.error(error);
         throw error;
     }

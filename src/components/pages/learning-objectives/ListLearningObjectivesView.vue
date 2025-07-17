@@ -16,7 +16,9 @@ export default {
             skillUrl: this.$route.params.skillUrl,
             skill: {},
             learningObjectives: [],
-            isLoading: true
+            isLoading: true,
+            showDeleteModal: false,
+            objectiveToDelete: null
         };
     },
     async created() {
@@ -45,6 +47,39 @@ export default {
             } finally {
                 this.isLoading = false;
             }
+        },
+        async deleteLearningObjective(objectiveId) {
+            try {
+                const response = await fetch(
+                    `/skill-learning-objectives/${this.skill.id}/${objectiveId}`,
+                    {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Refresh the learning objectives list
+                    await this.getLearningObjectives();
+                } else {
+                    console.error(
+                        'Error deleting learning objective:',
+                        data.message || 'Unknown error'
+                    );
+                    alert(
+                        'Failed to delete learning objective. Please try again.'
+                    );
+                }
+            } catch (error) {
+                console.error('Error deleting learning objective:', error);
+                alert(
+                    'An error occurred while deleting the learning objective. Please try again.'
+                );
+            }
         }
     }
 };
@@ -55,7 +90,7 @@ export default {
         <div class="col d-flex justify-content-between">
             <router-link
                 v-if="
-                    userDetailsStore.role == 'admin' ||
+                    userDetailsStore.role == 'platform_admin' ||
                     userDetailsStore.role == 'editor'
                 "
                 class="primary-btn btn"
@@ -120,7 +155,7 @@ export default {
                             <th
                                 class="secondary-heading text-start"
                                 v-if="
-                                    userDetailsStore.role == 'admin' ||
+                                    userDetailsStore.role == 'platform_admin' ||
                                     userDetailsStore.role == 'editor'
                                 "
                             >
@@ -144,7 +179,8 @@ export default {
                             <td>{{ objective.objective }}</td>
                             <td
                                 v-if="
-                                    userDetailsStore.role === 'admin' ||
+                                    userDetailsStore.role ===
+                                        'platform_admin' ||
                                     userDetailsStore.role === 'editor'
                                 "
                                 class="d-flex gap-2"
@@ -169,7 +205,10 @@ export default {
                                 <button
                                     type="button"
                                     class="btn btn red-btn p-2"
-                                    @click="console.log(objective.id)"
+                                    @click="
+                                        objectiveToDelete = objective;
+                                        showDeleteModal = true;
+                                    "
                                     :title="'Delete ' + objective.objective"
                                 >
                                     <svg
@@ -191,6 +230,35 @@ export default {
             </div>
         </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteModal">
+        <div id="deleteModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <p>Are you sure you want to delete this learning objective?</p>
+                <div style="display: flex; justify-content: space-between">
+                    <button
+                        type="button"
+                        class="btn primary-btn"
+                        @click="showDeleteModal = false"
+                    >
+                        No
+                    </button>
+                    <button
+                        type="button"
+                        class="btn red-btn"
+                        @click="
+                            showDeleteModal = false;
+                            deleteLearningObjective(objectiveToDelete.id);
+                        "
+                    >
+                        Yes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
@@ -198,4 +266,46 @@ table {
     background-color: white;
     border-radius: 10px;
 }
+
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    /* Could be more or less, depending on screen size */
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.modal-content > div {
+    display: flex;
+    justify-content: space-between;
+}
+/* | End Of Warning Model Styling | */
 </style>

@@ -39,7 +39,7 @@ const conn = require('../config/db');
 
 //Middlewares
 const isAuthenticated = require('../middlewares/authMiddleware');
-const isAdmin = require('../middlewares/adminMiddleware');
+const isPlatformAdmin = require('../middlewares/platformAdminMiddleware');
 const checkRoleHierarchy = require('../middlewares/roleMiddleware');
 const { recordUserAction } = require('../utilities/record-user-action');
 
@@ -268,7 +268,7 @@ router.post(
 router.post(
     '/add/new-instance',
     isAuthenticated,
-    isAdmin,
+    isPlatformAdmin,
     async (req, res, next) => {
         let skill;
 
@@ -358,7 +358,7 @@ router.get('/list', (req, res, next) => {
     });
 });
 
-// Nested List - for "Admin Role"
+// Nested List - for "Platform Admin Role"
 router.get('/nested-list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
@@ -1518,7 +1518,7 @@ router.get('/:id/image-questions/list', (req, res, next) => {
 router.post(
     '/:id/mc-questions/add',
     isAuthenticated,
-    isAdmin,
+    isPlatformAdmin,
     (req, res, next) => {
         if (req.session.userName) {
             // Trim whitespace off the CSVs (Generative AI adds whitespace to the questions).
@@ -1583,7 +1583,7 @@ router.post(
 router.post(
     '/:id/essay-questions/add',
     isAuthenticated,
-    isAdmin,
+    isPlatformAdmin,
     (req, res, next) => {
         if (req.session.userName) {
             // For each question.
@@ -1648,12 +1648,12 @@ router.get('/name-list', (req, res, next) => {
 
                 let sqlQuery = '';
 
-                // For admins, so skills should be removed.
-                if (req.session.role == 'admin') {
+                // For platform admins, so skills should be removed.
+                if (req.session.role == 'platform_admin') {
                     sqlQuery = `SELECT id, name, parent, display_name
                     FROM skills
                     WHERE is_deleted = 0;`;
-                    // For instructors and admins, globally filtered skills should be removed.
+                    // For instructors and platform admins, globally filtered skills should be removed.
                 } else if (
                     req.session.role == 'editor' ||
                     req.session.role == 'instructor'
@@ -1794,9 +1794,9 @@ router.get('/name-list-old', (req, res, next) => {
     WHERE is_deleted = 0
     AND is_filtered = 'available';`;
 
-    // Show globally filtered skills for admins.
+    // Show globally filtered skills for platform admins.
     if (req.session) {
-        if (req.session.role == 'admin') {
+        if (req.session.role == 'platform_admin') {
             query = `SELECT id, name, parent, display_name
             FROM skills
             WHERE is_deleted = 0;`;

@@ -37,15 +37,15 @@ export default {
     <div class="container">
         <!-- Profile Section -->
         <ProfileDetails />
-        <!-- Admin role only -->
+        <!-- Platform Admin role only -->
         <!-- App Settings --->
-        <Settings v-if="userDetailsStore.role == 'admin'" />
+        <Settings v-if="userDetailsStore.role == 'platform_admin'" />
         <!-- Bulk upload multiple choice questions --->
-        <BulkQuestionsUpload v-if="userDetailsStore.role == 'admin'" />
+        <BulkQuestionsUpload v-if="userDetailsStore.role == 'platform_admin'" />
         <!-- Delete all sources with negative vote amount --->
         <DeleteDownVotedSources
             v-if="
-                userDetailsStore.role == 'admin' ||
+                userDetailsStore.role == 'platform_admin' ||
                 userDetailsStore.userName == 'Sgt. Dysxleia' ||
                 userDetailsStore.userName == 'jonathandyason@gmail.com'
             "
@@ -63,7 +63,9 @@ export default {
             </button>
             <div style="font-size: 14px" class="mt-2">
                 <ul>
-                    <li><em>To be done by devs and not admins.</em></li>
+                    <li>
+                        <em>To be done by devs and not platform admins.</em>
+                    </li>
                     <li>
                         <em>
                             Note that this will check ALL unchecked

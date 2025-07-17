@@ -122,6 +122,7 @@ export default {
                         username: this.user.username,
                         avatar: this.user.avatar,
                         password: this.user.password,
+                        tenant_id: this.userDetailsStore.tenantId,
                         role: 'student'
                     })
                 });

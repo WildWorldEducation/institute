@@ -3,11 +3,13 @@
 import { useUsersStore } from '../../../stores/UsersStore';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import TooltipBtn from './../share-components/TooltipBtn.vue';
+import StudentNotifications from './../teacher-analytics/students/StudentNotifications.vue';
 
 export default {
     props: ['userId'],
     components: {
-        TooltipBtn
+        TooltipBtn,
+        StudentNotifications
     },
     setup() {
         const usersStore = useUsersStore();
@@ -29,6 +31,7 @@ export default {
             isMobileCheck: window.innerWidth
         };
     },
+
     created() {
         this.localIsSkillsLocked = this.isSkillsLocked;
     },
@@ -87,8 +90,11 @@ export default {
                     {{ this.$parent.user.username }}
                 </h1>
 
-                <!-- Role (admins only) -->
-                <div v-if="userDetailsStore.role == 'admin'" class="mb-3">
+                <!-- Role (platform admin only) -->
+                <div
+                    v-if="userDetailsStore.role == 'platform_admin'"
+                    class="mb-3"
+                >
                     <label class="form-label">Role</label>
                     <input
                         class="form-control user-input-information"
@@ -102,15 +108,12 @@ export default {
         <div class="row">
             <!-- Student Progress -->
             <div class="col-12 col-md-5">
-                <!-- Admin -->
-                <div
-                    id="user-function-btns-row"
-                    class="d-flex justify-content-center"
-                >
+                <!-- Platform Admin -->
+                <div class="d-flex flex-column">
                     <router-link
-                        v-if="userDetailsStore.role == 'admin'"
+                        v-if="userDetailsStore.role == 'platform_admin'"
                         :to="'/users/edit/' + this.$parent.user.id"
-                        class="btn primary-btn"
+                        class="btn primary-btn mb-2"
                     >
                         Edit&nbsp;
                         <!-- Pencil icon -->
@@ -133,13 +136,11 @@ export default {
                                 d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
                                 fill="white"
                             />
-                        </svg> </router-link
-                    ><span v-if="userDetailsStore.role == 'admin'"
-                        >&nbsp;&nbsp;</span
-                    >
+                        </svg>
+                    </router-link>
                     <!-- Delete button -->
                     <button
-                        v-if="userDetailsStore.role == 'admin'"
+                        v-if="userDetailsStore.role == 'platform_admin'"
                         class="btn red-btn"
                         @click="showModal = true"
                     >
@@ -167,7 +168,7 @@ export default {
                     "
                     class="secondary-heading h4"
                 >
-                    Check Progress
+                    Check progress
                 </h2>
                 <div
                     v-if="
@@ -192,7 +193,7 @@ export default {
                         Progress
                     </router-link>
                     <!-- Tracking Report -->
-                    <h2 class="secondary-heading h4 mt-4">Student analytics</h2>
+                    <h2 class="secondary-heading h4 mt-4">Check activity</h2>
                     <router-link
                         :to="`/student/${this.$parent.user.id}/skill-activity`"
                         class="fit-content"
@@ -247,7 +248,7 @@ export default {
                 <div class="mt-2">
                     <router-link
                         v-if="
-                            userDetailsStore.role == 'admin' ||
+                            userDetailsStore.role == 'platform_admin' ||
                             userDetailsStore.role == 'editor'
                         "
                         target="_blank"
@@ -306,7 +307,7 @@ export default {
                 <div
                     v-if="
                         this.$parent.user.role == 'student' &&
-                        userDetailsStore.role == 'admin'
+                        userDetailsStore.role == 'platform_admin'
                     "
                     class="mb-3"
                 >
@@ -392,14 +393,12 @@ export default {
                     />
                     <label for="two">Yes</label>
                 </div>
-                <!-- <h2 class="secondary-heading h4 mt-4">Notifications</h2> -->
-                <!-- <p><em>have a square for icons next to the student name</em></p>
-                <ul>
-                    <li>Low activity</li>
-                    <li>Behind the curve</li>
-                    <li>Ahead of the curve</li>
-                    <li>Struggling with a particular skill</li>
-                </ul> -->
+                <StudentNotifications
+                    v-if="
+                        userDetailsStore.role == 'instructor' ||
+                        userDetailsStore.role == 'partner'
+                    "
+                />
             </div>
         </div>
     </div>
@@ -482,11 +481,6 @@ export default {
     padding: 10px, 14px, 10px, 14px;
 }
 
-#user-function-btns-row {
-    margin-top: 17;
-    padding-left: 10px;
-    padding-right: 10px;
-}
 .form-label {
     color: black;
     font-size: 0.875rem;
@@ -569,13 +563,6 @@ export default {
         padding-bottom: 15px;
         margin-right: 10px;
         margin-bottom: 10px;
-    }
-
-    #user-function-btns-row {
-        margin-top: 17;
-        padding-left: 10px;
-        padding-right: 10px;
-        flex-direction: column;
     }
 
     .green-btn {
