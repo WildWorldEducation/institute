@@ -12,6 +12,7 @@ router.use(bodyParser.json());
 const conn = require('../config/db');
 // for querying DB
 const util = require('util');
+const { getSkillListRootParent } = require('../utilities/skill-relate-functions');
 const query = util.promisify(conn.query).bind(conn);
 
 /*------------------------------------------
@@ -81,7 +82,7 @@ router.get('/mastered-skills/:studentId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT skills.id, name, url, level, user_skills.last_visited_date, user_skills.date_mastered
+            SELECT skills.id, name, url, level, skills.parent, user_skills.last_visited_date, user_skills.date_mastered
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id            
@@ -95,10 +96,19 @@ router.get('/mastered-skills/:studentId', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                console.log('user ID: ' + req.params.studentId)
-                console.log('Student result is: ')
-                console.log(results)
-                res.json(results);
+                sqlQuery = `SELECT skills.id, name, url, level, skills.parent, user_skills.last_visited_date, user_skills.date_mastered
+                            FROM skills
+                            LEFT OUTER JOIN user_skills
+                            ON skills.id = user_skills.skill_id            
+                            WHERE user_skills.user_id = ${conn.escape(req.params.studentId)}`
+                conn.query(sqlQuery, (err, fullSkillList) => {
+                    if (err) {
+                        throw err
+                    }
+                    const skillWithRootParent = getSkillListRootParent(results, fullSkillList)
+                    res.json(skillWithRootParent);
+
+                })
             } catch (err) {
                 next(err);
             }

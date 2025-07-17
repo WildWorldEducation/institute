@@ -16,7 +16,8 @@ export default {
     data() {
         return {
             chartWidth: '500px',
-            data: []
+            data: [],
+            chartOrientation: 'vertical'
         };
     },
     computed: {},
@@ -28,6 +29,7 @@ export default {
         this.drawTimeLineChartWithMilesStone();
         this.calculateChartLength(this.data);
         this.changeBulletColor();
+        // this.changeLabelColor();
     },
     methods: {
         drawTimeLineChart() {
@@ -224,14 +226,14 @@ export default {
                 .call(chart);
         },
         drawTimeLineChartWithMilesStone() {
-            console.log('sever data is: ');
-            console.log(this.data);
             milestones('#timeline')
                 .mapping({
                     timestamp: 'date_mastered',
-                    text: 'name'
+                    text: 'labelName'
                 })
+                .aggregateBy('week')
                 .labelFormat('%d-%m-%Y')
+                .optimize(true)
                 .render(this.data);
         },
         calculateChartLength(dataArray) {
@@ -263,40 +265,67 @@ export default {
             console.log('----------------------------------');
             for (let index = 0; index < childDiv.length; index++) {
                 const element = childDiv[index];
-                console.log('|||||||||||||');
+
                 const skillNameDivs = element.getElementsByClassName(
-                    'milestones-text-label'
+                    'milestones-link-label'
                 );
                 const skillName = skillNameDivs[0].textContent;
-                console.log(skillName);
+                const skillData = this.data.find((e) => e.name === skillName);
 
                 const bulletDivs = element.getElementsByClassName(
                     'milestones__group__bullet'
                 );
                 const bulletDiv = bulletDivs[0];
-                const color =
-                    '#' +
-                    ((Math.random() * 0xffffff) << 0)
-                        .toString(16)
-                        .padStart(6, '0');
+                const skillNameDiv2 =
+                    element.getElementsByClassName('milestones-label');
+                console.log(
+                    '==================================================='
+                );
+                const color = this.mapSkillLevelWithColor(skillData.level);
                 bulletDiv.style.backgroundColor = color;
-                console.log(bulletDivs[0]);
             }
+        },
+        changeLabelColor() {
+            this.data.forEach((skill) => {
+                const labelLink = document.getElementById(skill.id);
+                console.log(labelLink);
+                labelLink.style.color = 'red';
+            });
         },
         async getUserSkillMasteredHistory() {
             await this.userSkillsStore.getMasteredSkills(
                 this.userDetailsStore.userId
             );
-            this.data = this.userSkillsStore.masteredSkills;
-            console.log('Data is: ');
-            console.log(this.data);
+            this.data = this.userSkillsStore.masteredSkills.map((e) => {
+                return {
+                    ...e,
+                    url: `/skills/${e.url}`,
+                    labelName: `${e.rootParent} - ${e.name}`
+                };
+            });
+        },
+        mapSkillLevelWithColor(level) {
+            switch (level) {
+                case 'grade_school':
+                    return '#40e0d0';
+                case 'middle_school':
+                    return '#33a133';
+                case 'high_school':
+                    return '#ffd700';
+                case 'college':
+                    return '#ffa500';
+                case 'phd':
+                    return '#ff0000';
+                default:
+                    break;
+            }
         }
     }
 };
 </script>
 
 <template>
-    <div class="time-chart-big-container">
+    <div class="container">
         <div class="d-flex flex-column">
             <h3>Time Line Chart</h3>
             <!-- Placeholder for the time line chart with circle -->
@@ -323,9 +352,8 @@ export default {
 }
 
 #timeline {
-    width: v-bind(chartWidth);
-    height: 400px;
-    overflow-x: auto;
+    width: 80vw;
+    height: 80vh;
 }
 
 #timelineLibrary {
@@ -334,18 +362,13 @@ export default {
     padding-top: 60px;
 }
 
-.time-chart-parent {
-    overflow: hidden;
-    width: 500px;
+.milestones-link-label {
+    text-decoration: none;
+    color: rgb(68, 68, 68);
+    font-weight: 600;
 }
 
-.time-chart-children {
-    display: inline-block;
-    white-space: nowrap;
-    overflow-x: auto;
-}
-
-.time-chart-big-container {
-    max-width: 1000px;
+.milestones-link-label:hover {
+    color: black;
 }
 </style>

@@ -175,7 +175,32 @@ function convertNodesToArray(nodes) {
     return results;
 }
 
+function getSkillListRootParent(skillList, fullSkillList) {
+    const localSkillList = []
+    for (let index = 0; index < skillList.length; index++) {
+        const targetSkill = skillList[index];
+        let stopFlag = false;
+        let currentSkill = targetSkill;
+        while (!stopFlag) {
+            const parentSkill = fullSkillList.find(e => {
+                console.log(e.id + ' || ' + typeof (e.id))
+                console.log(currentSkill.parent + ' || ' + typeof (currentSkill.parent))
+                return e.id == currentSkill.parent
+            })
+            if (!parentSkill) {
+                const resultObj = { ...targetSkill, rootParent: currentSkill.name }
+                localSkillList.push(resultObj)
+                stopFlag = true
+            } else {
+                currentSkill = parentSkill
+            }
+        }
+    }
+    console.log('=========================================')
+    return localSkillList
+}
 
 
 
-module.exports = { findParentHaveHiddenChild, showHiddenChildFromParent, convertNodesToArray, findNodeByName, findInaccessiblePath, findNode, findGuestHiddenSkillData, findSkillByUrl };
+
+module.exports = { findParentHaveHiddenChild, showHiddenChildFromParent, convertNodesToArray, findNodeByName, findInaccessiblePath, findNode, findGuestHiddenSkillData, findSkillByUrl, getSkillListRootParent };
