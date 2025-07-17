@@ -23,7 +23,7 @@ export default {
         <h2 class="secondary-heading">Resource usage</h2>
         <h3>Skill Engagement</h3>
         <ul>
-            <li>
+            <li class="mb-3">
                 average interaction time per skills
                 <ul>
                     <li><em>task made</em></li>
@@ -39,11 +39,20 @@ export default {
                 </ul>
             </li>
             <li>
-                <p>
-                    how many tokens it’s taking, on average, for a student to
-                    master a skill (to help manage budgeting and understand
-                    spending) <em>(task made)</em>
-                </p>
+                how many tokens it’s taking, on average, for a student to master
+                a skill (to help manage budgeting and understand spending)
+                <ul>
+                    <li><em>task made</em></li>
+                    <li>
+                        <em>horizontal bar chart</em>
+                    </li>
+                    <li>
+                        <em>show each skill that has been engaged with</em>
+                    </li>
+                    <li>
+                        <em>average number for all students</em>
+                    </li>
+                </ul>
             </li>
         </ul>
 
