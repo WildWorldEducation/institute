@@ -546,7 +546,7 @@ export default {
             console.log('disconnect');
             socket.disconnect();
         },
-        createChatStream() {        
+        createChatStream() {
             socket.emit(
                 'create-stream',
                 this.userDetailsStore.userId,

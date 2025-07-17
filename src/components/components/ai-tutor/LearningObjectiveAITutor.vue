@@ -15,6 +15,7 @@ export default {
     },
     props: [
         'skillName',
+        'skillId',
         'skillUrl',
         'skillLevel',
         'learningObjective',
@@ -246,7 +247,8 @@ export default {
                     learningObjective: this.learningObjective,
                     userId: this.userDetailsStore.userId,
                     skillName: this.skillName,
-                    skillLevel: this.englishSkillLevel
+                    skillLevel: this.englishSkillLevel,
+                    skillId: this.skillId
                 };
 
                 socket.emit('new-learning-objective-message', messageData);

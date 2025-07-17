@@ -219,7 +219,8 @@ const createSocket = (server) => {
                     socket,
                     assistantInstruction,
                     'learningObjective',
-                    messageData.userId
+                    messageData.userId,
+                    messageData.skillId
                 );
             });
 
