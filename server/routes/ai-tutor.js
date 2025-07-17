@@ -406,6 +406,7 @@ router.post(
 router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
     try {
         const userId = req.session.userId;
+        const skillId = req.body.skillId;
 
         let transcriptForAssessment = JSON.stringify(
             req.body.transcriptForAssessment
