@@ -6,6 +6,7 @@ export const useCohortsStore = defineStore('cohorts', {
             cohorts: [],
             cohortSkills: [],
             cohortFilteredSubjects: [],
+            cohortsPerTenant: [],
             selectedCohort: {}, // Track selected cohort
             isAllStudentsSelected: false // Select all students, instead of a cohort
         };
@@ -16,6 +17,12 @@ export const useCohortsStore = defineStore('cohorts', {
             const data = await result.json();
             this.cohorts = data;
             return this.$state;
+        },
+        async getCohortsPerTenant(tenantId) {
+            const result = await fetch('/cohorts/tenant/' + tenantId);
+            const data = await result.json();
+            this.cohortsPerTenant = data;
+            console.log(this.cohortsPerTenant);
         },
         // WHERE IS THIS USED? CAN IT BE DELETED?
         async getCohortSkillFilters(cohortId) {

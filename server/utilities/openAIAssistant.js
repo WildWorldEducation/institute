@@ -235,7 +235,7 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
             // 0.4 is hardcoded at the moment, based on pricing and choice of models
             let ttsTokens = outputTokens * 0.4;
             let tokenCount = run.usage.total_tokens + ttsTokens;
-            saveTokenUsage(messageData.userId, tokenCount);
+            saveTokenUsage(messageData.userId, messageData.skillId, tokenCount);
 
             return latestMessage;
         } else {
@@ -422,7 +422,7 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
             // 0.4 is hardcoded at the moment, based on pricing and choice of models
             let ttsTokens = outputTokens * 0.4;
             let tokenCount = run.usage.total_tokens + ttsTokens;
-            saveTokenUsage(messageData.userId, tokenCount);
+            saveTokenUsage(messageData.userId, messageData.skillId, tokenCount);
 
             return latestMessage;
         } else {
@@ -564,10 +564,10 @@ async function createRunStream(
     socket,
     assistantInstruction,
     streamType,
-    userId
+    userId,
+    skillId
 ) {
     // console.log('stream type: ');
-    // console.log(streamType);
     try {
         if (!isEmptyMessage) {
             try {
@@ -603,7 +603,8 @@ async function createRunStream(
                 // 0.4 is hardcoded at the moment, based on pricing and choice of models
                 let ttsTokens = outputTokens * 0.4;
                 let tokenCount = runStep.usage.total_tokens + ttsTokens;
-                saveTokenUsage(userId, tokenCount);
+
+                saveTokenUsage(userId, skillId, tokenCount);
             })
             .on('toolCallCreated', (event) =>
                 console.log('assistant ' + event.type)
@@ -641,7 +642,7 @@ async function createRunStream(
  * @param {string} userId
  * @param {int} tokenCount
  */
-async function saveTokenUsage(userId, tokenCount) {
+async function saveTokenUsage(userId, skillId, tokenCount) {
     try {
         // Update Monthly Usage
         // Get current year
@@ -664,7 +665,7 @@ async function saveTokenUsage(userId, tokenCount) {
 
         const d = new Date();
         let month = monthName[d.getMonth()];
-        let queryString = `
+        let monthlyTokenUsageQueryString = `
         INSERT INTO user_monthly_token_usage (user_id, year, month, token_count) 
         VALUES(${conn.escape(userId)},
         ${year}, '${month}', ${conn.escape(tokenCount)}) 
@@ -673,7 +674,18 @@ async function saveTokenUsage(userId, tokenCount) {
         )};
         `;
 
-        await query(queryString);
+        await query(monthlyTokenUsageQueryString);
+
+        let skillTokenUsageQueryString = `
+        INSERT INTO user_skills (user_id, skill_id, token_count) 
+        VALUES(${conn.escape(userId)},
+        ${conn.escape(skillId)}, ${conn.escape(tokenCount)}) 
+        ON DUPLICATE KEY UPDATE token_count = token_count + ${conn.escape(
+            tokenCount
+        )};
+        `;
+
+        await query(skillTokenUsageQueryString);
     } catch (error) {
         console.error('Error in saveTokenUsage:', error);
         throw error;

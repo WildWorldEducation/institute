@@ -2,17 +2,20 @@
 // Import the users store.
 import { useUsersStore } from '../../../stores/UsersStore';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import { useCohortsStore } from '../../../stores/CohortsStore';
 
 export default {
     setup() {
         const usersStore = useUsersStore();
         const userDetailsStore = useUserDetailsStore();
+        const cohortsStore = useCohortsStore();
 
         // Run the GET request.
         if (usersStore.users.length < 1) usersStore.getUsers();
         return {
             usersStore,
-            userDetailsStore
+            userDetailsStore,
+            cohortsStore
         };
     },
     data() {
@@ -138,6 +141,55 @@ export default {
             </div>
             <hr class="border border-1 opacity-0 w-75 d-none d-md-block" />
             <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
+        </div>
+
+        <!-- School Admins -->
+        <div
+            v-if="
+                userDetailsStore.role == 'school_admin' &&
+                $route.name == 'students'
+            "
+            v-for="student in usersStore.studentsPerTenant"
+            :key="student.id"
+        >
+            <div class="d-flex bg-light rounded p-2">
+                <img
+                    class="user-avatars"
+                    v-if="student.avatar != null"
+                    :src="student.avatar"
+                />
+                <button
+                    :class="
+                        student.id === selectedItemId
+                            ? 'isCurrentlyChoose'
+                            : 'user-buttons'
+                    "
+                    @click="selectUser(student)"
+                >
+                    {{ student.username }}
+                </button>
+            </div>
+        </div>
+        <div
+            v-if="
+                userDetailsStore.role == 'school_admin' &&
+                $route.name == 'classes'
+            "
+            v-for="cohort in cohortsStore.cohortsPerTenant"
+            :key="cohort.id"
+        >
+            <div class="d-flex bg-light rounded p-2">
+                <button
+                    :class="
+                        cohort.id === selectedItemId
+                            ? 'isCurrentlyChoose'
+                            : 'user-buttons'
+                    "
+                    @click="selectUser(cohort)"
+                >
+                    {{ cohort.name }}
+                </button>
+            </div>
         </div>
     </div>
 </template>

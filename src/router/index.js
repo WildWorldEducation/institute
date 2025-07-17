@@ -241,10 +241,10 @@ const router = createRouter({
                 ]
             }
         },
-        // School admins only - teachers from their school only
+        // School admins only - classes from their school only
         {
-            path: '/teachers',
-            name: 'teachers',
+            path: '/classes',
+            name: 'classes',
             component: () => import('../components/pages/UsersView.vue'),
             meta: {
                 requiresAuth: true,
@@ -607,6 +607,20 @@ const router = createRouter({
                 title: 'Cohort Progress Report',
                 requiresAuth: true,
                 roles: ['instructor', 'partner']
+            }
+        },
+        // School Admin analytics
+        {
+            path: '/school-report',
+            name: 'school-report',
+            component: () =>
+                import(
+                    '../components/pages/school-admin-analytics/SchoolReportView.vue'
+                ),
+            meta: {
+                title: 'School Report',
+                requiresAuth: true,
+                roles: ['school_admin']
             }
         },
         // Tokens

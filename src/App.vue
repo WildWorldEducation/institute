@@ -289,8 +289,7 @@ export default {
                         <li
                             v-if="
                                 userDetailsStore.role == 'instructor' ||
-                                userDetailsStore.role == 'partner' ||
-                                userDetailsStore.role == 'school_admin'
+                                userDetailsStore.role == 'partner'
                             "
                             class="nav-item dropdown"
                         >
@@ -306,10 +305,6 @@ export default {
 
                                 <!-- Dropdown toggle button -->
                                 <button
-                                    v-if="
-                                        userDetailsStore.role == 'instructor' ||
-                                        userDetailsStore.role == 'partner'
-                                    "
                                     class="nav-link dropdown-toggle border-0 bg-transparent"
                                 ></button>
                             </div>
@@ -348,16 +343,26 @@ export default {
                                 </li>
                             </ul>
                         </li>
-                        <!-- Teachers -->
+                        <li
+                            v-if="userDetailsStore.role == 'school_admin'"
+                            class="nav-item dropdown"
+                        >
+                            <div class="d-flex align-items-center">
+                                <RouterLink to="/students" class="nav-link">
+                                    <span>Students</span>
+                                </RouterLink>
+                            </div>
+                        </li>
+                        <!-- Tenant Cohorts -->
                         <li
                             v-if="userDetailsStore.role == 'school_admin'"
                             class="nav-item"
                         >
                             <RouterLink
-                                to="/teachers"
+                                to="/classes"
                                 class="nav-link close-on-click"
                             >
-                                Teachers
+                                Classes
                             </RouterLink>
                         </li>
                         <!-- Tenants -->
@@ -387,6 +392,7 @@ export default {
                                 <span>Skills</span>
                             </RouterLink>
                         </li>
+                        <!-- School admin reports -->
                         <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
@@ -395,10 +401,10 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink
-                                to="/skills"
+                                :to="'/school-report'"
                                 class="nav-link close-on-click"
                             >
-                                <span>Reports</span>
+                                <span>School</span>
                             </RouterLink>
                         </li>
                         <li

@@ -400,6 +400,101 @@ export default {
                     "
                 />
             </div>
+            <!-- School admins -->
+            <div
+                v-if="
+                    userDetailsStore.role == 'school_admin' &&
+                    $route.name == 'students'
+                "
+                class="d-flex flex-column"
+            >
+                <h2 class="secondary-heading">Academic Performance Overview</h2>
+                <h3>Growth Analytics</h3>
+                <p>
+                    (Jonathan, you may be able to determine what would be both
+                    easiest and most compelling for us to share at this
+                    level—e.g. Skills mastered, Key Skills mastered by student
+                    grade, progress made, % progress made within cohorts, etc.)
+                </p>
+                <ul>
+                    <li>number of skills mastered</li>
+                    <li>% progress made within cohorts</li>
+                </ul>
+
+                <h3>Estimated Mastery Scores</h3>
+                <p>
+                    Offers the current best estimate of a student’s progress,
+                    calculated from all available data (skills completed per
+                    their grade's cohort skills—e.g. "12th grade skills").
+                </p>
+                <p>
+                    <em
+                        >Student skills completed as percentage of grade level
+                        skills</em
+                    >
+                </p>
+            </div>
+            <div
+                v-if="
+                    userDetailsStore.role == 'school_admin' &&
+                    $route.name == 'classes'
+                "
+                class="d-flex flex-column"
+            >
+                <h2 class="secondary-heading">Student Progress & Attendance</h2>
+                <h3>Usage and Fidelity Reports</h3>
+                <p>
+                    Track weekly and cumulative usage, including the percentage
+                    of students who completed at least one skill, total tutoring
+                    time, and engagement.
+                </p>
+                <ul>
+                    <li>
+                        percentage of students who completed at least one skill
+                        <ul>
+                            <li>
+                                <em>task made</em>
+                            </li>
+                            <li>
+                                <em
+                                    >percentage of students who completed at
+                                    least one skill
+                                </em>
+                            </li>
+                            <li>
+                                <em>pie chart </em>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        total tutoring time
+                        <em
+                            >(Would have to record time per student per skill,
+                            with tutor)</em
+                        >
+                    </li>
+                    <li>
+                        engagement
+                        <ul>
+                            <li>
+                                <em>task made</em>
+                            </li>
+                            <li>
+                                <em
+                                    >starting date is when first student started
+                                    on</em
+                                >
+                            </li>
+                            <li>
+                                <em>total time on platform </em>
+                            </li>
+                            <li>
+                                <em>line chart </em>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
     <div v-if="showModal">

@@ -99,7 +99,8 @@ const createSocket = (server) => {
                     socket,
                     instructions,
                     'aiTutor',
-                    messageData.userId
+                    messageData.userId,
+                    messageData.skillId
                 );
             });
 
@@ -172,7 +173,8 @@ const createSocket = (server) => {
                     socket,
                     instructions,
                     'aiTutor',
-                    messageData.userId
+                    messageData.userId,
+                    messageData.skillId
                 );
             });
 
@@ -217,7 +219,8 @@ const createSocket = (server) => {
                     socket,
                     assistantInstruction,
                     'learningObjective',
-                    messageData.userId
+                    messageData.userId,
+                    messageData.skillId
                 );
             });
 

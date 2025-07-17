@@ -205,7 +205,8 @@ export default {
                             numAnswers++;
                         }
                     }
-                    if (numAnswers > 9 && numAnswers % 10 == 0) {
+                    //if (numAnswers > 9 && numAnswers % 10 == 0) {
+                    if (numAnswers == 1) {
                         this.assessMastery();
                     }
                 }
@@ -389,14 +390,13 @@ export default {
                     assistantId: this.assistantData.assistantId,
                     tutorType: this.tutorType,
                     skillName: this.skill.name,
+                    skillId: this.skill.id,
                     skillLevel: this.englishSkillLevel,
                     learningObjectives: this.learningObjectives,
                     // The message from the student
                     message: this.message,
                     userId: this.userDetailsStore.userId
                 };
-
-                console.log(messageData);
 
                 this.message = '';
                 socket.emit(socketChannel, messageData);
@@ -424,7 +424,8 @@ export default {
                     threadId: this.assistantData.threadId,
                     assistantId: this.assistantData.assistantId,
                     message: '',
-                    userId: this.userDetailsStore.userId
+                    userId: this.userDetailsStore.userId,
+                    skillId: this.skill.id
                 };
 
                 socket.emit(socketChannel, messageData);
@@ -468,6 +469,7 @@ export default {
                         userId: this.userDetailsStore.userId,
                         skillName: this.skill.name,
                         skillUrl: this.skill.url,
+                        skillId: this.skill.id,
                         skillLevel: this.englishSkillLevel,
                         learningObjectives: this.learningObjectives,
                         transcriptForAssessment: this.transcriptForAssessment
@@ -546,7 +548,6 @@ export default {
             socket.disconnect();
         },
         createChatStream() {
-            console.log('create-stream');
             socket.emit(
                 'create-stream',
                 this.userDetailsStore.userId,

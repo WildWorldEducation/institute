@@ -906,6 +906,35 @@ router.get('/instructors/list', (req, res, next) => {
     });
 });
 
+// List all students of a tenant.
+router.get(
+    '/tenant/:tenantId/students/list',
+    isAuthenticated,
+    (req, res, next) => {
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+            // Note: avatar has query param to deal with image caching by browser,
+            // in case image is changed.
+            let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar
+                FROM users
+                WHERE is_deleted = 0
+                AND role = 'student'
+                AND tenant_id = ${conn.escape(req.params.tenantId)};`;
+
+            conn.query(sqlQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    res.json(results);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
+
 // Get one specific user.
 router.get('/show/:id', (req, res, next) => {
     if (req.session.userName) {
