@@ -465,16 +465,17 @@ router.get(
             res.setHeader('Content-Type', 'application/json');
 
             let sqlQuery = `
-                SELECT SUM(token_count) AS quantity, skills.name AS name  
+                SELECT AVG(token_count) AS quantity, skills.name AS name  
                 FROM user_skills
                 JOIN users 
                 ON user_skills.user_id = users.id
                 JOIN skills
                 ON skills.id = user_skills.skill_id
                 WHERE is_mastered = 1
+                AND type <> 'domain'
                 AND users.tenant_id = ${conn.escape(req.params.tenantId)}
                 GROUP BY skill_id
-                HAVING quantity > 1;            
+                ORDER BY quantity DESC;                          
             `;
 
             conn.query(sqlQuery, (err, results) => {

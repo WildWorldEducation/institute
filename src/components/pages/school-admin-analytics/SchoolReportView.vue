@@ -29,7 +29,6 @@ export default {
 
                 const data = await response.json();
                 this.avgTokensToMasterSkills = Array.isArray(data) ? data : [];
-                console.log(this.avgTokensToMasterSkills);
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
@@ -66,23 +65,8 @@ export default {
                     </li>
                 </ul>
             </li>
-            <li>
-                how many tokens it’s taking, on average, for a student to master
-                a skill (to help manage budgeting and understand spending)
-                <ul>
-                    <li><em>task made</em></li>
-                    <li>
-                        <em>horizontal bar chart</em>
-                    </li>
-                    <li>
-                        <em>show each skill that has been engaged with</em>
-                    </li>
-                    <li>
-                        <em>average number for all students</em>
-                    </li>
-                </ul>
-            </li>
         </ul>
+        <h4>Average amount of tokens to master a skill</h4>
         <TenantAvgTokensToMasterSkillsHorizontalBarChart
             v-if="avgTokensToMasterSkills.length > 0"
             :data="avgTokensToMasterSkills"
