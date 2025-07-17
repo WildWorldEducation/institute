@@ -235,6 +235,12 @@ export default {
                 .orientation(this.chartOrientation)
                 .renderCallback(() => {
                     this.changeLabelColor();
+                    if (this.chartOrientation === 'vertical') {
+                        const milestonesDivs =
+                            document.getElementsByClassName('milestones');
+                        const milestonesDiv = milestonesDivs[0];
+                        milestonesDiv.style.marginLeft = '30%';
+                    }
                 })
                 .render(this.data);
 
@@ -336,16 +342,24 @@ export default {
 <template>
     <div class="container">
         <div class="d-flex flex-column">
-            <h3 class="mx-auto">Time Line Chart</h3>
-            <h5>Chart orientation</h5>
+            <h3 class="mx-auto time-line-chart-text">Time Line Chart</h3>
+            <h5 class="time-line-chart-text">Chart orientation</h5>
             <div class="d-flex gap-4">
                 <button
+                    :class="{
+                        'active-btn': chartOrientation === 'horizontal',
+                        'non-active-btn': chartOrientation === 'vertical'
+                    }"
                     @click="handleOrientationBtnClick('horizontal')"
                     class="btn green-btn"
                 >
                     Horizontal
                 </button>
                 <button
+                    :class="{
+                        'active-btn': chartOrientation === 'vertical',
+                        'non-active-btn': chartOrientation === 'horizontal'
+                    }"
                     @click="handleOrientationBtnClick('vertical')"
                     class="btn green-btn"
                 >
@@ -371,6 +385,10 @@ export default {
     border: 1px solid #ccc;
 }
 
+.time-line-chart-text {
+    color: '#5f31dd';
+}
+
 .chart-component {
     width: 500px;
 }
@@ -394,5 +412,19 @@ export default {
 
 .milestones-link-label:hover {
     color: black;
+}
+
+.active-btn,
+.active-btn:focus {
+    border: 1px green solid;
+    border-radius: 5px;
+    color: rgb(1, 105, 1);
+}
+
+.non-active-btn,
+.non-active-btn:focus {
+    border: 1px gray solid;
+    border-radius: 5px;
+    color: gray;
 }
 </style>
