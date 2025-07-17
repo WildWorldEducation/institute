@@ -439,7 +439,7 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
 
         // Save the user's token usage
         let tokenCount = completion.usage.total_tokens;
-        saveTokenUsage(userId, tokenCount);
+        saveTokenUsage(userId, skillId, tokenCount);
 
         let responseJSON = completion.choices[0].message.content;
         // Convert string to object.       ;
@@ -705,6 +705,7 @@ router.post('/stt/convert', async (req, res, next) => {
         const userId = req.session.userId;
         const skillUrl = req.body.skillUrl;
         const skillName = req.body.skillName;
+        const skillId = req.body.skillId;
         const skillLevel = req.body.skillLevel;
         const learningObjectives = req.body.learningObjectives;
         const audioData = req.body.audioData;
@@ -742,6 +743,7 @@ router.post('/stt/convert', async (req, res, next) => {
         if (tutorType == 'socratic')
             await sendSpeechToSocraticAI(
                 userId,
+                skillId,
                 skillUrl,
                 skillName,
                 skillLevel,
@@ -751,6 +753,7 @@ router.post('/stt/convert', async (req, res, next) => {
         else if (tutorType == 'assessing')
             await sendSpeechToAssessingAI(
                 userId,
+                skillId,
                 skillUrl,
                 skillName,
                 skillLevel,
@@ -775,6 +778,7 @@ router.get('/new-vector-store', async (req, res, next) => {
 
 async function sendSpeechToSocraticAI(
     userId,
+    skillId,
     skillUrl,
     skillName,
     skillLevel,
@@ -787,6 +791,7 @@ async function sendSpeechToSocraticAI(
 
         let messageData = {
             userId: userId,
+            skillId: skillId,
             skillName: skillName,
             skillLevel: skillLevel,
             learningObjectives: learningObjectives,
@@ -807,6 +812,7 @@ async function sendSpeechToSocraticAI(
 
 async function sendSpeechToAssessingAI(
     userId,
+    skillId,
     skillUrl,
     skillName,
     skillLevel,
@@ -818,6 +824,7 @@ async function sendSpeechToAssessingAI(
 
         let messageData = {
             userId: userId,
+            skillId: skillId,
             skillName: skillName,
             skillLevel: skillLevel,
             learningObjectives: learningObjectives,

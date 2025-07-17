@@ -389,6 +389,7 @@ export default {
                     assistantId: this.assistantData.assistantId,
                     tutorType: this.tutorType,
                     skillName: this.skill.name,
+                    skillId: this.skill.id,
                     skillLevel: this.englishSkillLevel,
                     learningObjectives: this.learningObjectives,
                     // The message from the student
@@ -468,6 +469,7 @@ export default {
                         userId: this.userDetailsStore.userId,
                         skillName: this.skill.name,
                         skillUrl: this.skill.url,
+                        skillId: this.skill.id,
                         skillLevel: this.englishSkillLevel,
                         learningObjectives: this.learningObjectives,
                         transcriptForAssessment: this.transcriptForAssessment

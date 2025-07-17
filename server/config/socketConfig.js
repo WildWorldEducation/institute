@@ -99,7 +99,8 @@ const createSocket = (server) => {
                     socket,
                     instructions,
                     'aiTutor',
-                    messageData.userId
+                    messageData.userId,
+                    messageData.skillId
                 );
             });
 

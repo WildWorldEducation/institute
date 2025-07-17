@@ -113,6 +113,7 @@ export default {
                     body: JSON.stringify({
                         skillUrl: this.skill.url,
                         skillName: this.skill.name,
+                        skillId: this.skill.id,
                         skillLevel: this.englishSkillLevel || this.skillLevel,
                         learningObjectives: this.learningObjectives,
                         audioData: base64data,
