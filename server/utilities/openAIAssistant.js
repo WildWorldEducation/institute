@@ -568,7 +568,6 @@ async function createRunStream(
     skillId
 ) {
     // console.log('stream type: ');
-    // console.log(streamType);
     try {
         if (!isEmptyMessage) {
             try {
@@ -604,6 +603,7 @@ async function createRunStream(
                 // 0.4 is hardcoded at the moment, based on pricing and choice of models
                 let ttsTokens = outputTokens * 0.4;
                 let tokenCount = runStep.usage.total_tokens + ttsTokens;
+
                 saveTokenUsage(userId, skillId, tokenCount);
             })
             .on('toolCallCreated', (event) =>

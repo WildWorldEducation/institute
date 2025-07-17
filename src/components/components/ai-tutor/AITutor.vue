@@ -397,8 +397,6 @@ export default {
                     userId: this.userDetailsStore.userId
                 };
 
-                console.log(messageData);
-
                 this.message = '';
                 socket.emit(socketChannel, messageData);
             } catch (error) {
@@ -425,7 +423,8 @@ export default {
                     threadId: this.assistantData.threadId,
                     assistantId: this.assistantData.assistantId,
                     message: '',
-                    userId: this.userDetailsStore.userId
+                    userId: this.userDetailsStore.userId,
+                    skillId: this.skill.id
                 };
 
                 socket.emit(socketChannel, messageData);
@@ -547,8 +546,7 @@ export default {
             console.log('disconnect');
             socket.disconnect();
         },
-        createChatStream() {
-            console.log('create-stream');
+        createChatStream() {        
             socket.emit(
                 'create-stream',
                 this.userDetailsStore.userId,

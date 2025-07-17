@@ -106,7 +106,7 @@ export default {
         },
 
         async sendAudioDataToServer(base64data) {
-            try {
+            try {           
                 const response = await fetch('/ai-tutor/stt/convert', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
