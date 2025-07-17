@@ -499,6 +499,45 @@ router.get(
     }
 );
 
+router.get('/avg-times-on-skills/tenant/:tenantId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT AVG(duration) AS quantity, skills.name AS name
+            FROM user_skills
+            JOIN users 
+            ON user_skills.user_id = users.id
+            JOIN skills
+            ON skills.id = user_skills.skill_id
+            WHERE type <> 'domain'
+            AND duration > 0
+            AND users.tenant_id = ${conn.escape(req.params.tenantId)}
+            GROUP BY skill_id
+            ORDER BY quantity DESC;                          
+            `;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                if (results.length === 0) {
+                    return res.status(404).json({
+                        error: 'No skill activity'
+                    });
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * RECORD DATA -------------------------------------------
  */
