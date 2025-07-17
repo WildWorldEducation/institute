@@ -1,16 +1,43 @@
 <script>
+import TenantAvgTokensToMasterSkillsHorizontalBarChart from '../../components/teacher-analytics/tenants/TenantAvgTokensToMasterSkillsHorizontalBarChart.vue';
 export default {
     setup() {
         return {};
     },
-    components: {},
+    components: {
+        TenantAvgTokensToMasterSkillsHorizontalBarChart
+    },
     data() {
         return {
-            tenantId: this.$route.params.tenantId
+            tenantId: this.$route.params.tenantId,
+            avgTokensToMasterSkills: []
         };
     },
-    async created() {},
-    methods: {}
+    async created() {
+        await this.getAvgTokensToMasterSkills();
+    },
+    methods: {
+        async getAvgTokensToMasterSkills() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/avg-tokens-to-master-skills/tenant/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                this.avgTokensToMasterSkills = Array.isArray(data) ? data : [];
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.avgTokensToMasterSkills = [];
+            }
+        }
+    }
 };
 </script>
 
@@ -23,7 +50,7 @@ export default {
         <h2 class="secondary-heading">Resource usage</h2>
         <h3>Skill Engagement</h3>
         <ul>
-            <li>
+            <li class="mb-3">
                 average interaction time per skills
                 <ul>
                     <li><em>task made</em></li>
@@ -38,14 +65,13 @@ export default {
                     </li>
                 </ul>
             </li>
-            <li>
-                <p>
-                    how many tokens it’s taking, on average, for a student to
-                    master a skill (to help manage budgeting and understand
-                    spending) <em>(task made)</em>
-                </p>
-            </li>
         </ul>
+        <h4>Average amount of tokens to master a skill</h4>
+        <TenantAvgTokensToMasterSkillsHorizontalBarChart
+            v-if="avgTokensToMasterSkills.length > 0"
+            :data="avgTokensToMasterSkills"
+            colour="darkblue"
+        />
 
         <h2 class="secondary-heading mt-5">Student Progress & Attendance</h2>
         <h3>Usage and Fidelity Reports</h3>

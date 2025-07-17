@@ -205,8 +205,7 @@ export default {
                             numAnswers++;
                         }
                     }
-                    //if (numAnswers > 9 && numAnswers % 10 == 0) {
-                    if (numAnswers == 1) {
+                    if (numAnswers > 9 && numAnswers % 10 == 0) {
                         this.assessMastery();
                     }
                 }

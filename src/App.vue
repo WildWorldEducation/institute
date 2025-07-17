@@ -371,7 +371,7 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink
-                                to="/tenants"
+                                to="/tenants/"
                                 class="nav-link close-on-click"
                             >
                                 Tenants
@@ -401,7 +401,10 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink
-                                :to="'/school-report'"
+                                :to="
+                                    '/school-report/' +
+                                    userDetailsStore.tenantId
+                                "
                                 class="nav-link close-on-click"
                             >
                                 <span>School</span>

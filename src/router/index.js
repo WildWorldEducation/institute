@@ -611,7 +611,7 @@ const router = createRouter({
         },
         // School Admin analytics
         {
-            path: '/school-report',
+            path: '/school-report/:tenantId',
             name: 'school-report',
             component: () =>
                 import(
