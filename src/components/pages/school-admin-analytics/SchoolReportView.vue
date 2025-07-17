@@ -1,20 +1,24 @@
 <script>
 import TenantAvgTokensToMasterSkillsHorizontalBarChart from '../../components/teacher-analytics/tenants/TenantAvgTokensToMasterSkillsHorizontalBarChart.vue';
+import TenantAvgInteractionTimePerSkillHorizontalBarChart from '../../components/teacher-analytics/tenants/TenantAvgInteractionTimePerSkillHorizontalBarChart.vue';
 export default {
     setup() {
         return {};
     },
     components: {
-        TenantAvgTokensToMasterSkillsHorizontalBarChart
+        TenantAvgTokensToMasterSkillsHorizontalBarChart,
+        TenantAvgInteractionTimePerSkillHorizontalBarChart
     },
     data() {
         return {
             tenantId: this.$route.params.tenantId,
-            avgTokensToMasterSkills: []
+            avgTokensToMasterSkills: [],
+            avgTimeOnSkills: []
         };
     },
     async created() {
         await this.getAvgTokensToMasterSkills();
+        await this.getAvgTimeOnSkills();
     },
     methods: {
         async getAvgTokensToMasterSkills() {
@@ -36,6 +40,26 @@ export default {
                 );
                 this.avgTokensToMasterSkills = [];
             }
+        },
+        async getAvgTimeOnSkills() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/avg-times-on-skills/tenant/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                this.avgTimeOnSkills = Array.isArray(data) ? data : [];
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.avgTimeOnSkills = [];
+            }
         }
     }
 };
@@ -49,23 +73,13 @@ export default {
         </span>
         <h2 class="secondary-heading">Resource usage</h2>
         <h3>Skill Engagement</h3>
-        <ul>
-            <li class="mb-3">
-                average interaction time per skills
-                <ul>
-                    <li><em>task made</em></li>
-                    <li>
-                        <em>horizontal bar chart</em>
-                    </li>
-                    <li>
-                        <em>show each skill that has been engaged with</em>
-                    </li>
-                    <li>
-                        <em>average time on it</em>
-                    </li>
-                </ul>
-            </li>
-        </ul>
+        <h4>Average interaction time per skill</h4>
+        <TenantAvgInteractionTimePerSkillHorizontalBarChart
+            v-if="avgTimeOnSkills.length > 0"
+            :data="avgTimeOnSkills"
+            colour="darkblue"
+        />
+
         <h4>Average amount of tokens to master a skill</h4>
         <TenantAvgTokensToMasterSkillsHorizontalBarChart
             v-if="avgTokensToMasterSkills.length > 0"
