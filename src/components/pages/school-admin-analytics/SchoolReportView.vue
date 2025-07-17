@@ -23,12 +23,26 @@ export default {
         <h2 class="secondary-heading">Resource usage</h2>
         <h3>Skill Engagement</h3>
         <ul>
-            <li><p>average interaction time per skills</p></li>
+            <li>
+                average interaction time per skills
+                <ul>
+                    <li><em>task made</em></li>
+                    <li>
+                        <em>horizontal bar chart</em>
+                    </li>
+                    <li>
+                        <em>show each skill that has been engaged with</em>
+                    </li>
+                    <li>
+                        <em>average time on it</em>
+                    </li>
+                </ul>
+            </li>
             <li>
                 <p>
                     how many tokens it’s taking, on average, for a student to
                     master a skill (to help manage budgeting and understand
-                    spending)
+                    spending) <em>(task made)</em>
                 </p>
             </li>
         </ul>
@@ -38,13 +52,42 @@ export default {
         <p>
             Track weekly and cumulative usage, including the percentage of
             students who completed at least one skill, total tutoring time, and
-            engagement by school/class.
+            engagement.
         </p>
         <ul>
-            <li>percentage of students who completed at least one skill</li>
+            <li>
+                percentage of students who completed at least one skill
+                <ul>
+                    <li>
+                        <em>task made</em>
+                    </li>
+                    <li>
+                        <em
+                            >percentage of students who completed at least one
+                            skill
+                        </em>
+                    </li>
+                    <li>
+                        <em>pie chart </em>
+                    </li>
+                </ul>
+            </li>
             <li>total tutoring time</li>
-            <li>engagement by school/class</li>
-            <li>percentage of students who completed at least one skill</li>
+            <li>
+                engagement
+                <ul>
+                    <li><em>task made</em></li>
+                    <li>
+                        <em>starting date is when first student started on</em>
+                    </li>
+                    <li>
+                        <em>total time on platform </em>
+                    </li>
+                    <li>
+                        <em>line chart </em>
+                    </li>
+                </ul>
+            </li>
         </ul>
 
         <h2 class="secondary-heading mt-5">Academic Performance Overview</h2>

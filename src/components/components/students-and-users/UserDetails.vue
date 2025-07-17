@@ -446,16 +446,52 @@ export default {
                 <p>
                     Track weekly and cumulative usage, including the percentage
                     of students who completed at least one skill, total tutoring
-                    time, and engagement by school/class.
+                    time, and engagement.
                 </p>
                 <ul>
                     <li>
                         percentage of students who completed at least one skill
+                        <ul>
+                            <li>
+                                <em>task made</em>
+                            </li>
+                            <li>
+                                <em
+                                    >percentage of students who completed at
+                                    least one skill
+                                </em>
+                            </li>
+                            <li>
+                                <em>pie chart </em>
+                            </li>
+                        </ul>
                     </li>
-                    <li>total tutoring time</li>
-                    <li>engagement by school/class</li>
                     <li>
-                        percentage of students who completed at least one skill
+                        total tutoring time
+                        <em
+                            >(Would have to record time per student per skill,
+                            with tutor)</em
+                        >
+                    </li>
+                    <li>
+                        engagement
+                        <ul>
+                            <li>
+                                <em>task made</em>
+                            </li>
+                            <li>
+                                <em
+                                    >starting date is when first student started
+                                    on</em
+                                >
+                            </li>
+                            <li>
+                                <em>total time on platform </em>
+                            </li>
+                            <li>
+                                <em>line chart </em>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </div>
