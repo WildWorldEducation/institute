@@ -386,7 +386,7 @@ export default {
 }
 
 .time-line-chart-text {
-    color: '#5f31dd';
+    color: #5f31dd;
 }
 
 .chart-component {
