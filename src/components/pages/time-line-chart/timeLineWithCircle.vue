@@ -17,7 +17,7 @@ export default {
         return {
             chartWidth: '500px',
             data: [],
-            chartOrientation: 'vertical'
+            chartOrientation: 'horizontal'
         };
     },
     computed: {},
@@ -28,8 +28,6 @@ export default {
         //this.drawTimeLineChartWithCircle();
         this.drawTimeLineChartWithMilesStone();
         this.calculateChartLength(this.data);
-        this.changeBulletColor();
-        // this.changeLabelColor();
     },
     methods: {
         drawTimeLineChart() {
@@ -234,12 +232,18 @@ export default {
                 .aggregateBy('week')
                 .labelFormat('%d-%m-%Y')
                 .optimize(true)
+                .orientation(this.chartOrientation)
+                .renderCallback(() => {
+                    this.changeLabelColor();
+                })
                 .render(this.data);
+
+            this.changeBulletColor();
+            this.changeLabelColor();
         },
         calculateChartLength(dataArray) {
             const startDate = dataArray[0].date;
             const endDate = dataArray[dataArray.length - 1].date;
-            console.log(startDate + ' === ' + endDate);
             const dayDiff = this.getDaysBetweenDates(startDate, endDate);
             const numberOfItem = dataArray.length;
             this.chartWidth = dayDiff * 3 + numberOfItem * 50 + 'px';
@@ -262,25 +266,23 @@ export default {
             const milestonesDiv = document.getElementsByClassName('milestones');
             const childDiv =
                 milestonesDiv[0].getElementsByClassName('milestones__group');
-            console.log('----------------------------------');
+
             for (let index = 0; index < childDiv.length; index++) {
                 const element = childDiv[index];
 
                 const skillNameDivs = element.getElementsByClassName(
                     'milestones-link-label'
                 );
-                const skillName = skillNameDivs[0].textContent;
-                const skillData = this.data.find((e) => e.name === skillName);
+                const skillId = skillNameDivs[0].id;
+                const skillData = this.data.find(
+                    (e) => e.id === parseInt(skillId)
+                );
 
                 const bulletDivs = element.getElementsByClassName(
                     'milestones__group__bullet'
                 );
                 const bulletDiv = bulletDivs[0];
-                const skillNameDiv2 =
-                    element.getElementsByClassName('milestones-label');
-                console.log(
-                    '==================================================='
-                );
+
                 const color = this.mapSkillLevelWithColor(skillData.level);
                 bulletDiv.style.backgroundColor = color;
             }
@@ -288,8 +290,11 @@ export default {
         changeLabelColor() {
             this.data.forEach((skill) => {
                 const labelLink = document.getElementById(skill.id);
-                console.log(labelLink);
-                labelLink.style.color = 'red';
+                const skillData = this.data.find(
+                    (e) => parseInt(labelLink.id) === e.id
+                );
+                const color = this.mapSkillLevelWithColor(skillData.level);
+                labelLink.style.color = color;
             });
         },
         async getUserSkillMasteredHistory() {
@@ -319,6 +324,10 @@ export default {
                 default:
                     break;
             }
+        },
+        handleOrientationBtnClick(direction) {
+            this.chartOrientation = direction;
+            this.drawTimeLineChartWithMilesStone();
         }
     }
 };
@@ -327,7 +336,22 @@ export default {
 <template>
     <div class="container">
         <div class="d-flex flex-column">
-            <h3>Time Line Chart</h3>
+            <h3 class="mx-auto">Time Line Chart</h3>
+            <h5>Chart orientation</h5>
+            <div class="d-flex gap-4">
+                <button
+                    @click="handleOrientationBtnClick('horizontal')"
+                    class="btn green-btn"
+                >
+                    Horizontal
+                </button>
+                <button
+                    @click="handleOrientationBtnClick('vertical')"
+                    class="btn green-btn"
+                >
+                    Vertical
+                </button>
+            </div>
             <!-- Placeholder for the time line chart with circle -->
             <p class="text-white text-center">
                 This is a placeholder for the time line chart with circle

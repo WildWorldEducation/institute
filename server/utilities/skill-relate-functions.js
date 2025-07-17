@@ -183,8 +183,7 @@ function getSkillListRootParent(skillList, fullSkillList) {
         let currentSkill = targetSkill;
         while (!stopFlag) {
             const parentSkill = fullSkillList.find(e => {
-                console.log(e.id + ' || ' + typeof (e.id))
-                console.log(currentSkill.parent + ' || ' + typeof (currentSkill.parent))
+
                 return e.id == currentSkill.parent
             })
             if (!parentSkill) {
@@ -196,7 +195,7 @@ function getSkillListRootParent(skillList, fullSkillList) {
             }
         }
     }
-    console.log('=========================================')
+
     return localSkillList
 }
 
