@@ -75,10 +75,10 @@ export default {
             .attr('y', (d) => y(d.name) + y.bandwidth() / 2)
             .attr('dy', '0.35em')
             .attr('dx', -4)
-            .text((d) => format(d.quantity))
+            .text((d) => d.formattedQuantity)
             .call((text) =>
                 text
-                    .filter((d) => x(d.quantity) - x(0) < 20) // short bars
+                    .filter((d) => x(d.quantity) - x(0) < 30) // short bars
                     .attr('dx', +4)
                     .attr('fill', 'black')
                     .attr('text-anchor', 'start')
@@ -102,4 +102,9 @@ export default {
     <div id="tenant-avg-interaction-time-per-skill-chart-container"></div>
 </template>
 
-<style scoped></style>
+<style scoped>
+#tenant-avg-interaction-time-per-skill-chart-container {
+    overflow-y: scroll;
+    max-height: 500px;
+}
+</style>
