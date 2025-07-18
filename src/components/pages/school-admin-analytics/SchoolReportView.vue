@@ -99,11 +99,7 @@ export default {
 
         <h2 class="secondary-heading mt-5">Student Progress & Attendance</h2>
         <h3>Usage and Fidelity Reports</h3>
-        <p>
-            Track weekly and cumulative usage, including the percentage of
-            students who completed at least one skill, total tutoring time, and
-            engagement.
-        </p>
+        <p>Weekly and cumulative usage</p>
         <ul>
             <li>
                 percentage of students who completed at least one skill
@@ -138,6 +134,7 @@ export default {
                     </li>
                 </ul>
             </li>
+            <li>any others?</li>
         </ul>
 
         <h2 class="secondary-heading mt-5">Academic Performance Overview</h2>
