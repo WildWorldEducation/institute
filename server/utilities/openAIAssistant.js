@@ -676,14 +676,17 @@ async function saveTokenUsage(userId, skillId, tokenCount) {
 
         await query(monthlyTokenUsageQueryString);
 
+        // Record the token usage for the skill
+        // If the user has mastered the skill, do not update the token count
         let skillTokenUsageQueryString = `
         INSERT INTO user_skills (user_id, skill_id, token_count) 
         VALUES(${conn.escape(userId)},
         ${conn.escape(skillId)}, ${conn.escape(tokenCount)}) 
-        ON DUPLICATE KEY UPDATE token_count = token_count + ${conn.escape(
+        ON DUPLICATE KEY UPDATE 
+        token_count = 
+        IF(is_mastered = 0 OR is_mastered IS NULL, token_count + ${conn.escape(
             tokenCount
-        )};
-        `;
+        )}, token_count);`;
 
         await query(skillTokenUsageQueryString);
     } catch (error) {
