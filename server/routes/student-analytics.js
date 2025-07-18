@@ -65,7 +65,7 @@ router.get('/mastered-skills/:studentId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT skills.id, name, url, level, skills.parent, user_skills.last_visited_date, user_skills.date_mastered
+            SELECT skills.id, name, url, level, skills.parent, user_skills.last_visited_date, user_skills.mastered_date
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id            
@@ -79,7 +79,7 @@ router.get('/mastered-skills/:studentId', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                sqlQuery = `SELECT skills.id, name, url, level, skills.parent, user_skills.last_visited_date, user_skills.date_mastered
+                sqlQuery = `SELECT skills.id, name, url, level, skills.parent, user_skills.last_visited_date, user_skills.mastered_date
                             FROM skills
                             LEFT OUTER JOIN user_skills
                             ON skills.id = user_skills.skill_id            

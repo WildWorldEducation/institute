@@ -226,7 +226,7 @@ export default {
         drawTimeLineChartWithMilesStone() {
             milestones('#timeline')
                 .mapping({
-                    timestamp: 'date_mastered',
+                    timestamp: 'mastered_date',
                     text: 'labelName'
                 })
                 .aggregateBy('week')
