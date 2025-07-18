@@ -499,7 +499,8 @@ app.post('/login-attempt', (req, res, next) => {
                             // Send response to front end.
                             return res.json({
                                 account: 'authorized',
-                                role: req.session.role
+                                role: req.session.role,
+                                tenantId: results[0].tenant_id
                             });
                         }
 
