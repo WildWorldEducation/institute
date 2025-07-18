@@ -45,19 +45,21 @@ async function uploadAndPollVectorStores() {
         './public/data/uploads/the-pragmatist_s-guide-to-relationships.docx'
     ].map((path) => fs.createReadStream(path));
 
-    //Create a vector store including our file.
-    let vectorStore = await openai.vectorStores.create({
-        name: 'Collins Institute Skills Extra Documentation'
-    });
+    try {
+        //Create a vector store including our file.
+        let vectorStore = await openai.vectorStores.create({
+            name: 'Collins Institute Skills Extra Documentation'
+        });
 
-    await openai.vectorStores.fileBatches.uploadAndPoll(vectorStore.id, {
-        files: fileStreams
-    });
+        await openai.vectorStores.fileBatches.uploadAndPoll(vectorStore.id, {
+            files: fileStreams
+        });
+    } catch (error) {
+        console.error('Error creating vector store:', error);
+        throw error;
+    }
 
     return vectorStore;
-    // await openai.beta.assistants.update(assistant.id, {
-    //     tool_resources: { file_search: { vector_store_ids: [vectorStore.id] } }
-    // });
 }
 
 /**
@@ -77,12 +79,19 @@ async function createSocraticAssistantAndThread(
     );
 
     if (isFileSearchSkill) {
-        // Give it access to certain documents if this skill need file search feature
-        await openai.beta.assistants.update(assistant.id, {
-            tool_resources: {
-                file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] }
-            }
-        });
+        try {
+            // Give it access to certain documents if this skill need file search feature
+            await openai.beta.assistants.update(assistant.id, {
+                tool_resources: {
+                    file_search: {
+                        vector_store_ids: [process.env.VECTOR_STORE_ID]
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error with Open AI API:', error);
+            throw error;
+        }
     }
 
     const thread = await createSocraticAssistantThread();
@@ -125,20 +134,28 @@ async function createSocraticAssistant(
             - FORBIDDEN PHRASES: "uploaded", "document", "file", "material", "based on the", "according to"
             - Act as if you are an expert who naturally knows this information`;
     }
-
-    const assistant = await openai.beta.assistants.create({
-        name: 'Socratic Tutor',
-        instructions: instructions,
-        tools: isFileSearchSkill ? [{ type: 'file_search' }] : [],
-        model: 'gpt-4.1'
-    });
-
-    return assistant;
+    try {
+        const assistant = await openai.beta.assistants.create({
+            name: 'Socratic Tutor',
+            instructions: instructions,
+            tools: isFileSearchSkill ? [{ type: 'file_search' }] : [],
+            model: 'gpt-4.1'
+        });
+        return assistant;
+    } catch (error) {
+        console.error('Error with Open AI API:', error);
+        throw error;
+    }
 }
 
 async function createSocraticAssistantThread() {
-    const thread = await openai.beta.threads.create();
-    return thread;
+    try {
+        const thread = await openai.beta.threads.create();
+        return thread;
+    } catch (error) {
+        console.error('Error with Open AI API:', error);
+        throw error;
+    }
 }
 
 /**
@@ -181,11 +198,12 @@ async function saveSocraticTutorThread(data) {
 // Only used for Speech to Text at the moment
 async function socraticTutorMessage(threadId, assistantId, messageData) {
     // Add a Message to the Thread
-    const message = await openai.beta.threads.messages.create(threadId, {
-        role: 'user',
-        content: messageData.message
-    });
     try {
+        const message = await openai.beta.threads.messages.create(threadId, {
+            role: 'user',
+            content: messageData.message
+        });
+
         let run = await openai.beta.threads.runs.createAndPoll(threadId, {
             assistant_id: assistantId,
             instructions: `Please tutor about the subject: ${messageData.skillName},
@@ -265,11 +283,18 @@ async function createAssessingAssistantAndThread(
 
     // Give it access to certain documents
     if (isFileSearchSkill) {
-        await openai.beta.assistants.update(assistant.id, {
-            tool_resources: {
-                file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] }
-            }
-        });
+        try {
+            await openai.beta.assistants.update(assistant.id, {
+                tool_resources: {
+                    file_search: {
+                        vector_store_ids: [process.env.VECTOR_STORE_ID]
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error with Open AI API:', error);
+            throw error;
+        }
     }
 
     const thread = await createAssessingAssistantThread();
@@ -323,8 +348,13 @@ async function createAssessingAssistant(
 }
 
 async function createAssessingAssistantThread() {
-    const thread = await openai.beta.threads.create();
-    return thread;
+    try {
+        const thread = await openai.beta.threads.create();
+        return thread;
+    } catch (error) {
+        console.error('Error with Open AI API:', error);
+        throw error;
+    }
 }
 
 /**
@@ -366,12 +396,13 @@ async function saveAssessingTutorThread(data) {
 
 // Only used for Speech to text
 async function assessingTutorMessage(threadId, assistantId, messageData) {
-    // Add a Message to the Thread
-    const message = await openai.beta.threads.messages.create(threadId, {
-        role: 'user',
-        content: messageData.message
-    });
     try {
+        // Add a Message to the Thread
+        const message = await openai.beta.threads.messages.create(threadId, {
+            role: 'user',
+            content: messageData.message
+        });
+
         let run = await openai.beta.threads.runs.createAndPoll(threadId, {
             assistant_id: assistantId,
             instructions: `The user is at a ${messageData.skillLevel} level and age.
@@ -451,12 +482,19 @@ async function createLearningObjectiveAssistantAndThread(
 
     // only update the assistant with file search if it is in the list
     if (isFileSearchSkill) {
-        // Give it access to certain documents
-        await openai.beta.assistants.update(assistant.id, {
-            tool_resources: {
-                file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] }
-            }
-        });
+        try {
+            // Give it access to certain documents
+            await openai.beta.assistants.update(assistant.id, {
+                tool_resources: {
+                    file_search: {
+                        vector_store_ids: [process.env.VECTOR_STORE_ID]
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error with Open AI API:', error);
+            throw error;
+        }
     }
 
     const thread = await createLearningObjectiveAssistantThread();
@@ -499,18 +537,28 @@ async function createLearningObjectiveAssistant(
             - Act as if you are an expert who naturally knows this information`;
     }
 
-    const assistant = await openai.beta.assistants.create({
-        name: 'Learning Objective Tutor',
-        instructions: instructions,
-        tools: isFileSearchSkill ? [{ type: 'file_search' }] : [],
-        model: 'gpt-4.1'
-    });
-    return assistant;
+    try {
+        const assistant = await openai.beta.assistants.create({
+            name: 'Learning Objective Tutor',
+            instructions: instructions,
+            tools: isFileSearchSkill ? [{ type: 'file_search' }] : [],
+            model: 'gpt-4.1'
+        });
+        return assistant;
+    } catch (error) {
+        console.error('Error with Open AI API:', error);
+        throw error;
+    }
 }
 
 async function createLearningObjectiveAssistantThread() {
-    const thread = await openai.beta.threads.create();
-    return thread;
+    try {
+        const thread = await openai.beta.threads.create();
+        return thread;
+    } catch (error) {
+        console.error('Error with Open AI API:', error);
+        throw error;
+    }
 }
 
 async function saveLearningObjectiveThread(data) {
@@ -567,7 +615,6 @@ async function createRunStream(
     userId,
     skillId
 ) {
-    // console.log('stream type: ');
     try {
         if (!isEmptyMessage) {
             try {
@@ -580,56 +627,78 @@ async function createRunStream(
                 throw error;
             }
         }
-        const run = openai.beta.threads.runs
-            .stream(threadId, {
-                assistant_id: assistantId,
-                instructions: assistantInstruction
-            })
-            .on('textDelta', (textDelta, snapshot) => {
-                socket.emit(
-                    'stream-message',
-                    textDelta,
-                    streamType,
-                    snapshot,
-                    threadId
-                );
-            })
-            .on('runStepDone', (runStep) => {
-                socket.emit('run-end');
-                // Save the amount of tokens the user is using
-                // These tokens are priced at $150 per million
-                let outputTokens = runStep.usage.completion_tokens;
-                // Work out tts equivalent usage
-                // 0.4 is hardcoded at the moment, based on pricing and choice of models
-                let ttsTokens = outputTokens * 0.4;
-                let tokenCount = runStep.usage.total_tokens + ttsTokens;
+        try {
+            let runStream;
+            try {
+                // ── Stage 1: create the stream; any failure here is a promise rejection
+                runStream = openai.beta.threads.runs.stream(threadId, {
+                    assistant_id: assistantId,
+                    instructions: assistantInstruction
+                });
+            } catch (err) {
+                console.error('Could not start OpenAI run stream:', err);
+                socket.emit('server-error', { msg: err.message });
+                return; // nothing more to do
+            }
 
-                saveTokenUsage(userId, skillId, tokenCount);
-            })
-            .on('toolCallCreated', (event) =>
-                console.log('assistant ' + event.type)
-            )
-            .on('toolCallDelta', (toolCallDelta, snapshot) => {
-                if (toolCallDelta.type === 'code_interpreter') {
-                    if (toolCallDelta.code_interpreter.input) {
-                        process.stdout.write(
-                            toolCallDelta.code_interpreter.input
-                        );
+            /* ── Stage 2: the stream exists, so listen for runtime events */
+            runStream
+                .on('error', (err) => {
+                    console.error('Stream error:', err);
+                    // maybe notify user, close response, etc.
+                })
+                .on('textDelta', (textDelta, snapshot) => {
+                    socket.emit(
+                        'stream-message',
+                        textDelta,
+                        streamType,
+                        snapshot,
+                        threadId
+                    );
+                })
+                .on('runStepDone', (runStep) => {
+                    socket.emit('run-end');
+                    // Save the amount of tokens the user is using
+                    // These tokens are priced at $150 per million
+                    let outputTokens = runStep.usage.completion_tokens;
+                    // Work out tts equivalent usage
+                    // 0.4 is hardcoded at the moment, based on pricing and choice of models
+                    let ttsTokens = outputTokens * 0.4;
+                    if (runStep.usage.total_tokens) {
+                        let tokenCount = runStep.usage.total_tokens + ttsTokens;
+                        saveTokenUsage(userId, skillId, tokenCount);
                     }
-                    if (toolCallDelta.code_interpreter.outputs) {
-                        process.stdout.write('\noutput >\n');
-                        toolCallDelta.code_interpreter.outputs.forEach(
-                            (output) => {
-                                if (output.type === 'logs') {
-                                    process.stdout.write(`\n${output.logs}\n`);
+                })
+                .on('toolCallCreated', (event) =>
+                    console.log('assistant ' + event.type)
+                )
+                .on('toolCallDelta', (toolCallDelta, snapshot) => {
+                    if (toolCallDelta.type === 'code_interpreter') {
+                        if (toolCallDelta.code_interpreter.input) {
+                            process.stdout.write(
+                                toolCallDelta.code_interpreter.input
+                            );
+                        }
+                        if (toolCallDelta.code_interpreter.outputs) {
+                            process.stdout.write('\noutput >\n');
+                            toolCallDelta.code_interpreter.outputs.forEach(
+                                (output) => {
+                                    if (output.type === 'logs') {
+                                        process.stdout.write(
+                                            `\n${output.logs}\n`
+                                        );
+                                    }
                                 }
-                            }
-                        );
+                            );
+                        }
                     }
-                }
-            });
+                });
 
-        return run;
+            return runStream;
+        } catch (error) {
+            console.error('Error creating message:', error);
+            throw error;
+        }
     } catch (error) {
         console.error('Error in createRunStream:', error);
         socket.emit('error', error);
@@ -756,11 +825,16 @@ function checkAssistantHaveVectorStore(assistantData) {
 }
 
 async function injectVectorStoreToAssistant(assistantId) {
-    await openai.beta.assistants.update(assistantId, {
-        tool_resources: {
-            file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] }
-        }
-    });
+    try {
+        await openai.beta.assistants.update(assistantId, {
+            tool_resources: {
+                file_search: { vector_store_ids: [process.env.VECTOR_STORE_ID] }
+            }
+        });
+    } catch (error) {
+        console.error('Error with Open AI API:', error);
+        throw error;
+    }
 }
 
 module.exports = {
