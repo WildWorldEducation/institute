@@ -102,4 +102,9 @@ export default {
     <div id="tenant-avg-interaction-time-per-skill-chart-container"></div>
 </template>
 
-<style scoped></style>
+<style scoped>
+#tenant-avg-interaction-time-per-skill-chart-container {
+    overflow-y: scroll;
+    max-height: 500px;
+}
+</style>

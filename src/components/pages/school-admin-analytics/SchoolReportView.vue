@@ -82,20 +82,19 @@ export default {
             <h1 class="heading">School Admin Report</h1>
             <h2 class="secondary-heading h3">{{ tenantName }}</h2>
         </span>
-        <h2 class="secondary-heading">Resource usage</h2>
-        <h3>Skill Engagement</h3>
+        <h2 class="secondary-heading">Skill Engagement & Resource Usage</h2>
         <h4>Average interaction time per skill (minutes)</h4>
         <TenantAvgInteractionTimePerSkillHorizontalBarChart
             v-if="avgTimeOnSkills.length > 0"
             :data="avgTimeOnSkills"
-            colour="darkblue"
+            colour="purple"
         />
 
-        <h4>Average amount of tokens to master a skill</h4>
+        <h4 class="mt-5">Average number of tokens to master a skill</h4>
         <TenantAvgTokensToMasterSkillsHorizontalBarChart
             v-if="avgTokensToMasterSkills.length > 0"
             :data="avgTokensToMasterSkills"
-            colour="darkblue"
+            colour="darkgreen"
         />
 
         <h2 class="secondary-heading mt-5">Student Progress & Attendance</h2>
