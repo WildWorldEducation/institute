@@ -98,7 +98,9 @@ export default {
                         } else if (data.role == 'platform_admin') {
                             router.push({ name: 'tenants' });
                         } else if (data.role == 'school_admin') {
-                            router.push({ name: 'school-report' });
+                            router.push({
+                                path: '/school-report/' + data.tenant_id
+                            });
                         } else router.push({ name: 'skills' });
                     } else if (data.account == 'wrong-password') {
                         alert('Wrong password');

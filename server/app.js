@@ -465,7 +465,7 @@ const bcrypt = require('bcrypt');
 app.post('/login-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     // Look for user.
-    const loginQuery = `SELECT id, first_name, last_name, role, password 
+    const loginQuery = `SELECT id, first_name, last_name, role, password, tenant_id
                        FROM users 
                        WHERE users.username = ${conn.escape(req.body.username)} 
                        AND users.is_deleted = 0;`;
