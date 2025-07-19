@@ -96,15 +96,15 @@ export default {
         mapSkillLevelWithColor(level) {
             switch (level) {
                 case 'grade_school':
-                    return '#40e0d0';
+                    return '#116b62';
                 case 'middle_school':
-                    return '#33a133';
+                    return '#168216';
                 case 'high_school':
-                    return '#ffd700';
+                    return '#7d6a02';
                 case 'college':
                     return '#ffa500';
                 case 'phd':
-                    return '#ff0000';
+                    return '#9e0000';
                 default:
                     break;
             }
@@ -119,12 +119,13 @@ export default {
 <template>
     <div id="timeline"></div>
 </template>
-<style scoped>
+<style>
 #timeline {
     position: relative;
-    width: 100%;
-    height: 100%;
-    margin: 0 auto;
+}
+
+.milestones__group__label__text-horizontal {
+    width: 220px !important;
 }
 
 .milestones-link-label {
@@ -134,5 +135,117 @@ export default {
 }
 .milestones-link-label:hover {
     color: black;
+}
+
+.milestones__category_label {
+    display: inline-block;
+    text-align: right;
+    font-size: 14px;
+    margin-top: -4px;
+}
+.milestones__horizontal_line {
+    position: absolute;
+    background-color: #000;
+    height: 3px;
+    margin-top: 4px;
+    margin-left: 5.5px;
+    border-radius: 1.5px;
+}
+.milestones__vertical_line {
+    position: absolute;
+    background-color: #000;
+    width: 3px;
+    margin-left: 4px;
+    margin-bottom: 5.5px;
+    border-radius: 1.5px;
+}
+.milestones__group {
+    position: absolute;
+    font-family: sans-serif;
+    font-size: 14px;
+}
+.milestones__group__bullet {
+    background-color: #fff;
+    border: 3px solid #333;
+    border-radius: 50%;
+    width: 0px;
+    height: 0px;
+    padding: 2.5px;
+}
+.milestones__group__label-horizontal,
+.milestones__group__label-vertical {
+    position: absolute;
+    padding: 0;
+    color: #666;
+}
+.milestones__group__label-horizontal {
+    border-left: 1px solid #000;
+    margin-left: 5px;
+}
+.milestones__group__label-horizontal div {
+    position: relative;
+    margin-left: 3px;
+    display: inline-block;
+}
+.milestones__group__label-vertical {
+    padding-left: 10px;
+    padding-bottom: 0px;
+    border-bottom: 1px solid #000;
+    margin-bottom: -5.5px;
+    margin-left: 10px;
+    bottom: 100%;
+    overflow: visible;
+}
+.milestones__group__label-vertical .wrapper {
+    min-width: 100px;
+    max-width: 300px;
+    border-left: 1px solid black;
+    border-bottom: 1px solid white;
+    margin-bottom: -1px;
+    padding-left: 5px;
+}
+.milestones__group__label-above-horizontal {
+    bottom: 100%;
+}
+.milestones__group__label-above-vertical {
+    padding-left: 0px;
+    padding-right: 10px;
+    right: 100%;
+    text-align: right;
+}
+.milestones__group__label-above-vertical .wrapper {
+    border-left: 0;
+    border-right: 1px solid black;
+    padding-left: 0px;
+    padding-right: 5px;
+}
+.milestones__group__label-last {
+    right: 100%;
+    border-left: 0;
+    border-right: 1px solid #000;
+    margin-left: 0;
+    margin-right: -6px;
+    text-align: right;
+}
+.milestones__group__label-last div {
+    margin-left: 0px;
+    margin-right: 3px;
+}
+.milestones__group__label__text-vertical {
+    display: table-cell;
+    vertical-align: bottom;
+}
+.milestones__group__label__text__title {
+    color: #000;
+    font-weight: bold;
+    font-size: 15px;
+    white-space: nowrap;
+}
+.milestones__group__label__text__event {
+    cursor: pointer;
+}
+.milestones__group__label__text__event--hover {
+    background: #efefef;
+    color: #313131;
 }
 </style>
