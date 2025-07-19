@@ -207,6 +207,45 @@ router.get('/all-skills-duration/:studentId', (req, res, next) => {
     }
 });
 
+/* Skill Activity report 
+   Get the start and end time for each skill per user 
+*/
+router.get('/skill-activity-report/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT skills.id AS id, name, url, mastered_date, first_visited_date AS startDate, last_visited_date AS endDate
+            FROM user_skills
+            JOIN skills
+            ON user_skills.skill_id = skills.id
+            WHERE user_id = ${conn.escape(req.params.studentId)}
+            AND first_visited_date IS NOT NULL    
+            AND skills.type <> 'domain'
+            ORDER BY endDate DESC
+        ;`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                if (results.length === 0) {
+                    return res.status(404).json({
+                        error: 'No skill activity'
+                    });
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * PER COHORT -------------------------------------------------
  */
