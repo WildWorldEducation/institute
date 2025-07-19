@@ -319,13 +319,13 @@ export default {
         mapSkillLevelWithColor(level) {
             switch (level) {
                 case 'grade_school':
-                    return '#40e0d0';
+                    return '#30a195';
                 case 'middle_school':
-                    return '#33a133';
+                    return '#197819';
                 case 'high_school':
-                    return '#ffd700';
+                    return '#ab9002';
                 case 'college':
-                    return '#ffa500';
+                    return '#e09202';
                 case 'phd':
                     return '#ff0000';
                 default:
@@ -360,13 +360,14 @@ export default {
 <style>
 #timeline {
     width: 80vw;
-    height: 80vh;
+    max-height: 80vh;
+    overflow: auto;
 }
 
 .milestones-link-label {
     text-decoration: none;
     color: rgb(68, 68, 68);
-    font-weight: 600;
+    font-weight: 900;
 }
 
 .milestones-link-label:hover {
