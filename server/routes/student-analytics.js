@@ -626,6 +626,7 @@ router.get(
                         JOIN users
                         ON user_skills.user_id = users.id
                         WHERE is_mastered = 1
+                        AND role = 'student'
                         AND tenant_id = ${conn.escape(req.params.tenantId)};`;
 
                     conn.query(
