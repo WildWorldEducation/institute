@@ -671,6 +671,12 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
                                                         req.body.avatar
                                                     );
                                                     let newUserId = data.id;
+                                                    
+                                                    // Unlock skills here
+                                                    unlockInitialSkills(
+                                                        newUserId
+                                                    );
+
                                                     res.json({
                                                         account:
                                                             'account created',
