@@ -212,7 +212,8 @@ export default {
                                 userDetailsStore.role == 'student' ||
                                 userDetailsStore.role == 'instructor' ||
                                 userDetailsStore.role == 'partner' ||
-                                userDetailsStore.role == 'editor'
+                                userDetailsStore.role == 'editor' ||
+                                userDetailsStore.role == 'school_admin'
                             "
                             class="nav-item"
                         >

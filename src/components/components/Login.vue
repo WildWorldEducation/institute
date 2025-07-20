@@ -98,9 +98,8 @@ export default {
                         } else if (data.role == 'platform_admin') {
                             router.push({ name: 'tenants' });
                         } else if (data.role == 'school_admin') {
-                            console.log(data);
                             router.push({
-                                path: '/school-report/' + data.tenantId
+                                name: 'skill-tree'
                             });
                         } else router.push({ name: 'skills' });
                     } else if (data.account == 'wrong-password') {
