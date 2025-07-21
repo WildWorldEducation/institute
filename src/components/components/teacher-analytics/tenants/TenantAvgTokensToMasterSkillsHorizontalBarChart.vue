@@ -102,4 +102,9 @@ export default {
     <div id="tenant-avg-tokens-to-master-skills-chart-container"></div>
 </template>
 
-<style scoped></style>
+<style scoped>
+#tenant-avg-tokens-to-master-skills-chart-container {
+    overflow-y: scroll;
+    max-height: 500px;
+}
+</style>

@@ -13,6 +13,9 @@ const conn = require('../config/db');
 // for querying DB
 const util = require('util');
 const query = util.promisify(conn.query).bind(conn);
+const {
+    getSkillListRootParent
+} = require('../utilities/skill-relate-functions');
 
 /*------------------------------------------
 --------------------------------------------
@@ -64,7 +67,7 @@ router.get('/mastered-skills/:studentId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT skills.id, name, url, level, user_skills.mastered_date AS date
+            SELECT skills.id, name, url, level, skills.parent, user_skills.last_visited_date, user_skills.mastered_date
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id            
@@ -79,7 +82,23 @@ router.get('/mastered-skills/:studentId', (req, res, next) => {
                     throw err;
                 }
 
-                res.json(results);
+                sqlQuery = `SELECT skills.id, name, url, level, skills.parent, user_skills.last_visited_date, user_skills.mastered_date
+                            FROM skills
+                            LEFT OUTER JOIN user_skills
+                            ON skills.id = user_skills.skill_id            
+                            WHERE user_skills.user_id = ${conn.escape(
+                                req.params.studentId
+                            )}`;
+                conn.query(sqlQuery, (err, fullSkillList) => {
+                    if (err) {
+                        throw err;
+                    }
+                    const skillWithRootParent = getSkillListRootParent(
+                        results,
+                        fullSkillList
+                    );
+                    res.json(skillWithRootParent);
+                });
             } catch (err) {
                 next(err);
             }
@@ -181,6 +200,45 @@ router.get('/all-skills-duration/:studentId', (req, res, next) => {
                 }
 
                 res.json(result[0]);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Skill Activity report 
+   Get the start and end time for each skill per user 
+*/
+router.get('/skill-activity-report/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT skills.id AS id, name, url, mastered_date, first_visited_date AS startDate, last_visited_date AS endDate
+            FROM user_skills
+            JOIN skills
+            ON user_skills.skill_id = skills.id
+            WHERE user_id = ${conn.escape(req.params.studentId)}
+            AND first_visited_date IS NOT NULL    
+            AND skills.type <> 'domain'
+            ORDER BY endDate DESC
+        ;`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                if (results.length === 0) {
+                    return res.status(404).json({
+                        error: 'No skill activity'
+                    });
+                }
+
+                res.json(results);
             } catch (err) {
                 next(err);
             }
@@ -537,6 +595,80 @@ router.get('/avg-times-on-skills/tenant/:tenantId', (req, res, next) => {
         });
     }
 });
+
+router.get(
+    '/percentage-students-mastered-one-skill/tenant/:tenantId',
+    (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            let allStudentsSQLQuery = `
+                SELECT COUNT(users.id) AS quantity
+                FROM users
+                WHERE tenant_id = ${conn.escape(req.params.tenantId)}
+                AND role = 'student'
+                AND is_deleted = 0;`;
+
+            conn.query(allStudentsSQLQuery, (err, allStudentsResults) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    if (allStudentsResults.length === 0) {
+                        return res.status(404).json({
+                            error: 'No users in the tenant'
+                        });
+                    }
+
+                    let masteredAtLeastOneSkillSQLQuery = `
+                        SELECT COUNT(distinct users.id) AS quantity
+                        FROM user_skills
+                        JOIN users
+                        ON user_skills.user_id = users.id
+                        WHERE is_mastered = 1
+                        AND role = 'student'
+                        AND tenant_id = ${conn.escape(req.params.tenantId)};`;
+
+                    conn.query(
+                        masteredAtLeastOneSkillSQLQuery,
+                        (err, masteredOneSkillResults) => {
+                            try {
+                                if (err) {
+                                    throw err;
+                                }
+
+                                let allStudents =
+                                    allStudentsResults[0].quantity || 0;
+
+                                let studentsMasteredNoSkills =
+                                    allStudents -
+                                    masteredOneSkillResults[0].quantity;
+
+                                let results = [
+                                    {
+                                        name: 'Mastered no skills',
+                                        value: studentsMasteredNoSkills
+                                    },
+                                    {
+                                        name: 'Mastered one skill',
+                                        value: masteredOneSkillResults[0]
+                                            .quantity
+                                    }
+                                ];
+
+                                res.json(results);
+                            } catch (err) {
+                                next(err);
+                            }
+                        }
+                    );
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
 
 /**
  * RECORD DATA -------------------------------------------

@@ -465,7 +465,7 @@ const bcrypt = require('bcrypt');
 app.post('/login-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     // Look for user.
-    const loginQuery = `SELECT id, first_name, last_name, role, password 
+    const loginQuery = `SELECT id, first_name, last_name, role, password, tenant_id
                        FROM users 
                        WHERE users.username = ${conn.escape(req.body.username)} 
                        AND users.is_deleted = 0;`;
@@ -499,7 +499,8 @@ app.post('/login-attempt', (req, res, next) => {
                             // Send response to front end.
                             return res.json({
                                 account: 'authorized',
-                                role: req.session.role
+                                role: req.session.role,
+                                tenantId: results[0].tenant_id
                             });
                         }
 
