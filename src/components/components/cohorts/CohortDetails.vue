@@ -18,10 +18,14 @@ export default {
             showRemoveStudentModal: false,
             localIsSkillsLocked: null,
             mode: 'big',
-            isMobileCheck: window.innerWidth
+            isMobileCheck: window.innerWidth,
+            percentageStudentsMasteredOneSkill: []
         };
     },
-    created() {},
+    async created() {
+        if (this.userDetailsStore.role == 'school_admin')
+            await this.getCohortPercentageStudentsMasteredAtLeastOneSkill();
+    },
     computed: {
         studentName() {
             return `${this.$parent.user.username}`.trim();
@@ -32,10 +36,10 @@ export default {
     },
     methods: {
         // For School admin reports
-        async getCohortPercentageStudentsMasteredAtLeastOneSkill() {
+        async getCohortPercentageStudentsMasteredAtLeastOneSkill() {       
             try {
                 const response = await fetch(
-                    `/student-analytics/percentage-students-mastered-one-skill/cohort/${this.cohortId}`
+                    `/student-analytics/percentage-students-mastered-one-skill/cohort/${this.cohortsStore.selectedCohort.id}`
                 );
 
                 if (!response.ok) {
@@ -46,6 +50,8 @@ export default {
                 this.percentageStudentsMasteredOneSkill = Array.isArray(data)
                     ? data
                     : [];
+
+                console.log(this.percentageStudentsMasteredOneSkill);
             } catch (error) {
                 console.error(
                     'Error fetching all students failed assessments:',

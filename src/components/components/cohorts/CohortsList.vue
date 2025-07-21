@@ -31,7 +31,10 @@ export default {
         selectCohort(cohort) {
             this.cohortsStore.selectedCohort = cohort;
             this.cohortsStore.isAllStudentsSelected = false;
-            console.log('Selected cohort:', this.cohortsStore.selectedCohort);
+            // pas data to the sibling component, via the parent
+            if (this.userDetailsStore.role == 'school_admin') {
+                this.$parent.updateCohortDetails(cohort);
+            }
         },
         restartTutorial() {
             this.showTutorialTip2 = false;
