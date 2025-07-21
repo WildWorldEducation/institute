@@ -2,6 +2,7 @@
 import { useUsersStore } from '../../../../stores/UsersStore';
 import { useTeacherAnalyticsStore } from '../../../../stores/TeacherAnalyticsStore';
 import SkillActivityGanttChart from '../../../components/teacher-analytics/students/SkillActivityGanttChart.vue';
+import SkillActivityTimeLinesChart from '../../../components/teacher-analytics/students/SkillActivityTimeLinesChart.vue';
 
 export default {
     setup() {
@@ -20,7 +21,8 @@ export default {
         };
     },
     components: {
-        SkillActivityGanttChart
+        SkillActivityGanttChart,
+        SkillActivityTimeLinesChart
     },
     async created() {
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
@@ -59,7 +61,12 @@ export default {
             <h1 class="heading">Skill Activity Report</h1>
             <h2 class="secondary-heading h3">{{ studentName }}</h2>
         </span>
-        <SkillActivityGanttChart
+        <!-- <SkillActivityGanttChart
+            v-if="teacherAnalyticsStore.skillActivities.length > 0"
+            :data="teacherAnalyticsStore.skillActivities"
+            colour="darkred"
+        /> -->
+        <SkillActivityTimeLinesChart
             v-if="teacherAnalyticsStore.skillActivities.length > 0"
             :data="teacherAnalyticsStore.skillActivities"
             colour="darkred"

@@ -241,10 +241,10 @@ const router = createRouter({
                 ]
             }
         },
-        // School admins only - classes from their school only
+        // School admins only - teachers from their school only
         {
-            path: '/classes',
-            name: 'classes',
+            path: '/teachers',
+            name: 'teachers',
             component: () => import('../components/pages/UsersView.vue'),
             meta: {
                 requiresAuth: true,
@@ -609,20 +609,6 @@ const router = createRouter({
                 roles: ['instructor', 'partner']
             }
         },
-        // School Admin analytics
-        {
-            path: '/school-report/:tenantId',
-            name: 'school-report',
-            component: () =>
-                import(
-                    '../components/pages/school-admin-analytics/SchoolReportView.vue'
-                ),
-            meta: {
-                title: 'School Report',
-                requiresAuth: true,
-                roles: ['school_admin']
-            }
-        },
         // Tokens
         {
             path: '/tokens',
@@ -665,12 +651,7 @@ const router = createRouter({
             component: () =>
                 import('../components/pages/tokens/StudentPayments.vue')
         },
-        {
-            path: '/time-line-chart',
-            name: 'time-line-chart',
-            component: () =>
-                import('../components/pages/time-line-chart/TimeLineWithCircle.vue')
-        },
+
         {
             path: '/:pathMatch(.*)*',
             name: 'not-found',

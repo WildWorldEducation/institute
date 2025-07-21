@@ -213,8 +213,7 @@ export default {
                 .itemHeight(30)
                 .itemMargin(-15)
                 .height(400)
-                .stack()
-                .display('circle');
+                .stack();
 
             const svg = d3
                 .select('#timelineLibrary')

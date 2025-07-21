@@ -14,9 +14,7 @@ const conn = require('../config/db');
 const util = require('util');
 const { getSkillListRootParent } = require('../utilities/skill-relate-functions');
 const query = util.promisify(conn.query).bind(conn);
-const {
-    getSkillListRootParent
-} = require('../utilities/skill-relate-functions');
+
 
 /*------------------------------------------
 --------------------------------------------
