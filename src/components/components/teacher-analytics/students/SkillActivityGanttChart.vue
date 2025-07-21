@@ -399,6 +399,7 @@ export default {
 </script>
 
 <template>
+    <div>HI HI HI</div>
     <div id="skill-activity-chart-container"></div>
 </template>
 
