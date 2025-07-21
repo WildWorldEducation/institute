@@ -726,12 +726,6 @@ router.get(
                                     allStudents -
                                     masteredOneSkillResults[0].quantity;
 
-                                console.log(allStudents);
-                                console.log(studentsMasteredNoSkills);
-                                console.log(
-                                    masteredOneSkillResults[0].quantity
-                                );
-
                                 let results = [
                                     {
                                         name: 'Mastered no skills',
