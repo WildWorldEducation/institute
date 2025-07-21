@@ -12,6 +12,7 @@ export default {
             userDetailsStore
         };
     },
+    props: ['instructors'],
     data() {
         return {
             showInformationModal: false
@@ -130,6 +131,24 @@ export default {
         >
             {{ cohort.name }}
         </button>
+        <div
+            v-if="userDetailsStore.role == 'school_admin'"
+            v-for="instructor in instructors"
+            :key="instructor.id"
+        >
+            <div class="d-flex bg-light rounded p-2">
+                <button
+                    :class="
+                        instructor.id === cohortsStore.selectedCohort.id
+                            ? 'isCurrentlySelected'
+                            : 'cohort-buttons'
+                    "
+                    @click="selectInstructor(instructor)"
+                >
+                    {{ instructor.username }}
+                </button>
+            </div>
+        </div>
     </div>
 </template>
 

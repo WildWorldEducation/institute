@@ -24,7 +24,9 @@ export default {
             showTutorialTip1: false,
             showTutorialTip2: false,
             showTutorialTip3: false,
-            showTutorialTip4: false
+            showTutorialTip4: false,
+            instructorsPerTenant: [],
+            selectedInstructor: {}
         };
     },
     components: {
@@ -38,10 +40,23 @@ export default {
         ) {
             await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
             this.cohortsStore.selectedCohort = this.cohortsStore.cohorts[0];
+        } else if (this.userDetailsStore.role === 'school_admin') {
+            if (this.instructorsPerTenant.length < 1) {
+                await this.getInstructorsPerTenant(
+                    this.userDetailsStore.tenantId
+                );
+                this.selectedInstructor = this.instructorsPerTenant[0];
+            }
         }
+
         this.isLoading = false;
     },
     methods: {
+        async getInstructorsPerTenant(tenantId) {
+            const result = await fetch('/tenants/instructors/' + tenantId);
+            const data = await result.json();
+            this.instructorsPerTenant = data;
+        },
         updateCohortDetails() {
             this.$refs.CohortDetails.getInstructorPercentageStudentsMasteredAtLeastOneSkill();
         }
@@ -103,7 +118,7 @@ export default {
         <div class="row position-relative">
             <!-- Left column -->
             <div class="col-lg-4 col-md-5">
-                <CohortsList />
+                <CohortsList :instructors="instructorsPerTenant" />
             </div>
             <!-- Right column -->
             <!-- User detail view for PC and Tablet View -->

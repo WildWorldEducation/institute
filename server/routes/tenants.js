@@ -96,5 +96,29 @@ router.post('/add', (req, res, next) => {
     }
 });
 
+router.get('/instructors/:tenantId', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `
+            SELECT DISTINCT *
+            FROM users
+            WHERE users.tenant_id = ${conn.escape(req.params.tenantId)}
+            AND (role = 'instructor' OR role = 'partner')
+            AND is_deleted = 0;`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;
