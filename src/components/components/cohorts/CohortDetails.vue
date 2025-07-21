@@ -1,12 +1,15 @@
 <script>
 import { useCohortsStore } from '../../../stores/CohortsStore.js';
-
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
+import CohortPercentageStudentsMasteredAtLeastOneSkillPieChart from './../teacher-analytics/cohorts/CohortPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
 export default {
     setup() {
         const cohortsStore = useCohortsStore();
+        const userDetailsStore = useUserDetailsStore();
 
         return {
-            cohortsStore
+            cohortsStore,
+            userDetailsStore
         };
     },
     data() {
@@ -24,7 +27,34 @@ export default {
             return `${this.$parent.user.username}`.trim();
         }
     },
-    methods: {}
+    components: {
+        CohortPercentageStudentsMasteredAtLeastOneSkillPieChart
+    },
+    methods: {
+        // For School admin reports
+        async getCohortPercentageStudentsMasteredAtLeastOneSkill() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/percentage-students-mastered-one-skill/cohort/${this.cohortId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                this.percentageStudentsMasteredOneSkill = Array.isArray(data)
+                    ? data
+                    : [];
+            } catch (error) {
+                console.error(
+                    'Error fetching all students failed assessments:',
+                    error
+                );
+                this.percentageStudentsMasteredOneSkill = [];
+            }
+        }
+    }
 };
 </script>
 
@@ -57,7 +87,13 @@ export default {
                 {{ this.cohortsStore.selectedCohort.name }}
             </h1>
         </div>
-        <div class="row">
+        <div
+            class="row"
+            v-if="
+                userDetailsStore.role == 'instructor' ||
+                userDetailsStore.role == 'partner'
+            "
+        >
             <!-- Cohort Progress -->
             <div class="col-12 col-md-8">
                 <div class="d-flex flex-column">
@@ -238,6 +274,68 @@ export default {
                     </router-link>
                 </div> -->
             </div>
+        </div>
+        <div
+            v-if="
+                userDetailsStore.role == 'school_admin' &&
+                $route.name == 'classes'
+            "
+            class="d-flex flex-column"
+        >
+            <h2 class="secondary-heading">Student Progress & Attendance</h2>
+            <h3>Usage and Fidelity Reports</h3>
+            <!-- <CohortPercentageStudentsMasteredAtLeastOneSkillPieChart /> -->
+            <p>
+                Track weekly and cumulative usage, including the percentage of
+                students who completed at least one skill, total tutoring time,
+                and engagement.
+            </p>
+            <ul>
+                <li>
+                    percentage of students who completed at least one skill
+                    <ul>
+                        <li>
+                            <em>task made</em>
+                        </li>
+                        <li>
+                            <em
+                                >percentage of students who completed at least
+                                one skill
+                            </em>
+                        </li>
+                        <li>
+                            <em>pie chart </em>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    total tutoring time
+                    <em
+                        >(Would have to record time per student per skill, with
+                        tutor)</em
+                    >
+                </li>
+                <li>
+                    engagement
+                    <ul>
+                        <li>
+                            <em>task made</em>
+                        </li>
+                        <li>
+                            <em
+                                >starting date is when first student started
+                                on</em
+                            >
+                        </li>
+                        <li>
+                            <em>total time on platform </em>
+                        </li>
+                        <li>
+                            <em>line chart </em>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
         </div>
     </div>
     <div v-if="showModal">

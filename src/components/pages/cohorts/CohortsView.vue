@@ -32,8 +32,20 @@ export default {
         CohortsList
     },
     async created() {
-        await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
-        this.cohortsStore.selectedCohort = this.cohortsStore.cohorts[0];
+        if (
+            this.userDetailsStore.role === 'instructor' ||
+            this.userDetailsStore.role === 'partner'
+        ) {
+            await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
+            this.cohortsStore.selectedCohort = this.cohortsStore.cohorts[0];
+        } else if (this.userDetailsStore.role === 'school_admin') {
+            if (this.cohortsStore.cohortsPerTenant.length < 1) {
+                await this.cohortsStore.getCohortsPerTenant(
+                    this.userDetailsStore.tenantId
+                );
+            }
+        }
+
         this.isLoading = false;
     },
     methods: {
