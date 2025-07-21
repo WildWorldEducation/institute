@@ -51,7 +51,9 @@ router.get('/tenant/:tenantId', (req, res, next) => {
             SELECT DISTINCT cohorts.id, cohorts.name, instructor_id 
             FROM cohorts
             JOIN users
-            WHERE tenant_id = ${conn.escape(req.params.tenantId)};`;
+            ON users.id = cohorts.instructor_id 
+            WHERE users.tenant_id = ${conn.escape(req.params.tenantId)};`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
