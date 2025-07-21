@@ -295,8 +295,8 @@ app.get('/google-student-signup-attempt', async (req, res, next) => {
                                     const getReferrerSQLIDQuery = `SELECT id
                                         FROM users
                                         WHERE username = ${conn.escape(
-                                            referrerUsername
-                                        )};`;
+                                        referrerUsername
+                                    )};`;
 
                                     const res = await query(
                                         getReferrerSQLIDQuery
@@ -469,6 +469,7 @@ app.post('/login-attempt', (req, res, next) => {
                        FROM users 
                        WHERE users.username = ${conn.escape(req.body.username)} 
                        AND users.is_deleted = 0;`;
+    console.log(loginQuery)
 
     conn.query(loginQuery, (err, results) => {
         try {

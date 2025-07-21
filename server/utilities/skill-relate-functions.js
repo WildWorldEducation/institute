@@ -171,39 +171,31 @@ function convertNodesToArray(nodes) {
 }
 
 function getSkillListRootParent(skillList, fullSkillList) {
-    const localSkillList = [];
+    const localSkillList = []
     for (let index = 0; index < skillList.length; index++) {
         const targetSkill = skillList[index];
         let stopFlag = false;
         let currentSkill = targetSkill;
         while (!stopFlag) {
-            const parentSkill = fullSkillList.find((e) => {
-                return e.id == currentSkill.parent;
-            });
+            const parentSkill = fullSkillList.find(e => {
+
+                return e.id == currentSkill.parent
+            })
             if (!parentSkill) {
-                const resultObj = {
-                    ...targetSkill,
-                    rootParent: currentSkill.name
-                };
-                localSkillList.push(resultObj);
-                stopFlag = true;
+                const resultObj = { ...targetSkill, rootParent: currentSkill.name }
+                localSkillList.push(resultObj)
+                stopFlag = true
             } else {
-                currentSkill = parentSkill;
+                currentSkill = parentSkill
             }
         }
     }
 
-    return localSkillList;
+    return localSkillList
 }
 
-module.exports = {
-    findParentHaveHiddenChild,
-    showHiddenChildFromParent,
-    convertNodesToArray,
-    findNodeByName,
-    findInaccessiblePath,
-    findNode,
-    findGuestHiddenSkillData,
-    findSkillByUrl,
-    getSkillListRootParent
-};
+
+
+
+
+module.exports = { findParentHaveHiddenChild, showHiddenChildFromParent, convertNodesToArray, findNodeByName, findInaccessiblePath, findNode, findGuestHiddenSkillData, findSkillByUrl, getSkillListRootParent };

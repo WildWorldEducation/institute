@@ -666,6 +666,12 @@ const router = createRouter({
                 import('../components/pages/tokens/StudentPayments.vue')
         },
         {
+            path: '/time-line-chart',
+            name: 'time-line-chart',
+            component: () =>
+                import('../components/pages/time-line-chart/TimeLineWithCircle.vue')
+        },
+        {
             path: '/:pathMatch(.*)*',
             name: 'not-found',
             component: () => import('../components/pages/PageNotFoundView.vue')
