@@ -19,7 +19,8 @@ export default {
             localIsSkillsLocked: null,
             mode: 'big',
             isMobileCheck: window.innerWidth,
-            percentageStudentsMasteredOneSkill: []
+            percentageStudentsMasteredOneSkill: [],
+            isLoaded: false
         };
     },
     async created() {
@@ -36,7 +37,7 @@ export default {
     },
     methods: {
         // For School admin reports
-        async getCohortPercentageStudentsMasteredAtLeastOneSkill() {       
+        async getCohortPercentageStudentsMasteredAtLeastOneSkill() {
             try {
                 const response = await fetch(
                     `/student-analytics/percentage-students-mastered-one-skill/cohort/${this.cohortsStore.selectedCohort.id}`
@@ -51,7 +52,9 @@ export default {
                     ? data
                     : [];
 
-                console.log(this.percentageStudentsMasteredOneSkill);
+                this.isLoaded = true;
+
+                await this.$refs.cohortPercentageStudentsMasteredAtLeastOneSkillPieChart.generateChart();
             } catch (error) {
                 console.error(
                     'Error fetching all students failed assessments:',
@@ -290,30 +293,13 @@ export default {
         >
             <h2 class="secondary-heading">Student Progress & Attendance</h2>
             <h3>Usage and Fidelity Reports</h3>
-            <!-- <CohortPercentageStudentsMasteredAtLeastOneSkillPieChart /> -->
-            <p>
-                Track weekly and cumulative usage, including the percentage of
-                students who completed at least one skill, total tutoring time,
-                and engagement.
-            </p>
+            <p>Track weekly and cumulative usage</p>
+            <h4>Percentage of students who completed at least one skill</h4>
+            <CohortPercentageStudentsMasteredAtLeastOneSkillPieChart
+                ref="cohortPercentageStudentsMasteredAtLeastOneSkillPieChart"
+            />
+            <p>including total tutoring time, and engagement.</p>
             <ul>
-                <li>
-                    percentage of students who completed at least one skill
-                    <ul>
-                        <li>
-                            <em>task made</em>
-                        </li>
-                        <li>
-                            <em
-                                >percentage of students who completed at least
-                                one skill
-                            </em>
-                        </li>
-                        <li>
-                            <em>pie chart </em>
-                        </li>
-                    </ul>
-                </li>
                 <li>
                     total tutoring time
                     <em
