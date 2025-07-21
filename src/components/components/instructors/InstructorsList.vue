@@ -25,17 +25,9 @@ export default {
     },
 
     methods: {
-        selectAllStudents() {
-            this.cohortsStore.selectedCohort = {};
-            this.cohortsStore.isAllStudentsSelected = true;
-        },
-        selectCohort(cohort) {
-            this.cohortsStore.selectedCohort = cohort;
-            this.cohortsStore.isAllStudentsSelected = false;
-            // pas data to the sibling component, via the parent
-            if (this.userDetailsStore.role == 'school_admin') {
-                this.$parent.updateCohortDetails(cohort);
-            }
+        selectInstructor(instructor) {
+            this.$parent.selectedInstructor = instructor;
+            this.$parent.updateInstructorDetails(instructor);
         },
         restartTutorial() {
             this.showTutorialTip2 = false;
@@ -99,47 +91,11 @@ export default {
 
 <template>
     <div class="container mt-1">
-        <button
-            v-if="
-                userDetailsStore.role == 'instructor' ||
-                userDetailsStore.role == 'partner'
-            "
-            @click="selectAllStudents()"
-            class="mb-1 cohort-buttons"
-            :class="
-                cohortsStore.isAllStudentsSelected
-                    ? 'isCurrentlySelected'
-                    : 'cohort-buttons'
-            "
-        >
-            All students
-        </button>
-        <button
-            v-if="
-                userDetailsStore.role == 'instructor' ||
-                userDetailsStore.role == 'partner'
-            "
-            v-for="cohort in cohortsStore.cohorts"
-            @click="selectCohort(cohort)"
-            :key="cohort.id"
-            :class="
-                cohort.id === cohortsStore.selectedCohort.id
-                    ? 'isCurrentlySelected'
-                    : 'cohort-buttons'
-            "
-            class="mb-1"
-        >
-            {{ cohort.name }}
-        </button>
-        <div
-            v-if="userDetailsStore.role == 'school_admin'"
-            v-for="instructor in instructors"
-            :key="instructor.id"
-        >
+        <div v-for="instructor in instructors" :key="instructor.id">
             <div class="d-flex bg-light rounded p-2">
                 <button
                     :class="
-                        instructor.id === cohortsStore.selectedCohort.id
+                        instructor.id === $parent.selectedInstructor.id
                             ? 'isCurrentlySelected'
                             : 'cohort-buttons'
                     "

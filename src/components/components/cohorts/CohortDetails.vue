@@ -19,51 +19,17 @@ export default {
             localIsSkillsLocked: null,
             mode: 'big',
             isMobileCheck: window.innerWidth,
-            percentageStudentsMasteredOneSkill: [],
             isLoaded: false
         };
     },
-    async created() {
-        if (this.userDetailsStore.role == 'school_admin')
-            await this.getCohortPercentageStudentsMasteredAtLeastOneSkill();
-    },
+    async created() {},
     computed: {
         studentName() {
             return `${this.$parent.user.username}`.trim();
         }
     },
-    components: {
-        CohortPercentageStudentsMasteredAtLeastOneSkillPieChart
-    },
-    methods: {
-        // For School admin reports
-        async getCohortPercentageStudentsMasteredAtLeastOneSkill() {
-            try {
-                const response = await fetch(
-                    `/student-analytics/percentage-students-mastered-one-skill/cohort/${this.cohortsStore.selectedCohort.id}`
-                );
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                this.percentageStudentsMasteredOneSkill = Array.isArray(data)
-                    ? data
-                    : [];
-
-                this.isLoaded = true;
-
-                await this.$refs.cohortPercentageStudentsMasteredAtLeastOneSkillPieChart.generateChart();
-            } catch (error) {
-                console.error(
-                    'Error fetching all students failed assessments:',
-                    error
-                );
-                this.percentageStudentsMasteredOneSkill = [];
-            }
-        }
-    }
+    components: {},
+    methods: {}
 };
 </script>
 
