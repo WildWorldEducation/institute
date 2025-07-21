@@ -32,13 +32,27 @@ export default {
         CohortsList
     },
     async created() {
-        await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
-        this.cohortsStore.selectedCohort = this.cohortsStore.cohorts[0];
+        if (
+            this.userDetailsStore.role === 'instructor' ||
+            this.userDetailsStore.role === 'partner'
+        ) {
+            await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
+            this.cohortsStore.selectedCohort = this.cohortsStore.cohorts[0];
+        } else if (this.userDetailsStore.role === 'school_admin') {
+            if (this.cohortsStore.cohortsPerTenant.length < 1) {
+                await this.cohortsStore.getCohortsPerTenant(
+                    this.userDetailsStore.tenantId
+                );
+                this.cohortsStore.selectedCohort =
+                    this.cohortsStore.cohortsPerTenant[0];
+            }
+        }
+
         this.isLoading = false;
     },
     methods: {
-        updateCohortDetails(cohort) {
-            this.cohort = cohort;
+        updateCohortDetails() {         
+            this.$refs.CohortDetails.getCohortPercentageStudentsMasteredAtLeastOneSkill();
         }
     }
 };
@@ -49,7 +63,13 @@ export default {
     <div class="container-fluid">
         <!-- Top buttons -->
         <div class="d-flex justify-content-between mb-2">
-            <router-link class="btn primary-btn me-2" to="/cohorts/add"
+            <router-link
+                v-if="
+                    userDetailsStore.role == 'instructor' ||
+                    userDetailsStore.role == 'partner'
+                "
+                class="btn primary-btn me-2"
+                to="/cohorts/add"
                 >Add&nbsp;
                 <!-- Plus sign -->
                 <svg
@@ -98,7 +118,7 @@ export default {
             <!-- User detail view for PC and Tablet View -->
             <div class="col-lg-8 col-md-7 d-none d-md-block">
                 <div class="row user-form-data-row">
-                    <CohortDetails v-if="!isLoading" />
+                    <CohortDetails ref="CohortDetails" v-if="!isLoading" />
                     <div v-else>
                         <h1 class="text-muted py-5">You have no cohorts</h1>
                     </div>
@@ -111,7 +131,10 @@ export default {
                 id="user-detail-section"
             >
                 <div class="row">
-                    <CohortDetails v-if="this.cohortsStore.selectedCohort.id" />
+                    <CohortDetails
+                        ref="CohortDetails"
+                        v-if="this.cohortsStore.selectedCohort.id"
+                    />
                 </div>
             </div>
         </div>

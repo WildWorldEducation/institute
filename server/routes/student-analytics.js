@@ -670,6 +670,88 @@ router.get(
     }
 );
 
+router.get(
+    '/percentage-students-mastered-one-skill/cohort/:cohortId',
+    (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            let allStudentsSQLQuery = `
+                SELECT COUNT(distinct users.id) AS quantity
+                FROM users
+                JOIN cohorts_users
+                ON users.id = cohorts_users.user_id
+                WHERE cohorts_users.cohort_id = ${conn.escape(
+                    req.params.cohortId
+                )}
+                AND role = 'student'
+                AND is_deleted = 0;`;
+
+            conn.query(allStudentsSQLQuery, (err, allStudentsResults) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    if (allStudentsResults.length === 0) {
+                        return res.status(404).json({
+                            error: 'No users in the tenant'
+                        });
+                    }
+
+                    let masteredAtLeastOneSkillSQLQuery = `
+                        SELECT COUNT(distinct users.id) AS quantity
+                        FROM user_skills
+                        JOIN cohorts_users
+                        ON user_skills.user_id = cohorts_users.user_id
+                        JOIN users 
+                        ON users.id = user_skills.user_id
+                        WHERE is_mastered = 1
+                        AND role = 'student'
+                        AND cohorts_users.cohort_id = ${conn.escape(
+                            req.params.cohortId
+                        )};`;
+
+                    conn.query(
+                        masteredAtLeastOneSkillSQLQuery,
+                        (err, masteredOneSkillResults) => {
+                            try {
+                                if (err) {
+                                    throw err;
+                                }
+
+                                let allStudents =
+                                    allStudentsResults[0].quantity || 0;
+
+                                let studentsMasteredNoSkills =
+                                    allStudents -
+                                    masteredOneSkillResults[0].quantity;
+
+                                let results = [
+                                    {
+                                        name: 'Mastered no skills',
+                                        value: studentsMasteredNoSkills
+                                    },
+                                    {
+                                        name: 'Mastered one skill',
+                                        value: masteredOneSkillResults[0]
+                                            .quantity
+                                    }
+                                ];
+
+                                res.json(results);
+                            } catch (err) {
+                                next(err);
+                            }
+                        }
+                    );
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
+
 /**
  * RECORD DATA -------------------------------------------
  */

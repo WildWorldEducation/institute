@@ -245,7 +245,8 @@ const router = createRouter({
         {
             path: '/classes',
             name: 'classes',
-            component: () => import('../components/pages/UsersView.vue'),
+            component: () =>
+                import('../components/pages/cohorts/CohortsView.vue'),
             meta: {
                 requiresAuth: true,
                 roles: ['school_admin']
