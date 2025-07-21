@@ -42,6 +42,31 @@ router.get('/:instructorId/list', (req, res, next) => {
 });
 
 /**
+ * Get All Items per tenant
+ */
+router.get('/tenant/:tenantId', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `
+            SELECT DISTINCT cohorts.id, cohorts.name, instructor_id 
+            FROM cohorts
+            JOIN users
+            WHERE tenant_id = ${conn.escape(req.params.tenantId)};`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
  * Get One Item
  *
  * @return response()

@@ -106,13 +106,14 @@ export default {
         },
 
         async sendAudioDataToServer(base64data) {
-            try {
+            try {           
                 const response = await fetch('/ai-tutor/stt/convert', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         skillUrl: this.skill.url,
                         skillName: this.skill.name,
+                        skillId: this.skill.id,
                         skillLevel: this.englishSkillLevel || this.skillLevel,
                         learningObjectives: this.learningObjectives,
                         audioData: base64data,

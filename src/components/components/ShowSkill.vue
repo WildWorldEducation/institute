@@ -1709,6 +1709,7 @@ export default {
                                     "
                                     :learningObjectiveId="learningObjective.id"
                                     :skillName="calculatedSkillName"
+                                    :skillId="skill.id"
                                     :skillUrl="skill.url"
                                     :skillLevel="skill.level"
                                 />

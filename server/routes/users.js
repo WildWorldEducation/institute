@@ -593,7 +593,8 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
             username: req.body.username,
             email: req.body.email,
             role: req.body.role,
-            password: hashedPassword
+            password: hashedPassword,
+            tenant_id: req.body.tenant_id
         };
 
         // Check if username or email address already exist.
@@ -670,6 +671,12 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
                                                         req.body.avatar
                                                     );
                                                     let newUserId = data.id;
+                                                    
+                                                    // Unlock skills here
+                                                    unlockInitialSkills(
+                                                        newUserId
+                                                    );
+
                                                     res.json({
                                                         account:
                                                             'account created',
@@ -723,7 +730,8 @@ router.post(
                     last_name: req.body.lastname,
                     username: req.body.username,
                     role: req.body.role,
-                    password: hashedPassword
+                    password: hashedPassword,
+                    tenant_id: req.body.tenant_id
                 };
 
                 // Check if username already exists.
@@ -904,6 +912,35 @@ router.get('/instructors/list', (req, res, next) => {
     });
 });
 
+// List all students of a tenant.
+router.get(
+    '/tenant/:tenantId/students/list',
+    isAuthenticated,
+    (req, res, next) => {
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+            // Note: avatar has query param to deal with image caching by browser,
+            // in case image is changed.
+            let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar
+                FROM users
+                WHERE is_deleted = 0
+                AND role = 'student'
+                AND tenant_id = ${conn.escape(req.params.tenantId)};`;
+
+            conn.query(sqlQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    res.json(results);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
+
 // Get one specific user.
 router.get('/show/:id', (req, res, next) => {
     if (req.session.userName) {
@@ -911,7 +948,7 @@ router.get('/show/:id', (req, res, next) => {
         // Note: avatar has query param to deal with image caching by browser,
         // in case image is changed.
         let sqlQuery = `
-    SELECT users.id, first_name, last_name, username,
+    SELECT users.id, tenant_id, first_name, last_name, username,
     CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', users.id, '?v=', UNIX_TIMESTAMP()) AS avatar, 
     email, role, is_deleted, is_google_auth, grade_filter, theme,
     is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter, reputation_score, is_unlocked_skills_only_filter, cohort_id, is_audio_auto_play, tokens
@@ -1109,7 +1146,8 @@ router.put(
             username = ${conn.escape(req.body.username)}, 
             email = ${conn.escape(req.body.email)}, 
             password = ${conn.escape(req.body.password)},
-            role = ${conn.escape(req.body.role)} 
+            role = ${conn.escape(req.body.role)},
+            tenant_id = ${conn.escape(req.body.tenant_id)}
             WHERE id = ${conn.escape(req.params.id)};`;
 
             conn.query(sqlQuery, async (err) => {

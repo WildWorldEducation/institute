@@ -109,14 +109,11 @@ export default {
             <!-- Student Progress -->
             <div class="col-12 col-md-5">
                 <!-- Platform Admin -->
-                <div
-                    id="user-function-btns-row"
-                    class="d-flex justify-content-center"
-                >
+                <div class="d-flex flex-column">
                     <router-link
                         v-if="userDetailsStore.role == 'platform_admin'"
                         :to="'/users/edit/' + this.$parent.user.id"
-                        class="btn primary-btn"
+                        class="btn primary-btn mb-2"
                     >
                         Edit&nbsp;
                         <!-- Pencil icon -->
@@ -139,10 +136,8 @@ export default {
                                 d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
                                 fill="white"
                             />
-                        </svg> </router-link
-                    ><span v-if="userDetailsStore.role == 'platform_admin'"
-                        >&nbsp;&nbsp;</span
-                    >
+                        </svg>
+                    </router-link>
                     <!-- Delete button -->
                     <button
                         v-if="userDetailsStore.role == 'platform_admin'"
@@ -398,7 +393,43 @@ export default {
                     />
                     <label for="two">Yes</label>
                 </div>
-                <StudentNotifications />
+                <StudentNotifications
+                    v-if="
+                        userDetailsStore.role == 'instructor' ||
+                        userDetailsStore.role == 'partner'
+                    "
+                />
+            </div>
+            <!-- School admins -->
+            <div
+                v-if="userDetailsStore.role == 'school_admin'"
+                class="d-flex flex-column"
+            >
+                <h2 class="secondary-heading">Academic Performance Overview</h2>
+                <h3>Growth Analytics</h3>
+                <p>
+                    (Jonathan, you may be able to determine what would be both
+                    easiest and most compelling for us to share at this
+                    level—e.g. Skills mastered, Key Skills mastered by student
+                    grade, progress made, % progress made within cohorts, etc.)
+                </p>
+                <ul>
+                    <li>number of skills mastered</li>
+                    <li>% progress made within cohorts</li>
+                </ul>
+
+                <h3>Estimated Mastery Scores</h3>
+                <p>
+                    Offers the current best estimate of a student’s progress,
+                    calculated from all available data (skills completed per
+                    their grade's cohort skills—e.g. "12th grade skills").
+                </p>
+                <p>
+                    <em
+                        >Student skills completed as percentage of grade level
+                        skills</em
+                    >
+                </p>
             </div>
         </div>
     </div>
@@ -481,11 +512,6 @@ export default {
     padding: 10px, 14px, 10px, 14px;
 }
 
-#user-function-btns-row {
-    margin-top: 17;
-    padding-left: 10px;
-    padding-right: 10px;
-}
 .form-label {
     color: black;
     font-size: 0.875rem;
@@ -568,13 +594,6 @@ export default {
         padding-bottom: 15px;
         margin-right: 10px;
         margin-bottom: 10px;
-    }
-
-    #user-function-btns-row {
-        margin-top: 17;
-        padding-left: 10px;
-        padding-right: 10px;
-        flex-direction: column;
     }
 
     .green-btn {

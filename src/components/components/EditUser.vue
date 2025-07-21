@@ -21,6 +21,7 @@ export default {
             user: {},
             image: '',
             instructors: [],
+            tenants: [],
             // Select input bind model
             instructorId: 0,
             instructorName: '',
@@ -48,7 +49,8 @@ export default {
             },
             // Zoom relate state data
             lastZoomValue: 0,
-            zoomValue: 0
+            zoomValue: 0,
+            isUserDataLoaded: false
         };
     },
     components: {
@@ -74,7 +76,7 @@ export default {
         }
     },
     methods: {
-        getUser() {
+        async getUser() {
             fetch('/users/show/' + this.userId)
                 .then(function (response) {
                     return response.json();
@@ -82,6 +84,13 @@ export default {
                 .then((data) => (this.user = data))
                 .then(() => {
                     this.image = this.user.avatar;
+                    // Assign tenant
+                    for (let i = 0; i < this.tenants.length; i++) {
+                        if (this.tenants[i].id == this.user.tenant_id) {
+                            this.user.tenant = this.tenants[i];
+                        }
+                    }
+                    this.isUserDataLoaded = true;
                 });
         },
         async getInstructors() {
@@ -107,9 +116,14 @@ export default {
                         ].instructor_id;
                 }
             }
-
+            await this.getTenants();
             // Call this after the above, so that instructor field loaded correctly.
-            this.getUser();
+            await this.getUser();
+        },
+        async getTenants() {
+            const result = await fetch('/tenants/list');
+            const data = await result.json();
+            this.tenants = data;
         },
         ValidateForm() {
             if (this.user.first_name == '' || this.user.first_name == null) {
@@ -149,7 +163,8 @@ export default {
                     email: this.user.email,
                     avatar: this.user.avatar,
                     role: this.user.role,
-                    password: this.user.password
+                    password: this.user.password,
+                    tenant_id: this.user.tenant.id
                 })
             };
 
@@ -276,7 +291,10 @@ export default {
     <div class="container mt-3 pb-5">
         <h1 class="h1-stroke">Edit User</h1>
 
-        <div class="container-fluid main-content-container p-4 mt-5">
+        <div
+            class="container-fluid main-content-container p-4 mt-5"
+            v-if="isUserDataLoaded"
+        >
             <div class="row">
                 <div class="col-lg-4 mt-3">
                     <div class="mb-3 row">
@@ -498,16 +516,18 @@ export default {
                                 <div
                                     class="custom-dropdown-option"
                                     @click="
-                                        user.role = 'platform_admin';
+                                        user.role = 'school_admin';
                                         showRoleDropDown = false;
                                     "
                                 >
-                                    platform admin
+                                    school admin
                                 </div>
                             </div>
                         </div>
                         <!-- End of custom dropdown -->
                     </div>
+
+                    <!-- Choose instructor -->
                     <div v-if="user.role == 'student'" class="mb-3">
                         <label class="form-label">Instructor</label>
                         <div class="d-flex flex-column">
@@ -557,6 +577,58 @@ export default {
                         </div>
                         <!-- End of custom dropdown -->
                     </div>
+
+                    <!-- Choose tenant -->
+                    <div class="mb-3">
+                        <label class="form-label">Tenant</label>
+                        <div class="d-flex flex-column">
+                            <div
+                                :class="[
+                                    showInstructorDropDown
+                                        ? 'custom-select-button-focus'
+                                        : 'custom-select-button'
+                                ]"
+                                @click="
+                                    showInstructorDropDown =
+                                        !showInstructorDropDown
+                                "
+                            >
+                                {{ user.tenant.name }}
+                                <span>
+                                    <svg
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 20 20"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                            fill="#344054"
+                                        />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div
+                                v-if="showInstructorDropDown"
+                                class="custom-dropdown-base"
+                            >
+                                <div
+                                    v-for="tenant in tenants"
+                                    class="custom-dropdown-option"
+                                    @click="
+                                        user.tenant = tenant;
+                                        showInstructorDropDown = false;
+                                    "
+                                >
+                                    {{ tenant.name }}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End of custom dropdown -->
+                    </div>
+
+                    <!-- Password -->
                     <div class="mb-3">
                         <label class="form-label">Password</label>
                         <input
@@ -574,6 +646,7 @@ export default {
                             please enter a password !
                         </div>
                     </div>
+
                     <div class="d-flex justify-content-end gap-4">
                         <router-link class="btn red-btn" to="/users"
                             >Cancel

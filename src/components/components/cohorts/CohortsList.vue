@@ -19,7 +19,6 @@ export default {
     },
     async created() {
         await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
-        console.log(this.cohortsStore.cohorts);
         // Check if user has visited before
         this.checkIfTutorialComplete();
     },
@@ -32,6 +31,10 @@ export default {
         selectCohort(cohort) {
             this.cohortsStore.selectedCohort = cohort;
             this.cohortsStore.isAllStudentsSelected = false;
+            // pas data to the sibling component, via the parent
+            if (this.userDetailsStore.role == 'school_admin') {
+                this.$parent.updateCohortDetails(cohort);
+            }
         },
         restartTutorial() {
             this.showTutorialTip2 = false;
@@ -96,6 +99,10 @@ export default {
 <template>
     <div class="container mt-1">
         <button
+            v-if="
+                userDetailsStore.role == 'instructor' ||
+                userDetailsStore.role == 'partner'
+            "
             @click="selectAllStudents()"
             class="mb-1 cohort-buttons"
             :class="
@@ -107,6 +114,10 @@ export default {
             All students
         </button>
         <button
+            v-if="
+                userDetailsStore.role == 'instructor' ||
+                userDetailsStore.role == 'partner'
+            "
             v-for="cohort in cohortsStore.cohorts"
             @click="selectCohort(cohort)"
             :key="cohort.id"
@@ -119,6 +130,24 @@ export default {
         >
             {{ cohort.name }}
         </button>
+        <div
+            v-if="userDetailsStore.role == 'school_admin'"
+            v-for="cohort in cohortsStore.cohortsPerTenant"
+            :key="cohort.id"
+        >
+            <div class="d-flex bg-light rounded p-2">
+                <button
+                    :class="
+                        cohort.id === cohortsStore.selectedCohort.id
+                            ? 'isCurrentlySelected'
+                            : 'cohort-buttons'
+                    "
+                    @click="selectCohort(cohort)"
+                >
+                    {{ cohort.name }}
+                </button>
+            </div>
+        </div>
     </div>
 </template>
 

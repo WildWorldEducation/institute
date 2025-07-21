@@ -2,6 +2,7 @@
 import { useUsersStore } from '../../../../stores/UsersStore';
 import { useUserSkillsStore } from '../../../../stores/UserSkillsStore';
 import { useTeacherAnalyticsStore } from '../../../../stores/TeacherAnalyticsStore';
+import PassedAssessmentsTimelineChart from '../../../components/teacher-analytics/students/PassedAssessmentsTimelineChart.vue';
 import FailedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/students/FailedAssessmentsHorizontalBarChart.vue';
 
 export default {
@@ -16,12 +17,14 @@ export default {
         };
     },
     components: {
-        FailedAssessmentsHorizontalBarChart
+        FailedAssessmentsHorizontalBarChart,
+        PassedAssessmentsTimelineChart
     },
     data() {
         return {
             studentId: this.$route.params.studentId,
             studentName: null,
+            assessmentPasses: [],
             assessmentAttempts: [],
             multipleFails: []
         };
@@ -36,8 +39,7 @@ export default {
             this.studentName = foundObject.username;
         }
 
-        await this.userSkillsStore.getMasteredSkills(this.studentId);
-
+        await this.getUserSkillMasteredHistory(this.studentId);
         await this.getAssessmentAttempts();
 
         if (this.teacherAnalyticsStore.studentMultipleFails.length == 0) {
@@ -45,6 +47,8 @@ export default {
                 this.studentId
             );
         }
+
+        this.isLoaded = true;
     },
     methods: {
         async getAssessmentAttempts() {
@@ -69,6 +73,18 @@ export default {
                 minute: '2-digit',
                 second: '2-digit'
             });
+        },
+        async getUserSkillMasteredHistory(studentId) {
+            await this.userSkillsStore.getMasteredSkills(studentId);
+            this.assessmentPasses = this.userSkillsStore.masteredSkills.map(
+                (e) => {
+                    return {
+                        ...e,
+                        url: `/skills/${e.url}`,
+                        labelName: `${e.rootParent} - ${e.name}`
+                    };
+                }
+            );
         }
     }
 };
@@ -91,14 +107,18 @@ export default {
             <em>different colour line for passed, attempted, and failed</em>
         </p> -->
         <h2 class="secondary-heading">Passed</h2>
-        <div v-if="this.userSkillsStore.masteredSkills.length > 0" class="mb-4">
+        <PassedAssessmentsTimelineChart
+            v-if="assessmentPasses.length > 0"
+            :data="assessmentPasses"
+        />
+        <div v-if="assessmentPasses.length > 0" class="mt-4 mb-4">
             <table class="table">
                 <tr>
                     <th>Skill</th>
                     <th>Date</th>
                 </tr>
                 <tr
-                    v-for="skill in userSkillsStore.masteredSkills"
+                    v-for="skill in assessmentPasses"
                     :key="skill.id"
                     class="table-rows"
                 >
@@ -110,12 +130,13 @@ export default {
                         >
                     </td>
                     <td>
-                        {{ assessmentDate(skill.date) }}
+                        {{ assessmentDate(skill.mastered_date) }}
                     </td>
                 </tr>
             </table>
         </div>
         <p v-else>This student has not completed any assessments yet.</p>
+
         <h2 class="secondary-heading">Attempted</h2>
         <!-- <p>
             <em
@@ -148,6 +169,7 @@ export default {
             </table>
         </div>
         <p v-else>This student has attempted any assessments yet.</p>
+
         <p></p>
         <h2 class="secondary-heading">Failed multiple times</h2>
         <FailedAssessmentsHorizontalBarChart
