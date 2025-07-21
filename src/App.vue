@@ -535,7 +535,15 @@ export default {
                                 >
                                     Goals
                                 </RouterLink>
-                                <RouterLink to="/reputation" class="nav-link">
+                                <RouterLink
+                                    v-if="
+                                        userDetailsStore.role == 'student' ||
+                                        userDetailsStore.role == 'instructor' ||
+                                        userDetailsStore.role == 'partner'
+                                    "
+                                    to="/reputation"
+                                    class="nav-link"
+                                >
                                     Reputation
                                 </RouterLink>
                                 <RouterLink
