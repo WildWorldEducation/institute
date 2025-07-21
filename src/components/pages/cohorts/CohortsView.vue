@@ -51,7 +51,7 @@ export default {
         this.isLoading = false;
     },
     methods: {
-        updateCohortDetails() {         
+        updateCohortDetails() {
             this.$refs.CohortDetails.getCohortPercentageStudentsMasteredAtLeastOneSkill();
         }
     }
@@ -118,7 +118,13 @@ export default {
             <!-- User detail view for PC and Tablet View -->
             <div class="col-lg-8 col-md-7 d-none d-md-block">
                 <div class="row user-form-data-row">
-                    <CohortDetails ref="CohortDetails" v-if="!isLoading" />
+                    <CohortDetails
+                        ref="CohortDetails"
+                        v-if="
+                            !isLoading &&
+                            this.cohortsStore.cohortsPerTenant.length > 0
+                        "
+                    />
                     <div v-else>
                         <h1 class="text-muted py-5">You have no cohorts</h1>
                     </div>
@@ -133,7 +139,10 @@ export default {
                 <div class="row">
                     <CohortDetails
                         ref="CohortDetails"
-                        v-if="this.cohortsStore.selectedCohort.id"
+                        v-if="
+                            this.cohortsStore.cohortsPerTenant.length > 0 &&
+                            this.cohortsStore.selectedCohort.id
+                        "
                     />
                 </div>
             </div>
