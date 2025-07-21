@@ -676,9 +676,13 @@ router.get(
         // Check if logged in.
         if (req.session.userName) {
             let allStudentsSQLQuery = `
-                SELECT COUNT(users.id) AS quantity
+                SELECT COUNT(distinct users.id) AS quantity
                 FROM users
-                WHERE tenant_id = ${conn.escape(req.params.tenantId)}
+                JOIN cohorts_users
+                ON users.id = cohorts_users.user_id
+                WHERE cohorts_users.cohort_id = ${conn.escape(
+                    req.params.cohortId
+                )}
                 AND role = 'student'
                 AND is_deleted = 0;`;
 
@@ -697,11 +701,15 @@ router.get(
                     let masteredAtLeastOneSkillSQLQuery = `
                         SELECT COUNT(distinct users.id) AS quantity
                         FROM user_skills
-                        JOIN users
-                        ON user_skills.user_id = users.id
+                        JOIN cohorts_users
+                        ON user_skills.user_id = cohorts_users.user_id
+                        JOIN users 
+                        ON users.id = user_skills.user_id
                         WHERE is_mastered = 1
                         AND role = 'student'
-                        AND tenant_id = ${conn.escape(req.params.tenantId)};`;
+                        AND cohorts_users.cohort_id = ${conn.escape(
+                            req.params.cohortId
+                        )};`;
 
                     conn.query(
                         masteredAtLeastOneSkillSQLQuery,
@@ -717,6 +725,12 @@ router.get(
                                 let studentsMasteredNoSkills =
                                     allStudents -
                                     masteredOneSkillResults[0].quantity;
+
+                                console.log(allStudents);
+                                console.log(studentsMasteredNoSkills);
+                                console.log(
+                                    masteredOneSkillResults[0].quantity
+                                );
 
                                 let results = [
                                     {
