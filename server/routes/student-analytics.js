@@ -37,7 +37,7 @@ router.get(
     async (req, res, next) => {
         if (req.session.userName) {
             let sqlQuery = `            
-                SELECT assessment_attempts.id, url, name, date
+                SELECT assessment_attempts.id, url, name, date, level
                     FROM assessment_attempts
                     JOIN skills ON skills.id = assessment_attempts.skill_id
                     WHERE assessment_attempts.user_id = ${conn.escape(
@@ -82,23 +82,23 @@ router.get('/mastered-skills/:studentId', (req, res, next) => {
                     throw err;
                 }
 
-                sqlQuery = `SELECT skills.id, name, url, level, skills.parent, user_skills.last_visited_date, user_skills.mastered_date
-                            FROM skills
-                            LEFT OUTER JOIN user_skills
-                            ON skills.id = user_skills.skill_id            
-                            WHERE user_skills.user_id = ${conn.escape(
-                                req.params.studentId
-                            )}`;
-                conn.query(sqlQuery, (err, fullSkillList) => {
-                    if (err) {
-                        throw err;
-                    }
-                    const skillWithRootParent = getSkillListRootParent(
-                        results,
-                        fullSkillList
-                    );
-                    res.json(skillWithRootParent);
-                });
+                res.json(results);
+                // sqlQuery = `SELECT skills.id, name, url, level, skills.parent, user_skills.last_visited_date, user_skills.mastered_date
+                //             FROM skills
+                //             LEFT OUTER JOIN user_skills
+                //             ON skills.id = user_skills.skill_id
+                //             WHERE user_skills.user_id = ${conn.escape(
+                //                 req.params.studentId
+                //             )}`;
+                // conn.query(sqlQuery, (err, fullSkillList) => {
+                //     if (err) {
+                //         throw err;
+                //     }
+                    // const skillWithRootParent = getSkillListRootParent(
+                    //     results,
+                    //     fullSkillList
+                    // );
+                // });
             } catch (err) {
                 next(err);
             }

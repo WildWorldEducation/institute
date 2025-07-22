@@ -50,6 +50,9 @@ export default {
         <ul>
             <li><em>Time on platform, comparing students</em></li>
             <li><em>bar chart</em></li>
+        </ul>
+        maybe later:
+        <ul>
             <li><em>allow change of order</em></li>
             <li><em>Choose by day, week etc</em></li>
         </ul>
