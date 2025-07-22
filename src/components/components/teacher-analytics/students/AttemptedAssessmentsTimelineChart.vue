@@ -23,9 +23,9 @@ export default {
     },
     methods: {
         drawTimeLineChartWithMilesStone() {
-            milestones('#passed-assessments-timeline')
+            milestones('#attempted-assessments-timeline')
                 .mapping({
-                    timestamp: 'mastered_date',
+                    timestamp: 'date',
                     text: 'labelName'
                 })
                 .aggregateBy('week')
@@ -117,10 +117,10 @@ export default {
 };
 </script>
 <template>
-    <div id="passed-assessments-timeline"></div>
+    <div id="attempted-assessments-timeline"></div>
 </template>
 <style>
-#passed-assessments-timeline {
+#attempted-assessments-timeline {
     position: relative;
 }
 

@@ -3,7 +3,9 @@ import { useUsersStore } from '../../../../stores/UsersStore';
 import { useUserSkillsStore } from '../../../../stores/UserSkillsStore';
 import { useTeacherAnalyticsStore } from '../../../../stores/TeacherAnalyticsStore';
 import PassedAssessmentsTimelineChart from '../../../components/teacher-analytics/students/PassedAssessmentsTimelineChart.vue';
+import AttemptedAssessmentsTimelineChart from '../../../components/teacher-analytics/students/AttemptedAssessmentsTimelineChart.vue';
 import FailedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/students/FailedAssessmentsHorizontalBarChart.vue';
+import { ListBucketInventoryConfigurationsOutputFilterSensitiveLog } from '@aws-sdk/client-s3';
 
 export default {
     setup() {
@@ -18,7 +20,8 @@ export default {
     },
     components: {
         FailedAssessmentsHorizontalBarChart,
-        PassedAssessmentsTimelineChart
+        PassedAssessmentsTimelineChart,
+        AttemptedAssessmentsTimelineChart
     },
     data() {
         return {
@@ -57,7 +60,14 @@ export default {
             )
                 .then((response) => response.json())
                 .then((data) => {
-                    this.assessmentAttempts = data;
+                    this.assessmentAttempts = data.map((e) => {
+                        return {
+                            ...e,
+                            url: `/skills/${e.url}`,
+                            // labelName: `${e.rootParent} - ${e.name}`
+                            labelName: `${e.name}`
+                        };
+                    });
                 })
                 .catch((error) => {
                     console.error('Error fetching last visited skills:', error);
@@ -76,12 +86,14 @@ export default {
         },
         async getUserSkillMasteredHistory(studentId) {
             await this.userSkillsStore.getMasteredSkills(studentId);
+
             this.assessmentPasses = this.userSkillsStore.masteredSkills.map(
                 (e) => {
                     return {
                         ...e,
                         url: `/skills/${e.url}`,
-                        labelName: `${e.rootParent} - ${e.name}`
+                        // labelName: `${e.rootParent} - ${e.name}`
+                        labelName: `${e.name}`
                     };
                 }
             );
@@ -96,22 +108,13 @@ export default {
             <h1 class="heading">Assessment Status Report</h1>
             <h2 class="secondary-heading h3">{{ studentName }}</h2>
         </span>
-        <!-- <h2 class="secondary-heading">Combined</h2> -->
-        <!-- <p>
-            <em
-                >line chart, over time period. Skill names on hover or
-                permanently</em
-            >
-        </p>
-        <p>
-            <em>different colour line for passed, attempted, and failed</em>
-        </p> -->
         <h2 class="secondary-heading">Passed</h2>
         <PassedAssessmentsTimelineChart
+            class="mb-5"
             v-if="assessmentPasses.length > 0"
             :data="assessmentPasses"
         />
-        <div v-if="assessmentPasses.length > 0" class="mt-4 mb-4">
+        <!-- <div v-if="assessmentPasses.length > 0" class="mt-4 mb-4">
             <table class="table">
                 <tr>
                     <th>Skill</th>
@@ -134,17 +137,16 @@ export default {
                     </td>
                 </tr>
             </table>
-        </div>
+        </div> -->
         <p v-else>This student has not completed any assessments yet.</p>
 
         <h2 class="secondary-heading">Attempted</h2>
-        <!-- <p>
-            <em
-                >line chart, over time period. Skill names on hover or
-                permanently. Show number of attempts</em
-            >
-        </p> -->
-        <div v-if="this.assessmentAttempts.length > 0" class="mb-4">
+        <AttemptedAssessmentsTimelineChart
+            class="mb-5"
+            v-if="assessmentAttempts.length > 0"
+            :data="assessmentAttempts"
+        />
+        <!-- <div v-if="this.assessmentAttempts.length > 0" class="mb-4">
             <table class="table">
                 <tr>
                     <th>Skill</th>
@@ -167,7 +169,7 @@ export default {
                     </td>
                 </tr>
             </table>
-        </div>
+        </div> -->
         <p v-else>This student has attempted any assessments yet.</p>
 
         <p></p>
@@ -177,7 +179,7 @@ export default {
             :data="teacherAnalyticsStore.studentMultipleFails"
             colour="darkred"
         />
-        <div
+        <!-- <div
             v-if="this.teacherAnalyticsStore.studentMultipleFails.length > 0"
             class="mb-4"
         >
@@ -203,7 +205,7 @@ export default {
                     </td>
                 </tr>
             </table>
-        </div>
+        </div> -->
         <p v-else>
             This student has not failed any assessments more than once yet.
         </p>
