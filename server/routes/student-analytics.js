@@ -671,19 +671,18 @@ router.get(
 );
 
 router.get(
-    '/percentage-students-mastered-one-skill/cohort/:cohortId',
+    '/percentage-students-mastered-one-skill/instructor/:instructorId',
     (req, res, next) => {
         // Check if logged in.
         if (req.session.userName) {
             let allStudentsSQLQuery = `
-                SELECT COUNT(distinct users.id) AS quantity
-                FROM users
-                JOIN cohorts_users
-                ON users.id = cohorts_users.user_id
-                WHERE cohorts_users.cohort_id = ${conn.escape(
-                    req.params.cohortId
+                SELECT COUNT(*) AS quantity
+                FROM instructor_students
+                JOIN users
+                ON instructor_students.student_id = users.id
+                WHERE instructor_students.instructor_id = ${conn.escape(
+                    req.params.instructorId
                 )}
-                AND role = 'student'
                 AND is_deleted = 0;`;
 
             conn.query(allStudentsSQLQuery, (err, allStudentsResults) => {
@@ -700,16 +699,17 @@ router.get(
 
                     let masteredAtLeastOneSkillSQLQuery = `
                         SELECT COUNT(distinct users.id) AS quantity
-                        FROM user_skills
-                        JOIN cohorts_users
-                        ON user_skills.user_id = cohorts_users.user_id
+                        FROM instructor_students
+                        JOIN user_skills
+                        ON instructor_students.student_id = user_skills.user_id
                         JOIN users 
                         ON users.id = user_skills.user_id
                         WHERE is_mastered = 1
                         AND role = 'student'
-                        AND cohorts_users.cohort_id = ${conn.escape(
-                            req.params.cohortId
-                        )};`;
+                        AND is_deleted = 0
+                        AND instructor_students.instructor_id = ${conn.escape(
+                            req.params.instructorId
+                        )}`;
 
                     conn.query(
                         masteredAtLeastOneSkillSQLQuery,

@@ -112,6 +112,7 @@ export default {
             :data="avgTimeOnSkills"
             colour="purple"
         />
+        <p v-else>No data yet</p>
 
         <h4 class="mt-5">Average number of tokens to master a skill</h4>
         <TenantAvgTokensToMasterSkillsHorizontalBarChart
@@ -119,6 +120,7 @@ export default {
             :data="avgTokensToMasterSkills"
             colour="darkgreen"
         />
+        <p v-else>No data yet</p>
 
         <h2 class="secondary-heading mt-5">Student Progress & Attendance</h2>
         <h3>Usage and Fidelity Reports</h3>
@@ -129,6 +131,7 @@ export default {
             v-if="percentageStudentsMasteredOneSkill.length > 0"
             :data="percentageStudentsMasteredOneSkill"
         />
+        <p v-else>No data yet</p>
         <ul class="mt-5">
             <li>
                 percentage of students who completed at least one skill
