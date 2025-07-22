@@ -94,10 +94,10 @@ router.get('/mastered-skills/:studentId', (req, res, next) => {
                 //     if (err) {
                 //         throw err;
                 //     }
-                    // const skillWithRootParent = getSkillListRootParent(
-                    //     results,
-                    //     fullSkillList
-                    // );
+                // const skillWithRootParent = getSkillListRootParent(
+                //     results,
+                //     fullSkillList
+                // );
                 // });
             } catch (err) {
                 next(err);
@@ -767,6 +767,37 @@ router.post('/record-duration/:userId/:skillId', (req, res, next) => {
         VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
             req.params.skillId
         )}, ${conn.escape(duration)}) 
+        ON DUPLICATE KEY UPDATE duration= duration + ${conn.escape(duration)};
+        `;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Record time on app per day per student
+ */
+router.post('/record-time-on-app/:userId', (req, res, next) => {
+    if (req.session.userName) {
+        const duration = req.body.duration;
+
+        let sqlQuery = `
+        INSERT INTO user_time_per_day (user_id, date, duration) 
+        VALUES(${conn.escape(req.params.userId)}, CURDATE(), ${conn.escape(
+            duration
+        )}) 
+        
         ON DUPLICATE KEY UPDATE duration= duration + ${conn.escape(duration)};
         `;
 

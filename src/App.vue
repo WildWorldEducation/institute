@@ -3,6 +3,7 @@
 import { useSessionDetailsStore } from './stores/SessionDetailsStore.js';
 import { useUserDetailsStore } from './stores/UserDetailsStore.js';
 import router from './router';
+import AppTimeTracker from './components/components/teacher-analytics/AppTimeTracker.vue';
 
 export default {
     setup() {
@@ -42,6 +43,15 @@ export default {
             document.body.classList.remove('instructor-theme');
         }
         this.closeNavbarOnClick();
+    },
+    mounted() {
+        window.addEventListener('beforeunload', this.handleBeforeUnload);
+    },
+    beforeUnmount() {
+        window.removeEventListener('beforeunload', this.handleBeforeUnload);
+    },
+    components: {
+        AppTimeTracker
     },
     watch: {
         $route() {
@@ -93,7 +103,6 @@ export default {
                 }
             });
         },
-
         closeNavbarWithAnimation() {
             const navbarToggler = document.querySelector('.navbar-toggler');
             const navbarCollapse = document.querySelector('.navbar-collapse');
@@ -128,6 +137,10 @@ export default {
             fetch('/logout', requestOptions).then(() => {
                 router.push({ name: 'login' });
             });
+        },
+        handleBeforeUnload(event) {
+            console.log('Tab is closing or refreshing');
+            this.$refs.appTimeTracker.saveDuration();
         }
     }
 };
@@ -609,6 +622,8 @@ export default {
     <div id="router-view" class="router-view-padding">
         <RouterView />
     </div>
+    <!-- To track student time -->
+    <AppTimeTracker ref="appTimeTracker" />
 </template>
 
 <style>
