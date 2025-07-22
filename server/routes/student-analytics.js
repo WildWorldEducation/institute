@@ -793,7 +793,7 @@ router.post('/record-time-on-app/:userId', (req, res, next) => {
         const duration = req.body.duration;
 
         let sqlQuery = `
-        INSERT INTO user_time_per_day (user_id, date, duration) 
+        INSERT INTO user_duration_per_day (user_id, date, duration) 
         VALUES(${conn.escape(req.params.userId)}, CURDATE(), ${conn.escape(
             duration
         )}) 
