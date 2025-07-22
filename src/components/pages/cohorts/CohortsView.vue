@@ -38,21 +38,12 @@ export default {
         ) {
             await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
             this.cohortsStore.selectedCohort = this.cohortsStore.cohorts[0];
-        } else if (this.userDetailsStore.role === 'school_admin') {
-            if (this.cohortsStore.cohortsPerTenant.length < 1) {
-                await this.cohortsStore.getCohortsPerTenant(
-                    this.userDetailsStore.tenantId
-                );
-                this.cohortsStore.selectedCohort =
-                    this.cohortsStore.cohortsPerTenant[0];
-            }
         }
-
         this.isLoading = false;
     },
     methods: {
         updateCohortDetails() {
-            this.$refs.CohortDetails.getCohortPercentageStudentsMasteredAtLeastOneSkill();
+            this.$refs.CohortDetails.getInstructorPercentageStudentsMasteredAtLeastOneSkill();
         }
     }
 };
@@ -118,13 +109,7 @@ export default {
             <!-- User detail view for PC and Tablet View -->
             <div class="col-lg-8 col-md-7 d-none d-md-block">
                 <div class="row user-form-data-row">
-                    <CohortDetails
-                        ref="CohortDetails"
-                        v-if="
-                            !isLoading &&
-                            this.cohortsStore.cohortsPerTenant.length > 0
-                        "
-                    />
+                    <CohortDetails ref="CohortDetails" v-if="!isLoading" />
                     <div v-else>
                         <h1 class="text-muted py-5">You have no cohorts</h1>
                     </div>

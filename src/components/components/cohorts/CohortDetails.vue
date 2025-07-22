@@ -19,51 +19,17 @@ export default {
             localIsSkillsLocked: null,
             mode: 'big',
             isMobileCheck: window.innerWidth,
-            percentageStudentsMasteredOneSkill: [],
             isLoaded: false
         };
     },
-    async created() {
-        if (this.userDetailsStore.role == 'school_admin')
-            await this.getCohortPercentageStudentsMasteredAtLeastOneSkill();
-    },
+    async created() {},
     computed: {
         studentName() {
             return `${this.$parent.user.username}`.trim();
         }
     },
-    components: {
-        CohortPercentageStudentsMasteredAtLeastOneSkillPieChart
-    },
-    methods: {
-        // For School admin reports
-        async getCohortPercentageStudentsMasteredAtLeastOneSkill() {
-            try {
-                const response = await fetch(
-                    `/student-analytics/percentage-students-mastered-one-skill/cohort/${this.cohortsStore.selectedCohort.id}`
-                );
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                this.percentageStudentsMasteredOneSkill = Array.isArray(data)
-                    ? data
-                    : [];
-
-                this.isLoaded = true;
-
-                await this.$refs.cohortPercentageStudentsMasteredAtLeastOneSkillPieChart.generateChart();
-            } catch (error) {
-                console.error(
-                    'Error fetching all students failed assessments:',
-                    error
-                );
-                this.percentageStudentsMasteredOneSkill = [];
-            }
-        }
-    }
+    components: {},
+    methods: {}
 };
 </script>
 
@@ -109,7 +75,10 @@ export default {
                     <h2 class="secondary-heading h4">Check progress</h2>
                     <!-- Whether all students or cohort selected -->
                     <router-link
-                        v-if="!cohortsStore.isAllStudentsSelected"
+                        v-if="
+                            !cohortsStore.isAllStudentsSelected &&
+                            this.cohortsStore.cohorts.length > 0
+                        "
                         :to="`/cohort/${cohortsStore.selectedCohort.id}/progress-report`"
                         class="fit-content"
                         target="_blank"
@@ -128,7 +97,10 @@ export default {
                     <h2 class="secondary-heading h4 mt-4">Check activity</h2>
                     <!-- Whether all students or cohort selected -->
                     <router-link
-                        v-if="!cohortsStore.isAllStudentsSelected"
+                        v-if="
+                            !cohortsStore.isAllStudentsSelected &&
+                            this.cohortsStore.cohorts.length > 0
+                        "
                         :to="`/cohort/${this.cohortsStore.selectedCohort.id}/skill-activity`"
                         class="fit-content"
                         target="_blank"
@@ -146,7 +118,10 @@ export default {
 
                     <!-- Whether all students or cohort selected -->
                     <router-link
-                        v-if="!cohortsStore.isAllStudentsSelected"
+                        v-if="
+                            !cohortsStore.isAllStudentsSelected &&
+                            this.cohortsStore.cohorts.length > 0
+                        "
                         :to="`/cohort/${this.cohortsStore.selectedCohort.id}/assessment-status`"
                         class="fit-content mt-2"
                         target="_blank"
@@ -164,7 +139,7 @@ export default {
 
                     <!-- Whether all students or cohort selected -->
                     <router-link
-                        v-if="!cohortsStore.isAllStudentsSelected"
+                        v-if="this.cohortsStore.cohorts.length > 0"
                         :to="`/cohort/${this.cohortsStore.selectedCohort.id}/total-time`"
                         class="fit-content mt-2"
                         target="_blank"
@@ -207,6 +182,7 @@ export default {
                 <div class="d-flex flex-column">
                     <!-- Edit Cohort -->
                     <router-link
+                        v-if="cohortsStore.cohorts.length > 0"
                         :to="`/cohort/edit/${cohortsStore.selectedCohort.id}`"
                         class="btn primary-btn mt-1"
                     >
@@ -283,51 +259,6 @@ export default {
                     </router-link>
                 </div> -->
             </div>
-        </div>
-        <div
-            v-if="
-                userDetailsStore.role == 'school_admin' &&
-                $route.name == 'classes'
-            "
-            class="d-flex flex-column"
-        >
-            <h2 class="secondary-heading">Student Progress & Attendance</h2>
-            <h3>Usage and Fidelity Reports</h3>
-            <p>Track weekly and cumulative usage</p>
-            <h4>Percentage of students who completed at least one skill</h4>
-            <CohortPercentageStudentsMasteredAtLeastOneSkillPieChart
-                ref="cohortPercentageStudentsMasteredAtLeastOneSkillPieChart"
-            />
-            <p>including total tutoring time, and engagement.</p>
-            <ul>
-                <li>
-                    total tutoring time
-                    <em
-                        >(Would have to record time per student per skill, with
-                        tutor)</em
-                    >
-                </li>
-                <li>
-                    engagement
-                    <ul>
-                        <li>
-                            <em>task made</em>
-                        </li>
-                        <li>
-                            <em
-                                >starting date is when first student started
-                                on</em
-                            >
-                        </li>
-                        <li>
-                            <em>total time on platform </em>
-                        </li>
-                        <li>
-                            <em>line chart </em>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
         </div>
     </div>
     <div v-if="showModal">
