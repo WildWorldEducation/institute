@@ -49,15 +49,12 @@ export default {
                     this.studentName = foundStudent.username;
                 }
 
-                // Get mastered skills data
+                // Get mastered skills data (keep for other purposes)
                 await this.userSkillsStore.getMasteredSkills(studentId);
                 this.masteredSkills = this.userSkillsStore.masteredSkills;
 
-                // Get start date
-                await this.getSkillActivityData(studentId);
-
-                // Generate progress data using only real API data
-                this.progressData = this.generateProgressData();
+                // Get progress chart data using new endpoint
+                await this.getProgressChartData(studentId);
             } catch (error) {
                 console.error('Error initializing data:', error);
             } finally {
@@ -65,7 +62,35 @@ export default {
             }
         },
 
-        async getSkillActivityData(studentId) {
+        async getProgressChartData(studentId) {
+            try {
+                const response = await fetch(
+                    `/student-analytics/skills-progress-chart/${studentId}`
+                );
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    this.startDate = data.startDate
+                        ? new Date(data.startDate)
+                        : this.getFallbackStartDate();
+
+                    // Generate cumulative progress data
+                    this.progressData = this.generateCumulativeProgressData(
+                        data.skillsByDate
+                    );
+                } else {
+                    // Fallback to old method if new endpoint not available
+                    await this.getSkillActivityDataFallback(studentId);
+                }
+            } catch (error) {
+                console.error('Error fetching progress chart data:', error);
+                // Fallback to old method
+                await this.getSkillActivityDataFallback(studentId);
+            }
+        },
+
+        async getSkillActivityDataFallback(studentId) {
             try {
                 const response = await fetch(
                     `/student-analytics/skill-activity-report/${studentId}`
@@ -96,10 +121,42 @@ export default {
                 } else {
                     this.setStartDateFromMasteredSkills();
                 }
+
+                // Generate progress data using legacy method
+                this.progressData = this.generateProgressDataLegacy();
             } catch (error) {
                 console.error('Error fetching skill activity data:', error);
                 this.setStartDateFromMasteredSkills();
+                this.progressData = this.generateProgressDataLegacy();
             }
+        },
+
+        generateCumulativeProgressData(skillsByDate) {
+            if (!skillsByDate || skillsByDate.length === 0) {
+                return [];
+            }
+
+            const data = [];
+            let cumulativeCount = 0;
+
+            // Add start point if we have a start date
+            if (this.startDate) {
+                data.push({
+                    date: this.startDate,
+                    skillsCount: 0
+                });
+            }
+
+            // Process each date and calculate cumulative count
+            skillsByDate.forEach((item) => {
+                cumulativeCount += parseInt(item.skills_on_date) || 0;
+                data.push({
+                    date: new Date(item.date),
+                    skillsCount: cumulativeCount
+                });
+            });
+
+            return data;
         },
 
         setStartDateFromMasteredSkills() {
@@ -130,7 +187,8 @@ export default {
             return new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
         },
 
-        generateProgressData() {
+        generateProgressDataLegacy() {
+            // Legacy method - only used as fallback
             // Return empty array if no skills
             if (this.masteredSkills.length === 0) {
                 return [];
@@ -147,12 +205,23 @@ export default {
                 return [];
             }
 
-            // Sort by actual mastered_date
-            const sortedSkills = validSkills.sort((a, b) => {
-                return new Date(a.mastered_date) - new Date(b.mastered_date);
+            // Group skills by date and sum them
+            const skillsByDate = {};
+            validSkills.forEach((skill) => {
+                const dateStr = new Date(skill.mastered_date).toDateString();
+                skillsByDate[dateStr] = (skillsByDate[dateStr] || 0) + 1;
             });
 
+            // Convert to array and sort by date
+            const sortedDates = Object.keys(skillsByDate)
+                .map((dateStr) => ({
+                    date: new Date(dateStr),
+                    count: skillsByDate[dateStr]
+                }))
+                .sort((a, b) => a.date - b.date);
+
             const data = [];
+            let cumulativeCount = 0;
 
             // Add start point only if we have a real start date
             if (this.startDate) {
@@ -162,13 +231,15 @@ export default {
                 });
             }
 
-            // Add each skill at its actual mastered_date
-            sortedSkills.forEach((skill, index) => {
+            // Add cumulative counts for each date
+            sortedDates.forEach((item) => {
+                cumulativeCount += item.count;
                 data.push({
-                    date: new Date(skill.mastered_date),
-                    skillsCount: index + 1
+                    date: item.date,
+                    skillsCount: cumulativeCount
                 });
             });
+
             return data;
         }
     }

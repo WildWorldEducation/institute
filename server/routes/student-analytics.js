@@ -106,6 +106,60 @@ router.get('/mastered-skills/:studentId', (req, res, next) => {
     }
 });
 
+/* Get skills progress data for chart - grouped by mastery date with start date for cumulative visualization */
+router.get('/skills-progress-chart/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        // First get the earliest first_visited_date for start point
+        let startDateQuery = `
+            SELECT first_visited_date
+            FROM user_skills
+            WHERE user_id = ${conn.escape(req.params.studentId)}
+            AND first_visited_date IS NOT NULL
+            ORDER BY first_visited_date ASC
+            LIMIT 1;
+        `;
+
+        conn.query(startDateQuery, (err, startDateResult) => {
+            if (err) {
+                console.error('Error in start date query:', err);
+                return next(err);
+            }
+
+            // Get skills mastered grouped by date
+            let masteredSkillsQuery = `
+                SELECT COUNT(*) AS skills_on_date, CAST(mastered_date AS DATE) AS date
+                FROM user_skills
+                WHERE is_mastered = 1
+                AND user_id = ${conn.escape(req.params.studentId)}
+                AND mastered_date IS NOT NULL
+                GROUP BY CAST(mastered_date AS DATE)
+                ORDER BY date ASC;
+            `;
+
+            conn.query(masteredSkillsQuery, (err, masteredResults) => {
+                if (err) {
+                    console.error('Error in mastered skills query:', err);
+                    return next(err);
+                }
+
+                const response = {
+                    startDate:
+                        startDateResult.length > 0
+                            ? startDateResult[0].first_visited_date
+                            : null,
+                    skillsByDate: masteredResults || []
+                };
+                res.json(response);
+            });
+        });
+    } else {
+        res.status(401).json({ error: 'Not authenticated' });
+    }
+});
+
 /* Get assessments that have been failed multiple times, and not yet passed */
 router.get('/multiple-fails/:studentId', (req, res, next) => {
     // Check if logged in.

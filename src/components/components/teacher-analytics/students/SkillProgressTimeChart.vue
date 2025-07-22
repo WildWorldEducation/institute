@@ -28,21 +28,30 @@ export default {
         }
     },
     watch: {
+        // Only watch for when data becomes available (not for every change)
         progressData: {
-            handler() {
-                this.$nextTick(() => {
-                    if (this.progressData.length > 0) {
+            handler(newData) {
+                if (!this.chartRendered && newData && newData.length > 0) {
+                    this.$nextTick(() => {
                         this.createChart();
-                    }
-                });
+                        this.chartRendered = true;
+                    });
+                }
             },
-            deep: true,
             immediate: true
         }
     },
+    data() {
+        return {
+            chartRendered: false
+        };
+    },
     mounted() {
         if (!this.isLoading && this.progressData.length > 0) {
-            this.createChart();
+            this.$nextTick(() => {
+                this.createChart();
+                this.chartRendered = true;
+            });
         }
     },
     beforeUnmount() {
@@ -55,7 +64,9 @@ export default {
             d3.select(`#${this.chartId}`).selectAll('*').remove();
             d3.selectAll('.skills-progress-tooltip').remove();
 
-            if (this.progressData.length === 0) return;
+            if (!this.progressData || this.progressData.length === 0) {
+                return;
+            }
 
             // Clean and validate data
             const cleanData = this.progressData
@@ -76,10 +87,43 @@ export default {
                 return;
             }
 
-            // Chart dimensions
-            const container = d3.select(`#${this.chartId}`);
+            try {
+                this.renderChart(cleanData);
+            } catch (error) {
+                console.error('Error creating chart:', error);
+            }
+        },
+
+        renderChart(data) {
+            // Wait a bit for DOM to be ready and try multiple times if needed
+            this.$nextTick(() => {
+                const container = d3.select(`#${this.chartId}`);
+                let containerNode = container.node();
+
+                if (!containerNode) {
+                    // Try again after a short delay
+                    setTimeout(() => {
+                        const retryContainer = d3.select(`#${this.chartId}`);
+                        containerNode = retryContainer.node();
+
+                        if (!containerNode) {
+                            console.error(
+                                `Chart container #${this.chartId} not found after retry`
+                            );
+                            return;
+                        }
+
+                        this.drawChart(retryContainer, containerNode, data);
+                    }, 100);
+                } else {
+                    this.drawChart(container, containerNode, data);
+                }
+            });
+        },
+
+        drawChart(container, containerNode, data) {
             const containerWidth =
-                container.node()?.getBoundingClientRect().width || 600;
+                containerNode.getBoundingClientRect().width || 600;
             const width = Math.min(containerWidth - 20, 600);
             const height = 300;
             const marginTop = 20;
@@ -88,11 +132,8 @@ export default {
             const marginLeft = 50;
 
             // Create scales with clean data
-            const xExtent = d3.extent(cleanData, (d) => d.date);
-            const yMax = Math.max(
-                d3.max(cleanData, (d) => d.skillsCount) || 1,
-                1
-            );
+            const xExtent = d3.extent(data, (d) => d.date);
+            const yMax = Math.max(d3.max(data, (d) => d.skillsCount) || 1, 1);
 
             const x = d3
                 .scaleTime()
@@ -168,21 +209,21 @@ export default {
 
             // Add the line (dark green color) with clean data
             svg.append('path')
-                .datum(cleanData)
+                .datum(data)
                 .attr('fill', 'none')
                 .attr('stroke', '#006400') // Dark green
-                .attr('stroke-width', 2) // Reduced from 3 to 2
+                .attr('stroke-width', 2)
                 .attr('d', line);
 
             // Add data points with clean data
             svg.selectAll('.dot')
-                .data(cleanData)
+                .data(data)
                 .enter()
                 .append('circle')
                 .attr('class', 'dot')
                 .attr('cx', (d) => x(d.date))
                 .attr('cy', (d) => y(d.skillsCount))
-                .attr('r', 3) // Reduced from 5 to 3
+                .attr('r', 4)
                 .attr('fill', '#006400') // Dark green
                 .style('cursor', 'pointer')
                 .on('mouseover', (event, d) => {
@@ -250,7 +291,10 @@ export default {
             <p class="mt-2 mb-0 text-muted">Loading progress data...</p>
         </div>
 
-        <div v-else-if="progressData.length === 0" class="no-data-state">
+        <div
+            v-else-if="!progressData || progressData.length === 0"
+            class="no-data-state"
+        >
             <i class="fas fa-chart-line fa-2x text-muted mb-2"></i>
             <p class="text-muted mb-0">No progress data available yet.</p>
         </div>
@@ -287,7 +331,7 @@ export default {
 .chart-svg-container {
     width: 100%;
     overflow: visible;
-    max-width: 100%; /* Allow full width */
+    max-width: 100%;
     display: flex;
     justify-content: center;
 }
