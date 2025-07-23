@@ -634,6 +634,38 @@ router.get('/all-students-duration-per-day/:userId', (req, res, next) => {
     }
 });
 
+/* Get all students of instructor durations */
+router.get('/all-students-total-durations/:userId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT username AS name, SUM(duration) AS quantity
+            FROM user_duration_per_day
+            JOIN instructor_students
+            ON user_duration_per_day.user_id = instructor_students.student_id
+            JOIN users
+            ON users.id = user_duration_per_day.user_id
+            WHERE instructor_students.instructor_id = ${conn.escape(
+                req.params.userId
+            )}              
+            GROUP BY instructor_students.student_id;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * PER TENANT --------------------------------------
  */

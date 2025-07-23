@@ -41,6 +41,7 @@ export default {
             await this.getCohortStudentTotalDurations();
         } else {
             await this.getAllStudentsDurationPerDay();
+            await this.getAllStudentsStudentTotalDurations();
         }
     },
     methods: {
@@ -75,7 +76,6 @@ export default {
             )
                 .then((response) => response.json())
                 .then((data) => {
-                    console.log(data);
                     for (let i = 0; i < data.length; i++) {
                         data[i].formattedQuantity =
                             this.millisToMinutesAndSeconds(data[i].quantity);
@@ -89,7 +89,6 @@ export default {
                     }
                     data.sort((a, b) => a.date - b.date);
                     this.durationsPerDay = data;
-                    console.log(this.durationsPerDay);
                 })
                 .catch((error) => {
                     console.error(
@@ -100,6 +99,27 @@ export default {
         },
         async getCohortStudentTotalDurations() {
             fetch(`/student-analytics/cohort-total-durations/${this.cohortId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].formattedQuantity =
+                            this.millisToMinutesAndSeconds(data[i].quantity);
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.studentTotalDurations = data;
+                })
+                .catch((error) => {
+                    console.error(
+                        'Error fetching student duration per day:',
+                        error
+                    );
+                });
+        },
+        async getAllStudentsStudentTotalDurations() {
+            fetch(
+                `/student-analytics/all-students-total-durations/${this.userDetailsStore.userId}`
+            )
                 .then((response) => response.json())
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {
@@ -162,10 +182,9 @@ export default {
             :colour="'#5f31dd'"
             v-if="studentTotalDurations.length > 0"
         />
+        <p v-else>No time recorded yet</p>
 
-        <h2 class="secondary-heading">All skills</h2>
-
-        <h2 class="secondary-heading">Minutes per skill</h2>
+        <h2 class="secondary-heading mt-4">Minutes per skill</h2>
     </div>
 </template>
 
