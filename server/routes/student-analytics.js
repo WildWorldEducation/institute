@@ -94,10 +94,10 @@ router.get('/mastered-skills/:studentId', (req, res, next) => {
                 //     if (err) {
                 //         throw err;
                 //     }
-                    // const skillWithRootParent = getSkillListRootParent(
-                    //     results,
-                    //     fullSkillList
-                    // );
+                // const skillWithRootParent = getSkillListRootParent(
+                //     results,
+                //     fullSkillList
+                // );
                 // });
             } catch (err) {
                 next(err);
@@ -140,6 +140,76 @@ router.get('/multiple-fails/:studentId', (req, res, next) => {
                 next(err);
             }
         });
+    }
+});
+
+/* Get total time spent on skills per student in cohort */
+router.get('/total-time-skills/cohort/:cohortId', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery;
+
+        // Check if requesting all students or specific cohort
+        if (req.params.cohortId === 'all-students') {
+            // Use the instructor ID from session (current logged-in user)
+            const instructorId = req.session.userId;
+
+            sqlQuery = `
+                SELECT SUM(user_skills.duration) AS quantity, users.username AS name
+                FROM user_skills
+                JOIN skills ON skills.id = user_skills.skill_id            
+                JOIN instructor_students ON user_skills.user_id = instructor_students.student_id
+                JOIN users ON user_skills.user_id = users.id     
+                WHERE instructor_students.instructor_id = ${conn.escape(
+                    instructorId
+                )}
+                AND user_skills.duration > 0
+                AND skills.type <> 'domain'
+                GROUP BY user_skills.user_id, users.username
+                ORDER BY quantity DESC;`;
+        } else {
+            // Cohort-specific query
+            sqlQuery = `
+                SELECT SUM(user_skills.duration) AS quantity, users.username AS name
+                FROM user_skills
+                JOIN skills ON skills.id = user_skills.skill_id            
+                JOIN cohorts_users ON user_skills.user_id = cohorts_users.user_id
+                JOIN users ON user_skills.user_id = users.id     
+                WHERE cohorts_users.cohort_id = ${conn.escape(
+                    req.params.cohortId
+                )}
+                AND user_skills.duration > 0
+                AND skills.type <> 'domain'
+                GROUP BY user_skills.user_id, users.username
+                ORDER BY quantity DESC;`;
+        }
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    console.error('SQL Error:', err);
+                    throw err;
+                }
+
+                if (results.length === 0) {
+                    return res.json([]);
+                }
+
+                // Clean results and ensure quantity is a number
+                const cleanResults = results.map((row) => ({
+                    name: row.name || 'Unknown Student',
+                    quantity: parseFloat(row.quantity) || 0
+                }));
+
+                res.json(cleanResults);
+            } catch (err) {
+                console.error('Database error:', err);
+                next(err);
+            }
+        });
+    } else {
+        res.status(401).json({ error: 'Not authenticated' });
     }
 });
 
