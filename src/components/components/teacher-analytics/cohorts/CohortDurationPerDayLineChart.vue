@@ -2,7 +2,7 @@
 import * as d3 from 'd3';
 
 export default {
-    name: 'StudentDurationPerDayLineChart',
+    name: 'CohortDurationPerDayLineChart',
     props: ['data', 'colour'],
     data() {
         return {
@@ -11,10 +11,7 @@ export default {
     },
     mounted() {
         const data = this.data;
-
-        const container = d3.select(
-            '#student-duration-per-day-chart-container'
-        );
+        const container = d3.select('#cohort-duration-per-day-chart-container');
 
         // Declare the chart dimensions and margins.
         const width = 928;
@@ -44,7 +41,7 @@ export default {
 
         // Create the SVG container.
         const svg = d3
-            .select('#student-duration-per-day-chart-container')
+            .select('#cohort-duration-per-day-chart-container')
             .append('svg')
             .attr('width', width)
             .attr('height', height)
@@ -93,7 +90,7 @@ export default {
 </script>
 
 <template>
-    <div id="student-duration-per-day-chart-container"></div>
+    <div id="cohort-duration-per-day-chart-container"></div>
 </template>
 
 <style scoped></style>
