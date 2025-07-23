@@ -469,36 +469,41 @@ router.get('/cohort-total-durations/:cohortId', (req, res, next) => {
 });
 
 /* Get all student in cohort durations per skill*/
-router.get('/cohort-student-durations-per-skill/:cohortId', (req, res, next) => {
-    // Check if logged in.
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
+router.get(
+    '/cohort-student-durations-per-skill/:cohortId',
+    (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
 
-        let sqlQuery = `
-         SELECT username AS name, SUM(duration) AS quantity
-            FROM user_duration_per_day
+            let sqlQuery = `
+            SELECT skills.name, SUM(duration) AS quantity
+            FROM user_skills            
             JOIN cohorts_users
-            ON user_duration_per_day.user_id = cohorts_users.user_id
-            JOIN users
-            ON users.id = user_duration_per_day.user_id
+            ON user_skills.user_id = cohorts_users.user_id
+			JOIN skills
+            ON skills.id = user_skills.skill_id
             WHERE cohorts_users.cohort_id = ${conn.escape(
                 req.params.cohortId
             )}              
-            GROUP BY cohorts_users.user_id;`;
+            GROUP BY skills.name
+            HAVING quantity > 0
+            ORDER BY quantity DESC;`;
 
-        conn.query(sqlQuery, (err, result) => {
-            try {
-                if (err) {
-                    throw err;
+            conn.query(sqlQuery, (err, result) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    res.json(result);
+                } catch (err) {
+                    next(err);
                 }
-
-                res.json(result);
-            } catch (err) {
-                next(err);
-            }
-        });
+            });
+        }
     }
-});
+);
 
 /**
  * FOR ALL STUDENTS OF AN INSTRUCTOR -------------------------------------------------------
@@ -697,6 +702,43 @@ router.get('/all-students-total-durations/:userId', (req, res, next) => {
         });
     }
 });
+
+/* Get all student in cof instructor durations per skill*/
+router.get(
+    '/all-students-student-durations-per-skill/:userId',
+    (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+
+            let sqlQuery = `            
+                SELECT skills.name, SUM(duration) AS quantity
+                FROM user_skills            
+                JOIN instructor_students
+                ON user_skills.user_id = instructor_students.student_id
+                JOIN skills
+                ON skills.id = user_skills.skill_id
+                WHERE instructor_students.instructor_id = ${conn.escape(
+                    req.params.userId
+                )}              
+                GROUP BY skills.name
+                HAVING quantity > 0
+                ORDER BY quantity DESC;`;
+
+            conn.query(sqlQuery, (err, result) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    res.json(result);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
 
 /**
  * PER TENANT --------------------------------------

@@ -2,7 +2,7 @@
 import * as d3 from 'd3';
 
 export default {
-    name: 'CohortTimePerSkillHorizontalBarChart',
+    name: 'CohortDurationPerSkillHorizontalBarChart',
     props: ['data', 'colour'],
     data() {
         return {
@@ -10,7 +10,9 @@ export default {
         };
     },
     mounted() {
-        const container = d3.select('#cohort-time-per-skill-chart-container');
+        const container = d3.select(
+            '#cohort-duration-per-skill-chart-container'
+        );
         //console.log(this.data);
 
         // Specify the chart’s dimensions, based on a bar’s height.
@@ -42,7 +44,7 @@ export default {
 
         // Create the SVG container.
         const svg = d3
-            .select('#cohort-time-per-skill-chart-container')
+            .select('#cohort-duration-per-skill-chart-container')
             .append('svg')
             .attr('width', width)
             .attr('height', height)
@@ -98,7 +100,7 @@ export default {
 </script>
 
 <template>
-    <div id="cohort-time-per-skill-chart-container"></div>
+    <div id="cohort-duration-per-skill-chart-container"></div>
 </template>
 
 <style scoped></style>

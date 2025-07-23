@@ -3,6 +3,7 @@ import { useCohortsStore } from '../../../../stores/CohortsStore';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import CohortDurationPerDayLineChart from '../../../components/teacher-analytics/cohorts/CohortDurationPerDayLineChart.vue';
 import CohortCompareDurationHorizontalChart from '../../../components/teacher-analytics/cohorts/CohortCompareDurationHorizontalChart.vue';
+import CohortDurationPerSkillHorizontalBarChart from '../../../components/teacher-analytics/cohorts/CohortDurationPerSkillHorizontalBarChart.vue';
 
 export default {
     setup() {
@@ -15,7 +16,8 @@ export default {
     },
     components: {
         CohortDurationPerDayLineChart,
-        CohortCompareDurationHorizontalChart
+        CohortCompareDurationHorizontalChart,
+        CohortDurationPerSkillHorizontalBarChart
     },
     data() {
         return {
@@ -40,10 +42,11 @@ export default {
         if (this.cohortId != 'all-students') {
             await this.getCohortDurationPerDay();
             await this.getCohortStudentTotalDurations();
-            await this.getStudentDurationsPerSkill();
+            await this.getCohortDurationsPerSkill();
         } else {
             await this.getAllStudentsDurationPerDay();
             await this.getAllStudentsStudentTotalDurations();
+            await this.getAllStudentsDurationsPerSkill();
         }
     },
     methods: {
@@ -139,9 +142,28 @@ export default {
                     );
                 });
         },
-        async getStudentDurationsPerSkill() {
+        async getCohortDurationsPerSkill() {
             fetch(
                 `/student-analytics/cohort-student-durations-per-skill/${this.cohortId}`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].formattedQuantity =
+                            this.millisToMinutesAndSeconds(data[i].quantity);
+                    }
+                    this.studentDurationsPerSkill = data;
+                })
+                .catch((error) => {
+                    console.error(
+                        'Error fetching student durations per skill:',
+                        error
+                    );
+                });
+        },
+        async getAllStudentsDurationsPerSkill() {
+            fetch(
+                `/student-analytics/all-students-student-durations-per-skill/${this.userDetailsStore.userId}`
             )
                 .then((response) => response.json())
                 .then((data) => {
@@ -206,6 +228,11 @@ export default {
         <p v-else>No time recorded yet</p>
 
         <h2 class="secondary-heading mt-4">Minutes per skill</h2>
+        <CohortDurationPerSkillHorizontalBarChart
+            :data="studentDurationsPerSkill"
+            :colour="'#5f31dd'"
+            v-if="studentDurationsPerSkill.length > 0"
+        />
     </div>
 </template>
 
