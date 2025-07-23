@@ -85,7 +85,7 @@ export default {
         // Append a path for the line.
         svg.append('path')
             .attr('fill', 'none')
-            .attr('stroke', 'darkblue')
+            .attr('stroke', '#5f31dd')
             .attr('stroke-width', 1.5)
             .attr('d', line(data));
     }
