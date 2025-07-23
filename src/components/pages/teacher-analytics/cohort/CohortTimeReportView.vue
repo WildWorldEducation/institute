@@ -3,6 +3,8 @@ import { useCohortsStore } from '../../../../stores/CohortsStore';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import CohortDurationPerDayLineChart from '../../../components/teacher-analytics/cohorts/CohortDurationPerDayLineChart.vue';
 import CohortCompareDurationHorizontalChart from '../../../components/teacher-analytics/cohorts/CohortCompareDurationHorizontalChart.vue';
+import CohortTimeHorizontalChart from '../../../components/teacher-analytics/cohorts/CohortTimeHorizontalChart.vue';
+import TimePerSkillHorizontalBarChart from '../../../components/teacher-analytics/students/TimePerSkillHorizontalBarChart.vue';
 
 export default {
     setup() {
@@ -15,26 +17,42 @@ export default {
     },
     components: {
         CohortDurationPerDayLineChart,
-        CohortCompareDurationHorizontalChart
+        CohortCompareDurationHorizontalChart,
+        CohortTimeHorizontalChart,
+        TimePerSkillHorizontalBarChart
     },
     data() {
         return {
             cohortId: this.$route.params.cohortId,
             cohortName: '',
             durationsPerDay: [],
-            studentTotalDurations: []
+            studentTotalDurations: [],
+            timeData: [],
+            isDataLoaded: false,
+            error: null,
+            skillDurations: [],
+            allSkillsDuration: 0
         };
     },
     async created() {
-        if (this.cohortsStore.cohorts.length < 1) {
-            await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
+        // Handle both specific cohorts and "all-students"
+        if (this.cohortId !== 'all-students') {
+            if (this.cohortsStore.cohorts.length < 1) {
+                await this.cohortsStore.getCohorts(
+                    this.userDetailsStore.userId
+                );
+            }
+            const foundObject = this.cohortsStore.cohorts.find(
+                (cohort) => cohort.id == this.cohortId
+            );
+            if (foundObject) {
+                this.cohortName = foundObject.name;
+            }
+        } else {
+            this.cohortName = 'All Students';
         }
-        const foundObject = this.cohortsStore.cohorts.find(
-            (cohort) => cohort.id == this.cohortId
-        );
-        if (foundObject) {
-            this.cohortName = foundObject.name;
-        }
+
+        await this.loadTimeData();
 
         if (this.cohortId != 'all-students') {
             await this.getCohortDurationPerDay();
@@ -137,6 +155,42 @@ export default {
                     );
                 });
         },
+        async loadTimeData() {
+            this.error = null;
+
+            try {
+                const url = `/student-analytics/total-time-skills/cohort/${this.cohortId}`;
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    this.timeData = data;
+                    this.isDataLoaded = true;
+                } else if (response.status === 404) {
+                    this.timeData = [];
+                    this.isDataLoaded = true;
+                } else {
+                    const errorText = await response.text();
+                    console.error('HTTP error response:', errorText);
+                    throw new Error(
+                        `HTTP error! status: ${response.status} - ${errorText}`
+                    );
+                }
+            } catch (error) {
+                console.error('Error loading time data:', error);
+                this.error = `Failed to load time data: ${error.message}`;
+                this.timeData = [];
+                this.isDataLoaded = true;
+            }
+        },
+
         millisToMinutesAndSeconds(millis) {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);
@@ -166,6 +220,17 @@ export default {
             <h1 class="heading">Time Report</h1>
             <h2 class="secondary-heading h3">{{ cohortName }}</h2>
         </span>
+        <h2 class="secondary-heading mt-4">
+            Total time on skills, comparing students
+        </h2>
+
+        <div v-if="isDataLoaded">
+            <CohortTimeHorizontalChart :data="timeData" :colour="'#4A90E2'" />
+
+            <div v-if="timeData.length === 0" class="alert alert-info mt-3">
+                No time data available for students in this cohort.
+            </div>
+        </div>
 
         <h2 class="secondary-heading">Total time on platform per day</h2>
         <CohortDurationPerDayLineChart
@@ -188,4 +253,4 @@ export default {
     </div>
 </template>
 
-<style></style>
+<style scoped></style>
