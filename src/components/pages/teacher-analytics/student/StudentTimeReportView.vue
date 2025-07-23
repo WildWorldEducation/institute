@@ -1,6 +1,7 @@
 <script>
 import { useUsersStore } from '../../../../stores/UsersStore';
 import TimePerSkillHorizontalBarChart from '../../../components/teacher-analytics/students/TimePerSkillHorizontalBarChart.vue';
+import StudentDurationPerDayLineChart from '../../../components/teacher-analytics/students/StudentDurationPerDayLineChart.vue';
 
 export default {
     setup() {
@@ -10,13 +11,15 @@ export default {
         };
     },
     components: {
-        TimePerSkillHorizontalBarChart
+        TimePerSkillHorizontalBarChart,
+        StudentDurationPerDayLineChart
     },
     data() {
         return {
             studentId: this.$route.params.studentId,
             studentName: null,
             skillDurations: [],
+            durationsPerDay: [],
             allSkillsDuration: 0,
             isDataLoaded: false
         };
@@ -32,6 +35,7 @@ export default {
 
         await this.getSkillDuration();
         await this.getAllSkillsDuration();
+        await this.getStudentDurationPerDay();
         this.isDataLoaded = true;
     },
     methods: {
@@ -59,6 +63,28 @@ export default {
                 })
                 .catch((error) => {
                     console.error('Error fetching last visited skills:', error);
+                });
+        },
+        async getStudentDurationPerDay() {
+            fetch(
+                `/student-analytics/student-duration-per-day/${this.studentId}`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].formattedQuantity =
+                            this.millisToMinutesAndSeconds(data[i].quantity);
+
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.durationsPerDay = data;
+                })
+                .catch((error) => {
+                    console.error(
+                        'Error fetching student duration per day:',
+                        error
+                    );
                 });
         },
         millisToMinutesAndSeconds(millis) {
@@ -95,6 +121,10 @@ export default {
 
         <div v-if="isDataLoaded">
             <h2 class="secondary-heading">All skills</h2>
+            <StudentDurationPerDayLineChart
+                v-if="durationsPerDay.length > 0"
+                :data="durationsPerDay"
+            />
             <!-- <p><em>line chart, over days / hours</em></p> -->
             <p>{{ millisToMinutesAndSeconds(this.allSkillsDuration) }}</p>
             <h2 class="secondary-heading">Minutes per skill</h2>
