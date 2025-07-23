@@ -22,7 +22,8 @@ export default {
             cohortId: this.$route.params.cohortId,
             cohortName: '',
             durationsPerDay: [],
-            studentTotalDurations: []
+            studentTotalDurations: [],
+            studentDurationsPerSkill: []
         };
     },
     async created() {
@@ -39,6 +40,7 @@ export default {
         if (this.cohortId != 'all-students') {
             await this.getCohortDurationPerDay();
             await this.getCohortStudentTotalDurations();
+            await this.getStudentDurationsPerSkill();
         } else {
             await this.getAllStudentsDurationPerDay();
             await this.getAllStudentsStudentTotalDurations();
@@ -133,6 +135,25 @@ export default {
                 .catch((error) => {
                     console.error(
                         'Error fetching student duration per day:',
+                        error
+                    );
+                });
+        },
+        async getStudentDurationsPerSkill() {
+            fetch(
+                `/student-analytics/cohort-student-durations-per-skill/${this.cohortId}`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].formattedQuantity =
+                            this.millisToMinutesAndSeconds(data[i].quantity);
+                    }
+                    this.studentDurationsPerSkill = data;
+                })
+                .catch((error) => {
+                    console.error(
+                        'Error fetching student durations per skill:',
                         error
                     );
                 });
