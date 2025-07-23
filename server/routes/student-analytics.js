@@ -405,6 +405,37 @@ router.get('/attempted-assessments/cohort/:cohortId', (req, res, next) => {
     }
 });
 
+/* Get duration on platform per cohort per day */
+router.get('/cohort-duration-per-day/:cohortId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT date, SUM(duration) AS quantity
+            FROM user_duration_per_day
+            JOIN cohorts_users
+            ON user_duration_per_day.user_id = cohorts_users.user_id
+            WHERE cohorts_users.cohort_id = ${conn.escape(
+                req.params.cohortId
+            )}              
+            GROUP BY date
+            ORDER BY date ASC;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * FOR ALL STUDENTS OF AN INSTRUCTOR -------------------------------------------------------
  */

@@ -79,7 +79,7 @@ export default {
                     .attr('y', 10)
                     .attr('fill', 'currentColor')
                     .attr('text-anchor', 'start')
-                    .text('↑ Duration in seconds and minutes')
+                    .text('↑ Duration in seconds')
             );
 
         // Append a path for the line.
