@@ -22,7 +22,7 @@ export default {
             isDropdownOpen: false
         };
     },
-    async mounted() {
+    async mounted() {     
         await this.userDetailsStore.getUserDetails();
         this.initDropdown();
 
@@ -43,10 +43,9 @@ export default {
             document.body.classList.remove('instructor-theme');
         }
         this.closeNavbarOnClick();
-    },
-    mounted() {
         window.addEventListener('beforeunload', this.handleBeforeUnload);
     },
+
     beforeUnmount() {
         window.removeEventListener('beforeunload', this.handleBeforeUnload);
     },
@@ -62,10 +61,10 @@ export default {
         initDropdown() {
             // Single click listener that handles both toggle and outside clicks
             document.addEventListener('click', (e) => {
-                const dropdown = document.querySelector('.nav-item.dropdown');
+                const dropdown = document.querySelector('.nav-item.dropdown');              
                 const dropdownToggle =
                     dropdown?.querySelector('.dropdown-toggle');
-
+           
                 if (!dropdown) return;
 
                 // If clicking the toggle button, toggle the dropdown
