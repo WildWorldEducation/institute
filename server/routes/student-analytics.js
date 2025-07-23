@@ -436,6 +436,38 @@ router.get('/cohort-duration-per-day/:cohortId', (req, res, next) => {
     }
 });
 
+/* Get all student in cohort durations */
+router.get('/cohort-total-durations/:cohortId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+         SELECT username AS name, SUM(duration) AS quantity
+            FROM user_duration_per_day
+            JOIN cohorts_users
+            ON user_duration_per_day.user_id = cohorts_users.user_id
+            JOIN users
+            ON users.id = user_duration_per_day.user_id
+            WHERE cohorts_users.cohort_id = ${conn.escape(
+                req.params.cohortId
+            )}              
+            GROUP BY cohorts_users.user_id;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * FOR ALL STUDENTS OF AN INSTRUCTOR -------------------------------------------------------
  */

@@ -2,6 +2,7 @@
 import { useCohortsStore } from '../../../../stores/CohortsStore';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import CohortDurationPerDayLineChart from '../../../components/teacher-analytics/cohorts/CohortDurationPerDayLineChart.vue';
+import CohortCompareDurationHorizontalChart from '../../../components/teacher-analytics/cohorts/CohortCompareDurationHorizontalChart.vue';
 
 export default {
     setup() {
@@ -12,12 +13,16 @@ export default {
             userDetailsStore
         };
     },
-    components: { CohortDurationPerDayLineChart },
+    components: {
+        CohortDurationPerDayLineChart,
+        CohortCompareDurationHorizontalChart
+    },
     data() {
         return {
             cohortId: this.$route.params.cohortId,
             cohortName: '',
-            durationsPerDay: []
+            durationsPerDay: [],
+            studentTotalDurations: []
         };
     },
     async created() {
@@ -33,6 +38,7 @@ export default {
 
         if (this.cohortId != 'all-students') {
             await this.getCohortDurationPerDay();
+            await this.getCohortStudentTotalDurations();
         } else {
             await this.getAllStudentsDurationPerDay();
         }
@@ -63,12 +69,13 @@ export default {
                     );
                 });
         },
-        async getCohortDurationPerDay() {
+        async getAllStudentsDurationPerDay() {
             fetch(
                 `/student-analytics/all-students-duration-per-day/${this.userDetailsStore.userId}`
             )
                 .then((response) => response.json())
                 .then((data) => {
+                    console.log(data);
                     for (let i = 0; i < data.length; i++) {
                         data[i].formattedQuantity =
                             this.millisToMinutesAndSeconds(data[i].quantity);
@@ -83,6 +90,25 @@ export default {
                     data.sort((a, b) => a.date - b.date);
                     this.durationsPerDay = data;
                     console.log(this.durationsPerDay);
+                })
+                .catch((error) => {
+                    console.error(
+                        'Error fetching student duration per day:',
+                        error
+                    );
+                });
+        },
+        async getCohortStudentTotalDurations() {
+            fetch(`/student-analytics/cohort-total-durations/${this.cohortId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].formattedQuantity =
+                            this.millisToMinutesAndSeconds(data[i].quantity);
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.studentTotalDurations = data;
                 })
                 .catch((error) => {
                     console.error(
@@ -127,71 +153,19 @@ export default {
             v-if="durationsPerDay.length > 0"
         />
         <p v-else>No time recorded yet</p>
-        <h2 class="secondary-heading mt-4">
-            Total time on skills, comparing students
-        </h2>
-        <ul>
-            <li><em>Time on platform, comparing students</em></li>
-            <li><em>bar chart</em></li>
-        </ul>
-        maybe later:
-        <ul>
-            <li><em>allow change of order</em></li>
-            <li><em>Choose by day, week etc</em></li>
-        </ul>
 
-        <h2 class="secondary-heading">
+        <h2 class="secondary-heading mt-4">
             Total time on platform, comparing students
         </h2>
-        <ul>
-            <li><em>Time on platform, comparing students</em></li>
-            <li><em>bar chart</em></li>
-            <li><em>allow change of order</em></li>
-            <li><em>Choose by day, week etc</em></li>
-        </ul>
+        <CohortCompareDurationHorizontalChart
+            :data="studentTotalDurations"
+            :colour="'#5f31dd'"
+            v-if="studentTotalDurations.length > 0"
+        />
 
-        <div v-if="isDataLoaded">
-            <h2 class="secondary-heading">All skills</h2>
-            <!-- <p><em>line chart, over days / hours</em></p> -->
-            <p>{{ millisToMinutesAndSeconds(this.allSkillsDuration) }}</p>
-            <h2 class="secondary-heading">Minutes per skill</h2>
-            <TimePerSkillHorizontalBarChart
-                v-if="skillDurations.length > 0"
-                :data="skillDurations"
-                colour="darkgreen"
-            />
-            <div v-if="this.skillDurations.length > 0" class="mb-4">
-                <table class="table">
-                    <tr>
-                        <th>Skill</th>
-                        <th>Duration</th>
-                    </tr>
-                    <tr
-                        v-for="skillDuration in skillDurations"
-                        :key="skillDuration.id"
-                        class="table-rows"
-                    >
-                        <td>
-                            <router-link
-                                target="_blank"
-                                :to="'/skills/' + skillDuration.url"
-                                >{{ skillDuration.name }}</router-link
-                            >
-                        </td>
-                        <td>
-                            {{
-                                millisToMinutesAndSeconds(
-                                    skillDuration.quantity
-                                )
-                            }}
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <div v-else>
-                <p>No skills visited by this student.</p>
-            </div>
-        </div>
+        <h2 class="secondary-heading">All skills</h2>
+
+        <h2 class="secondary-heading">Minutes per skill</h2>
     </div>
 </template>
 
