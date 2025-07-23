@@ -32,7 +32,7 @@ export default {
 
         // Declare the y (vertical position) scale.
         const y = d3.scaleLinear(
-            [0, d3.max(data, (d) => d.quantity)],
+            [0, d3.max(data, (d) => d.formattedQuantity)],
             [height - marginBottom, marginTop]
         );
 
@@ -40,7 +40,7 @@ export default {
         const line = d3
             .line()
             .x((d) => x(d.date))
-            .y((d) => y(d.quantity));
+            .y((d) => y(d.formattedQuantity));
 
         // Create the SVG container.
         const svg = d3
@@ -64,7 +64,7 @@ export default {
         // Add the y-axis, remove the domain line, add grid lines and a label.
         svg.append('g')
             .attr('transform', `translate(${marginLeft},0)`)
-            .call(d3.axisLeft(y).ticks(height / 40))
+            .call(d3.axisLeft(y).ticks(height / 80))
             .call((g) =>
                 g
                     .selectAll('.tick line')
@@ -79,7 +79,7 @@ export default {
                     .attr('y', 10)
                     .attr('fill', 'currentColor')
                     .attr('text-anchor', 'start')
-                    .text('↑ Duration in milliseconds')
+                    .text('↑ Duration in seconds and minutes')
             );
 
         // Append a path for the line.
