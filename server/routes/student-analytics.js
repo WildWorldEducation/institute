@@ -246,6 +246,34 @@ router.get('/skill-activity-report/:studentId', (req, res, next) => {
     }
 });
 
+/* Get duration on platform per student per day */
+router.get('/student-duration-per-day/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT date, duration AS quantity
+            FROM user_duration_per_day            
+            WHERE user_id = ${conn.escape(
+                req.params.studentId
+            )}                           
+            ORDER BY date ASC;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * PER COHORT -------------------------------------------------
  */
