@@ -139,7 +139,10 @@ export default {
 
                     <!-- Whether all students or cohort selected -->
                     <router-link
-                        v-if="this.cohortsStore.cohorts.length > 0"
+                        v-if="
+                            !cohortsStore.isAllStudentsSelected &&
+                            this.cohortsStore.cohorts.length > 0
+                        "
                         :to="`/cohort/${this.cohortsStore.selectedCohort.id}/total-time`"
                         class="fit-content mt-2"
                         target="_blank"
