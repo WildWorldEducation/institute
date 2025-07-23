@@ -316,6 +316,34 @@ router.get('/skill-activity-report/:studentId', (req, res, next) => {
     }
 });
 
+/* Get duration on platform per student per day */
+router.get('/student-duration-per-day/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT date, duration AS quantity
+            FROM user_duration_per_day            
+            WHERE user_id = ${conn.escape(
+                req.params.studentId
+            )}                           
+            ORDER BY date ASC;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * PER COHORT -------------------------------------------------
  */
@@ -440,6 +468,69 @@ router.get('/attempted-assessments/cohort/:cohortId', (req, res, next) => {
                 }
 
                 res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Get duration on platform per cohort per day */
+router.get('/cohort-duration-per-day/:cohortId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT date, SUM(duration) AS quantity
+            FROM user_duration_per_day
+            JOIN cohorts_users
+            ON user_duration_per_day.user_id = cohorts_users.user_id
+            WHERE cohorts_users.cohort_id = ${conn.escape(
+                req.params.cohortId
+            )}              
+            GROUP BY date
+            ORDER BY date ASC;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Get all student in cohort durations */
+router.get('/cohort-total-durations/:cohortId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+         SELECT username AS name, SUM(duration) AS quantity
+            FROM user_duration_per_day
+            JOIN cohorts_users
+            ON user_duration_per_day.user_id = cohorts_users.user_id
+            JOIN users
+            ON users.id = user_duration_per_day.user_id
+            WHERE cohorts_users.cohort_id = ${conn.escape(
+                req.params.cohortId
+            )}              
+            GROUP BY cohorts_users.user_id;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
             } catch (err) {
                 next(err);
             }
@@ -575,6 +666,69 @@ router.get('/attempted-assessments/all-students/:userId', (req, res, next) => {
                 }
 
                 res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Get duration on platform per cohort per day */
+router.get('/all-students-duration-per-day/:userId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT date, SUM(duration) AS quantity
+            FROM user_duration_per_day
+            JOIN instructor_students
+            ON instructor_students.student_id = user_duration_per_day.user_id
+            WHERE instructor_students.instructor_id = ${conn.escape(
+                req.params.userId
+            )}              
+            GROUP BY date
+            ORDER BY date ASC;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Get all students of instructor durations */
+router.get('/all-students-total-durations/:userId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT username AS name, SUM(duration) AS quantity
+            FROM user_duration_per_day
+            JOIN instructor_students
+            ON user_duration_per_day.user_id = instructor_students.student_id
+            JOIN users
+            ON users.id = user_duration_per_day.user_id
+            WHERE instructor_students.instructor_id = ${conn.escape(
+                req.params.userId
+            )}              
+            GROUP BY instructor_students.student_id;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
             } catch (err) {
                 next(err);
             }
@@ -837,6 +991,37 @@ router.post('/record-duration/:userId/:skillId', (req, res, next) => {
         VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
             req.params.skillId
         )}, ${conn.escape(duration)}) 
+        ON DUPLICATE KEY UPDATE duration= duration + ${conn.escape(duration)};
+        `;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Record time on app per day per student
+ */
+router.post('/record-time-on-app/:userId', (req, res, next) => {
+    if (req.session.userName) {
+        const duration = req.body.duration;
+
+        let sqlQuery = `
+        INSERT INTO user_duration_per_day (user_id, date, duration) 
+        VALUES(${conn.escape(req.params.userId)}, CURDATE(), ${conn.escape(
+            duration
+        )}) 
+        
         ON DUPLICATE KEY UPDATE duration= duration + ${conn.escape(duration)};
         `;
 

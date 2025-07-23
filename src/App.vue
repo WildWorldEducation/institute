@@ -3,6 +3,7 @@
 import { useSessionDetailsStore } from './stores/SessionDetailsStore.js';
 import { useUserDetailsStore } from './stores/UserDetailsStore.js';
 import router from './router';
+import AppTimeTracker from './components/components/teacher-analytics/AppTimeTracker.vue';
 
 export default {
     setup() {
@@ -21,7 +22,7 @@ export default {
             isDropdownOpen: false
         };
     },
-    async mounted() {
+    async mounted() {     
         await this.userDetailsStore.getUserDetails();
         this.initDropdown();
 
@@ -42,6 +43,14 @@ export default {
             document.body.classList.remove('instructor-theme');
         }
         this.closeNavbarOnClick();
+        window.addEventListener('beforeunload', this.handleBeforeUnload);
+    },
+
+    beforeUnmount() {
+        window.removeEventListener('beforeunload', this.handleBeforeUnload);
+    },
+    components: {
+        AppTimeTracker
     },
     watch: {
         $route() {
@@ -52,10 +61,10 @@ export default {
         initDropdown() {
             // Single click listener that handles both toggle and outside clicks
             document.addEventListener('click', (e) => {
-                const dropdown = document.querySelector('.nav-item.dropdown');
+                const dropdown = document.querySelector('.nav-item.dropdown');              
                 const dropdownToggle =
                     dropdown?.querySelector('.dropdown-toggle');
-
+           
                 if (!dropdown) return;
 
                 // If clicking the toggle button, toggle the dropdown
@@ -93,7 +102,6 @@ export default {
                 }
             });
         },
-
         closeNavbarWithAnimation() {
             const navbarToggler = document.querySelector('.navbar-toggler');
             const navbarCollapse = document.querySelector('.navbar-collapse');
@@ -128,6 +136,10 @@ export default {
             fetch('/logout', requestOptions).then(() => {
                 router.push({ name: 'login' });
             });
+        },
+        handleBeforeUnload(event) {
+            console.log('Tab is closing or refreshing');
+            this.$refs.appTimeTracker.saveDuration();
         }
     }
 };
@@ -609,6 +621,8 @@ export default {
     <div id="router-view" class="router-view-padding">
         <RouterView />
     </div>
+    <!-- To track student time -->
+    <AppTimeTracker ref="appTimeTracker" />
 </template>
 
 <style>

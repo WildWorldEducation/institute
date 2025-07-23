@@ -1,6 +1,8 @@
 <script>
 import { useCohortsStore } from '../../../../stores/CohortsStore';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
+import CohortDurationPerDayLineChart from '../../../components/teacher-analytics/cohorts/CohortDurationPerDayLineChart.vue';
+import CohortCompareDurationHorizontalChart from '../../../components/teacher-analytics/cohorts/CohortCompareDurationHorizontalChart.vue';
 import CohortTimeHorizontalChart from '../../../components/teacher-analytics/cohorts/CohortTimeHorizontalChart.vue';
 import TimePerSkillHorizontalBarChart from '../../../components/teacher-analytics/students/TimePerSkillHorizontalBarChart.vue';
 
@@ -14,6 +16,8 @@ export default {
         };
     },
     components: {
+        CohortDurationPerDayLineChart,
+        CohortCompareDurationHorizontalChart,
         CohortTimeHorizontalChart,
         TimePerSkillHorizontalBarChart
     },
@@ -21,12 +25,13 @@ export default {
         return {
             cohortId: this.$route.params.cohortId,
             cohortName: '',
+            durationsPerDay: [],
+            studentTotalDurations: [],
             timeData: [],
             isDataLoaded: false,
-            isLoading: false,
             error: null,
-            skillDurations: [], // For individual student data if needed
-            allSkillsDuration: 0 // For total duration if needed
+            skillDurations: [],
+            allSkillsDuration: 0
         };
     },
     async created() {
@@ -47,12 +52,110 @@ export default {
             this.cohortName = 'All Students';
         }
 
-        // Load the time data
         await this.loadTimeData();
+
+        if (this.cohortId != 'all-students') {
+            await this.getCohortDurationPerDay();
+            await this.getCohortStudentTotalDurations();
+        } else {
+            await this.getAllStudentsDurationPerDay();
+            await this.getAllStudentsStudentTotalDurations();
+        }
     },
     methods: {
+        async getCohortDurationPerDay() {
+            fetch(`/student-analytics/cohort-duration-per-day/${this.cohortId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].formattedQuantity =
+                            this.millisToMinutesAndSeconds(data[i].quantity);
+
+                        data[i].formattedQuantity =
+                            this.convertMinutesSecondsToSeconds(
+                                data[i].formattedQuantity
+                            );
+
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.durationsPerDay = data;
+                })
+                .catch((error) => {
+                    console.error(
+                        'Error fetching student duration per day:',
+                        error
+                    );
+                });
+        },
+        async getAllStudentsDurationPerDay() {
+            fetch(
+                `/student-analytics/all-students-duration-per-day/${this.userDetailsStore.userId}`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].formattedQuantity =
+                            this.millisToMinutesAndSeconds(data[i].quantity);
+
+                        data[i].formattedQuantity =
+                            this.convertMinutesSecondsToSeconds(
+                                data[i].formattedQuantity
+                            );
+
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.durationsPerDay = data;
+                })
+                .catch((error) => {
+                    console.error(
+                        'Error fetching student duration per day:',
+                        error
+                    );
+                });
+        },
+        async getCohortStudentTotalDurations() {
+            fetch(`/student-analytics/cohort-total-durations/${this.cohortId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].formattedQuantity =
+                            this.millisToMinutesAndSeconds(data[i].quantity);
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.studentTotalDurations = data;
+                })
+                .catch((error) => {
+                    console.error(
+                        'Error fetching student duration per day:',
+                        error
+                    );
+                });
+        },
+        async getAllStudentsStudentTotalDurations() {
+            fetch(
+                `/student-analytics/all-students-total-durations/${this.userDetailsStore.userId}`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].formattedQuantity =
+                            this.millisToMinutesAndSeconds(data[i].quantity);
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.studentTotalDurations = data;
+                })
+                .catch((error) => {
+                    console.error(
+                        'Error fetching student duration per day:',
+                        error
+                    );
+                });
+        },
         async loadTimeData() {
-            this.isLoading = true;
             this.error = null;
 
             try {
@@ -85,16 +188,27 @@ export default {
                 this.error = `Failed to load time data: ${error.message}`;
                 this.timeData = [];
                 this.isDataLoaded = true;
-            } finally {
-                this.isLoading = false;
             }
         },
 
-        // Time formatting method for potential future use
         millisToMinutesAndSeconds(millis) {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);
             return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        },
+        convertMinutesSecondsToSeconds(durationString) {
+            const parts = durationString.split(':');
+            if (parts.length !== 2) {
+                throw new Error("Invalid duration format. Expected 'MM:SS'.");
+            }
+            const minutes = parseInt(parts[0], 10);
+            const seconds = parseInt(parts[1], 10);
+
+            if (isNaN(minutes) || isNaN(seconds)) {
+                throw new Error('Invalid numerical values in duration string.');
+            }
+
+            return minutes * 60 + seconds;
         }
     }
 };
@@ -106,137 +220,37 @@ export default {
             <h1 class="heading">Time Report</h1>
             <h2 class="secondary-heading h3">{{ cohortName }}</h2>
         </span>
+        <h2 class="secondary-heading mt-4">
+            Total time on skills, comparing students
+        </h2>
 
-        <div class="mt-4">
-            <h2 class="secondary-heading">
-                Total time on skills, comparing students
-            </h2>
+        <div v-if="isDataLoaded">
+            <CohortTimeHorizontalChart :data="timeData" :colour="'#4A90E2'" />
 
-            <div v-if="isLoading" class="text-center p-4">
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p class="mt-2">Loading time data...</p>
-            </div>
-
-            <div v-else-if="error" class="alert alert-danger">
-                {{ error }}
-                <button
-                    @click="loadTimeData"
-                    class="btn btn-sm btn-outline-danger ms-2"
-                >
-                    Retry
-                </button>
-            </div>
-
-            <div v-else-if="isDataLoaded">
-                <CohortTimeHorizontalChart
-                    :data="timeData"
-                    :colour="'#4A90E2'"
-                />
-
-                <div v-if="timeData.length === 0" class="alert alert-info mt-3">
-                    No time data available for students in this cohort.
-                </div>
+            <div v-if="timeData.length === 0" class="alert alert-info mt-3">
+                No time data available for students in this cohort.
             </div>
         </div>
 
-        <!-- Future features section -->
-        <!-- maybe later:
-        <ul>
-            <li><em>allow change of order</em></li>
-            <li><em>Choose by day, week etc</em></li>
-        </ul> -->
+        <h2 class="secondary-heading">Total time on platform per day</h2>
+        <CohortDurationPerDayLineChart
+            :data="durationsPerDay"
+            v-if="durationsPerDay.length > 0"
+        />
+        <p v-else>No time recorded yet</p>
 
-        <h2 class="secondary-heading">
+        <h2 class="secondary-heading mt-4">
             Total time on platform, comparing students
         </h2>
-        <ul>
-            <li><em>Time on platform, comparing students</em></li>
-            <li><em>bar chart</em></li>
-            <li><em>allow change of order</em></li>
-            <li><em>Choose by day, week etc</em></li>
-        </ul>
+        <CohortCompareDurationHorizontalChart
+            :data="studentTotalDurations"
+            :colour="'#5f31dd'"
+            v-if="studentTotalDurations.length > 0"
+        />
+        <p v-else>No time recorded yet</p>
 
-        <h2 class="secondary-heading">
-            Total time on platform, comparing time
-        </h2>
-        <ul>
-            <li><em>Time on platform, comparing students</em></li>
-            <li><em>line chart, over days</em></li>
-            <li>
-                <em>Would have to record the time each day</em>
-            </li>
-            <li><em>Choose by day, week etc</em></li>
-        </ul>
-
-        <!-- Individual student data section - for future implementation -->
-
-        <div v-if="isDataLoaded && skillDurations && skillDurations.length > 0">
-            <h2 class="secondary-heading">All skills</h2>
-            <p>{{ millisToMinutesAndSeconds(this.allSkillsDuration) }}</p>
-            <h2 class="secondary-heading">Minutes per skill</h2>
-            <TimePerSkillHorizontalBarChart
-                v-if="skillDurations.length > 0"
-                :data="skillDurations"
-                colour="darkgreen"
-            />
-            <div v-if="this.skillDurations.length > 0" class="mb-4">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Skill</th>
-                            <th>Duration</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            v-for="skillDuration in skillDurations"
-                            :key="skillDuration.id"
-                            class="table-rows"
-                        >
-                            <td>
-                                <router-link
-                                    target="_blank"
-                                    :to="'/skills/' + skillDuration.url"
-                                    >{{ skillDuration.name }}</router-link
-                                >
-                            </td>
-                            <td>
-                                {{
-                                    millisToMinutesAndSeconds(
-                                        skillDuration.quantity
-                                    )
-                                }}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div v-else>
-                <p>No skills visited by this student.</p>
-            </div>
-        </div>
+        <h2 class="secondary-heading mt-4">Minutes per skill</h2>
     </div>
 </template>
 
-<style scoped>
-.container {
-    padding: 20px;
-}
-
-.heading {
-    color: #333;
-    font-weight: bold;
-}
-
-.secondary-heading {
-    color: #666;
-    font-weight: normal;
-}
-
-.spinner-border {
-    width: 3rem;
-    height: 3rem;
-}
-</style>
+<style scoped></style>
