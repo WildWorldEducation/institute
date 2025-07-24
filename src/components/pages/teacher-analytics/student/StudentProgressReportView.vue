@@ -39,8 +39,7 @@ export default {
                         data[i].date = new Date(data[i].date);
                     }
                     data.sort((a, b) => a.date - b.date);
-                    this.studentProgress = data;
-                    console.log('Student Progress Data:', this.studentProgress);
+                    this.studentProgress = data;                   
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
