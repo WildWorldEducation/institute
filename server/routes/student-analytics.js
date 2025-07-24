@@ -326,8 +326,6 @@ router.get('/student-progress/:studentId', (req, res, next) => {
                             });
                         }
 
-                        console.log(results);
-
                         res.json(results);
                     } catch (err) {
                         next(err);

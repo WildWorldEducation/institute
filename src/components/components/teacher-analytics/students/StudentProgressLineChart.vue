@@ -11,7 +11,6 @@ export default {
     },
     mounted() {
         const data = this.data;
-        console.log(data);
 
         const container = d3.select('#student-progress-line-chart-container');
 
