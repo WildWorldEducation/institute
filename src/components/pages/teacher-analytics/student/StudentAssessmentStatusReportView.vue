@@ -178,6 +178,7 @@ export default {
             v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
             :data="teacherAnalyticsStore.studentMultipleFails"
             colour="darkred"
+            class="mb-5"
         />
         <!-- <div
             v-if="this.teacherAnalyticsStore.studentMultipleFails.length > 0"
