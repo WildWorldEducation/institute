@@ -1,12 +1,48 @@
 <script>
+import { useUsersStore } from '../../../../stores/UsersStore';
+import StudentProgressLineChart from '../../../components/teacher-analytics/students/StudentProgressLineChart.vue';
 export default {
-    setup() {},
-    components: {},
-    data() {
-        return {};
+    setup() {
+        const usersStore = useUsersStore();
+        return {
+            usersStore
+        };
     },
-    async created() {},
-    methods: {}
+    components: {
+        StudentProgressLineChart
+    },
+    data() {
+        return {
+            studentId: this.$route.params.studentId,
+            studentName: null,
+            studentProgress: []
+        };
+    },
+    async created() {
+        // Get student name
+        if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
+        const foundObject = this.usersStore.users.find(
+            (student) => student.id === this.studentId
+        );
+        if (foundObject) {
+            this.studentName = foundObject.username;
+        }
+
+        await this.getStudentDurationPerDay();
+    },
+    methods: {
+        async getStudentDurationPerDay() {
+            fetch(`/student-analytics/student-progress/${this.studentId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    this.studentProgress = data;
+                    console.log('Student Progress Data:', this.studentProgress);
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        }
+    }
 };
 </script>
 
@@ -16,9 +52,10 @@ export default {
             <h1 class="heading">Progress Report</h1>
             <h2 class="secondary-heading h3">{{ studentName }}</h2>
         </span>
-        <p>Number of skills mastered over time</p>
-        <p>Line chart</p>
-        <p>May have to record when the user started on the platform</p>
+        <StudentProgressLineChart
+            v-if="studentProgress.length > 0"
+            :data="studentProgress"
+        />
     </div>
 </template>
 

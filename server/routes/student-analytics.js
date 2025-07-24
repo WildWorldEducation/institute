@@ -274,6 +274,34 @@ router.get('/student-duration-per-day/:studentId', (req, res, next) => {
     }
 });
 
+/* Get student progress (number of total skills mastered over time) */
+router.get('/student-progress/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT CAST(mastered_date AS DATE) AS date, SUM(COUNT(*)) OVER(ORDER BY date) AS quantity
+            FROM user_skills
+            WHERE is_mastered = 1
+            AND user_id = ${conn.escape(req.params.studentId)}              
+            GROUP BY date
+            ORDER BY date ASC;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * PER COHORT -------------------------------------------------
  */
