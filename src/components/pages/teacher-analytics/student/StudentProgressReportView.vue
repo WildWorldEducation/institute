@@ -28,10 +28,10 @@ export default {
             this.studentName = foundObject.username;
         }
 
-        await this.getStudentDurationPerDay();
+        await this.getStudentProgress();
     },
     methods: {
-        async getStudentDurationPerDay() {
+        async getStudentProgress() {
             fetch(`/student-analytics/student-progress/${this.studentId}`)
                 .then((response) => response.json())
                 .then((data) => {
