@@ -296,10 +296,11 @@ router.get('/student-progress/:studentId', (req, res, next) => {
                 let sqlQuery = `
                     SELECT CAST(mastered_date AS DATE) AS date, SUM(COUNT(*)) OVER(ORDER BY date) AS quantity
                     FROM user_skills
+                    JOIN skills
+                    ON skills.id = user_skills.skill_id
                     WHERE is_mastered = 1
-                    AND user_id = ${conn.escape(
-                        req.params.studentId
-                    )}              
+                    AND user_id = ${conn.escape(req.params.studentId)}        
+                    AND type <> 'domain'      
                     GROUP BY date
                     ORDER BY date ASC;`;
 
