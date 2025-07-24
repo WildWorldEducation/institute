@@ -280,21 +280,59 @@ router.get('/student-progress/:studentId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
 
-        let sqlQuery = `
-            SELECT CAST(mastered_date AS DATE) AS date, SUM(COUNT(*)) OVER(ORDER BY date) AS quantity
-            FROM user_skills
-            WHERE is_mastered = 1
-            AND user_id = ${conn.escape(req.params.studentId)}              
-            GROUP BY date
-            ORDER BY date ASC;`;
+        // First, get the date the student started on the platform
+        let firstInteractionSQLQuery = `SELECT date
+            FROM user_duration_per_day
+            WHERE user_id = '019498db-00a2-7aa5-b333-58aa207f557d'
+            ORDER BY date ASC
+            LIMIT 1;`;
 
-        conn.query(sqlQuery, (err, result) => {
+        conn.query(firstInteractionSQLQuery, (err, firstInteractionResult) => {
             try {
                 if (err) {
                     throw err;
                 }
 
-                res.json(result);
+                let sqlQuery = `
+                    SELECT CAST(mastered_date AS DATE) AS date, SUM(COUNT(*)) OVER(ORDER BY date) AS quantity
+                    FROM user_skills
+                    WHERE is_mastered = 1
+                    AND user_id = ${conn.escape(
+                        req.params.studentId
+                    )}              
+                    GROUP BY date
+                    ORDER BY date ASC;`;
+
+                conn.query(sqlQuery, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        let flag = false;
+                        for (let i = 0; i < results.length; i++) {
+                            if (
+                                firstInteractionResult[0].date ==
+                                results[i].date
+                            ) {
+                                flag = true;
+                            }
+                        }
+
+                        if (!flag) {
+                            results.unshift({
+                                date: firstInteractionResult[0].date,
+                                quantity: 0
+                            });
+                        }
+
+                        console.log(results);
+
+                        res.json(results);
+                    } catch (err) {
+                        next(err);
+                    }
+                });
             } catch (err) {
                 next(err);
             }
