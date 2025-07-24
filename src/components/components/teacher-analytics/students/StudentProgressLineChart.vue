@@ -11,6 +11,7 @@ export default {
     },
     mounted() {
         const data = this.data;
+        console.log(data);
 
         const container = d3.select('#student-progress-line-chart-container');
 
@@ -30,7 +31,7 @@ export default {
 
         // Declare the y (vertical position) scale.
         const y = d3.scaleLinear(
-            [0, d3.max(data, (d) => d.formattedQuantity)],
+            [0, d3.max(data, (d) => d.quantity)],
             [height - marginBottom, marginTop]
         );
 
@@ -38,7 +39,7 @@ export default {
         const line = d3
             .line()
             .x((d) => x(d.date))
-            .y((d) => y(d.formattedQuantity));
+            .y((d) => y(d.quantity));
 
         // Create the SVG container.
         const svg = d3

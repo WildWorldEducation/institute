@@ -5,7 +5,6 @@ import { useTeacherAnalyticsStore } from '../../../../stores/TeacherAnalyticsSto
 import PassedAssessmentsTimelineChart from '../../../components/teacher-analytics/students/PassedAssessmentsTimelineChart.vue';
 import AttemptedAssessmentsTimelineChart from '../../../components/teacher-analytics/students/AttemptedAssessmentsTimelineChart.vue';
 import FailedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/students/FailedAssessmentsHorizontalBarChart.vue';
-import { ListBucketInventoryConfigurationsOutputFilterSensitiveLog } from '@aws-sdk/client-s3';
 
 export default {
     setup() {

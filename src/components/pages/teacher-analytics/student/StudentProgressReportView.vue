@@ -35,6 +35,10 @@ export default {
             fetch(`/student-analytics/student-progress/${this.studentId}`)
                 .then((response) => response.json())
                 .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
                     this.studentProgress = data;
                     console.log('Student Progress Data:', this.studentProgress);
                 })
