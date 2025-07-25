@@ -469,7 +469,7 @@ app.post('/login-attempt', (req, res, next) => {
                        FROM users 
                        WHERE users.username = ${conn.escape(req.body.username)} 
                        AND users.is_deleted = 0;`;
-    console.log(loginQuery)
+
 
     conn.query(loginQuery, (err, results) => {
         try {

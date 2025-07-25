@@ -32,69 +32,6 @@ export default {
     },
     methods: {
         drawTimeLineChart() {
-            const data = [
-                {
-                    start: new Date(2024, 0, 5),
-                    end: new Date(2024, 0, 7),
-                    label: 'Read Chapter 1'
-                },
-                {
-                    start: new Date(2024, 0, 15),
-                    end: new Date(2024, 0, 17),
-                    label: 'Number Theory'
-                },
-                {
-                    start: new Date(2024, 0, 25),
-                    end: new Date(2024, 0, 26),
-                    label: 'Practice Worksheet'
-                },
-                {
-                    start: new Date(2024, 1, 3),
-                    end: new Date(2024, 1, 5),
-                    label: 'Group Study'
-                },
-                {
-                    start: new Date(2024, 1, 12),
-                    end: new Date(2024, 1, 14),
-                    label: 'Quiz'
-                },
-                {
-                    start: new Date(2024, 1, 22),
-                    end: new Date(2024, 1, 24),
-                    label: 'Read '
-                },
-                {
-                    start: new Date(2024, 2, 1),
-                    end: new Date(2024, 2, 2),
-                    label: 'Real Life'
-                },
-                {
-                    start: new Date(2024, 2, 10),
-                    end: new Date(2024, 2, 12),
-                    label: 'Proportions'
-                },
-                {
-                    start: new Date(2024, 2, 20),
-                    end: new Date(2024, 2, 21),
-                    label: ' Review Session'
-                },
-                {
-                    start: new Date(2024, 2, 28),
-                    end: new Date(2024, 2, 30),
-                    label: 'Midterm Exam'
-                },
-                {
-                    start: new Date(2024, 3, 10),
-                    end: new Date(2024, 3, 12),
-                    label: 'geometry Basics'
-                },
-                {
-                    start: new Date(2024, 3, 20),
-                    end: new Date(2024, 3, 22),
-                    label: 'and Shapes'
-                }
-            ];
-
             const margin = { top: 20, right: 20, bottom: 30, left: 50 };
             const width = 1900 - margin.left - margin.right;
             const height = 700 - margin.top - margin.bottom;
@@ -303,18 +240,7 @@ export default {
                 labelLink.style.color = color;
             });
         },
-        async getUserSkillMasteredHistory() {
-            await this.userSkillsStore.getMasteredSkills(
-                this.$route.params.studentId
-            );
-            this.data = this.userSkillsStore.masteredSkills.map((e) => {
-                return {
-                    ...e,
-                    url: `/skills/${e.url}`,
-                    labelName: `${e.rootParent} - ${e.name}`
-                };
-            });
-        },
+
         mapSkillLevelWithColor(level) {
             switch (level) {
                 case 'grade_school':

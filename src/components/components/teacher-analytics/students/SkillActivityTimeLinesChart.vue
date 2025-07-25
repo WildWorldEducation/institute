@@ -1,405 +1,320 @@
 <script>
 import * as d3 from 'd3';
+import { timelines } from 'd3-timelines';
 import moment from 'moment';
+import { useTeacherAnalyticsStore } from '../../../../stores/TeacherAnalyticsStore';
 
 export default {
     name: 'SkillActivityGanttChart',
-    props: ['data', 'colour'],
+    props: ['data', 'colour', 'studentId'],
+    setup() {
+        const teacherAnalyticsStore = useTeacherAnalyticsStore();
+        return {
+            teacherAnalyticsStore
+        };
+    },
     data() {
         return {
-            padding: 60
+            padding: 60,
+            chartData: [],
+            timeRange: { min: 0, max: 0 },
+            showDropDown: false,
+            order: 'time'
         };
     },
     mounted() {
-        const prepareDataElement = ({
-            id,
-            name,
-            startDate,
-            endDate,
-            dependsOn
-        }) => {
-            if (!startDate || !endDate) {
-                throw new Exception(
-                    'Wrong element format: should contain startDate and endDate'
-                );
-            }
+        this.timeRange = this.calculateTimeRange();
+        this.prepareDataForChart();
+        this.createTimeLinesChart();
+    },
+    methods: {
+        createTimeLinesChart() {
+            const chart = timelines()
+                .stack(true)
+                .tickFormat({
+                    format: d3.timeFormat('%d-%m-%Y'),
+                    tickTime: d3.timeYears,
+                    tickInterval: 1,
+                    tickSize: 6
+                })
+                .beginning(this.timeRange.min * 1000)
+                .ending(this.timeRange.max * 1000)
+                .margin({ left: 0, right: 0, top: 0, bottom: 20 });
 
-            if (startDate) {
-                startDate = startDate.slice(0, 10);
-                startDate = moment(startDate);
-            }
+            const svg = d3
+                .select('#skill-activity-chart-container')
+                .append('svg')
+                .attr('width', 1630)
+                .attr('height', this.calculateChartHeight())
+                .datum(this.chartData)
+                .call(chart);
 
-            if (endDate) {
-                endDate = endDate.slice(0, 10);
-                endDate = moment(endDate);
-            }
+            const emptyChart = timelines()
+                .stack(true)
+                .tickFormat({
+                    format: d3.timeFormat('%d-%m-%Y'),
+                    tickTime: d3.timeYears,
+                    tickInterval: 1,
+                    tickSize: 6
+                })
+                .margin({ left: 0, right: 0 })
+                .beginning(this.timeRange.min * 1000)
+                .ending(this.timeRange.max * 1000);
 
-            if (!dependsOn) dependsOn = [];
-
-            return {
-                id,
-                name,
-                startDate,
-                endDate,
-                dependsOn
-            };
-        };
-
-        const findDateBoundaries = (data) => {
-            let minStartDate, maxEndDate;
-
-            data.forEach(({ startDate, endDate }) => {
-                if (!minStartDate || startDate.isBefore(minStartDate))
-                    minStartDate = moment(startDate);
-
-                if (!minStartDate || endDate.isBefore(minStartDate))
-                    minStartDate = moment(endDate);
-
-                if (!maxEndDate || endDate.isAfter(maxEndDate))
-                    maxEndDate = moment(endDate);
-
-                if (!maxEndDate || startDate.isAfter(maxEndDate))
-                    maxEndDate = moment(startDate);
-            });
-
-            return {
-                minStartDate,
-                maxEndDate
-            };
-        };
-
-        const createDataCacheById = (data) =>
-            data.reduce(
-                (cache, elt) => Object.assign(cache, { [elt.id]: elt }),
-                {}
-            );
-
-        const createChildrenCache = (data) => {
-            const dataCache = createDataCacheById(data);
-
-            const fillDependenciesForElement = (
-                eltId,
-                dependenciesByParent
-            ) => {
-                dataCache[eltId].dependsOn.forEach((parentId) => {
-                    if (!dependenciesByParent[parentId])
-                        dependenciesByParent[parentId] = [];
-
-                    if (dependenciesByParent[parentId].indexOf(eltId) < 0)
-                        dependenciesByParent[parentId].push(eltId);
-
-                    fillDependenciesForElement(parentId, dependenciesByParent);
-                });
-            };
-
-            return data.reduce((cache, elt) => {
-                if (!cache[elt.id]) cache[elt.id] = [];
-
-                fillDependenciesForElement(elt.id, cache);
-
-                return cache;
-            }, {});
-        };
-
-        const sortElementsByChildrenCount = (data) => {
-            const childrenByParentId = createChildrenCache(data);
-
-            return data.sort((e1, e2) => {
-                if (
-                    childrenByParentId[e1.id] &&
-                    childrenByParentId[e2.id] &&
-                    childrenByParentId[e1.id].length >
-                        childrenByParentId[e2.id].length
-                )
-                    return -1;
-                else return 1;
-            });
-        };
-
-        const sortElementsByEndDate = (data) =>
-            data.sort((e1, e2) => {
-                if (moment(e1.endDate).isBefore(moment(e2.endDate))) return -1;
-                else return 1;
-            });
-
-        const sortElements = (data, sortMode) => {
-            if (sortMode === 'childrenCount') {
-                return sortElementsByChildrenCount(data);
-            } else if (sortMode === 'date') {
-                return sortElementsByEndDate(data);
-            }
-        };
-
-        const parseUserData = (data) => data.map(prepareDataElement);
-
-        const createPolylineData = (rectangleData, elementHeight) => {
-            // prepare dependencies polyline data
-            const cachedData = createDataCacheById(rectangleData);
-
-            // used to calculate offsets between elements later
-            const storedConnections = rectangleData.reduce(
-                (acc, e) => Object.assign(acc, { [e.id]: 0 }),
-                {}
-            );
-
-            // create data describing connections' lines
-            return rectangleData.flatMap((d) =>
-                d.dependsOn
-                    .map((parentId) => cachedData[parentId])
-                    .map((parent) => {
-                        const color =
-                            '#' +
-                            (
-                                (Math.max(0.1, Math.min(0.9, Math.random())) *
-                                    0xfff) <<
-                                0
-                            ).toString(16);
-
-                        // increase the amount rows occupied by both parent and current element (d)
-                        storedConnections[parent.id]++;
-                        storedConnections[d.id]++;
-
-                        const deltaParentConnections =
-                            storedConnections[parent.id] * (elementHeight / 4);
-                        const deltaChildConnections =
-                            storedConnections[d.id] * (elementHeight / 4);
-
-                        const points = [
-                            d.x,
-                            d.y + elementHeight / 2,
-                            d.x - deltaChildConnections,
-                            d.y + elementHeight / 2,
-                            d.x - deltaChildConnections,
-                            d.y - elementHeight * 0.25,
-                            parent.xEnd + deltaParentConnections,
-                            d.y - elementHeight * 0.25,
-                            parent.xEnd + deltaParentConnections,
-                            parent.y + elementHeight / 2,
-                            parent.xEnd,
-                            parent.y + elementHeight / 2
-                        ];
-
-                        return {
-                            points: points.join(','),
-                            color
-                        };
-                    })
-            );
-        };
-
-        const createElementData = (data, elementHeight, xScale, fontSize) =>
-            data.map((d, i) => {
-                const x = xScale(d.startDate.toDate());
-                const xEnd = xScale(d.endDate.toDate());
-
-                const y = i * elementHeight * 1.5;
-                const width = xEnd - x;
-
-                const height = elementHeight;
-
-                const dependsOn = d.dependsOn;
-                const id = d.id;
-
-                const tooltip = d.name;
-
-                const singleCharWidth = fontSize * 0.5;
-                const singleCharHeight = fontSize * 0.45;
-
-                let label = d.name;
-
-                const labelX =
-                    x + (width / 2 - (label.length / 2) * singleCharWidth);
-                const labelY = y + (height / 2 + singleCharHeight);
-
+            const emptyData = [
+                {
+                    times: [
+                        {
+                            starting_time: this.timeRange.min * 1000,
+                            ending_time: this.timeRange.min * 1000,
+                            label: ''
+                        }
+                    ]
+                }
+            ];
+            // Create an empty chart for the top axis
+            const svg2 = d3
+                .select('#skill-activity-chart-top-axis')
+                .append('svg')
+                .attr('width', 1630)
+                .attr('height', 50)
+                .style('margin-top', '40px')
+                .datum(emptyData)
+                .call(emptyChart);
+        },
+        prepareDataForChart() {
+            this.chartData = this.data.map((item) => {
                 return {
-                    x,
-                    y,
-                    xEnd,
-                    width,
-                    height,
-                    id,
-                    dependsOn,
-                    label,
-                    labelX,
-                    labelY,
-                    tooltip
+                    times: [
+                        {
+                            starting_time: moment(item.startDate).unix() * 1000,
+                            ending_time: moment(item.endDate).unix() * 1000,
+                            label: item.name,
+                            level: item.level || 'N/A'
+                        }
+                    ]
                 };
             });
+        },
+        calculateTimeRange() {
+            if (this.data.length === 0) return { min: 0, max: 0 };
 
-        const createChartSVG = (
-            data,
-            placeholder,
-            {
-                svgWidth,
-                svgHeight,
-                elementHeight,
-                scaleWidth,
-                scaleHeight,
-                fontSize,
-                minStartDate,
-                maxEndDate,
-                margin,
-                showRelations
-            }
-        ) => {
-            // create container element for the whole chart
-            const svg = d3
-                .select(placeholder)
-                .append('svg')
-                .attr('width', svgWidth)
-                .attr('height', svgHeight);
-
-            const xScale = d3
-                .scaleTime()
-                .domain([minStartDate.toDate(), maxEndDate.toDate()])
-                .range([0, scaleWidth]);
-
-            // prepare data for every data element
-            const rectangleData = createElementData(
-                data,
-                elementHeight,
-                xScale,
-                fontSize
+            const startDates = this.data.map((item) =>
+                moment(item.startDate).unix()
+            );
+            const endDates = this.data.map((item) =>
+                moment(item.endDate).unix()
             );
 
-            // create data describing connections' lines
-            const polylineData = createPolylineData(
-                rectangleData,
-                elementHeight
-            );
-
-            const axisTop = d3.axisBottom(xScale);
-            //const axisBottom = d3.axisTop(xScale);
-
-            // create container for the data
-            const g1 = svg
-                .append('g')
-                .attr('transform', `translate(${margin.left},${margin.top})`);
-
-            const linesContainer = g1
-                .append('g')
-                .attr('transform', `translate(0,${margin.top})`);
-            const barsContainer = g1
-                .append('g')
-                .attr('transform', `translate(0,${margin.top})`);
-
-            g1.append('g').call(axisTop);
-            //g1.append('g').call(axisBottom);
-
-            // create axes
-            const bars = barsContainer
-                .selectAll('g')
-                .data(rectangleData)
-                .enter()
-                .append('g');
-
-            // add stuff to the SVG
-            if (showRelations) {
-                linesContainer
-                    .selectAll('polyline')
-                    .data(polylineData)
-                    .enter()
-                    .append('polyline')
-                    .style('fill', 'none')
-                    .style('stroke', (d) => d.color)
-                    .attr('points', (d) => d.points);
-            }
-
-            bars.append('rect')
-                .attr('rx', elementHeight / 2)
-                .attr('ry', elementHeight / 2)
-                .attr('x', (d) => d.x)
-                .attr('y', (d) => d.y)
-                .attr('width', (d) => d.width)
-                .attr('height', (d) => d.height)
-                .style('fill', '#ddd')
-                .style('stroke', 'black');
-
-            bars.append('text')
-                .style('fill', 'black')
-                .style('font-family', 'sans-serif')
-                .attr('x', (d) => d.labelX)
-                .attr('y', (d) => d.labelY)
-                .text((d) => d.label);
-
-            bars.append('title').text((d) => d.tooltip);
-        };
-
-        const createGanttChart = (
-            placeholder,
-            data,
-            { elementHeight, sortMode, showRelations, svgOptions }
-        ) => {
-            // prepare data
-            const margin = (svgOptions && svgOptions.margin) || {
-                top: elementHeight * 2,
-                left: elementHeight * 2
+            return {
+                min: Math.min(...startDates),
+                max: Math.max(...endDates)
             };
-
-            const scaleWidth =
-                ((svgOptions && svgOptions.width) || 600) - margin.left * 2;
-
-            const scaleHeight =
-                Math.max(
-                    (svgOptions && svgOptions.height) || 200,
-                    data.length * elementHeight * 2
-                ) -
-                margin.top * 2;
-
-            const svgWidth = scaleWidth + margin.left * 2;
-            const svgHeight = scaleHeight + margin.top * 2;
-
-            const fontSize = (svgOptions && svgOptions.fontSize) || 12;
-
-            if (!sortMode) sortMode = 'date';
-
-            if (typeof showRelations === 'undefined') showRelations = true;
-
-            data = parseUserData(data); // transform raw user data to valid values
-
-            data = sortElements(data, sortMode);
-
-            const { minStartDate, maxEndDate } = findDateBoundaries(data);
-
-            // add some padding to axes
-            minStartDate.subtract(2, 'days');
-            maxEndDate.add(2, 'days');
-
-            createChartSVG(data, placeholder, {
-                svgWidth,
-                svgHeight,
-                scaleWidth,
-                elementHeight,
-                scaleHeight,
-                fontSize,
-                minStartDate,
-                maxEndDate,
-                margin,
-                showRelations
-            });
-        };
-
-        createGanttChart(
-            document.getElementById('skill-activity-chart-container'),
-            this.data,
-            {
-                elementHeight: 20,
-                sortMode: 'date', // alternatively, 'childrenCount'
-                showRelations: false,
-                svgOptions: {
-                    width: 1200,
-                    height: 400,
-                    fontSize: 12
-                }
+        },
+        calculateTickInterval() {
+            const range = this.timeRange.max - this.timeRange.min;
+            if (range < 60 * 60 * 24) return 1; // less than a day
+            if (range < 60 * 60 * 24 * 30) return 7; // less than a month
+            return 30; // more than a month
+        },
+        calculateChartHeight() {
+            return this.data.length * 50 + 100; // 50px per item + padding
+        },
+        handleChooseOrder(orderString) {
+            this.order = orderString;
+            this.showDropDown = false;
+            this.reOrderDataArray();
+        },
+        async reOrderDataArray() {
+            if (this.order === 'time') {
+                this.chartData.sort((a, b) => {
+                    return a.times[0].starting_time - b.times[0].starting_time;
+                });
+            } else if (this.order === 'level') {
+                const newData =
+                    await this.teacherAnalyticsStore.getSkillActivityReportOrderByLevel(
+                        this.studentId
+                    );
+                console.log(newData);
+                this.prepareDataForChart();
             }
-        );
-    },
-    methods: {}
+            this.redrawTimeLinesChart();
+        },
+        redrawTimeLinesChart() {
+            d3.select('#skill-activity-chart-container').select('svg').remove();
+            d3.select('#skill-activity-chart-top-axis').select('svg').remove();
+            this.createTimeLinesChart();
+        }
+    }
 };
 </script>
 
 <template>
+    <div class="row">
+        <div class="col col-md-8 col-lg-5 mt-2">
+            <!-- Custom Dropdown -->
+            <h2 class="secondary-heading h4">Order chart:</h2>
+            <div class="d-flex flex-column position-relative drop-down-div">
+                <div
+                    :class="[
+                        showDropDown
+                            ? 'custom-select-button-focus '
+                            : 'custom-select-button '
+                    ]"
+                    @click="showDropDown = !showDropDown"
+                >
+                    Order by: {{ order }}
+                    <span>
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                fill="#344054"
+                            />
+                        </svg>
+                    </span>
+                </div>
+                <div v-if="showDropDown" class="custom-dropdown-base">
+                    <div
+                        class="custom-dropdown-option"
+                        @click="handleChooseOrder('time')"
+                    >
+                        Time
+                    </div>
+                    <div
+                        class="custom-dropdown-option"
+                        @click="handleChooseOrder('level')"
+                    >
+                        Level
+                    </div>
+                </div>
+            </div>
+            <!-- End of custom dropdown -->
+        </div>
+    </div>
+    <!-- an empty time line chart just to get the time line axis -->
+    <div id="skill-activity-chart-top-axis"></div>
     <div id="skill-activity-chart-container"></div>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* Style For The Custom Select */
+.custom-select-button {
+    width: 100%;
+    height: 42px;
+    padding: 10px 0px 10px 14px;
+    border-radius: 8px;
+    gap: 8px;
+    background: linear-gradient(0deg, #ffffff, #ffffff),
+        linear-gradient(0deg, #f2f4f7, #f2f4f7);
+    border: 1px solid #6f6f6f;
+    box-shadow: 0px 1px 2px 0px #1018280d;
+    font-family: 'Poppins' sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.03em;
+    text-align: left;
+    display: flex;
+}
+
+.custom-select-button-focus {
+    width: 100%;
+    height: 42px;
+    padding: 10px 0px 10px 14px;
+    border-radius: 8px;
+    gap: 8px;
+    background: linear-gradient(0deg, #ffffff, #ffffff),
+        linear-gradient(0deg, #f2f4f7, #f2f4f7);
+    border: 1px solid #9c7eec;
+    box-shadow: 0px 0px 0px 4px #bca3ff4d;
+    font-family: 'Poppins' sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.03em;
+    text-align: left;
+    display: flex;
+}
+
+.custom-select-button:hover {
+    cursor: pointer;
+    border: 1px solid #9c7eec;
+}
+
+.custom-select-button > span {
+    margin-right: 2px;
+    margin-left: auto;
+    animation: rotationBack 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+.custom-select-button-focus > span {
+    margin-right: 2px;
+    margin-left: auto;
+    animation: rotation 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+.form-validate {
+    font-size: 0.75rem;
+    color: red;
+    font-weight: 300;
+}
+
+/* The animation key frame */
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(180deg);
+    }
+}
+
+@keyframes rotationBack {
+    from {
+        transform: rotate(180deg);
+    }
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+.custom-select-button-focus:hover {
+    cursor: pointer;
+}
+.custom-dropdown-base {
+    border-radius: 8px;
+    border: 1px;
+    background: linear-gradient(0deg, #ffffff, #ffffff);
+    border: 1px solid #9c7eec;
+    box-shadow: 0px 4px 6px -2px #10182808;
+    box-shadow: 0px 12px 16px -4px #10182814;
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    top: 42px;
+}
+
+.custom-dropdown-option {
+    padding: 10px 14px 10px 14px;
+    gap: 8px;
+    color: #344054;
+}
+
+.custom-dropdown-option:hover {
+    cursor: pointer;
+    background: #bca3ff1a;
+}
+
+.drop-down-div {
+    width: 40%;
+}
+/* End of CSS style for Custom Select */
+</style>

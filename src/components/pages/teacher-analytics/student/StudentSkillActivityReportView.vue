@@ -61,15 +61,12 @@ export default {
             <h1 class="heading">Skill Activity Report</h1>
             <h2 class="secondary-heading h3">{{ studentName }}</h2>
         </span>
-        <!-- <SkillActivityGanttChart
-            v-if="teacherAnalyticsStore.skillActivities.length > 0"
-            :data="teacherAnalyticsStore.skillActivities"
-            colour="darkred"
-        /> -->
+
         <SkillActivityTimeLinesChart
             v-if="teacherAnalyticsStore.skillActivities.length > 0"
             :data="teacherAnalyticsStore.skillActivities"
             colour="darkred"
+            :student-id="studentId"
         />
         <div
             v-if="teacherAnalyticsStore.skillActivities.length > 0"

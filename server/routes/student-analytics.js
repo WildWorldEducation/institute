@@ -257,6 +257,43 @@ router.get('/skill-activity-report/:studentId', (req, res, next) => {
     }
 });
 
+// get student skill activity report but order by level
+router.get('/skill-activity-report-order-by-level/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT skills.id AS id, name, url, mastered_date, first_visited_date AS startDate, last_visited_date AS endDate
+            FROM user_skills
+            JOIN skills
+            ON user_skills.skill_id = skills.id
+            WHERE user_id = ${conn.escape(req.params.studentId)}
+            AND first_visited_date IS NOT NULL    
+            AND skills.type <> 'domain'
+            ORDER BY field(LEVEL,'grade_school', 'middle_school','high_school','college','phd','domain');
+        ;`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                if (results.length === 0) {
+                    return res.status(404).json({
+                        error: 'No skill activity'
+                    });
+                }
+                console.log('Skill activities ordered by level:', results);
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * PER COHORT -------------------------------------------------
  */
