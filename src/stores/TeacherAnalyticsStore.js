@@ -33,7 +33,7 @@ export const useTeacherAnalyticsStore = defineStore('teacherAnalytics', {
             await fetch(`/student-analytics/skill-activity-report-order-by-level/${studentId}`)
                 .then((response) => response.json())
                 .then((data) => {
-                    console.log('Skill activities ordered by level:', data);
+
                     this.skillActivities = data;
                 })
                 .catch((error) => {
