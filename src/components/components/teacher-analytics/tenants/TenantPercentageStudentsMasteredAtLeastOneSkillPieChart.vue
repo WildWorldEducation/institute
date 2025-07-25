@@ -5,9 +5,7 @@ export default {
     name: 'TenantPercentageStudentsMasteredAtLeastOneSkillPieChart',
     props: ['data'],
     data() {
-        return {
-            padding: 60
-        };
+        return {};
     },
     mounted() {
         const container = d3.select(

@@ -269,7 +269,9 @@ export default {
                 this.showMobileTutorialTip5 = false;
                 this.showInstructorModeTutorialTip1 = false;
                 this.showInstructorModeTutorialTip2 = false;
+                this.isTutorialComplete = true;
                 this.isInstructorModeTutorialComplete = true;
+                this.markTutorialComplete();
                 this.markInstructorModeTutorialComplete();
             }
             if (this.userDetailsStore.role == 'editor') {

@@ -1,6 +1,7 @@
 <script>
 import { useUsersStore } from '../../../../stores/UsersStore';
 import TimePerSkillHorizontalBarChart from '../../../components/teacher-analytics/students/TimePerSkillHorizontalBarChart.vue';
+import StudentDurationPerDayLineChart from '../../../components/teacher-analytics/students/StudentDurationPerDayLineChart.vue';
 
 export default {
     setup() {
@@ -10,13 +11,15 @@ export default {
         };
     },
     components: {
-        TimePerSkillHorizontalBarChart
+        TimePerSkillHorizontalBarChart,
+        StudentDurationPerDayLineChart
     },
     data() {
         return {
             studentId: this.$route.params.studentId,
             studentName: null,
             skillDurations: [],
+            durationsPerDay: [],
             allSkillsDuration: 0,
             isDataLoaded: false
         };
@@ -32,6 +35,7 @@ export default {
 
         await this.getSkillDuration();
         await this.getAllSkillsDuration();
+        await this.getStudentDurationPerDay();
         this.isDataLoaded = true;
     },
     methods: {
@@ -61,10 +65,52 @@ export default {
                     console.error('Error fetching last visited skills:', error);
                 });
         },
+        async getStudentDurationPerDay() {
+            fetch(
+                `/student-analytics/student-duration-per-day/${this.studentId}`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].formattedQuantity =
+                            this.millisToMinutesAndSeconds(data[i].quantity);
+
+                        data[i].formattedQuantity =
+                            this.convertMinutesSecondsToSeconds(
+                                data[i].formattedQuantity
+                            );
+
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.durationsPerDay = data;
+                })
+                .catch((error) => {
+                    console.error(
+                        'Error fetching student duration per day:',
+                        error
+                    );
+                });
+        },
+
         millisToMinutesAndSeconds(millis) {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);
             return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        },
+        convertMinutesSecondsToSeconds(durationString) {
+            const parts = durationString.split(':');
+            if (parts.length !== 2) {
+                throw new Error("Invalid duration format. Expected 'MM:SS'.");
+            }
+            const minutes = parseInt(parts[0], 10);
+            const seconds = parseInt(parts[1], 10);
+
+            if (isNaN(minutes) || isNaN(seconds)) {
+                throw new Error('Invalid numerical values in duration string.');
+            }
+
+            return minutes * 60 + seconds;
         }
     }
 };
@@ -81,21 +127,15 @@ export default {
                 Please note that time spent on external sources (e.g. websites)
                 related to skills is not measured.</em
             >
-            <!--         </p>
-        <p>
-            <em
-                >Ability to choose time period - which will change entire
-                page</em
-            >
-        </p> 
-        <h2 class="secondary-heading">Total time on platform</h2>
-        <p><em>line chart, over days / hours</em></p>
-        <p><em>Would have to record the time each day</em></p> -->
         </p>
 
         <div v-if="isDataLoaded">
+            <h2 class="secondary-heading">Total time on platform</h2>
+            <StudentDurationPerDayLineChart
+                v-if="durationsPerDay.length > 0"
+                :data="durationsPerDay"
+            />
             <h2 class="secondary-heading">All skills</h2>
-            <!-- <p><em>line chart, over days / hours</em></p> -->
             <p>{{ millisToMinutesAndSeconds(this.allSkillsDuration) }}</p>
             <h2 class="secondary-heading">Minutes per skill</h2>
             <TimePerSkillHorizontalBarChart
@@ -103,39 +143,12 @@ export default {
                 :data="skillDurations"
                 colour="darkgreen"
             />
-            <div v-if="this.skillDurations.length > 0" class="mb-4">
-                <table class="table">
-                    <tr>
-                        <th>Skill</th>
-                        <th>Duration</th>
-                    </tr>
-                    <tr
-                        v-for="skillDuration in skillDurations"
-                        :key="skillDuration.id"
-                        class="table-rows"
-                    >
-                        <td>
-                            <router-link
-                                target="_blank"
-                                :to="'/skills/' + skillDuration.url"
-                                >{{ skillDuration.name }}</router-link
-                            >
-                        </td>
-                        <td>
-                            {{
-                                millisToMinutesAndSeconds(
-                                    skillDuration.quantity
-                                )
-                            }}
-                        </td>
-                    </tr>
-                </table>
-            </div>
             <div v-else>
                 <p>No skills visited by this student.</p>
             </div>
         </div>
     </div>
+    <p>&nbsp;</p>
 </template>
 
 <style></style>

@@ -89,6 +89,14 @@ export default {
             await this.getStudents();
         }
 
+        if (this.userDetailsStore.role === 'school_admin') {
+            let tenantId = this.userDetailsStore.tenantId;
+
+            if (this.usersStore.studentsPerTenant.length < 1) {
+                await this.usersStore.getStudentsPerTenant(tenantId);
+            }
+        }
+
         this.isLoading = false;
 
         // Handle initial user selection
@@ -401,22 +409,6 @@ export default {
             handler(newId) {
                 if (newId && this.initialSetupComplete) {
                     this.updateUserFromStore(newId);
-                }
-            }
-        },
-        // Load data for school admins
-        async $route(to, from) {
-            if (this.userDetailsStore.role === 'school_admin') {
-                let tenantId = this.userDetailsStore.tenantId;
-
-                if (to.name == 'students') {
-                    if (this.usersStore.studentsPerTenant.length < 1) {
-                        await this.usersStore.getStudentsPerTenant(tenantId);
-                    }
-                } else if (to.name == 'classes') {
-                    if (this.cohortsStore.cohortsPerTenant.length < 1) {
-                        await this.cohortsStore.getCohortsPerTenant(tenantId);
-                    }
                 }
             }
         }

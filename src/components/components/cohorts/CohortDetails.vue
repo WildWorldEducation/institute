@@ -1,12 +1,15 @@
 <script>
 import { useCohortsStore } from '../../../stores/CohortsStore.js';
-
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
+import CohortPercentageStudentsMasteredAtLeastOneSkillPieChart from './../teacher-analytics/cohorts/CohortPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
 export default {
     setup() {
         const cohortsStore = useCohortsStore();
+        const userDetailsStore = useUserDetailsStore();
 
         return {
-            cohortsStore
+            cohortsStore,
+            userDetailsStore
         };
     },
     data() {
@@ -15,15 +18,17 @@ export default {
             showRemoveStudentModal: false,
             localIsSkillsLocked: null,
             mode: 'big',
-            isMobileCheck: window.innerWidth
+            isMobileCheck: window.innerWidth,
+            isLoaded: false
         };
     },
-    created() {},
+    async created() {},
     computed: {
         studentName() {
             return `${this.$parent.user.username}`.trim();
         }
     },
+    components: {},
     methods: {}
 };
 </script>
@@ -57,14 +62,23 @@ export default {
                 {{ this.cohortsStore.selectedCohort.name }}
             </h1>
         </div>
-        <div class="row">
+        <div
+            class="row"
+            v-if="
+                userDetailsStore.role == 'instructor' ||
+                userDetailsStore.role == 'partner'
+            "
+        >
             <!-- Cohort Progress -->
             <div class="col-12 col-md-8">
                 <div class="d-flex flex-column">
                     <h2 class="secondary-heading h4">Check progress</h2>
                     <!-- Whether all students or cohort selected -->
                     <router-link
-                        v-if="!cohortsStore.isAllStudentsSelected"
+                        v-if="
+                            !cohortsStore.isAllStudentsSelected &&
+                            this.cohortsStore.cohorts.length > 0
+                        "
                         :to="`/cohort/${cohortsStore.selectedCohort.id}/progress-report`"
                         class="fit-content"
                         target="_blank"
@@ -83,7 +97,10 @@ export default {
                     <h2 class="secondary-heading h4 mt-4">Check activity</h2>
                     <!-- Whether all students or cohort selected -->
                     <router-link
-                        v-if="!cohortsStore.isAllStudentsSelected"
+                        v-if="
+                            !cohortsStore.isAllStudentsSelected &&
+                            this.cohortsStore.cohorts.length > 0
+                        "
                         :to="`/cohort/${this.cohortsStore.selectedCohort.id}/skill-activity`"
                         class="fit-content"
                         target="_blank"
@@ -101,7 +118,10 @@ export default {
 
                     <!-- Whether all students or cohort selected -->
                     <router-link
-                        v-if="!cohortsStore.isAllStudentsSelected"
+                        v-if="
+                            !cohortsStore.isAllStudentsSelected &&
+                            this.cohortsStore.cohorts.length > 0
+                        "
                         :to="`/cohort/${this.cohortsStore.selectedCohort.id}/assessment-status`"
                         class="fit-content mt-2"
                         target="_blank"
@@ -119,9 +139,12 @@ export default {
 
                     <!-- Whether all students or cohort selected -->
                     <router-link
-                        v-if="!cohortsStore.isAllStudentsSelected"
+                        v-if="
+                            !cohortsStore.isAllStudentsSelected &&
+                            this.cohortsStore.cohorts.length > 0
+                        "
                         :to="`/cohort/${this.cohortsStore.selectedCohort.id}/total-time`"
-                        class="fit-content mt-2"
+                        class="fit-content mt-2 mb-3"
                         target="_blank"
                     >
                         Time on platform
@@ -129,28 +152,11 @@ export default {
                     <router-link
                         v-else
                         :to="`/cohort/all-students/total-time`"
-                        class="fit-content mt-2"
+                        class="fit-content mt-2 mb-3"
                         target="_blank"
                     >
                         Time on platform
                     </router-link>
-
-                    <!-- <h3>Possibly: Skills -> Learning Objectives</h3>
-                    <ul>
-                        <li><em>which are students struggling with</em></li>
-                        <li>
-                            <em
-                                >Calendar showing: passing assessments, taking
-                                them, failing them:
-                                https://observablehq.com/@d3/calendar/2</em
-                            >
-                        </li>
-                    </ul> -->
-
-                    <!-- Goals -->
-                    <h2 class="secondary-heading h4 mt-4">Assign work</h2>
-                    <p>Assign goals</p>
-                    <p>See current goals</p>
                 </div>
             </div>
             <!-- Right column -->
@@ -162,6 +168,7 @@ export default {
                 <div class="d-flex flex-column">
                     <!-- Edit Cohort -->
                     <router-link
+                        v-if="cohortsStore.cohorts.length > 0"
                         :to="`/cohort/edit/${cohortsStore.selectedCohort.id}`"
                         class="btn primary-btn mt-1"
                     >

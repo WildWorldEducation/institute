@@ -23,7 +23,7 @@ export default {
     },
     methods: {
         drawTimeLineChartWithMilesStone() {
-            milestones('#timeline')
+            milestones('#passed-assessments-timeline')
                 .mapping({
                     timestamp: 'mastered_date',
                     text: 'labelName'
@@ -117,10 +117,10 @@ export default {
 };
 </script>
 <template>
-    <div id="timeline"></div>
+    <div id="passed-assessments-timeline"></div>
 </template>
 <style>
-#timeline {
+#passed-assessments-timeline {
     position: relative;
 }
 

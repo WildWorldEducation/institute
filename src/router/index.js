@@ -243,9 +243,9 @@ const router = createRouter({
         },
         // School admins only - teachers from their school only
         {
-            path: '/teachers',
-            name: 'teachers',
-            component: () => import('../components/pages/UsersView.vue'),
+            path: '/classes',
+            name: 'classes',
+            component: () => import('../components/pages/InstructorsView.vue'),
             meta: {
                 requiresAuth: true,
                 roles: ['school_admin']

@@ -36,7 +36,7 @@ router.get(
     async (req, res, next) => {
         if (req.session.userName) {
             let sqlQuery = `            
-                SELECT assessment_attempts.id, url, name, date
+                SELECT assessment_attempts.id, url, name, date, level
                     FROM assessment_attempts
                     JOIN skills ON skills.id = assessment_attempts.skill_id
                     WHERE assessment_attempts.user_id = ${conn.escape(
@@ -257,6 +257,7 @@ router.get('/skill-activity-report/:studentId', (req, res, next) => {
     }
 });
 
+
 // get student skill activity report but order by level
 router.get('/skill-activity-report-order-by-level/:studentId', (req, res, next) => {
     // Check if logged in.
@@ -280,6 +281,7 @@ router.get('/skill-activity-report-order-by-level/:studentId', (req, res, next) 
                     throw err;
                 }
 
+
                 if (results.length === 0) {
                     return res.status(404).json({
                         error: 'No skill activity'
@@ -287,6 +289,99 @@ router.get('/skill-activity-report-order-by-level/:studentId', (req, res, next) 
                 }
                 console.log('Skill activities ordered by level:', results);
                 res.json(results);
+
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+
+/* Get duration on platform per student per day */
+router.get('/student-duration-per-day/:studentId', (req, res, next) => {
+
+    // Check if logged in.
+    if (req.session.userName) {
+        let sqlQuery = `
+            SELECT date, duration AS quantity
+            FROM user_duration_per_day
+            WHERE user_id = ${conn.escape(
+            req.params.studentId
+        )}
+            ORDER BY date ASC;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(result);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Get student progress (number of total skills mastered over time) */
+router.get('/student-progress/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        // First, get the date the student started on the platform
+        let firstInteractionSQLQuery = `SELECT date
+            FROM user_duration_per_day
+            WHERE user_id = ${conn.escape(req.params.studentId)}
+            ORDER BY date ASC
+            LIMIT 1;`;
+
+        conn.query(firstInteractionSQLQuery, (err, firstInteractionResult) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                let sqlQuery = `
+                    SELECT CAST(mastered_date AS DATE) AS date, SUM(COUNT(*)) OVER(ORDER BY date) AS quantity
+                    FROM user_skills
+                    JOIN skills
+                    ON skills.id = user_skills.skill_id
+                    WHERE is_mastered = 1
+                    AND user_id = ${conn.escape(req.params.studentId)}
+                    AND type <> 'domain'
+                    GROUP BY date
+                    ORDER BY date ASC;`;
+
+                conn.query(sqlQuery, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        let flag = false;
+                        for (let i = 0; i < results.length; i++) {
+                            if (
+                                firstInteractionResult[0].date ==
+                                results[i].date
+                            ) {
+                                flag = true;
+                            }
+                        }
+
+                        if (!flag) {
+                            results.unshift({
+                                date: firstInteractionResult[0].date,
+                                quantity: 0
+                            });
+                        }
+
+                        res.json(results);
+                    } catch (err) {
+                        next(err);
+                    }
+                });
             } catch (err) {
                 next(err);
             }
@@ -425,6 +520,188 @@ router.get('/attempted-assessments/cohort/:cohortId', (req, res, next) => {
     }
 });
 
+/* Get duration on platform per cohort per day */
+router.get('/cohort-duration-per-day/:cohortId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT date, SUM(duration) AS quantity
+            FROM user_duration_per_day
+            JOIN cohorts_users
+            ON user_duration_per_day.user_id = cohorts_users.user_id
+            WHERE cohorts_users.cohort_id = ${conn.escape(
+            req.params.cohortId
+        )}              
+            GROUP BY date
+            ORDER BY date ASC;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Get all student in cohort total durations */
+router.get('/cohort-total-durations/:cohortId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+         SELECT username AS name, SUM(duration) AS quantity
+            FROM user_duration_per_day
+            JOIN cohorts_users
+            ON user_duration_per_day.user_id = cohorts_users.user_id
+            JOIN users
+            ON users.id = user_duration_per_day.user_id
+            WHERE cohorts_users.cohort_id = ${conn.escape(
+            req.params.cohortId
+        )}              
+            GROUP BY cohorts_users.user_id;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Get all student in cohort durations per skill*/
+router.get(
+    '/cohort-student-durations-per-skill/:cohortId',
+    (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+
+            let sqlQuery = `
+            SELECT skills.name, SUM(duration) AS quantity
+            FROM user_skills            
+            JOIN cohorts_users
+            ON user_skills.user_id = cohorts_users.user_id
+			JOIN skills
+            ON skills.id = user_skills.skill_id
+            WHERE cohorts_users.cohort_id = ${conn.escape(
+                req.params.cohortId
+            )}              
+            GROUP BY skills.name
+            HAVING quantity > 0
+            ORDER BY quantity DESC;`;
+
+            conn.query(sqlQuery, (err, result) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    res.json(result);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
+
+/* Get cohort progress (number of total skills mastered over time) */
+router.get('/cohort-progress/:cohortId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        // First, get the date the first student in the cohort student started on the platform
+        let firstInteractionSQLQuery = `
+            SELECT date
+            FROM user_duration_per_day
+            JOIN cohorts_users
+            ON cohorts_users.user_id = user_duration_per_day.user_id
+            WHERE cohort_id = ${conn.escape(req.params.cohortId)}  
+            ORDER BY date ASC
+            LIMIT 1;`;
+
+        conn.query(firstInteractionSQLQuery, (err, firstInteractionResult) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                if (firstInteractionResult.length === 0) {
+                    return res.status(404).json({
+                        error: 'No skill activity'
+                    });
+                }
+
+                let sqlQuery = `
+                    SELECT CAST(mastered_date AS DATE) AS date, SUM(COUNT(*)) OVER(ORDER BY date) AS quantity
+                    FROM user_skills
+                    JOIN cohorts_users
+                    ON cohorts_users.user_id = user_skills.user_id
+                    JOIN skills
+                    ON skills.id = user_skills.skill_id
+                    WHERE is_mastered = 1
+                    AND cohort_id = ${conn.escape(req.params.cohortId)}        
+                    AND type <> 'domain'      
+                    GROUP BY date
+                    ORDER BY date ASC;`;
+
+                conn.query(sqlQuery, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        if (results.length === 0) {
+                            return res.status(404).json({
+                                error: 'No skill activity'
+                            });
+                        }
+
+                        let flag = false;
+                        for (let i = 0; i < results.length; i++) {
+                            if (
+                                firstInteractionResult[0].date ==
+                                results[i].date
+                            ) {
+                                flag = true;
+                            }
+                        }
+
+                        if (!flag) {
+                            results.unshift({
+                                date: firstInteractionResult[0].date,
+                                quantity: 0
+                            });
+                        }
+
+                        res.json(results);
+                    } catch (err) {
+                        next(err);
+                    }
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * FOR ALL STUDENTS OF AN INSTRUCTOR -------------------------------------------------------
  */
@@ -553,6 +830,192 @@ router.get('/attempted-assessments/all-students/:userId', (req, res, next) => {
                 }
 
                 res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Get duration on platform per cohort per day */
+router.get('/all-students-duration-per-day/:userId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT date, SUM(duration) AS quantity
+            FROM user_duration_per_day
+            JOIN instructor_students
+            ON instructor_students.student_id = user_duration_per_day.user_id
+            WHERE instructor_students.instructor_id = ${conn.escape(
+            req.params.userId
+        )}              
+            GROUP BY date
+            ORDER BY date ASC;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Get all students of instructor durations */
+router.get('/all-students-total-durations/:userId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT username AS name, SUM(duration) AS quantity
+            FROM user_duration_per_day
+            JOIN instructor_students
+            ON user_duration_per_day.user_id = instructor_students.student_id
+            JOIN users
+            ON users.id = user_duration_per_day.user_id
+            WHERE instructor_students.instructor_id = ${conn.escape(
+            req.params.userId
+        )}              
+            GROUP BY instructor_students.student_id;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Get all student of instructor durations per skill*/
+router.get(
+    '/all-students-student-durations-per-skill/:userId',
+    (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+
+            let sqlQuery = `            
+                SELECT skills.name, SUM(duration) AS quantity
+                FROM user_skills            
+                JOIN instructor_students
+                ON user_skills.user_id = instructor_students.student_id
+                JOIN skills
+                ON skills.id = user_skills.skill_id
+                WHERE instructor_students.instructor_id = ${conn.escape(
+                req.params.userId
+            )}              
+                GROUP BY skills.name
+                HAVING quantity > 0
+                ORDER BY quantity DESC;`;
+
+            conn.query(sqlQuery, (err, result) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    res.json(result);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
+
+/* Get all students of instructor progress (number of total skills mastered over time) */
+router.get('/all-students-progress/:userId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        // First, get the date the first student in the cohort student started on the platform
+        let firstInteractionSQLQuery = `
+            SELECT date
+            FROM user_duration_per_day
+            JOIN instructor_students
+            ON instructor_students.student_id = user_duration_per_day.user_id
+            WHERE instructor_students.instructor_id = ${conn.escape(
+            req.params.userId
+        )}  
+            ORDER BY date ASC
+            LIMIT 1;`;
+
+        conn.query(firstInteractionSQLQuery, (err, firstInteractionResult) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                if (firstInteractionResult.length === 0) {
+                    return res.status(404).json({
+                        error: 'No skill activity'
+                    });
+                }
+
+                let sqlQuery = `
+                    SELECT CAST(mastered_date AS DATE) AS date, SUM(COUNT(*)) OVER(ORDER BY date) AS quantity
+                    FROM user_skills
+                    JOIN instructor_students
+                    ON instructor_students.student_id = user_skills.user_id
+                    JOIN skills
+                    ON skills.id = user_skills.skill_id
+                    WHERE is_mastered = 1
+                    AND instructor_students.instructor_id = ${conn.escape(
+                    req.params.userId
+                )}        
+                    AND type <> 'domain'      
+                    GROUP BY date
+                    ORDER BY date ASC;`;
+
+                conn.query(sqlQuery, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        if (results.length === 0) {
+                            return res.status(404).json({
+                                error: 'No skill activity'
+                            });
+                        }
+
+                        let flag = false;
+                        for (let i = 0; i < results.length; i++) {
+                            if (
+                                firstInteractionResult[0].date ==
+                                results[i].date
+                            ) {
+                                flag = true;
+                            }
+                        }
+
+                        if (!flag) {
+                            results.unshift({
+                                date: firstInteractionResult[0].date,
+                                quantity: 0
+                            });
+                        }
+
+                        res.json(results);
+                    } catch (err) {
+                        next(err);
+                    }
+                });
             } catch (err) {
                 next(err);
             }
@@ -718,6 +1181,88 @@ router.get(
     }
 );
 
+router.get(
+    '/percentage-students-mastered-one-skill/instructor/:instructorId',
+    (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            let allStudentsSQLQuery = `
+                SELECT COUNT(*) AS quantity
+                FROM instructor_students
+                JOIN users
+                ON instructor_students.student_id = users.id
+                WHERE instructor_students.instructor_id = ${conn.escape(
+                req.params.instructorId
+            )}
+                AND is_deleted = 0;`;
+
+            conn.query(allStudentsSQLQuery, (err, allStudentsResults) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    if (allStudentsResults.length === 0) {
+                        return res.status(404).json({
+                            error: 'No users in the tenant'
+                        });
+                    }
+
+                    let masteredAtLeastOneSkillSQLQuery = `
+                        SELECT COUNT(distinct users.id) AS quantity
+                        FROM instructor_students
+                        JOIN user_skills
+                        ON instructor_students.student_id = user_skills.user_id
+                        JOIN users 
+                        ON users.id = user_skills.user_id
+                        WHERE is_mastered = 1
+                        AND role = 'student'
+                        AND is_deleted = 0
+                        AND instructor_students.instructor_id = ${conn.escape(
+                        req.params.instructorId
+                    )}`;
+
+                    conn.query(
+                        masteredAtLeastOneSkillSQLQuery,
+                        (err, masteredOneSkillResults) => {
+                            try {
+                                if (err) {
+                                    throw err;
+                                }
+
+                                let allStudents =
+                                    allStudentsResults[0].quantity || 0;
+
+                                let studentsMasteredNoSkills =
+                                    allStudents -
+                                    masteredOneSkillResults[0].quantity;
+
+                                let results = [
+                                    {
+                                        name: 'Mastered no skills',
+                                        value: studentsMasteredNoSkills
+                                    },
+                                    {
+                                        name: 'Mastered one skill',
+                                        value: masteredOneSkillResults[0]
+                                            .quantity
+                                    }
+                                ];
+
+                                res.json(results);
+                            } catch (err) {
+                                next(err);
+                            }
+                        }
+                    );
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
+
 /**
  * RECORD DATA -------------------------------------------
  */
@@ -733,6 +1278,37 @@ router.post('/record-duration/:userId/:skillId', (req, res, next) => {
         VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
             req.params.skillId
         )}, ${conn.escape(duration)}) 
+        ON DUPLICATE KEY UPDATE duration= duration + ${conn.escape(duration)};
+        `;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Record time on app per day per student
+ */
+router.post('/record-time-on-app/:userId', (req, res, next) => {
+    if (req.session.userName) {
+        const duration = req.body.duration;
+
+        let sqlQuery = `
+        INSERT INTO user_duration_per_day (user_id, date, duration) 
+        VALUES(${conn.escape(req.params.userId)}, CURDATE(), ${conn.escape(
+            duration
+        )}) 
+        
         ON DUPLICATE KEY UPDATE duration= duration + ${conn.escape(duration)};
         `;
 

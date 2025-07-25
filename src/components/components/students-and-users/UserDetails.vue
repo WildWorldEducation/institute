@@ -402,10 +402,7 @@ export default {
             </div>
             <!-- School admins -->
             <div
-                v-if="
-                    userDetailsStore.role == 'school_admin' &&
-                    $route.name == 'students'
-                "
+                v-if="userDetailsStore.role == 'school_admin'"
                 class="d-flex flex-column"
             >
                 <h2 class="secondary-heading">Academic Performance Overview</h2>
@@ -433,67 +430,6 @@ export default {
                         skills</em
                     >
                 </p>
-            </div>
-            <div
-                v-if="
-                    userDetailsStore.role == 'school_admin' &&
-                    $route.name == 'classes'
-                "
-                class="d-flex flex-column"
-            >
-                <h2 class="secondary-heading">Student Progress & Attendance</h2>
-                <h3>Usage and Fidelity Reports</h3>
-                <p>
-                    Track weekly and cumulative usage, including the percentage
-                    of students who completed at least one skill, total tutoring
-                    time, and engagement.
-                </p>
-                <ul>
-                    <li>
-                        percentage of students who completed at least one skill
-                        <ul>
-                            <li>
-                                <em>task made</em>
-                            </li>
-                            <li>
-                                <em
-                                    >percentage of students who completed at
-                                    least one skill
-                                </em>
-                            </li>
-                            <li>
-                                <em>pie chart </em>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        total tutoring time
-                        <em
-                            >(Would have to record time per student per skill,
-                            with tutor)</em
-                        >
-                    </li>
-                    <li>
-                        engagement
-                        <ul>
-                            <li>
-                                <em>task made</em>
-                            </li>
-                            <li>
-                                <em
-                                    >starting date is when first student started
-                                    on</em
-                                >
-                            </li>
-                            <li>
-                                <em>total time on platform </em>
-                            </li>
-                            <li>
-                                <em>line chart </em>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
             </div>
         </div>
     </div>
