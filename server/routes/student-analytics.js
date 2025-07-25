@@ -227,7 +227,7 @@ router.get('/skill-activity-report/:studentId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT skills.id AS id, name, url, mastered_date, first_visited_date AS startDate, last_visited_date AS endDate
+            SELECT skills.id AS id, name, url, mastered_date, first_visited_date AS startDate, last_visited_date AS endDate, skills.level
             FROM user_skills
             JOIN skills
             ON user_skills.skill_id = skills.id
@@ -265,7 +265,7 @@ router.get('/skill-activity-report-order-by-level/:studentId', (req, res, next) 
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT skills.id AS id, name, url, mastered_date, first_visited_date AS startDate, last_visited_date AS endDate
+            SELECT skills.id AS id, name, url, mastered_date, first_visited_date AS startDate, last_visited_date AS endDate, skills.level
             FROM user_skills
             JOIN skills
             ON user_skills.skill_id = skills.id
@@ -287,7 +287,7 @@ router.get('/skill-activity-report-order-by-level/:studentId', (req, res, next) 
                         error: 'No skill activity'
                     });
                 }
-                console.log('Skill activities ordered by level:', results);
+
                 res.json(results);
 
             } catch (err) {

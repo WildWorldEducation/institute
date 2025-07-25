@@ -131,11 +131,11 @@ export default {
                     return a.times[0].starting_time - b.times[0].starting_time;
                 });
             } else if (this.order === 'level') {
-                const newData =
-                    await this.teacherAnalyticsStore.getSkillActivityReportOrderByLevel(
-                        this.studentId
-                    );
-                console.log(newData);
+                // Fetch the ordered data from the store ( this will change the data prop )
+                await this.teacherAnalyticsStore.getSkillActivityReportOrderByLevel(
+                    this.studentId
+                );
+                // get the new array from data prop
                 this.prepareDataForChart();
             }
             this.redrawTimeLinesChart();

@@ -33,8 +33,8 @@ export const useTeacherAnalyticsStore = defineStore('teacherAnalytics', {
             await fetch(`/student-analytics/skill-activity-report-order-by-level/${studentId}`)
                 .then((response) => response.json())
                 .then((data) => {
-
                     this.skillActivities = data;
+
                 })
                 .catch((error) => {
                     console.error('Error fetching skill activities ordered by level:', error);
