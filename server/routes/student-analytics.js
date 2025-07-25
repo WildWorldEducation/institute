@@ -1295,6 +1295,35 @@ router.get('/tenant-progress/:tenantId', (req, res, next) => {
     }
 });
 
+/* Get tenant duration per day */
+router.get('/tenant-duration-per-day/:tenantId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT SUM(duration) AS quantity, date
+            FROM user_duration_per_day            
+            JOIN users
+            ON users.id = user_duration_per_day.user_id
+            WHERE users.tenant_id = ${conn.escape(req.params.tenantId)}  
+            GROUP BY date
+            ORDER BY date ASC;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * RECORD DATA -------------------------------------------
  */

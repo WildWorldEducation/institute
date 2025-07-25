@@ -3,6 +3,7 @@ import TenantAvgTokensToMasterSkillsHorizontalBarChart from '../../components/te
 import TenantAvgInteractionTimePerSkillHorizontalBarChart from '../../components/teacher-analytics/tenants/TenantAvgInteractionTimePerSkillHorizontalBarChart.vue';
 import TenantPercentageStudentsMasteredAtLeastOneSkillPieChart from '../../components/teacher-analytics/tenants/TenantPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
 import TenantProgressLineChart from '../../components/teacher-analytics/tenants/TenantProgressLineChart.vue';
+import TenantDurationPerDayLineChart from '../../components/teacher-analytics/tenants/TenantDurationPerDayLineChart.vue';
 
 export default {
     setup() {
@@ -12,7 +13,8 @@ export default {
         TenantAvgTokensToMasterSkillsHorizontalBarChart,
         TenantAvgInteractionTimePerSkillHorizontalBarChart,
         TenantPercentageStudentsMasteredAtLeastOneSkillPieChart,
-        TenantProgressLineChart
+        TenantProgressLineChart,
+        TenantDurationPerDayLineChart
     },
     data() {
         return {
@@ -20,7 +22,8 @@ export default {
             avgTokensToMasterSkills: [],
             avgTimeOnSkills: [],
             percentageStudentsMasteredOneSkill: [],
-            tenantProgress: []
+            tenantProgress: [],
+            studentDurationsPerSkill: []
         };
     },
     async created() {
@@ -28,6 +31,7 @@ export default {
         await this.getAvgTimeOnSkills();
         await this.getPercentageStudentsMasteredOneSkill();
         await this.getTenantProgress();
+        await this.getTenantDuration();
     },
     methods: {
         async getAvgTokensToMasterSkills() {
@@ -104,7 +108,21 @@ export default {
                     }
                     data.sort((a, b) => a.date - b.date);
                     this.tenantProgress = data;
-                    console.log(this.tenantProgress);
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
+        async getTenantDuration() {
+            fetch(`/student-analytics/tenant-duration-per-day/${this.tenantId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                        data[i].formattedQuantity = data[i].quantity / 1000;
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.studentDurationsPerSkill = data;
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
@@ -191,6 +209,12 @@ export default {
                 </ul>
             </li>
         </ul>
+        <TenantDurationPerDayLineChart
+            v-if="studentDurationsPerSkill.length > 0"
+            :data="studentDurationsPerSkill"
+            colour="#5f31dd"
+            class="mb-5 mt-5"
+        />
 
         <h2 class="secondary-heading mt-5">Academic Performance Overview</h2>
         <h3>Growth Analytics</h3>
