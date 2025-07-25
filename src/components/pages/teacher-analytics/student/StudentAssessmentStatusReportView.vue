@@ -5,7 +5,6 @@ import { useTeacherAnalyticsStore } from '../../../../stores/TeacherAnalyticsSto
 import PassedAssessmentsTimelineChart from '../../../components/teacher-analytics/students/PassedAssessmentsTimelineChart.vue';
 import AttemptedAssessmentsTimelineChart from '../../../components/teacher-analytics/students/AttemptedAssessmentsTimelineChart.vue';
 import FailedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/students/FailedAssessmentsHorizontalBarChart.vue';
-import { ListBucketInventoryConfigurationsOutputFilterSensitiveLog } from '@aws-sdk/client-s3';
 
 export default {
     setup() {
@@ -178,6 +177,7 @@ export default {
             v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
             :data="teacherAnalyticsStore.studentMultipleFails"
             colour="darkred"
+            class="mb-5"
         />
         <!-- <div
             v-if="this.teacherAnalyticsStore.studentMultipleFails.length > 0"

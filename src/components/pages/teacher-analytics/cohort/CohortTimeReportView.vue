@@ -230,6 +230,7 @@ export default {
         <h2 class="secondary-heading mt-4">Minutes per skill</h2>
         <CohortDurationPerSkillHorizontalBarChart
             :data="studentDurationsPerSkill"
+            class="mb-5"
             :colour="'#5f31dd'"
             v-if="studentDurationsPerSkill.length > 0"
         />

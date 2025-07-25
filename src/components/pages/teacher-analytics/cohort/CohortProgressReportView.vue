@@ -1,6 +1,8 @@
 <script>
 import { useCohortsStore } from '../../../../stores/CohortsStore';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
+import CohortProgressLineChart from '../../../components/teacher-analytics/cohorts/CohortProgressLineChart.vue';
+
 export default {
     setup() {
         const cohortsStore = useCohortsStore();
@@ -10,11 +12,12 @@ export default {
             userDetailsStore
         };
     },
-    components: {},
+    components: { CohortProgressLineChart },
     data() {
         return {
             cohortId: this.$route.params.cohortId,
-            cohortName: ''
+            cohortName: '',
+            cohortProgress: []
         };
     },
     async created() {
@@ -27,8 +30,44 @@ export default {
         if (foundObject) {
             this.cohortName = foundObject.name;
         }
+        if (this.cohortId != 'all-students') {
+            await this.getCohortProgress();
+        } else {
+            await this.getAllStudentsProgress();
+        }
     },
-    methods: {}
+    methods: {
+        async getCohortProgress() {
+            fetch(`/student-analytics/cohort-progress/${this.cohortId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.cohortProgress = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
+        async getAllStudentsProgress() {
+            fetch(
+                `/student-analytics/all-students-progress/${this.userDetailsStore.userId}`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.cohortProgress = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        }
+    }
 };
 </script>
 
@@ -38,9 +77,12 @@ export default {
             <h1 class="heading">Progress Report</h1>
             <h2 class="secondary-heading h3">{{ cohortName }}</h2>
         </span>
-        <p>Number of skills mastered over time</p>
-        <p>Line chart</p>
-        <p>May have to record when the user started on the platform</p>
+        <CohortProgressLineChart
+            v-if="cohortProgress.length > 0"
+            :data="cohortProgress"
+            colour="#5f31dd"
+        />
+        <p v-else>There is no data to show yet.</p>
     </div>
 </template>
 
