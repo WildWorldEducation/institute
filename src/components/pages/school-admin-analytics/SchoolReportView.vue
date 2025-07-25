@@ -2,6 +2,9 @@
 import TenantAvgTokensToMasterSkillsHorizontalBarChart from '../../components/teacher-analytics/tenants/TenantAvgTokensToMasterSkillsHorizontalBarChart.vue';
 import TenantAvgInteractionTimePerSkillHorizontalBarChart from '../../components/teacher-analytics/tenants/TenantAvgInteractionTimePerSkillHorizontalBarChart.vue';
 import TenantPercentageStudentsMasteredAtLeastOneSkillPieChart from '../../components/teacher-analytics/tenants/TenantPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
+import TenantProgressLineChart from '../../components/teacher-analytics/tenants/TenantProgressLineChart.vue';
+import TenantDurationPerDayLineChart from '../../components/teacher-analytics/tenants/TenantDurationPerDayLineChart.vue';
+
 export default {
     setup() {
         return {};
@@ -9,20 +12,26 @@ export default {
     components: {
         TenantAvgTokensToMasterSkillsHorizontalBarChart,
         TenantAvgInteractionTimePerSkillHorizontalBarChart,
-        TenantPercentageStudentsMasteredAtLeastOneSkillPieChart
+        TenantPercentageStudentsMasteredAtLeastOneSkillPieChart,
+        TenantProgressLineChart,
+        TenantDurationPerDayLineChart
     },
     data() {
         return {
             tenantId: this.$route.params.tenantId,
             avgTokensToMasterSkills: [],
             avgTimeOnSkills: [],
-            percentageStudentsMasteredOneSkill: []
+            percentageStudentsMasteredOneSkill: [],
+            tenantProgress: [],
+            studentDurationsPerSkill: []
         };
     },
     async created() {
         await this.getAvgTokensToMasterSkills();
         await this.getAvgTimeOnSkills();
         await this.getPercentageStudentsMasteredOneSkill();
+        await this.getTenantProgress();
+        await this.getTenantDuration();
     },
     methods: {
         async getAvgTokensToMasterSkills() {
@@ -90,6 +99,35 @@ export default {
                 this.percentageStudentsMasteredOneSkill = [];
             }
         },
+        async getTenantProgress() {
+            fetch(`/student-analytics/tenant-progress/${this.tenantId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.tenantProgress = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
+        async getTenantDuration() {
+            fetch(`/student-analytics/tenant-duration-per-day/${this.tenantId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                        data[i].formattedQuantity = data[i].quantity / 1000;
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.studentDurationsPerSkill = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
         millisToMinutesAndSeconds(millis) {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);
@@ -122,7 +160,7 @@ export default {
         />
         <p v-else>No data yet</p>
 
-        <h2 class="secondary-heading mt-5">Student Progress & Attendance</h2>
+        <h2 class="secondary-heading">Student Progress & Attendance</h2>
         <h3>Usage and Fidelity Reports</h3>
         <h4>
             Percentage of students who completed at least one skill (cumulative)
@@ -130,29 +168,20 @@ export default {
         <TenantPercentageStudentsMasteredAtLeastOneSkillPieChart
             v-if="percentageStudentsMasteredOneSkill.length > 0"
             :data="percentageStudentsMasteredOneSkill"
+            class="mb-5"
+        />
+        <p v-else>No data yet</p>
+        <p>add weekly version</p>
+
+        <h4>Tenant progress</h4>
+        <TenantProgressLineChart
+            v-if="tenantProgress.length > 0"
+            :data="tenantProgress"
+            colour="#5f31dd"
+            class="mb-5 mt-5"
         />
         <p v-else>No data yet</p>
         <ul class="mt-5">
-            <li>
-                percentage of students who completed at least one skill
-                <ul>
-                    <li>
-                        <em>task made</em>
-                    </li>
-                    <li>
-                        <em
-                            >percentage of students who completed at least one
-                            skill
-                        </em>
-                    </li>
-                    <li>
-                        <em>pie chart </em>
-                    </li>
-                    <li>
-                        <em>add weekly version</em>
-                    </li>
-                </ul>
-            </li>
             <li class="mt-3">
                 total tutoring time
                 <ul>
@@ -179,8 +208,13 @@ export default {
                     </li>
                 </ul>
             </li>
-            <li class="mt-3">any others?</li>
         </ul>
+        <TenantDurationPerDayLineChart
+            v-if="studentDurationsPerSkill.length > 0"
+            :data="studentDurationsPerSkill"
+            colour="#5f31dd"
+            class="mb-5 mt-5"
+        />
 
         <h2 class="secondary-heading mt-5">Academic Performance Overview</h2>
         <h3>Growth Analytics</h3>
