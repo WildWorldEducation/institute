@@ -850,7 +850,7 @@ router.get('/all-students-total-durations/:userId', (req, res, next) => {
     }
 });
 
-/* Get all student in cof instructor durations per skill*/
+/* Get all student of instructor durations per skill*/
 router.get(
     '/all-students-student-durations-per-skill/:userId',
     (req, res, next) => {
@@ -886,6 +886,92 @@ router.get(
         }
     }
 );
+
+/* Get all students of instructor progress (number of total skills mastered over time) */
+router.get('/all-students-progress/:userId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        // First, get the date the first student in the cohort student started on the platform
+        let firstInteractionSQLQuery = `
+            SELECT date
+            FROM user_duration_per_day
+            JOIN instructor_students
+            ON instructor_students.student_id = user_duration_per_day.user_id
+            WHERE instructor_students.instructor_id = ${conn.escape(
+                req.params.userId
+            )}  
+            ORDER BY date ASC
+            LIMIT 1;`;
+
+        conn.query(firstInteractionSQLQuery, (err, firstInteractionResult) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                if (firstInteractionResult.length === 0) {
+                    return res.status(404).json({
+                        error: 'No skill activity'
+                    });
+                }
+
+                let sqlQuery = `
+                    SELECT CAST(mastered_date AS DATE) AS date, SUM(COUNT(*)) OVER(ORDER BY date) AS quantity
+                    FROM user_skills
+                    JOIN instructor_students
+                    ON instructor_students.student_id = user_skills.user_id
+                    JOIN skills
+                    ON skills.id = user_skills.skill_id
+                    WHERE is_mastered = 1
+                    AND instructor_students.instructor_id = ${conn.escape(
+                        req.params.userId
+                    )}        
+                    AND type <> 'domain'      
+                    GROUP BY date
+                    ORDER BY date ASC;`;
+
+                conn.query(sqlQuery, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        if (results.length === 0) {
+                            return res.status(404).json({
+                                error: 'No skill activity'
+                            });
+                        }
+
+                        let flag = false;
+                        for (let i = 0; i < results.length; i++) {
+                            if (
+                                firstInteractionResult[0].date ==
+                                results[i].date
+                            ) {
+                                flag = true;
+                            }
+                        }
+
+                        if (!flag) {
+                            results.unshift({
+                                date: firstInteractionResult[0].date,
+                                quantity: 0
+                            });
+                        }
+
+                        res.json(results);
+                    } catch (err) {
+                        next(err);
+                    }
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
 
 /**
  * PER TENANT --------------------------------------

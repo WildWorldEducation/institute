@@ -30,8 +30,11 @@ export default {
         if (foundObject) {
             this.cohortName = foundObject.name;
         }
-
-        await this.getCohortProgress();
+        if (this.cohortId != 'all-students') {
+            await this.getCohortProgress();
+        } else {
+            await this.getAllStudentsProgress();
+        }
     },
     methods: {
         async getCohortProgress() {
@@ -43,7 +46,22 @@ export default {
                     }
                     data.sort((a, b) => a.date - b.date);
                     this.cohortProgress = data;
-                    console.log(this.cohortProgress);
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
+        async getAllStudentsProgress() {
+            fetch(
+                `/student-analytics/all-students-progress/${this.userDetailsStore.userId}`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.cohortProgress = data;
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
@@ -64,6 +82,7 @@ export default {
             :data="cohortProgress"
             colour="#5f31dd"
         />
+        <p v-else>There is no data to show yet.</p>
     </div>
 </template>
 
