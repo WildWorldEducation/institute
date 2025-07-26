@@ -1,7 +1,7 @@
 <script>
-import InstructorsList from '../components/instructors/InstructorsList.vue';
-import InstructorDetails from '../components/instructors/InstructorDetails.vue';
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import InstructorsList from '../../components/instructors/InstructorsList.vue';
+import InstructorDetails from '../../components/instructors/InstructorDetails.vue';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 
 export default {
     setup() {

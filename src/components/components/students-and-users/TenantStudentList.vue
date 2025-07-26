@@ -8,8 +8,6 @@ export default {
         const usersStore = useUsersStore();
         const userDetailsStore = useUserDetailsStore();
 
-        // Run the GET request.
-        if (usersStore.users.length < 1) usersStore.getUsers();
         return {
             usersStore,
             userDetailsStore
@@ -46,43 +44,9 @@ export default {
 
 <template>
     <div class="container mt-1">
-        <!-- Platform Admins -->
-        <div
-            v-if="userDetailsStore.role == 'platform_admin'"
-            v-for="user in usersStore.users"
-            :key="user.id"
-        >
+        <!-- School Admins -->
+        <div v-for="student in usersStore.studentsPerTenant" :key="student.id">
             <div class="d-flex bg-light rounded p-2">
-                <img
-                    class="user-avatars"
-                    v-if="user.avatar != null"
-                    :src="user.avatar"
-                />
-                <button
-                    :class="
-                        user.id === selectedItemId
-                            ? 'isCurrentlyChoose'
-                            : 'user-buttons'
-                    "
-                    @click="selectUser(user)"
-                >
-                    {{ user.username }}
-                </button>
-            </div>
-            <hr class="border border-1 w-100 d-none d-md-block" />
-            <hr class="border border-1 w-100 d-block d-md-none" />
-        </div>
-
-        <!-- Instructors -->
-        <div
-            v-else-if="
-                userDetailsStore.role == 'instructor' ||
-                userDetailsStore.role == 'partner'
-            "
-            v-for="student in $parent.students"
-            :key="student.id"
-        >
-            <div class="d-flex bg-light rounded mb-2">
                 <img
                     class="user-avatars"
                     v-if="student.avatar != null"
@@ -99,45 +63,6 @@ export default {
                     {{ student.username }}
                 </button>
             </div>
-        </div>
-
-        <!-- Add Student Link -->
-        <RouterLink
-            v-if="
-                userDetailsStore.role == 'instructor' ||
-                userDetailsStore.role == 'partner'
-            "
-            to="/users/add-student"
-            class="d-block mb-4 btn primary-btn"
-        >
-            Add Student
-        </RouterLink>
-
-        <!-- Editors -->
-        <div
-            v-if="userDetailsStore.role == 'editor'"
-            v-for="editor in $parent.usersStore.editors"
-            :key="editor.id"
-        >
-            <div class="d-flex bg-light rounded p-2">
-                <img
-                    class="user-avatars"
-                    v-if="editor.avatar != null"
-                    :src="editor.avatar"
-                />
-                <button
-                    :class="
-                        editor.id === selectedItemId
-                            ? 'isCurrentlyChoose'
-                            : 'user-buttons'
-                    "
-                    @click="selectUser(editor)"
-                >
-                    {{ editor.username }}
-                </button>
-            </div>
-            <hr class="border border-1 opacity-0 w-75 d-none d-md-block" />
-            <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
         </div>
     </div>
 </template>

@@ -221,7 +221,7 @@ const router = createRouter({
         {
             path: '/users',
             name: 'users',
-            component: () => import('../components/pages/UsersView.vue'),
+            component: () => import('../components/pages/users/UsersView.vue'),
             meta: {
                 requiresAuth: true,
                 roles: ['platform_admin', 'editor']
@@ -230,22 +230,28 @@ const router = createRouter({
         {
             path: '/students',
             name: 'students',
-            component: () => import('../components/pages/UsersView.vue'),
+            component: () => import('../components/pages/users/UsersView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: [
-                    'instructor',
-                    'platform_admin',
-                    'partner',
-                    'school_admin'
-                ]
+                roles: ['instructor', 'platform_admin', 'partner']
+            }
+        },
+        {
+            path: '/tenant-students',
+            name: 'tenant-students',
+            component: () =>
+                import('../components/pages/users/TenantStudentsView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['school_admin']
             }
         },
         // School admins only - classes from their school only
         {
             path: '/classes',
             name: 'classes',
-            component: () => import('../components/pages/InstructorsView.vue'),
+            component: () =>
+                import('../components/pages/users/InstructorsView.vue'),
             meta: {
                 requiresAuth: true,
                 roles: ['school_admin']

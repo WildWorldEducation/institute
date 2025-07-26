@@ -1,14 +1,14 @@
 <script>
-import UsersList from '../components/students-and-users/UsersList.vue';
-import UserDetails from '../components/students-and-users/UserDetails.vue';
+import UsersList from '../../components/students-and-users/UsersList.vue';
+import UserDetails from '../../components/students-and-users/UserDetails.vue';
 
 // Import the stores.
-import { useTeacherAnalyticsStore } from '../../stores/TeacherAnalyticsStore';
-import { useUsersStore } from '../../stores/UsersStore';
-import { useCohortsStore } from '../../stores/CohortsStore';
-import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import SearchUserBar from '../components/users-list/SearchUserBar.vue';
+import { useTeacherAnalyticsStore } from '../../../stores/TeacherAnalyticsStore';
+import { useUsersStore } from '../../../stores/UsersStore';
+import { useCohortsStore } from '../../../stores/CohortsStore';
+import { useInstructorStudentsStore } from '../../../stores/InstructorStudentsStore';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import SearchUserBar from '../../components/users-list/SearchUserBar.vue';
 
 export default {
     setup() {
@@ -62,7 +62,7 @@ export default {
     },
     async created() {
         this.checkIfTutorialComplete();
-
+        console.log(this.user);
         // Load data
         if (
             this.userDetailsStore.role === 'platform_admin' ||
@@ -87,14 +87,6 @@ export default {
             this.userDetailsStore.role === 'partner'
         ) {
             await this.getStudents();
-        }
-
-        if (this.userDetailsStore.role === 'school_admin') {
-            let tenantId = this.userDetailsStore.tenantId;
-
-            if (this.usersStore.studentsPerTenant.length < 1) {
-                await this.usersStore.getStudentsPerTenant(tenantId);
-            }
         }
 
         this.isLoading = false;
@@ -224,7 +216,12 @@ export default {
             }
 
             // Show details
-            this.showDetails = true;
+            if (window.innerWidth < 769) {
+                this.showDetails = true;
+                console.log('test');
+            }
+
+            console.log(this.user);
 
             // Get instructor info if needed
             if (
@@ -250,6 +247,14 @@ export default {
                 );
 
                 this.checkIfLowActivity();
+            }
+
+            if (this.userDetailsStore.role === 'school_admin') {
+                let tenantId = this.userDetailsStore.tenantId;
+
+                if (this.usersStore.studentsPerTenant.length < 1) {
+                    await this.usersStore.getStudentsPerTenant(tenantId);
+                }
             }
         },
         getInstructor() {
