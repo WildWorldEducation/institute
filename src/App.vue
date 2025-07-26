@@ -22,7 +22,7 @@ export default {
             isDropdownOpen: false
         };
     },
-    async mounted() {     
+    async mounted() {
         await this.userDetailsStore.getUserDetails();
         this.initDropdown();
 
@@ -61,10 +61,10 @@ export default {
         initDropdown() {
             // Single click listener that handles both toggle and outside clicks
             document.addEventListener('click', (e) => {
-                const dropdown = document.querySelector('.nav-item.dropdown');              
+                const dropdown = document.querySelector('.nav-item.dropdown');
                 const dropdownToggle =
                     dropdown?.querySelector('.dropdown-toggle');
-           
+
                 if (!dropdown) return;
 
                 // If clicking the toggle button, toggle the dropdown
@@ -361,7 +361,10 @@ export default {
                             class="nav-item dropdown"
                         >
                             <div class="d-flex align-items-center">
-                                <RouterLink to="/students" class="nav-link">
+                                <RouterLink
+                                    to="/tenant-students"
+                                    class="nav-link"
+                                >
                                     <span>Students</span>
                                 </RouterLink>
                             </div>
