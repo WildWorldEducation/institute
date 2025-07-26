@@ -291,7 +291,7 @@ router.get('/student-progress/:studentId', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
-                }               
+                }
 
                 if (firstInteractionResult.length === 0) {
                     return res.status(404).json({
@@ -322,9 +322,6 @@ router.get('/student-progress/:studentId', (req, res, next) => {
                             });
                         }
 
-                        console.log(sqlQuery);
-                        console.log(results);
-
                         let flag = false;
                         for (let i = 0; i < results.length; i++) {
                             if (
@@ -341,8 +338,6 @@ router.get('/student-progress/:studentId', (req, res, next) => {
                                 quantity: 0
                             });
                         }
-
-                        console.log(results);
 
                         res.json(results);
                     } catch (err) {
