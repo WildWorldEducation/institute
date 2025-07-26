@@ -28,11 +28,11 @@ export default {
             showRemoveStudentModal: false,
             localIsSkillsLocked: null,
             mode: 'big',
-            isMobileCheck: window.innerWidth
+            isMobileCheck: window.innerWidth,
+            studentProgress: []
         };
     },
-
-    created() {
+    async created() {
         this.localIsSkillsLocked = this.isSkillsLocked;
     },
     computed: {
@@ -399,37 +399,6 @@ export default {
                         userDetailsStore.role == 'partner'
                     "
                 />
-            </div>
-            <!-- School admins -->
-            <div
-                v-if="userDetailsStore.role == 'school_admin'"
-                class="d-flex flex-column"
-            >
-                <h2 class="secondary-heading">Academic Performance Overview</h2>
-                <h3>Growth Analytics</h3>
-                <p>
-                    (Jonathan, you may be able to determine what would be both
-                    easiest and most compelling for us to share at this
-                    level—e.g. Skills mastered, Key Skills mastered by student
-                    grade, progress made, % progress made within cohorts, etc.)
-                </p>
-                <ul>
-                    <li>number of skills mastered</li>
-                    <li>% progress made within cohorts</li>
-                </ul>
-
-                <h3>Estimated Mastery Scores</h3>
-                <p>
-                    Offers the current best estimate of a student’s progress,
-                    calculated from all available data (skills completed per
-                    their grade's cohort skills—e.g. "12th grade skills").
-                </p>
-                <p>
-                    <em
-                        >Student skills completed as percentage of grade level
-                        skills</em
-                    >
-                </p>
             </div>
         </div>
     </div>
