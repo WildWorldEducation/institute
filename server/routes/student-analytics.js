@@ -223,6 +223,7 @@ router.get('/skill-activity-report/:studentId', (req, res, next) => {
             WHERE user_id = ${conn.escape(req.params.studentId)}
             AND first_visited_date IS NOT NULL    
             AND skills.type <> 'domain'
+            AND TIMESTAMPDIFF(SECOND, first_visited_date, last_visited_date) > 120
             ORDER BY endDate DESC
         ;`;
 
