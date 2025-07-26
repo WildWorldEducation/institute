@@ -41,8 +41,8 @@ router.get(
                     FROM assessment_attempts
                     JOIN skills ON skills.id = assessment_attempts.skill_id
                     WHERE assessment_attempts.user_id = ${conn.escape(
-                        req.params.studentId
-                    )};                      
+                req.params.studentId
+            )};                      
            `;
 
             conn.query(sqlQuery, (err, results) => {
@@ -117,14 +117,14 @@ router.get('/multiple-fails/:studentId', (req, res, next) => {
                     FROM assessment_attempts
                     JOIN skills ON skills.id = assessment_attempts.skill_id
                     WHERE assessment_attempts.user_id = ${conn.escape(
-                        req.params.studentId
-                    )}
+            req.params.studentId
+        )}
 					AND assessment_attempts.skill_id NOT IN 
                     (SELECT skill_id
                     FROM user_skills
                     WHERE user_skills.user_id = ${conn.escape(
-                        req.params.studentId
-                    )}
+            req.params.studentId
+        )}
                     AND is_mastered = 1)  
                     group by id, name
                     HAVING COUNT(*) > 1;`;
@@ -155,8 +155,8 @@ router.get('/skill-durations/:studentId', (req, res, next) => {
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id
             WHERE user_skills.user_id = ${conn.escape(
-                req.params.studentId
-            )}            
+            req.params.studentId
+        )}            
             AND type <> 'domain'
             AND duration > 0
             ORDER BY id;`;
@@ -187,8 +187,8 @@ router.get('/all-skills-duration/:studentId', (req, res, next) => {
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id
             WHERE user_skills.user_id = ${conn.escape(
-                req.params.studentId
-            )}            
+            req.params.studentId
+        )}            
             AND type <> 'domain'
             AND duration > 0
             ORDER BY id;`;
@@ -257,8 +257,8 @@ router.get('/student-duration-per-day/:studentId', (req, res, next) => {
             SELECT date, duration AS quantity
             FROM user_duration_per_day            
             WHERE user_id = ${conn.escape(
-                req.params.studentId
-            )}                           
+            req.params.studentId
+        )}                           
             ORDER BY date ASC;`;
 
         conn.query(sqlQuery, (err, result) => {
@@ -410,8 +410,8 @@ router.get('/failed-assessments/cohort/:cohortId', (req, res, next) => {
                 JOIN users
                 ON users.id = assessment_attempts.user_id
                 WHERE cohorts_users.cohort_id = ${conn.escape(
-                    req.params.cohortId
-                )}
+            req.params.cohortId
+        )}
                 AND assessment_attempts.skill_id NOT IN
                     (SELECT DISTINCT user_skills.skill_id
                     FROM user_skills
@@ -495,8 +495,8 @@ router.get('/cohort-duration-per-day/:cohortId', (req, res, next) => {
             JOIN cohorts_users
             ON user_duration_per_day.user_id = cohorts_users.user_id
             WHERE cohorts_users.cohort_id = ${conn.escape(
-                req.params.cohortId
-            )}              
+            req.params.cohortId
+        )}              
             GROUP BY date
             ORDER BY date ASC;`;
 
@@ -528,8 +528,8 @@ router.get('/cohort-total-durations/:cohortId', (req, res, next) => {
             JOIN users
             ON users.id = user_duration_per_day.user_id
             WHERE cohorts_users.cohort_id = ${conn.escape(
-                req.params.cohortId
-            )}              
+            req.params.cohortId
+        )}              
             GROUP BY cohorts_users.user_id;`;
 
         conn.query(sqlQuery, (err, result) => {
@@ -684,8 +684,8 @@ router.get('/mastered-skills/all-students/:userId', (req, res, next) => {
             JOIN users
             ON user_skills.user_id = users.id     
             WHERE instructor_students.instructor_id = ${conn.escape(
-                req.params.userId
-            )}
+            req.params.userId
+        )}
             AND is_mastered = 1
             AND type <> 'domain'
             GROUP BY user_skills.user_id
@@ -721,8 +721,8 @@ router.get('/failed-assessments/all-students/:userId', (req, res, next) => {
             JOIN users
             ON users.id = assessment_attempts.user_id
             WHERE instructor_students.instructor_id = ${conn.escape(
-                req.params.userId
-            )}
+            req.params.userId
+        )}
             AND assessment_attempts.skill_id NOT IN
                 (SELECT DISTINCT user_skills.skill_id
                 FROM user_skills
@@ -775,8 +775,8 @@ router.get('/attempted-assessments/all-students/:userId', (req, res, next) => {
             JOIN instructor_students
             ON assessment_attempts.user_id = instructor_students.student_id
             WHERE instructor_students.instructor_id = ${conn.escape(
-                req.params.userId
-            )}
+            req.params.userId
+        )}
             GROUP BY username
         ;`;
 
@@ -812,8 +812,8 @@ router.get('/all-students-duration-per-day/:userId', (req, res, next) => {
             JOIN instructor_students
             ON instructor_students.student_id = user_duration_per_day.user_id
             WHERE instructor_students.instructor_id = ${conn.escape(
-                req.params.userId
-            )}              
+            req.params.userId
+        )}              
             GROUP BY date
             ORDER BY date ASC;`;
 
@@ -845,9 +845,11 @@ router.get('/all-students-total-durations/:userId', (req, res, next) => {
             JOIN users
             ON users.id = user_duration_per_day.user_id
             WHERE instructor_students.instructor_id = ${conn.escape(
-                req.params.userId
-            )}              
+            req.params.userId
+        )}              
             GROUP BY instructor_students.student_id;`;
+
+        console.log(sqlQuery);
 
         conn.query(sqlQuery, (err, result) => {
             try {
@@ -879,8 +881,8 @@ router.get(
                 JOIN skills
                 ON skills.id = user_skills.skill_id
                 WHERE instructor_students.instructor_id = ${conn.escape(
-                    req.params.userId
-                )}              
+                req.params.userId
+            )}              
                 GROUP BY skills.name
                 HAVING quantity > 0
                 ORDER BY quantity DESC;`;
@@ -913,8 +915,8 @@ router.get('/all-students-progress/:userId', (req, res, next) => {
             JOIN instructor_students
             ON instructor_students.student_id = user_duration_per_day.user_id
             WHERE instructor_students.instructor_id = ${conn.escape(
-                req.params.userId
-            )}  
+            req.params.userId
+        )}  
             ORDER BY date ASC
             LIMIT 1;`;
 
@@ -939,8 +941,8 @@ router.get('/all-students-progress/:userId', (req, res, next) => {
                     ON skills.id = user_skills.skill_id
                     WHERE is_mastered = 1
                     AND instructor_students.instructor_id = ${conn.escape(
-                        req.params.userId
-                    )}        
+                    req.params.userId
+                )}        
                     AND type <> 'domain'      
                     GROUP BY date
                     ORDER BY date ASC;`;
@@ -1155,8 +1157,8 @@ router.get(
                 JOIN users
                 ON instructor_students.student_id = users.id
                 WHERE instructor_students.instructor_id = ${conn.escape(
-                    req.params.instructorId
-                )}
+                req.params.instructorId
+            )}
                 AND is_deleted = 0;`;
 
             conn.query(allStudentsSQLQuery, (err, allStudentsResults) => {
@@ -1182,8 +1184,8 @@ router.get(
                         AND role = 'student'
                         AND is_deleted = 0
                         AND instructor_students.instructor_id = ${conn.escape(
-                            req.params.instructorId
-                        )}`;
+                        req.params.instructorId
+                    )}`;
 
                     conn.query(
                         masteredAtLeastOneSkillSQLQuery,

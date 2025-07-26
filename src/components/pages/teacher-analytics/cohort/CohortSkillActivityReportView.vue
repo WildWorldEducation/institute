@@ -32,6 +32,21 @@ export default {
 
         this.getSkillActivityReport();
     },
+    mounted() {
+        fetch(
+            `/student-analytics/all-students-total-durations/${this.userDetailsStore.userId}`
+        )
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(
+                    'Total durations for all students: ---------------------------'
+                );
+                console.log(data);
+            })
+            .catch((error) => {
+                console.error('Error fetching visited skills:', error);
+            });
+    },
 
     methods: {
         // getLastVisitedSkills() {
