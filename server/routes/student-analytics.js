@@ -291,10 +291,7 @@ router.get('/student-progress/:studentId', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
-                }
-
-                console.log(firstInteractionSQLQuery);
-                console.log(firstInteractionResult);
+                }               
 
                 if (firstInteractionResult.length === 0) {
                     return res.status(404).json({
