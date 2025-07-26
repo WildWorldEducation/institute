@@ -293,6 +293,15 @@ router.get('/student-progress/:studentId', (req, res, next) => {
                     throw err;
                 }
 
+                console.log(firstInteractionSQLQuery);
+                console.log(firstInteractionResult);
+
+                if (firstInteractionResult.length === 0) {
+                    return res.status(404).json({
+                        error: 'No skill activity'
+                    });
+                }
+
                 let sqlQuery = `
                     SELECT CAST(mastered_date AS DATE) AS date, SUM(COUNT(*)) OVER(ORDER BY date) AS quantity
                     FROM user_skills
@@ -310,6 +319,15 @@ router.get('/student-progress/:studentId', (req, res, next) => {
                             throw err;
                         }
 
+                        if (results.length === 0) {
+                            return res.status(404).json({
+                                error: 'No skill activity'
+                            });
+                        }
+
+                        console.log(sqlQuery);
+                        console.log(results);
+
                         let flag = false;
                         for (let i = 0; i < results.length; i++) {
                             if (
@@ -326,6 +344,8 @@ router.get('/student-progress/:studentId', (req, res, next) => {
                                 quantity: 0
                             });
                         }
+
+                        console.log(results);
 
                         res.json(results);
                     } catch (err) {
