@@ -98,7 +98,6 @@ export default {
                     colour="#5f31dd"
                 />
                 <p v-else>No data to show yet.</p>
-                <h3>Maybe skills mastered timeline</h3>
                 <!-- <p>
                     (Jonathan, you may be able to determine what would be both
                     easiest and most compelling for us to share at this
