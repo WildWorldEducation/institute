@@ -64,40 +64,7 @@ export default {
             :data="teacherAnalyticsStore.skillActivities"
             colour="darkred"
         />
-        <div
-            v-if="teacherAnalyticsStore.skillActivities.length > 0"
-            class="mb-4"
-        >
-            <table class="table">
-                <tr>
-                    <th>Skill</th>
-                    <th>Date first visited</th>
-                    <th>Date last visited</th>
-                </tr>
-                <tr
-                    v-for="skill in teacherAnalyticsStore.skillActivities"
-                    :key="skill.id"
-                    class="table-rows"
-                >
-                    <td>
-                        <router-link
-                            target="_blank"
-                            :to="'/skills/' + skill.url"
-                            >{{ skill.name }}</router-link
-                        >
-                    </td>
-                    <td>
-                        {{ visitedDate(skill.startDate) }}
-                    </td>
-                    <td>
-                        {{ visitedDate(skill.endDate) }}
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div v-else>
-            <p>No skills visited by this student.</p>
-        </div>
+        <p v-else>No skills visited by this student.</p>
     </div>
 </template>
 
