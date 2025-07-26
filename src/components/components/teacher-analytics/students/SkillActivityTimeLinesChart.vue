@@ -106,9 +106,12 @@ export default {
                 moment(item.endDate).unix()
             );
 
+            // Ensure the time range includes a week after the last activity so the label is visible properly
+            const addTime = 60 * 60 * 24 * 7; // add one week to the max date
+
             return {
                 min: Math.min(...startDates),
-                max: Math.max(...endDates)
+                max: Math.max(...endDates) + addTime
             };
         },
         calculateTickInterval() {
