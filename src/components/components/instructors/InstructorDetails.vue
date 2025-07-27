@@ -38,10 +38,11 @@ export default {
     methods: {
         async getTenantClassProgress() {
             fetch(
-                `/student-analytics/cohort-progress/${this.$parent.selectedInstructor.id}`
+                `/student-analytics/all-students-progress/${this.$parent.selectedInstructor.id}`
             )
                 .then((response) => response.json())
                 .then((data) => {
+                    console.log(data);
                     for (let i = 0; i < data.length; i++) {
                         data[i].date = new Date(data[i].date);
                     }

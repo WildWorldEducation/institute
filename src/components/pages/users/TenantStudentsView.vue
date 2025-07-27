@@ -115,8 +115,7 @@ export default {
             if (this.usersStore.studentsPerTenant.length < 1) {
                 await this.usersStore.getStudentsPerTenant(tenantId);
             }
-            console.log(this.user);
-            console.log(this.$refs.tenantStudentDetailsRef);
+        
             this.$refs.tenantStudentDetailsRef.studentProgress = [];
             this.$refs.tenantStudentDetailsRef.getTenantStudentProgress();
         },
