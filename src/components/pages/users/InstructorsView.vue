@@ -15,7 +15,7 @@ export default {
         return {
             isLoading: true,
             // Flag to show user details when in phone view
-            showDetails: true,
+            showDetails: false,
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false,
@@ -35,7 +35,7 @@ export default {
             await this.getInstructorsPerTenant(this.userDetailsStore.tenantId);
             this.selectedInstructor = this.instructorsPerTenant[0];
         }
-
+        if (window.innerWidth < 769) this.showDetails = true;
         this.isLoading = false;
     },
     methods: {
@@ -47,7 +47,10 @@ export default {
         },
         updateInstructorDetails(instructor) {
             this.selectedInstructor = instructor;
-            //     this.$refs.CohortDetails.getInstructorPercentageStudentsMasteredAtLeastOneSkill();
+            this.$refs.InstructorDetails.getInstructorPercentageStudentsMasteredAtLeastOneSkill();
+            this.$refs.InstructorDetails.classProgress = [];
+            this.$refs.InstructorDetails.getTenantClassProgress();
+            this.$refs.InstructorDetails.getTenantClassDurationPerDay();
         }
     }
 };

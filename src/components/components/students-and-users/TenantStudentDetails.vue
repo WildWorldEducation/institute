@@ -21,8 +21,7 @@ export default {
         };
     },
     data() {
-        return {
-            mode: 'big',
+        return {            
             isMobileCheck: window.innerWidth,
             studentProgress: []
         };

@@ -2,6 +2,9 @@
 import { useCohortsStore } from '../../../stores/CohortsStore.js';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import CohortPercentageStudentsMasteredAtLeastOneSkillPieChart from './../teacher-analytics/cohorts/CohortPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
+import CohortProgressLineChart from './../teacher-analytics/cohorts/CohortProgressLineChart.vue';
+import CohortDurationPerDayLineChart from './../teacher-analytics/cohorts/CohortDurationPerDayLineChart.vue';
+
 export default {
     setup() {
         const cohortsStore = useCohortsStore();
@@ -14,17 +17,17 @@ export default {
     },
     data() {
         return {
-            showModal: false,
-            showRemoveStudentModal: false,
-            localIsSkillsLocked: null,
-            mode: 'big',
             isMobileCheck: window.innerWidth,
             percentageStudentsMasteredOneSkill: [],
-            isLoaded: false
+            isLoaded: false,
+            classProgress: [],
+            durationsPerDay: []
         };
     },
     async created() {
+        await this.getTenantClassProgress();
         await this.getInstructorPercentageStudentsMasteredAtLeastOneSkill();
+        await this.getTenantClassDurationPerDay();
     },
     computed: {
         studentName() {
@@ -32,10 +35,27 @@ export default {
         }
     },
     components: {
-        CohortPercentageStudentsMasteredAtLeastOneSkillPieChart
+        CohortPercentageStudentsMasteredAtLeastOneSkillPieChart,
+        CohortProgressLineChart,
+        CohortDurationPerDayLineChart
     },
     methods: {
-        // For School admin reports
+        async getTenantClassProgress() {
+            fetch(
+                `/student-analytics/all-students-progress/${this.$parent.selectedInstructor.id}`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.classProgress = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
         async getInstructorPercentageStudentsMasteredAtLeastOneSkill() {
             try {
                 const response = await fetch(
@@ -61,6 +81,26 @@ export default {
                 );
                 this.percentageStudentsMasteredOneSkill = [];
             }
+        },
+        async getTenantClassDurationPerDay() {
+            fetch(
+                `/student-analytics/all-students-duration-per-day/${this.$parent.selectedInstructor.id}`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].formattedQuantity = data[i].quantity / 1000;
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.durationsPerDay = data;
+                })
+                .catch((error) => {
+                    console.error(
+                        'Error fetching student duration per day:',
+                        error
+                    );
+                });
         }
     }
 };
@@ -95,98 +135,29 @@ export default {
                 {{ this.cohortsStore.selectedCohort.name }}
             </h1>
         </div>
-        <div class="d-flex flex-column">
-            <h2 class="secondary-heading">Student Progress & Attendance</h2>
-            <h3>Usage and Fidelity Reports</h3>
-            <p>Track weekly and cumulative usage</p>
+        <h2 class="secondary-heading">Student Progress & Attendance</h2>
+        <div>
+            <h4>Class engagement</h4>
+            <CohortDurationPerDayLineChart
+                v-if="durationsPerDay.length > 0"
+                :data="durationsPerDay"
+                colour="#5f31dd"
+                ref="cohortDurationPerDayLineChart"
+            />
+            <p v-else>No data available</p>
+            <h4>Class progress</h4>
+            <CohortProgressLineChart
+                v-if="classProgress.length > 0"
+                :data="classProgress"
+                colour="#5f31dd"
+                ref="cohortProgressLineChart"
+            />
+            <p v-else>No data available</p>
+
             <h4>Percentage of students who completed at least one skill</h4>
             <CohortPercentageStudentsMasteredAtLeastOneSkillPieChart
                 ref="cohortPercentageStudentsMasteredAtLeastOneSkillPieChart"
             />
-            <p>including total tutoring time, and engagement.</p>
-            <ul>
-                <li>
-                    total tutoring time
-                    <em
-                        >(Would have to record time per student per skill, with
-                        tutor)</em
-                    >
-                </li>
-                <li>
-                    engagement
-                    <ul>
-                        <li>
-                            <em>task made</em>
-                        </li>
-                        <li>
-                            <em
-                                >starting date is when first student started
-                                on</em
-                            >
-                        </li>
-                        <li>
-                            <em>total time on platform </em>
-                        </li>
-                        <li>
-                            <em>line chart </em>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div v-if="showModal">
-        <div id="myModal" class="modal">
-            <!-- Modal content -->
-            <div class="modal-content">
-                <p>Are you sure you want to delete this user?</p>
-                <div style="display: flex; gap: 10px">
-                    <button
-                        type="button"
-                        class="btn btn-danger"
-                        @click="
-                            usersStore.deleteUser(userId);
-                            showModal = false;
-                            this.$parent.showDetails = false;
-                            // Call parent method
-                            this.$parent.changeUserToDefault();
-                        "
-                    >
-                        Yes
-                    </button>
-                    <button
-                        type="button"
-                        class="btn btn-dark"
-                        @click="showModal = false"
-                    >
-                        No
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div v-if="showRemoveStudentModal">
-        <div id="myModal" class="modal">
-            <!-- Modal content -->
-            <div class="modal-content">
-                <p>Are you sure you want to remove this student?</p>
-                <div style="display: flex; gap: 10px">
-                    <button
-                        type="button"
-                        class="btn btn-danger"
-                        @click="removeStudentFromInstructor()"
-                    >
-                        Yes
-                    </button>
-                    <button
-                        type="button"
-                        class="btn btn-dark"
-                        @click="showRemoveStudentModal = false"
-                    >
-                        No
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
 </template>

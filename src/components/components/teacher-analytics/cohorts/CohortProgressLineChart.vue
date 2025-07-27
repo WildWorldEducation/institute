@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 export default {
     name: 'CohortProgressLineChart',
     props: ['data', 'colour'],
-    data() {},
+
     mounted() {
         const data = this.data;
         const container = d3.select('#cohort-progress-line-chart-container');
