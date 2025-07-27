@@ -42,7 +42,6 @@ export default {
             )
                 .then((response) => response.json())
                 .then((data) => {
-                    console.log(data);
                     for (let i = 0; i < data.length; i++) {
                         data[i].date = new Date(data[i].date);
                     }
@@ -112,49 +111,21 @@ export default {
                 {{ this.cohortsStore.selectedCohort.name }}
             </h1>
         </div>
-        <div class="d-flex flex-column">
+        <h2 class="secondary-heading">Student Progress & Attendance</h2>
+        <div>
+            <h4>Class progress</h4>
             <CohortProgressLineChart
                 v-if="classProgress.length > 0"
                 :data="classProgress"
+                colour="#5f31dd"
                 ref="cohortProgressLineChart"
             />
-            <h2 class="secondary-heading">Student Progress & Attendance</h2>
-            <h3>Usage and Fidelity Reports</h3>
-            <p>Track weekly and cumulative usage</p>
+            <p v-else>No data available</p>
+
             <h4>Percentage of students who completed at least one skill</h4>
             <CohortPercentageStudentsMasteredAtLeastOneSkillPieChart
                 ref="cohortPercentageStudentsMasteredAtLeastOneSkillPieChart"
             />
-            <p>including total tutoring time, and engagement.</p>
-            <ul>
-                <li>
-                    total tutoring time
-                    <em
-                        >(Would have to record time per student per skill, with
-                        tutor)</em
-                    >
-                </li>
-                <li>
-                    engagement
-                    <ul>
-                        <li>
-                            <em>task made</em>
-                        </li>
-                        <li>
-                            <em
-                                >starting date is when first student started
-                                on</em
-                            >
-                        </li>
-                        <li>
-                            <em>total time on platform </em>
-                        </li>
-                        <li>
-                            <em>line chart </em>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
         </div>
     </div>
 </template>

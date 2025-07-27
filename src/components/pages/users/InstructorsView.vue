@@ -48,7 +48,7 @@ export default {
         updateInstructorDetails(instructor) {
             this.selectedInstructor = instructor;
             this.$refs.InstructorDetails.getInstructorPercentageStudentsMasteredAtLeastOneSkill();
-            console.log('test');
+            this.$refs.InstructorDetails.classProgress = [];
             this.$refs.InstructorDetails.getTenantClassProgress();
         }
     }
