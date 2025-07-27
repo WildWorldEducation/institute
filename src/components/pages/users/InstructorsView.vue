@@ -50,6 +50,7 @@ export default {
             this.$refs.InstructorDetails.getInstructorPercentageStudentsMasteredAtLeastOneSkill();
             this.$refs.InstructorDetails.classProgress = [];
             this.$refs.InstructorDetails.getTenantClassProgress();
+            this.$refs.InstructorDetails.getTenantClassDurationPerDay();
         }
     }
 };

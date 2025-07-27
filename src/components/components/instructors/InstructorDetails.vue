@@ -3,6 +3,7 @@ import { useCohortsStore } from '../../../stores/CohortsStore.js';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import CohortPercentageStudentsMasteredAtLeastOneSkillPieChart from './../teacher-analytics/cohorts/CohortPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
 import CohortProgressLineChart from './../teacher-analytics/cohorts/CohortProgressLineChart.vue';
+import CohortDurationPerDayLineChart from './../teacher-analytics/cohorts/CohortDurationPerDayLineChart.vue';
 
 export default {
     setup() {
@@ -19,12 +20,14 @@ export default {
             isMobileCheck: window.innerWidth,
             percentageStudentsMasteredOneSkill: [],
             isLoaded: false,
-            classProgress: []
+            classProgress: [],
+            durationsPerDay: []
         };
     },
     async created() {
         await this.getTenantClassProgress();
         await this.getInstructorPercentageStudentsMasteredAtLeastOneSkill();
+        await this.getTenantClassDurationPerDay();
     },
     computed: {
         studentName() {
@@ -33,7 +36,8 @@ export default {
     },
     components: {
         CohortPercentageStudentsMasteredAtLeastOneSkillPieChart,
-        CohortProgressLineChart
+        CohortProgressLineChart,
+        CohortDurationPerDayLineChart
     },
     methods: {
         async getTenantClassProgress() {
@@ -77,6 +81,26 @@ export default {
                 );
                 this.percentageStudentsMasteredOneSkill = [];
             }
+        },
+        async getTenantClassDurationPerDay() {
+            fetch(
+                `/student-analytics/all-students-duration-per-day/${this.$parent.selectedInstructor.id}`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].formattedQuantity = data[i].quantity / 1000;
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.durationsPerDay = data;
+                })
+                .catch((error) => {
+                    console.error(
+                        'Error fetching student duration per day:',
+                        error
+                    );
+                });
         }
     }
 };
@@ -113,6 +137,14 @@ export default {
         </div>
         <h2 class="secondary-heading">Student Progress & Attendance</h2>
         <div>
+            <h4>Class engagement</h4>
+            <CohortDurationPerDayLineChart
+                v-if="durationsPerDay.length > 0"
+                :data="durationsPerDay"
+                colour="#5f31dd"
+                ref="cohortDurationPerDayLineChart"
+            />
+            <p v-else>No data available</p>
             <h4>Class progress</h4>
             <CohortProgressLineChart
                 v-if="classProgress.length > 0"
