@@ -1,7 +1,7 @@
 <script>
-import { useUsersStore } from '../../../../stores/UsersStore';
-import TimePerSkillHorizontalBarChart from '../../../components/teacher-analytics/students/TimePerSkillHorizontalBarChart.vue';
-import StudentDurationPerDayLineChart from '../../../components/teacher-analytics/students/StudentDurationPerDayLineChart.vue';
+import { useUsersStore } from '../../../../../stores/UsersStore';
+import TimePerSkillHorizontalBarChart from '../../../../components/teacher-analytics/students/TimePerSkillHorizontalBarChart.vue';
+import StudentDurationPerDayLineChart from '../../../../components/teacher-analytics/students/StudentDurationPerDayLineChart.vue';
 
 export default {
     setup() {
@@ -72,13 +72,7 @@ export default {
                 .then((response) => response.json())
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {
-                        data[i].formattedQuantity =
-                            this.millisToMinutesAndSeconds(data[i].quantity);
-
-                        data[i].formattedQuantity =
-                            this.convertMinutesSecondsToSeconds(
-                                data[i].formattedQuantity
-                            );
+                        data[i].formattedQuantity = data[i].quantity / 1000;
 
                         data[i].date = new Date(data[i].date);
                     }
@@ -97,20 +91,6 @@ export default {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);
             return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
-        },
-        convertMinutesSecondsToSeconds(durationString) {
-            const parts = durationString.split(':');
-            if (parts.length !== 2) {
-                throw new Error("Invalid duration format. Expected 'MM:SS'.");
-            }
-            const minutes = parseInt(parts[0], 10);
-            const seconds = parseInt(parts[1], 10);
-
-            if (isNaN(minutes) || isNaN(seconds)) {
-                throw new Error('Invalid numerical values in duration string.');
-            }
-
-            return minutes * 60 + seconds;
         }
     }
 };

@@ -458,6 +458,12 @@ export default {
                                         Profile
                                     </RouterLink>
                                     <RouterLink
+                                        to="/my-progress"
+                                        class="dropdown-item"
+                                    >
+                                        My Progress
+                                    </RouterLink>
+                                    <RouterLink
                                         to="/settings"
                                         class="dropdown-item"
                                     >
@@ -533,6 +539,9 @@ export default {
                             <div class="d-sm-none">
                                 <RouterLink to="/profile" class="nav-link">
                                     Profile
+                                </RouterLink>
+                                <RouterLink to="/my-progress" class="nav-link">
+                                    My Progress
                                 </RouterLink>
                                 <RouterLink to="/settings" class="nav-link">
                                     Settings

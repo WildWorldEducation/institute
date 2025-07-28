@@ -355,6 +355,19 @@ const router = createRouter({
                     '../components/pages/dropdown-menu-pages/SettingsView.vue'
                 )
         },
+        // Student analytics
+        {
+            path: '/my-progress',
+            name: 'my-progress',
+            component: () =>
+                import(
+                    '../components/pages/analytics/StudentAnalyticsView.vue'
+                ),
+            meta: {
+                requiresAuth: true,
+                roles: ['student']
+            }
+        },
         {
             path: '/news-and-notifications',
             name: 'news-and-notifications',
@@ -515,7 +528,7 @@ const router = createRouter({
             name: 'student-assessment-status',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/student/StudentAssessmentStatusReportView.vue'
+                    '../components/pages/analytics/teacher-analytics/student/StudentAssessmentStatusReportView.vue'
                 ),
             meta: {
                 title: 'Student Assessment Report',
@@ -528,7 +541,7 @@ const router = createRouter({
             name: 'student-progress-report',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/student/StudentProgressReportView.vue'
+                    '../components/pages/analytics/teacher-analytics/student/StudentProgressReportView.vue'
                 ),
             meta: {
                 title: 'Student Progress Report',
@@ -541,7 +554,7 @@ const router = createRouter({
             name: 'student-skill-activity',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/student/StudentSkillActivityReportView.vue'
+                    '../components/pages/analytics/teacher-analytics/student/StudentSkillActivityReportView.vue'
                 ),
             meta: {
                 title: 'Student Skill Activity Report',
@@ -554,7 +567,7 @@ const router = createRouter({
             name: 'student-time-report',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/student/StudentTimeReportView.vue'
+                    '../components/pages/analytics/teacher-analytics/student/StudentTimeReportView.vue'
                 ),
             meta: {
                 title: 'Student Time Report',
@@ -568,7 +581,7 @@ const router = createRouter({
             name: 'cohort-assessment-status',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/cohort/CohortAssessmentStatusReportView.vue'
+                    '../components/pages/analytics/teacher-analytics/cohort/CohortAssessmentStatusReportView.vue'
                 ),
             meta: {
                 title: 'Cohort Assessment Status Report',
@@ -581,7 +594,7 @@ const router = createRouter({
             name: 'cohort-time-report',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/cohort/CohortTimeReportView.vue'
+                    '../components/pages/analytics/teacher-analytics/cohort/CohortTimeReportView.vue'
                 ),
             meta: {
                 title: 'Cohort Time Report',
@@ -594,7 +607,7 @@ const router = createRouter({
             name: 'cohort-skill-activity',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/cohort/CohortSkillActivityReportView.vue'
+                    '../components/pages/analytics/teacher-analytics/cohort/CohortSkillActivityReportView.vue'
                 ),
             meta: {
                 title: 'Cohort Skill Activity Report',
@@ -607,7 +620,7 @@ const router = createRouter({
             name: 'cohort-progress-report',
             component: () =>
                 import(
-                    '../components/pages/teacher-analytics/cohort/CohortProgressReportView.vue'
+                    '../components/pages/analytics/teacher-analytics/cohort/CohortProgressReportView.vue'
                 ),
             meta: {
                 title: 'Cohort Progress Report',
@@ -621,7 +634,7 @@ const router = createRouter({
             name: 'school-report',
             component: () =>
                 import(
-                    '../components/pages/school-admin-analytics/SchoolReportView.vue'
+                    '../components/pages/analytics/school-admin-analytics/SchoolReportView.vue'
                 ),
             meta: {
                 title: 'School Report',
