@@ -665,6 +665,34 @@ router.get('/cohort-progress/:cohortId', (req, res, next) => {
     }
 });
 
+/* Get student activity in ALL cohorts of an instructor */
+router.get('/all-student-cohort-activity/instructor/:instructorId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT  skills.name, SUM(duration) AS total_cohort_duration 
+            FROM user_skills JOIN instructor_students ON user_skills.user_id = instructor_students.student_id JOIN skills ON skills.id  = user_skills.skill_id
+            WHERE instructor_students.instructor_id = ${conn.escape(req.params.instructorId)}       
+            GROUP BY skills.name 
+            HAVING total_cohort_duration > 0
+        `;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+})
+
 /**
  * FOR ALL STUDENTS OF AN INSTRUCTOR -------------------------------------------------------
  */
@@ -1338,6 +1366,8 @@ router.get('/tenant-duration-per-day/:tenantId', (req, res, next) => {
         });
     }
 });
+
+
 
 /**
  * RECORD DATA -------------------------------------------
