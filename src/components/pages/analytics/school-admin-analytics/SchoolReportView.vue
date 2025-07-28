@@ -250,9 +250,14 @@ export default {
 
             <h3>Assessment Completion Tracking</h3>
             <p>
-                Visualizes the percentage of students who have completed, are in
-                progress, or have not started skills' assessments, with daily
-                and weekly updates.
+                percentage of students that have passed an assessment, by number
+                of assessments. from 0 to more than 5, in a given time.
+            </p>
+            <p>need to use sub query</p>
+            <p>
+                percentage of students that have attempted an assessment without
+                passing it, by number of assessments. from 0 to more than 5, in
+                a given time.
             </p>
 
             <h3>Performance by Root Subject</h3>
