@@ -89,5 +89,99 @@ router.delete('/:skillId/:objectiveId', (req, res, next) => {
     });
 });
 
+/**
+ * Get Single Learning Objective for Editing
+ */
+router.get('/:skillId/:objectiveId', (req, res, next) => {
+    res.setHeader('Content-Type', 'application/json');
+
+    let sqlQuery = `SELECT * 
+                    FROM skill_learning_objectives 
+                    WHERE id = ${conn.escape(req.params.objectiveId)} 
+                    AND skill_id = ${conn.escape(req.params.skillId)}`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+
+            if (results.length === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message:
+                        'Learning objective not found or does not belong to this skill'
+                });
+            }
+
+            res.json(results[0]);
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
+/**
+ * Update Learning Objective
+ */
+router.put('/:skillId/:objectiveId', (req, res, next) => {
+    res.setHeader('Content-Type', 'application/json');
+
+    const { objective } = req.body;
+
+    if (!objective || objective.trim() === '') {
+        return res.status(400).json({
+            success: false,
+            message: 'Learning objective text is required'
+        });
+    }
+
+    // First check if the learning objective exists and belongs to the specified skill
+    let checkQuery = `SELECT id FROM skill_learning_objectives 
+                      WHERE id = ${conn.escape(req.params.objectiveId)} 
+                      AND skill_id = ${conn.escape(req.params.skillId)}`;
+
+    conn.query(checkQuery, (err, checkResults) => {
+        try {
+            if (err) {
+                throw err;
+            }
+
+            if (checkResults.length === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message:
+                        'Learning objective not found or does not belong to this skill'
+                });
+            }
+
+            // If exists, proceed with update
+            let updateQuery = `UPDATE skill_learning_objectives 
+                              SET objective = ${conn.escape(objective.trim())}
+                              WHERE id = ${conn.escape(req.params.objectiveId)} 
+                              AND skill_id = ${conn.escape(
+                                  req.params.skillId
+                              )}`;
+
+            conn.query(updateQuery, (updateErr, updateResults) => {
+                try {
+                    if (updateErr) {
+                        throw updateErr;
+                    }
+
+                    res.json({
+                        success: true,
+                        message: 'Learning objective updated successfully'
+                    });
+                } catch (updateErr) {
+                    next(updateErr);
+                }
+            });
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
 // Export the router for app to use.
 module.exports = router;
