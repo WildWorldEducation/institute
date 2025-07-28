@@ -10,9 +10,7 @@ export default {
         };
     },
     mounted() {
-        const container = d3.select(
-            '#tenant-avg-tokens-to-master-skills-chart-container'
-        );
+        const container = d3.select('#tenant-tokens-per-skill-chart-container');
 
         // Specify the chart’s dimensions, based on a bar’s height.
         const barHeight = 25;
@@ -43,7 +41,7 @@ export default {
 
         // Create the SVG container.
         const svg = d3
-            .select('#tenant-avg-tokens-to-master-skills-chart-container')
+            .select('#tenant-tokens-per-skill-chart-container')
             .append('svg')
             .attr('width', width)
             .attr('height', height)
@@ -99,12 +97,12 @@ export default {
 </script>
 
 <template>
-    <div id="tenant-avg-tokens-to-master-skills-chart-container"></div>
+    <div id="tenant-tokens-per-skill-chart-container"></div>
 </template>
 
 <style scoped>
-#tenant-avg-tokens-to-master-skills-chart-container {
-    overflow-y: scroll;
+#tenant-tokens-per-skill-chart-container {
+    overflow-y: auto;
     max-height: 500px;
 }
 </style>
