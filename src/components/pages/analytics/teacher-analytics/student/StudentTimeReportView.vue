@@ -1,7 +1,7 @@
 <script>
-import { useUsersStore } from '../../../../stores/UsersStore';
-import TimePerSkillHorizontalBarChart from '../../../components/teacher-analytics/students/TimePerSkillHorizontalBarChart.vue';
-import StudentDurationPerDayLineChart from '../../../components/teacher-analytics/students/StudentDurationPerDayLineChart.vue';
+import { useUsersStore } from '../../../../../stores/UsersStore';
+import TimePerSkillHorizontalBarChart from '../../../../components/teacher-analytics/students/TimePerSkillHorizontalBarChart.vue';
+import StudentDurationPerDayLineChart from '../../../../components/teacher-analytics/students/StudentDurationPerDayLineChart.vue';
 
 export default {
     setup() {

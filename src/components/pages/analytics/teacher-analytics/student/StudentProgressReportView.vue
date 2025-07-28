@@ -1,6 +1,6 @@
 <script>
-import { useUsersStore } from '../../../../stores/UsersStore';
-import StudentProgressLineChart from '../../../components/teacher-analytics/students/StudentProgressLineChart.vue';
+import { useUsersStore } from '../../../../../stores/UsersStore';
+import StudentProgressLineChart from '../../../../components/teacher-analytics/students/StudentProgressLineChart.vue';
 export default {
     setup() {
         const usersStore = useUsersStore();
@@ -39,7 +39,7 @@ export default {
                         data[i].date = new Date(data[i].date);
                     }
                     data.sort((a, b) => a.date - b.date);
-                    this.studentProgress = data;                   
+                    this.studentProgress = data;
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);

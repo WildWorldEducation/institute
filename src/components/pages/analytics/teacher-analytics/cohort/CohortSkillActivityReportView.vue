@@ -1,6 +1,6 @@
 <script>
-import { useCohortsStore } from '../../../../stores/CohortsStore';
-import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
+import { useCohortsStore } from '../../../../../stores/CohortsStore';
+import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
 export default {
     setup() {
         const cohortsStore = useCohortsStore();

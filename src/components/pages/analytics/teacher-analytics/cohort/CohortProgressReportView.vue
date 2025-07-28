@@ -1,7 +1,7 @@
 <script>
-import { useCohortsStore } from '../../../../stores/CohortsStore';
-import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
-import CohortProgressLineChart from '../../../components/teacher-analytics/cohorts/CohortProgressLineChart.vue';
+import { useCohortsStore } from '../../../../../stores/CohortsStore';
+import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
+import CohortProgressLineChart from '../../../../components/teacher-analytics/cohorts/CohortProgressLineChart.vue';
 
 export default {
     setup() {

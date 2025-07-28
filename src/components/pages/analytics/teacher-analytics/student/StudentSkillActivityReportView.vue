@@ -1,7 +1,7 @@
 <script>
-import { useUsersStore } from '../../../../stores/UsersStore';
-import { useTeacherAnalyticsStore } from '../../../../stores/TeacherAnalyticsStore';
-import SkillActivityGanttChart from '../../../components/teacher-analytics/students/SkillActivityGanttChart.vue';
+import { useUsersStore } from '../../../../../stores/UsersStore';
+import { useTeacherAnalyticsStore } from '../../../../../stores/TeacherAnalyticsStore';
+import SkillActivityGanttChart from '../../../../components/teacher-analytics/students/SkillActivityGanttChart.vue';
 
 export default {
     setup() {
