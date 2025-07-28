@@ -4,6 +4,7 @@ import TenantAvgInteractionTimePerSkillHorizontalBarChart from '../../../compone
 import TenantPercentageStudentsMasteredAtLeastOneSkillPieChart from '../../../components/teacher-analytics/tenants/TenantPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
 import TenantProgressLineChart from '../../../components/teacher-analytics/tenants/TenantProgressLineChart.vue';
 import TenantDurationPerDayLineChart from '../../../components/teacher-analytics/tenants/TenantDurationPerDayLineChart.vue';
+import TenantTokensPerSkillHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantTokensPerSkillHorizontalBarChart.vue';
 
 export default {
     setup() {
@@ -11,6 +12,7 @@ export default {
     },
     components: {
         TenantAvgTokensToMasterSkillsHorizontalBarChart,
+        TenantTokensPerSkillHorizontalBarChart,
         TenantAvgInteractionTimePerSkillHorizontalBarChart,
         TenantPercentageStudentsMasteredAtLeastOneSkillPieChart,
         TenantProgressLineChart,
@@ -21,6 +23,7 @@ export default {
             chosenPage: 1,
             tenantId: this.$route.params.tenantId,
             avgTokensToMasterSkills: [],
+            totalTokensPerSkill: [],
             avgTimeOnSkills: [],
             percentageStudentsMasteredOneSkill: [],
             tenantProgress: [],
@@ -234,7 +237,16 @@ export default {
             />
             <p v-else>No data yet</p>
 
-            <p>Number of tokens per skill</p>
+            <TenantTokensPerSkillHorizontalBarChart
+                v-if="totalTokensPerSkill.length > 0"
+                :data="totalTokensPerSkill"
+                colour="darkgreen"
+            />
+            <p v-else>No data yet</p>
+            <p>
+                Number of tokens per skill (cut off recording usage after
+                mastery)
+            </p>
             <p>Number of tokens per day</p>
         </div>
     </div>
