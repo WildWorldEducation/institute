@@ -660,12 +660,16 @@ export default {
             <h1 class="heading">{{ skill.name }}</h1>
             <span>
                 <!-- Learning Objectives -->
-                <!-- <router-link
-                    v-if="skill.type != 'domain'"
+                <router-link
+                    v-if="
+                        skill.type != 'domain' &&
+                        (userDetailsStore.role == 'platform_admin' ||
+                            userDetailsStore.role == 'editor')
+                    "
                     class="btn primary-btn me-1"
                     :to="'/skills/' + skillUrl + '/learning-objectives'"
                     >Learning Objectives&nbsp;
-                </router-link> -->
+                </router-link>
                 <!-- Question Bank -->
                 <router-link
                     v-if="skill.type != 'domain' && skill.type != 'super'"
