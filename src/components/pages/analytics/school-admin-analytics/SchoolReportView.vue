@@ -18,6 +18,7 @@ export default {
     },
     data() {
         return {
+            chosenPage: 1,
             tenantId: this.$route.params.tenantId,
             avgTokensToMasterSkills: [],
             avgTimeOnSkills: [],
@@ -141,107 +142,101 @@ export default {
     <div class="container">
         <span class="d-flex justify-content-between w-100">
             <h1 class="heading">School Admin Report</h1>
-            <!-- <h2 class="secondary-heading h3">{{ tenantName }}</h2>-->
         </span>
-        <h2 class="secondary-heading">Skill Engagement & Resource Usage</h2>
-        <h4>Average interaction time per skill (minutes)</h4>
-        <TenantAvgInteractionTimePerSkillHorizontalBarChart
-            v-if="avgTimeOnSkills.length > 0"
-            :data="avgTimeOnSkills"
-            colour="purple"
-        />
-        <p v-else>No data yet</p>
+        <div>
+            <button class="btn primary-btn me-1" @click="chosenPage = 1">
+                Engagement
+            </button>
+            <button class="btn primary-btn me-1" @click="chosenPage = 2">
+                Academic Performance
+            </button>
+            <button class="btn primary-btn" @click="chosenPage = 3">
+                Resource Usage
+            </button>
+        </div>
+        <div v-if="chosenPage == 1">
+            <div class="mt-2 mb-4">
+                <button class="btn btn-dark me-1">Total</button>
+                <button class="btn btn-dark me-1">This week</button>
+            </div>
+            <h4>Average interaction time per skill (minutes)</h4>
+            <TenantAvgInteractionTimePerSkillHorizontalBarChart
+                v-if="avgTimeOnSkills.length > 0"
+                :data="avgTimeOnSkills"
+                colour="purple"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
+            <h4>Time spent on platform per day</h4>
+            <TenantDurationPerDayLineChart
+                v-if="studentDurationsPerSkill.length > 0"
+                :data="studentDurationsPerSkill"
+                colour="#5f31dd"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
 
-        <h4 class="mt-5">Average number of tokens to master a skill</h4>
-        <TenantAvgTokensToMasterSkillsHorizontalBarChart
-            v-if="avgTokensToMasterSkills.length > 0"
-            :data="avgTokensToMasterSkills"
-            colour="darkgreen"
-        />
-        <p v-else>No data yet</p>
+            <h4>
+                Percentage of students who completed at least one skill
+                (cumulative)
+            </h4>
+            <TenantPercentageStudentsMasteredAtLeastOneSkillPieChart
+                v-if="percentageStudentsMasteredOneSkill.length > 0"
+                :data="percentageStudentsMasteredOneSkill"
+            />
+            <p v-else>No data yet</p>
+            <p>add total tutoring time</p>
+        </div>
 
-        <h2 class="secondary-heading">Student Progress & Attendance</h2>
-        <h3>Usage and Fidelity Reports</h3>
-        <h4>
-            Percentage of students who completed at least one skill (cumulative)
-        </h4>
-        <TenantPercentageStudentsMasteredAtLeastOneSkillPieChart
-            v-if="percentageStudentsMasteredOneSkill.length > 0"
-            :data="percentageStudentsMasteredOneSkill"
-            class="mb-5"
-        />
-        <p v-else>No data yet</p>
-        <p>add weekly version</p>
+        <div v-else-if="chosenPage == 2">
+            <div class="mt-2 mb-4">
+                <button class="btn btn-dark me-1">Total</button>
+                <button class="btn btn-dark me-1">This week</button>
+            </div>
+            <h3>Growth Analytics</h3>
+            <h4>Tenant progress</h4>
+            <TenantProgressLineChart
+                v-if="tenantProgress.length > 0"
+                :data="tenantProgress"
+                colour="#5f31dd"
+                class="mb-5 mt-5"
+            />
+            <p v-else>No data yet</p>
+            <p>number of skills mastered</p>
 
-        <h4>Tenant progress</h4>
-        <TenantProgressLineChart
-            v-if="tenantProgress.length > 0"
-            :data="tenantProgress"
-            colour="#5f31dd"
-            class="mb-5 mt-5"
-        />
-        <p v-else>No data yet</p>
-        <ul class="mt-5">
-            <li class="mt-3">
-                total tutoring time
-                <ul>
-                    <li>
-                        <em>weekly and cumulative usage</em>
-                    </li>
-                </ul>
-            </li>
-            <li class="mt-3">
-                engagement
-                <ul>
-                    <li><em>task made</em></li>
-                    <li>
-                        <em>starting date is when first student started on</em>
-                    </li>
-                    <li>
-                        <em>total time on platform </em>
-                    </li>
-                    <li>
-                        <em>line chart </em>
-                    </li>
-                    <li>
-                        <em>weekly and cumulative usage</em>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-        <TenantDurationPerDayLineChart
-            v-if="studentDurationsPerSkill.length > 0"
-            :data="studentDurationsPerSkill"
-            colour="#5f31dd"
-            class="mb-5 mt-5"
-        />
+            <h3>Assessment Completion Tracking</h3>
+            <p>
+                Visualizes the percentage of students who have completed, are in
+                progress, or have not started skills' assessments, with daily
+                and weekly updates.
+            </p>
 
-        <h2 class="secondary-heading mt-5">Academic Performance Overview</h2>
-        <h3>Growth Analytics</h3>
-        <p>
-            (Jonathan, you may be able to determine what would be both easiest
-            and most compelling for us to share at this level—e.g. Skills
-            mastered, Key Skills mastered by student grade, progress made, %
-            progress made within cohorts, etc.)
-        </p>
-        <ul>
-            <li>number of skills mastered</li>
-            <li>% progress made within cohorts</li>
-        </ul>
+            <h3>Performance by Skill Category</h3>
+            <p>
+                Allows drill-down into skill categories to view where extra help
+                might be needed (e.g. with math, science, history, etc.)
+            </p>
+            <p>
+                <em>What skills / categories are students failing the most?</em>
+            </p>
+        </div>
 
-        <h3>Assessment Completion Tracking</h3>
-        <p>
-            Visualizes the percentage of students who have completed, are in
-            progress, or have not started skills' assessments, with daily and
-            weekly updates.
-        </p>
+        <div v-if="chosenPage == 3">
+            <div class="mt-2 mb-4">
+                <button class="btn btn-dark me-1">Total</button>
+                <button class="btn btn-dark me-1">This week</button>
+            </div>
+            <h4 class="mt-5">Average number of tokens to master a skill</h4>
+            <TenantAvgTokensToMasterSkillsHorizontalBarChart
+                v-if="avgTokensToMasterSkills.length > 0"
+                :data="avgTokensToMasterSkills"
+                colour="darkgreen"
+            />
+            <p v-else>No data yet</p>
 
-        <h3>Performance by Skill Category</h3>
-        <p>
-            Allows drill-down into skill categories to view where extra help
-            might be needed (e.g. with math, science, history, etc.)
-        </p>
-        <p><em>What skills / categories are students failing the most?</em></p>
+            <p>Number of tokens per skill</p>
+            <p>Number of tokens per day</p>
+        </div>
     </div>
 </template>
 
