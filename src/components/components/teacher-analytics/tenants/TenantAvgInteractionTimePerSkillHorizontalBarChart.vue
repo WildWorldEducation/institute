@@ -104,7 +104,7 @@ export default {
 
 <style scoped>
 #tenant-avg-interaction-time-per-skill-chart-container {
-    overflow-y: scroll;
+    overflow-y: auto;
     max-height: 500px;
 }
 </style>

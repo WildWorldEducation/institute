@@ -5,6 +5,7 @@ import TenantPercentageStudentsMasteredAtLeastOneSkillPieChart from '../../../co
 import TenantProgressLineChart from '../../../components/teacher-analytics/tenants/TenantProgressLineChart.vue';
 import TenantDurationPerDayLineChart from '../../../components/teacher-analytics/tenants/TenantDurationPerDayLineChart.vue';
 import TenantTokensPerSkillHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantTokensPerSkillHorizontalBarChart.vue';
+import TenantTokensPerDayLineChart from '../../../components/teacher-analytics/tenants/TenantTokensPerDayLineChart.vue';
 
 export default {
     setup() {
@@ -16,7 +17,8 @@ export default {
         TenantAvgInteractionTimePerSkillHorizontalBarChart,
         TenantPercentageStudentsMasteredAtLeastOneSkillPieChart,
         TenantProgressLineChart,
-        TenantDurationPerDayLineChart
+        TenantDurationPerDayLineChart,
+        TenantTokensPerDayLineChart
     },
     data() {
         return {
@@ -24,6 +26,7 @@ export default {
             tenantId: this.$route.params.tenantId,
             avgTokensToMasterSkills: [],
             totalTokensPerSkill: [],
+            //totalTokensPerDay: [],
             avgTimeOnSkills: [],
             percentageStudentsMasteredOneSkill: [],
             tenantProgress: [],
@@ -32,10 +35,12 @@ export default {
     },
     async created() {
         await this.getAvgTokensToMasterSkills();
+        await this.getTotalTokensPerSkill();
         await this.getAvgTimeOnSkills();
         await this.getPercentageStudentsMasteredOneSkill();
         await this.getTenantProgress();
         await this.getTenantDuration();
+        // await this.getTotalTokensPerDay();
     },
     methods: {
         async getAvgTokensToMasterSkills() {
@@ -58,6 +63,42 @@ export default {
                 this.avgTokensToMasterSkills = [];
             }
         },
+        async getTotalTokensPerSkill() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/total-tokens-per-skill/tenant/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                this.totalTokensPerSkill = Array.isArray(data) ? data : [];
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.totalTokensPerSkill = [];
+            }
+        },
+        // async getTotalTokensPerDay() {
+        //     fetch(`/student-analytics/tenant-tokens-per-day/${this.tenantId}`)
+        //         .then((response) => response.json())
+        //         .then((data) => {
+        //             for (let i = 0; i < data.length; i++) {
+        //                 data[i].date = new Date(data[i].date);
+        //                 data[i].formattedQuantity = data[i].quantity / 1000;
+        //             }
+        //             data.sort((a, b) => a.date - b.date);
+        //             this.totalTokensPerDay = data;
+        //             console.log(this.totalTokensPerDay);
+        //         })
+        //         .catch((error) => {
+        //             console.error('Error fetching student progress:', error);
+        //         });
+        // },
         async getAvgTimeOnSkills() {
             try {
                 const response = await fetch(
@@ -214,22 +255,23 @@ export default {
                 and weekly updates.
             </p>
 
-            <h3>Performance by Skill Category</h3>
+            <h3>Performance by Root Subject</h3>
             <p>
-                Allows drill-down into skill categories to view where extra help
-                might be needed (e.g. with math, science, history, etc.)
+                <em>number of fails per root subject</em>
             </p>
             <p>
-                <em>What skills / categories are students failing the most?</em>
+                <em>will have to use recursive function</em>
             </p>
         </div>
 
-        <div v-if="chosenPage == 3">
+        <div v-else-if="chosenPage == 3">
             <div class="mt-2 mb-4">
                 <button class="btn btn-dark me-1">Total</button>
                 <button class="btn btn-dark me-1">This week</button>
             </div>
-            <h4 class="mt-5">Average number of tokens to master a skill</h4>
+            <h4 class="mt-5">
+                Average number of tokens spent to master a skill
+            </h4>
             <TenantAvgTokensToMasterSkillsHorizontalBarChart
                 v-if="avgTokensToMasterSkills.length > 0"
                 :data="avgTokensToMasterSkills"
@@ -237,17 +279,23 @@ export default {
             />
             <p v-else>No data yet</p>
 
+            <h4 class="mt-5">Total number of tokens spent per skill</h4>
             <TenantTokensPerSkillHorizontalBarChart
                 v-if="totalTokensPerSkill.length > 0"
                 :data="totalTokensPerSkill"
-                colour="darkgreen"
+                colour="#5f31dd"
             />
             <p v-else>No data yet</p>
-            <p>
-                Number of tokens per skill (cut off recording usage after
-                mastery)
-            </p>
-            <p>Number of tokens per day</p>
+            <p><em>please note recording cut off usage after mastery</em></p>
+
+            <h4 class="mt-5">Number of tokens per day</h4>
+            <p><em>need to record this data first</em></p>
+            <!-- <TenantTokensPerSkillHorizontalBarChart
+                v-if="totalTokensPerDay.length > 0"
+                :data="totalTokensPerDay"
+                colour="#5f31dd"
+            />
+            <p v-else>No data yet</p> -->
         </div>
     </div>
 </template>
