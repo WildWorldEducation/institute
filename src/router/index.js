@@ -355,6 +355,19 @@ const router = createRouter({
                     '../components/pages/dropdown-menu-pages/SettingsView.vue'
                 )
         },
+        // Student analytics
+        {
+            path: '/my-progress',
+            name: 'my-progress',
+            component: () =>
+                import(
+                    '../components/pages/analytics/StudentAnalyticsView.vue'
+                ),
+            meta: {
+                requiresAuth: true,
+                roles: ['student']
+            }
+        },
         {
             path: '/news-and-notifications',
             name: 'news-and-notifications',
@@ -621,7 +634,7 @@ const router = createRouter({
             name: 'school-report',
             component: () =>
                 import(
-                    '../components/pages/school-admin-analytics/SchoolReportView.vue'
+                    '../components/pages/analytics/school-admin-analytics/SchoolReportView.vue'
                 ),
             meta: {
                 title: 'School Report',
