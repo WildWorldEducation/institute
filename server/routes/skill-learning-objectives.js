@@ -40,6 +40,50 @@ router.get('/:skillId/list', (req, res, next) => {
 });
 
 /**
+ * Add New Learning Objective
+ */
+router.post('/:skillId/add', (req, res, next) => {
+    res.setHeader('Content-Type', 'application/json');
+
+    const { objective } = req.body;
+
+    if (!objective || objective.trim() === '') {
+        return res.status(400).json({
+            success: false,
+            message: 'Learning objective text is required'
+        });
+    }
+
+    if (objective.trim().length < 10) {
+        return res.status(400).json({
+            success: false,
+            message: 'Learning objective must be at least 10 characters long'
+        });
+    }
+
+    let insertQuery = `INSERT INTO skill_learning_objectives (skill_id, objective) 
+                       VALUES (${conn.escape(
+                           req.params.skillId
+                       )}, ${conn.escape(objective.trim())})`;
+
+    conn.query(insertQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+
+            res.json({
+                success: true,
+                message: 'Learning objective added successfully',
+                id: results.insertId
+            });
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
+/**
  * Delete Learning Objective
  */
 router.delete('/:skillId/:objectiveId', (req, res, next) => {
