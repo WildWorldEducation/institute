@@ -859,7 +859,7 @@ router.get('/all-students-duration-per-day/:userId', (req, res, next) => {
     }
 });
 
-/* Get all students of instructor durations */
+/* Get all students of an instructor durations */
 router.get('/all-students-total-durations/:userId', (req, res, next) => {
     // Check if logged in.
     if (req.session.userName) {
@@ -877,7 +877,7 @@ router.get('/all-students-total-durations/:userId', (req, res, next) => {
         )}              
             GROUP BY instructor_students.student_id;`;
 
-        console.log(sqlQuery);
+
 
         conn.query(sqlQuery, (err, result) => {
             try {

@@ -7,12 +7,21 @@ export default {
     props: ['data', 'colour'],
     data() {
         return {
-            padding: 60
+            chartHeight: 400,
+            chartWidth: 1200,
+            labelWidth: 20
         };
     },
-    mounted() {
-        this.drawChart();
+    watch: {
+        data: {
+            handler() {
+                this.labelWidth = this.calculateLongestLabelWidth();
+                this.chartHeight = this.calculateChartHeight();
+                this.drawChart();
+            }
+        }
     },
+
     methods: {
         drawChart() {
             const data = this.data;
@@ -22,8 +31,8 @@ export default {
             }
 
             const margin = { top: 20, right: 60, bottom: 40, left: 100 };
-            const width = 1200 - margin.left - margin.right;
-            const height = 400 - margin.top - margin.bottom;
+            const width = 1200;
+            const height = this.chartHeight - margin.top - margin.bottom;
 
             const svg = d3
                 .select('#skill-activity-chart-container')
@@ -42,7 +51,7 @@ export default {
                 .scaleBand()
                 .domain(this.data.map((d) => d.name)) // Map task names to scale domain
                 .range([0, height]) // Set output range
-                .padding(0.1); // Add padding between bars
+                .padding(0.3); // Add padding between bars
 
             // X scale for time duration (linear scale)
             const xScale = d3
@@ -59,12 +68,19 @@ export default {
                 .attr('class', 'bar')
                 .attr('x', 0) // Start bars at x=0 (left edge)
                 .attr('y', (d) => yScale(d.name)) // Position vertically based on task
-                .attr('width', (d) => xScale(d.quantity)) // Width based on duration value
-                .attr('height', yScale.bandwidth()) // Height from scale bandwidth
-                .attr('fill', 'orange'); // Set bar color
+                .attr('width', (d) =>
+                    d.quantity > 0 ? xScale(d.quantity) : xScale(1)
+                ) // Width based on duration value
+                .attr('height', (d) =>
+                    d.quantity > 0 ? yScale.bandwidth() : 1
+                ) // Height from scale bandwidth
+                .attr('fill', '#9E9E9E'); // Set bar color
 
             // Create Y axis (left side, showing task names)
-            g.append('g').attr('class', 'axis').call(d3.axisLeft(yScale)); // Create left-oriented axis with task labels
+            g.append('g')
+                .attr('class', 'axis')
+
+                .call(d3.axisLeft(yScale)); // Create left-oriented axis with task labels
 
             // Create X axis (bottom, showing time duration)
             g.append('g')
@@ -77,16 +93,7 @@ export default {
                 .attr('class', 'axis-label')
                 .attr('transform', `translate(${width / 2},${height + 35})`) // Center below x-axis
                 .style('text-anchor', 'middle')
-                .text('Duration (milliseconds)');
-
-            // // Add Y axis label
-            // g.append('text')
-            //     .attr('class', 'axis-label')
-            //     .attr('transform', 'rotate(-90)') // Rotate for vertical text
-            //     .attr('y', -70) // Position left of y-axis
-            //     .attr('x', -height / 2) // Center vertically
-            //     .style('text-anchor', 'middle')
-            //     .text('Skill Name');
+                .text('Duration (days)');
 
             // Add value labels on bars
             g.selectAll('.bar-label')
@@ -98,7 +105,28 @@ export default {
                 .attr('y', (d) => yScale(d.name) + yScale.bandwidth() / 2) // Center vertically on bar
                 .attr('dy', '0.35em') // Fine-tune vertical alignment
                 .style('font-size', '12px')
-                .text((d) => d.quantity + ' miliseconds'); // Display duration value
+                .text((d) => d.quantity + ' days'); // Display duration value
+        },
+        calculateChartHeight() {
+            if (this.data.length > 0) {
+                const numRows = this.data.length;
+                const rowHeight = 30; // Height of each row in pixels
+                const result = numRows * rowHeight + 100; // Add some padding
+                return result;
+            } else {
+                return 400; // Default height if no data
+            }
+        },
+        calculateLongestLabelWidth() {
+            // find the longest skill name length
+            let maxLength = 0;
+            for (const skill of this.data) {
+                maxLength = Math.max(maxLength, skill.name.length);
+            }
+
+            const labelWidth = maxLength + 10; // Estimate width based on character length
+            console.log(`Longest label width: ${labelWidth}px`);
+            return labelWidth; // Add some padding
         }
     }
 };

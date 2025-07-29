@@ -50,6 +50,12 @@ export default {
         } else {
             console.error('Cohort not found for ID:', this.cohortId);
         }
+        this.skillActivities = this.skillActivities.map((skill) => {
+            return {
+                ...skill,
+                quantity: this.millisecondsTodays(skill.quantity, 2)
+            };
+        });
     },
     mounted() {
         fetch(
@@ -104,6 +110,15 @@ export default {
                 minute: '2-digit',
                 second: '2-digit'
             });
+        },
+        millisecondsTodays(milliseconds, precision) {
+            const msPerDay = 24 * 60 * 60 * 1000;
+            const days = milliseconds / msPerDay;
+            console.log(
+                `Converted ${milliseconds} milliseconds to ${days} days`
+            );
+            // Round to specified decimal places
+            return days.toFixed(precision);
         }
     }
 };
