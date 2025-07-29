@@ -6,6 +6,8 @@ import TenantProgressLineChart from '../../../components/teacher-analytics/tenan
 import TenantDurationPerDayLineChart from '../../../components/teacher-analytics/tenants/TenantDurationPerDayLineChart.vue';
 import TenantTokensPerSkillHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantTokensPerSkillHorizontalBarChart.vue';
 import TenantTokensPerDayLineChart from '../../../components/teacher-analytics/tenants/TenantTokensPerDayLineChart.vue';
+import TenantNumSkillsPassedPerNumStudentsHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantNumSkillsPassedPerNumStudentsHorizontalBarChart.vue';
+import TenantPassedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantPassedAssessmentsHorizontalBarChart.vue';
 
 export default {
     setup() {
@@ -18,7 +20,9 @@ export default {
         TenantPercentageStudentsMasteredAtLeastOneSkillPieChart,
         TenantProgressLineChart,
         TenantDurationPerDayLineChart,
-        TenantTokensPerDayLineChart
+        TenantTokensPerDayLineChart,
+        TenantNumSkillsPassedPerNumStudentsHorizontalBarChart,
+        TenantPassedAssessmentsHorizontalBarChart
     },
     data() {
         return {
@@ -30,7 +34,9 @@ export default {
             avgTimeOnSkills: [],
             percentageStudentsMasteredOneSkill: [],
             tenantProgress: [],
-            studentDurationsPerSkill: []
+            studentDurationsPerSkill: [],
+            numSkillsPassedPerNumStudents: [],
+            passedAssessments: []
         };
     },
     async created() {
@@ -40,6 +46,8 @@ export default {
         await this.getPercentageStudentsMasteredOneSkill();
         await this.getTenantProgress();
         await this.getTenantDuration();
+        await this.getNumSkillsPassedPerNumStudents();
+        await this.getPassedAssessments();
         // await this.getTotalTokensPerDay();
     },
     methods: {
@@ -173,6 +181,45 @@ export default {
                     console.error('Error fetching student progress:', error);
                 });
         },
+        async getNumSkillsPassedPerNumStudents() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/num-skills-passed-per-num-students/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                this.numSkillsPassedPerNumStudents = await response.json();
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.numSkillsPassedPerNumStudents = [];
+            }
+        },
+        async getPassedAssessments() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/passed-assessments/tenant/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                this.passedAssessments = await response.json();
+                console.log(this.numSkillsPassedPerNumStudents);
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.passedAssessments = [];
+            }
+        },
         millisToMinutesAndSeconds(millis) {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);
@@ -237,8 +284,7 @@ export default {
                 <button class="btn btn-dark me-1">Total</button>
                 <button class="btn btn-dark me-1">This week</button>
             </div>
-            <h3>Growth Analytics</h3>
-            <h4>Tenant progress</h4>
+            <h3>Growth</h3>
             <TenantProgressLineChart
                 v-if="tenantProgress.length > 0"
                 :data="tenantProgress"
@@ -246,20 +292,26 @@ export default {
                 class="mb-5 mt-5"
             />
             <p v-else>No data yet</p>
-            <p>number of skills mastered</p>
 
-            <h3>Assessment Completion Tracking</h3>
-            <p>
-                percentage of students that have passed an assessment, by number
-                of assessments. from 0 to more than 5, in a given time.
-            </p>
-            <p>need to use sub query</p>
-            <p>
-                percentage of students that have attempted an assessment without
-                passing it, by number of assessments. from 0 to more than 5, in
-                a given time.
-            </p>
-
+            <h3>Assessment Completion</h3>
+            <h4>
+                Number of students who have passed a specific number of skills
+            </h4>
+            <TenantNumSkillsPassedPerNumStudentsHorizontalBarChart
+                v-if="numSkillsPassedPerNumStudents.length > 0"
+                :data="numSkillsPassedPerNumStudents"
+                colour="darkgreen"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
+            <h4>Number of students who have passed a specific skill</h4>
+            <TenantPassedAssessmentsHorizontalBarChart
+                v-if="passedAssessments.length > 0"
+                :data="passedAssessments"
+                colour="darkgreen"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
             <h3>Performance by Root Subject</h3>
             <p>
                 <em>number of fails per root subject</em>
