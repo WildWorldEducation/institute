@@ -437,11 +437,11 @@ export default {
 }
 
 .tab-btn.active {
-    background-color: #6f42c1;
-    color: white;
-    border-color: #6f42c1 #6f42c1 #fff;
+    background-color: var(--primary-color);
+    color: var(--primary-contrast-color);
+    border-color: var(--primary-color) var(--primary-color) #fff;
     opacity: 1;
-    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.25);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 /* Filter Button Styling */
@@ -491,7 +491,7 @@ export default {
     }
 
     .tab-btn.active {
-        border-color: #6f42c1;
+        border-color: var(--primary-color);
     }
 }
 </style>
