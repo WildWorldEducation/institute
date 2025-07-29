@@ -1453,6 +1453,74 @@ router.get('/tenant-duration-per-day/:tenantId', (req, res, next) => {
     }
 });
 
+/* Get nuber of skills passed by number of students that have passed that number */
+router.get(
+    '/num-skills-passed-per-num-students/:tenantId',
+    (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+
+            let sqlQuery = `
+                SELECT quantity AS "num_skills_passed", COUNT(sub.quantity) AS "num_students"
+                FROM
+                (SELECT COUNT(*) AS quantity, users.username AS name
+                FROM user_skills
+                JOIN users
+                ON users.id = user_skills.user_id
+                WHERE is_mastered = 1
+                AND tenant_id = ${conn.escape(req.params.tenantId)}
+                AND role = "student"
+                GROUP BY user_id) AS sub
+                GROUP BY quantity;`;
+
+            conn.query(sqlQuery, (err, result) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    res.json(result);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
+
+/* Get nuber of assessments passed */
+router.get('/passed-assessments/tenant/:tenantId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT skills.name as name, count(*) as quantity
+            FROM user_skills
+            JOIN users
+            ON users.id = user_skills.user_id
+            JOIN skills
+            ON skills.id = user_skills.skill_id
+            WHERE tenant_id = ${conn.escape(req.params.tenantId)}
+            AND is_mastered = 1
+            AND type <> 'domain'
+            GROUP BY name;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * RECORD DATA -------------------------------------------
  */
