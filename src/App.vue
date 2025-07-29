@@ -458,6 +458,9 @@ export default {
                                         Profile
                                     </RouterLink>
                                     <RouterLink
+                                        v-if="
+                                            userDetailsStore.role == 'student'
+                                        "
                                         to="/my-progress"
                                         class="dropdown-item"
                                     >
@@ -540,7 +543,11 @@ export default {
                                 <RouterLink to="/profile" class="nav-link">
                                     Profile
                                 </RouterLink>
-                                <RouterLink to="/my-progress" class="nav-link">
+                                <RouterLink
+                                    v-if="userDetailsStore.role == 'student'"
+                                    to="/my-progress"
+                                    class="nav-link"
+                                >
                                     My Progress
                                 </RouterLink>
                                 <RouterLink to="/settings" class="nav-link">
