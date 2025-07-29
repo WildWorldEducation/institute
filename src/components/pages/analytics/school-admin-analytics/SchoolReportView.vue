@@ -8,6 +8,7 @@ import TenantTokensPerSkillHorizontalBarChart from '../../../components/teacher-
 import TenantTokensPerDayLineChart from '../../../components/teacher-analytics/tenants/TenantTokensPerDayLineChart.vue';
 import TenantNumSkillsPassedPerNumStudentsHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantNumSkillsPassedPerNumStudentsHorizontalBarChart.vue';
 import TenantPassedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantPassedAssessmentsHorizontalBarChart.vue';
+import TenantAssessmentsAttemptedHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantAssessmentsAttemptedHorizontalBarChart.vue';
 
 export default {
     setup() {
@@ -22,7 +23,8 @@ export default {
         TenantDurationPerDayLineChart,
         TenantTokensPerDayLineChart,
         TenantNumSkillsPassedPerNumStudentsHorizontalBarChart,
-        TenantPassedAssessmentsHorizontalBarChart
+        TenantPassedAssessmentsHorizontalBarChart,
+        TenantAssessmentsAttemptedHorizontalBarChart
     },
     data() {
         return {
@@ -36,7 +38,8 @@ export default {
             tenantProgress: [],
             studentDurationsPerSkill: [],
             numSkillsPassedPerNumStudents: [],
-            passedAssessments: []
+            passedAssessments: [],
+            attemptedAssessments: []
         };
     },
     async created() {
@@ -48,6 +51,7 @@ export default {
         await this.getTenantDuration();
         await this.getNumSkillsPassedPerNumStudents();
         await this.getPassedAssessments();
+        await this.getTenantAssessmentsAttempted();
         // await this.getTotalTokensPerDay();
     },
     methods: {
@@ -211,13 +215,32 @@ export default {
                 }
 
                 this.passedAssessments = await response.json();
-                console.log(this.numSkillsPassedPerNumStudents);
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
                     error
                 );
                 this.passedAssessments = [];
+            }
+        },
+        async getTenantAssessmentsAttempted() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/attempted-assessments/tenant/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                this.attemptedAssessments = await response.json();
+                console.log(this.attemptedAssessments);
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.attemptedAssessments = [];
             }
         },
         millisToMinutesAndSeconds(millis) {
@@ -369,12 +392,12 @@ export default {
                     >This week</label
                 >
             </div>
-            <h3>Growth</h3>
+            <h4>Number of total mastered skills growth over time</h4>
             <TenantProgressLineChart
                 v-if="tenantProgress.length > 0"
                 :data="tenantProgress"
                 colour="#5f31dd"
-                class="mb-5 mt-5"
+                class="mb-5"
             />
             <p v-else>No data yet</p>
 
@@ -389,6 +412,7 @@ export default {
                 class="mb-5"
             />
             <p v-else>No data yet</p>
+
             <h4>Number of students who have passed a specific skill</h4>
             <TenantPassedAssessmentsHorizontalBarChart
                 v-if="passedAssessments.length > 0"
@@ -397,7 +421,19 @@ export default {
                 class="mb-5"
             />
             <p v-else>No data yet</p>
-            <h3>Performance by Root Subject</h3>
+
+            <h4>
+                Number of students who have attempted a specific skill
+                assessment
+            </h4>
+            <TenantAssessmentsAttemptedHorizontalBarChart
+                v-if="attemptedAssessments.length > 0"
+                :data="attemptedAssessments"
+                colour="#5f31dd"
+            />
+            <p v-else>No data yet</p>
+
+            <h3 class="mt-5">Performance by Root Subject</h3>
             <p>
                 <em>number of fails per root subject</em>
             </p>
@@ -436,9 +472,7 @@ export default {
                     >This week</label
                 >
             </div>
-            <h4 class="mt-5">
-                Average number of tokens spent to master a skill
-            </h4>
+            <h4>Average number of tokens spent to master a skill</h4>
             <TenantAvgTokensToMasterSkillsHorizontalBarChart
                 v-if="avgTokensToMasterSkills.length > 0"
                 :data="avgTokensToMasterSkills"
@@ -446,23 +480,23 @@ export default {
             />
             <p v-else>No data yet</p>
 
-            <h4 class="mt-5">Total number of tokens spent per skill</h4>
+            <h4 class="mt-5">Number of tokens per skill</h4>
             <TenantTokensPerSkillHorizontalBarChart
                 v-if="totalTokensPerSkill.length > 0"
                 :data="totalTokensPerSkill"
                 colour="#5f31dd"
             />
             <p v-else>No data yet</p>
-            <p><em>please note recording cut off usage after mastery</em></p>
 
-            <h4 class="mt-5">Number of tokens per day</h4>
-            <p><em>need to record this data first</em></p>
-            <!-- <TenantTokensPerSkillHorizontalBarChart
-                v-if="totalTokensPerDay.length > 0"
-                :data="totalTokensPerDay"
-                colour="#5f31dd"
+            <h4 class="mt-5">Tokens spent per day</h4>
+            <TenantTokensPerDayLineChart
+                v-if="avgTokensToMasterSkills.length > 0"
+                :data="avgTokensToMasterSkills"
+                colour="darkgreen"
             />
-            <p v-else>No data yet</p> -->
+            <p v-else>No data yet</p>
+            <p><em>please note recording cut off usage after mastery</em></p>
+            <p><em>need to record this data first</em></p>
         </div>
     </div>
 </template>
@@ -485,7 +519,7 @@ export default {
     color: #495057;
     opacity: 1;
     transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
 }
 
 .tab-btn.active {
@@ -493,7 +527,7 @@ export default {
     color: var(--primary-contrast-color);
     border-color: var(--primary-color) var(--primary-color) #fff;
     opacity: 1;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); */
 }
 
 /* Filter Button Styling */

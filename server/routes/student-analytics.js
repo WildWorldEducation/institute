@@ -491,15 +491,17 @@ router.get('/attempted-assessments/cohort/:cohortId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT COUNT(*) AS quantity, username AS name
-            FROM assessment_attempts
-            JOIN users
-            ON assessment_attempts.user_id = users.id
-            JOIN cohorts_users
-            ON assessment_attempts.user_id = cohorts_users.user_id
-            WHERE cohorts_users.cohort_id = ${conn.escape(req.params.cohortId)}
-            GROUP BY username
-        ;`;
+            SELECT COUNT(skills.name) as quantity, skills.name
+            FROM users
+            JOIN user_skills
+            ON users.id = user_skills.user_id
+            JOIN skills
+            ON user_skills.skill_id = skills.id
+            WHERE tenant_id = ${conn.escape(req.params.tenantId)}
+            AND is_mastered = 1
+            AND role = "student"
+            AND skills.type <> 'domain'
+            GROUP by skills.name;`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -1453,7 +1455,7 @@ router.get('/tenant-duration-per-day/:tenantId', (req, res, next) => {
     }
 });
 
-/* Get nuber of skills passed by number of students that have passed that number */
+/* Get number of skills passed by number of students that have passed that number */
 router.get(
     '/num-skills-passed-per-num-students/:tenantId',
     (req, res, next) => {
@@ -1489,8 +1491,40 @@ router.get(
     }
 );
 
-/* Get nuber of assessments passed */
+/* Get number of assessments passed */
 router.get('/passed-assessments/tenant/:tenantId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT skills.name as name, count(*) as quantity
+            FROM user_skills
+            JOIN users
+            ON users.id = user_skills.user_id
+            JOIN skills
+            ON skills.id = user_skills.skill_id
+            WHERE tenant_id = ${conn.escape(req.params.tenantId)}
+            AND is_mastered = 1
+            AND type <> 'domain'
+            GROUP BY name;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Get number of assessments attempted */
+router.get('/attempted-assessments/tenant/:tenantId', (req, res, next) => {
     // Check if logged in.
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
