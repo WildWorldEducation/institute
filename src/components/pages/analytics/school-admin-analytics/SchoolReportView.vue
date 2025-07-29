@@ -8,6 +8,7 @@ import TenantTokensPerSkillHorizontalBarChart from '../../../components/teacher-
 import TenantTokensPerDayLineChart from '../../../components/teacher-analytics/tenants/TenantTokensPerDayLineChart.vue';
 import TenantNumSkillsPassedPerNumStudentsHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantNumSkillsPassedPerNumStudentsHorizontalBarChart.vue';
 import TenantPassedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantPassedAssessmentsHorizontalBarChart.vue';
+import TenantAssessmentsAttemptedHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantAssessmentsAttemptedHorizontalBarChart.vue';
 
 export default {
     setup() {
@@ -22,7 +23,8 @@ export default {
         TenantDurationPerDayLineChart,
         TenantTokensPerDayLineChart,
         TenantNumSkillsPassedPerNumStudentsHorizontalBarChart,
-        TenantPassedAssessmentsHorizontalBarChart
+        TenantPassedAssessmentsHorizontalBarChart,
+        TenantAssessmentsAttemptedHorizontalBarChart
     },
     data() {
         return {
@@ -36,7 +38,8 @@ export default {
             tenantProgress: [],
             studentDurationsPerSkill: [],
             numSkillsPassedPerNumStudents: [],
-            passedAssessments: []
+            passedAssessments: [],
+            attemptedAssessments: []
         };
     },
     async created() {
@@ -48,6 +51,7 @@ export default {
         await this.getTenantDuration();
         await this.getNumSkillsPassedPerNumStudents();
         await this.getPassedAssessments();
+        await this.getTenantAssessmentsAttempted();
         // await this.getTotalTokensPerDay();
     },
     methods: {
@@ -211,13 +215,32 @@ export default {
                 }
 
                 this.passedAssessments = await response.json();
-                console.log(this.numSkillsPassedPerNumStudents);
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
                     error
                 );
                 this.passedAssessments = [];
+            }
+        },
+        async getTenantAssessmentsAttempted() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/attempted-assessments/tenant/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                this.attemptedAssessments = await response.json();
+                console.log(this.attemptedAssessments);
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.attemptedAssessments = [];
             }
         },
         millisToMinutesAndSeconds(millis) {
@@ -234,22 +257,82 @@ export default {
         <span class="d-flex justify-content-between w-100">
             <h1 class="heading">School Admin Report</h1>
         </span>
-        <div>
-            <button class="btn primary-btn me-1" @click="chosenPage = 1">
-                Engagement
+
+        <!-- Main Tab Navigation -->
+        <div class="nav nav-tabs mb-4 d-flex flex-wrap">
+            <button
+                :class="[
+                    'btn',
+                    'nav-link',
+                    'tab-btn',
+                    'flex-fill',
+                    'flex-sm-grow-0',
+                    'me-1',
+                    { active: chosenPage === 1 }
+                ]"
+                @click="chosenPage = 1"
+            >
+                <span class="d-inline">Engagement</span>
             </button>
-            <button class="btn primary-btn me-1" @click="chosenPage = 2">
-                Academic Performance
+            <button
+                :class="[
+                    'btn',
+                    'nav-link',
+                    'tab-btn',
+                    'flex-fill',
+                    'flex-sm-grow-0',
+                    'me-1',
+                    { active: chosenPage === 2 }
+                ]"
+                @click="chosenPage = 2"
+            >
+                <span class="d-inline">Academic Performance</span>
             </button>
-            <button class="btn primary-btn" @click="chosenPage = 3">
-                Resource Usage
+            <button
+                :class="[
+                    'btn',
+                    'nav-link',
+                    'tab-btn',
+                    'flex-fill',
+                    'flex-sm-grow-0',
+                    { active: chosenPage === 3 }
+                ]"
+                @click="chosenPage = 3"
+            >
+                <span class="d-inline">Resource Usage</span>
             </button>
         </div>
         <div v-if="chosenPage == 1">
-            <div class="mt-2 mb-4">
-                <button class="btn btn-dark me-1">Total</button>
-                <button class="btn btn-dark me-1">This week</button>
+            <!-- Filter Buttons -->
+            <div
+                class="btn-group d-flex d-sm-inline-flex mt-2 mb-4"
+                role="group"
+            >
+                <input
+                    type="radio"
+                    class="btn-check"
+                    name="timeFilter1"
+                    id="total1"
+                    checked
+                />
+                <label
+                    class="btn btn-outline-dark btn-sm filter-btn"
+                    for="total1"
+                    >Total</label
+                >
+                <input
+                    type="radio"
+                    class="btn-check"
+                    name="timeFilter1"
+                    id="week1"
+                />
+                <label
+                    class="btn btn-outline-dark btn-sm filter-btn"
+                    for="week1"
+                    >This week</label
+                >
             </div>
+
             <h4>Average interaction time per skill (minutes)</h4>
             <TenantAvgInteractionTimePerSkillHorizontalBarChart
                 v-if="avgTimeOnSkills.length > 0"
@@ -280,16 +363,41 @@ export default {
         </div>
 
         <div v-else-if="chosenPage == 2">
-            <div class="mt-2 mb-4">
-                <button class="btn btn-dark me-1">Total</button>
-                <button class="btn btn-dark me-1">This week</button>
+            <!-- Filter Buttons -->
+            <div
+                class="btn-group d-flex d-sm-inline-flex mt-2 mb-4"
+                role="group"
+            >
+                <input
+                    type="radio"
+                    class="btn-check"
+                    name="timeFilter2"
+                    id="total2"
+                    checked
+                />
+                <label
+                    class="btn btn-outline-dark btn-sm filter-btn"
+                    for="total2"
+                    >Total</label
+                >
+                <input
+                    type="radio"
+                    class="btn-check"
+                    name="timeFilter2"
+                    id="week2"
+                />
+                <label
+                    class="btn btn-outline-dark btn-sm filter-btn"
+                    for="week2"
+                    >This week</label
+                >
             </div>
-            <h3>Growth</h3>
+            <h4>Number of total mastered skills growth over time</h4>
             <TenantProgressLineChart
                 v-if="tenantProgress.length > 0"
                 :data="tenantProgress"
                 colour="#5f31dd"
-                class="mb-5 mt-5"
+                class="mb-5"
             />
             <p v-else>No data yet</p>
 
@@ -304,6 +412,7 @@ export default {
                 class="mb-5"
             />
             <p v-else>No data yet</p>
+
             <h4>Number of students who have passed a specific skill</h4>
             <TenantPassedAssessmentsHorizontalBarChart
                 v-if="passedAssessments.length > 0"
@@ -312,7 +421,19 @@ export default {
                 class="mb-5"
             />
             <p v-else>No data yet</p>
-            <h3>Performance by Root Subject</h3>
+
+            <h4>
+                Number of students who have attempted a specific skill
+                assessment
+            </h4>
+            <TenantAssessmentsAttemptedHorizontalBarChart
+                v-if="attemptedAssessments.length > 0"
+                :data="attemptedAssessments"
+                colour="#5f31dd"
+            />
+            <p v-else>No data yet</p>
+
+            <h3 class="mt-5">Performance by Root Subject</h3>
             <p>
                 <em>number of fails per root subject</em>
             </p>
@@ -322,13 +443,36 @@ export default {
         </div>
 
         <div v-else-if="chosenPage == 3">
-            <div class="mt-2 mb-4">
-                <button class="btn btn-dark me-1">Total</button>
-                <button class="btn btn-dark me-1">This week</button>
+            <!-- Filter Buttons -->
+            <div
+                class="btn-group d-flex d-sm-inline-flex mt-2 mb-4"
+                role="group"
+            >
+                <input
+                    type="radio"
+                    class="btn-check"
+                    name="timeFilter3"
+                    id="total3"
+                    checked
+                />
+                <label
+                    class="btn btn-outline-dark btn-sm filter-btn"
+                    for="total3"
+                    >Total</label
+                >
+                <input
+                    type="radio"
+                    class="btn-check"
+                    name="timeFilter3"
+                    id="week3"
+                />
+                <label
+                    class="btn btn-outline-dark btn-sm filter-btn"
+                    for="week3"
+                    >This week</label
+                >
             </div>
-            <h4 class="mt-5">
-                Average number of tokens spent to master a skill
-            </h4>
+            <h4>Average number of tokens spent to master a skill</h4>
             <TenantAvgTokensToMasterSkillsHorizontalBarChart
                 v-if="avgTokensToMasterSkills.length > 0"
                 :data="avgTokensToMasterSkills"
@@ -336,25 +480,104 @@ export default {
             />
             <p v-else>No data yet</p>
 
-            <h4 class="mt-5">Total number of tokens spent per skill</h4>
+            <h4 class="mt-5">Number of tokens per skill</h4>
             <TenantTokensPerSkillHorizontalBarChart
                 v-if="totalTokensPerSkill.length > 0"
                 :data="totalTokensPerSkill"
                 colour="#5f31dd"
             />
             <p v-else>No data yet</p>
-            <p><em>please note recording cut off usage after mastery</em></p>
 
-            <h4 class="mt-5">Number of tokens per day</h4>
-            <p><em>need to record this data first</em></p>
-            <!-- <TenantTokensPerSkillHorizontalBarChart
-                v-if="totalTokensPerDay.length > 0"
-                :data="totalTokensPerDay"
-                colour="#5f31dd"
+            <h4 class="mt-5">Tokens spent per day</h4>
+            <TenantTokensPerDayLineChart
+                v-if="avgTokensToMasterSkills.length > 0"
+                :data="avgTokensToMasterSkills"
+                colour="darkgreen"
             />
-            <p v-else>No data yet</p> -->
+            <p v-else>No data yet</p>
+            <p><em>please note recording cut off usage after mastery</em></p>
+            <p><em>need to record this data first</em></p>
         </div>
     </div>
 </template>
 
-<style></style>
+<style scoped>
+/* Main Tab Styling */
+.tab-btn {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    border: 1px solid #dee2e6;
+    border-bottom-color: transparent;
+    font-weight: 500;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.tab-btn:hover {
+    background-color: #e9ecef;
+    color: #495057;
+    opacity: 1;
+    transform: translateY(-1px);
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+}
+
+.tab-btn.active {
+    background-color: var(--primary-color);
+    color: var(--primary-contrast-color);
+    border-color: var(--primary-color) var(--primary-color) #fff;
+    opacity: 1;
+    /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); */
+}
+
+/* Filter Button Styling */
+.filter-btn {
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-check:checked + .filter-btn {
+    background-color: #495057;
+    border-color: #495057;
+    color: white;
+    box-shadow: 0 2px 6px rgba(73, 80, 87, 0.25);
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .tab-btn:hover,
+    .filter-btn:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .tab-btn,
+    .filter-btn {
+        min-height: 44px;
+    }
+}
+
+/* Mobile Responsive */
+@media (max-width: 576px) {
+    .nav.nav-tabs {
+        flex-direction: column;
+        border-bottom: none;
+    }
+
+    .tab-btn {
+        width: 100%;
+        margin-bottom: 0.25rem;
+        border-radius: 0.5rem;
+        border-bottom-color: #dee2e6;
+        text-align: center;
+    }
+
+    .tab-btn.active {
+        border-color: var(--primary-color);
+    }
+}
+</style>
