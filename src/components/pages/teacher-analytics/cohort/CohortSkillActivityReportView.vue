@@ -1,6 +1,8 @@
 <script>
 import { useCohortsStore } from '../../../../stores/CohortsStore';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
+import CohortSkillActivityChart from '../../../components/teacher-analytics/cohorts/CohortSkillActivityChart.vue';
+
 export default {
     setup() {
         const cohortsStore = useCohortsStore();
@@ -18,7 +20,9 @@ export default {
             skillActivities: []
         };
     },
-    components: {},
+    components: {
+        CohortSkillActivityChart
+    },
     async created() {
         if (this.cohortsStore.cohorts.length < 1) {
             await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
@@ -28,9 +32,24 @@ export default {
         );
         if (foundObject) {
             this.cohortName = foundObject.name;
+            console.log(
+                'Cohort name found: ',
+                this.cohortName,
+                'Cohort ID: ',
+                this.cohortId
+            );
+            await this.getCohortSkillActivityReport();
+            console.log(
+                'Skill activities fetched for cohort:',
+                this.skillActivities
+            );
+        } else if (this.cohortId === 'all-students') {
+            console.log('Cohort ID is "all-students", fetching all cohorts');
+            this.cohortName = 'All Students';
+            await this.getAllCohortSkillActivityReport();
+        } else {
+            console.error('Cohort not found for ID:', this.cohortId);
         }
-
-        this.getSkillActivityReport();
     },
     mounted() {
         fetch(
@@ -38,10 +57,7 @@ export default {
         )
             .then((response) => response.json())
             .then((data) => {
-                console.log(
-                    'Total durations for all students: ---------------------------'
-                );
-                console.log(data);
+                this.skillActivities;
             })
             .catch((error) => {
                 console.error('Error fetching visited skills:', error);
@@ -49,27 +65,34 @@ export default {
     },
 
     methods: {
-        // getLastVisitedSkills() {
-        //     // Fetch last visited skills for the student
-        //     fetch(`/student-analytics/last-visited-skills/${this.studentId}`)
-        //         .then((response) => response.json())
-        //         .then((data) => {
-        //             this.visitedSkills = data;
-        //         })
-        //         .catch((error) => {
-        //             console.error('Error fetching last visited skills:', error);
-        //         });
-        // },
-        getSkillActivityReport() {
-            fetch(`/student-analytics/skill-activity-report/${this.studentId}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    this.skillActivities = data;
-                    console.log(this.skillActivities);
-                })
-                .catch((error) => {
-                    console.error('Error fetching skill activities:', error);
-                });
+        async getCohortSkillActivityReport() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/cohort-skill-activity-report/${this.cohortId}`
+                );
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                this.skillActivities = await response.json();
+            } catch (error) {
+                console.error('Error fetching skill activity report:', error);
+            }
+        },
+        async getAllCohortSkillActivityReport() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/all-student-cohort-activity/instructor/${this.userDetailsStore.userId}`
+                );
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                this.skillActivities = await response.json();
+            } catch (error) {
+                console.error(
+                    'Error fetching skill activity report for all students:',
+                    error
+                );
+            }
         },
         visitedDate(date) {
             let jsDate = new Date(date);
@@ -95,7 +118,14 @@ export default {
         <p>
             Gantt chart, time of all students (summed together), for each skills
         </p>
+
         <div v-if="this.skillActivities.length > 0" class="mb-4">
+            <!-- The cohort skill activity chart -->
+            <CohortSkillActivityChart
+                :data="skillActivities"
+                colour="#4CAF50"
+            />
+
             <table class="table">
                 <tr>
                     <th>Skill</th>

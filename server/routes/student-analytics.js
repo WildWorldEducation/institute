@@ -672,11 +672,11 @@ router.get('/all-student-cohort-activity/instructor/:instructorId', (req, res, n
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT  skills.name, SUM(duration) AS total_cohort_duration 
+            SELECT  skills.name, SUM(duration) AS quantity
             FROM user_skills JOIN instructor_students ON user_skills.user_id = instructor_students.student_id JOIN skills ON skills.id  = user_skills.skill_id
             WHERE instructor_students.instructor_id = ${conn.escape(req.params.instructorId)}       
             GROUP BY skills.name 
-            HAVING total_cohort_duration > 0
+            HAVING quantity > 0
         `;
 
         conn.query(sqlQuery, (err, results) => {
