@@ -745,6 +745,18 @@ async function saveTokenUsage(userId, skillId, tokenCount) {
 
         await query(monthlyTokenUsageQueryString);
 
+        // Record daily token usage
+        let dailyTokenUsageQueryString = `
+            INSERT INTO user_duration_tokens_per_day (user_id, date, tokens) 
+            VALUES(${conn.escape(userId)}, CURDATE(), ${conn.escape(
+            tokenCount
+        )})                 
+            ON DUPLICATE KEY UPDATE tokens = tokens + ${conn.escape(
+                tokenCount
+            )};`;
+
+        await query(dailyTokenUsageQueryString);
+
         // Record the token usage for the skill
         // If the user has mastered the skill, do not update the token count
         let skillTokenUsageQueryString = `
