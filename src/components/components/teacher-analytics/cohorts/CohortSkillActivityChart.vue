@@ -1,6 +1,5 @@
 <script>
 import * as d3 from 'd3';
-import moment from 'moment';
 
 export default {
     name: 'CohortSkillActivityChart',
@@ -30,8 +29,8 @@ export default {
                 return;
             }
 
-            const margin = { top: 20, right: 60, bottom: 40, left: 100 };
-            const width = 1200;
+            const margin = { top: 20, right: 400, bottom: 40, left: 200 };
+            const width = 400;
             const height = this.chartHeight - margin.top - margin.bottom;
 
             const svg = d3
@@ -74,26 +73,23 @@ export default {
                 .attr('height', (d) =>
                     d.quantity > 0 ? yScale.bandwidth() : 1
                 ) // Height from scale bandwidth
-                .attr('fill', '#9E9E9E'); // Set bar color
+                .attr('fill', '#5f31dd'); // Set bar color
 
             // Create Y axis (left side, showing task names)
-            g.append('g')
-                .attr('class', 'axis')
-
-                .call(d3.axisLeft(yScale)); // Create left-oriented axis with task labels
+            g.append('g').attr('class', 'axis').call(d3.axisLeft(yScale)); // Create left-oriented axis with task labels
 
             // Create X axis (bottom, showing time duration)
-            g.append('g')
-                .attr('class', 'axis')
-                .attr('transform', `translate(0,${height})`) // Move to bottom of chart
-                .call(d3.axisBottom(xScale)); // Create bottom-oriented axis with duration values
+            // g.append('g')
+            //     .attr('class', 'axis')
+            //     .attr('transform', `translate(0,${height})`) // Move to bottom of chart
+            //     .call(d3.axisBottom(xScale)); // Create bottom-oriented axis with duration values
 
             // Add X axis label
             g.append('text')
                 .attr('class', 'axis-label')
                 .attr('transform', `translate(${width / 2},${height + 35})`) // Center below x-axis
                 .style('text-anchor', 'middle')
-                .text('Duration (days)');
+                .text('Duration (hours)');
 
             // Add value labels on bars
             g.selectAll('.bar-label')
@@ -105,7 +101,7 @@ export default {
                 .attr('y', (d) => yScale(d.name) + yScale.bandwidth() / 2) // Center vertically on bar
                 .attr('dy', '0.35em') // Fine-tune vertical alignment
                 .style('font-size', '12px')
-                .text((d) => d.quantity + ' days'); // Display duration value
+                .text((d) => d.quantity); // Display duration value
         },
         calculateChartHeight() {
             if (this.data.length > 0) {
@@ -125,7 +121,6 @@ export default {
             }
 
             const labelWidth = maxLength + 10; // Estimate width based on character length
-            console.log(`Longest label width: ${labelWidth}px`);
             return labelWidth; // Add some padding
         }
     }

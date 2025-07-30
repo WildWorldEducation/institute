@@ -32,43 +32,21 @@ export default {
         );
         if (foundObject) {
             this.cohortName = foundObject.name;
-            console.log(
-                'Cohort name found: ',
-                this.cohortName,
-                'Cohort ID: ',
-                this.cohortId
-            );
             await this.getCohortSkillActivityReport();
-            console.log(
-                'Skill activities fetched for cohort:',
-                this.skillActivities
-            );
         } else if (this.cohortId === 'all-students') {
-            console.log('Cohort ID is "all-students", fetching all cohorts');
             this.cohortName = 'All Students';
-            await this.getAllCohortSkillActivityReport();
+            await this.getAllStudentsSkillActivityReport();
         } else {
             console.error('Cohort not found for ID:', this.cohortId);
         }
         this.skillActivities = this.skillActivities.map((skill) => {
             return {
                 ...skill,
-                quantity: this.millisecondsTodays(skill.quantity, 2)
+                quantity: this.millisecondsToHours(skill.quantity, 2)
             };
         });
     },
-    mounted() {
-        fetch(
-            `/student-analytics/all-students-total-durations/${this.userDetailsStore.userId}`
-        )
-            .then((response) => response.json())
-            .then((data) => {
-                this.skillActivities;
-            })
-            .catch((error) => {
-                console.error('Error fetching visited skills:', error);
-            });
-    },
+    mounted() {},
 
     methods: {
         async getCohortSkillActivityReport() {
@@ -84,7 +62,7 @@ export default {
                 console.error('Error fetching skill activity report:', error);
             }
         },
-        async getAllCohortSkillActivityReport() {
+        async getAllStudentsSkillActivityReport() {
             try {
                 const response = await fetch(
                     `/student-analytics/all-student-cohort-activity/instructor/${this.userDetailsStore.userId}`
@@ -111,14 +89,11 @@ export default {
                 second: '2-digit'
             });
         },
-        millisecondsTodays(milliseconds, precision) {
-            const msPerDay = 24 * 60 * 60 * 1000;
-            const days = milliseconds / msPerDay;
-            console.log(
-                `Converted ${milliseconds} milliseconds to ${days} days`
-            );
+        millisecondsToHours(milliseconds, precision) {
+            const msPerHour = 60 * 60 * 1000;
+            const hours = milliseconds / msPerHour;
             // Round to specified decimal places
-            return days.toFixed(precision);
+            return hours.toFixed(precision);
         }
     }
 };
@@ -130,9 +105,6 @@ export default {
             <h1 class="heading">Skill Activity Report</h1>
             <h2 class="secondary-heading h3">{{ cohortName }}</h2>
         </span>
-        <p>
-            Gantt chart, time of all students (summed together), for each skills
-        </p>
 
         <div v-if="this.skillActivities.length > 0" class="mb-4">
             <!-- The cohort skill activity chart -->
@@ -140,33 +112,6 @@ export default {
                 :data="skillActivities"
                 colour="#4CAF50"
             />
-
-            <table class="table">
-                <tr>
-                    <th>Skill</th>
-                    <th>Date first visited</th>
-                    <th>Date last visited</th>
-                </tr>
-                <tr
-                    v-for="skill in skillActivities"
-                    :key="skill.id"
-                    class="table-rows"
-                >
-                    <td>
-                        <router-link
-                            target="_blank"
-                            :to="'/skills/' + skill.url"
-                            >{{ skill.name }}</router-link
-                        >
-                    </td>
-                    <td>
-                        {{ visitedDate(skill.startDate) }}
-                    </td>
-                    <td>
-                        {{ visitedDate(skill.endDate) }}
-                    </td>
-                </tr>
-            </table>
         </div>
         <div v-else>
             <p>No skills visited by this cohort.</p>
