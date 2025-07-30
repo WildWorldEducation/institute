@@ -76,6 +76,8 @@ export default {
 
         const createChildrenCache = (data) => {
             const dataCache = createDataCacheById(data);
+            console.log('Data cache created: +=+=+=+=+=+=');
+            console.log(dataCache);
 
             const fillDependenciesForElement = (
                 eltId,
