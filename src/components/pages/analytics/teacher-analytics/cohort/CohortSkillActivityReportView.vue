@@ -1,7 +1,7 @@
 <script>
-import { useCohortsStore } from '../../../../stores/CohortsStore';
-import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
-import CohortSkillActivityChart from '../../../components/teacher-analytics/cohorts/CohortSkillActivityChart.vue';
+import { useCohortsStore } from '../../../../../stores/CohortsStore';
+import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
+import CohortSkillActivityChart from '../../../../components/teacher-analytics/cohorts/CohortSkillActivityChart.vue';
 
 export default {
     setup() {
