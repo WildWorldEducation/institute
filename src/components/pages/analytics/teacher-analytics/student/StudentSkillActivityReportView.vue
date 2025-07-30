@@ -1,7 +1,7 @@
 <script>
 import { useUsersStore } from '../../../../../stores/UsersStore';
 import { useTeacherAnalyticsStore } from '../../../../../stores/TeacherAnalyticsStore';
-import SkillActivityGanttChart from '../../../../components/teacher-analytics/students/SkillActivityGanttChart.vue';
+import StudentSkillActivityChart from '../../../../components/teacher-analytics/students/StudentSkillActivityChart.vue';
 
 export default {
     setup() {
@@ -20,7 +20,7 @@ export default {
         };
     },
     components: {
-        SkillActivityGanttChart
+        StudentSkillActivityChart
     },
     async created() {
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
@@ -36,6 +36,13 @@ export default {
                 this.studentId
             );
         }
+        this.teacherAnalyticsStore.skillActivities =
+            this.teacherAnalyticsStore.skillActivities.map((skill) => {
+                return {
+                    ...skill,
+                    quantity: this.millisecondsToHours(skill.quantity, 2)
+                };
+            });
     },
     methods: {
         visitedDate(date) {
@@ -48,6 +55,12 @@ export default {
                 minute: '2-digit',
                 second: '2-digit'
             });
+        },
+        millisecondsToHours(milliseconds, precision) {
+            const msPerHour = 60 * 60 * 1000;
+            const hours = milliseconds / msPerHour;
+            // Round to specified decimal places
+            return hours.toFixed(precision);
         }
     }
 };
@@ -59,7 +72,7 @@ export default {
             <h1 class="heading">Skill Activity Report</h1>
             <h2 class="secondary-heading h3">{{ studentName }}</h2>
         </span>
-        <SkillActivityGanttChart
+        <StudentSkillActivityChart
             v-if="teacherAnalyticsStore.skillActivities.length > 0"
             :data="teacherAnalyticsStore.skillActivities"
             colour="darkred"

@@ -1,6 +1,8 @@
 <script>
 import { useCohortsStore } from '../../../../../stores/CohortsStore';
 import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
+import CohortSkillActivityChart from '../../../../components/teacher-analytics/cohorts/CohortSkillActivityChart.vue';
+
 export default {
     setup() {
         const cohortsStore = useCohortsStore();
@@ -18,7 +20,9 @@ export default {
             skillActivities: []
         };
     },
-    components: {},
+    components: {
+        CohortSkillActivityChart
+    },
     async created() {
         if (this.cohortsStore.cohorts.length < 1) {
             await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
@@ -28,33 +32,51 @@ export default {
         );
         if (foundObject) {
             this.cohortName = foundObject.name;
+            await this.getCohortSkillActivityReport();
+        } else if (this.cohortId === 'all-students') {
+            this.cohortName = 'All Students';
+            await this.getAllStudentsSkillActivityReport();
+        } else {
+            console.error('Cohort not found for ID:', this.cohortId);
         }
-
-        this.getSkillActivityReport();
+        this.skillActivities = this.skillActivities.map((skill) => {
+            return {
+                ...skill,
+                quantity: this.millisecondsToHours(skill.quantity, 2)
+            };
+        });
     },
+    mounted() {},
 
     methods: {
-        // getLastVisitedSkills() {
-        //     // Fetch last visited skills for the student
-        //     fetch(`/student-analytics/last-visited-skills/${this.studentId}`)
-        //         .then((response) => response.json())
-        //         .then((data) => {
-        //             this.visitedSkills = data;
-        //         })
-        //         .catch((error) => {
-        //             console.error('Error fetching last visited skills:', error);
-        //         });
-        // },
-        getSkillActivityReport() {
-            fetch(`/student-analytics/skill-activity-report/${this.studentId}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    this.skillActivities = data;
-                    console.log(this.skillActivities);
-                })
-                .catch((error) => {
-                    console.error('Error fetching skill activities:', error);
-                });
+        async getCohortSkillActivityReport() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/cohort-skill-activity-report/${this.cohortId}`
+                );
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                this.skillActivities = await response.json();
+            } catch (error) {
+                console.error('Error fetching skill activity report:', error);
+            }
+        },
+        async getAllStudentsSkillActivityReport() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/all-student-cohort-activity/instructor/${this.userDetailsStore.userId}`
+                );
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                this.skillActivities = await response.json();
+            } catch (error) {
+                console.error(
+                    'Error fetching skill activity report for all students:',
+                    error
+                );
+            }
         },
         visitedDate(date) {
             let jsDate = new Date(date);
@@ -66,6 +88,12 @@ export default {
                 minute: '2-digit',
                 second: '2-digit'
             });
+        },
+        millisecondsToHours(milliseconds, precision) {
+            const msPerHour = 60 * 60 * 1000;
+            const hours = milliseconds / msPerHour;
+            // Round to specified decimal places
+            return hours.toFixed(precision);
         }
     }
 };
@@ -77,36 +105,13 @@ export default {
             <h1 class="heading">Skill Activity Report</h1>
             <h2 class="secondary-heading h3">{{ cohortName }}</h2>
         </span>
-        <p>
-            Gantt chart, time of all students (summed together), for each skills
-        </p>
+
         <div v-if="this.skillActivities.length > 0" class="mb-4">
-            <table class="table">
-                <tr>
-                    <th>Skill</th>
-                    <th>Date first visited</th>
-                    <th>Date last visited</th>
-                </tr>
-                <tr
-                    v-for="skill in skillActivities"
-                    :key="skill.id"
-                    class="table-rows"
-                >
-                    <td>
-                        <router-link
-                            target="_blank"
-                            :to="'/skills/' + skill.url"
-                            >{{ skill.name }}</router-link
-                        >
-                    </td>
-                    <td>
-                        {{ visitedDate(skill.startDate) }}
-                    </td>
-                    <td>
-                        {{ visitedDate(skill.endDate) }}
-                    </td>
-                </tr>
-            </table>
+            <!-- The cohort skill activity chart -->
+            <CohortSkillActivityChart
+                :data="skillActivities"
+                colour="#4CAF50"
+            />
         </div>
         <div v-else>
             <p>No skills visited by this cohort.</p>

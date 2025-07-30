@@ -24,7 +24,8 @@ export default {
         const height =
             Math.ceil((this.data.length + 0.1) * barHeight) +
             marginTop +
-            marginBottom;
+            marginBottom +
+            5;
 
         // Create the scales.
         const x = d3
@@ -94,8 +95,15 @@ export default {
         svg.append('g')
             .attr('transform', `translate(0,${marginTop})`)
             .call(d3.axisBottom(x).ticks(0))
-
             .call((g) => g.select('.domain').remove());
+
+        // Add X axis label
+        svg.append('text')
+            .attr('fill', 'black')
+            .attr('class', 'axis-label')
+            .attr('transform', `translate(${width / 2},${height})`) // Center below x-axis
+            .style('text-anchor', 'middle')
+            .text('Number of students');
 
         svg.append('g')
             .attr('transform', `translate(${marginLeft},0)`)
