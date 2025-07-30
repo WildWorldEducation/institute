@@ -32,7 +32,7 @@ export default {
             tenantId: this.$route.params.tenantId,
             avgTokensToMasterSkills: [],
             totalTokensPerSkill: [],
-            //totalTokensPerDay: [],
+            totalTokensPerDay: [],
             avgTimeOnSkills: [],
             percentageStudentsMasteredOneSkill: [],
             tenantProgress: [],
@@ -52,7 +52,7 @@ export default {
         await this.getNumSkillsPassedPerNumStudents();
         await this.getPassedAssessments();
         await this.getTenantAssessmentsAttempted();
-        // await this.getTotalTokensPerDay();
+        await this.getTotalTokensPerDay();
     },
     methods: {
         async getAvgTokensToMasterSkills() {
@@ -95,22 +95,20 @@ export default {
                 this.totalTokensPerSkill = [];
             }
         },
-        // async getTotalTokensPerDay() {
-        //     fetch(`/student-analytics/tenant-tokens-per-day/${this.tenantId}`)
-        //         .then((response) => response.json())
-        //         .then((data) => {
-        //             for (let i = 0; i < data.length; i++) {
-        //                 data[i].date = new Date(data[i].date);
-        //                 data[i].formattedQuantity = data[i].quantity / 1000;
-        //             }
-        //             data.sort((a, b) => a.date - b.date);
-        //             this.totalTokensPerDay = data;
-        //             console.log(this.totalTokensPerDay);
-        //         })
-        //         .catch((error) => {
-        //             console.error('Error fetching student progress:', error);
-        //         });
-        // },
+        async getTotalTokensPerDay() {
+            fetch(`/student-analytics/tenant-tokens-per-day/${this.tenantId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.totalTokensPerDay = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
         async getAvgTimeOnSkills() {
             try {
                 const response = await fetch(
@@ -234,7 +232,6 @@ export default {
                 }
 
                 this.attemptedAssessments = await response.json();
-                console.log(this.attemptedAssessments);
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
@@ -490,13 +487,17 @@ export default {
 
             <h4 class="mt-5">Tokens spent per day</h4>
             <TenantTokensPerDayLineChart
-                v-if="avgTokensToMasterSkills.length > 0"
-                :data="avgTokensToMasterSkills"
-                colour="darkgreen"
+                v-if="totalTokensPerDay.length > 0"
+                :data="totalTokensPerDay"
+                colour="#5f31dd"
             />
             <p v-else>No data yet</p>
-            <p><em>please note recording cut off usage after mastery</em></p>
-            <p><em>need to record this data first</em></p>
+            <p>
+                <em
+                    >Please note recording of tokens per skill stops after
+                    student mastery of that skill</em
+                >
+            </p>
         </div>
     </div>
 </template>
