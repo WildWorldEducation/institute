@@ -252,7 +252,7 @@ router.get('/student-duration-per-day/:studentId', (req, res, next) => {
 
         let sqlQuery = `
             SELECT date, duration AS quantity
-            FROM user_duration_per_day            
+            FROM user_duration_tokens_per_day            
             WHERE user_id = ${conn.escape(
                 req.params.studentId
             )}                           
@@ -280,7 +280,7 @@ router.get('/student-progress/:studentId', (req, res, next) => {
 
         // First, get the date the student started on the platform
         let firstInteractionSQLQuery = `SELECT date
-            FROM user_duration_per_day
+            FROM user_duration_tokens_per_day
             WHERE user_id = ${conn.escape(req.params.studentId)}  
             ORDER BY date ASC
             LIMIT 1;`;
@@ -528,9 +528,9 @@ router.get('/cohort-duration-per-day/:cohortId', (req, res, next) => {
 
         let sqlQuery = `
             SELECT date, SUM(duration) AS quantity
-            FROM user_duration_per_day
+            FROM user_duration_tokens_per_day
             JOIN cohorts_users
-            ON user_duration_per_day.user_id = cohorts_users.user_id
+            ON user_duration_tokens_per_day.user_id = cohorts_users.user_id
             WHERE cohorts_users.cohort_id = ${conn.escape(
                 req.params.cohortId
             )}              
@@ -559,11 +559,11 @@ router.get('/cohort-total-durations/:cohortId', (req, res, next) => {
 
         let sqlQuery = `
          SELECT username AS name, SUM(duration) AS quantity
-            FROM user_duration_per_day
+            FROM user_duration_tokens_per_day
             JOIN cohorts_users
-            ON user_duration_per_day.user_id = cohorts_users.user_id
+            ON user_duration_tokens_per_day.user_id = cohorts_users.user_id
             JOIN users
-            ON users.id = user_duration_per_day.user_id
+            ON users.id = user_duration_tokens_per_day.user_id
             WHERE cohorts_users.cohort_id = ${conn.escape(
                 req.params.cohortId
             )}              
@@ -629,9 +629,9 @@ router.get('/cohort-progress/:cohortId', (req, res, next) => {
         // First, get the date the first student in the cohort student started on the platform
         let firstInteractionSQLQuery = `
             SELECT date
-            FROM user_duration_per_day
+            FROM user_duration_tokens_per_day
             JOIN cohorts_users
-            ON cohorts_users.user_id = user_duration_per_day.user_id
+            ON cohorts_users.user_id = user_duration_tokens_per_day.user_id
             WHERE cohort_id = ${conn.escape(req.params.cohortId)}  
             ORDER BY date ASC
             LIMIT 1;`;
@@ -878,9 +878,9 @@ router.get('/all-students-duration-per-day/:userId', (req, res, next) => {
 
         let sqlQuery = `
             SELECT date, SUM(duration) AS quantity
-            FROM user_duration_per_day
+            FROM user_duration_tokens_per_day
             JOIN instructor_students
-            ON instructor_students.student_id = user_duration_per_day.user_id
+            ON instructor_students.student_id = user_duration_tokens_per_day.user_id
             WHERE instructor_students.instructor_id = ${conn.escape(
                 req.params.userId
             )}              
@@ -909,11 +909,11 @@ router.get('/all-students-total-durations/:userId', (req, res, next) => {
 
         let sqlQuery = `
             SELECT username AS name, SUM(duration) AS quantity
-            FROM user_duration_per_day
+            FROM user_duration_tokens_per_day
             JOIN instructor_students
-            ON user_duration_per_day.user_id = instructor_students.student_id
+            ON user_duration_tokens_per_day.user_id = instructor_students.student_id
             JOIN users
-            ON users.id = user_duration_per_day.user_id
+            ON users.id = user_duration_tokens_per_day.user_id
             WHERE instructor_students.instructor_id = ${conn.escape(
                 req.params.userId
             )}              
@@ -979,9 +979,9 @@ router.get('/all-students-progress/:userId', (req, res, next) => {
         // First, get the date the first student in the cohort student started on the platform
         let firstInteractionSQLQuery = `
             SELECT date
-            FROM user_duration_per_day
+            FROM user_duration_tokens_per_day
             JOIN instructor_students
-            ON instructor_students.student_id = user_duration_per_day.user_id
+            ON instructor_students.student_id = user_duration_tokens_per_day.user_id
             WHERE instructor_students.instructor_id = ${conn.escape(
                 req.params.userId
             )}  
@@ -1413,9 +1413,9 @@ router.get('/tenant-progress/:tenantId', (req, res, next) => {
         // First, get the date the first student in the tenant student started on the platform
         let firstInteractionSQLQuery = `
             SELECT date
-            FROM user_duration_per_day
+            FROM user_duration_tokens_per_day
             JOIN users
-            ON users.id = user_duration_per_day.user_id
+            ON users.id = user_duration_tokens_per_day.user_id
             WHERE tenant_id = ${conn.escape(req.params.tenantId)}  
             ORDER BY date ASC
             LIMIT 1;`;
@@ -1494,9 +1494,9 @@ router.get('/tenant-duration-per-day/:tenantId', (req, res, next) => {
 
         let sqlQuery = `
             SELECT SUM(duration) AS quantity, date
-            FROM user_duration_per_day            
+            FROM user_duration_tokens_per_day            
             JOIN users
-            ON users.id = user_duration_per_day.user_id
+            ON users.id = user_duration_tokens_per_day.user_id
             WHERE users.tenant_id = ${conn.escape(req.params.tenantId)}  
             GROUP BY date
             ORDER BY date ASC;`;
@@ -1656,7 +1656,7 @@ router.post('/record-time-on-app/:userId', (req, res, next) => {
         const duration = req.body.duration;
 
         let sqlQuery = `
-        INSERT INTO user_duration_per_day (user_id, date, duration) 
+        INSERT INTO user_duration_tokens_per_day (user_id, date, duration) 
         VALUES(${conn.escape(req.params.userId)}, CURDATE(), ${conn.escape(
             duration
         )}) 
