@@ -16,6 +16,7 @@ const query = util.promisify(conn.query).bind(conn);
 const {
     getSkillListRootParent
 } = require('../utilities/skill-relate-functions');
+const { fail } = require('assert');
 
 /*------------------------------------------
 --------------------------------------------
@@ -1656,6 +1657,82 @@ router.get('/failed-assessments/tenant/:tenantId', (req, res, next) => {
         });
     }
 });
+
+/* Get number of assessments failed more than once, by root subject */
+router.get(
+    '/failed-assessments-by-subject/tenant/:tenantId',
+    async (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+
+            // Create referral record
+            const allSkillsQuery = `
+                SELECT *
+                FROM skills;
+                                        `;
+            const skills = await query(allSkillsQuery);
+
+            let sqlQuery = `
+            SELECT skills.id, parent, skills.name, COUNT(name) AS quantity
+            FROM assessment_attempts
+            JOIN skills 
+            ON skills.id = assessment_attempts.skill_id
+            JOIN users
+            ON users.id = assessment_attempts.user_id
+            WHERE users.tenant_id = ${conn.escape(
+                req.params.tenantId
+            )}                    
+            AND assessment_attempts.skill_id NOT IN 
+
+            (SELECT skill_id
+            FROM user_skills
+            JOIN users
+            ON user_skills.user_id = users.id
+            WHERE is_mastered = 1
+            AND tenant_id = ${conn.escape(req.params.tenantId)})  
+
+            group by id, name
+            HAVING COUNT(*) > 1;`;
+
+            conn.query(sqlQuery, async (err, failedAssessmentSkills) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    // Recursive function
+                    async function getRootSubject(originalSkill, parentSkill) {
+                        // Check if this is a root subject skill
+                        if (parentSkill.parent == 0) {
+                            originalSkill.rootSubject = parentSkill.name;
+                        } else {
+                            for (let i = 0; i < skills.length; i++) {
+                                if (skills[i].id == parentSkill.parent) {
+                                    await getRootSubject(
+                                        originalSkill,
+                                        skills[i]
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    for (let i = 0; i < failedAssessmentSkills.length; i++) {
+                        await getRootSubject(
+                            failedAssessmentSkills[i],
+                            failedAssessmentSkills[i]
+                        );
+                    }
+
+                    res.json(failedAssessmentSkills);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
 
 /**
  * RECORD DATA -------------------------------------------

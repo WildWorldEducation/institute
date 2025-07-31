@@ -42,6 +42,7 @@ export default {
             numSkillsPassedPerNumStudents: [],
             passedAssessments: [],
             failedAssessments: [],
+            rootSubjectsFailedAssessments: [],
             attemptedAssessments: [],
             isDataWeekly: false
         };
@@ -56,6 +57,7 @@ export default {
         await this.getNumSkillsPassedPerNumStudents();
         await this.getPassedAssessments();
         await this.getFailedAssessments();
+        await this.getFailedAssessmentsBySubject();
         await this.getTenantAssessmentsAttempted();
         await this.getTotalTokensPerDay();
     },
@@ -204,8 +206,27 @@ export default {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                this.failedAssessments = await response.json();
-                console.log(this.failedAssessments);
+                this.failedAssessments = await response.json();              
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.failedAssessments = [];
+            }
+        },
+        async getFailedAssessmentsBySubject() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/failed-assessments-by-subject/tenant/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                this.rootSubjectsFailedAssessments = await response.json();
+                console.log(this.rootSubjectsFailedAssessments);
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
