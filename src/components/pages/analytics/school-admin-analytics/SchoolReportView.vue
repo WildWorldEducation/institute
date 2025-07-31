@@ -12,6 +12,7 @@ import TenantAssessmentsAttemptedHorizontalBarChart from '../../../components/te
 import TenantFailedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantFailedAssessmentsHorizontalBarChart.vue';
 import TenantFailedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
 import TenantPassedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
 
 export default {
     setup() {
@@ -30,7 +31,8 @@ export default {
         TenantAssessmentsAttemptedHorizontalBarChart,
         TenantFailedAssessmentsHorizontalBarChart,
         TenantFailedAssessmentsByRootSubjectHorizontalBarChart,
-        TenantPassedAssessmentsByRootSubjectHorizontalBarChart
+        TenantPassedAssessmentsByRootSubjectHorizontalBarChart,
+        TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart
     },
     data() {
         return {
@@ -48,6 +50,7 @@ export default {
             failedAssessments: [],
             rootSubjectsFailedAssessments: [],
             rootSubjectsPassedAssessments: [],
+            rootSubjectsAttemptedAssessments: [],
             attemptedAssessments: [],
             isDataWeekly: false
         };
@@ -64,6 +67,7 @@ export default {
         await this.getFailedAssessments();
         await this.getFailedAssessmentsBySubject();
         await this.getPassedAssessmentsBySubject();
+        await this.getAttemptedAssessmentsBySubject();
         await this.getTenantAssessmentsAttempted();
         await this.getTotalTokensPerDay();
     },
@@ -257,6 +261,25 @@ export default {
                     error
                 );
                 this.rootSubjectsPassedAssessments = [];
+            }
+        },
+        async getAttemptedAssessmentsBySubject() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/attempted-assessments-by-subject/tenant/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                this.rootSubjectsAttemptedAssessments = await response.json();
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.rootSubjectsAttemptedAssessments = [];
             }
         },
 
@@ -530,6 +553,15 @@ export default {
                 v-if="rootSubjectsPassedAssessments.length > 0"
                 :data="rootSubjectsPassedAssessments"
                 colour="darkgreen"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
+
+            <h4>Subjects that have been attempted</h4>
+            <TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart
+                v-if="rootSubjectsAttemptedAssessments.length > 0"
+                :data="rootSubjectsAttemptedAssessments"
+                colour="darkblue"
                 class="mb-5"
             />
             <p v-else>No data yet</p>
