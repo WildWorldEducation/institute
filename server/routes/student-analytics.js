@@ -1734,6 +1734,72 @@ router.get(
     }
 );
 
+/* Get number of assessments failed more than once, by root subject */
+router.get(
+    '/passed-assessments-by-subject/tenant/:tenantId',
+    async (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+
+            // Create referral record
+            const allSkillsQuery = `
+                SELECT *
+                FROM skills;
+                                        `;
+            const skills = await query(allSkillsQuery);
+
+            let sqlQuery = `
+                SELECT skills.name as name, count(*) as quantity, parent
+                FROM user_skills
+                JOIN users
+                ON users.id = user_skills.user_id
+                JOIN skills
+                ON skills.id = user_skills.skill_id
+                WHERE tenant_id = ${conn.escape(req.params.tenantId)}
+                AND is_mastered = 1
+                AND type <> 'domain'
+                GROUP BY name;`;
+
+            conn.query(sqlQuery, async (err, passedAssessmentSkills) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    // Recursive function
+                    async function getRootSubject(originalSkill, parentSkill) {
+                        // Check if this is a root subject skill
+                        if (parentSkill.parent == 0) {
+                            originalSkill.rootSubject = parentSkill.name;
+                        } else {
+                            for (let i = 0; i < skills.length; i++) {
+                                if (skills[i].id == parentSkill.parent) {
+                                    await getRootSubject(
+                                        originalSkill,
+                                        skills[i]
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    for (let i = 0; i < passedAssessmentSkills.length; i++) {
+                        await getRootSubject(
+                            passedAssessmentSkills[i],
+                            passedAssessmentSkills[i]
+                        );
+                    }
+
+                    res.json(passedAssessmentSkills);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
+
 /**
  * RECORD DATA -------------------------------------------
  */

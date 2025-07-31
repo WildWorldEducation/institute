@@ -10,6 +10,8 @@ import TenantNumSkillsPassedPerNumStudentsHorizontalBarChart from '../../../comp
 import TenantPassedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantPassedAssessmentsHorizontalBarChart.vue';
 import TenantAssessmentsAttemptedHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantAssessmentsAttemptedHorizontalBarChart.vue';
 import TenantFailedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantFailedAssessmentsHorizontalBarChart.vue';
+import TenantFailedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import TenantPassedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
 
 export default {
     setup() {
@@ -26,7 +28,9 @@ export default {
         TenantNumSkillsPassedPerNumStudentsHorizontalBarChart,
         TenantPassedAssessmentsHorizontalBarChart,
         TenantAssessmentsAttemptedHorizontalBarChart,
-        TenantFailedAssessmentsHorizontalBarChart
+        TenantFailedAssessmentsHorizontalBarChart,
+        TenantFailedAssessmentsByRootSubjectHorizontalBarChart,
+        TenantPassedAssessmentsByRootSubjectHorizontalBarChart
     },
     data() {
         return {
@@ -43,6 +47,7 @@ export default {
             passedAssessments: [],
             failedAssessments: [],
             rootSubjectsFailedAssessments: [],
+            rootSubjectsPassedAssessments: [],
             attemptedAssessments: [],
             isDataWeekly: false
         };
@@ -58,6 +63,7 @@ export default {
         await this.getPassedAssessments();
         await this.getFailedAssessments();
         await this.getFailedAssessmentsBySubject();
+        await this.getPassedAssessmentsBySubject();
         await this.getTenantAssessmentsAttempted();
         await this.getTotalTokensPerDay();
     },
@@ -206,7 +212,7 @@ export default {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                this.failedAssessments = await response.json();              
+                this.failedAssessments = await response.json();
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
@@ -226,13 +232,31 @@ export default {
                 }
 
                 this.rootSubjectsFailedAssessments = await response.json();
-                console.log(this.rootSubjectsFailedAssessments);
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
                     error
                 );
-                this.failedAssessments = [];
+                this.rootSubjectsFailedAssessments = [];
+            }
+        },
+        async getPassedAssessmentsBySubject() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/passed-assessments-by-subject/tenant/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                this.rootSubjectsPassedAssessments = await response.json();
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.rootSubjectsPassedAssessments = [];
             }
         },
 
@@ -491,13 +515,24 @@ export default {
             />
             <p v-else>No data yet</p>
 
-            <h3 class="mt-5">Performance by Root Subject</h3>
-            <p>
-                <em>number of fails per root subject</em>
-            </p>
-            <p>
-                <em>will have to use recursive function</em>
-            </p>
+            <h3 class="mt-5">Performance by Subject</h3>
+            <h4>Subjects that have been failed more than once</h4>
+            <TenantFailedAssessmentsByRootSubjectHorizontalBarChart
+                v-if="rootSubjectsFailedAssessments.length > 0"
+                :data="rootSubjectsFailedAssessments"
+                colour="darkred"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
+
+            <h4>Subjects that have been passed</h4>
+            <TenantPassedAssessmentsByRootSubjectHorizontalBarChart
+                v-if="rootSubjectsPassedAssessments.length > 0"
+                :data="rootSubjectsPassedAssessments"
+                colour="darkgreen"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
         </div>
 
         <div v-else-if="chosenPage == 3">
