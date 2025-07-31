@@ -39,7 +39,8 @@ export default {
             studentDurationsPerSkill: [],
             numSkillsPassedPerNumStudents: [],
             passedAssessments: [],
-            attemptedAssessments: []
+            attemptedAssessments: [],
+            isDataWeekly: false
         };
     },
     async created() {
@@ -55,60 +56,7 @@ export default {
         await this.getTotalTokensPerDay();
     },
     methods: {
-        async getAvgTokensToMasterSkills() {
-            try {
-                const response = await fetch(
-                    `/student-analytics/avg-tokens-to-master-skills/tenant/${this.tenantId}`
-                );
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                this.avgTokensToMasterSkills = Array.isArray(data) ? data : [];
-            } catch (error) {
-                console.error(
-                    'Error fetching cohort mastered assessments:',
-                    error
-                );
-                this.avgTokensToMasterSkills = [];
-            }
-        },
-        async getTotalTokensPerSkill() {
-            try {
-                const response = await fetch(
-                    `/student-analytics/total-tokens-per-skill/tenant/${this.tenantId}`
-                );
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                this.totalTokensPerSkill = Array.isArray(data) ? data : [];
-            } catch (error) {
-                console.error(
-                    'Error fetching cohort mastered assessments:',
-                    error
-                );
-                this.totalTokensPerSkill = [];
-            }
-        },
-        async getTotalTokensPerDay() {
-            fetch(`/student-analytics/tenant-tokens-per-day/${this.tenantId}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    for (let i = 0; i < data.length; i++) {
-                        data[i].date = new Date(data[i].date);
-                    }
-                    data.sort((a, b) => a.date - b.date);
-                    this.totalTokensPerDay = data;
-                })
-                .catch((error) => {
-                    console.error('Error fetching student progress:', error);
-                });
-        },
+        // Engagement -----------------------
         async getAvgTimeOnSkills() {
             try {
                 const response = await fetch(
@@ -135,6 +83,21 @@ export default {
                 this.avgTimeOnSkills = [];
             }
         },
+        async getTenantDuration() {
+            fetch(`/student-analytics/tenant-duration-per-day/${this.tenantId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                        data[i].formattedQuantity = data[i].quantity / 1000;
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.studentDurationsPerSkill = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
         async getPercentageStudentsMasteredOneSkill() {
             try {
                 const response = await fetch(
@@ -154,6 +117,8 @@ export default {
                 this.percentageStudentsMasteredOneSkill = [];
             }
         },
+
+        // Academic Performance
         async getTenantProgress() {
             fetch(`/student-analytics/tenant-progress/${this.tenantId}`)
                 .then((response) => response.json())
@@ -163,21 +128,6 @@ export default {
                     }
                     data.sort((a, b) => a.date - b.date);
                     this.tenantProgress = data;
-                })
-                .catch((error) => {
-                    console.error('Error fetching student progress:', error);
-                });
-        },
-        async getTenantDuration() {
-            fetch(`/student-analytics/tenant-duration-per-day/${this.tenantId}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    for (let i = 0; i < data.length; i++) {
-                        data[i].date = new Date(data[i].date);
-                        data[i].formattedQuantity = data[i].quantity / 1000;
-                    }
-                    data.sort((a, b) => a.date - b.date);
-                    this.studentDurationsPerSkill = data;
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
@@ -240,6 +190,63 @@ export default {
                 this.attemptedAssessments = [];
             }
         },
+
+        // Resource usage
+        async getAvgTokensToMasterSkills() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/avg-tokens-to-master-skills/tenant/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                this.avgTokensToMasterSkills = Array.isArray(data) ? data : [];
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.avgTokensToMasterSkills = [];
+            }
+        },
+        async getTotalTokensPerSkill() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/total-tokens-per-skill/tenant/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                this.totalTokensPerSkill = Array.isArray(data) ? data : [];
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.totalTokensPerSkill = [];
+            }
+        },
+        async getTotalTokensPerDay() {
+            fetch(`/student-analytics/tenant-tokens-per-day/${this.tenantId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.totalTokensPerDay = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
+
         millisToMinutesAndSeconds(millis) {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);
@@ -356,7 +363,6 @@ export default {
                 :data="percentageStudentsMasteredOneSkill"
             />
             <p v-else>No data yet</p>
-            <p>add total tutoring time</p>
         </div>
 
         <div v-else-if="chosenPage == 2">
