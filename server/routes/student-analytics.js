@@ -1853,7 +1853,23 @@ router.get(
                         );
                     }
 
-                    res.json(attemptedAssessmentSkills);
+                    const totalsMap = attemptedAssessmentSkills.reduce(
+                        (acc, item) => {
+                            acc[item.rootSubject] =
+                                (acc[item.rootSubject] || 0) + item.quantity;
+                            return acc;
+                        },
+                        {}
+                    );
+
+                    const result = Object.entries(totalsMap).map(
+                        ([key, value]) => ({
+                            name: key,
+                            quantity: value
+                        })
+                    );
+
+                    res.json(result);
                 } catch (err) {
                     next(err);
                 }
