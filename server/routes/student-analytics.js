@@ -1615,6 +1615,48 @@ router.get('/attempted-assessments/tenant/:tenantId', (req, res, next) => {
     }
 });
 
+/* Get number of assessments failed more than once */
+router.get('/failed-assessments/tenant/:tenantId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT skills.id, skills.name, COUNT(name) AS quantity
+            FROM assessment_attempts
+            JOIN skills 
+            ON skills.id = assessment_attempts.skill_id
+            JOIN users
+            ON users.id = assessment_attempts.user_id
+            WHERE users.tenant_id = ${conn.escape(
+                req.params.tenantId
+            )}                    
+            AND assessment_attempts.skill_id NOT IN 
+
+            (SELECT skill_id
+            FROM user_skills
+            JOIN users
+            ON user_skills.user_id = users.id
+            WHERE is_mastered = 1
+            AND tenant_id = ${conn.escape(req.params.tenantId)})  
+
+            group by id, name
+            HAVING COUNT(*) > 1;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * RECORD DATA -------------------------------------------
  */

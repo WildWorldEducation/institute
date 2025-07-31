@@ -9,6 +9,7 @@ import TenantTokensPerDayLineChart from '../../../components/teacher-analytics/t
 import TenantNumSkillsPassedPerNumStudentsHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantNumSkillsPassedPerNumStudentsHorizontalBarChart.vue';
 import TenantPassedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantPassedAssessmentsHorizontalBarChart.vue';
 import TenantAssessmentsAttemptedHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantAssessmentsAttemptedHorizontalBarChart.vue';
+import TenantFailedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantFailedAssessmentsHorizontalBarChart.vue';
 
 export default {
     setup() {
@@ -24,7 +25,8 @@ export default {
         TenantTokensPerDayLineChart,
         TenantNumSkillsPassedPerNumStudentsHorizontalBarChart,
         TenantPassedAssessmentsHorizontalBarChart,
-        TenantAssessmentsAttemptedHorizontalBarChart
+        TenantAssessmentsAttemptedHorizontalBarChart,
+        TenantFailedAssessmentsHorizontalBarChart
     },
     data() {
         return {
@@ -39,6 +41,7 @@ export default {
             studentDurationsPerSkill: [],
             numSkillsPassedPerNumStudents: [],
             passedAssessments: [],
+            failedAssessments: [],
             attemptedAssessments: [],
             isDataWeekly: false
         };
@@ -52,6 +55,7 @@ export default {
         await this.getTenantDuration();
         await this.getNumSkillsPassedPerNumStudents();
         await this.getPassedAssessments();
+        await this.getFailedAssessments();
         await this.getTenantAssessmentsAttempted();
         await this.getTotalTokensPerDay();
     },
@@ -188,6 +192,26 @@ export default {
                     error
                 );
                 this.attemptedAssessments = [];
+            }
+        },
+        async getFailedAssessments() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/failed-assessments/tenant/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                this.failedAssessments = await response.json();
+                console.log(this.failedAssessments);
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.failedAssessments = [];
             }
         },
 
@@ -433,6 +457,16 @@ export default {
                 v-if="attemptedAssessments.length > 0"
                 :data="attemptedAssessments"
                 colour="#5f31dd"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
+
+            <h4>Skills that have been failed more than once</h4>
+            <TenantFailedAssessmentsHorizontalBarChart
+                v-if="failedAssessments.length > 0"
+                :data="failedAssessments"
+                colour="darkred"
+                class="mb-5"
             />
             <p v-else>No data yet</p>
 
