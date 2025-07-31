@@ -489,17 +489,15 @@ router.get('/attempted-assessments/cohort/:cohortId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT COUNT(skills.name) as quantity, skills.name
-            FROM users
-            JOIN user_skills
-            ON users.id = user_skills.user_id
-            JOIN skills
-            ON user_skills.skill_id = skills.id
-            WHERE tenant_id = ${conn.escape(req.params.tenantId)}
-            AND is_mastered = 1
-            AND role = "student"
-            AND skills.type <> 'domain'
-            GROUP by skills.name;`;
+            SELECT COUNT(username) AS quantity, username AS name
+            FROM assessment_attempts
+            JOIN cohorts_users
+            ON cohorts_users.user_id = assessment_attempts.user_id
+            JOIN users
+            ON users.id = cohorts_users.user_id
+            WHERE cohorts_users.cohort_id = ${conn.escape(req.params.cohortId)}
+            GROUP BY name
+            ORDER BY quantity DESC;`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -1591,16 +1589,15 @@ router.get('/attempted-assessments/tenant/:tenantId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT skills.name as name, count(*) as quantity
-            FROM user_skills
+            SELECT COUNT(name) AS quantity, name
+            FROM assessment_attempts
+            JOIN skills 
+            ON skills.id = assessment_attempts.skill_id
             JOIN users
-            ON users.id = user_skills.user_id
-            JOIN skills
-            ON skills.id = user_skills.skill_id
-            WHERE tenant_id = ${conn.escape(req.params.tenantId)}
-            AND is_mastered = 1
-            AND type <> 'domain'
-            GROUP BY name;`;
+            ON users.id = assessment_attempts.user_id
+            WHERE users.tenant_id = ${conn.escape(req.params.tenantId)}
+            GROUP BY name
+            ORDER BY quantity DESC;`;
 
         conn.query(sqlQuery, (err, result) => {
             try {
@@ -1815,17 +1812,16 @@ router.get(
                                         `;
             const skills = await query(allSkillsQuery);
 
-            let sqlQuery = `
-                SELECT skills.name as name, count(*) as quantity, parent
-                FROM user_skills
+            let sqlQuery = `            
+                SELECT COUNT(name) AS quantity, name, parent
+                FROM assessment_attempts
+                JOIN skills 
+                ON skills.id = assessment_attempts.skill_id
                 JOIN users
-                ON users.id = user_skills.user_id
-                JOIN skills
-                ON skills.id = user_skills.skill_id
-                WHERE tenant_id = ${conn.escape(req.params.tenantId)}
-                AND is_mastered = 1
-                AND type <> 'domain'
-                GROUP BY name;`;
+                ON users.id = assessment_attempts.user_id
+                WHERE users.tenant_id = ${conn.escape(req.params.tenantId)}
+                GROUP BY name
+                ORDER BY quantity DESC;`;
 
             conn.query(sqlQuery, async (err, attemptedAssessmentSkills) => {
                 try {
