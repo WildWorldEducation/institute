@@ -9,6 +9,10 @@ import TenantTokensPerDayLineChart from '../../../components/teacher-analytics/t
 import TenantNumSkillsPassedPerNumStudentsHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantNumSkillsPassedPerNumStudentsHorizontalBarChart.vue';
 import TenantPassedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantPassedAssessmentsHorizontalBarChart.vue';
 import TenantAssessmentsAttemptedHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantAssessmentsAttemptedHorizontalBarChart.vue';
+import TenantFailedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantFailedAssessmentsHorizontalBarChart.vue';
+import TenantFailedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import TenantPassedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
 
 export default {
     setup() {
@@ -24,7 +28,11 @@ export default {
         TenantTokensPerDayLineChart,
         TenantNumSkillsPassedPerNumStudentsHorizontalBarChart,
         TenantPassedAssessmentsHorizontalBarChart,
-        TenantAssessmentsAttemptedHorizontalBarChart
+        TenantAssessmentsAttemptedHorizontalBarChart,
+        TenantFailedAssessmentsHorizontalBarChart,
+        TenantFailedAssessmentsByRootSubjectHorizontalBarChart,
+        TenantPassedAssessmentsByRootSubjectHorizontalBarChart,
+        TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart
     },
     data() {
         return {
@@ -39,7 +47,12 @@ export default {
             studentDurationsPerSkill: [],
             numSkillsPassedPerNumStudents: [],
             passedAssessments: [],
-            attemptedAssessments: []
+            failedAssessments: [],
+            rootSubjectsFailedAssessments: [],
+            rootSubjectsPassedAssessments: [],
+            rootSubjectsAttemptedAssessments: [],
+            attemptedAssessments: [],
+            isDataWeekly: false
         };
     },
     async created() {
@@ -51,64 +64,15 @@ export default {
         await this.getTenantDuration();
         await this.getNumSkillsPassedPerNumStudents();
         await this.getPassedAssessments();
+        await this.getFailedAssessments();
+        await this.getFailedAssessmentsBySubject();
+        await this.getPassedAssessmentsBySubject();
+        await this.getAttemptedAssessmentsBySubject();
         await this.getTenantAssessmentsAttempted();
         await this.getTotalTokensPerDay();
     },
     methods: {
-        async getAvgTokensToMasterSkills() {
-            try {
-                const response = await fetch(
-                    `/student-analytics/avg-tokens-to-master-skills/tenant/${this.tenantId}`
-                );
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                this.avgTokensToMasterSkills = Array.isArray(data) ? data : [];
-            } catch (error) {
-                console.error(
-                    'Error fetching cohort mastered assessments:',
-                    error
-                );
-                this.avgTokensToMasterSkills = [];
-            }
-        },
-        async getTotalTokensPerSkill() {
-            try {
-                const response = await fetch(
-                    `/student-analytics/total-tokens-per-skill/tenant/${this.tenantId}`
-                );
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                this.totalTokensPerSkill = Array.isArray(data) ? data : [];
-            } catch (error) {
-                console.error(
-                    'Error fetching cohort mastered assessments:',
-                    error
-                );
-                this.totalTokensPerSkill = [];
-            }
-        },
-        async getTotalTokensPerDay() {
-            fetch(`/student-analytics/tenant-tokens-per-day/${this.tenantId}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    for (let i = 0; i < data.length; i++) {
-                        data[i].date = new Date(data[i].date);
-                    }
-                    data.sort((a, b) => a.date - b.date);
-                    this.totalTokensPerDay = data;
-                })
-                .catch((error) => {
-                    console.error('Error fetching student progress:', error);
-                });
-        },
+        // Engagement -----------------------
         async getAvgTimeOnSkills() {
             try {
                 const response = await fetch(
@@ -135,6 +99,21 @@ export default {
                 this.avgTimeOnSkills = [];
             }
         },
+        async getTenantDuration() {
+            fetch(`/student-analytics/tenant-duration-per-day/${this.tenantId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                        data[i].formattedQuantity = data[i].quantity / 1000;
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.studentDurationsPerSkill = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
         async getPercentageStudentsMasteredOneSkill() {
             try {
                 const response = await fetch(
@@ -154,6 +133,8 @@ export default {
                 this.percentageStudentsMasteredOneSkill = [];
             }
         },
+
+        // Academic Performance
         async getTenantProgress() {
             fetch(`/student-analytics/tenant-progress/${this.tenantId}`)
                 .then((response) => response.json())
@@ -163,21 +144,6 @@ export default {
                     }
                     data.sort((a, b) => a.date - b.date);
                     this.tenantProgress = data;
-                })
-                .catch((error) => {
-                    console.error('Error fetching student progress:', error);
-                });
-        },
-        async getTenantDuration() {
-            fetch(`/student-analytics/tenant-duration-per-day/${this.tenantId}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    for (let i = 0; i < data.length; i++) {
-                        data[i].date = new Date(data[i].date);
-                        data[i].formattedQuantity = data[i].quantity / 1000;
-                    }
-                    data.sort((a, b) => a.date - b.date);
-                    this.studentDurationsPerSkill = data;
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
@@ -240,6 +206,139 @@ export default {
                 this.attemptedAssessments = [];
             }
         },
+        async getFailedAssessments() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/failed-assessments/tenant/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                this.failedAssessments = await response.json();
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.failedAssessments = [];
+            }
+        },
+        async getFailedAssessmentsBySubject() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/failed-assessments-by-subject/tenant/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                this.rootSubjectsFailedAssessments = await response.json();
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.rootSubjectsFailedAssessments = [];
+            }
+        },
+        async getPassedAssessmentsBySubject() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/passed-assessments-by-subject/tenant/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                this.rootSubjectsPassedAssessments = await response.json();
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.rootSubjectsPassedAssessments = [];
+            }
+        },
+        async getAttemptedAssessmentsBySubject() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/attempted-assessments-by-subject/tenant/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                this.rootSubjectsAttemptedAssessments = await response.json();
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.rootSubjectsAttemptedAssessments = [];
+            }
+        },
+
+        // Resource usage
+        async getAvgTokensToMasterSkills() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/avg-tokens-to-master-skills/tenant/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                this.avgTokensToMasterSkills = Array.isArray(data) ? data : [];
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.avgTokensToMasterSkills = [];
+            }
+        },
+        async getTotalTokensPerSkill() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/total-tokens-per-skill/tenant/${this.tenantId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                this.totalTokensPerSkill = Array.isArray(data) ? data : [];
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.totalTokensPerSkill = [];
+            }
+        },
+        async getTotalTokensPerDay() {
+            fetch(`/student-analytics/tenant-tokens-per-day/${this.tenantId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.totalTokensPerDay = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
+
         millisToMinutesAndSeconds(millis) {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);
@@ -356,7 +455,6 @@ export default {
                 :data="percentageStudentsMasteredOneSkill"
             />
             <p v-else>No data yet</p>
-            <p>add total tutoring time</p>
         </div>
 
         <div v-else-if="chosenPage == 2">
@@ -427,16 +525,46 @@ export default {
                 v-if="attemptedAssessments.length > 0"
                 :data="attemptedAssessments"
                 colour="#5f31dd"
+                class="mb-5"
             />
             <p v-else>No data yet</p>
 
-            <h3 class="mt-5">Performance by Root Subject</h3>
-            <p>
-                <em>number of fails per root subject</em>
-            </p>
-            <p>
-                <em>will have to use recursive function</em>
-            </p>
+            <h4>Skills that have been failed more than once</h4>
+            <TenantFailedAssessmentsHorizontalBarChart
+                v-if="failedAssessments.length > 0"
+                :data="failedAssessments"
+                colour="darkred"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
+
+            <h3 class="mt-5">Performance by Subject</h3>
+            <h4>Subjects that have been failed more than once</h4>
+            <TenantFailedAssessmentsByRootSubjectHorizontalBarChart
+                v-if="rootSubjectsFailedAssessments.length > 0"
+                :data="rootSubjectsFailedAssessments"
+                colour="darkred"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
+
+            <h4>Subjects that have been passed</h4>
+            <TenantPassedAssessmentsByRootSubjectHorizontalBarChart
+                v-if="rootSubjectsPassedAssessments.length > 0"
+                :data="rootSubjectsPassedAssessments"
+                colour="darkgreen"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
+
+            <h4>Subjects that have been attempted</h4>
+            <TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart
+                v-if="rootSubjectsAttemptedAssessments.length > 0"
+                :data="rootSubjectsAttemptedAssessments"
+                colour="darkblue"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
         </div>
 
         <div v-else-if="chosenPage == 3">
