@@ -105,7 +105,8 @@ export default {
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {
                         data[i].date = new Date(data[i].date);
-                        data[i].formattedQuantity = data[i].quantity / 1000;
+                        data[i].formattedQuantity =
+                            data[i].quantity / (1000 * 60);
                     }
                     data.sort((a, b) => a.date - b.date);
                     this.studentDurationsPerSkill = data;

@@ -76,7 +76,7 @@ export default {
                     .attr('y', 10)
                     .attr('fill', 'currentColor')
                     .attr('text-anchor', 'start')
-                    .text('↑ Duration in seconds')
+                    .text('↑ Tokens')
             );
 
         // Append a path for the line.
