@@ -29,7 +29,9 @@ export default {
         }
     },
     components: {},
-    methods: {}
+    methods: {
+        deleteCohort() {}
+    }
 };
 </script>
 
@@ -196,12 +198,12 @@ export default {
                         </svg>
                     </router-link>
                     <!-- Delete Cohort -->
-                    <button
+                    <!-- <button
                         class="btn btn-danger mt-1 remove-student-btn fit-content"
                         @click="showRemoveStudentModal = true"
                     >
                         Delete Cohort
-                    </button>
+                    </button> -->
                 </div>
                 <!-- Lock skill progress -->
                 <!-- <div class="mt-4">
@@ -281,12 +283,12 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-                <p>Are you sure you want to remove this student?</p>
+                <p>Are you sure you want to delete this cohort?</p>
                 <div style="display: flex; gap: 10px">
                     <button
                         type="button"
                         class="btn btn-danger"
-                        @click="removeStudentFromInstructor()"
+                        @click="deleteCohort()"
                     >
                         Yes
                     </button>
