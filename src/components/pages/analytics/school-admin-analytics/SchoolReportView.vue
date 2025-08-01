@@ -237,6 +237,7 @@ export default {
                 }
 
                 this.rootSubjectsFailedAssessments = await response.json();
+                console.log(this.rootSubjectsFailedAssessments);
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',

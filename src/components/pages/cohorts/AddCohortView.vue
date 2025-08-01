@@ -28,6 +28,7 @@ export default {
             if (this.cohort.name === '' || this.cohort.name === null) {
                 this.validate.name = true;
                 this.validate.violated = true;
+                return;
             }
 
             const requestOptions = {

@@ -32,9 +32,7 @@ export default {
 
         const y = d3
             .scaleBand()
-            .domain(
-                d3.sort(this.data, (d) => -d.quantity).map((d) => d.rootSubject)
-            )
+            .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
             .padding(0.1);
 
@@ -62,7 +60,7 @@ export default {
             .data(this.data)
             .join('rect')
             .attr('x', x(0))
-            .attr('y', (d) => y(d.rootSubject))
+            .attr('y', (d) => y(d.name))
             .attr('width', (d) => x(d.quantity) - x(0))
             .attr('height', y.bandwidth());
 
@@ -74,7 +72,7 @@ export default {
             .data(this.data)
             .join('text')
             .attr('x', (d) => x(d.quantity))
-            .attr('y', (d) => y(d.rootSubject) + y.bandwidth() / 2)
+            .attr('y', (d) => y(d.name) + y.bandwidth() / 2)
             .attr('dy', '0.35em')
             .attr('dx', -4)
             .text((d) => format(d.quantity))
