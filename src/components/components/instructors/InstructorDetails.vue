@@ -136,9 +136,9 @@ export default {
                 {{ this.cohortsStore.selectedCohort.name }}
             </h1>
         </div>
-        <h2 class="secondary-heading">Student Progress & Attendance</h2>
+        <h2 class="secondary-heading">Class Progress & Attendance</h2>
         <div>
-            <h4>Class engagement</h4>
+            <h4>Engagement</h4>
             <CohortDurationPerDayLineChart
                 v-if="durationsPerDay.length > 0"
                 :data="durationsPerDay"
@@ -146,7 +146,7 @@ export default {
                 ref="cohortDurationPerDayLineChart"
             />
             <p v-else>No data available</p>
-            <h4>Class progress</h4>
+            <h4>Progress</h4>
             <CohortProgressLineChart
                 v-if="classProgress.length > 0"
                 :data="classProgress"

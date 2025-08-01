@@ -1764,6 +1764,8 @@ router.get(
                         throw err;
                     }
 
+                    console.log(passedAssessmentSkills);
+
                     // Recursive function
                     async function getRootSubject(originalSkill, parentSkill) {
                         // Check if this is a root subject skill
@@ -1788,7 +1790,23 @@ router.get(
                         );
                     }
 
-                    res.json(passedAssessmentSkills);
+                    const totalsMap = passedAssessmentSkills.reduce(
+                        (acc, item) => {
+                            const subject = item.rootSubject;
+                            acc[subject] = (acc[subject] || 0) + item.quantity;
+                            return acc;
+                        },
+                        {}
+                    );
+
+                    const result = Object.entries(totalsMap).map(
+                        ([key, value]) => ({
+                            name: key,
+                            quantity: value
+                        })
+                    );
+
+                    res.json(result);
                 } catch (err) {
                     next(err);
                 }
