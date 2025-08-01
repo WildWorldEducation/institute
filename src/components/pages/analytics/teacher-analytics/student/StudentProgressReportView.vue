@@ -59,6 +59,7 @@ export default {
             v-if="studentProgress.length > 0"
             :data="studentProgress"
         />
+        <p v-else>There is no data to show yet.</p>
     </div>
 </template>
 

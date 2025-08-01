@@ -402,7 +402,7 @@ export default {
         </div>
         <div v-if="chosenPage == 1">
             <!-- Filter Buttons -->
-            <div
+            <!-- <div
                 class="btn-group d-flex d-sm-inline-flex mt-2 mb-4"
                 role="group"
             >
@@ -429,7 +429,7 @@ export default {
                     for="week1"
                     >This week</label
                 >
-            </div>
+            </div> -->
 
             <h4>Average interaction time per skill (minutes)</h4>
             <TenantAvgInteractionTimePerSkillHorizontalBarChart
@@ -461,7 +461,7 @@ export default {
 
         <div v-else-if="chosenPage == 2">
             <!-- Filter Buttons -->
-            <div
+            <!-- <div
                 class="btn-group d-flex d-sm-inline-flex mt-2 mb-4"
                 role="group"
             >
@@ -488,7 +488,7 @@ export default {
                     for="week2"
                     >This week</label
                 >
-            </div>
+            </div> -->
             <h4>Number of total mastered skills growth over time</h4>
             <TenantProgressLineChart
                 v-if="tenantProgress.length > 0"
@@ -571,7 +571,7 @@ export default {
 
         <div v-else-if="chosenPage == 3">
             <!-- Filter Buttons -->
-            <div
+            <!-- <div
                 class="btn-group d-flex d-sm-inline-flex mt-2 mb-4"
                 role="group"
             >
@@ -598,7 +598,7 @@ export default {
                     for="week3"
                     >This week</label
                 >
-            </div>
+            </div> -->
             <h4>Average number of tokens spent to master a skill</h4>
             <TenantAvgTokensToMasterSkillsHorizontalBarChart
                 v-if="avgTokensToMasterSkills.length > 0"
