@@ -115,6 +115,7 @@ export default {
                 v-if="durationsPerDay.length > 0"
                 :data="durationsPerDay"
             />
+            <p v-else>There is no data to show yet.</p>
             <h2 class="secondary-heading">All skills</h2>
             <p>{{ millisToMinutesAndSeconds(this.allSkillsDuration) }}</p>
             <h2 class="secondary-heading">Minutes per skill</h2>
