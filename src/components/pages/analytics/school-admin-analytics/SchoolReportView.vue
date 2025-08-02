@@ -430,15 +430,6 @@ export default {
                     >This week</label
                 >
             </div> -->
-
-            <h4>Average interaction time per skill (minutes)</h4>
-            <TenantAvgInteractionTimePerSkillHorizontalBarChart
-                v-if="avgTimeOnSkills.length > 0"
-                :data="avgTimeOnSkills"
-                colour="purple"
-                class="mb-5"
-            />
-            <p v-else>No data yet</p>
             <h4>Time spent on platform per day</h4>
             <TenantDurationPerDayLineChart
                 v-if="studentDurationsPerSkill.length > 0"
@@ -447,6 +438,15 @@ export default {
                 class="mb-5"
             />
             <p v-else>No data yet</p>
+
+            <h4>Average interaction time per skill (minutes)</h4>
+            <TenantAvgInteractionTimePerSkillHorizontalBarChart
+                v-if="avgTimeOnSkills.length > 0"
+                :data="avgTimeOnSkills"
+                colour="purple"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>            
 
             <h4>
                 Percentage of students who completed at least one skill
@@ -489,7 +489,7 @@ export default {
                     >This week</label
                 >
             </div> -->
-            <h4>Number of total mastered skills growth over time</h4>
+            <h4>Skill mastery progress</h4>
             <TenantProgressLineChart
                 v-if="tenantProgress.length > 0"
                 :data="tenantProgress"
@@ -498,7 +498,7 @@ export default {
             />
             <p v-else>No data yet</p>
 
-            <h3>Assessment Completion</h3>
+            <h3 class="secondary-heading">Assessment Completion</h3>
             <h4>
                 Number of students who have passed a specific number of skills
             </h4>
@@ -540,7 +540,7 @@ export default {
             />
             <p v-else>No data yet</p>
 
-            <h3 class="mt-5">Performance by Subject</h3>
+            <h3  class="secondary-heading mt-5">Performance by Subject</h3>
             <h4>Subjects that have been failed more than once</h4>
             <TenantFailedAssessmentsByRootSubjectHorizontalBarChart
                 v-if="rootSubjectsFailedAssessments.length > 0"
@@ -607,7 +607,7 @@ export default {
             />
             <p v-else>No data yet</p>
 
-            <h4 class="mt-5">Number of tokens per skill</h4>
+            <h4 class="mt-5">Tokens spent per skill</h4>
             <TenantTokensPerSkillHorizontalBarChart
                 v-if="totalTokensPerSkill.length > 0"
                 :data="totalTokensPerSkill"
