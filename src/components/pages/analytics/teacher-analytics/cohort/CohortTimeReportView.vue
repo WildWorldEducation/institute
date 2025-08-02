@@ -184,24 +184,26 @@ export default {
             <h2 class="secondary-heading h3">{{ cohortName }}</h2>
         </span>
 
-        <h2 class="secondary-heading">Total time on platform per day</h2>
+        <h4 class="secondary-heading">Total time on platform per day</h4>
         <CohortDurationPerDayLineChart
             :data="durationsPerDay"
             v-if="durationsPerDay.length > 0"
+            class="mb-5"
         />
         <p v-else>No time recorded yet</p>
 
-        <h2 class="secondary-heading mt-4">
+        <h4 class="secondary-heading mt-4">
             Total time on platform, comparing students
-        </h2>
+        </h4>
         <CohortCompareDurationHorizontalChart
             :data="studentTotalDurations"
             :colour="'#5f31dd'"
             v-if="studentTotalDurations.length > 0"
+            class="mb-5"
         />
         <p v-else>No time recorded yet</p>
 
-        <h2 class="secondary-heading mt-4">Minutes per skill</h2>
+        <h4 class="secondary-heading mt-4">Minutes per skill</h4>
         <CohortDurationPerSkillHorizontalBarChart
             :data="studentDurationsPerSkill"
             class="mb-5"

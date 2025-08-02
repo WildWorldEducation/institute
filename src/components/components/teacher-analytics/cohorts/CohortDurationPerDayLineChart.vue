@@ -52,7 +52,7 @@ export default {
             .call(
                 d3
                     .axisBottom(x)
-                    .ticks(data.length / 2)
+                    .ticks(data.length)
                     .tickSizeOuter(0)
             );
 
