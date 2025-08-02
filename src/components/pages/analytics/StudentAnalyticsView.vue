@@ -1,5 +1,10 @@
 <script>
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import { useTeacherAnalyticsStore } from '../../../stores/TeacherAnalyticsStore';
+import { useUserSkillsStore } from '../../../stores/UserSkillsStore';
+import PassedAssessmentsTimelineChart from '../../components/teacher-analytics/students/PassedAssessmentsTimelineChart.vue';
+import AttemptedAssessmentsTimelineChart from '../../components/teacher-analytics/students/AttemptedAssessmentsTimelineChart.vue';
+import FailedAssessmentsHorizontalBarChart from '../../components/teacher-analytics/students/FailedAssessmentsHorizontalBarChart.vue';
 import TimePerSkillHorizontalBarChart from '../../components/teacher-analytics/students/TimePerSkillHorizontalBarChart.vue';
 import StudentDurationPerDayLineChart from '../../components/teacher-analytics/students/StudentDurationPerDayLineChart.vue';
 import StudentAvgTokensToMasterSkillsHorizontalBarChart from '../../components/teacher-analytics/students/StudentAvgTokensToMasterSkillsHorizontalBarChart.vue';
@@ -7,11 +12,18 @@ import StudentAvgTokensToMasterSkillsHorizontalBarChart from '../../components/t
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const teacherAnalyticsStore = useTeacherAnalyticsStore();
+        const userSkillsStore = useUserSkillsStore();
         return {
-            userDetailsStore
+            userDetailsStore, teacherAnalyticsStore, userSkillsStore
         };
     },
     components: {
+        // assessments
+        PassedAssessmentsTimelineChart,
+        AttemptedAssessmentsTimelineChart,
+        FailedAssessmentsHorizontalBarChart,
+        // engagement
         TimePerSkillHorizontalBarChart,
         StudentDurationPerDayLineChart,
         StudentAvgTokensToMasterSkillsHorizontalBarChart
@@ -19,17 +31,62 @@ export default {
     data() {
         return {
             studentId: this.userDetailsStore.userId,
+            assessmentPasses: [],
+            assessmentAttempts: [],
+            multipleFails: [],
             skillDurations: [],
             durationsPerDay: [],
             tokensPerSkills: []
         };
     },
     async created() {
+        // assessments
+        await this.getAssessmentAttempts();
+        await this.getAssessmentPasses();
+        await this.teacherAnalyticsStore.getStudentMultipleFails(
+            this.userDetailsStore.userId
+        );
+        // engagement
         await this.getSkillDuration();
         await this.getStudentDurationPerDay();
         await this.getAvgTokensToMasterSkills();
     },
     methods: {
+        // assessments
+        async getAssessmentAttempts() {
+            fetch(
+                `/student-analytics/started-unmastered-assessments/${this.userDetailsStore.userId}`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    this.assessmentAttempts = data.map((e) => {
+                        return {
+                            ...e,
+                            url: `/skills/${e.url}`,
+                            // labelName: `${e.rootParent} - ${e.name}`
+                            labelName: `${e.name}`
+                        };
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error fetching last visited skills:', error);
+                });
+        },       
+        async getAssessmentPasses() {
+            await this.userSkillsStore.getMasteredSkills(this.userDetailsStore.userId);            
+
+            this.assessmentPasses = this.userSkillsStore.masteredSkills.map(
+                (e) => {
+                    return {
+                        ...e,
+                        url: `/skills/${e.url}`,
+                        // labelName: `${e.rootParent} - ${e.name}`
+                        labelName: `${e.name}`
+                    };
+                }
+            );
+        },
+        // engagement
         async getSkillDuration() {
             fetch(`/student-analytics/skill-durations/${this.studentId}`)
                 .then((response) => response.json())
@@ -90,7 +147,18 @@ export default {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);
             return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
-        }
+        },
+        assessmentDate(date) {
+            let jsDate = new Date(date);
+            return jsDate.toLocaleString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        },
     }
 };
 </script>
@@ -100,6 +168,35 @@ export default {
         <span class="d-flex justify-content-between w-100">
             <h1 class="heading">My Progress</h1>
         </span>
+        <h2 class="heading">Assessments</h2>
+        <h2 class="secondary-heading">Passed</h2>
+        <PassedAssessmentsTimelineChart
+            class="mb-5"
+            v-if="assessmentPasses.length > 0"
+            :data="assessmentPasses"
+        />     
+        <p v-else>This student has not completed any assessments yet.</p>
+
+        <h2 class="secondary-heading">Attempted</h2>
+        <AttemptedAssessmentsTimelineChart
+            class="mb-5"
+            v-if="assessmentAttempts.length > 0"
+            :data="assessmentAttempts"
+        />      
+        <p v-else>This student has attempted any assessments yet.</p>
+
+        <p></p>
+        <h2 class="secondary-heading">Failed multiple times</h2>
+        <FailedAssessmentsHorizontalBarChart
+            v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
+            :data="teacherAnalyticsStore.studentMultipleFails"
+            colour="darkred"
+            class="mb-5"
+        />       
+        <p v-else>
+            This student has not failed any assessments more than once yet.
+        </p>
+        <h2 class="heading">Engagement</h2>
         <h4>Time spent on each skill</h4>
         <TimePerSkillHorizontalBarChart
             v-if="skillDurations.length > 0"
