@@ -107,6 +107,16 @@ export default {
             <h1 class="heading">Assessment Status Report</h1>
             <h2 class="secondary-heading h3">{{ studentName }}</h2>
         </span>
+        <h2 class="secondary-heading">Failed multiple times</h2>
+        <FailedAssessmentsHorizontalBarChart
+            v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
+            :data="teacherAnalyticsStore.studentMultipleFails"
+            colour="darkred"
+            class="mb-5"
+        />       
+        <p v-else>
+            This student has not failed any assessments more than once yet.
+        </p>
         <h2 class="secondary-heading">Passed</h2>
         <PassedAssessmentsTimelineChart
             class="mb-5"
@@ -121,19 +131,7 @@ export default {
             v-if="assessmentAttempts.length > 0"
             :data="assessmentAttempts"
         />      
-        <p v-else>This student has attempted any assessments yet.</p>
-
-        <p></p>
-        <h2 class="secondary-heading">Failed multiple times</h2>
-        <FailedAssessmentsHorizontalBarChart
-            v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
-            :data="teacherAnalyticsStore.studentMultipleFails"
-            colour="darkred"
-            class="mb-5"
-        />       
-        <p v-else>
-            This student has not failed any assessments more than once yet.
-        </p>
+        <p v-else>This student has attempted any assessments yet.</p>        
     </div>
 </template>
 
