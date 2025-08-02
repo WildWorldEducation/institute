@@ -110,15 +110,15 @@ export default {
         </p>
 
         <div v-if="isDataLoaded">
-            <h2 class="secondary-heading">Total time on platform</h2>
+            <h4 class="secondary-heading">Total time on platform</h4>
             <StudentDurationPerDayLineChart
                 v-if="durationsPerDay.length > 0"
                 :data="durationsPerDay"
             />
             <p v-else>There is no data to show yet.</p>
-            <h2 class="secondary-heading">All skills</h2>
+            <h4 class="secondary-heading">All skills</h4>
             <p>{{ millisToMinutesAndSeconds(this.allSkillsDuration) }}</p>
-            <h2 class="secondary-heading">Minutes per skill</h2>
+            <h4 class="secondary-heading">Minutes per skill</h4>
             <TimePerSkillHorizontalBarChart
                 v-if="skillDurations.length > 0"
                 :data="skillDurations"

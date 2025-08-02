@@ -455,8 +455,9 @@ export default {
             <TenantPercentageStudentsMasteredAtLeastOneSkillPieChart
                 v-if="percentageStudentsMasteredOneSkill.length > 0"
                 :data="percentageStudentsMasteredOneSkill"
+                class="mb-5"
             />
-            <p v-else>No data yet</p>
+            <p v-else class="mb-5">No data yet</p>
         </div>
 
         <div v-else-if="chosenPage == 2">
@@ -494,6 +495,34 @@ export default {
                 v-if="tenantProgress.length > 0"
                 :data="tenantProgress"
                 colour="#5f31dd"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
+
+            <h3  class="secondary-heading mt-5">Performance by Subject</h3>
+            <h4>Failed more than once</h4>
+            <TenantFailedAssessmentsByRootSubjectHorizontalBarChart
+                v-if="rootSubjectsFailedAssessments.length > 0"
+                :data="rootSubjectsFailedAssessments"
+                colour="darkred"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
+
+            <h4>Passed</h4>
+            <TenantPassedAssessmentsByRootSubjectHorizontalBarChart
+                v-if="rootSubjectsPassedAssessments.length > 0"
+                :data="rootSubjectsPassedAssessments"
+                colour="darkgreen"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
+
+            <h4>Attempted</h4>
+            <TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart
+                v-if="rootSubjectsAttemptedAssessments.length > 0"
+                :data="rootSubjectsAttemptedAssessments"
+                colour="darkblue"
                 class="mb-5"
             />
             <p v-else>No data yet</p>
@@ -538,35 +567,7 @@ export default {
                 colour="darkred"
                 class="mb-5"
             />
-            <p v-else>No data yet</p>
-
-            <h3  class="secondary-heading mt-5">Performance by Subject</h3>
-            <h4>Subjects that have been failed more than once</h4>
-            <TenantFailedAssessmentsByRootSubjectHorizontalBarChart
-                v-if="rootSubjectsFailedAssessments.length > 0"
-                :data="rootSubjectsFailedAssessments"
-                colour="darkred"
-                class="mb-5"
-            />
-            <p v-else>No data yet</p>
-
-            <h4>Subjects that have been passed</h4>
-            <TenantPassedAssessmentsByRootSubjectHorizontalBarChart
-                v-if="rootSubjectsPassedAssessments.length > 0"
-                :data="rootSubjectsPassedAssessments"
-                colour="darkgreen"
-                class="mb-5"
-            />
-            <p v-else>No data yet</p>
-
-            <h4>Subjects that have been attempted</h4>
-            <TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart
-                v-if="rootSubjectsAttemptedAssessments.length > 0"
-                :data="rootSubjectsAttemptedAssessments"
-                colour="darkblue"
-                class="mb-5"
-            />
-            <p v-else>No data yet</p>
+            <p v-else>No data yet</p>            
         </div>
 
         <div v-else-if="chosenPage == 3">
@@ -599,6 +600,20 @@ export default {
                     >This week</label
                 >
             </div> -->
+             <h4>Tokens spent per day</h4>
+            <TenantTokensPerDayLineChart
+                v-if="totalTokensPerDay.length > 0"
+                :data="totalTokensPerDay"
+                colour="#5f31dd"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
+            <p>
+                <em
+                    >Please note recording of tokens per skill stops after
+                    student mastery of that skill</em
+                >
+            </p>
             <h4>Average number of tokens spent to master a skill</h4>
             <TenantAvgTokensToMasterSkillsHorizontalBarChart
                 v-if="avgTokensToMasterSkills.length > 0"
@@ -612,22 +627,9 @@ export default {
                 v-if="totalTokensPerSkill.length > 0"
                 :data="totalTokensPerSkill"
                 colour="#5f31dd"
+                class="mb-5"
             />
-            <p v-else>No data yet</p>
-
-            <h4 class="mt-5">Tokens spent per day</h4>
-            <TenantTokensPerDayLineChart
-                v-if="totalTokensPerDay.length > 0"
-                :data="totalTokensPerDay"
-                colour="#5f31dd"
-            />
-            <p v-else>No data yet</p>
-            <p>
-                <em
-                    >Please note recording of tokens per skill stops after
-                    student mastery of that skill</em
-                >
-            </p>
+            <p v-else class="mb-5">No data yet</p>           
         </div>
     </div>
 </template>
