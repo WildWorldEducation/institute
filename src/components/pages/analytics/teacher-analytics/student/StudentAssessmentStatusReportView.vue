@@ -112,31 +112,7 @@ export default {
             class="mb-5"
             v-if="assessmentPasses.length > 0"
             :data="assessmentPasses"
-        />
-        <!-- <div v-if="assessmentPasses.length > 0" class="mt-4 mb-4">
-            <table class="table">
-                <tr>
-                    <th>Skill</th>
-                    <th>Date</th>
-                </tr>
-                <tr
-                    v-for="skill in assessmentPasses"
-                    :key="skill.id"
-                    class="table-rows"
-                >
-                    <td>
-                        <router-link
-                            target="_blank"
-                            :to="'/skills/' + skill.url"
-                            >{{ skill.name }}</router-link
-                        >
-                    </td>
-                    <td>
-                        {{ assessmentDate(skill.mastered_date) }}
-                    </td>
-                </tr>
-            </table>
-        </div> -->
+        />     
         <p v-else>This student has not completed any assessments yet.</p>
 
         <h2 class="secondary-heading">Attempted</h2>
@@ -144,31 +120,7 @@ export default {
             class="mb-5"
             v-if="assessmentAttempts.length > 0"
             :data="assessmentAttempts"
-        />
-        <!-- <div v-if="this.assessmentAttempts.length > 0" class="mb-4">
-            <table class="table">
-                <tr>
-                    <th>Skill</th>
-                    <th>Date</th>
-                </tr>
-                <tr
-                    v-for="assessmentAttempt in assessmentAttempts"
-                    :key="assessmentAttempt.id"
-                    class="table-rows"
-                >
-                    <td>
-                        <router-link
-                            target="_blank"
-                            :to="'/skills/' + assessmentAttempt.url"
-                            >{{ assessmentAttempt.name }}</router-link
-                        >
-                    </td>
-                    <td>
-                        {{ assessmentDate(assessmentAttempt.date) }}
-                    </td>
-                </tr>
-            </table>
-        </div> -->
+        />      
         <p v-else>This student has attempted any assessments yet.</p>
 
         <p></p>
@@ -178,34 +130,7 @@ export default {
             :data="teacherAnalyticsStore.studentMultipleFails"
             colour="darkred"
             class="mb-5"
-        />
-        <!-- <div
-            v-if="this.teacherAnalyticsStore.studentMultipleFails.length > 0"
-            class="mb-4"
-        >
-            <table class="table">
-                <tr>
-                    <th>Skill</th>
-                    <th>Times</th>
-                </tr>
-                <tr
-                    v-for="failedAssessment in teacherAnalyticsStore.studentMultipleFails"
-                    :key="failedAssessment.id"
-                    class="table-rows"
-                >
-                    <td>
-                        <router-link
-                            target="_blank"
-                            :to="'/skills/' + failedAssessment.url"
-                            >{{ failedAssessment.name }}</router-link
-                        >
-                    </td>
-                    <td>
-                        {{ failedAssessment.quantity }}
-                    </td>
-                </tr>
-            </table>
-        </div> -->
+        />       
         <p v-else>
             This student has not failed any assessments more than once yet.
         </p>
