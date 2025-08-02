@@ -169,7 +169,7 @@ export default {
             <h1 class="heading">My Progress</h1>
         </span>
         <h2 class="heading">Assessments</h2>
-        <h4>Failed multiple times</h4>
+        <h4 class="secondary-heading"> Failed multiple times</h4>
         <FailedAssessmentsHorizontalBarChart
             v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
             :data="teacherAnalyticsStore.studentMultipleFails"
@@ -179,7 +179,7 @@ export default {
         <p v-else>
             This student has not failed any assessments more than once yet.
         </p>
-        <h4>Passed</h4>
+        <h4 class="secondary-heading">Passed</h4>
         <PassedAssessmentsTimelineChart
             class="mb-5"
             v-if="assessmentPasses.length > 0"
@@ -187,7 +187,7 @@ export default {
         />     
         <p v-else>This student has not completed any assessments yet.</p>
 
-        <h4>Attempted</h4>
+        <h4 class="secondary-heading">Attempted</h4>
         <AttemptedAssessmentsTimelineChart
             class="mb-5"
             v-if="assessmentAttempts.length > 0"

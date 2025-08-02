@@ -207,21 +207,23 @@ export default {
             <h2 class="secondary-heading h3">{{ cohortName }}</h2>
         </span>
 
-        <h2 class="secondary-heading">Passed</h2>
+        <h4 class="secondary-heading">Passed</h4>
         <CohortPassedAssessmentsHorizontalBarChart
             v-if="masteredSkillQuantities.length > 0"
             :data="masteredSkillQuantities"
             colour="darkgreen"
+            class="mb-4"
         />
 
-        <h2 class="secondary-heading">Attempted</h2>
+        <h4 class="secondary-heading">Attempted</h4>
         <CohortAttemptedAssessmentsHorizontalChart
             v-if="attemptedAssessmentQuantities.length > 0"
             :data="attemptedAssessmentQuantities"
             colour="darkblue"
+            class="mb-4"
         />
 
-        <h2 class="secondary-heading">Failed multiple times</h2>
+        <h4 class="secondary-heading">Failed multiple times</h4>
         <FailedAssessmentsHorizontalBarChart
             v-if="failedAssessmentQuantities.length > 0"
             :data="failedAssessmentQuantities"
