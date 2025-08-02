@@ -144,20 +144,23 @@ export default {
                 :data="durationsPerDay"
                 colour="#5f31dd"
                 ref="cohortDurationPerDayLineChart"
+                class="mb-5"
             />
-            <p v-else>No data available</p>
+            <p v-else class="mb-5">No data available</p>
             <h4>Skill mastery progress</h4>
             <CohortProgressLineChart
                 v-if="classProgress.length > 0"
                 :data="classProgress"
                 colour="#5f31dd"
                 ref="cohortProgressLineChart"
+                class="mb-5"
             />
-            <p v-else>No data available</p>
+            <p v-else class="mb-5">No data available</p>
 
             <h4>Percentage of students who completed at least one skill</h4>
             <CohortPercentageStudentsMasteredAtLeastOneSkillPieChart
                 ref="cohortPercentageStudentsMasteredAtLeastOneSkillPieChart"
+                class="mb-5"
             />
         </div>
     </div>
