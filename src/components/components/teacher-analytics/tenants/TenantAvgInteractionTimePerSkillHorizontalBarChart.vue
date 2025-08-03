@@ -6,7 +6,7 @@ export default {
     props: ['data', 'colour'],
     data() {
         return {
-            padding: 60
+            
         };
     },
     mounted() {
@@ -29,12 +29,12 @@ export default {
         // Create the scales.
         const x = d3
             .scaleLinear()
-            .domain([0, d3.max(this.data, (d) => d.quantity)])
+            .domain([0, d3.max(this.data, (d) => d.milliseconds)])
             .range([marginLeft, width - marginRight]);
 
         const y = d3
             .scaleBand()
-            .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
+            .domain(d3.sort(this.data, (d) => -d.milliseconds).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
             .padding(0.1);
 
@@ -61,7 +61,7 @@ export default {
             .join('rect')
             .attr('x', x(0))
             .attr('y', (d) => y(d.name))
-            .attr('width', (d) => x(d.quantity) - x(0))
+            .attr('width', (d) => x(d.milliseconds) - x(0))
             .attr('height', y.bandwidth());
 
         // Append a label for each name.
@@ -71,14 +71,14 @@ export default {
             .selectAll()
             .data(this.data)
             .join('text')
-            .attr('x', (d) => x(d.quantity))
+            .attr('x', (d) => x(d.milliseconds))
             .attr('y', (d) => y(d.name) + y.bandwidth() / 2)
             .attr('dy', '0.35em')
             .attr('dx', -4)
-            .text((d) => d.formattedQuantity)
+            .text((d) => d.minutes)
             .call((text) =>
                 text
-                    .filter((d) => x(d.quantity) - x(0) < 30) // short bars
+                    .filter((d) => x(d.milliseconds) - x(0) < 30) // short bars
                     .attr('dx', +4)
                     .attr('fill', 'black')
                     .attr('text-anchor', 'start')

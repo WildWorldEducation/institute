@@ -1214,7 +1214,7 @@ router.get('/avg-times-on-skills/tenant/:tenantId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT skills.name AS name, AVG(duration) AS quantity
+            SELECT skills.name AS name, AVG(duration) AS milliseconds
             FROM user_skills
             JOIN users 
             ON user_skills.user_id = users.id
@@ -1224,7 +1224,7 @@ router.get('/avg-times-on-skills/tenant/:tenantId', (req, res, next) => {
             AND duration > 0
             AND users.tenant_id = ${conn.escape(req.params.tenantId)}
             GROUP BY skill_id
-            ORDER BY quantity DESC;                          
+            ORDER BY milliseconds DESC;                          
             `;
 
         conn.query(sqlQuery, (err, results) => {
@@ -1492,7 +1492,7 @@ router.get('/tenant-duration-per-day/:tenantId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT date, SUM(duration) AS quantity
+            SELECT date, SUM(duration) AS milliseconds
             FROM user_duration_tokens_per_day            
             JOIN users
             ON users.id = user_duration_tokens_per_day.user_id
