@@ -351,8 +351,7 @@ export default {
             var seconds = ((millis % 60000) / 1000).toFixed(0);
             return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
         },
-        downloadData(data, name){          
-            console.log(data)  
+        downloadData(data, name){               
             const headers = Object.keys(data[0]);
             console.log(headers)
             const csvRows = [];
