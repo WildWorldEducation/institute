@@ -39,14 +39,11 @@ export default {
             chosenPage: 1,
             tenantId: this.$route.params.tenantId,
             // Engagement -----------------------
+            durationPerDay: [],
             avgTimeOnSkills: [],
-            avgTokensToMasterSkills: [],
-            totalTokensPerSkill: [],
-            totalTokensPerDay: [],
-           
             percentageStudentsMasteredOneSkill: [],
+            // Academic performance
             tenantProgress: [],
-            studentDurationsPerSkill: [],
             numSkillsPassedPerNumStudents: [],
             passedAssessments: [],
             failedAssessments: [],
@@ -54,6 +51,10 @@ export default {
             rootSubjectsPassedAssessments: [],
             rootSubjectsAttemptedAssessments: [],
             attemptedAssessments: [],
+            // Resources
+            avgTokensToMasterSkills: [],
+            totalTokensPerSkill: [],
+            totalTokensPerDay: [],
             isDataWeekly: false
         };
     },
@@ -91,11 +92,12 @@ export default {
                 const data = await response.json();
                 this.avgTimeOnSkills = Array.isArray(data) ? data : [];
                 for (let i = 0; i < this.avgTimeOnSkills.length; i++) {
-                    this.avgTimeOnSkills[i].formattedQuantity =
+                    this.avgTimeOnSkills[i].minutes =
                         this.millisToMinutesAndSeconds(
-                            this.avgTimeOnSkills[i].quantity
+                            this.avgTimeOnSkills[i].milliseconds
                         );
                 }
+                console.log(this.avgTimeOnSkills)
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
@@ -110,11 +112,11 @@ export default {
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {
                         data[i].date = new Date(data[i].date);
-                        data[i].formattedQuantity =
-                            data[i].quantity / (1000 * 60);
+                        data[i].minutes =
+                            data[i].milliseconds / (1000 * 60);
                     }
                     data.sort((a, b) => a.date - b.date);
-                    this.studentDurationsPerSkill = data;
+                    this.durationPerDay = data;
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
@@ -386,7 +388,7 @@ export default {
         </span>
 
         <!-- Main Tab Navigation -->
-        <div class="mb-4 d-flex justify-content-between flex-wrap">
+        <div class="mb-4">
             <span class="nav nav-tabs flex-wrap d-flex">
                 <button
                     :class="[
@@ -430,14 +432,6 @@ export default {
                     <span class="d-inline">Resource Usage</span>
                 </button>
             </span>
-            <button
-                class="
-                    btn                    
-                    primary-btn
-                "                
-            >
-                <span>Download data</span>
-            </button>
         </div>
         <div v-if="chosenPage == 1">
             <!-- Filter Buttons -->
@@ -472,7 +466,7 @@ export default {
             <h4 class="d-flex justify-content-between">Time spent on platform per day 
                 <button 
                     class="btn"
-                    @click="downloadData(studentDurationsPerSkill, 'Time-per-day')">
+                    @click="downloadData(durationPerDay, 'Time-per-day')">
                     <svg xmlns="http://www.w3.org/2000/svg" 
                         viewBox="0 0 384 512"
                         width="18"
@@ -482,8 +476,8 @@ export default {
             </button>
             </h4>
             <TenantDurationPerDayLineChart
-                v-if="studentDurationsPerSkill.length > 0"
-                :data="studentDurationsPerSkill"
+                v-if="durationPerDay.length > 0"
+                :data="durationPerDay"
                 colour="#5f31dd"
                 class="mb-5"
             />
