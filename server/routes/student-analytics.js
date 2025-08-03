@@ -1102,7 +1102,7 @@ router.get(
             res.setHeader('Content-Type', 'application/json');
 
             let sqlQuery = `
-                SELECT AVG(token_count) AS quantity, skills.name AS name  
+                SELECT skills.name AS name, AVG(token_count) AS quantity   
                 FROM user_skills
                 JOIN users 
                 ON user_skills.user_id = users.id
@@ -1142,7 +1142,7 @@ router.get('/total-tokens-per-skill/tenant/:tenantId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT SUM(token_count) AS quantity, skills.name AS name  
+            SELECT skills.name AS name, SUM(token_count) AS quantity
             FROM user_skills
             JOIN users 
             ON user_skills.user_id = users.id
@@ -1214,7 +1214,7 @@ router.get('/avg-times-on-skills/tenant/:tenantId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT AVG(duration) AS quantity, skills.name AS name
+            SELECT skills.name AS name, AVG(duration) AS quantity
             FROM user_skills
             JOIN users 
             ON user_skills.user_id = users.id
@@ -1492,7 +1492,7 @@ router.get('/tenant-duration-per-day/:tenantId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT SUM(duration) AS quantity, date
+            SELECT date, SUM(duration) AS quantity
             FROM user_duration_tokens_per_day            
             JOIN users
             ON users.id = user_duration_tokens_per_day.user_id
@@ -1589,7 +1589,7 @@ router.get('/attempted-assessments/tenant/:tenantId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT COUNT(name) AS quantity, name
+            SELECT name, COUNT(name) AS quantity
             FROM assessment_attempts
             JOIN skills 
             ON skills.id = assessment_attempts.skill_id
@@ -1671,7 +1671,7 @@ router.get(
             const skills = await query(allSkillsQuery);
 
             let sqlQuery = `
-            SELECT skills.id, parent, skills.name, COUNT(name) AS quantity
+            SELECT skills.name, skills.id, parent, COUNT(name) AS quantity
             FROM assessment_attempts
             JOIN skills 
             ON skills.id = assessment_attempts.skill_id
@@ -1845,7 +1845,7 @@ router.get(
             const skills = await query(allSkillsQuery);
 
             let sqlQuery = `            
-                SELECT COUNT(name) AS quantity, name, parent
+                SELECT name, COUNT(name) AS quantity, parent
                 FROM assessment_attempts
                 JOIN skills 
                 ON skills.id = assessment_attempts.skill_id

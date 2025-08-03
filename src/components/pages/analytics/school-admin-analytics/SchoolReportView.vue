@@ -38,10 +38,12 @@ export default {
         return {
             chosenPage: 1,
             tenantId: this.$route.params.tenantId,
+            // Engagement -----------------------
+            avgTimeOnSkills: [],
             avgTokensToMasterSkills: [],
             totalTokensPerSkill: [],
             totalTokensPerDay: [],
-            avgTimeOnSkills: [],
+           
             percentageStudentsMasteredOneSkill: [],
             tenantProgress: [],
             studentDurationsPerSkill: [],
@@ -56,12 +58,12 @@ export default {
         };
     },
     async created() {
-        await this.getAvgTokensToMasterSkills();
-        await this.getTotalTokensPerSkill();
+        // Engagement -----------------------
         await this.getAvgTimeOnSkills();
-        await this.getPercentageStudentsMasteredOneSkill();
-        await this.getTenantProgress();
         await this.getTenantDuration();
+        await this.getPercentageStudentsMasteredOneSkill();
+        // Academic Performance
+        await this.getTenantProgress();        
         await this.getNumSkillsPassedPerNumStudents();
         await this.getPassedAssessments();
         await this.getFailedAssessments();
@@ -69,6 +71,9 @@ export default {
         await this.getPassedAssessmentsBySubject();
         await this.getAttemptedAssessmentsBySubject();
         await this.getTenantAssessmentsAttempted();
+        // Resource usage
+        await this.getAvgTokensToMasterSkills();
+        await this.getTotalTokensPerSkill();        
         await this.getTotalTokensPerDay();
     },
     methods: {
@@ -236,8 +241,7 @@ export default {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                this.rootSubjectsFailedAssessments = await response.json();
-                console.log(this.rootSubjectsFailedAssessments);
+                this.rootSubjectsFailedAssessments = await response.json();               
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
@@ -341,10 +345,35 @@ export default {
                 });
         },
 
+        // Utilities
         millisToMinutesAndSeconds(millis) {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);
             return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        },
+        downloadData(data, name){               
+            const headers = Object.keys(data[0]);
+            console.log(headers)
+            const csvRows = [];
+
+            // Header row
+            csvRows.push(headers.join(','));
+
+            // Data rows
+            for (const row of data) {
+            const values = headers.map(h => {
+                const val = row[h];
+                return `"${String(val).replace(/"/g, '""')}"`; // Escape quotes
+            });
+            csvRows.push(values.join(','));
+            }
+
+            const csvString = csvRows.join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = name + '.csv';
+            link.click();  
         }
     }
 };
@@ -357,47 +386,57 @@ export default {
         </span>
 
         <!-- Main Tab Navigation -->
-        <div class="nav nav-tabs mb-4 d-flex flex-wrap">
+        <div class="mb-4 d-flex justify-content-between flex-wrap">
+            <span class="nav nav-tabs flex-wrap d-flex">
+                <button
+                    :class="[
+                        'btn',
+                        'nav-link',
+                        'tab-btn',
+                        'flex-fill',
+                        'flex-sm-grow-0',
+                        'me-1',
+                        { active: chosenPage === 1 }
+                    ]"
+                    @click="chosenPage = 1"
+                >
+                    <span class="d-inline">Engagement</span>
+                </button>
+                <button
+                    :class="[
+                        'btn',
+                        'nav-link',
+                        'tab-btn',
+                        'flex-fill',
+                        'flex-sm-grow-0',
+                        'me-1',
+                        { active: chosenPage === 2 }
+                    ]"
+                    @click="chosenPage = 2"
+                >
+                    <span class="d-inline">Academic Performance</span>
+                </button>            
+                <button
+                    :class="[
+                        'btn',
+                        'nav-link',
+                        'tab-btn',
+                        'flex-fill',
+                        'flex-sm-grow-0',
+                        { active: chosenPage === 3 }
+                    ]"
+                    @click="chosenPage = 3"
+                >
+                    <span class="d-inline">Resource Usage</span>
+                </button>
+            </span>
             <button
-                :class="[
-                    'btn',
-                    'nav-link',
-                    'tab-btn',
-                    'flex-fill',
-                    'flex-sm-grow-0',
-                    'me-1',
-                    { active: chosenPage === 1 }
-                ]"
-                @click="chosenPage = 1"
+                class="
+                    btn                    
+                    primary-btn
+                "                
             >
-                <span class="d-inline">Engagement</span>
-            </button>
-            <button
-                :class="[
-                    'btn',
-                    'nav-link',
-                    'tab-btn',
-                    'flex-fill',
-                    'flex-sm-grow-0',
-                    'me-1',
-                    { active: chosenPage === 2 }
-                ]"
-                @click="chosenPage = 2"
-            >
-                <span class="d-inline">Academic Performance</span>
-            </button>
-            <button
-                :class="[
-                    'btn',
-                    'nav-link',
-                    'tab-btn',
-                    'flex-fill',
-                    'flex-sm-grow-0',
-                    { active: chosenPage === 3 }
-                ]"
-                @click="chosenPage = 3"
-            >
-                <span class="d-inline">Resource Usage</span>
+                <span>Download data</span>
             </button>
         </div>
         <div v-if="chosenPage == 1">
@@ -430,16 +469,38 @@ export default {
                     >This week</label
                 >
             </div> -->
-            <h4>Time spent on platform per day</h4>
+            <h4 class="d-flex justify-content-between">Time spent on platform per day 
+                <button 
+                    class="btn"
+                    @click="downloadData(studentDurationsPerSkill, 'Time-per-day')">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18">
+                        <!-- Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                    </svg>
+            </button>
+            </h4>
             <TenantDurationPerDayLineChart
                 v-if="studentDurationsPerSkill.length > 0"
                 :data="studentDurationsPerSkill"
                 colour="#5f31dd"
                 class="mb-5"
             />
-            <p v-else>No data yet</p>
-
-            <h4>Average interaction time per skill (minutes)</h4>
+            <p v-else>No data yet</p>            
+            
+            <h4 class="d-flex justify-content-between">Average interaction time per skill (minutes)
+                <button 
+                    class="btn"
+                    @click="downloadData(avgTimeOnSkills, 'Avg-time-per-skill')">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18">
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                    </svg>
+            </button>
+            </h4>
             <TenantAvgInteractionTimePerSkillHorizontalBarChart
                 v-if="avgTimeOnSkills.length > 0"
                 :data="avgTimeOnSkills"
@@ -447,10 +508,19 @@ export default {
                 class="mb-5"
             />
             <p v-else>No data yet</p>            
-
-            <h4>
-                Percentage of students who completed at least one skill
+            
+            <h4 class="d-flex justify-content-between">Percentage of students who completed at least one skill
                 (cumulative)
+                <button 
+                    class="btn"
+                    @click="downloadData(percentageStudentsMasteredOneSkill, 'Percentage-students-completed-one-skill')">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18">
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                    </svg>
+                </button> 
             </h4>
             <TenantPercentageStudentsMasteredAtLeastOneSkillPieChart
                 v-if="percentageStudentsMasteredOneSkill.length > 0"
@@ -490,7 +560,19 @@ export default {
                     >This week</label
                 >
             </div> -->
-            <h4>Skill mastery progress</h4>
+            
+            <h4 class="d-flex justify-content-between">Skill mastery progress
+                <button 
+                    class="btn"
+                    @click="downloadData(tenantProgress, 'Progress')">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18">
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                    </svg>
+                </button> 
+            </h4>
             <TenantProgressLineChart
                 v-if="tenantProgress.length > 0"
                 :data="tenantProgress"
@@ -499,8 +581,19 @@ export default {
             />
             <p v-else>No data yet</p>
 
-            <h3  class="secondary-heading mt-5">Performance by Subject</h3>
-            <h4>Failed more than once</h4>
+            <h3 class="secondary-heading mt-5">Performance by Subject</h3>            
+            <h4 class="d-flex justify-content-between">Failed more than once
+                <button 
+                    class="btn"
+                    @click="downloadData(rootSubjectsFailedAssessments, 'Subjects-failed')">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18">
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                    </svg>
+                </button> 
+            </h4>
             <TenantFailedAssessmentsByRootSubjectHorizontalBarChart
                 v-if="rootSubjectsFailedAssessments.length > 0"
                 :data="rootSubjectsFailedAssessments"
@@ -508,8 +601,19 @@ export default {
                 class="mb-5"
             />
             <p v-else>No data yet</p>
-
-            <h4>Passed</h4>
+            
+            <h4 class="d-flex justify-content-between">Passed
+                <button 
+                    class="btn"
+                    @click="downloadData(rootSubjectsPassedAssessments, 'Subjects-passed')">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18">
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                    </svg>
+                </button> 
+            </h4>
             <TenantPassedAssessmentsByRootSubjectHorizontalBarChart
                 v-if="rootSubjectsPassedAssessments.length > 0"
                 :data="rootSubjectsPassedAssessments"
@@ -517,8 +621,19 @@ export default {
                 class="mb-5"
             />
             <p v-else>No data yet</p>
-
-            <h4>Attempted</h4>
+          
+            <h4 class="d-flex justify-content-between">Attempted
+                <button 
+                    class="btn"
+                    @click="downloadData(rootSubjectsAttemptedAssessments, 'Subjects-attempted')">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18">
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                    </svg>
+                </button> 
+            </h4>
             <TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart
                 v-if="rootSubjectsAttemptedAssessments.length > 0"
                 :data="rootSubjectsAttemptedAssessments"
@@ -528,8 +643,17 @@ export default {
             <p v-else>No data yet</p>
 
             <h3 class="secondary-heading">Assessment Completion</h3>
-            <h4>
-                Number of students who have passed a specific number of skills
+            <h4 class="d-flex justify-content-between">Number of students who have passed a specific number of skills
+                <button 
+                    class="btn"
+                    @click="downloadData(numSkillsPassedPerNumStudents, 'Number-skills-passed-per-number-of-students')">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18">
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                    </svg>
+                </button> 
             </h4>
             <TenantNumSkillsPassedPerNumStudentsHorizontalBarChart
                 v-if="numSkillsPassedPerNumStudents.length > 0"
@@ -538,8 +662,19 @@ export default {
                 class="mb-5"
             />
             <p v-else>No data yet</p>
-
-            <h4>Number of students who have passed a specific skill</h4>
+            
+            <h4 class="d-flex justify-content-between">Number of students who have passed a specific skill
+                <button 
+                    class="btn"
+                    @click="downloadData(passedAssessments, 'Assessments-passed')">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18">
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                    </svg>
+                </button> 
+            </h4>
             <TenantPassedAssessmentsHorizontalBarChart
                 v-if="passedAssessments.length > 0"
                 :data="passedAssessments"
@@ -547,10 +682,19 @@ export default {
                 class="mb-5"
             />
             <p v-else>No data yet</p>
-
-            <h4>
-                Number of students who have attempted a specific skill
+            
+            <h4 class="d-flex justify-content-between">Number of students who have attempted a specific skill
                 assessment
+                <button 
+                    class="btn"
+                    @click="downloadData(attemptedAssessments, 'Assessments-attempted')">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18">
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                    </svg>
+                </button> 
             </h4>
             <TenantAssessmentsAttemptedHorizontalBarChart
                 v-if="attemptedAssessments.length > 0"
@@ -559,8 +703,19 @@ export default {
                 class="mb-5"
             />
             <p v-else>No data yet</p>
-
-            <h4>Skills that have been failed more than once</h4>
+            
+            <h4 class="d-flex justify-content-between">Skills that have been failed more than once
+                <button 
+                    class="btn"
+                    @click="downloadData(failedAssessments, 'Assessments-failed')">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18">
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                    </svg>
+                </button> 
+            </h4>
             <TenantFailedAssessmentsHorizontalBarChart
                 v-if="failedAssessments.length > 0"
                 :data="failedAssessments"
@@ -599,8 +754,19 @@ export default {
                     for="week3"
                     >This week</label
                 >
-            </div> -->
-             <h4>Tokens spent per day</h4>
+            </div> -->             
+             <h4 class="d-flex justify-content-between">Tokens spent per day
+                <button 
+                    class="btn"
+                    @click="downloadData(totalTokensPerDay, 'Tokens-per-day')">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18">
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                    </svg>
+                </button> 
+            </h4>
             <TenantTokensPerDayLineChart
                 v-if="totalTokensPerDay.length > 0"
                 :data="totalTokensPerDay"
@@ -614,15 +780,38 @@ export default {
                     student mastery of that skill</em
                 >
             </p>
-            <h4>Average number of tokens spent to master a skill</h4>
+            
+            <h4 class="d-flex justify-content-between">Average number of tokens spent to master a skill
+                <button 
+                    class="btn"
+                    @click="downloadData(avgTokensToMasterSkills, 'Avg-tokens-to-master-skill')">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18">
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                    </svg>
+                </button> 
+            </h4>
             <TenantAvgTokensToMasterSkillsHorizontalBarChart
                 v-if="avgTokensToMasterSkills.length > 0"
                 :data="avgTokensToMasterSkills"
                 colour="darkgreen"
             />
             <p v-else>No data yet</p>
-
-            <h4 class="mt-5">Tokens spent per skill</h4>
+            
+            <h4 class="d-flex justify-content-between mt-5">Tokens spent per skill
+                <button 
+                    class="btn"
+                    @click="downloadData(totalTokensPerSkill, 'Tokens-per-skill')">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18">
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                    </svg>
+                </button> 
+            </h4>
             <TenantTokensPerSkillHorizontalBarChart
                 v-if="totalTokensPerSkill.length > 0"
                 :data="totalTokensPerSkill"
