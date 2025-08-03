@@ -97,7 +97,6 @@ export default {
                             this.avgTimeOnSkills[i].milliseconds
                         );
                 }
-                console.log(this.avgTimeOnSkills)
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
