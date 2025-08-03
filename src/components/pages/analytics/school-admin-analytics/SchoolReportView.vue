@@ -38,10 +38,12 @@ export default {
         return {
             chosenPage: 1,
             tenantId: this.$route.params.tenantId,
+            // Engagement -----------------------
+            avgTimeOnSkills: [],
             avgTokensToMasterSkills: [],
             totalTokensPerSkill: [],
             totalTokensPerDay: [],
-            avgTimeOnSkills: [],
+           
             percentageStudentsMasteredOneSkill: [],
             tenantProgress: [],
             studentDurationsPerSkill: [],
@@ -56,12 +58,12 @@ export default {
         };
     },
     async created() {
-        await this.getAvgTokensToMasterSkills();
-        await this.getTotalTokensPerSkill();
+        // Engagement -----------------------
         await this.getAvgTimeOnSkills();
-        await this.getPercentageStudentsMasteredOneSkill();
-        await this.getTenantProgress();
         await this.getTenantDuration();
+        await this.getPercentageStudentsMasteredOneSkill();
+        // Academic Performance
+        await this.getTenantProgress();        
         await this.getNumSkillsPassedPerNumStudents();
         await this.getPassedAssessments();
         await this.getFailedAssessments();
@@ -69,6 +71,9 @@ export default {
         await this.getPassedAssessmentsBySubject();
         await this.getAttemptedAssessmentsBySubject();
         await this.getTenantAssessmentsAttempted();
+        // Resource usage
+        await this.getAvgTokensToMasterSkills();
+        await this.getTotalTokensPerSkill();        
         await this.getTotalTokensPerDay();
     },
     methods: {
@@ -236,8 +241,7 @@ export default {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                this.rootSubjectsFailedAssessments = await response.json();
-                console.log(this.rootSubjectsFailedAssessments);
+                this.rootSubjectsFailedAssessments = await response.json();               
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
@@ -341,10 +345,36 @@ export default {
                 });
         },
 
+        // Utilities
         millisToMinutesAndSeconds(millis) {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);
             return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        },
+        downloadData(data){          
+            console.log(data)  
+            const headers = Object.keys(data[0]);
+            console.log(headers)
+            const csvRows = [];
+
+            // Header row
+            csvRows.push(headers.join(','));
+
+            // Data rows
+            for (const row of data) {
+            const values = headers.map(h => {
+                const val = row[h];
+                return `"${String(val).replace(/"/g, '""')}"`; // Escape quotes
+            });
+            csvRows.push(values.join(','));
+            }
+
+            const csvString = csvRows.join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'chart-data.csv';
+            link.click();  
         }
     }
 };
@@ -357,47 +387,57 @@ export default {
         </span>
 
         <!-- Main Tab Navigation -->
-        <div class="nav nav-tabs mb-4 d-flex flex-wrap">
+        <div class="mb-4 d-flex justify-content-between flex-wrap">
+            <span class="nav nav-tabs flex-wrap d-flex">
+                <button
+                    :class="[
+                        'btn',
+                        'nav-link',
+                        'tab-btn',
+                        'flex-fill',
+                        'flex-sm-grow-0',
+                        'me-1',
+                        { active: chosenPage === 1 }
+                    ]"
+                    @click="chosenPage = 1"
+                >
+                    <span class="d-inline">Engagement</span>
+                </button>
+                <button
+                    :class="[
+                        'btn',
+                        'nav-link',
+                        'tab-btn',
+                        'flex-fill',
+                        'flex-sm-grow-0',
+                        'me-1',
+                        { active: chosenPage === 2 }
+                    ]"
+                    @click="chosenPage = 2"
+                >
+                    <span class="d-inline">Academic Performance</span>
+                </button>            
+                <button
+                    :class="[
+                        'btn',
+                        'nav-link',
+                        'tab-btn',
+                        'flex-fill',
+                        'flex-sm-grow-0',
+                        { active: chosenPage === 3 }
+                    ]"
+                    @click="chosenPage = 3"
+                >
+                    <span class="d-inline">Resource Usage</span>
+                </button>
+            </span>
             <button
-                :class="[
-                    'btn',
-                    'nav-link',
-                    'tab-btn',
-                    'flex-fill',
-                    'flex-sm-grow-0',
-                    'me-1',
-                    { active: chosenPage === 1 }
-                ]"
-                @click="chosenPage = 1"
+                class="
+                    btn                    
+                    primary-btn
+                "                
             >
-                <span class="d-inline">Engagement</span>
-            </button>
-            <button
-                :class="[
-                    'btn',
-                    'nav-link',
-                    'tab-btn',
-                    'flex-fill',
-                    'flex-sm-grow-0',
-                    'me-1',
-                    { active: chosenPage === 2 }
-                ]"
-                @click="chosenPage = 2"
-            >
-                <span class="d-inline">Academic Performance</span>
-            </button>
-            <button
-                :class="[
-                    'btn',
-                    'nav-link',
-                    'tab-btn',
-                    'flex-fill',
-                    'flex-sm-grow-0',
-                    { active: chosenPage === 3 }
-                ]"
-                @click="chosenPage = 3"
-            >
-                <span class="d-inline">Resource Usage</span>
+                <span>Download data</span>
             </button>
         </div>
         <div v-if="chosenPage == 1">
@@ -430,14 +470,25 @@ export default {
                     >This week</label
                 >
             </div> -->
-            <h4>Time spent on platform per day</h4>
+            <h4 class="d-flex justify-content-between">Time spent on platform per day 
+                <button 
+                    class="btn"
+                    @click="downloadData(avgTimeOnSkills)">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 384 512"
+                    width="18"
+                    height="18">
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                    </svg>
+            </button>
+            </h4>
             <TenantDurationPerDayLineChart
                 v-if="studentDurationsPerSkill.length > 0"
                 :data="studentDurationsPerSkill"
                 colour="#5f31dd"
                 class="mb-5"
             />
-            <p v-else>No data yet</p>
+            <p v-else>No data yet</p>            
 
             <h4>Average interaction time per skill (minutes)</h4>
             <TenantAvgInteractionTimePerSkillHorizontalBarChart
