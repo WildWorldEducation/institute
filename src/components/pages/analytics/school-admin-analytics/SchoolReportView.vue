@@ -351,7 +351,7 @@ export default {
             var seconds = ((millis % 60000) / 1000).toFixed(0);
             return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
         },
-        downloadData(data){          
+        downloadData(data, name){          
             console.log(data)  
             const headers = Object.keys(data[0]);
             console.log(headers)
@@ -373,7 +373,7 @@ export default {
             const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'chart-data.csv';
+            link.download = name + '.csv';
             link.click();  
         }
     }
@@ -473,7 +473,7 @@ export default {
             <h4 class="d-flex justify-content-between">Time spent on platform per day 
                 <button 
                     class="btn"
-                    @click="downloadData(studentDurationsPerSkill)">
+                    @click="downloadData(studentDurationsPerSkill, 'Time-per-day')">
                     <svg xmlns="http://www.w3.org/2000/svg" 
                         viewBox="0 0 384 512"
                         width="18"
@@ -493,7 +493,7 @@ export default {
             <h4 class="d-flex justify-content-between">Average interaction time per skill (minutes)
                 <button 
                     class="btn"
-                    @click="downloadData(avgTimeOnSkills)">
+                    @click="downloadData(avgTimeOnSkills, 'Avg-time-per-skill')">
                     <svg xmlns="http://www.w3.org/2000/svg" 
                         viewBox="0 0 384 512"
                         width="18"
@@ -514,7 +514,7 @@ export default {
                 (cumulative)
                 <button 
                     class="btn"
-                    @click="downloadData(percentageStudentsMasteredOneSkill)">
+                    @click="downloadData(percentageStudentsMasteredOneSkill, 'Percentage-students-completed-one-skill')">
                     <svg xmlns="http://www.w3.org/2000/svg" 
                         viewBox="0 0 384 512"
                         width="18"
@@ -565,7 +565,7 @@ export default {
             <h4 class="d-flex justify-content-between">Skill mastery progress
                 <button 
                     class="btn"
-                    @click="downloadData(tenantProgress)">
+                    @click="downloadData(tenantProgress, 'Progress')">
                     <svg xmlns="http://www.w3.org/2000/svg" 
                         viewBox="0 0 384 512"
                         width="18"
@@ -586,7 +586,7 @@ export default {
             <h4 class="d-flex justify-content-between">Failed more than once
                 <button 
                     class="btn"
-                    @click="downloadData(rootSubjectsFailedAssessments)">
+                    @click="downloadData(rootSubjectsFailedAssessments, 'Subjects-failed')">
                     <svg xmlns="http://www.w3.org/2000/svg" 
                         viewBox="0 0 384 512"
                         width="18"
@@ -606,7 +606,7 @@ export default {
             <h4 class="d-flex justify-content-between">Passed
                 <button 
                     class="btn"
-                    @click="downloadData(rootSubjectsPassedAssessments)">
+                    @click="downloadData(rootSubjectsPassedAssessments, 'Subjects-passed')">
                     <svg xmlns="http://www.w3.org/2000/svg" 
                         viewBox="0 0 384 512"
                         width="18"
@@ -626,7 +626,7 @@ export default {
             <h4 class="d-flex justify-content-between">Attempted
                 <button 
                     class="btn"
-                    @click="downloadData(rootSubjectsAttemptedAssessments)">
+                    @click="downloadData(rootSubjectsAttemptedAssessments, 'Subjects-attempted')">
                     <svg xmlns="http://www.w3.org/2000/svg" 
                         viewBox="0 0 384 512"
                         width="18"
@@ -647,7 +647,7 @@ export default {
             <h4 class="d-flex justify-content-between">Number of students who have passed a specific number of skills
                 <button 
                     class="btn"
-                    @click="downloadData(numSkillsPassedPerNumStudents)">
+                    @click="downloadData(numSkillsPassedPerNumStudents, 'Number-skills-passed-per-number-of-students')">
                     <svg xmlns="http://www.w3.org/2000/svg" 
                         viewBox="0 0 384 512"
                         width="18"
@@ -667,7 +667,7 @@ export default {
             <h4 class="d-flex justify-content-between">Number of students who have passed a specific skill
                 <button 
                     class="btn"
-                    @click="downloadData(passedAssessments)">
+                    @click="downloadData(passedAssessments, 'Assessments-passed')">
                     <svg xmlns="http://www.w3.org/2000/svg" 
                         viewBox="0 0 384 512"
                         width="18"
@@ -688,7 +688,7 @@ export default {
                 assessment
                 <button 
                     class="btn"
-                    @click="downloadData(attemptedAssessments)">
+                    @click="downloadData(attemptedAssessments, 'Assessments-attempted')">
                     <svg xmlns="http://www.w3.org/2000/svg" 
                         viewBox="0 0 384 512"
                         width="18"
@@ -708,7 +708,7 @@ export default {
             <h4 class="d-flex justify-content-between">Skills that have been failed more than once
                 <button 
                     class="btn"
-                    @click="downloadData(failedAssessments)">
+                    @click="downloadData(failedAssessments, 'Assessments-failed')">
                     <svg xmlns="http://www.w3.org/2000/svg" 
                         viewBox="0 0 384 512"
                         width="18"
@@ -759,7 +759,7 @@ export default {
              <h4 class="d-flex justify-content-between">Tokens spent per day
                 <button 
                     class="btn"
-                    @click="downloadData(totalTokensPerDay)">
+                    @click="downloadData(totalTokensPerDay, 'Tokens-per-day')">
                     <svg xmlns="http://www.w3.org/2000/svg" 
                         viewBox="0 0 384 512"
                         width="18"
@@ -785,7 +785,7 @@ export default {
             <h4 class="d-flex justify-content-between">Average number of tokens spent to master a skill
                 <button 
                     class="btn"
-                    @click="downloadData(avgTokensToMasterSkills)">
+                    @click="downloadData(avgTokensToMasterSkills, 'Avg-tokens-to-master-skill')">
                     <svg xmlns="http://www.w3.org/2000/svg" 
                         viewBox="0 0 384 512"
                         width="18"
@@ -804,7 +804,7 @@ export default {
             <h4 class="d-flex justify-content-between mt-5">Tokens spent per skill
                 <button 
                     class="btn"
-                    @click="downloadData(totalTokensPerSkill)">
+                    @click="downloadData(totalTokensPerSkill, 'Tokens-per-skill')">
                     <svg xmlns="http://www.w3.org/2000/svg" 
                         viewBox="0 0 384 512"
                         width="18"
