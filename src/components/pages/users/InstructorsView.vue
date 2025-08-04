@@ -45,6 +45,44 @@ export default {
             this.instructorsPerTenant = data;
             this.selectedInstructor = this.instructorsPerTenant[0];
         },
+        async checkIfTutorialComplete() {
+            const result = await fetch(
+                '/users/check-tutorial-progress/instructors/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            if (data == 0) {
+                this.isTutorialComplete = false;
+                this.showTutorialTip1 = true;
+            } else if (data == 1) {
+                this.isTutorialComplete = true;
+            }
+        },
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+                this.markTutorialComplete();
+            }
+        },
+        restartTutorial() {
+            this.showTutorialTip1 = true;
+            this.isTutorialComplete = false;
+        },
+        markTutorialComplete() {
+            let url =
+                '/users/mark-tutorial-complete/skill/' +
+                this.userDetailsStore.userId;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch(url, requestOptions);
+        },
+        skipTutorial() {
+            this.showTutorialTip1 = false;
+            this.isTutorialComplete = true;
+            this.markTutorialComplete();
+        },
         updateInstructorDetails(instructor) {
             this.selectedInstructor = instructor;
             this.$refs.InstructorDetails.getInstructorPercentageStudentsMasteredAtLeastOneSkill();
@@ -111,6 +149,29 @@ export default {
             >
                 <div class="row">
                     <InstructorDetails />
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Tutorial modals for school_admin -->
+    <div
+        v-if="userDetailsStore.role == 'school_admin' && showTutorialTip1"
+        class="modal"
+    >
+        <div class="modal-content">
+            <div v-if="showTutorialTip1">
+                <p>
+                    This page provides an overview of all instructors in your
+                    school, allowing you to monitor their performance and
+                    student progress.
+                </p>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        close
+                    </button>
                 </div>
             </div>
         </div>
@@ -231,7 +292,6 @@ export default {
     font-size: 18px;
     /* Could be more or less, depending on screen size */
 }
-
 /* Small devices (portrait phones) */
 @media (max-width: 480px) {
     /* Modal Content/Box */
