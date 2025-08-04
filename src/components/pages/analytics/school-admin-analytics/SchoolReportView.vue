@@ -106,16 +106,33 @@ export default {
             }
         },
         async getTenantDuration() {
+            console.log("test")
+            this.durationPerDay = []
             fetch(`/student-analytics/tenant-duration-per-day/${this.tenantId}`)
                 .then((response) => response.json())
-                .then((data) => {
-                    for (let i = 0; i < data.length; i++) {
+                .then(async (data) => {
+                
+                    for (let i = 0; i < data.length; i++) {                        
+                        const now = new Date();
+                        const oneWeekAgo = new Date();
+                        oneWeekAgo.setDate(now.getDate() - 7); // Set to 7 days before 'now'                       
+                        // Compare the timestamp of the date to check with the timestamp of one week ago
                         data[i].date = new Date(data[i].date);
                         data[i].minutes =
-                            data[i].milliseconds / (1000 * 60);
+                                    data[i].milliseconds / (1000 * 60);
+                        if (this.isDataLastWeek)
+                        {
+                            if(data[i].date >= oneWeekAgo)
+                            {                              
+                                this.durationPerDay.push(data[i])                         
+                            }                        
+                        }
+                        else{
+                            this.durationPerDay.push(data[i])                         
+                        }
                     }
-                    data.sort((a, b) => a.date - b.date);
-                    this.durationPerDay = data;
+                     this.durationPerDay.sort((a, b) => a.date - b.date);  
+                     console.log(this.durationPerDay)             
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
@@ -376,9 +393,20 @@ export default {
             link.download = name + '.csv';
             link.click();  
         },
-        toggleWeeklyCumulativeData(){
+        async toggleWeeklyCumulativeData(){
             this.isDataLastWeek = !this.isDataLastWeek
-        }
+            await this.getTenantDuration()
+        },
+        // async checkIfDateMoreThanWeekAgo(dateToCheck) {
+        //     const now = new Date();
+        //     const oneWeekAgo = new Date();
+        //     oneWeekAgo.setDate(now.getDate() - 7); // Set to 7 days before 'now'                       
+        //     console.log(dateToCheck)
+        //     console.log(oneWeekAgo)
+        //     console.log(dateToCheck < oneWeekAgo)
+        //     // Compare the timestamp of the date to check with the timestamp of one week ago
+        //     return dateToCheck < oneWeekAgo;
+        // }
     }
 };
 </script>
