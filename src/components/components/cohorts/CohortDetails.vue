@@ -1,7 +1,7 @@
 <script>
 import { useCohortsStore } from '../../../stores/CohortsStore.js';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
-import CohortPercentageStudentsMasteredAtLeastOneSkillPieChart from './../teacher-analytics/cohorts/CohortPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
+
 export default {
     setup() {
         const cohortsStore = useCohortsStore();
@@ -29,7 +29,9 @@ export default {
         }
     },
     components: {},
-    methods: {}
+    methods: {
+        deleteCohort() {}
+    }
 };
 </script>
 
@@ -144,7 +146,7 @@ export default {
                             this.cohortsStore.cohorts.length > 0
                         "
                         :to="`/cohort/${this.cohortsStore.selectedCohort.id}/total-time`"
-                        class="fit-content mt-2"
+                        class="fit-content mt-2 mb-3"
                         target="_blank"
                     >
                         Time on platform
@@ -152,28 +154,11 @@ export default {
                     <router-link
                         v-else
                         :to="`/cohort/all-students/total-time`"
-                        class="fit-content mt-2"
+                        class="fit-content mt-2 mb-3"
                         target="_blank"
                     >
                         Time on platform
                     </router-link>
-
-                    <!-- <h3>Possibly: Skills -> Learning Objectives</h3>
-                    <ul>
-                        <li><em>which are students struggling with</em></li>
-                        <li>
-                            <em
-                                >Calendar showing: passing assessments, taking
-                                them, failing them:
-                                https://observablehq.com/@d3/calendar/2</em
-                            >
-                        </li>
-                    </ul> -->
-
-                    <!-- Goals -->
-                    <h2 class="secondary-heading h4 mt-4">Assign work</h2>
-                    <p>Assign goals</p>
-                    <p>See current goals</p>
                 </div>
             </div>
             <!-- Right column -->
@@ -213,12 +198,12 @@ export default {
                         </svg>
                     </router-link>
                     <!-- Delete Cohort -->
-                    <button
+                    <!-- <button
                         class="btn btn-danger mt-1 remove-student-btn fit-content"
                         @click="showRemoveStudentModal = true"
                     >
                         Delete Cohort
-                    </button>
+                    </button> -->
                 </div>
                 <!-- Lock skill progress -->
                 <!-- <div class="mt-4">
@@ -298,12 +283,12 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-                <p>Are you sure you want to remove this student?</p>
+                <p>Are you sure you want to delete this cohort?</p>
                 <div style="display: flex; gap: 10px">
                     <button
                         type="button"
                         class="btn btn-danger"
-                        @click="removeStudentFromInstructor()"
+                        @click="deleteCohort()"
                     >
                         Yes
                     </button>

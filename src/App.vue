@@ -22,7 +22,7 @@ export default {
             isDropdownOpen: false
         };
     },
-    async mounted() {     
+    async mounted() {
         await this.userDetailsStore.getUserDetails();
         this.initDropdown();
 
@@ -61,10 +61,10 @@ export default {
         initDropdown() {
             // Single click listener that handles both toggle and outside clicks
             document.addEventListener('click', (e) => {
-                const dropdown = document.querySelector('.nav-item.dropdown');              
+                const dropdown = document.querySelector('.nav-item.dropdown');
                 const dropdownToggle =
                     dropdown?.querySelector('.dropdown-toggle');
-           
+
                 if (!dropdown) return;
 
                 // If clicking the toggle button, toggle the dropdown
@@ -361,7 +361,10 @@ export default {
                             class="nav-item dropdown"
                         >
                             <div class="d-flex align-items-center">
-                                <RouterLink to="/students" class="nav-link">
+                                <RouterLink
+                                    to="/tenant-students"
+                                    class="nav-link"
+                                >
                                     <span>Students</span>
                                 </RouterLink>
                             </div>
@@ -455,6 +458,15 @@ export default {
                                         Profile
                                     </RouterLink>
                                     <RouterLink
+                                        v-if="
+                                            userDetailsStore.role == 'student'
+                                        "
+                                        to="/my-progress"
+                                        class="dropdown-item"
+                                    >
+                                        My Progress
+                                    </RouterLink>
+                                    <RouterLink
                                         to="/settings"
                                         class="dropdown-item"
                                     >
@@ -530,6 +542,13 @@ export default {
                             <div class="d-sm-none">
                                 <RouterLink to="/profile" class="nav-link">
                                     Profile
+                                </RouterLink>
+                                <RouterLink
+                                    v-if="userDetailsStore.role == 'student'"
+                                    to="/my-progress"
+                                    class="nav-link"
+                                >
+                                    My Progress
                                 </RouterLink>
                                 <RouterLink to="/settings" class="nav-link">
                                     Settings

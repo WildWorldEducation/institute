@@ -14,11 +14,6 @@ export default {
             '#tenant-avg-tokens-to-master-skills-chart-container'
         );
 
-        console.log(
-            'Data received for TenantAvgTokensToMasterSkillsHorizontalBarChart:',
-            this.data
-        );
-
         // Specify the chart’s dimensions, based on a bar’s height.
         const barHeight = 25;
         const marginTop = 0;
@@ -109,7 +104,7 @@ export default {
 
 <style scoped>
 #tenant-avg-tokens-to-master-skills-chart-container {
-    overflow-y: scroll;
+    overflow-y: auto;
     max-height: 500px;
 }
 </style>
