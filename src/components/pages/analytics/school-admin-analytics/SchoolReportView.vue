@@ -64,6 +64,7 @@ export default {
             showTutorialTip2: false,
             showTutorialTip3: false,
             showTutorialTip4: false,
+            dataMode: 'total',
             isLoading: true
         };
     },
@@ -119,11 +120,11 @@ export default {
             }
         },
         restartTutorial() {
+            this.isTutorialComplete = false;
             this.showTutorialTip1 = true;
             this.showTutorialTip2 = false;
             this.showTutorialTip3 = false;
             this.showTutorialTip4 = false;
-            this.isTutorialComplete = false;
         },
         markTutorialComplete() {
             let url =
@@ -169,25 +170,29 @@ export default {
             }
         },
         async getTenantDuration() {
-            fetch(`/student-analytics/tenant-duration-per-day/${this.tenantId}`)
+            this.durationPerDay = [];
+            let url = `/student-analytics/tenant-duration-per-day/${this.dataMode}/${this.tenantId}`;
+            fetch(url)
                 .then((response) => response.json())
-                .then((data) => {
+                .then(async (data) => {
+                    this.durationPerDay = [];
                     for (let i = 0; i < data.length; i++) {
                         data[i].date = new Date(data[i].date);
                         data[i].minutes = data[i].milliseconds / (1000 * 60);
+                        this.durationPerDay.push(data[i]);
                     }
-                    data.sort((a, b) => a.date - b.date);
-                    this.durationPerDay = data;
+                    this.durationPerDay.sort((a, b) => a.date - b.date);
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
                 });
         },
         async getPercentageStudentsMasteredOneSkill() {
+            this.percentageStudentsMasteredOneSkill = [];
             try {
-                const response = await fetch(
-                    `/student-analytics/percentage-students-mastered-one-skill/tenant/${this.tenantId}`
-                );
+                let url = `/student-analytics/percentage-students-mastered-one-skill/tenant/${this.dataMode}/${this.tenantId}`;
+                let response = await fetch(url);
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -372,7 +377,10 @@ export default {
             }
         },
         async getTotalTokensPerDay() {
-            fetch(`/student-analytics/tenant-tokens-per-day/${this.tenantId}`)
+            this.totalTokensPerDay = [];
+            fetch(
+                `/student-analytics/tenant-tokens-per-day/${this.dataMode}/${this.tenantId}`
+            )
                 .then((response) => response.json())
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {
@@ -399,7 +407,7 @@ export default {
             for (const row of data) {
                 const values = headers.map((h) => {
                     const val = row[h];
-                    return `"${String(val).replace(/"/g, '""')}"`;
+                    return `"${String(val).replace(/"/g, '""')}"`; // Escape quotes
                 });
                 csvRows.push(values.join(','));
             }
@@ -411,7 +419,22 @@ export default {
             link.href = URL.createObjectURL(blob);
             link.download = name + '.csv';
             link.click();
+        },
+        async toggleWeeklyCumulativeData() {
+            if (this.dataMode == 'total') this.dataMode = 'weekly';
+            else this.dataMode = 'total';
+
+            await this.getTenantDuration();
+            await this.getPercentageStudentsMasteredOneSkill();
+            await this.getTotalTokensPerDay();
         }
+        // async checkIfDateMoreThanWeekAgo(dateToCheck) {
+        //     const now = new Date();
+        //     const oneWeekAgo = new Date();
+        //     oneWeekAgo.setDate(now.getDate() - 7); // Set to 7 days before 'now'
+        //     // Compare the timestamp of the date to check with the timestamp of one week ago
+        //     return dateToCheck >= oneWeekAgo;
+        // }
     }
 };
 </script>
@@ -592,18 +615,14 @@ export default {
                     </div>
                 </div>
             </span>
-        </div>
-        <div v-if="chosenPage == 1">
             <!-- Filter Buttons -->
-            <!-- <div
-                class="btn-group d-flex d-sm-inline-flex mt-2 mb-4"
-                role="group"
-            >
+            <div class="btn-group d-flex d-sm-inline-flex mt-2" role="group">
                 <input
                     type="radio"
                     class="btn-check"
                     name="timeFilter1"
                     id="total1"
+                    @click="toggleWeeklyCumulativeData"
                     checked
                 />
                 <label
@@ -616,13 +635,16 @@ export default {
                     class="btn-check"
                     name="timeFilter1"
                     id="week1"
+                    @click="toggleWeeklyCumulativeData"
                 />
                 <label
                     class="btn btn-outline-dark btn-sm filter-btn"
                     for="week1"
                     >This week</label
                 >
-            </div> -->
+            </div>
+        </div>
+        <div v-if="chosenPage == 1">
             <h4 class="d-flex justify-content-between">
                 Time spent on platform per day
                 <button
@@ -648,7 +670,7 @@ export default {
                 colour="#5f31dd"
                 class="mb-5"
             />
-            <p v-else>No data yet</p>
+            <div v-else style="height: 500px">No data yet</div>
 
             <h4 class="d-flex justify-content-between">
                 Average interaction time per skill (minutes)
@@ -711,36 +733,6 @@ export default {
         </div>
 
         <div v-else-if="chosenPage == 2">
-            <!-- Filter Buttons -->
-            <!-- <div
-                class="btn-group d-flex d-sm-inline-flex mt-2 mb-4"
-                role="group"
-            >
-                <input
-                    type="radio"
-                    class="btn-check"
-                    name="timeFilter2"
-                    id="total2"
-                    checked
-                />
-                <label
-                    class="btn btn-outline-dark btn-sm filter-btn"
-                    for="total2"
-                    >Total</label
-                >
-                <input
-                    type="radio"
-                    class="btn-check"
-                    name="timeFilter2"
-                    id="week2"
-                />
-                <label
-                    class="btn btn-outline-dark btn-sm filter-btn"
-                    for="week2"
-                    >This week</label
-                >
-            </div> -->
-
             <h4 class="d-flex justify-content-between">
                 Skill mastery progress
                 <button
@@ -991,35 +983,6 @@ export default {
         </div>
 
         <div v-else-if="chosenPage == 3">
-            <!-- Filter Buttons -->
-            <!-- <div
-                class="btn-group d-flex d-sm-inline-flex mt-2 mb-4"
-                role="group"
-            >
-                <input
-                    type="radio"
-                    class="btn-check"
-                    name="timeFilter3"
-                    id="total3"
-                    checked
-                />
-                <label
-                    class="btn btn-outline-dark btn-sm filter-btn"
-                    for="total3"
-                    >Total</label
-                >
-                <input
-                    type="radio"
-                    class="btn-check"
-                    name="timeFilter3"
-                    id="week3"
-                />
-                <label
-                    class="btn btn-outline-dark btn-sm filter-btn"
-                    for="week3"
-                    >This week</label
-                >
-            </div> -->
             <h4 class="d-flex justify-content-between">
                 Tokens spent per day
                 <button
