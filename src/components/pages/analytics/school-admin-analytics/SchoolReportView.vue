@@ -334,14 +334,17 @@ export default {
             }
         },
         async getTotalTokensPerDay() {
-            fetch(`/student-analytics/tenant-tokens-per-day/${this.tenantId}`)
+            this.totalTokensPerDay = []
+            fetch(
+                `/student-analytics/tenant-tokens-per-day/${this.dataMode}/${this.tenantId}`
+            )
                 .then((response) => response.json())
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {
                         data[i].date = new Date(data[i].date);
                     }
                     data.sort((a, b) => a.date - b.date);
-                    this.totalTokensPerDay = data;
+                    this.totalTokensPerDay = data;                  
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
@@ -386,7 +389,8 @@ export default {
 
             await this.getTenantDuration();
             await this.getPercentageStudentsMasteredOneSkill();
-        },
+            await this.getTotalTokensPerDay();
+        }
         // async checkIfDateMoreThanWeekAgo(dateToCheck) {
         //     const now = new Date();
         //     const oneWeekAgo = new Date();
@@ -405,7 +409,7 @@ export default {
         </span>
 
         <!-- Main Tab Navigation -->
-        <div class="mb-4">
+        <div class="mb-4 flex-wrap d-flex justify-content-between">
             <span class="nav nav-tabs flex-wrap d-flex">
                 <button
                     :class="[
@@ -449,13 +453,8 @@ export default {
                     <span class="d-inline">Resource Usage</span>
                 </button>
             </span>
-        </div>
-        <div v-if="chosenPage == 1">
             <!-- Filter Buttons -->
-            <div
-                class="btn-group d-flex d-sm-inline-flex mt-2 mb-4"
-                role="group"
-            >
+            <div class="btn-group d-flex d-sm-inline-flex mt-2" role="group">
                 <input
                     type="radio"
                     class="btn-check"
@@ -482,6 +481,8 @@ export default {
                     >This week</label
                 >
             </div>
+        </div>
+        <div v-if="chosenPage == 1">
             <h4 class="d-flex justify-content-between">
                 Time spent on platform per day
                 <button
@@ -570,36 +571,6 @@ export default {
         </div>
 
         <div v-else-if="chosenPage == 2">
-            <!-- Filter Buttons -->
-            <!-- <div
-                class="btn-group d-flex d-sm-inline-flex mt-2 mb-4"
-                role="group"
-            >
-                <input
-                    type="radio"
-                    class="btn-check"
-                    name="timeFilter2"
-                    id="total2"
-                    checked
-                />
-                <label
-                    class="btn btn-outline-dark btn-sm filter-btn"
-                    for="total2"
-                    >Total</label
-                >
-                <input
-                    type="radio"
-                    class="btn-check"
-                    name="timeFilter2"
-                    id="week2"
-                />
-                <label
-                    class="btn btn-outline-dark btn-sm filter-btn"
-                    for="week2"
-                    >This week</label
-                >
-            </div> -->
-
             <h4 class="d-flex justify-content-between">
                 Skill mastery progress
                 <button
@@ -850,35 +821,6 @@ export default {
         </div>
 
         <div v-else-if="chosenPage == 3">
-            <!-- Filter Buttons -->
-            <!-- <div
-                class="btn-group d-flex d-sm-inline-flex mt-2 mb-4"
-                role="group"
-            >
-                <input
-                    type="radio"
-                    class="btn-check"
-                    name="timeFilter3"
-                    id="total3"
-                    checked
-                />
-                <label
-                    class="btn btn-outline-dark btn-sm filter-btn"
-                    for="total3"
-                    >Total</label
-                >
-                <input
-                    type="radio"
-                    class="btn-check"
-                    name="timeFilter3"
-                    id="week3"
-                />
-                <label
-                    class="btn btn-outline-dark btn-sm filter-btn"
-                    for="week3"
-                    >This week</label
-                >
-            </div> -->
             <h4 class="d-flex justify-content-between">
                 Tokens spent per day
                 <button

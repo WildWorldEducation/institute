@@ -1175,19 +1175,30 @@ router.get('/total-tokens-per-skill/tenant/:tenantId', (req, res, next) => {
     }
 });
 
-router.get('/tenant-tokens-per-day/:tenantId', (req, res, next) => {
+router.get('/tenant-tokens-per-day/:dataMode/:tenantId', (req, res, next) => {
     // Check if logged in.
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery;
 
-        sqlQuery = `
+        let sqlQuery;
+        if (req.params.dataMode == 'total') {
+            sqlQuery = `
             SELECT date, SUM(user_duration_tokens_per_day.tokens) AS quantity
             FROM user_duration_tokens_per_day
             JOIN users
             ON users.id = user_duration_tokens_per_day.user_id
             where tenant_id = ${conn.escape(req.params.tenantId)}
             GROUP BY date;`;
+        } else {
+            sqlQuery = `
+            SELECT date, SUM(user_duration_tokens_per_day.tokens) AS quantity
+            FROM user_duration_tokens_per_day
+            JOIN users
+            ON users.id = user_duration_tokens_per_day.user_id
+            where tenant_id = ${conn.escape(req.params.tenantId)}
+            AND date >= NOW() - INTERVAL 1 WEEK
+            GROUP BY date;`;
+        }
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -1517,7 +1528,7 @@ router.get('/tenant-duration-per-day/:dataMode/:tenantId', (req, res, next) => {
             ORDER BY date ASC;`;
         } else {
             sqlQuery = `
-            SELECT date, SUM(duration) AS milliseconds
+             SELECT date, SUM(duration) AS milliseconds
             FROM user_duration_tokens_per_day            
             JOIN users
             ON users.id = user_duration_tokens_per_day.user_id
@@ -1532,7 +1543,6 @@ router.get('/tenant-duration-per-day/:dataMode/:tenantId', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-
                 res.json(result);
             } catch (err) {
                 next(err);
