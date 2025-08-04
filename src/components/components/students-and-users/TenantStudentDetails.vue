@@ -21,7 +21,7 @@ export default {
         };
     },
     data() {
-        return {            
+        return {
             isMobileCheck: window.innerWidth,
             studentProgress: []
         };
@@ -90,36 +90,17 @@ export default {
             <div class="d-flex flex-column">
                 <h2 class="secondary-heading">Academic Performance Overview</h2>
                 <h4>Skill mastery progress</h4>
-
                 <StudentProgressLineChart
                     v-if="studentProgress.length > 0"
                     :data="studentProgress"
                     colour="#5f31dd"
                 />
                 <p v-else>No data to show yet.</p>
-                <!-- <p>
-                    (Jonathan, you may be able to determine what would be both
-                    easiest and most compelling for us to share at this
-                    level—e.g. Skills mastered, Key Skills mastered by student
-                    grade, progress made, % progress made within cohorts, etc.)
-                </p>
-                <ul>
-                    <li>number of skills mastered</li>
-                    <li>% progress made within cohorts</li>
-                </ul> -->
-
-                <!-- <h3>Estimated Mastery Scores</h3>
-                <p>
-                    Offers the current best estimate of a student’s progress,
-                    calculated from all available data (skills completed per
-                    their grade's cohort skills—e.g. "12th grade skills").
-                </p>
-                <p>
-                    <em
-                        >Student skills completed as percentage of grade level
-                        skills</em
-                    >
-                </p> -->
+                <h4>Skills visited</h4>
+                <h4>Time spent on skills</h4>
+                <h4>Assessments attempted</h4>
+                <h4>Assessments passed</h4>
+                <h4>Assessments failed</h4>
             </div>
         </div>
     </div>
