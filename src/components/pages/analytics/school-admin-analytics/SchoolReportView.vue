@@ -55,8 +55,7 @@ export default {
             avgTokensToMasterSkills: [],
             totalTokensPerSkill: [],
             totalTokensPerDay: [],
-            isDataLastWeek: false,
-            durationPerDayIsLoading: false
+            dataMode: 'total'
         };
     },
     async created() {
@@ -107,39 +106,28 @@ export default {
             }
         },
         async getTenantDuration() {
-            this.durationPerDayIsLoading = true;
             this.durationPerDay = [];
-            fetch(`/student-analytics/tenant-duration-per-day/${this.tenantId}`)
+            let url = `/student-analytics/tenant-duration-per-day/${this.dataMode}/${this.tenantId}`;
+            fetch(url)
                 .then((response) => response.json())
                 .then(async (data) => {
                     this.durationPerDay = [];
                     for (let i = 0; i < data.length; i++) {
                         data[i].date = new Date(data[i].date);
                         data[i].minutes = data[i].milliseconds / (1000 * 60);
-                        if (this.isDataLastWeek) {
-                            if (
-                                await this.checkIfDateMoreThanWeekAgo(
-                                    data[i].date
-                                )
-                            ) {
-                                this.durationPerDay.push(data[i]);
-                            }
-                        } else {
-                            this.durationPerDay.push(data[i]);
-                        }
+                        this.durationPerDay.push(data[i]);
                     }
                     this.durationPerDay.sort((a, b) => a.date - b.date);
-                    this.durationPerDayIsLoading = false;
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
                 });
         },
         async getPercentageStudentsMasteredOneSkill() {
+            this.percentageStudentsMasteredOneSkill = [];
             try {
-                const response = await fetch(
-                    `/student-analytics/percentage-students-mastered-one-skill/tenant/${this.tenantId}`
-                );
+                let url = `/student-analytics/percentage-students-mastered-one-skill/tenant/${this.dataMode}/${this.tenantId}`;
+                let response = await fetch(url);
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -393,16 +381,19 @@ export default {
             link.click();
         },
         async toggleWeeklyCumulativeData() {
-            this.isDataLastWeek = !this.isDataLastWeek;
+            if (this.dataMode == 'total') this.dataMode = 'weekly';
+            else this.dataMode = 'total';
+
             await this.getTenantDuration();
+            await this.getPercentageStudentsMasteredOneSkill();
         },
-        async checkIfDateMoreThanWeekAgo(dateToCheck) {
-            const now = new Date();
-            const oneWeekAgo = new Date();
-            oneWeekAgo.setDate(now.getDate() - 7); // Set to 7 days before 'now'
-            // Compare the timestamp of the date to check with the timestamp of one week ago
-            return dateToCheck >= oneWeekAgo;
-        }
+        // async checkIfDateMoreThanWeekAgo(dateToCheck) {
+        //     const now = new Date();
+        //     const oneWeekAgo = new Date();
+        //     oneWeekAgo.setDate(now.getDate() - 7); // Set to 7 days before 'now'
+        //     // Compare the timestamp of the date to check with the timestamp of one week ago
+        //     return dateToCheck >= oneWeekAgo;
+        // }
     }
 };
 </script>
@@ -461,7 +452,7 @@ export default {
         </div>
         <div v-if="chosenPage == 1">
             <!-- Filter Buttons -->
-            <!-- <div
+            <div
                 class="btn-group d-flex d-sm-inline-flex mt-2 mb-4"
                 role="group"
             >
@@ -470,6 +461,7 @@ export default {
                     class="btn-check"
                     name="timeFilter1"
                     id="total1"
+                    @click="toggleWeeklyCumulativeData"
                     checked
                 />
                 <label
@@ -482,57 +474,39 @@ export default {
                     class="btn-check"
                     name="timeFilter1"
                     id="week1"
+                    @click="toggleWeeklyCumulativeData"
                 />
                 <label
                     class="btn btn-outline-dark btn-sm filter-btn"
                     for="week1"
                     >This week</label
                 >
-            </div> -->
+            </div>
             <h4 class="d-flex justify-content-between">
                 Time spent on platform per day
-                <span>
-                    <button
-                        v-if="!isDataLastWeek"
-                        @click="toggleWeeklyCumulativeData"
-                        class="btn"
+                <button
+                    class="btn"
+                    @click="downloadData(durationPerDay, 'Time-per-day')"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18"
                     >
-                        Last week
-                    </button>
-                    <button
-                        v-else
-                        @click="toggleWeeklyCumulativeData"
-                        class="btn"
-                    >
-                        Cumulative
-                    </button>
-                    <button
-                        class="btn"
-                        @click="downloadData(durationPerDay, 'Time-per-day')"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 384 512"
-                            width="18"
-                            height="18"
-                        >
-                            <!-- Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                            <path
-                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
-                            />
-                        </svg>
-                    </button>
-                </span>
+                        <!-- Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                        />
+                    </svg>
+                </button>
             </h4>
             <TenantDurationPerDayLineChart
-                v-if="durationPerDay.length > 0 && !durationPerDayIsLoading"
+                v-if="durationPerDay.length > 0"
                 :data="durationPerDay"
                 colour="#5f31dd"
                 class="mb-5"
             />
-            <div v-else-if="durationPerDayIsLoading" style="height: 500px">
-                loading
-            </div>
             <div v-else style="height: 500px">No data yet</div>
 
             <h4 class="d-flex justify-content-between">
