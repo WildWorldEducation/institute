@@ -315,6 +315,7 @@ export default {
             this.isGoal = false;
             this.isAssessmentStarted = false;
 
+            console.log(this.userSkills);
             for (let i = 0; i < this.userSkills.length; i++) {
                 if (this.userSkills[i].id == this.skill.id) {
                     // For domain skills, we always want to keep the button visible

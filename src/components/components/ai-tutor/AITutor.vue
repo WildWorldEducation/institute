@@ -602,12 +602,13 @@ export default {
 
             // If this is the first time the user starts the assessment,
             // record that the user has started the assessment.
-            if (this.$parent.isAssessmentStarted == false) {
-                this.userSkillsStore.recordAssessmentAttempt(
-                    this.userDetailsStore.userId,
-                    this.skill.id
-                );
-            }
+
+            // if (this.$parent.isAssessmentStarted == false) {
+            //     this.userSkillsStore.recordAssessmentAttempt(
+            //         this.userDetailsStore.userId,
+            //         this.skill.id
+            //     );
+            // }
             this.$router.push(`${this.skill.id}/assessment`);
         },
         // Get all latex string in a message
