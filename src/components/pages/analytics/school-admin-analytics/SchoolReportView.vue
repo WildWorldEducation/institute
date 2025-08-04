@@ -55,7 +55,8 @@ export default {
             avgTokensToMasterSkills: [],
             totalTokensPerSkill: [],
             totalTokensPerDay: [],
-            isDataLastWeek: false
+            isDataLastWeek: false,
+            durationPerDayIsLoading: false
         };
     },
     async created() {
@@ -64,7 +65,7 @@ export default {
         await this.getTenantDuration();
         await this.getPercentageStudentsMasteredOneSkill();
         // Academic Performance
-        await this.getTenantProgress();        
+        await this.getTenantProgress();
         await this.getNumSkillsPassedPerNumStudents();
         await this.getPassedAssessments();
         await this.getFailedAssessments();
@@ -74,7 +75,7 @@ export default {
         await this.getTenantAssessmentsAttempted();
         // Resource usage
         await this.getAvgTokensToMasterSkills();
-        await this.getTotalTokensPerSkill();        
+        await this.getTotalTokensPerSkill();
         await this.getTotalTokensPerDay();
     },
     methods: {
@@ -106,33 +107,29 @@ export default {
             }
         },
         async getTenantDuration() {
-            console.log("test")
-            this.durationPerDay = []
+            this.durationPerDayIsLoading = true;
+            this.durationPerDay = [];
             fetch(`/student-analytics/tenant-duration-per-day/${this.tenantId}`)
                 .then((response) => response.json())
                 .then(async (data) => {
-                
-                    for (let i = 0; i < data.length; i++) {                        
-                        const now = new Date();
-                        const oneWeekAgo = new Date();
-                        oneWeekAgo.setDate(now.getDate() - 7); // Set to 7 days before 'now'                       
-                        // Compare the timestamp of the date to check with the timestamp of one week ago
+                    this.durationPerDay = [];
+                    for (let i = 0; i < data.length; i++) {
                         data[i].date = new Date(data[i].date);
-                        data[i].minutes =
-                                    data[i].milliseconds / (1000 * 60);
-                        if (this.isDataLastWeek)
-                        {
-                            if(data[i].date >= oneWeekAgo)
-                            {                              
-                                this.durationPerDay.push(data[i])                         
-                            }                        
-                        }
-                        else{
-                            this.durationPerDay.push(data[i])                         
+                        data[i].minutes = data[i].milliseconds / (1000 * 60);
+                        if (this.isDataLastWeek) {
+                            if (
+                                await this.checkIfDateMoreThanWeekAgo(
+                                    data[i].date
+                                )
+                            ) {
+                                this.durationPerDay.push(data[i]);
+                            }
+                        } else {
+                            this.durationPerDay.push(data[i]);
                         }
                     }
-                     this.durationPerDay.sort((a, b) => a.date - b.date);  
-                     console.log(this.durationPerDay)             
+                    this.durationPerDay.sort((a, b) => a.date - b.date);
+                    this.durationPerDayIsLoading = false;
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
@@ -259,7 +256,7 @@ export default {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                this.rootSubjectsFailedAssessments = await response.json();               
+                this.rootSubjectsFailedAssessments = await response.json();
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
@@ -369,9 +366,9 @@ export default {
             var seconds = ((millis % 60000) / 1000).toFixed(0);
             return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
         },
-        downloadData(data, name){               
+        downloadData(data, name) {
             const headers = Object.keys(data[0]);
-            console.log(headers)
+            console.log(headers);
             const csvRows = [];
 
             // Header row
@@ -379,34 +376,33 @@ export default {
 
             // Data rows
             for (const row of data) {
-            const values = headers.map(h => {
-                const val = row[h];
-                return `"${String(val).replace(/"/g, '""')}"`; // Escape quotes
-            });
-            csvRows.push(values.join(','));
+                const values = headers.map((h) => {
+                    const val = row[h];
+                    return `"${String(val).replace(/"/g, '""')}"`; // Escape quotes
+                });
+                csvRows.push(values.join(','));
             }
 
             const csvString = csvRows.join('\n');
-            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const blob = new Blob([csvString], {
+                type: 'text/csv;charset=utf-8;'
+            });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = name + '.csv';
-            link.click();  
+            link.click();
         },
-        async toggleWeeklyCumulativeData(){
-            this.isDataLastWeek = !this.isDataLastWeek
-            await this.getTenantDuration()
+        async toggleWeeklyCumulativeData() {
+            this.isDataLastWeek = !this.isDataLastWeek;
+            await this.getTenantDuration();
         },
-        // async checkIfDateMoreThanWeekAgo(dateToCheck) {
-        //     const now = new Date();
-        //     const oneWeekAgo = new Date();
-        //     oneWeekAgo.setDate(now.getDate() - 7); // Set to 7 days before 'now'                       
-        //     console.log(dateToCheck)
-        //     console.log(oneWeekAgo)
-        //     console.log(dateToCheck < oneWeekAgo)
-        //     // Compare the timestamp of the date to check with the timestamp of one week ago
-        //     return dateToCheck < oneWeekAgo;
-        // }
+        async checkIfDateMoreThanWeekAgo(dateToCheck) {
+            const now = new Date();
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(now.getDate() - 7); // Set to 7 days before 'now'
+            // Compare the timestamp of the date to check with the timestamp of one week ago
+            return dateToCheck >= oneWeekAgo;
+        }
     }
 };
 </script>
@@ -447,7 +443,7 @@ export default {
                     @click="chosenPage = 2"
                 >
                     <span class="d-inline">Academic Performance</span>
-                </button>            
+                </button>
                 <button
                     :class="[
                         'btn',
@@ -493,41 +489,70 @@ export default {
                     >This week</label
                 >
             </div> -->
-            <h4 class="d-flex justify-content-between">Time spent on platform per day 
+            <h4 class="d-flex justify-content-between">
+                Time spent on platform per day
                 <span>
-                <button v-if="!isDataLastWeek" @click="toggleWeeklyCumulativeData" class="btn">Last week</button>
-                <button v-else @click="toggleWeeklyCumulativeData" class="btn">Cumulative</button>
-                <button 
-                    class="btn"
-                    @click="downloadData(durationPerDay, 'Time-per-day')">
-                    <svg xmlns="http://www.w3.org/2000/svg" 
-                        viewBox="0 0 384 512"
-                        width="18"
-                        height="18">
-                        <!-- Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
-                    </svg>
-                </button>
+                    <button
+                        v-if="!isDataLastWeek"
+                        @click="toggleWeeklyCumulativeData"
+                        class="btn"
+                    >
+                        Last week
+                    </button>
+                    <button
+                        v-else
+                        @click="toggleWeeklyCumulativeData"
+                        class="btn"
+                    >
+                        Cumulative
+                    </button>
+                    <button
+                        class="btn"
+                        @click="downloadData(durationPerDay, 'Time-per-day')"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            width="18"
+                            height="18"
+                        >
+                            <!-- Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                            />
+                        </svg>
+                    </button>
                 </span>
             </h4>
             <TenantDurationPerDayLineChart
-                v-if="durationPerDay.length > 0"
+                v-if="durationPerDay.length > 0 && !durationPerDayIsLoading"
                 :data="durationPerDay"
                 colour="#5f31dd"
                 class="mb-5"
             />
-            <p v-else>No data yet</p>            
-            
-            <h4 class="d-flex justify-content-between">Average interaction time per skill (minutes)
-                <button 
+            <div v-else-if="durationPerDayIsLoading" style="height: 500px">
+                loading
+            </div>
+            <div v-else style="height: 500px">No data yet</div>
+
+            <h4 class="d-flex justify-content-between">
+                Average interaction time per skill (minutes)
+                <button
                     class="btn"
-                    @click="downloadData(avgTimeOnSkills, 'Avg-time-per-skill')">
-                    <svg xmlns="http://www.w3.org/2000/svg" 
+                    @click="downloadData(avgTimeOnSkills, 'Avg-time-per-skill')"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 384 512"
                         width="18"
-                        height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                        height="18"
+                    >
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                        />
                     </svg>
-            </button>
+                </button>
             </h4>
             <TenantAvgInteractionTimePerSkillHorizontalBarChart
                 v-if="avgTimeOnSkills.length > 0"
@@ -535,20 +560,32 @@ export default {
                 colour="purple"
                 class="mb-5"
             />
-            <p v-else>No data yet</p>            
-            
-            <h4 class="d-flex justify-content-between">Percentage of students who completed at least one skill
+            <p v-else>No data yet</p>
+
+            <h4 class="d-flex justify-content-between">
+                Percentage of students who completed at least one skill
                 (cumulative)
-                <button 
+                <button
                     class="btn"
-                    @click="downloadData(percentageStudentsMasteredOneSkill, 'Percentage-students-completed-one-skill')">
-                    <svg xmlns="http://www.w3.org/2000/svg" 
+                    @click="
+                        downloadData(
+                            percentageStudentsMasteredOneSkill,
+                            'Percentage-students-completed-one-skill'
+                        )
+                    "
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 384 512"
                         width="18"
-                        height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                        height="18"
+                    >
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                        />
                     </svg>
-                </button> 
+                </button>
             </h4>
             <TenantPercentageStudentsMasteredAtLeastOneSkillPieChart
                 v-if="percentageStudentsMasteredOneSkill.length > 0"
@@ -588,18 +625,25 @@ export default {
                     >This week</label
                 >
             </div> -->
-            
-            <h4 class="d-flex justify-content-between">Skill mastery progress
-                <button 
+
+            <h4 class="d-flex justify-content-between">
+                Skill mastery progress
+                <button
                     class="btn"
-                    @click="downloadData(tenantProgress, 'Progress')">
-                    <svg xmlns="http://www.w3.org/2000/svg" 
+                    @click="downloadData(tenantProgress, 'Progress')"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 384 512"
                         width="18"
-                        height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                        height="18"
+                    >
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                        />
                     </svg>
-                </button> 
+                </button>
             </h4>
             <TenantProgressLineChart
                 v-if="tenantProgress.length > 0"
@@ -609,18 +653,30 @@ export default {
             />
             <p v-else>No data yet</p>
 
-            <h3 class="secondary-heading mt-5">Performance by Subject</h3>            
-            <h4 class="d-flex justify-content-between">Failed more than once
-                <button 
+            <h3 class="secondary-heading mt-5">Performance by Subject</h3>
+            <h4 class="d-flex justify-content-between">
+                Failed more than once
+                <button
                     class="btn"
-                    @click="downloadData(rootSubjectsFailedAssessments, 'Subjects-failed')">
-                    <svg xmlns="http://www.w3.org/2000/svg" 
+                    @click="
+                        downloadData(
+                            rootSubjectsFailedAssessments,
+                            'Subjects-failed'
+                        )
+                    "
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 384 512"
                         width="18"
-                        height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                        height="18"
+                    >
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                        />
                     </svg>
-                </button> 
+                </button>
             </h4>
             <TenantFailedAssessmentsByRootSubjectHorizontalBarChart
                 v-if="rootSubjectsFailedAssessments.length > 0"
@@ -629,18 +685,30 @@ export default {
                 class="mb-5"
             />
             <p v-else>No data yet</p>
-            
-            <h4 class="d-flex justify-content-between">Passed
-                <button 
+
+            <h4 class="d-flex justify-content-between">
+                Passed
+                <button
                     class="btn"
-                    @click="downloadData(rootSubjectsPassedAssessments, 'Subjects-passed')">
-                    <svg xmlns="http://www.w3.org/2000/svg" 
+                    @click="
+                        downloadData(
+                            rootSubjectsPassedAssessments,
+                            'Subjects-passed'
+                        )
+                    "
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 384 512"
                         width="18"
-                        height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                        height="18"
+                    >
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                        />
                     </svg>
-                </button> 
+                </button>
             </h4>
             <TenantPassedAssessmentsByRootSubjectHorizontalBarChart
                 v-if="rootSubjectsPassedAssessments.length > 0"
@@ -649,18 +717,30 @@ export default {
                 class="mb-5"
             />
             <p v-else>No data yet</p>
-          
-            <h4 class="d-flex justify-content-between">Attempted
-                <button 
+
+            <h4 class="d-flex justify-content-between">
+                Attempted
+                <button
                     class="btn"
-                    @click="downloadData(rootSubjectsAttemptedAssessments, 'Subjects-attempted')">
-                    <svg xmlns="http://www.w3.org/2000/svg" 
+                    @click="
+                        downloadData(
+                            rootSubjectsAttemptedAssessments,
+                            'Subjects-attempted'
+                        )
+                    "
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 384 512"
                         width="18"
-                        height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                        height="18"
+                    >
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                        />
                     </svg>
-                </button> 
+                </button>
             </h4>
             <TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart
                 v-if="rootSubjectsAttemptedAssessments.length > 0"
@@ -671,17 +751,29 @@ export default {
             <p v-else>No data yet</p>
 
             <h3 class="secondary-heading">Assessment Completion</h3>
-            <h4 class="d-flex justify-content-between">Number of students who have passed a specific number of skills
-                <button 
+            <h4 class="d-flex justify-content-between">
+                Number of students who have passed a specific number of skills
+                <button
                     class="btn"
-                    @click="downloadData(numSkillsPassedPerNumStudents, 'Number-skills-passed-per-number-of-students')">
-                    <svg xmlns="http://www.w3.org/2000/svg" 
+                    @click="
+                        downloadData(
+                            numSkillsPassedPerNumStudents,
+                            'Number-skills-passed-per-number-of-students'
+                        )
+                    "
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 384 512"
                         width="18"
-                        height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                        height="18"
+                    >
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                        />
                     </svg>
-                </button> 
+                </button>
             </h4>
             <TenantNumSkillsPassedPerNumStudentsHorizontalBarChart
                 v-if="numSkillsPassedPerNumStudents.length > 0"
@@ -690,18 +782,27 @@ export default {
                 class="mb-5"
             />
             <p v-else>No data yet</p>
-            
-            <h4 class="d-flex justify-content-between">Number of students who have passed a specific skill
-                <button 
+
+            <h4 class="d-flex justify-content-between">
+                Number of students who have passed a specific skill
+                <button
                     class="btn"
-                    @click="downloadData(passedAssessments, 'Assessments-passed')">
-                    <svg xmlns="http://www.w3.org/2000/svg" 
+                    @click="
+                        downloadData(passedAssessments, 'Assessments-passed')
+                    "
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 384 512"
                         width="18"
-                        height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                        height="18"
+                    >
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                        />
                     </svg>
-                </button> 
+                </button>
             </h4>
             <TenantPassedAssessmentsHorizontalBarChart
                 v-if="passedAssessments.length > 0"
@@ -710,19 +811,31 @@ export default {
                 class="mb-5"
             />
             <p v-else>No data yet</p>
-            
-            <h4 class="d-flex justify-content-between">Number of students who have attempted a specific skill
+
+            <h4 class="d-flex justify-content-between">
+                Number of students who have attempted a specific skill
                 assessment
-                <button 
+                <button
                     class="btn"
-                    @click="downloadData(attemptedAssessments, 'Assessments-attempted')">
-                    <svg xmlns="http://www.w3.org/2000/svg" 
+                    @click="
+                        downloadData(
+                            attemptedAssessments,
+                            'Assessments-attempted'
+                        )
+                    "
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 384 512"
                         width="18"
-                        height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                        height="18"
+                    >
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                        />
                     </svg>
-                </button> 
+                </button>
             </h4>
             <TenantAssessmentsAttemptedHorizontalBarChart
                 v-if="attemptedAssessments.length > 0"
@@ -731,18 +844,27 @@ export default {
                 class="mb-5"
             />
             <p v-else>No data yet</p>
-            
-            <h4 class="d-flex justify-content-between">Skills that have been failed more than once
-                <button 
+
+            <h4 class="d-flex justify-content-between">
+                Skills that have been failed more than once
+                <button
                     class="btn"
-                    @click="downloadData(failedAssessments, 'Assessments-failed')">
-                    <svg xmlns="http://www.w3.org/2000/svg" 
+                    @click="
+                        downloadData(failedAssessments, 'Assessments-failed')
+                    "
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 384 512"
                         width="18"
-                        height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                        height="18"
+                    >
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                        />
                     </svg>
-                </button> 
+                </button>
             </h4>
             <TenantFailedAssessmentsHorizontalBarChart
                 v-if="failedAssessments.length > 0"
@@ -750,7 +872,7 @@ export default {
                 colour="darkred"
                 class="mb-5"
             />
-            <p v-else>No data yet</p>            
+            <p v-else>No data yet</p>
         </div>
 
         <div v-else-if="chosenPage == 3">
@@ -782,18 +904,25 @@ export default {
                     for="week3"
                     >This week</label
                 >
-            </div> -->             
-             <h4 class="d-flex justify-content-between">Tokens spent per day
-                <button 
+            </div> -->
+            <h4 class="d-flex justify-content-between">
+                Tokens spent per day
+                <button
                     class="btn"
-                    @click="downloadData(totalTokensPerDay, 'Tokens-per-day')">
-                    <svg xmlns="http://www.w3.org/2000/svg" 
+                    @click="downloadData(totalTokensPerDay, 'Tokens-per-day')"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 384 512"
                         width="18"
-                        height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                        height="18"
+                    >
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                        />
                     </svg>
-                </button> 
+                </button>
             </h4>
             <TenantTokensPerDayLineChart
                 v-if="totalTokensPerDay.length > 0"
@@ -808,18 +937,30 @@ export default {
                     student mastery of that skill</em
                 >
             </p>
-            
-            <h4 class="d-flex justify-content-between">Average number of tokens spent to master a skill
-                <button 
+
+            <h4 class="d-flex justify-content-between">
+                Average number of tokens spent to master a skill
+                <button
                     class="btn"
-                    @click="downloadData(avgTokensToMasterSkills, 'Avg-tokens-to-master-skill')">
-                    <svg xmlns="http://www.w3.org/2000/svg" 
+                    @click="
+                        downloadData(
+                            avgTokensToMasterSkills,
+                            'Avg-tokens-to-master-skill'
+                        )
+                    "
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 384 512"
                         width="18"
-                        height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                        height="18"
+                    >
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                        />
                     </svg>
-                </button> 
+                </button>
             </h4>
             <TenantAvgTokensToMasterSkillsHorizontalBarChart
                 v-if="avgTokensToMasterSkills.length > 0"
@@ -827,18 +968,27 @@ export default {
                 colour="darkgreen"
             />
             <p v-else>No data yet</p>
-            
-            <h4 class="d-flex justify-content-between mt-5">Tokens spent per skill
-                <button 
+
+            <h4 class="d-flex justify-content-between mt-5">
+                Tokens spent per skill
+                <button
                     class="btn"
-                    @click="downloadData(totalTokensPerSkill, 'Tokens-per-skill')">
-                    <svg xmlns="http://www.w3.org/2000/svg" 
+                    @click="
+                        downloadData(totalTokensPerSkill, 'Tokens-per-skill')
+                    "
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 384 512"
                         width="18"
-                        height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. --> <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"/>
+                        height="18"
+                    >
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                        />
                     </svg>
-                </button> 
+                </button>
             </h4>
             <TenantTokensPerSkillHorizontalBarChart
                 v-if="totalTokensPerSkill.length > 0"
@@ -846,7 +996,7 @@ export default {
                 colour="#5f31dd"
                 class="mb-5"
             />
-            <p v-else class="mb-5">No data yet</p>           
+            <p v-else class="mb-5">No data yet</p>
         </div>
     </div>
 </template>

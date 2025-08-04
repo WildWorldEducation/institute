@@ -5,9 +5,7 @@ export default {
     name: 'TenantDurationPerDayLineChart',
     props: ['data', 'colour'],
     data() {
-        return {
-            padding: 60
-        };
+        return {};
     },
     mounted() {
         const data = this.data;
