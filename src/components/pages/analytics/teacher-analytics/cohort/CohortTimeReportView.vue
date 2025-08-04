@@ -4,8 +4,8 @@ import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
 import CohortDurationPerDayLineChart from '../../../../components/teacher-analytics/cohorts/CohortDurationPerDayLineChart.vue';
 import CohortCompareDurationHorizontalChart from '../../../../components/teacher-analytics/cohorts/CohortCompareDurationHorizontalChart.vue';
 import CohortDurationPerSkillHorizontalBarChart from '../../../../components/teacher-analytics/cohorts/CohortDurationPerSkillHorizontalBarChart.vue';
-import CohortTimeHorizontalChart from '../../../components/teacher-analytics/cohorts/CohortTimeHorizontalChart.vue';
-import TimePerSkillHorizontalBarChart from '../../../components/teacher-analytics/students/TimePerSkillHorizontalBarChart.vue';
+import CohortTimeHorizontalChart from '../../../../components/teacher-analytics/cohorts/CohortTimeHorizontalChart.vue';
+import TimePerSkillHorizontalBarChart from '../../../../components/teacher-analytics/students/TimePerSkillHorizontalBarChart.vue';
 
 export default {
     setup() {
