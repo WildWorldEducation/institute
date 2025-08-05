@@ -3,11 +3,13 @@ import TenantAvgTokensToMasterSkillsHorizontalBarChart from '../../../components
 import TenantTokensPerSkillHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantTokensPerSkillHorizontalBarChart.vue';
 import TenantTokensPerDayLineChart from '../../../components/teacher-analytics/tenants/TenantTokensPerDayLineChart.vue';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
+import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
-        return { userDetailsStore };
+        const analyticsStore = useAnalyticsStore();
+        return { userDetailsStore, analyticsStore };
     },
     components: {
         TenantAvgTokensToMasterSkillsHorizontalBarChart,
@@ -17,10 +19,6 @@ export default {
     data() {
         return {
             tenantId: this.$route.params.tenantId,
-            // Resources
-            avgTokensToMasterSkills: [],
-            totalTokensPerSkill: [],
-            totalTokensPerDay: [],
             isDataWeekly: false,
             // Tutorial tooltips
             isTutorialComplete: false,
@@ -93,7 +91,6 @@ export default {
             this.isTutorialComplete = true;
             this.markTutorialComplete();
         },
-        // Resource usage
         async getAvgTokensToMasterSkills() {
             try {
                 const response = await fetch(
@@ -103,13 +100,17 @@ export default {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
-                this.avgTokensToMasterSkills = Array.isArray(data) ? data : [];
+                this.analyticsStore.avgTokensToMasterSkills = Array.isArray(
+                    data
+                )
+                    ? data
+                    : [];
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
                     error
                 );
-                this.avgTokensToMasterSkills = [];
+                this.analyticsStore.avgTokensToMasterSkills = [];
             }
         },
         async getTotalTokensPerSkill() {
@@ -121,17 +122,19 @@ export default {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
-                this.totalTokensPerSkill = Array.isArray(data) ? data : [];
+                this.analyticsStore.totalTokensPerSkill = Array.isArray(data)
+                    ? data
+                    : [];
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
                     error
                 );
-                this.totalTokensPerSkill = [];
+                this.analyticsStore.totalTokensPerSkill = [];
             }
         },
         async getTotalTokensPerDay() {
-            this.totalTokensPerDay = [];
+            this.analyticsStore.totalTokensPerDay = [];
             fetch(
                 `/student-analytics/tenant-tokens-per-day/${this.dataMode}/${this.tenantId}`
             )
@@ -141,7 +144,7 @@ export default {
                         data[i].date = new Date(data[i].date);
                     }
                     data.sort((a, b) => a.date - b.date);
-                    this.totalTokensPerDay = data;
+                    this.analyticsStore.totalTokensPerDay = data;
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
@@ -228,7 +231,12 @@ export default {
             Tokens spent per day
             <button
                 class="btn"
-                @click="downloadData(totalTokensPerDay, 'Tokens-per-day')"
+                @click="
+                    downloadData(
+                        analyticsStore.totalTokensPerDay,
+                        'Tokens-per-day'
+                    )
+                "
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -244,8 +252,8 @@ export default {
             </button>
         </h4>
         <TenantTokensPerDayLineChart
-            v-if="totalTokensPerDay.length > 0"
-            :data="totalTokensPerDay"
+            v-if="analyticsStore.totalTokensPerDay.length > 0"
+            :data="analyticsStore.totalTokensPerDay"
             colour="#5f31dd"
             class="mb-5"
         />
@@ -263,7 +271,7 @@ export default {
                 class="btn"
                 @click="
                     downloadData(
-                        avgTokensToMasterSkills,
+                        analyticsStore.avgTokensToMasterSkills,
                         'Avg-tokens-to-master-skill'
                     )
                 "
@@ -282,8 +290,8 @@ export default {
             </button>
         </h4>
         <TenantAvgTokensToMasterSkillsHorizontalBarChart
-            v-if="avgTokensToMasterSkills.length > 0"
-            :data="avgTokensToMasterSkills"
+            v-if="analyticsStore.avgTokensToMasterSkills.length > 0"
+            :data="analyticsStore.avgTokensToMasterSkills"
             colour="darkgreen"
         />
         <p v-else>No data yet</p>
@@ -292,7 +300,12 @@ export default {
             Tokens spent per skill
             <button
                 class="btn"
-                @click="downloadData(totalTokensPerSkill, 'Tokens-per-skill')"
+                @click="
+                    downloadData(
+                        analyticsStore.totalTokensPerSkill,
+                        'Tokens-per-skill'
+                    )
+                "
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -308,8 +321,8 @@ export default {
             </button>
         </h4>
         <TenantTokensPerSkillHorizontalBarChart
-            v-if="totalTokensPerSkill.length > 0"
-            :data="totalTokensPerSkill"
+            v-if="analyticsStore.totalTokensPerSkill.length > 0"
+            :data="analyticsStore.totalTokensPerSkill"
             colour="#5f31dd"
             class="mb-5"
         />

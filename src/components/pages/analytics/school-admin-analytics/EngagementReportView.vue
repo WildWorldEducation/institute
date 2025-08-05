@@ -3,11 +3,13 @@ import TenantAvgInteractionTimePerSkillHorizontalBarChart from '../../../compone
 import TenantPercentageStudentsMasteredAtLeastOneSkillPieChart from '../../../components/teacher-analytics/tenants/TenantPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
 import TenantDurationPerDayLineChart from '../../../components/teacher-analytics/tenants/TenantDurationPerDayLineChart.vue';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
+import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
-        return { userDetailsStore };
+        const analyticsStore = useAnalyticsStore();
+        return { userDetailsStore, analyticsStore };
     },
     components: {
         TenantAvgInteractionTimePerSkillHorizontalBarChart,
@@ -19,7 +21,6 @@ export default {
             tenantId: this.$route.params.tenantId,
             // Engagement -----------------------
             durationPerDay: [],
-            avgTimeOnSkills: [],
             percentageStudentsMasteredOneSkill: [],
             isDataWeekly: false,
             // Tutorial tooltips
@@ -35,9 +36,12 @@ export default {
         // Check tutorial progress
         await this.checkIfTutorialComplete();
         // Engagement -----------------------
-        await this.getAvgTimeOnSkills();
-        await this.getTenantDuration();
-        await this.getPercentageStudentsMasteredOneSkill();
+        if (this.analyticsStore.avgTimeOnSkills.length == 0)
+            await this.getAvgTimeOnSkills();
+        if (this.analyticsStore.durationPerDay.length == 0)
+            await this.getTenantDuration();
+        if (this.analyticsStore.percentageStudentsMasteredOneSkill.length == 0)
+            await this.getPercentageStudentsMasteredOneSkill();
     },
     methods: {
         // Tutorial methods
@@ -103,11 +107,18 @@ export default {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
-                this.avgTimeOnSkills = Array.isArray(data) ? data : [];
-                for (let i = 0; i < this.avgTimeOnSkills.length; i++) {
-                    this.avgTimeOnSkills[i].minutes =
+
+                this.analyticsStore.avgTimeOnSkills = Array.isArray(data)
+                    ? data
+                    : [];
+                for (
+                    let i = 0;
+                    i < this.analyticsStore.avgTimeOnSkills.length;
+                    i++
+                ) {
+                    this.analyticsStore.avgTimeOnSkills[i].minutes =
                         this.millisToMinutesAndSeconds(
-                            this.avgTimeOnSkills[i].milliseconds
+                            this.analyticsStore.avgTimeOnSkills[i].milliseconds
                         );
                 }
             } catch (error) {
@@ -119,25 +130,27 @@ export default {
             }
         },
         async getTenantDuration() {
-            this.durationPerDay = [];
+            this.analyticsStore.durationPerDay = [];
             let url = `/student-analytics/tenant-duration-per-day/${this.dataMode}/${this.tenantId}`;
             fetch(url)
                 .then((response) => response.json())
                 .then(async (data) => {
-                    this.durationPerDay = [];
+                    this.analyticsStore.durationPerDay = [];
                     for (let i = 0; i < data.length; i++) {
                         data[i].date = new Date(data[i].date);
                         data[i].minutes = data[i].milliseconds / (1000 * 60);
-                        this.durationPerDay.push(data[i]);
+                        this.analyticsStore.durationPerDay.push(data[i]);
                     }
-                    this.durationPerDay.sort((a, b) => a.date - b.date);
+                    this.analyticsStore.durationPerDay.sort(
+                        (a, b) => a.date - b.date
+                    );
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
                 });
         },
         async getPercentageStudentsMasteredOneSkill() {
-            this.percentageStudentsMasteredOneSkill = [];
+            this.analyticsStore.percentageStudentsMasteredOneSkill = [];
             try {
                 let url = `/student-analytics/percentage-students-mastered-one-skill/tenant/${this.dataMode}/${this.tenantId}`;
                 let response = await fetch(url);
@@ -145,13 +158,14 @@ export default {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                this.percentageStudentsMasteredOneSkill = await response.json();
+                this.analyticsStore.percentageStudentsMasteredOneSkill =
+                    await response.json();
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
                     error
                 );
-                this.percentageStudentsMasteredOneSkill = [];
+                this.analyticsStore.percentageStudentsMasteredOneSkill = [];
             }
         },
         // Utilities
@@ -240,7 +254,9 @@ export default {
             Time spent on platform per day
             <button
                 class="btn"
-                @click="downloadData(durationPerDay, 'Time-per-day')"
+                @click="
+                    downloadData(analyticsStore.durationPerDay, 'Time-per-day')
+                "
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -256,8 +272,8 @@ export default {
             </button>
         </h4>
         <TenantDurationPerDayLineChart
-            v-if="durationPerDay.length > 0"
-            :data="durationPerDay"
+            v-if="analyticsStore.durationPerDay.length > 0"
+            :data="analyticsStore.durationPerDay"
             colour="#5f31dd"
             class="mb-5"
         />
@@ -267,7 +283,12 @@ export default {
             Average interaction time per skill (minutes)
             <button
                 class="btn"
-                @click="downloadData(avgTimeOnSkills, 'Avg-time-per-skill')"
+                @click="
+                    downloadData(
+                        analyticsStore.avgTimeOnSkills,
+                        'Avg-time-per-skill'
+                    )
+                "
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -283,8 +304,8 @@ export default {
             </button>
         </h4>
         <TenantAvgInteractionTimePerSkillHorizontalBarChart
-            v-if="avgTimeOnSkills.length > 0"
-            :data="avgTimeOnSkills"
+            v-if="analyticsStore.avgTimeOnSkills.length > 0"
+            :data="analyticsStore.avgTimeOnSkills"
             colour="purple"
             class="mb-5"
         />
@@ -296,7 +317,7 @@ export default {
                 class="btn"
                 @click="
                     downloadData(
-                        percentageStudentsMasteredOneSkill,
+                        analyticsStore.percentageStudentsMasteredOneSkill,
                         'Percentage-students-completed-one-skill'
                     )
                 "
@@ -315,8 +336,8 @@ export default {
             </button>
         </h4>
         <TenantPercentageStudentsMasteredAtLeastOneSkillPieChart
-            v-if="percentageStudentsMasteredOneSkill.length > 0"
-            :data="percentageStudentsMasteredOneSkill"
+            v-if="analyticsStore.percentageStudentsMasteredOneSkill.length > 0"
+            :data="analyticsStore.percentageStudentsMasteredOneSkill"
             class="mb-5"
         />
         <p v-else class="mb-5">No data yet</p>

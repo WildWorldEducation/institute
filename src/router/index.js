@@ -645,19 +645,6 @@ const router = createRouter({
             }
         },
         // School Admin analytics
-        // {
-        //     path: '/school-report/:tenantId',
-        //     name: 'school-report',
-        //     component: () =>
-        //         import(
-        //             '../components/pages/analytics/school-admin-analytics/SchoolReportView.vue'
-        //         ),
-        //     meta: {
-        //         title: 'School Report',
-        //         requiresAuth: true,
-        //         roles: ['school_admin']
-        //     }
-        // },
         {
             path: '/cost-report/:tenantId',
             name: 'cost-report',

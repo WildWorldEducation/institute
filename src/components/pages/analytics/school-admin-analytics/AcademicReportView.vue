@@ -8,11 +8,13 @@ import TenantFailedAssessmentsByRootSubjectHorizontalBarChart from '../../../com
 import TenantPassedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
 import TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
+import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
-        return { userDetailsStore };
+        const analyticsStore = useAnalyticsStore();
+        return { userDetailsStore, analyticsStore };
     },
     components: {
         TenantProgressLineChart,
@@ -27,15 +29,6 @@ export default {
     data() {
         return {
             tenantId: this.$route.params.tenantId,
-            // Academic performance
-            tenantProgress: [],
-            numSkillsPassedPerNumStudents: [],
-            passedAssessments: [],
-            failedAssessments: [],
-            rootSubjectsFailedAssessments: [],
-            rootSubjectsPassedAssessments: [],
-            rootSubjectsAttemptedAssessments: [],
-            attemptedAssessments: [],
             isDataWeekly: false,
             // Tutorial tooltips
             isTutorialComplete: false,
@@ -49,15 +42,22 @@ export default {
     async created() {
         // Check tutorial progress
         await this.checkIfTutorialComplete();
-        // Academic Performance
-        await this.getTenantProgress();
-        await this.getNumSkillsPassedPerNumStudents();
-        await this.getPassedAssessments();
-        await this.getFailedAssessments();
-        await this.getFailedAssessmentsBySubject();
-        await this.getPassedAssessmentsBySubject();
-        await this.getAttemptedAssessmentsBySubject();
-        await this.getTenantAssessmentsAttempted();
+        if (this.analyticsStore.tenantProgress.length == 0)
+            await this.getTenantProgress();
+        if (this.analyticsStore.numSkillsPassedPerNumStudents.length == 0)
+            await this.getNumSkillsPassedPerNumStudents();
+        if (this.analyticsStore.passedAssessments.length == 0)
+            await this.getPassedAssessments();
+        if (this.analyticsStore.failedAssessments.length == 0)
+            await this.getFailedAssessments();
+        if (this.analyticsStore.rootSubjectsFailedAssessments.length == 0)
+            await this.getFailedAssessmentsBySubject();
+        if (this.analyticsStore.rootSubjectsPassedAssessments.length == 0)
+            await this.getPassedAssessmentsBySubject();
+        if (this.analyticsStore.rootSubjectsAttemptedAssessments.length == 0)
+            await this.getAttemptedAssessmentsBySubject();
+        if (this.analyticsStore.attemptedAssessments.length == 0)
+            await this.getTenantAssessmentsAttempted();
     },
     methods: {
         // Tutorial methods
@@ -113,7 +113,6 @@ export default {
             this.isTutorialComplete = true;
             this.markTutorialComplete();
         },
-        // Academic Performance
         async getTenantProgress() {
             fetch(`/student-analytics/tenant-progress/${this.tenantId}`)
                 .then((response) => response.json())
@@ -122,7 +121,7 @@ export default {
                         data[i].date = new Date(data[i].date);
                     }
                     data.sort((a, b) => a.date - b.date);
-                    this.tenantProgress = data;
+                    this.analyticsStore.tenantProgress = data;
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
@@ -136,13 +135,14 @@ export default {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                this.numSkillsPassedPerNumStudents = await response.json();
+                this.analyticsStore.numSkillsPassedPerNumStudents =
+                    await response.json();
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
                     error
                 );
-                this.numSkillsPassedPerNumStudents = [];
+                this.analyticsStore.numSkillsPassedPerNumStudents = [];
             }
         },
         async getPassedAssessments() {
@@ -153,13 +153,13 @@ export default {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                this.passedAssessments = await response.json();
+                this.analyticsStore.passedAssessments = await response.json();
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
                     error
                 );
-                this.passedAssessments = [];
+                this.analyticsStore.passedAssessments = [];
             }
         },
         async getTenantAssessmentsAttempted() {
@@ -170,13 +170,14 @@ export default {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                this.attemptedAssessments = await response.json();
+                this.analyticsStore.attemptedAssessments =
+                    await response.json();
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
                     error
                 );
-                this.attemptedAssessments = [];
+                this.analyticsStore.attemptedAssessments = [];
             }
         },
         async getFailedAssessments() {
@@ -187,13 +188,13 @@ export default {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                this.failedAssessments = await response.json();
+                this.analyticsStore.failedAssessments = await response.json();
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
                     error
                 );
-                this.failedAssessments = [];
+                this.analyticsStore.failedAssessments = [];
             }
         },
         async getFailedAssessmentsBySubject() {
@@ -204,13 +205,14 @@ export default {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                this.rootSubjectsFailedAssessments = await response.json();
+                this.analyticsStore.rootSubjectsFailedAssessments =
+                    await response.json();
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
                     error
                 );
-                this.rootSubjectsFailedAssessments = [];
+                this.analyticsStore.rootSubjectsFailedAssessments = [];
             }
         },
         async getPassedAssessmentsBySubject() {
@@ -221,13 +223,14 @@ export default {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                this.rootSubjectsPassedAssessments = await response.json();
+                this.analyticsStore.rootSubjectsPassedAssessments =
+                    await response.json();
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
                     error
                 );
-                this.rootSubjectsPassedAssessments = [];
+                this.analyticsStore.rootSubjectsPassedAssessments = [];
             }
         },
         async getAttemptedAssessmentsBySubject() {
@@ -238,13 +241,14 @@ export default {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                this.rootSubjectsAttemptedAssessments = await response.json();
+                this.analyticsStore.rootSubjectsAttemptedAssessments =
+                    await response.json();
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
                     error
                 );
-                this.rootSubjectsAttemptedAssessments = [];
+                this.analyticsStore.rootSubjectsAttemptedAssessments = [];
             }
         },
         // Utilities
@@ -328,7 +332,7 @@ export default {
             Skill mastery progress
             <button
                 class="btn"
-                @click="downloadData(tenantProgress, 'Progress')"
+                @click="downloadData(analyticsStore.tenantProgress, 'Progress')"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -344,8 +348,8 @@ export default {
             </button>
         </h4>
         <TenantProgressLineChart
-            v-if="tenantProgress.length > 0"
-            :data="tenantProgress"
+            v-if="analyticsStore.tenantProgress.length > 0"
+            :data="analyticsStore.tenantProgress"
             colour="#5f31dd"
             class="mb-5"
         />
@@ -358,7 +362,7 @@ export default {
                 class="btn"
                 @click="
                     downloadData(
-                        rootSubjectsFailedAssessments,
+                        analyticsStore.rootSubjectsFailedAssessments,
                         'Subjects-failed'
                     )
                 "
@@ -377,8 +381,8 @@ export default {
             </button>
         </h4>
         <TenantFailedAssessmentsByRootSubjectHorizontalBarChart
-            v-if="rootSubjectsFailedAssessments.length > 0"
-            :data="rootSubjectsFailedAssessments"
+            v-if="analyticsStore.rootSubjectsFailedAssessments.length > 0"
+            :data="analyticsStore.rootSubjectsFailedAssessments"
             colour="darkred"
             class="mb-5"
         />
@@ -390,7 +394,7 @@ export default {
                 class="btn"
                 @click="
                     downloadData(
-                        rootSubjectsPassedAssessments,
+                        analyticsStore.rootSubjectsPassedAssessments,
                         'Subjects-passed'
                     )
                 "
@@ -409,8 +413,8 @@ export default {
             </button>
         </h4>
         <TenantPassedAssessmentsByRootSubjectHorizontalBarChart
-            v-if="rootSubjectsPassedAssessments.length > 0"
-            :data="rootSubjectsPassedAssessments"
+            v-if="analyticsStore.rootSubjectsPassedAssessments.length > 0"
+            :data="analyticsStore.rootSubjectsPassedAssessments"
             colour="darkgreen"
             class="mb-5"
         />
@@ -422,7 +426,7 @@ export default {
                 class="btn"
                 @click="
                     downloadData(
-                        rootSubjectsAttemptedAssessments,
+                        analyticsStore.rootSubjectsAttemptedAssessments,
                         'Subjects-attempted'
                     )
                 "
@@ -441,8 +445,8 @@ export default {
             </button>
         </h4>
         <TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart
-            v-if="rootSubjectsAttemptedAssessments.length > 0"
-            :data="rootSubjectsAttemptedAssessments"
+            v-if="analyticsStore.rootSubjectsAttemptedAssessments.length > 0"
+            :data="analyticsStore.rootSubjectsAttemptedAssessments"
             colour="darkblue"
             class="mb-5"
         />
@@ -455,7 +459,7 @@ export default {
                 class="btn"
                 @click="
                     downloadData(
-                        numSkillsPassedPerNumStudents,
+                        analyticsStore.numSkillsPassedPerNumStudents,
                         'Number-skills-passed-per-number-of-students'
                     )
                 "
@@ -474,8 +478,8 @@ export default {
             </button>
         </h4>
         <TenantNumSkillsPassedPerNumStudentsHorizontalBarChart
-            v-if="numSkillsPassedPerNumStudents.length > 0"
-            :data="numSkillsPassedPerNumStudents"
+            v-if="analyticsStore.numSkillsPassedPerNumStudents.length > 0"
+            :data="analyticsStore.numSkillsPassedPerNumStudents"
             colour="darkgreen"
             class="mb-5"
         />
@@ -485,7 +489,12 @@ export default {
             Number of students who have passed a specific skill
             <button
                 class="btn"
-                @click="downloadData(passedAssessments, 'Assessments-passed')"
+                @click="
+                    downloadData(
+                        analyticsStore.passedAssessments,
+                        'Assessments-passed'
+                    )
+                "
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -501,8 +510,8 @@ export default {
             </button>
         </h4>
         <TenantPassedAssessmentsHorizontalBarChart
-            v-if="passedAssessments.length > 0"
-            :data="passedAssessments"
+            v-if="analyticsStore.passedAssessments.length > 0"
+            :data="analyticsStore.passedAssessments"
             colour="darkgreen"
             class="mb-5"
         />
@@ -513,7 +522,10 @@ export default {
             <button
                 class="btn"
                 @click="
-                    downloadData(attemptedAssessments, 'Assessments-attempted')
+                    downloadData(
+                        analyticsStore.attemptedAssessments,
+                        'Assessments-attempted'
+                    )
                 "
             >
                 <svg
@@ -530,8 +542,8 @@ export default {
             </button>
         </h4>
         <TenantAssessmentsAttemptedHorizontalBarChart
-            v-if="attemptedAssessments.length > 0"
-            :data="attemptedAssessments"
+            v-if="analyticsStore.attemptedAssessments.length > 0"
+            :data="analyticsStore.attemptedAssessments"
             colour="#5f31dd"
             class="mb-5"
         />
@@ -541,7 +553,12 @@ export default {
             Skills that have been failed more than once
             <button
                 class="btn"
-                @click="downloadData(failedAssessments, 'Assessments-failed')"
+                @click="
+                    downloadData(
+                        analyticsStore.failedAssessments,
+                        'Assessments-failed'
+                    )
+                "
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -557,8 +574,8 @@ export default {
             </button>
         </h4>
         <TenantFailedAssessmentsHorizontalBarChart
-            v-if="failedAssessments.length > 0"
-            :data="failedAssessments"
+            v-if="analyticsStore.failedAssessments.length > 0"
+            :data="analyticsStore.failedAssessments"
             colour="darkred"
             class="mb-5"
         />
