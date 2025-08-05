@@ -162,6 +162,12 @@ export default {
                 ref="cohortPercentageStudentsMasteredAtLeastOneSkillPieChart"
                 class="mb-5"
             />
+
+            <h4>Skills visited</h4>
+            <h4>Time spent on skills</h4>
+            <h4>Assessments attempted</h4>
+            <h4>Assessments passed</h4>
+            <h4>Assessments failed</h4>
         </div>
     </div>
 </template>
