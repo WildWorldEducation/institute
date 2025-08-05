@@ -42,33 +42,6 @@ router.get('/:instructorId/list', (req, res, next) => {
 });
 
 /**
- * Get All Items per tenant
- */
-// router.get('/tenant/:tenantId', (req, res, next) => {
-//     if (req.session.userName) {
-//         res.setHeader('Content-Type', 'application/json');
-//         let sqlQuery = `
-//             SELECT DISTINCT cohorts.id, cohorts.name, instructor_id 
-//             FROM cohorts
-//             JOIN users
-//             ON users.id = cohorts.instructor_id 
-//             WHERE users.tenant_id = ${conn.escape(req.params.tenantId)};`;
-
-//         conn.query(sqlQuery, (err, results) => {
-//             try {
-//                 if (err) {
-//                     throw err;
-//                 }
-
-//                 res.json(results);
-//             } catch (err) {
-//                 next(err);
-//             }
-//         });
-//     }
-// });
-
-/**
  * Get One Item
  *
  * @return response()
@@ -156,7 +129,6 @@ router.get('/:cohortId/filteredSubjects', (req, res, next) => {
     }
 });
 
-// WHERE IS THE BELOW ROUTE USED? CAN IT BE DELETED?
 /**
  * Get Cohort Skill Filters
  *
@@ -173,7 +145,7 @@ router.get('/:id/skill-filters', (req, res, next) => {
     WHERE cohort_skill_filters.cohort_id = ${conn.escape(
         req.params.id
     )}            
-	AND is_deleted = 0
+    AND is_deleted = 0
     AND is_filtered = 'available' 
 
     UNION
@@ -204,14 +176,11 @@ router.get('/:id/skill-filters', (req, res, next) => {
 
                 // Assign children to parent skills.
                 for (var i = 0; i < results.length; i++) {
-                    // Regular parent.
                     if (results[i].parent != null && results[i].parent != 0) {
                         var parentId = results[i].parent;
 
-                        // Go through all rows again, add children
                         for (let j = 0; j < results.length; j++) {
                             if (results[j].id == parentId) {
-                                // bug
                                 results[j].children.push(results[i]);
                             }
                         }
@@ -269,14 +238,12 @@ router.post('/add', (req, res, next) => {
 router.put('/edit/:cohortId', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery = '';
-        // If student is a member of cohort, and record does not exist already, add record.
         if (req.body.isMember) {
             sqlQuery = `
             INSERT IGNORE INTO cohorts_users (cohort_id, user_id)
             VALUES (${conn.escape(req.params.cohortId)}, ${conn.escape(
                 req.body.studentId
             )});`;
-            // If student is not a member of cohort, delete any record.
         } else {
             sqlQuery = `
             DELETE
@@ -324,14 +291,12 @@ router.put('/edit/:cohortId', (req, res, next) => {
 router.put('/:cohortId/edit-filters', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery = '';
-        // If skill is filtered, and record does not exist already, add record.
         if (req.body.isFiltered) {
             sqlQuery = `
             INSERT IGNORE INTO cohort_skill_filters (cohort_id, skill_id)
             VALUES (${conn.escape(req.params.cohortId)}, ${conn.escape(
                 req.body.skillId
             )});`;
-            // If skill is not filtered, delete any record.
         } else {
             sqlQuery = `
             DELETE
@@ -381,12 +346,13 @@ router.get('/unavailable/:cohortId/list', (req, res, next) => {
 });
 
 /**
- * Delete Item
+ * Delete All Members of a Cohort
  *
+ * @return response()
  */
-router.delete('/:cohortId', (req, res, next) => {
+router.delete('/:cohortId/members', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = `DELETE FROM cohorts WHERE id=${conn.escape(
+        let sqlQuery = `DELETE FROM cohorts_users WHERE cohort_id = ${conn.escape(
             req.params.cohortId
         )};`;
         conn.query(sqlQuery, (err, results) => {
@@ -394,16 +360,51 @@ router.delete('/:cohortId', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                let sqlQuery2 = `DELETE 
-                FROM cohort_skill_filters 
-                WHERE cohort_id=${conn.escape(req.params.cohortId)}`;
+                // Update users table to set cohort_id to NULL for affected users
+                let updateUsersQuery = `UPDATE users SET cohort_id = NULL WHERE cohort_id = ${conn.escape(
+                    req.params.cohortId
+                )};`;
+                conn.query(updateUsersQuery, (err) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+                        res.end();
+                    } catch (err) {
+                        next(err);
+                    }
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
 
+/**
+ * Delete Cohort
+ *
+ */
+router.delete('/:cohortId', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `DELETE FROM cohorts WHERE id = ${conn.escape(
+            req.params.cohortId
+        )};`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                let sqlQuery2 = `DELETE FROM cohort_skill_filters WHERE cohort_id = ${conn.escape(
+                    req.params.cohortId
+                )};`;
                 conn.query(sqlQuery2, (err, results) => {
                     try {
                         if (err) {
                             throw err;
                         }
-
                         res.end();
                     } catch (err) {
                         next(err);
