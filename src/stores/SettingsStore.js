@@ -13,7 +13,8 @@ export const useSettingsStore = defineStore('settings', {
         todoStudentQuestionTableRows: 0,
         todoContentFlagTableRows: 0,
         todoNewSkillTableRows: 0,
-        freeTokenMonthlyLimit: 0
+        freeTokenMonthlyLimit: 0,
+        conversationalTestQuestionsBeforeRecord: 0
     }),
     actions: {
         async getSettings() {
@@ -35,6 +36,7 @@ export const useSettingsStore = defineStore('settings', {
                 data[0].todo_student_question_table_rows;
             this.todoNewSkillTableRows = data[0].todo_new_skills_table_rows;
             this.freeTokenMonthlyLimit = data[0].free_token_monthly_limit;
+            this.conversationalTestQuestionsBeforeRecord = data[0].conversational_test_questions_before_record;
         },
 
         async saveSettings() {

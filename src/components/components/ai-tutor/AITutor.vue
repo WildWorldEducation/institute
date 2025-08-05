@@ -2,6 +2,7 @@
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import { useUserSkillsStore } from '../../../stores/UserSkillsStore.js';
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore.js';
+import { useSettingsStore } from '../../../stores/SettingsStore.js';
 import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
 import TooltipBtn from './../share-components/TooltipBtn.vue';
 import SpeechRecorder from './SpeechRecorder.vue';
@@ -13,12 +14,14 @@ export default {
         const userDetailsStore = useUserDetailsStore();
         const userSkillsStore = useUserSkillsStore();
         const skillTreeStore = useSkillTreeStore();
+        const settingStore = useSettingsStore();
         const stateOfSocket = socketState;
         return {
             stateOfSocket,
             userDetailsStore,
             userSkillsStore,
-            skillTreeStore
+            skillTreeStore,
+            settingStore
         };
     },
     props: [
@@ -66,7 +69,8 @@ export default {
             modalTextAreaHeight: '',
             isLoading: false,
             loadingMessage: '',
-            isRecording: false
+            isRecording: false,
+            localNumOfConversationalQuestion: 0
         };
     },
     async created() {
@@ -115,6 +119,17 @@ export default {
         });
 
         // ========================================================================================
+        // Get number of conversational test questions before we record user is attempt on take the assignment
+        if (this.settingStore.conversationalTestQuestionsBeforeRecord === 0) {
+            await this.settingStore.getSettings();
+        }
+        // Get local storage current number of question
+        this.localNumOfConversationalQuestion = parseInt(
+            localStorage.getItem('numOfConversationalQuestion')
+        );
+        if (!this.localNumOfConversationalQuestion) {
+            this.localNumOfConversationalQuestion = 0;
+        }
     },
     methods: {
         // Setting this method to allow the user to be able to create a new line with shift+enter
@@ -584,6 +599,7 @@ export default {
                         ? 'Socratic Tutor'
                         : 'Conversational Test'
                 }...`;
+
                 this.hasTutorButtonBeenClicked = true;
                 this.showTutorModal(type);
             }
@@ -863,6 +879,32 @@ export default {
                         assistantMessage.index,
                         assistantMessage.content[0].text.value
                     );
+                    // Record user assignment attempt
+
+                    if (this.tutorType == 'assessing') {
+                        if (
+                            this.localNumOfConversationalQuestion ===
+                            this.settingStore
+                                .conversationalTestQuestionsBeforeRecord
+                        ) {
+                            await this.userSkillsStore.recordAssessmentAttempt(
+                                this.userDetailsStore.userId,
+                                this.skill.id
+                            );
+                            localStorage.setItem(
+                                'numOfConversationalQuestion',
+                                '0'
+                            );
+                        } else {
+                            this.localNumOfConversationalQuestion =
+                                this.localNumOfConversationalQuestion + 1;
+                            localStorage.setItem(
+                                'numOfConversationalQuestion',
+                                this.localNumOfConversationalQuestion
+                            );
+                        }
+                    }
+
                     this.$nextTick(() => {
                         this.scrollToMessageInput();
                     });
