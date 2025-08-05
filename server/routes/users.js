@@ -671,7 +671,7 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
                                                         req.body.avatar
                                                     );
                                                     let newUserId = data.id;
-                                                    
+
                                                     // Unlock skills here
                                                     unlockInitialSkills(
                                                         newUserId
@@ -2035,7 +2035,9 @@ router.put(
             is_hub_tutorial_complete = 1,
             is_vertical_tree_tutorial_complete = 1,
             is_my_tree_tutorial_complete = 1 ,
-            is_collapsible_tree_tutorial_complete = 1
+            is_collapsible_tree_tutorial_complete = 1,
+            is_instructors_overview_tutorial_complete = 1,
+            is_school_report_tutorial_complete = 1
         WHERE id = ${conn.escape(req.params.userId)};`;
 
         conn.query(sqlQuery, (err) => {
@@ -2070,7 +2072,9 @@ router.put(
             is_hub_tutorial_complete = 0,
             is_vertical_tree_tutorial_complete = 0,
             is_my_tree_tutorial_complete = 0,
-            is_collapsible_tree_tutorial_complete = 0
+            is_collapsible_tree_tutorial_complete = 0,
+            is_instructors_overview_tutorial_complete = 0,
+            is_school_report_tutorial_complete = 0
         WHERE id = ${conn.escape(req.params.userId)};`;
 
         conn.query(sqlQuery, (err) => {
@@ -2254,6 +2258,96 @@ router.put(
     UPDATE users
     SET is_activity_report_tutorial_complete = 1
     WHERE id = ${conn.escape(req.params.userId)};`;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+);
+
+// School Report page.
+router.get(
+    '/check-tutorial-progress/school-report/:userId',
+    isAuthenticated,
+    (req, res, next) => {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT is_school_report_tutorial_complete
+            FROM users
+            WHERE id = ${conn.escape(req.params.userId)};`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results[0].is_school_report_tutorial_complete);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+);
+
+router.put(
+    '/mark-tutorial-complete/school-report/:userId',
+    isAuthenticated,
+    (req, res, next) => {
+        let sqlQuery = `
+            UPDATE users
+            SET is_school_report_tutorial_complete = 1
+            WHERE id = ${conn.escape(req.params.userId)};`;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+);
+
+//Instructor View Page.
+router.get(
+    '/check-tutorial-progress/instructors/:userId',
+    isAuthenticated,
+    (req, res, next) => {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT is_instructors_overview_tutorial_complete
+            FROM users
+            WHERE id = ${conn.escape(req.params.userId)};`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results[0].is_instructors_overview_tutorial_complete);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+);
+
+router.put(
+    '/mark-tutorial-complete/skill/:userId',
+    isAuthenticated,
+    (req, res, next) => {
+        let sqlQuery = `
+            UPDATE users
+            SET is_instructors_overview_tutorial_complete = 1
+            WHERE id = ${conn.escape(req.params.userId)};`;
 
         conn.query(sqlQuery, (err) => {
             try {
