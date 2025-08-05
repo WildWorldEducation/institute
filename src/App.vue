@@ -365,7 +365,7 @@ export default {
                                     to="/tenant-students"
                                     class="nav-link"
                                 >
-                                    <span>Students</span>
+                                    Students
                                 </RouterLink>
                             </div>
                         </li>
@@ -378,7 +378,7 @@ export default {
                                 to="/classes"
                                 class="nav-link close-on-click"
                             >
-                                Classes
+                                Teachers
                             </RouterLink>
                         </li>
                         <!-- Tenants -->
@@ -409,7 +409,7 @@ export default {
                             </RouterLink>
                         </li>
                         <!-- School admin reports -->
-                        <li
+                        <!-- <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
                                 userDetailsStore.role == 'school_admin'
@@ -425,7 +425,58 @@ export default {
                             >
                                 <span>School</span>
                             </RouterLink>
+                        </li> -->
+                        <li
+                            v-if="
+                                sessionDetailsStore.isLoggedIn &&
+                                userDetailsStore.role == 'school_admin'
+                            "
+                            class="nav-item"
+                        >
+                            <RouterLink
+                                :to="
+                                    '/engagement-report/' +
+                                    userDetailsStore.tenantId
+                                "
+                                class="nav-link close-on-click"
+                            >
+                                Engagement
+                            </RouterLink>
                         </li>
+                        <li
+                            v-if="
+                                sessionDetailsStore.isLoggedIn &&
+                                userDetailsStore.role == 'school_admin'
+                            "
+                            class="nav-item"
+                        >
+                            <RouterLink
+                                :to="
+                                    '/academic-report/' +
+                                    userDetailsStore.tenantId
+                                "
+                                class="nav-link close-on-click"
+                            >
+                                Academics
+                            </RouterLink>
+                        </li>
+                        <li
+                            v-if="
+                                sessionDetailsStore.isLoggedIn &&
+                                userDetailsStore.role == 'school_admin'
+                            "
+                            class="nav-item"
+                        >
+                            <RouterLink
+                                :to="
+                                    '/cost-report/' + userDetailsStore.tenantId
+                                "
+                                class="nav-link close-on-click"
+                            >
+                                Cost
+                            </RouterLink>
+                        </li>
+
                         <li
                             v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item"
