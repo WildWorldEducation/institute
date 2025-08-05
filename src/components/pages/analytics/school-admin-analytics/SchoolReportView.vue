@@ -64,11 +64,12 @@ export default {
             showTutorialTip2: false,
             showTutorialTip3: false,
             showTutorialTip4: false,
-            dataMode: 'total',
-            isLoading: true
+            dataMode: 'total'
         };
     },
     async created() {
+        // Check tutorial progress
+        await this.checkIfTutorialComplete();
         // Engagement -----------------------
         await this.getAvgTimeOnSkills();
         await this.getTenantDuration();
@@ -86,9 +87,6 @@ export default {
         await this.getAvgTokensToMasterSkills();
         await this.getTotalTokensPerSkill();
         await this.getTotalTokensPerDay();
-        // Check tutorial progress
-        await this.checkIfTutorialComplete();
-        this.isLoading = false;
     },
     methods: {
         // Tutorial methods
@@ -103,6 +101,9 @@ export default {
             } else if (data == 1) {
                 this.isTutorialComplete = true;
             }
+            console.log(data);
+            console.log(this.isTutorialComplete);
+            console.log(this.showTutorialTip1);
         },
         progressTutorial(step) {
             if (step == 1) {
@@ -449,7 +450,7 @@ export default {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 192 512"
                     width="20"
-                    height="23"
+                    height="23"                    
                     class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
@@ -1080,6 +1081,69 @@ export default {
 </template>
 
 <style scoped>
+/* Modals */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 2000;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 520px;
+    font-size: 18px;
+    /* Could be more or less, depending on screen size */
+}
+
+/* Specific phone view css */
+@media (max-width: 576px) {
+    .modal-content {
+        margin-top: 100%;
+        width: 90%;
+    }
+}
+
+/* ************************* */
+/* Tablet Styling */
+@media (min-width: 577px) and (max-width: 1023px) {
+    .modal-content {
+        width: 70%;
+    }
+
+    .modal-btn {
+        width: fit-content;
+    }
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 480px) {
+    /* Modal Content/Box */
+    .modal-content {
+        width: 90% !important;
+        margin: auto;
+        margin-top: 30%;
+    }
+}
 /* Main Tab Styling */
 .tab-btn {
     background-color: #f8f9fa;
