@@ -101,9 +101,6 @@ export default {
             } else if (data == 1) {
                 this.isTutorialComplete = true;
             }
-            console.log(data);
-            console.log(this.isTutorialComplete);
-            console.log(this.showTutorialTip1);
         },
         progressTutorial(step) {
             if (step == 1) {
@@ -450,7 +447,7 @@ export default {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 192 512"
                     width="20"
-                    height="23"                    
+                    height="23"
                     class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
