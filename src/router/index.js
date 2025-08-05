@@ -645,15 +645,54 @@ const router = createRouter({
             }
         },
         // School Admin analytics
+        // {
+        //     path: '/school-report/:tenantId',
+        //     name: 'school-report',
+        //     component: () =>
+        //         import(
+        //             '../components/pages/analytics/school-admin-analytics/SchoolReportView.vue'
+        //         ),
+        //     meta: {
+        //         title: 'School Report',
+        //         requiresAuth: true,
+        //         roles: ['school_admin']
+        //     }
+        // },
         {
-            path: '/school-report/:tenantId',
-            name: 'school-report',
+            path: '/cost-report/:tenantId',
+            name: 'cost-report',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/SchoolReportView.vue'
+                    '../components/pages/analytics/school-admin-analytics/CostReportView.vue'
                 ),
             meta: {
-                title: 'School Report',
+                title: 'Cost Report',
+                requiresAuth: true,
+                roles: ['school_admin']
+            }
+        },
+        {
+            path: '/engagement-report/:tenantId',
+            name: 'engagement-report',
+            component: () =>
+                import(
+                    '../components/pages/analytics/school-admin-analytics/EngagementReportView.vue'
+                ),
+            meta: {
+                title: 'Engagement Report',
+                requiresAuth: true,
+                roles: ['school_admin']
+            }
+        },
+        {
+            path: '/academic-report/:tenantId',
+            name: 'academic-report',
+            component: () =>
+                import(
+                    '../components/pages/analytics/school-admin-analytics/AcademicReportView.vue'
+                ),
+            meta: {
+                title: 'Academic Report',
                 requiresAuth: true,
                 roles: ['school_admin']
             }

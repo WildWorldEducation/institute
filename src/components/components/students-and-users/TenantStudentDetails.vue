@@ -86,9 +86,9 @@ export default {
             </div>
         </div>
         <div class="row">
-            <!-- School admins -->
+            <h1 class="heading">Student Report</h1>
             <div class="d-flex flex-column">
-                <h2 class="secondary-heading">Academic Performance Overview</h2>
+                <h2 class="secondary-heading">Academic Performance</h2>
                 <h4>Skill mastery progress</h4>
                 <StudentProgressLineChart
                     v-if="studentProgress.length > 0"

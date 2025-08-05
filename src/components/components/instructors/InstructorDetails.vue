@@ -136,8 +136,9 @@ export default {
                 {{ this.cohortsStore.selectedCohort.name }}
             </h1>
         </div>
+        <h1 class="heading">Teacher Report</h1>
         <div class="d-flex justify-content-between mb-2">
-            <h2 class="secondary-heading">Class Progress & Attendance</h2>
+            <h2 class="secondary-heading">Attendance</h2>
             <button class="btn me-1" @click="$parent.restartTutorial">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -163,6 +164,7 @@ export default {
                 class="mb-5"
             />
             <p v-else class="mb-5">No data available</p>
+            <h2 class="secondary-heading">Progress</h2>
             <h4>Skill mastery progress</h4>
             <CohortProgressLineChart
                 v-if="classProgress.length > 0"
