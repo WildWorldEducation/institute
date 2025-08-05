@@ -244,6 +244,47 @@ export default {
                         Delete Cohort
                     </button>
                 </div>
+                <!-- Lock skill progress -->
+                <!-- <div class="mt-4">
+                    <div class="d-flex gap-1">
+                        <h3 class="secondary-heading h6">
+                            Lock skill progress?
+                        </h3>
+                        <div class="tooltip-wrapper"></div>
+                    </div>
+                    <input
+                        type="radio"
+                        value="0"
+                        v-model="$parent.cohort.isSkillsLocked"
+                        @change="updateSkillsLock()"
+                    />
+                    <label for="one">No</label>
+                    &nbsp;
+                    <input
+                        type="radio"
+                        value="1"
+                        v-model="$parent.cohort.isSkillsLocked"
+                        @change="updateSkillsLock()"
+                    />
+                    <label for="two">Yes</label>
+                </div> -->
+                <!-- <h2 class="secondary-heading h4 mt-4">Notifications</h2>
+                <div class="d-flex flex-column">
+                    <router-link
+                        :to="`/student/${this.$parent.cohort.id}/progress-report`"
+                        class="fit-content"
+                        target="_blank"
+                    >
+                        Students ahead of estimated progress
+                    </router-link>
+                    <router-link
+                        :to="`/student/${this.$parent.cohort.id}/progress-report`"
+                        class="fit-content mt-2"
+                        target="_blank"
+                    >
+                        Students behind estimated progress
+                    </router-link>
+                </div> -->
             </div>
         </div>
     </div>
