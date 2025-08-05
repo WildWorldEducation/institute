@@ -55,6 +55,11 @@ export default {
                 >
                 <span v-else>Manual (instructor)</span>
             </p>
+            <p>
+                Number of conversational test question before an attempt is
+                record:
+                {{ settingsStore.conversationalTestQuestionsBeforeRecord }}
+            </p>
             <p class="mt-4">
                 <router-link
                     to="/settings/edit"

@@ -34,7 +34,10 @@ export default {
                     quiz_max_questions: this.settingsStore.quizMaxQuestions,
                     is_manual_essay_marking:
                         this.settingsStore.isManualEssayMarking,
-                    pass_mark: this.settingsStore.passMark
+                    pass_mark: this.settingsStore.passMark,
+                    conversational_test_questions_before_record:
+                        this.settingsStore
+                            .conversationalTestQuestionsBeforeRecord
                 })
             };
             var url = '/api/settings/edit';
@@ -113,6 +116,20 @@ export default {
                 />
                 <label class="form-check-label"> Manual (instructor) </label>
             </div>
+        </div>
+        <div class="mb-3">
+            <label for="daysForSkillToDegrade" class="form-label"
+                >Number Of Conversational Question Before Record Attempt:</label
+            >
+            <input
+                v-model="settingsStore.conversationalTestQuestionsBeforeRecord"
+                type="number"
+                id="NumberOfConversationalQuestionBeforeRecordAttempt"
+                min="50"
+                max="100"
+                class="form-control"
+                aria-describedby="NumberOfConversationalQuestionBeforeRecordAttempt"
+            />
         </div>
         <div class="d-flex justify-content-between mb-3">
             <router-link class="btn btn-dark" to="/profile-settings">
