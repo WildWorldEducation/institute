@@ -657,6 +657,12 @@ export default {
                         }
                     }
                 }
+
+                // record assessment attempt
+                this.userSkillsStore.recordAssessmentAttempt(
+                    this.userDetailsStore.userId,
+                    this.skill.id
+                );
             } catch (error) {
                 console.error('Unexpected error during submission:', error);
                 alert('There was an unexpected error. Please try again.');

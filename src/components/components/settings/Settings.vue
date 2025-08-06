@@ -41,7 +41,7 @@ export default {
                 {{ settingsStore.skillDegradationDays }}
             </p>
             <p>
-                max number of questions per quiz:
+                number of questions per quiz / conversational test:
                 {{ settingsStore.quizMaxQuestions }}
             </p>
             <p>
