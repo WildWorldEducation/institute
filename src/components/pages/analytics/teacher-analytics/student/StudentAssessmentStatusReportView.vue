@@ -166,7 +166,7 @@ export default {
 
         <!-- Colour Legend for Timeline Charts -->
         <div v-if="hasTimelineData" class="color-legend mb-4">
-            <strong class="legend-title">Colour Legend:</strong>
+            <!--<strong class="legend-title">Legend:</strong> -->
             <span
                 v-for="skillLevel in skillLevelsWithStatus"
                 :key="skillLevel.level"
@@ -211,6 +211,7 @@ export default {
     font-size: 0.85rem;
     margin-bottom: 1.5rem;
     line-height: 1.6;
+    width:fit-content;
 }
 
 .legend-title {
@@ -221,7 +222,7 @@ export default {
     display: inline-flex;
     align-items: center;
     margin-right: 1.25rem;
-    margin-bottom: 0.5rem;
+   /* margin-bottom: 0.5rem; */
     white-space: nowrap;
 }
 
@@ -234,8 +235,8 @@ export default {
 }
 
 .color-dot {
-    width: 10px;
-    height: 10px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     border: 1px solid #333;
     margin-right: 0.4rem;
