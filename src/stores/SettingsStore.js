@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 export const useSettingsStore = defineStore('settings', {
     state: () => ({
         skillDegradationDays: null,
-        quizMaxQuestions: null,
+        quizMaxQuestions: 10,
         isManualEssayMarking: false,
         passMark: 80,
         todoSkillTableRows: 0,
