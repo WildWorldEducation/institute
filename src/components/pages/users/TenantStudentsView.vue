@@ -130,16 +130,29 @@ export default {
             this.teacherAnalyticsStore.studentMultipleFails = [];
             await this.teacherAnalyticsStore.getStudentMultipleFails(
                 this.user.id
-            );
-            this.$refs.tenantStudentDetailsRef.skillDurations = [];
-            this.$refs.tenantStudentDetailsRef.getSkillDuration();        
+            );               
             this.$refs.tenantStudentDetailsRef.durationsPerDay = [];
             this.$refs.tenantStudentDetailsRef.getStudentDurationPerDay();
-
+            this.teacherAnalyticsStore.skillActivities = []
+                await this.teacherAnalyticsStore.getSkillActivityReport(
+                   this.user.id
+                );            
+            this.teacherAnalyticsStore.skillActivities =
+                this.teacherAnalyticsStore.skillActivities.map((skill) => {
+                    return {
+                        ...skill,
+                        formattedQuantity: this.millisToMinutesAndSeconds(skill.quantity)
+                    };
+                });
         },
         updateShowUserDetails(newUser) {
             this.usersStore.selectedUserId = newUser.id;
-        }
+        },
+      millisToMinutesAndSeconds(millis) {
+            var minutes = Math.floor(millis / 60000);
+            var seconds = ((millis % 60000) / 1000).toFixed(0);
+            return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        },    
     }
 };
 </script>

@@ -9,7 +9,6 @@ import StudentSkillActivityChart from '../../components/teacher-analytics/studen
 import PassedAssessmentsTimelineChart from '../../components/teacher-analytics/students/PassedAssessmentsTimelineChart.vue';
 import AttemptedAssessmentsTimelineChart from '../../components/teacher-analytics/students/AttemptedAssessmentsTimelineChart.vue';
 import FailedAssessmentsHorizontalBarChart from '../../components/teacher-analytics/students/FailedAssessmentsHorizontalBarChart.vue';
-import TimePerSkillHorizontalBarChart from '../../components/teacher-analytics/students/TimePerSkillHorizontalBarChart.vue';
 import StudentDurationPerDayLineChart from '../../components/teacher-analytics/students/StudentDurationPerDayLineChart.vue';
 
 export default {
@@ -19,9 +18,8 @@ export default {
         StudentSkillActivityChart,
         PassedAssessmentsTimelineChart,
         AttemptedAssessmentsTimelineChart,
-        FailedAssessmentsHorizontalBarChart,
-        TimePerSkillHorizontalBarChart,
-        StudentDurationPerDayLineChart
+        FailedAssessmentsHorizontalBarChart,     
+        StudentDurationPerDayLineChart,
     },
     setup() {
         const usersStore = useUsersStore();
@@ -46,6 +44,7 @@ export default {
             assessmentAttempts: [],
             skillDurations: [],
             durationsPerDay: [],
+            visitedSkills: []
         };
     },
 
@@ -57,9 +56,20 @@ export default {
             await this.teacherAnalyticsStore.getStudentMultipleFails(
                 this.$parent.user.id
             );
-        }
-        await this.getSkillDuration();        
+        }           
         await this.getStudentDurationPerDay();
+         if (this.teacherAnalyticsStore.skillActivities.length == 0) {
+            await this.teacherAnalyticsStore.getSkillActivityReport(
+                this.$parent.user.id
+            );
+        }
+        this.teacherAnalyticsStore.skillActivities =
+            this.teacherAnalyticsStore.skillActivities.map((skill) => {
+                return {
+                    ...skill,
+                    formattedQuantity: this.millisToMinutesAndSeconds(skill.quantity)
+                };
+            });
     },
     computed: {
         studentName() {
@@ -112,23 +122,7 @@ export default {
                 }
             );
         },
-        async getSkillDuration() {
-            fetch(`/student-analytics/skill-durations/${this.$parent.user.id}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    this.skillDurations = data;
-                    for (let i = 0; i < this.skillDurations.length; i++) {
-                        this.skillDurations[i].formattedQuantity =
-                            this.millisToMinutesAndSeconds(
-                                this.skillDurations[i].quantity
-                            );
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching last visited skills:', error);
-                });
-        },
-        async getStudentDurationPerDay() {
+              async getStudentDurationPerDay() {
             fetch(
                 `/student-analytics/student-duration-per-day/${this.$parent.user.id}`
             )
@@ -153,7 +147,7 @@ export default {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);
             return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
-        }
+        },      
     }
 };
 </script>
@@ -189,41 +183,40 @@ export default {
                 </h1>
             </div>
         </div>
-        <div class="row">
-            <h1 class="heading">Student Report</h1>
+        <div class="row">           
             <div class="d-flex flex-column">
-                <h2 class="secondary-heading">Academic Performance</h2>
-                <h4>Skill mastery progress</h4>
+                <h2 class="secondary-heading">Engagement</h2>
+                <h4 class="secondary-heading">Skills visited</h4>
+                <StudentSkillActivityChart
+                    v-if="teacherAnalyticsStore.skillActivities.length > 0"
+                    :data="teacherAnalyticsStore.skillActivities"                   
+                />
+                <p v-else>No skills visited by this student.</p>
+              
+                <h4 class="secondary-heading mt-4">Total time on platform</h4>
+                <StudentDurationPerDayLineChart
+                    v-if="durationsPerDay.length > 0"
+                    :data="durationsPerDay"
+                />
+                <p v-else>There is no data to show yet.</p>
+                
+                <h2 class="secondary-heading mt-5">Academic Performance</h2>
+                <h4 class="secondary-heading">Skill mastery progress</h4>
                 <StudentProgressLineChart
                     v-if="studentProgress.length > 0"
                     :data="studentProgress"
                     colour="#5f31dd"
                 />
                 <p v-else>No data to show yet.</p>
-                <h4>Skills visited</h4>
-                <h4 class="secondary-heading">Total time on platform</h4>
-                <StudentDurationPerDayLineChart
-                    v-if="durationsPerDay.length > 0"
-                    :data="durationsPerDay"
-                />
-                <p v-else>There is no data to show yet.</p>
-                 <h4 class="secondary-heading">Minutes per skill</h4>
-                <TimePerSkillHorizontalBarChart
-                    v-if="skillDurations.length > 0"
-                    :data="skillDurations"
-                    colour="darkgreen"
-                />
-                <div v-else>
-                    <p>No skills visited by this student.</p>
-                </div>
-                <h4>Assessments attempted</h4>
+                
+                <h4 class="secondary-heading mt-4">Assessments attempted</h4>
                 <AttemptedAssessmentsTimelineChart
                     class="mb-5"
                     v-if="assessmentAttempts.length > 0"
                     :data="assessmentAttempts"
                 />
                 <p v-else>This student has attempted any assessments yet.</p>
-                <h4>Assessments passed</h4>
+                <h4 class="secondary-heading mt-4">Assessments passed</h4>
                 <PassedAssessmentsTimelineChart
                     class="mb-5"
                     v-if="assessmentPasses.length > 0"
@@ -232,7 +225,7 @@ export default {
                 <p v-else>
                     This student has not completed any assessments yet.
                 </p>
-                <h4>Assessments failed</h4>
+                <h4 class="secondary-heading mt-4">Assessments failed</h4>
                 <FailedAssessmentsHorizontalBarChart
                     v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
                     :data="teacherAnalyticsStore.studentMultipleFails"
