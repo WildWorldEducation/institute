@@ -16,6 +16,7 @@ export default {
         return {
             showModal: false,
             showRemoveStudentModal: false,
+            deleteErrorMessage: '',
             localIsSkillsLocked: null,
             mode: 'big',
             isMobileCheck: window.innerWidth,
@@ -30,7 +31,45 @@ export default {
     },
     components: {},
     methods: {
-        deleteCohort() {}
+        async deleteCohort() {
+            try {
+                this.deleteErrorMessage = ''; // Reset error message
+                // Delete all records from cohorts_users table for this cohort
+                const deleteMembersResult = await fetch(
+                    `/cohorts/${this.cohortsStore.selectedCohort.id}/members`,
+                    {
+                        method: 'DELETE'
+                    }
+                );
+                if (!deleteMembersResult.ok) {
+                    throw new Error('Failed to remove cohort members.');
+                }
+
+                // Delete the cohort itself
+                const result = await fetch(
+                    `/cohorts/${this.cohortsStore.selectedCohort.id}`,
+                    {
+                        method: 'DELETE'
+                    }
+                );
+                if (!result.ok) {
+                    throw new Error('Failed to delete cohort.');
+                }
+
+                // Update the store and navigate
+                this.cohortsStore.cohorts = this.cohortsStore.cohorts.filter(
+                    (cohort) =>
+                        cohort.id !== this.cohortsStore.selectedCohort.id
+                );
+                this.showRemoveStudentModal = false;
+                this.$router.push('/cohorts');
+            } catch (err) {
+                console.error(err);
+                this.deleteErrorMessage =
+                    err.message ||
+                    'An error occurred while deleting the cohort.';
+            }
+        }
     }
 };
 </script>
@@ -198,12 +237,12 @@ export default {
                         </svg>
                     </router-link>
                     <!-- Delete Cohort -->
-                    <!-- <button
+                    <button
                         class="btn btn-danger mt-1 remove-student-btn fit-content"
                         @click="showRemoveStudentModal = true"
                     >
                         Delete Cohort
-                    </button> -->
+                    </button>
                 </div>
                 <!-- Lock skill progress -->
                 <!-- <div class="mt-4">
@@ -283,7 +322,12 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-                <p>Are you sure you want to delete this cohort?</p>
+                <p>
+                    {{
+                        deleteErrorMessage ||
+                        'Are you sure you want to delete this cohort?'
+                    }}
+                </p>
                 <div style="display: flex; gap: 10px">
                     <button
                         type="button"
@@ -295,7 +339,10 @@ export default {
                     <button
                         type="button"
                         class="btn btn-dark"
-                        @click="showRemoveStudentModal = false"
+                        @click="
+                            showRemoveStudentModal = false;
+                            deleteErrorMessage = '';
+                        "
                     >
                         No
                     </button>
