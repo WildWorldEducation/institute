@@ -3,11 +3,19 @@
 import { useUsersStore } from '../../../stores/UsersStore';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import StudentProgressLineChart from '../../components/teacher-analytics/students/StudentProgressLineChart.vue';
+import StudentSkillActivityChart from '../../components/teacher-analytics/students/StudentSkillActivityChart.vue';
+import PassedAssessmentsTimelineChart from '../../components/teacher-analytics/students/PassedAssessmentsTimelineChart.vue';
+import AttemptedAssessmentsTimelineChart from '../../components/teacher-analytics/students/AttemptedAssessmentsTimelineChart.vue';
+import FailedAssessmentsHorizontalBarChart from '../../components/teacher-analytics/students/FailedAssessmentsHorizontalBarChart.vue';
 
 export default {
     props: ['userId'],
     components: {
-        StudentProgressLineChart
+        StudentProgressLineChart,
+        StudentSkillActivityChart,
+        PassedAssessmentsTimelineChart,
+        AttemptedAssessmentsTimelineChart,
+        FailedAssessmentsHorizontalBarChart
     },
     setup() {
         const usersStore = useUsersStore();
