@@ -5,14 +5,18 @@ import TenantStudentDetails from '../../components/students-and-users/TenantStud
 // Import the stores.
 import { useUsersStore } from '../../../stores/UsersStore';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import { useTeacherAnalyticsStore } from '../../../stores/TeacherAnalyticsStore';
 
 export default {
     setup() {
         const usersStore = useUsersStore();
         const userDetailsStore = useUserDetailsStore();
+        const teacherAnalyticsStore = useTeacherAnalyticsStore();
+
         return {
             usersStore,
-            userDetailsStore
+            userDetailsStore,
+            teacherAnalyticsStore
         };
     },
     data() {
@@ -116,8 +120,22 @@ export default {
                 await this.usersStore.getStudentsPerTenant(tenantId);
             }
         
+            // Get data for charts
             this.$refs.tenantStudentDetailsRef.studentProgress = [];
             this.$refs.tenantStudentDetailsRef.getTenantStudentProgress();
+            this.$refs.tenantStudentDetailsRef.assessmentPasses = [];
+            this.$refs.tenantStudentDetailsRef.getAssessmentPasses();
+            this.$refs.tenantStudentDetailsRef.assessmentAttempts = [];
+            this.$refs.tenantStudentDetailsRef.getAssessmentAttempts();
+            this.teacherAnalyticsStore.studentMultipleFails = [];
+            await this.teacherAnalyticsStore.getStudentMultipleFails(
+                this.user.id
+            );
+            this.$refs.tenantStudentDetailsRef.skillDurations = [];
+            this.$refs.tenantStudentDetailsRef.getSkillDuration();        
+            this.$refs.tenantStudentDetailsRef.durationsPerDay = [];
+            this.$refs.tenantStudentDetailsRef.getStudentDurationPerDay();
+
         },
         updateShowUserDetails(newUser) {
             this.usersStore.selectedUserId = newUser.id;

@@ -3,12 +3,14 @@
 import { useUsersStore } from '../../../stores/UsersStore';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import { useTeacherAnalyticsStore } from '../../../stores/TeacherAnalyticsStore';
-import { useUserSkillsStore } from '../../../../../stores/UserSkillsStore';
+import { useUserSkillsStore } from '../../../stores/UserSkillsStore';
 import StudentProgressLineChart from '../../components/teacher-analytics/students/StudentProgressLineChart.vue';
 import StudentSkillActivityChart from '../../components/teacher-analytics/students/StudentSkillActivityChart.vue';
 import PassedAssessmentsTimelineChart from '../../components/teacher-analytics/students/PassedAssessmentsTimelineChart.vue';
 import AttemptedAssessmentsTimelineChart from '../../components/teacher-analytics/students/AttemptedAssessmentsTimelineChart.vue';
 import FailedAssessmentsHorizontalBarChart from '../../components/teacher-analytics/students/FailedAssessmentsHorizontalBarChart.vue';
+import TimePerSkillHorizontalBarChart from '../../components/teacher-analytics/students/TimePerSkillHorizontalBarChart.vue';
+import StudentDurationPerDayLineChart from '../../components/teacher-analytics/students/StudentDurationPerDayLineChart.vue';
 
 export default {
     props: ['userId'],
@@ -17,7 +19,9 @@ export default {
         StudentSkillActivityChart,
         PassedAssessmentsTimelineChart,
         AttemptedAssessmentsTimelineChart,
-        FailedAssessmentsHorizontalBarChart
+        FailedAssessmentsHorizontalBarChart,
+        TimePerSkillHorizontalBarChart,
+        StudentDurationPerDayLineChart
     },
     setup() {
         const usersStore = useUsersStore();
@@ -39,7 +43,9 @@ export default {
             isMobileCheck: window.innerWidth,
             studentProgress: [],
             assessmentPasses: [],
-            assessmentAttempts: []
+            assessmentAttempts: [],
+            skillDurations: [],
+            durationsPerDay: [],
         };
     },
 
@@ -52,6 +58,8 @@ export default {
                 this.$parent.user.id
             );
         }
+        await this.getSkillDuration();        
+        await this.getStudentDurationPerDay();
     },
     computed: {
         studentName() {
@@ -103,6 +111,48 @@ export default {
                     };
                 }
             );
+        },
+        async getSkillDuration() {
+            fetch(`/student-analytics/skill-durations/${this.$parent.user.id}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    this.skillDurations = data;
+                    for (let i = 0; i < this.skillDurations.length; i++) {
+                        this.skillDurations[i].formattedQuantity =
+                            this.millisToMinutesAndSeconds(
+                                this.skillDurations[i].quantity
+                            );
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching last visited skills:', error);
+                });
+        },
+        async getStudentDurationPerDay() {
+            fetch(
+                `/student-analytics/student-duration-per-day/${this.$parent.user.id}`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].formattedQuantity =
+                            data[i].quantity / (1000 * 60);
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.durationsPerDay = data;
+                })
+                .catch((error) => {
+                    console.error(
+                        'Error fetching student duration per day:',
+                        error
+                    );
+                });
+        },
+         millisToMinutesAndSeconds(millis) {
+            var minutes = Math.floor(millis / 60000);
+            var seconds = ((millis % 60000) / 1000).toFixed(0);
+            return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
         }
     }
 };
@@ -151,7 +201,21 @@ export default {
                 />
                 <p v-else>No data to show yet.</p>
                 <h4>Skills visited</h4>
-                <h4>Time spent on skills</h4>
+                <h4 class="secondary-heading">Total time on platform</h4>
+                <StudentDurationPerDayLineChart
+                    v-if="durationsPerDay.length > 0"
+                    :data="durationsPerDay"
+                />
+                <p v-else>There is no data to show yet.</p>
+                 <h4 class="secondary-heading">Minutes per skill</h4>
+                <TimePerSkillHorizontalBarChart
+                    v-if="skillDurations.length > 0"
+                    :data="skillDurations"
+                    colour="darkgreen"
+                />
+                <div v-else>
+                    <p>No skills visited by this student.</p>
+                </div>
                 <h4>Assessments attempted</h4>
                 <AttemptedAssessmentsTimelineChart
                     class="mb-5"
