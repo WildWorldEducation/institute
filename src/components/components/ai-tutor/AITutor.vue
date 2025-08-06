@@ -70,7 +70,6 @@ export default {
             isLoading: false,
             loadingMessage: '',
             isRecording: false,
-            localNumOfConversationalQuestion: 0
         };
     },
     async created() {
@@ -117,19 +116,7 @@ export default {
             this.isAudioPlaying = false;
             this.currentIndexAudioPlaying = null;
         });
-
-        // ========================================================================================
-        // Get number of conversational test questions before we record user is attempt on take the assignment
-        if (this.settingStore.conversationalTestQuestionsBeforeRecord === 0) {
-            await this.settingStore.getSettings();
-        }
-        // Get local storage current number of question
-        this.localNumOfConversationalQuestion = parseInt(
-            localStorage.getItem('numOfConversationalQuestion')
-        );
-        if (!this.localNumOfConversationalQuestion) {
-            this.localNumOfConversationalQuestion = 0;
-        }
+       
     },
     methods: {
         // Setting this method to allow the user to be able to create a new line with shift+enter
@@ -220,7 +207,10 @@ export default {
                             numAnswers++;
                         }
                     }
-                    if (numAnswers > 9 && numAnswers % 10 == 0) {
+                    if (
+                        numAnswers > this.settingStore.quizMaxQuestions - 1 &&
+                        numAnswers % this.settingStore.quizMaxQuestions == 0
+                    ) {
                         this.assessMastery();
                     }
                 }
@@ -231,11 +221,7 @@ export default {
                         this.isNewSocraticChat = false;
                     else if (this.tutorType == 'assessing')
                         this.isNewAssessingChat = false;
-                }
-
-                // if (this.mode == 'modal') {
-                //     this.chatHistory = this.chatHistory.reverse();
-                // }
+                }               
 
                 this.$parent.checkTokenUsage();
             } catch (error) {
@@ -453,6 +439,11 @@ export default {
             });
         },
         async assessMastery() {
+            // Record assessment attempt
+            await this.userSkillsStore.recordAssessmentAttempt(
+                this.userDetailsStore.userId,
+                this.skill.id
+            );
             for (let i = 0; i < this.assessingTutorChatHistory.length; i++) {
                 let chat = this.assessingTutorChatHistory[i];
                 // AI question
@@ -581,18 +572,7 @@ export default {
             if (!this.userDetailsStore.userId) {
                 // Show guest tooltip instead of redirecting
                 this.$parent.showGuestTooltip();
-            } else {
-                // If this is the first time the user starts the assessment,
-                // record that the user has started the assessment.
-                if (type == 'assessing') {
-                    if (this.$parent.isAssessmentStarted == false) {
-                        this.userSkillsStore.recordAssessmentAttempt(
-                            this.userDetailsStore.userId,
-                            this.skill.id
-                        );
-                    }
-                }
-
+            } else {            
                 this.isLoading = true;
                 this.loadingMessage = `Loading ${
                     type === 'socratic'
@@ -616,15 +596,6 @@ export default {
             }
             this.loadingMessage = 'Loading assessment...';
 
-            // If this is the first time the user starts the assessment,
-            // record that the user has started the assessment.
-
-            // if (this.$parent.isAssessmentStarted == false) {
-            //     this.userSkillsStore.recordAssessmentAttempt(
-            //         this.userDetailsStore.userId,
-            //         this.skill.id
-            //     );
-            // }
             this.$router.push(`${this.skill.id}/assessment`);
         },
         // Get all latex string in a message
@@ -879,31 +850,6 @@ export default {
                         assistantMessage.index,
                         assistantMessage.content[0].text.value
                     );
-                    // Record user assignment attempt
-
-                    if (this.tutorType == 'assessing') {
-                        if (
-                            this.localNumOfConversationalQuestion ===
-                            this.settingStore
-                                .conversationalTestQuestionsBeforeRecord
-                        ) {
-                            await this.userSkillsStore.recordAssessmentAttempt(
-                                this.userDetailsStore.userId,
-                                this.skill.id
-                            );
-                            localStorage.setItem(
-                                'numOfConversationalQuestion',
-                                '0'
-                            );
-                        } else {
-                            this.localNumOfConversationalQuestion =
-                                this.localNumOfConversationalQuestion + 1;
-                            localStorage.setItem(
-                                'numOfConversationalQuestion',
-                                this.localNumOfConversationalQuestion
-                            );
-                        }
-                    }
 
                     this.$nextTick(() => {
                         this.scrollToMessageInput();

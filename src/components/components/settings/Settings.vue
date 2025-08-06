@@ -41,7 +41,7 @@ export default {
                 {{ settingsStore.skillDegradationDays }}
             </p>
             <p>
-                max number of questions per quiz:
+                number of questions per quiz / conversational test:
                 {{ settingsStore.quizMaxQuestions }}
             </p>
             <p>
@@ -54,11 +54,6 @@ export default {
                     >Automatic (AI)</span
                 >
                 <span v-else>Manual (instructor)</span>
-            </p>
-            <p>
-                Number of conversational test question before an attempt is
-                record:
-                {{ settingsStore.conversationalTestQuestionsBeforeRecord }}
             </p>
             <p class="mt-4">
                 <router-link

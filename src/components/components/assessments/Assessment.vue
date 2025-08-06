@@ -658,7 +658,7 @@ export default {
                     }
                 }
 
-                // update user assignment attempt
+                // record assessment attempt
                 this.userSkillsStore.recordAssessmentAttempt(
                     this.userDetailsStore.userId,
                     this.skill.id
