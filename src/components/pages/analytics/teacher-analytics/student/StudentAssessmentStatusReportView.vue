@@ -27,8 +27,8 @@ export default {
             studentId: this.$route.params.studentId,
             studentName: null,
             assessmentPasses: [],
-            assessmentAttempts: [],
-            multipleFails: []
+            assessmentAttempts: []
+            // multipleFails: []
         };
     },
     async created() {
@@ -91,7 +91,6 @@ export default {
                     return {
                         ...e,
                         url: `/skills/${e.url}`,
-                        // labelName: `${e.rootParent} - ${e.name}`
                         labelName: `${e.name}`
                     };
                 }
@@ -113,7 +112,7 @@ export default {
             :data="teacherAnalyticsStore.studentMultipleFails"
             colour="darkred"
             class="mb-5"
-        />       
+        />
         <p v-else>
             This student has not failed any assessments more than once yet.
         </p>
@@ -122,7 +121,7 @@ export default {
             class="mb-5"
             v-if="assessmentPasses.length > 0"
             :data="assessmentPasses"
-        />     
+        />
         <p v-else>This student has not completed any assessments yet.</p>
 
         <h4 class="secondary-heading">Attempted</h4>
@@ -130,8 +129,8 @@ export default {
             class="mb-5"
             v-if="assessmentAttempts.length > 0"
             :data="assessmentAttempts"
-        />      
-        <p v-else>This student has attempted any assessments yet.</p>        
+        />
+        <p v-else>This student has attempted any assessments yet.</p>
     </div>
 </template>
 
