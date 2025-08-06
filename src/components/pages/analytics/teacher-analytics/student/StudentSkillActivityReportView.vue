@@ -40,7 +40,7 @@ export default {
             this.teacherAnalyticsStore.skillActivities.map((skill) => {
                 return {
                     ...skill,
-                    quantity: this.millisecondsToHours(skill.quantity, 2)
+                    formattedQuantity: this.millisToMinutesAndSeconds(skill.quantity)
                 };
             });
     },
@@ -56,12 +56,11 @@ export default {
                 second: '2-digit'
             });
         },
-        millisecondsToHours(milliseconds, precision) {
-            const msPerHour = 60 * 60 * 1000;
-            const hours = milliseconds / msPerHour;
-            // Round to specified decimal places
-            return hours.toFixed(precision);
-        }
+         millisToMinutesAndSeconds(millis) {
+            var minutes = Math.floor(millis / 60000);
+            var seconds = ((millis % 60000) / 1000).toFixed(0);
+            return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        },  
     }
 };
 </script>
