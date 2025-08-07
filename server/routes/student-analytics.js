@@ -1526,6 +1526,88 @@ router.get(
     }
 );
 
+/* Get number of assessments attempted more than once, by root subject */
+router.get(
+    '/attempted-assessments-by-subject/instructor/:instructorId',
+    async (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+
+            // Create referral record
+            const allSkillsQuery = `
+                SELECT *
+                FROM skills;
+                                        `;
+            const skills = await query(allSkillsQuery);
+
+            let sqlQuery = `            
+                SELECT name, COUNT(name) AS quantity, parent
+                FROM assessment_attempts
+                JOIN skills 
+                ON skills.id = assessment_attempts.skill_id
+               JOIN instructor_students
+                ON assessment_attempts.user_id = instructor_students.student_id
+                WHERE instructor_students.instructor_id = ${conn.escape(req.params.instructorId)}  
+                GROUP BY name
+                ORDER BY quantity DESC;`;
+
+            conn.query(sqlQuery, async (err, attemptedAssessmentSkills) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    // Recursive function
+                    async function getRootSubject(originalSkill, parentSkill) {
+                        // Check if this is a root subject skill
+                        if (parentSkill.parent == 0) {
+                            originalSkill.rootSubject = parentSkill.name;
+                        } else {
+                            for (let i = 0; i < skills.length; i++) {
+                                if (skills[i].id == parentSkill.parent) {
+                                    await getRootSubject(
+                                        originalSkill,
+                                        skills[i]
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    for (let i = 0; i < attemptedAssessmentSkills.length; i++) {
+                        await getRootSubject(
+                            attemptedAssessmentSkills[i],
+                            attemptedAssessmentSkills[i]
+                        );
+                    }
+
+                    const totalsMap = attemptedAssessmentSkills.reduce(
+                        (acc, item) => {
+                            acc[item.rootSubject] =
+                                (acc[item.rootSubject] || 0) + item.quantity;
+                            return acc;
+                        },
+                        {}
+                    );
+
+                    const result = Object.entries(totalsMap).map(
+                        ([key, value]) => ({
+                            name: key,
+                            quantity: value
+                        })
+                    );
+
+                    res.json(result);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
+
+
 /**
  * PER TENANT --------------------------------------
  */

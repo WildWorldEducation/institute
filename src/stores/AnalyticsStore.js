@@ -146,14 +146,14 @@ export const useAnalyticsStore = defineStore('analytics', {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                this.analyticsStore.cohortRootSubjectsAttemptedAssessments =
+                this.cohortRootSubjectsAttemptedAssessments =
                     await response.json();
             } catch (error) {
                 console.error(
                     'Error fetching cohort attempted assessments:',
                     error
                 );
-                this.analyticsStore.cohortRootSubjectsAttemptedAssessments = [];
+                this.cohortRootSubjectsAttemptedAssessments = [];
             }
         },
     }
