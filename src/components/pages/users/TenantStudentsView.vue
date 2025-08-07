@@ -6,17 +6,20 @@ import TenantStudentDetails from '../../components/students-and-users/TenantStud
 import { useUsersStore } from '../../../stores/UsersStore';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import { useTeacherAnalyticsStore } from '../../../stores/TeacherAnalyticsStore';
+import { useAnalyticsStore } from '../../../stores/AnalyticsStore';
 
 export default {
     setup() {
         const usersStore = useUsersStore();
         const userDetailsStore = useUserDetailsStore();
         const teacherAnalyticsStore = useTeacherAnalyticsStore();
+        const analyticsStore = useAnalyticsStore();
 
         return {
             usersStore,
             userDetailsStore,
-            teacherAnalyticsStore
+            teacherAnalyticsStore,
+            analyticsStore
         };
     },
     data() {
@@ -144,11 +147,17 @@ export default {
                         formattedQuantity: this.millisToMinutesAndSeconds(skill.quantity)
                     };
                 });
+            this.analyticsStore.studentRootSubjectsFailedAssessments = []            
+            this.analyticsStore.getStudentFailedAssessmentsBySubject(this.user.id)
+            this.analyticsStore.studentRootSubjectsPassedAssessments =[]            
+            this.analyticsStore.getStudentPassedAssessmentsBySubject(this.user.id)            
+            this.analyticsStore.studentRootSubjectsAttemptedAssessments =[]
+            this.analyticsStore.getStudentAttemptedAssessmentsBySubject(this.user.id)
         },
         updateShowUserDetails(newUser) {
             this.usersStore.selectedUserId = newUser.id;
         },
-      millisToMinutesAndSeconds(millis) {
+        millisToMinutesAndSeconds(millis) {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);
             return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;

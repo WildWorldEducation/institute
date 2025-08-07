@@ -2,16 +2,16 @@
 import * as d3 from 'd3';
 
 export default {
-    name: 'FailedAssessmentsHorizontalBarChart',
+    name: 'StudentFailedAssessmentsByRootSubjectHorizontalBarChart',
     props: ['data', 'colour'],
     data() {
-        return {
-            padding: 60
-        };
+        return {};
     },
     mounted() {
-        const container = d3.select('#failed-assessments-chart-container');
-
+        const container = d3.select(
+            '#student-failed-assessments-by-root-subject-chart-container'
+        );
+      
         // Specify the chart’s dimensions, based on a bar’s height.
         const barHeight = 25;
         const marginTop = 0;
@@ -41,7 +41,9 @@ export default {
 
         // Create the SVG container.
         const svg = d3
-            .select('#failed-assessments-chart-container')
+            .select(
+                '#student-failed-assessments-by-root-subject-chart-container'
+            )
             .append('svg')
             .attr('width', width)
             .attr('height', height)
@@ -78,8 +80,8 @@ export default {
                 text
                     .filter((d) => x(d.quantity) - x(0) < 20) // short bars
                     .attr('dx', +4)
-                    .attr('fill', 'black')
-                    .attr('text-anchor', 'start')
+                    .attr('fill', 'white')
+                    .attr('text-anchor', 'start')                    
             );
 
         // Create the axes.
@@ -90,14 +92,14 @@ export default {
 
         svg.append('g')
             .attr('transform', `translate(${marginLeft},0)`)
-              .attr('style', 'font-size: 16px')
+            .attr('style', 'font-size: 16px')
             .call(d3.axisLeft(y).tickSizeOuter(0));
     }
 };
 </script>
 
 <template>
-    <div id="failed-assessments-chart-container"></div>
+    <div id="student-failed-assessments-by-root-subject-chart-container"></div>
 </template>
 
 <style scoped></style>

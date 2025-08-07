@@ -388,6 +388,268 @@ router.get(
     }
 );
 
+/* Get number of assessments failed more than once, by root subject */
+router.get(
+    '/failed-assessments-by-subject/student/:studentId',
+    async (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+
+            // Create referral record
+            const allSkillsQuery = `
+                SELECT *
+                FROM skills;
+                                        `;
+            const skills = await query(allSkillsQuery);
+
+            let sqlQuery = `
+            SELECT skills.name, skills.id, parent, COUNT(name) AS quantity
+            FROM assessment_attempts
+            JOIN skills 
+            ON skills.id = assessment_attempts.skill_id
+            JOIN users
+            ON users.id = assessment_attempts.user_id
+            WHERE users.id = ${conn.escape(
+                req.params.studentId
+            )}                    
+            AND assessment_attempts.skill_id NOT IN 
+
+            (SELECT skill_id
+            FROM user_skills
+            JOIN users
+            ON user_skills.user_id = users.id
+            WHERE is_mastered = 1
+            AND users.id = ${conn.escape(req.params.studentId)})  
+
+            group by id, name
+            HAVING COUNT(*) > 1;`;
+
+            conn.query(sqlQuery, async (err, failedAssessmentSkills) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    console.log(failedAssessmentSkills)
+
+                    // Recursive function
+                    async function getRootSubject(originalSkill, parentSkill) {
+                        // Check if this is a root subject skill
+                        if (parentSkill.parent == 0) {
+                            originalSkill.rootSubject = parentSkill.name;
+                        } else {
+                            for (let i = 0; i < skills.length; i++) {
+                                if (skills[i].id == parentSkill.parent) {
+                                    await getRootSubject(
+                                        originalSkill,
+                                        skills[i]
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    for (let i = 0; i < failedAssessmentSkills.length; i++) {
+                        await getRootSubject(
+                            failedAssessmentSkills[i],
+                            failedAssessmentSkills[i]
+                        );
+                    }
+
+                    const totalsMap = failedAssessmentSkills.reduce(
+                        (acc, item) => {
+                            const subject = item.rootSubject;
+                            acc[subject] = (acc[subject] || 0) + item.quantity;
+                            return acc;
+                        },
+                        {}
+                    );
+
+                    console.log(totalsMap)
+
+                    const result = Object.entries(totalsMap).map(
+                        ([key, value]) => ({
+                            name: key,
+                            quantity: value
+                        })
+                    );
+
+                    console.log(result)
+
+                    res.json(result);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
+
+/* Get number of assessments passed, by root subject */
+router.get(
+    '/passed-assessments-by-subject/student/:studentId',
+    async (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+
+            // Create referral record
+            const allSkillsQuery = `
+                SELECT *
+                FROM skills;
+                                        `;
+            const skills = await query(allSkillsQuery);
+
+            let sqlQuery = `
+                SELECT skills.name as name, count(*) as quantity, parent
+                FROM user_skills
+                JOIN users
+                ON users.id = user_skills.user_id
+                JOIN skills
+                ON skills.id = user_skills.skill_id
+                WHERE users.id = ${conn.escape(req.params.studentId)}
+                AND is_mastered = 1
+                AND type <> 'domain'
+                GROUP BY name;`;
+
+            conn.query(sqlQuery, async (err, passedAssessmentSkills) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    // Recursive function
+                    async function getRootSubject(originalSkill, parentSkill) {
+                        // Check if this is a root subject skill
+                        if (parentSkill.parent == 0) {
+                            originalSkill.rootSubject = parentSkill.name;
+                        } else {
+                            for (let i = 0; i < skills.length; i++) {
+                                if (skills[i].id == parentSkill.parent) {
+                                    await getRootSubject(
+                                        originalSkill,
+                                        skills[i]
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    for (let i = 0; i < passedAssessmentSkills.length; i++) {
+                        await getRootSubject(
+                            passedAssessmentSkills[i],
+                            passedAssessmentSkills[i]
+                        );
+                    }
+
+                    const totalsMap = passedAssessmentSkills.reduce(
+                        (acc, item) => {
+                            const subject = item.rootSubject;
+                            acc[subject] = (acc[subject] || 0) + item.quantity;
+                            return acc;
+                        },
+                        {}
+                    );
+
+                    const result = Object.entries(totalsMap).map(
+                        ([key, value]) => ({
+                            name: key,
+                            quantity: value
+                        })
+                    );
+
+                    res.json(result);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
+
+/* Get number of assessments attempted more than once, by root subject */
+router.get(
+    '/attempted-assessments-by-subject/student/:studentId',
+    async (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+
+            // Create referral record
+            const allSkillsQuery = `
+                SELECT *
+                FROM skills;
+                                        `;
+            const skills = await query(allSkillsQuery);
+
+            let sqlQuery = `            
+                SELECT name, COUNT(name) AS quantity, parent
+                FROM assessment_attempts
+                JOIN skills 
+                ON skills.id = assessment_attempts.skill_id
+                JOIN users
+                ON users.id = assessment_attempts.user_id
+                WHERE users.id = ${conn.escape(req.params.studentId)}
+                GROUP BY name
+                ORDER BY quantity DESC;`;
+
+            conn.query(sqlQuery, async (err, attemptedAssessmentSkills) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    // Recursive function
+                    async function getRootSubject(originalSkill, parentSkill) {
+                        // Check if this is a root subject skill
+                        if (parentSkill.parent == 0) {
+                            originalSkill.rootSubject = parentSkill.name;
+                        } else {
+                            for (let i = 0; i < skills.length; i++) {
+                                if (skills[i].id == parentSkill.parent) {
+                                    await getRootSubject(
+                                        originalSkill,
+                                        skills[i]
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    for (let i = 0; i < attemptedAssessmentSkills.length; i++) {
+                        await getRootSubject(
+                            attemptedAssessmentSkills[i],
+                            attemptedAssessmentSkills[i]
+                        );
+                    }
+
+                    const totalsMap = attemptedAssessmentSkills.reduce(
+                        (acc, item) => {
+                            acc[item.rootSubject] =
+                                (acc[item.rootSubject] || 0) + item.quantity;
+                            return acc;
+                        },
+                        {}
+                    );
+
+                    const result = Object.entries(totalsMap).map(
+                        ([key, value]) => ({
+                            name: key,
+                            quantity: value
+                        })
+                    );
+
+                    res.json(result);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
+
+
 /**
  * PER COHORT -------------------------------------------------
  */
