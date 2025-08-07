@@ -94,6 +94,7 @@ export default {
             this.analyticsStore.getTeacherClassSkillActivityReport(this.selectedInstructor.id);
             this.analyticsStore.getTeacherClassFailedAssessmentsBySubject(this.selectedInstructor.id);
             this.analyticsStore.getTeacherClassPassedAssessmentsBySubject(this.selectedInstructor.id);
+            this.analyticsStore.getTeacherClassAttemptedAssessmentsBySubject(this.selectedInstructor.id);
         }
     }
 };
