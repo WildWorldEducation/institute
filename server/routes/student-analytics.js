@@ -464,18 +464,14 @@ router.get(
                             return acc;
                         },
                         {}
-                    );
-
-                    console.log(totalsMap)
+                    );              
 
                     const result = Object.entries(totalsMap).map(
                         ([key, value]) => ({
                             name: key,
                             quantity: value
                         })
-                    );
-
-                    console.log(result)
+                    );                  
 
                     res.json(result);
                 } catch (err) {
