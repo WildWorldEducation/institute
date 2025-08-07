@@ -11,16 +11,21 @@ export default {
             labelWidth: 20
         };
     },
-    watch: {
-        data: {
-            handler() {
-                this.labelWidth = this.calculateLongestLabelWidth();
-                this.chartHeight = this.calculateChartHeight();
-                this.drawChart();
-            }
-        }
+    // watch: {
+    //     data: {
+    //         handler() {
+    //             this.labelWidth = this.calculateLongestLabelWidth();
+    //             this.chartHeight = this.calculateChartHeight();
+    //             this.drawChart();
+    //             console.log("draw")
+    //         }
+    //     }
+    // },
+    mounted() {
+        this.labelWidth = this.calculateLongestLabelWidth();
+        this.chartHeight = this.calculateChartHeight();
+        this.drawChart();       
     },
-
     methods: {
         drawChart() {
             const data = this.data;

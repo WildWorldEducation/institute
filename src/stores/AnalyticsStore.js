@@ -25,9 +25,13 @@ export const useAnalyticsStore = defineStore('analytics', {
             studentRootSubjectsFailedAssessments: [],
             studentRootSubjectsPassedAssessments: [],
             studentRootSubjectsAttemptedAssessments: [],
+            // Cohort/Class/Teacher level
+            cohortSkillActivities: [],
+            cohortRootSubjectsFailedAssessments: []
         };
     },
     actions: {
+        // Student
         async getStudentFailedAssessmentsBySubject(studentId) {
             try {
                 const response = await fetch(
@@ -80,6 +84,38 @@ export const useAnalyticsStore = defineStore('analytics', {
                     error
                 );
                 this.studentRootSubjectsAttemptedAssessments = [];
+            }
+        },
+        // Cohort
+        async getTeacherClassSkillActivityReport(instructorId) {         
+            try {
+                const response = await fetch(
+                    `/student-analytics/all-student-cohort-activity/instructor/${instructorId}`
+                );
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                this.cohortSkillActivities = await response.json();
+            } catch (error) {
+                console.error('Error fetching skill activity report:', error);
+            }
+        },
+        async getTeacherClassFailedAssessmentsBySubject(instructorId) {
+            try {
+                const response = await fetch(
+                    `/student-analytics/failed-assessments-by-subject/instructor/${instructorId}`
+                );
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                this.cohortRootSubjectsFailedAssessments =
+                    await response.json();
+            } catch (error) {
+                console.error(
+                    'Error fetching student mastered assessments:',
+                    error
+                );
+                this.cohortRootSubjectsFailedAssessments = [];
             }
         },
     }

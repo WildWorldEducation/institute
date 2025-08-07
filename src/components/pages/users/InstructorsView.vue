@@ -2,13 +2,15 @@
 import InstructorsList from '../../components/instructors/InstructorsList.vue';
 import InstructorDetails from '../../components/instructors/InstructorDetails.vue';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import { useAnalyticsStore } from '../../../stores/AnalyticsStore.js';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
-
+        const analyticsStore = useAnalyticsStore();
         return {
-            userDetailsStore
+            userDetailsStore,
+            analyticsStore
         };
     },
     data() {
@@ -89,6 +91,8 @@ export default {
             this.$refs.InstructorDetails.classProgress = [];
             this.$refs.InstructorDetails.getTenantClassProgress();
             this.$refs.InstructorDetails.getTenantClassDurationPerDay();
+            this.analyticsStore.getTeacherClassSkillActivityReport(this.selectedInstructor.id);
+            this.analyticsStore.getTeacherClassFailedAssessmentsBySubject(this.selectedInstructor.id);
         }
     }
 };
