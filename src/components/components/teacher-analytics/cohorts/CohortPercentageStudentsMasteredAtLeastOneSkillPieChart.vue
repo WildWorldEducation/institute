@@ -4,8 +4,7 @@ import * as d3 from 'd3';
 export default {
     name: 'CohortPercentageStudentsMasteredAtLeastOneSkillPieChart',
     data() {
-        return {
-            padding: 60
+        return {         
         };
     },
     mounted() {
@@ -34,7 +33,7 @@ export default {
 
             // Specify the chart’s dimensions.
             const width = 928;
-            const height = Math.min(width, 500);
+            const height = Math.min(width, 250);
 
             // Create the color scale.
             const color = d3
@@ -60,7 +59,7 @@ export default {
                 .innerRadius(0)
                 .outerRadius(Math.min(width, height) / 2 - 1);
 
-            const labelRadius = arc.outerRadius()() * 0.8;
+            const labelRadius = arc.outerRadius()() * 0.6;
 
             // A separate arc generator for labels.
             const arcLabel = d3
