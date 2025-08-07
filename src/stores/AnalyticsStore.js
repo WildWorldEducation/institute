@@ -27,7 +27,8 @@ export const useAnalyticsStore = defineStore('analytics', {
             studentRootSubjectsAttemptedAssessments: [],
             // Cohort/Class/Teacher level
             cohortSkillActivities: [],
-            cohortRootSubjectsFailedAssessments: []
+            cohortRootSubjectsFailedAssessments: [],
+            cohortRootSubjectsPassedAssessments: []
         };
     },
     actions: {
@@ -116,6 +117,24 @@ export const useAnalyticsStore = defineStore('analytics', {
                     error
                 );
                 this.cohortRootSubjectsFailedAssessments = [];
+            }
+        },
+        async getTeacherClassPassedAssessmentsBySubject(instructorId) {
+            try {
+                const response = await fetch(
+                    `/student-analytics/passed-assessments-by-subject/instructor/${instructorId}`
+                );
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                this.cohortRootSubjectsPassedAssessments =
+                    await response.json();
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.cohortRootSubjectsPassedAssessments = [];
             }
         },
     }

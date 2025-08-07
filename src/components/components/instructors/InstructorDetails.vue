@@ -7,6 +7,7 @@ import CohortProgressLineChart from './../teacher-analytics/cohorts/CohortProgre
 import CohortDurationPerDayLineChart from './../teacher-analytics/cohorts/CohortDurationPerDayLineChart.vue';
 import CohortSkillActivityChart from './../teacher-analytics/cohorts/CohortSkillActivityChart.vue';
 import CohortFailedAssessmentsByRootSubjectHorizontalBarChart from './../teacher-analytics/cohorts/CohortFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import CohortPassedAssessmentsByRootSubjectHorizontalBarChart from './../teacher-analytics/cohorts/CohortPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
 
 export default {
     setup() {
@@ -34,6 +35,8 @@ export default {
         await this.getTenantClassDurationPerDay();
         await this.analyticsStore.getTeacherClassSkillActivityReport(this.$parent.selectedInstructor.id);
         await this.analyticsStore.getTeacherClassFailedAssessmentsBySubject(this.$parent.selectedInstructor.id);
+        await this.analyticsStore.getTeacherClassPassedAssessmentsBySubject(this.$parent.selectedInstructor.id);
+        console.log(this.analyticsStore.cohortRootSubjectsPassedAssessments)
     },
     computed: {    
     },
@@ -42,7 +45,8 @@ export default {
         CohortProgressLineChart,
         CohortDurationPerDayLineChart,
         CohortSkillActivityChart,
-        CohortFailedAssessmentsByRootSubjectHorizontalBarChart
+        CohortFailedAssessmentsByRootSubjectHorizontalBarChart,
+        CohortPassedAssessmentsByRootSubjectHorizontalBarChart
     },
     methods: {
         async getTenantClassProgress() {
@@ -171,13 +175,13 @@ export default {
                 v-if="analyticsStore.cohortRootSubjectsFailedAssessments.length > 0"
                 :data="analyticsStore.cohortRootSubjectsFailedAssessments" colour="darkred" class="mb-5" />
             <p v-else>No data yet</p>
- <!-- 
+ 
             <h4 class="">Passed</h4>
-            <StudentPassedAssessmentsByRootSubjectHorizontalBarChart
-                v-if="analyticsStore.studentRootSubjectsPassedAssessments.length > 0"
-                :data="analyticsStore.studentRootSubjectsPassedAssessments" colour="darkgreen" class="mb-5" />
+            <CohortPassedAssessmentsByRootSubjectHorizontalBarChart
+                v-if="analyticsStore.cohortRootSubjectsPassedAssessments.length > 0"
+                :data="analyticsStore.cohortRootSubjectsPassedAssessments" colour="darkgreen" class="mb-5" />
             <p v-else>No data yet</p>
-
+<!-- 
             <h4 class="">Attempted</h4>
             <StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart
                 v-if="analyticsStore.studentRootSubjectsAttemptedAssessments.length > 0"

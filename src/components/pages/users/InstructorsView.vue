@@ -93,6 +93,7 @@ export default {
             this.$refs.InstructorDetails.getTenantClassDurationPerDay();
             this.analyticsStore.getTeacherClassSkillActivityReport(this.selectedInstructor.id);
             this.analyticsStore.getTeacherClassFailedAssessmentsBySubject(this.selectedInstructor.id);
+            this.analyticsStore.getTeacherClassPassedAssessmentsBySubject(this.selectedInstructor.id);
         }
     }
 };
