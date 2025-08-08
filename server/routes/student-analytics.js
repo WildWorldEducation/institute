@@ -431,8 +431,6 @@ router.get(
                         throw err;
                     }
 
-                    console.log(failedAssessmentSkills)
-
                     // Recursive function
                     async function getRootSubject(originalSkill, parentSkill) {
                         // Check if this is a root subject skill
