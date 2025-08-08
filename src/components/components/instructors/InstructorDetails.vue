@@ -37,7 +37,6 @@ export default {
         await this.analyticsStore.getTeacherClassSkillActivityReport(
             this.$parent.selectedInstructor.id
         );
-
         await this.analyticsStore.getTeacherClassFailedAssessmentsBySubject(
             this.$parent.selectedInstructor.id
         );

@@ -58,6 +58,7 @@ export default {
     },
 
     async created() {
+        await this.getStudentDurationPerDay();
         await this.getTenantStudentProgress();
         await this.getAssessmentPasses();
         await this.getAssessmentAttempts();
@@ -66,7 +67,6 @@ export default {
                 this.$parent.user.id
             );
         }
-        await this.getStudentDurationPerDay();
         if (this.teacherAnalyticsStore.skillActivities.length == 0) {
             await this.teacherAnalyticsStore.getSkillActivityReport(
                 this.$parent.user.id
@@ -162,6 +162,11 @@ export default {
                         error
                     );
                 });
+        },
+        millisToMinutesAndSeconds(millis) {
+            var minutes = Math.floor(millis / 60000);
+            var seconds = ((millis % 60000) / 1000).toFixed(0);
+            return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
         }
     }
 };
@@ -204,7 +209,7 @@ export default {
                 <h2 class="secondary-heading">Engagement</h2>
                 <h4>Total time on platform</h4>
                 <StudentDurationPerDayLineChart
-                    v-if="durationsPerDay.length > 0"
+                    v-if="durationsPerDay.length > 1"
                     :data="durationsPerDay"
                 />
                 <p v-else>There is no data to show yet.</p>

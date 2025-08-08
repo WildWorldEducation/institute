@@ -122,37 +122,48 @@ export default {
             if (this.usersStore.studentsPerTenant.length < 1) {
                 await this.usersStore.getStudentsPerTenant(tenantId);
             }
-        
+
             // Get data for charts
-            this.$refs.tenantStudentDetailsRef.studentProgress = [];
-            this.$refs.tenantStudentDetailsRef.getTenantStudentProgress();
-            this.$refs.tenantStudentDetailsRef.assessmentPasses = [];
-            this.$refs.tenantStudentDetailsRef.getAssessmentPasses();
-            this.$refs.tenantStudentDetailsRef.assessmentAttempts = [];
-            this.$refs.tenantStudentDetailsRef.getAssessmentAttempts();
-            this.teacherAnalyticsStore.studentMultipleFails = [];
-            await this.teacherAnalyticsStore.getStudentMultipleFails(
-                this.user.id
-            );               
-            this.$refs.tenantStudentDetailsRef.durationsPerDay = [];
-            this.$refs.tenantStudentDetailsRef.getStudentDurationPerDay();
-            this.teacherAnalyticsStore.skillActivities = []
+            if (this.$refs.tenantStudentDetailsRef) {
+                this.$refs.tenantStudentDetailsRef.studentProgress = [];
+                this.$refs.tenantStudentDetailsRef.getTenantStudentProgress();
+                this.$refs.tenantStudentDetailsRef.assessmentPasses = [];
+                this.$refs.tenantStudentDetailsRef.getAssessmentPasses();
+                this.$refs.tenantStudentDetailsRef.assessmentAttempts = [];
+                this.$refs.tenantStudentDetailsRef.getAssessmentAttempts();
+                this.teacherAnalyticsStore.studentMultipleFails = [];
+                await this.teacherAnalyticsStore.getStudentMultipleFails(
+                    this.user.id
+                );
+                this.$refs.tenantStudentDetailsRef.durationsPerDay = [];
+                this.$refs.tenantStudentDetailsRef.getStudentDurationPerDay();
+                this.teacherAnalyticsStore.skillActivities = [];
                 await this.teacherAnalyticsStore.getSkillActivityReport(
-                   this.user.id
-                );            
-            this.teacherAnalyticsStore.skillActivities =
-                this.teacherAnalyticsStore.skillActivities.map((skill) => {
-                    return {
-                        ...skill,
-                        formattedQuantity: this.millisToMinutesAndSeconds(skill.quantity)
-                    };
-                });
-            this.analyticsStore.studentRootSubjectsFailedAssessments = []            
-            this.analyticsStore.getStudentFailedAssessmentsBySubject(this.user.id)
-            this.analyticsStore.studentRootSubjectsPassedAssessments =[]            
-            this.analyticsStore.getStudentPassedAssessmentsBySubject(this.user.id)            
-            this.analyticsStore.studentRootSubjectsAttemptedAssessments =[]
-            this.analyticsStore.getStudentAttemptedAssessmentsBySubject(this.user.id)
+                    this.user.id
+                );
+                this.teacherAnalyticsStore.skillActivities =
+                    this.teacherAnalyticsStore.skillActivities.map((skill) => {
+                        return {
+                            ...skill,
+                            formattedQuantity: this.millisToMinutesAndSeconds(
+                                skill.quantity
+                            )
+                        };
+                    });
+                this.analyticsStore.studentRootSubjectsFailedAssessments = [];
+                this.analyticsStore.getStudentFailedAssessmentsBySubject(
+                    this.user.id
+                );
+                this.analyticsStore.studentRootSubjectsPassedAssessments = [];
+                this.analyticsStore.getStudentPassedAssessmentsBySubject(
+                    this.user.id
+                );
+                this.analyticsStore.studentRootSubjectsAttemptedAssessments =
+                    [];
+                this.analyticsStore.getStudentAttemptedAssessmentsBySubject(
+                    this.user.id
+                );
+            }
         },
         updateShowUserDetails(newUser) {
             this.usersStore.selectedUserId = newUser.id;
@@ -161,7 +172,7 @@ export default {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);
             return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
-        },    
+        }
     }
 };
 </script>
