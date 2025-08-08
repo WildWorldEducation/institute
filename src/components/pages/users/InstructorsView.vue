@@ -81,7 +81,7 @@ export default {
             fetch(url, requestOptions);
         },
         skipTutorial() {
-            this.showTutorialTip1 = false;      
+            this.showTutorialTip1 = false;
             this.isTutorialComplete = true;
             this.markTutorialComplete();
         },
@@ -91,10 +91,18 @@ export default {
             this.$refs.InstructorDetails.classProgress = [];
             this.$refs.InstructorDetails.getTenantClassProgress();
             this.$refs.InstructorDetails.getTenantClassDurationPerDay();
-            this.analyticsStore.getTeacherClassSkillActivityReport(this.selectedInstructor.id);
-            this.analyticsStore.getTeacherClassFailedAssessmentsBySubject(this.selectedInstructor.id);
-            this.analyticsStore.getTeacherClassPassedAssessmentsBySubject(this.selectedInstructor.id);
-            this.analyticsStore.getTeacherClassAttemptedAssessmentsBySubject(this.selectedInstructor.id);
+            this.analyticsStore.getTeacherClassSkillActivityReport(
+                this.selectedInstructor.id
+            );
+            this.analyticsStore.getTeacherClassFailedAssessmentsBySubject(
+                this.selectedInstructor.id
+            );
+            this.analyticsStore.getTeacherClassPassedAssessmentsBySubject(
+                this.selectedInstructor.id
+            );
+            this.analyticsStore.getTeacherClassAttemptedAssessmentsBySubject(
+                this.selectedInstructor.id
+            );
         }
     }
 };
@@ -147,8 +155,8 @@ export default {
         <div class="modal-content">
             <div v-if="showTutorialTip1">
                 <p>
-                    This page provides an overview of all instructors in your
-                    school, allowing you to monitor their performance and
+                    This page provides an overview of students of particular
+                    instructors, allowing you to monitor their performance and
                     student progress.
                 </p>
                 <div class="d-flex justify-content-between">

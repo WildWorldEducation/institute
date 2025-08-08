@@ -277,9 +277,7 @@ export default {
             if (this.dataMode == 'total') this.dataMode = 'weekly';
             else this.dataMode = 'total';
 
-            await this.getTenantDuration();
-            await this.getPercentageStudentsMasteredOneSkill();
-            await this.getTotalTokensPerDay();
+            // await this.getTotalTokensPerDay();
         }
     }
 };
