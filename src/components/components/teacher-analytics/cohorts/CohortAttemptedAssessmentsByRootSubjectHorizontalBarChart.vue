@@ -2,14 +2,16 @@
 import * as d3 from 'd3';
 
 export default {
-    name: 'StudentPassedAssessmentsByRootSubjectHorizontalBarChart',
+    name: 'CohortAttemptedAssessmentsByRootSubjectHorizontalBarChart',
     props: ['data', 'colour'],
     data() {
-        return {};
+        return {
+            padding: 60
+        };
     },
     mounted() {
         const container = d3.select(
-            '#student-passed-assessments-by-root-subject-chart-container'
+            '#cohort-attempted-assessments-by-root-subject-chart-container'
         );
 
         // Specify the chart’s dimensions, based on a bar’s height.
@@ -17,8 +19,8 @@ export default {
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
-        const marginLeft = 300;
-        const width = 700;
+        const marginLeft = 200;
+        const width = 1000;
         const height =
             Math.ceil((this.data.length + 0.1) * barHeight) +
             marginTop +
@@ -42,7 +44,7 @@ export default {
         // Create the SVG container.
         const svg = d3
             .select(
-                '#student-passed-assessments-by-root-subject-chart-container'
+                '#cohort-attempted-assessments-by-root-subject-chart-container'
             )
             .append('svg')
             .attr('width', width)
@@ -100,7 +102,9 @@ export default {
 </script>
 
 <template>
-    <div id="student-passed-assessments-by-root-subject-chart-container"></div>
+    <div
+        id="cohort-attempted-assessments-by-root-subject-chart-container"
+    ></div>
 </template>
 
 <style scoped></style>

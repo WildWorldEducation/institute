@@ -2,23 +2,23 @@
 import * as d3 from 'd3';
 
 export default {
-    name: 'StudentPassedAssessmentsByRootSubjectHorizontalBarChart',
+    name: 'CohortFailedAssessmentsByRootSubjectHorizontalBarChart',
     props: ['data', 'colour'],
     data() {
         return {};
     },
     mounted() {
         const container = d3.select(
-            '#student-passed-assessments-by-root-subject-chart-container'
+            '#cohort-failed-assessments-by-root-subject-chart-container'
         );
-
+      
         // Specify the chart’s dimensions, based on a bar’s height.
         const barHeight = 25;
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
-        const marginLeft = 300;
-        const width = 700;
+        const marginLeft = 200;
+        const width = 1000;
         const height =
             Math.ceil((this.data.length + 0.1) * barHeight) +
             marginTop +
@@ -42,7 +42,7 @@ export default {
         // Create the SVG container.
         const svg = d3
             .select(
-                '#student-passed-assessments-by-root-subject-chart-container'
+                '#cohort-failed-assessments-by-root-subject-chart-container'
             )
             .append('svg')
             .attr('width', width)
@@ -80,8 +80,8 @@ export default {
                 text
                     .filter((d) => x(d.quantity) - x(0) < 20) // short bars
                     .attr('dx', +4)
-                    .attr('fill', 'black')
-                    .attr('text-anchor', 'start')
+                    .attr('fill', 'white')
+                    .attr('text-anchor', 'start')                    
             );
 
         // Create the axes.
@@ -92,15 +92,14 @@ export default {
 
         svg.append('g')
             .attr('transform', `translate(${marginLeft},0)`)
-              .attr('style', 'font-size: 16px')
+            .attr('style', 'font-size: 16px')
             .call(d3.axisLeft(y).tickSizeOuter(0));
-    },
-    computed: {}
+    }
 };
 </script>
 
 <template>
-    <div id="student-passed-assessments-by-root-subject-chart-container"></div>
+    <div id="cohort-failed-assessments-by-root-subject-chart-container"></div>
 </template>
 
 <style scoped></style>

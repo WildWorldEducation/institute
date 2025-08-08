@@ -25,9 +25,15 @@ export const useAnalyticsStore = defineStore('analytics', {
             studentRootSubjectsFailedAssessments: [],
             studentRootSubjectsPassedAssessments: [],
             studentRootSubjectsAttemptedAssessments: [],
+            // Cohort/Class/Teacher level
+            cohortSkillActivities: [],
+            cohortRootSubjectsFailedAssessments: [],
+            cohortRootSubjectsPassedAssessments: [],
+            cohortRootSubjectsAttemptedAssessments: []
         };
     },
     actions: {
+        // Student
         async getStudentFailedAssessmentsBySubject(studentId) {
             try {
                 const response = await fetch(
@@ -82,5 +88,89 @@ export const useAnalyticsStore = defineStore('analytics', {
                 this.studentRootSubjectsAttemptedAssessments = [];
             }
         },
+        // Cohort
+        async getTeacherClassSkillActivityReport(instructorId) {
+            try {
+                const response = await fetch(
+                    `/student-analytics/all-student-cohort-activity/instructor/${instructorId}`
+                );
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                this.cohortSkillActivities = await response.json();
+                this.cohortSkillActivities = this.cohortSkillActivities.map(
+                    (skill) => {
+                        return {
+                            ...skill,
+                            formattedQuantity: this.millisToMinutesAndSeconds(
+                                skill.quantity
+                            )
+                        };
+                    }
+                );
+            } catch (error) {
+                console.error('Error fetching skill activity report:', error);
+            }
+        },
+        async getTeacherClassFailedAssessmentsBySubject(instructorId) {
+            try {
+                const response = await fetch(
+                    `/student-analytics/failed-assessments-by-subject/instructor/${instructorId}`
+                );
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                this.cohortRootSubjectsFailedAssessments =
+                    await response.json();
+            } catch (error) {
+                console.error(
+                    'Error fetching student mastered assessments:',
+                    error
+                );
+                this.cohortRootSubjectsFailedAssessments = [];
+            }
+        },
+        async getTeacherClassPassedAssessmentsBySubject(instructorId) {
+            try {
+                const response = await fetch(
+                    `/student-analytics/passed-assessments-by-subject/instructor/${instructorId}`
+                );
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                this.cohortRootSubjectsPassedAssessments =
+                    await response.json();
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.cohortRootSubjectsPassedAssessments = [];
+            }
+        },
+        async getTeacherClassAttemptedAssessmentsBySubject(instructorId) {
+            try {
+                const response = await fetch(
+                    `/student-analytics/attempted-assessments-by-subject/instructor/${instructorId}`
+                );
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                this.cohortRootSubjectsAttemptedAssessments =
+                    await response.json();
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort attempted assessments:',
+                    error
+                );
+                this.cohortRootSubjectsAttemptedAssessments = [];
+            }
+        },
+        millisToMinutesAndSeconds(millis) {
+            var minutes = Math.floor(millis / 60000);
+            var seconds = ((millis % 60000) / 1000).toFixed(0);
+            return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        }
     }
 });

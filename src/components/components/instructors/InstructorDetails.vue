@@ -1,18 +1,24 @@
 <script>
 import { useCohortsStore } from '../../../stores/CohortsStore.js';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
+import { useAnalyticsStore } from '../../../stores/AnalyticsStore.js';
 import CohortPercentageStudentsMasteredAtLeastOneSkillPieChart from './../teacher-analytics/cohorts/CohortPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
 import CohortProgressLineChart from './../teacher-analytics/cohorts/CohortProgressLineChart.vue';
 import CohortDurationPerDayLineChart from './../teacher-analytics/cohorts/CohortDurationPerDayLineChart.vue';
+import CohortSkillActivityChart from './../teacher-analytics/cohorts/CohortSkillActivityChart.vue';
+import CohortFailedAssessmentsByRootSubjectHorizontalBarChart from './../teacher-analytics/cohorts/CohortFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import CohortPassedAssessmentsByRootSubjectHorizontalBarChart from './../teacher-analytics/cohorts/CohortPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import CohortAttemptedAssessmentsByRootSubjectHorizontalBarChart from './../teacher-analytics/cohorts/CohortAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
 
 export default {
     setup() {
         const cohortsStore = useCohortsStore();
         const userDetailsStore = useUserDetailsStore();
-
+        const analyticsStore = useAnalyticsStore();
         return {
             cohortsStore,
-            userDetailsStore
+            userDetailsStore,
+            analyticsStore
         };
     },
     data() {
@@ -28,16 +34,28 @@ export default {
         await this.getTenantClassProgress();
         await this.getInstructorPercentageStudentsMasteredAtLeastOneSkill();
         await this.getTenantClassDurationPerDay();
-    },
-    computed: {
-        studentName() {
-            return `${this.$parent.user.username}`.trim();
-        }
+        await this.analyticsStore.getTeacherClassSkillActivityReport(
+            this.$parent.selectedInstructor.id
+        );
+
+        await this.analyticsStore.getTeacherClassFailedAssessmentsBySubject(
+            this.$parent.selectedInstructor.id
+        );
+        await this.analyticsStore.getTeacherClassPassedAssessmentsBySubject(
+            this.$parent.selectedInstructor.id
+        );
+        await this.analyticsStore.getTeacherClassAttemptedAssessmentsBySubject(
+            this.$parent.selectedInstructor.id
+        );
     },
     components: {
         CohortPercentageStudentsMasteredAtLeastOneSkillPieChart,
         CohortProgressLineChart,
-        CohortDurationPerDayLineChart
+        CohortDurationPerDayLineChart,
+        CohortSkillActivityChart,
+        CohortFailedAssessmentsByRootSubjectHorizontalBarChart,
+        CohortPassedAssessmentsByRootSubjectHorizontalBarChart,
+        CohortAttemptedAssessmentsByRootSubjectHorizontalBarChart
     },
     methods: {
         async getTenantClassProgress() {
@@ -102,6 +120,11 @@ export default {
                         error
                     );
                 });
+        },
+        millisToMinutesAndSeconds(millis) {
+            var minutes = Math.floor(millis / 60000);
+            var seconds = ((millis % 60000) / 1000).toFixed(0);
+            return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
         }
     }
 };
@@ -136,9 +159,8 @@ export default {
                 {{ this.cohortsStore.selectedCohort.name }}
             </h1>
         </div>
-        <h1 class="heading">Teacher Report</h1>
-        <div class="d-flex justify-content-between mb-2">
-            <h2 class="secondary-heading">Attendance</h2>
+        <div class="d-flex justify-content-between">
+            <h1 class="heading">Teacher Reports</h1>
             <button class="btn me-1" @click="$parent.restartTutorial">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -154,6 +176,8 @@ export default {
                 </svg>
             </button>
         </div>
+
+        <h2 class="secondary-heading">Engagement</h2>
         <div>
             <h4>Time on platform</h4>
             <CohortDurationPerDayLineChart
@@ -161,31 +185,89 @@ export default {
                 :data="durationsPerDay"
                 colour="#5f31dd"
                 ref="cohortDurationPerDayLineChart"
-                class="mb-5"
             />
-            <p v-else class="mb-5">No data available</p>
-            <h2 class="secondary-heading">Progress</h2>
+            <p v-else>No data available</p>
+
+            <h4 class="mt-4">Skills visited</h4>
+            <CohortSkillActivityChart
+                v-if="analyticsStore.cohortSkillActivities.length > 0"
+                :data="analyticsStore.cohortSkillActivities"
+            />
+            <p v-else>No skills visited by this student.</p>
+
+            <h2 class="secondary-heading mt-5">Academics</h2>
             <h4>Skill mastery progress</h4>
             <CohortProgressLineChart
                 v-if="classProgress.length > 0"
                 :data="classProgress"
                 colour="#5f31dd"
                 ref="cohortProgressLineChart"
-                class="mb-5"
             />
-            <p v-else class="mb-5">No data available</p>
+            <p v-else>No data available</p>
 
-            <h4>Percentage of students who completed at least one skill</h4>
+            <h4 class="mt-4">
+                Percentage of students who completed at least one skill
+            </h4>
             <CohortPercentageStudentsMasteredAtLeastOneSkillPieChart
                 ref="cohortPercentageStudentsMasteredAtLeastOneSkillPieChart"
                 class="mb-5"
             />
 
-            <h4>Skills visited</h4>
-            <h4>Time spent on skills</h4>
-            <h4>Assessments attempted</h4>
-            <h4>Assessments passed</h4>
-            <h4>Assessments failed</h4>
+            <h3 class="secondary-heading">By subject</h3>
+            <h4 class="">Failed more than once</h4>
+            <CohortFailedAssessmentsByRootSubjectHorizontalBarChart
+                v-if="
+                    analyticsStore.cohortRootSubjectsFailedAssessments.length >
+                    0
+                "
+                :data="analyticsStore.cohortRootSubjectsFailedAssessments"
+                colour="darkred"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
+
+            <h4 class="">Passed</h4>
+            <CohortPassedAssessmentsByRootSubjectHorizontalBarChart
+                v-if="
+                    analyticsStore.cohortRootSubjectsPassedAssessments.length >
+                    0
+                "
+                :data="analyticsStore.cohortRootSubjectsPassedAssessments"
+                colour="darkgreen"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
+
+            <h4 class="">Attempted</h4>
+            <CohortAttemptedAssessmentsByRootSubjectHorizontalBarChart
+                v-if="
+                    analyticsStore.cohortRootSubjectsAttemptedAssessments
+                        .length > 0
+                "
+                :data="analyticsStore.cohortRootSubjectsAttemptedAssessments"
+                colour="darkblue"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
+            <!-- 
+            <h4 class="secondary-heading mt-4">Assessments attempted</h4>
+            <AttemptedAssessmentsTimelineChart class="mb-5" v-if="assessmentAttempts.length > 0"
+                :data="assessmentAttempts" />
+            <p v-else>This student has attempted any assessments yet.</p>
+
+        
+            <h4 class="secondary-heading mt-4">Assessments passed</h4>
+            <PassedAssessmentsTimelineChart class="mb-5" v-if="assessmentPasses.length > 0" :data="assessmentPasses" />
+            <p v-else>
+                This student has not completed any assessments yet.
+            </p>
+            <h4 class="secondary-heading mt-4">Assessments failed</h4>
+            <FailedAssessmentsHorizontalBarChart v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
+                :data="teacherAnalyticsStore.studentMultipleFails" colour="darkred" class="mb-5" />
+            <p v-else>
+                This student has not failed any assessments more than once
+                yet.
+            </p> -->
         </div>
     </div>
 </template>
@@ -218,6 +300,7 @@ export default {
     padding-left: 10px;
     padding-right: 10px;
 }
+
 .form-label {
     color: black;
     font-size: 0.875rem;

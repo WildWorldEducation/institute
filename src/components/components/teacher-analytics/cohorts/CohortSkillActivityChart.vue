@@ -11,16 +11,21 @@ export default {
             labelWidth: 20
         };
     },
-    watch: {
-        data: {
-            handler() {
-                this.labelWidth = this.calculateLongestLabelWidth();
-                this.chartHeight = this.calculateChartHeight();
-                this.drawChart();
-            }
-        }
+    // watch: {
+    //     data: {
+    //         handler() {
+    //             this.labelWidth = this.calculateLongestLabelWidth();
+    //             this.chartHeight = this.calculateChartHeight();
+    //             this.drawChart();
+    //             console.log("draw")
+    //         }
+    //     }
+    // },
+    mounted() {
+        this.labelWidth = this.calculateLongestLabelWidth();
+        this.chartHeight = this.calculateChartHeight();
+        this.drawChart();
     },
-
     methods: {
         drawChart() {
             const data = this.data;
@@ -89,7 +94,7 @@ export default {
                 .attr('class', 'axis-label')
                 .attr('transform', `translate(${width / 2},${height + 35})`) // Center below x-axis
                 .style('text-anchor', 'middle')
-                .text('Duration (hours)');
+                .text('Duration (minutes)');
 
             // Add value labels on bars
             g.selectAll('.bar-label')
@@ -101,7 +106,7 @@ export default {
                 .attr('y', (d) => yScale(d.name) + yScale.bandwidth() / 2) // Center vertically on bar
                 .attr('dy', '0.35em') // Fine-tune vertical alignment
                 .style('font-size', '12px')
-                .text((d) => d.quantity); // Display duration value
+                .text((d) => d.formattedQuantity); // Display duration value
         },
         calculateChartHeight() {
             if (this.data.length > 0) {
