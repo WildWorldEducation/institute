@@ -69,7 +69,7 @@ export default {
             modalTextAreaHeight: '',
             isLoading: false,
             loadingMessage: '',
-            isRecording: false,
+            isRecording: false
         };
     },
     async created() {
@@ -116,7 +116,6 @@ export default {
             this.isAudioPlaying = false;
             this.currentIndexAudioPlaying = null;
         });
-       
     },
     methods: {
         // Setting this method to allow the user to be able to create a new line with shift+enter
@@ -221,8 +220,7 @@ export default {
                         this.isNewSocraticChat = false;
                     else if (this.tutorType == 'assessing')
                         this.isNewAssessingChat = false;
-                }               
-
+                }
                 this.$parent.checkTokenUsage();
             } catch (error) {
                 console.error(error);
@@ -572,7 +570,7 @@ export default {
             if (!this.userDetailsStore.userId) {
                 // Show guest tooltip instead of redirecting
                 this.$parent.showGuestTooltip();
-            } else {            
+            } else {
                 this.isLoading = true;
                 this.loadingMessage = `Loading ${
                     type === 'socratic'
@@ -594,7 +592,9 @@ export default {
                 this.$parent.showGuestTooltip();
                 return;
             }
-            this.loadingMessage = 'Loading assessment...';
+            // Using the same loading system as Socratic and Conversational buttons
+            this.isLoading = true;
+            this.loadingMessage = 'Loading Multiple-Choice Assessment Test...';
 
             this.$router.push(`${this.skill.id}/assessment`);
         },
@@ -857,6 +857,11 @@ export default {
                 }
             },
             deep: true
+        },
+        $route(to, from) {
+            // Clear loading state when route changes
+            this.isLoading = false;
+            this.loadingMessage = '';
         }
     }
 };
