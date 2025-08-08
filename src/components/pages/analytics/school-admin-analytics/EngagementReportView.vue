@@ -201,7 +201,6 @@ export default {
 
             await this.getTenantDuration();
             await this.getPercentageStudentsMasteredOneSkill();
-            await this.getTotalTokensPerDay();
         }
     }
 };
@@ -211,21 +210,58 @@ export default {
     <div class="container">
         <span class="d-flex justify-content-between w-100">
             <h1 class="heading">Engagement Report</h1>
-            <!-- Tutorial button -->
-            <button class="btn me-1" @click="restartTutorial" aria-label="info">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 192 512"
-                    width="20"
-                    height="23"
-                    class="primary-icon"
+            <span>
+                <!-- Filter Buttons -->
+                <div
+                    class="btn-group d-flex d-sm-inline-flex mt-2"
+                    role="group"
                 >
-                    <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                    <path
-                        d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                    <input
+                        type="radio"
+                        class="btn-check"
+                        name="timeFilter1"
+                        id="total1"
+                        @click="toggleWeeklyCumulativeData"
+                        checked
                     />
-                </svg>
-            </button>
+                    <label
+                        class="btn btn-outline-dark btn-sm filter-btn"
+                        for="total1"
+                        >Total</label
+                    >
+                    <input
+                        type="radio"
+                        class="btn-check"
+                        name="timeFilter1"
+                        id="week1"
+                        @click="toggleWeeklyCumulativeData"
+                    />
+                    <label
+                        class="btn btn-outline-dark btn-sm filter-btn"
+                        for="week1"
+                        >This week</label
+                    >
+                </div>
+                <!-- Tutorial button -->
+                <button
+                    class="btn me-1"
+                    @click="restartTutorial"
+                    aria-label="info"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 192 512"
+                        width="20"
+                        height="23"
+                        class="primary-icon"
+                    >
+                        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                        <path
+                            d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                        />
+                    </svg>
+                </button>
+            </span>
         </span>
 
         <!-- Tutorial modal for initial introduction -->
@@ -252,6 +288,7 @@ export default {
 
         <h4 class="d-flex justify-content-between">
             Time spent on platform per day
+
             <button
                 class="btn"
                 @click="
