@@ -89,7 +89,7 @@ export const useAnalyticsStore = defineStore('analytics', {
             }
         },
         // Cohort
-        async getTeacherClassSkillActivityReport(instructorId) {         
+        async getTeacherClassSkillActivityReport(instructorId) {
             try {
                 const response = await fetch(
                     `/student-analytics/all-student-cohort-activity/instructor/${instructorId}`
@@ -97,7 +97,18 @@ export const useAnalyticsStore = defineStore('analytics', {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
+
                 this.cohortSkillActivities = await response.json();
+                this.cohortSkillActivities = this.cohortSkillActivities.map(
+                    (skill) => {
+                        return {
+                            ...skill,
+                            formattedQuantity: this.millisToMinutesAndSeconds(
+                                skill.quantity
+                            )
+                        };
+                    }
+                );
             } catch (error) {
                 console.error('Error fetching skill activity report:', error);
             }
@@ -138,7 +149,7 @@ export const useAnalyticsStore = defineStore('analytics', {
                 this.cohortRootSubjectsPassedAssessments = [];
             }
         },
-         async getTeacherClassAttemptedAssessmentsBySubject(instructorId) {
+        async getTeacherClassAttemptedAssessmentsBySubject(instructorId) {
             try {
                 const response = await fetch(
                     `/student-analytics/attempted-assessments-by-subject/instructor/${instructorId}`
@@ -156,5 +167,10 @@ export const useAnalyticsStore = defineStore('analytics', {
                 this.cohortRootSubjectsAttemptedAssessments = [];
             }
         },
+        millisToMinutesAndSeconds(millis) {
+            var minutes = Math.floor(millis / 60000);
+            var seconds = ((millis % 60000) / 1000).toFixed(0);
+            return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        }
     }
 });

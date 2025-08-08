@@ -24,7 +24,7 @@ export default {
     mounted() {
         this.labelWidth = this.calculateLongestLabelWidth();
         this.chartHeight = this.calculateChartHeight();
-        this.drawChart();              
+        this.drawChart();
     },
     methods: {
         drawChart() {
@@ -106,7 +106,7 @@ export default {
                 .attr('y', (d) => yScale(d.name) + yScale.bandwidth() / 2) // Center vertically on bar
                 .attr('dy', '0.35em') // Fine-tune vertical alignment
                 .style('font-size', '12px')
-                .text((d) => d.quantity); // Display duration value
+                .text((d) => d.formattedQuantity); // Display duration value
         },
         calculateChartHeight() {
             if (this.data.length > 0) {
