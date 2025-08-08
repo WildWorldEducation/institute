@@ -24,7 +24,7 @@ export default {
     mounted() {
         this.labelWidth = this.calculateLongestLabelWidth();
         this.chartHeight = this.calculateChartHeight();
-        this.drawChart();       
+        this.drawChart();              
     },
     methods: {
         drawChart() {
@@ -94,7 +94,7 @@ export default {
                 .attr('class', 'axis-label')
                 .attr('transform', `translate(${width / 2},${height + 35})`) // Center below x-axis
                 .style('text-anchor', 'middle')
-                .text('Duration (hours)');
+                .text('Duration (minutes)');
 
             // Add value labels on bars
             g.selectAll('.bar-label')

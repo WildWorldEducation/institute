@@ -7,7 +7,7 @@ export default {
     data() {
         return {
             chartHeight: 400,
-            chartWidth: 1200,
+            chartWidth: 900,
             labelWidth: 20
         };
     },
@@ -65,8 +65,9 @@ export default {
                 .enter()
                 .append('rect') // Create rect elements for each data point
                 .attr('class', 'bar')
-                .attr('x', 0) // Start bars at x=0 (left edge)
-                .attr('y', (d) => yScale(d.name)) // Position vertically based on task
+                .attr('x', 0) // Start bars at x=0 (left edge)              
+                .attr('y', (d) => yScale(d.name))
+                
                 .attr('width', (d) =>
                     d.quantity > 0 ? xScale(d.quantity) : xScale(1)
                 ) // Width based on duration value
@@ -87,9 +88,10 @@ export default {
             // Add X axis label
             g.append('text')
                 .attr('class', 'axis-label')
+                .style('font-size', '16px')
                 .attr('transform', `translate(${width / 2},${height + 35})`) // Center below x-axis
-                .style('text-anchor', 'middle')
-                .text('Duration (hours)');
+                .style('text-anchor', 'middle')              
+                .text('Duration (minutes)');
 
             // Add value labels on bars
             g.selectAll('.bar-label')
@@ -100,7 +102,7 @@ export default {
                 .attr('x', (d) => xScale(d.quantity) + 5) // Position slightly right of bar end
                 .attr('y', (d) => yScale(d.name) + yScale.bandwidth() / 2) // Center vertically on bar
                 .attr('dy', '0.35em') // Fine-tune vertical alignment
-                .style('font-size', '12px')
+                .style('font-size', '14px')
                 .text((d) => d.formattedQuantity); // Display duration value
         },
         calculateChartHeight() {

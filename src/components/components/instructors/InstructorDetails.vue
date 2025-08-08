@@ -14,7 +14,7 @@ export default {
     setup() {
         const cohortsStore = useCohortsStore();
         const userDetailsStore = useUserDetailsStore();
-          const analyticsStore = useAnalyticsStore();
+        const analyticsStore = useAnalyticsStore();
         return {
             cohortsStore,
             userDetailsStore,
@@ -39,7 +39,7 @@ export default {
         await this.analyticsStore.getTeacherClassPassedAssessmentsBySubject(this.$parent.selectedInstructor.id);
         await this.analyticsStore.getTeacherClassAttemptedAssessmentsBySubject(this.$parent.selectedInstructor.id);
     },
-    computed: {    
+    computed: {
     },
     components: {
         CohortPercentageStudentsMasteredAtLeastOneSkillPieChart,
@@ -137,9 +137,8 @@ export default {
                 {{ this.cohortsStore.selectedCohort.name }}
             </h1>
         </div>
-        <h1 class="heading">Teacher Report</h1>
         <div class="d-flex justify-content-between mb-2">
-            <h2 class="secondary-heading">Attendance</h2>
+            <h1 class="heading">Teacher Reports</h1>
             <button class="btn me-1" @click="$parent.restartTutorial">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512" width="20" height="20"
                     class="primary-icon">
@@ -149,35 +148,37 @@ export default {
                 </svg>
             </button>
         </div>
+
+        <h2 class="secondary-heading">Engagement</h2>
+
         <div>
             <h4>Time on platform</h4>
             <CohortDurationPerDayLineChart v-if="durationsPerDay.length > 0" :data="durationsPerDay" colour="#5f31dd"
-                ref="cohortDurationPerDayLineChart" class="mb-5" />
-            <p v-else class="mb-5">No data available</p>
-            <h2 class="secondary-heading">Progress</h2>
-            <h4>Skill mastery progress</h4>
-            <CohortProgressLineChart v-if="classProgress.length > 0" :data="classProgress" colour="#5f31dd"
-                ref="cohortProgressLineChart" class="mb-5" />
-            <p v-else class="mb-5">No data available</p>
+                ref="cohortDurationPerDayLineChart" />
+            <p v-else>No data available</p>
 
-            <h4>Percentage of students who completed at least one skill</h4>
-            <CohortPercentageStudentsMasteredAtLeastOneSkillPieChart
-                ref="cohortPercentageStudentsMasteredAtLeastOneSkillPieChart" class="mb-5" />
-
-            <h2 class="secondary-heading">Engagement</h2>
-            <h4 class="secondary-heading">Skills visited</h4>
+            <h4 class="mt-4">Skills visited</h4>
             <CohortSkillActivityChart v-if="analyticsStore.cohortSkillActivities.length > 0"
                 :data="analyticsStore.cohortSkillActivities" />
             <p v-else>No skills visited by this student.</p>
 
-            <h2 class="secondary-heading mt-5">Academic Performance</h2>
-            <h3 class="secondary-heading">Performance by Subject</h3>
-           <h4 class="">Failed more than once</h4>
+            <h2 class="secondary-heading mt-5">Academics</h2>
+            <h4>Skill mastery progress</h4>
+            <CohortProgressLineChart v-if="classProgress.length > 0" :data="classProgress" colour="#5f31dd"
+                ref="cohortProgressLineChart" />
+            <p v-else>No data available</p>
+
+            <h4 class="mt-4">Percentage of students who completed at least one skill</h4>
+            <CohortPercentageStudentsMasteredAtLeastOneSkillPieChart
+                ref="cohortPercentageStudentsMasteredAtLeastOneSkillPieChart" class="mb-5" />
+
+            <h3 class="secondary-heading">By subject</h3>
+            <h4 class="">Failed more than once</h4>
             <CohortFailedAssessmentsByRootSubjectHorizontalBarChart
                 v-if="analyticsStore.cohortRootSubjectsFailedAssessments.length > 0"
                 :data="analyticsStore.cohortRootSubjectsFailedAssessments" colour="darkred" class="mb-5" />
             <p v-else>No data yet</p>
- 
+
             <h4 class="">Passed</h4>
             <CohortPassedAssessmentsByRootSubjectHorizontalBarChart
                 v-if="analyticsStore.cohortRootSubjectsPassedAssessments.length > 0"
@@ -189,11 +190,13 @@ export default {
                 v-if="analyticsStore.cohortRootSubjectsAttemptedAssessments.length > 0"
                 :data="analyticsStore.cohortRootSubjectsAttemptedAssessments" colour="darkblue" class="mb-5" />
             <p v-else>No data yet</p>
-<!-- 
+            <!-- 
             <h4 class="secondary-heading mt-4">Assessments attempted</h4>
             <AttemptedAssessmentsTimelineChart class="mb-5" v-if="assessmentAttempts.length > 0"
                 :data="assessmentAttempts" />
             <p v-else>This student has attempted any assessments yet.</p>
+
+        
             <h4 class="secondary-heading mt-4">Assessments passed</h4>
             <PassedAssessmentsTimelineChart class="mb-5" v-if="assessmentPasses.length > 0" :data="assessmentPasses" />
             <p v-else>

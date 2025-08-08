@@ -19,8 +19,8 @@ export default {
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
-        const marginLeft = 200;
-        const width = 1000;
+        const marginLeft = 300;
+        const width = 700;
         const height =
             Math.ceil((this.data.length + 0.1) * barHeight) +
             marginTop +

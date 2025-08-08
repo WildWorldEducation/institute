@@ -81,7 +81,7 @@ export default {
             fetch(url, requestOptions);
         },
         skipTutorial() {
-            this.showTutorialTip1 = false;
+            this.showTutorialTip1 = false;      
             this.isTutorialComplete = true;
             this.markTutorialComplete();
         },

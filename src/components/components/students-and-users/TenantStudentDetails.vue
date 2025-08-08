@@ -187,19 +187,23 @@ export default {
         </div>
         <div class="row">
             <div class="d-flex flex-column">
+                <h1 class="heading">Student Report</h1>
                 <h2 class="secondary-heading">Engagement</h2>
-                <h4 class="secondary-heading">Skills visited</h4>
+                <h4>Total time on platform</h4>
+                <StudentDurationPerDayLineChart v-if="durationsPerDay.length > 0" :data="durationsPerDay" />
+                <p v-else>There is no data to show yet.</p>
+
+                <h4 class="mt-4">Skills visited</h4>
                 <StudentSkillActivityChart v-if="teacherAnalyticsStore.skillActivities.length > 0"
                     :data="teacherAnalyticsStore.skillActivities" />
                 <p v-else>No skills visited by this student.</p>
 
-                <h4 class="secondary-heading mt-4">Total time on platform</h4>
-                <StudentDurationPerDayLineChart v-if="durationsPerDay.length > 0" :data="durationsPerDay" />
-                <p v-else>There is no data to show yet.</p>
+                <h2 class="secondary-heading mt-5">Academics</h2>
+                <h4>Skill mastery progress</h4>
+                <StudentProgressLineChart v-if="studentProgress.length > 0" :data="studentProgress" colour="#5f31dd" />
+                <p v-else>No data to show yet.</p>
 
-                <h2 class="secondary-heading mt-5">Academic Performance</h2>
-                <h3 class="secondary-heading">Performance by Subject</h3>
-                
+                <h3 class="secondary-heading mt-4">By subject</h3>
                 <h4 class="">Failed more than once</h4>
                 <StudentFailedAssessmentsByRootSubjectHorizontalBarChart
                     v-if="analyticsStore.studentRootSubjectsFailedAssessments.length > 0"
@@ -218,27 +222,25 @@ export default {
                     :data="analyticsStore.studentRootSubjectsAttemptedAssessments" colour="darkblue" class="mb-5" />
                 <p v-else>No data yet</p>
 
-                <h4 class="secondary-heading">Skill mastery progress</h4>
-                <StudentProgressLineChart v-if="studentProgress.length > 0" :data="studentProgress" colour="#5f31dd" />
-                <p v-else>No data to show yet.</p>
-
-                <h4 class="secondary-heading mt-4">Assessments attempted</h4>
-                <AttemptedAssessmentsTimelineChart class="mb-5" v-if="assessmentAttempts.length > 0"
-                    :data="assessmentAttempts" />
-                <p v-else>This student has attempted any assessments yet.</p>
-                <h4 class="secondary-heading mt-4">Assessments passed</h4>
-                <PassedAssessmentsTimelineChart class="mb-5" v-if="assessmentPasses.length > 0"
-                    :data="assessmentPasses" />
-                <p v-else>
-                    This student has not completed any assessments yet.
-                </p>
-                <h4 class="secondary-heading mt-4">Assessments failed</h4>
+                <h3 class="secondary-heading mt-4">By skill</h3>
+                <h4>Assessments failed</h4>
                 <FailedAssessmentsHorizontalBarChart v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
-                    :data="teacherAnalyticsStore.studentMultipleFails" colour="darkred" class="mb-5" />
+                    :data="teacherAnalyticsStore.studentMultipleFails" colour="darkred"/>
                 <p v-else>
                     This student has not failed any assessments more than once
                     yet.
                 </p>
+                <h4 class="mt-4">Assessments passed</h4>
+                <PassedAssessmentsTimelineChart v-if="assessmentPasses.length > 0"
+                    :data="assessmentPasses" />
+                <p v-else>
+                    This student has not completed any assessments yet.
+                </p>
+                <h4 class="mt-4">Assessments attempted</h4>
+                <AttemptedAssessmentsTimelineChart class="mb-5" v-if="assessmentAttempts.length > 0"
+                    :data="assessmentAttempts" />
+                <p v-else class="mb-5">This student has attempted any assessments yet.</p>
+
             </div>
         </div>
     </div>
