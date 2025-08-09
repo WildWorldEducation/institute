@@ -155,9 +155,11 @@ export default {
         <div class="modal-content">
             <div v-if="showTutorialTip1">
                 <p>
-                    This page provides an overview of students of particular
-                    instructors, allowing you to monitor their performance and
-                    student progress.
+                    This page displays comprehensive analytics for the selected
+                    instructor's classes, including student engagement metrics
+                    (time on platform, skills visited), academic progress (skill
+                    mastery, completion rates), and assessment performance
+                    broken down by subject areas.
                 </p>
                 <div class="d-flex justify-content-between">
                     <button

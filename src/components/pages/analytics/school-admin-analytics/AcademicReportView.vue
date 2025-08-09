@@ -33,9 +33,9 @@ export default {
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false,
-            showTutorialTip2: false,
-            showTutorialTip3: false,
-            showTutorialTip4: false,
+            // showTutorialTip2: false,
+            // showTutorialTip3: false,
+            // showTutorialTip4: false,
             dataMode: 'total'
         };
     },
@@ -76,24 +76,26 @@ export default {
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
-                this.showTutorialTip2 = true;
-            } else if (step == 2) {
-                this.showTutorialTip2 = false;
-                this.showTutorialTip3 = true;
-            } else if (step == 3) {
-                this.showTutorialTip3 = false;
-                this.showTutorialTip4 = true;
-            } else if (step == 4) {
-                this.showTutorialTip4 = false;
+                // this.showTutorialTip2 = true;
                 this.markTutorialComplete();
             }
+            // else if (step == 2) {
+            //     this.showTutorialTip2 = false;
+            //     this.showTutorialTip3 = true;
+            // } else if (step == 3) {
+            //     this.showTutorialTip3 = false;
+            //     this.showTutorialTip4 = true;
+            // } else if (step == 4) {
+            //     this.showTutorialTip4 = false;
+            //     this.markTutorialComplete();
+            // }
         },
         restartTutorial() {
             this.isTutorialComplete = false;
             this.showTutorialTip1 = true;
-            this.showTutorialTip2 = false;
-            this.showTutorialTip3 = false;
-            this.showTutorialTip4 = false;
+            // this.showTutorialTip2 = false;
+            // this.showTutorialTip3 = false;
+            // this.showTutorialTip4 = false;
         },
         markTutorialComplete() {
             let url =
@@ -105,14 +107,14 @@ export default {
             };
             fetch(url, requestOptions);
         },
-        skipTutorial() {
-            this.showTutorialTip1 = false;
-            this.showTutorialTip2 = false;
-            this.showTutorialTip3 = false;
-            this.showTutorialTip4 = false;
-            this.isTutorialComplete = true;
-            this.markTutorialComplete();
-        },
+        // skipTutorial() {
+        //     this.showTutorialTip1 = false;
+        //     this.showTutorialTip2 = false;
+        //     this.showTutorialTip3 = false;
+        //     this.showTutorialTip4 = false;
+        //     this.isTutorialComplete = true;
+        //     this.markTutorialComplete();
+        // },
         async getTenantProgress() {
             fetch(`/student-analytics/tenant-progress/${this.tenantId}`)
                 .then((response) => response.json())
@@ -308,19 +310,20 @@ export default {
         <div v-if="showTutorialTip1" class="modal">
             <div class="modal-content">
                 <p class="modal-text">
-                    The School Admin Report provides comprehensive analytics on
-                    student engagement, academic performance, and resource usage
-                    across your school.
+                    The Academic Report provides comprehensive analytics on
+                    student academic performance across your school, including
+                    skill mastery progress, assessment results by subject areas,
+                    completion rates, and detailed breakdowns of passed,
+                    attempted, and failed assessments. All chart data can be
+                    downloaded as CSV files using the download buttons next to
+                    each chart for further analysis.
                 </p>
                 <div class="d-flex justify-content-between">
                     <button
                         class="btn primary-btn"
                         @click="progressTutorial(1)"
                     >
-                        next
-                    </button>
-                    <button class="btn red-btn" @click="skipTutorial">
-                        exit tutorial
+                        close
                     </button>
                 </div>
             </div>

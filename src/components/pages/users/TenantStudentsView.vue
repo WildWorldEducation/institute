@@ -39,7 +39,9 @@ export default {
             isLoading: true,
             currentUserId: '',
             // Flag to prevent initial selection from triggering updates
-            isInitializing: true
+            isInitializing: true,
+            isTutorialComplete: false,
+            showTutorialTip1: false
         };
     },
     components: {
@@ -87,6 +89,44 @@ export default {
                         this.usersStore.studentsPerTenant[0].id;
                 }
             }
+        },
+        async checkIfTutorialComplete() {
+            const result = await fetch(
+                '/users/check-tutorial-progress/students/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            if (data == 0) {
+                this.isTutorialComplete = false;
+                this.showTutorialTip1 = true;
+            } else if (data == 1) {
+                this.isTutorialComplete = true;
+            }
+        },
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+                this.markTutorialComplete();
+            }
+        },
+        restartTutorial() {
+            this.showTutorialTip1 = true;
+            this.isTutorialComplete = false;
+        },
+        markTutorialComplete() {
+            let url =
+                '/users/mark-tutorial-complete/skill/' +
+                this.userDetailsStore.userId;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch(url, requestOptions);
+        },
+        skipTutorial() {
+            this.showTutorialTip1 = false;
+            this.isTutorialComplete = true;
+            this.markTutorialComplete();
         },
         // Updated method to handle both initial setup and user selections
         async updateUserDetails(selectedUser, isInitial = false) {
@@ -207,6 +247,31 @@ export default {
             >
                 <div class="row">
                     <TenantStudentDetails :userId="user.id" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Tutorial modals for school_admin -->
+    <div
+        v-if="userDetailsStore.role == 'school_admin' && showTutorialTip1"
+        class="modal"
+    >
+        <div class="modal-content">
+            <div v-if="showTutorialTip1">
+                <p>
+                    This page displays a list of individual students on the left
+                    and detailed analytics for the selected student on the
+                    right, allowing you to monitor each student's engagement,
+                    academic progress, and performance across subjects and
+                    skills.
+                </p>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        close
+                    </button>
                 </div>
             </div>
         </div>
