@@ -368,6 +368,17 @@ export default {
             class="mb-5"
         />
         <p v-else class="mb-5">No data yet</p>
+
+        <h4 class="d-flex justify-content-between mt-5">
+            Token spend per student
+        </h4>
+        <p><em>include total / monthly toggle</em></p>
+        <p>
+            <em
+                >make it clear if the student is above the free limit (eg a
+                different colour)</em
+            >
+        </p>
     </div>
 </template>
 
