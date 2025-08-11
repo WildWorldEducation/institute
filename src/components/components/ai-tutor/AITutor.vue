@@ -209,12 +209,7 @@ export default {
                 } else if (this.tutorType == 'assessing') {
                     this.assessingTutorChatHistory = resData.messages;
                     this.chatHistory = this.assessingTutorChatHistory;
-                    console.log(
-                        'isGettingNewMessages: ' + this.isGettingNewMessages
-                    );
-                    console.log(
-                        'isUserAnsweredQuestion: ' + this.isUserAnsweredQuestion
-                    );
+
                     // Only call assessMastery function if we are getting new messages from the server
                     if (
                         this.isGettingNewMessages &&
@@ -466,7 +461,7 @@ export default {
         },
         async assessMastery() {
             // Record assessment attempt
-            console.log('userSkillsStore recordAssessmentAttempt called');
+
             await this.userSkillsStore.recordAssessmentAttempt(
                 this.userDetailsStore.userId,
                 this.skill.id
@@ -517,7 +512,7 @@ export default {
 
                 const response = await res.json();
                 let result = response.result.result;
-                console.log('assess result: ' + result);
+
                 if (result >= 70) {
                     this.makeMastered();
                 }
