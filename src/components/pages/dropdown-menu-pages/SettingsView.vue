@@ -100,12 +100,17 @@ export default {
         },
         async toggleStudentsAccessBilling() {
             try {
+                let can_students_access_billing: number;
+                if (this.canStudentsAccessBilling == true) {
+                    can_students_access_billing = 1;
+                } else {
+                    can_students_access_billing = 0;
+                }
                 const reqOptions = {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        can_students_access_billing:
-                            this.canStudentsAccessBilling
+                        can_students_access_billing: can_students_access_billing
                     })
                 };
                 await fetch(
