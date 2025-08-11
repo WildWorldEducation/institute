@@ -827,6 +827,14 @@ router.beforeEach(async (to, from, next) => {
         );
     }
 
+    if (to.name == 'tokens') {
+        if (userDetailsStore.canAccessBilling) {
+            next(); // proceed
+        } else {
+            next('/'); // redirect
+        }
+    }
+
     // Check if initial data has been loaded and user is not logged in, redirect to login
     if (
         !sessionDetailsStore.isLoggedIn &&
