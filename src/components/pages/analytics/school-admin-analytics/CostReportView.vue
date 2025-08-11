@@ -23,9 +23,9 @@ export default {
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false,
-            showTutorialTip2: false,
-            showTutorialTip3: false,
-            showTutorialTip4: false,
+            // showTutorialTip2: false,
+            // showTutorialTip3: false,
+            // showTutorialTip4: false,
             dataMode: 'total'
         };
     },
@@ -54,24 +54,26 @@ export default {
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
-                this.showTutorialTip2 = true;
-            } else if (step == 2) {
-                this.showTutorialTip2 = false;
-                this.showTutorialTip3 = true;
-            } else if (step == 3) {
-                this.showTutorialTip3 = false;
-                this.showTutorialTip4 = true;
-            } else if (step == 4) {
-                this.showTutorialTip4 = false;
+                // this.showTutorialTip2 = true;
                 this.markTutorialComplete();
             }
+            // else if (step == 2) {
+            //     this.showTutorialTip2 = false;
+            //     this.showTutorialTip3 = true;
+            // } else if (step == 3) {
+            //     this.showTutorialTip3 = false;
+            //     this.showTutorialTip4 = true;
+            // } else if (step == 4) {
+            //     this.showTutorialTip4 = false;
+            //     this.markTutorialComplete();
+            // }
         },
         restartTutorial() {
             this.isTutorialComplete = false;
             this.showTutorialTip1 = true;
-            this.showTutorialTip2 = false;
-            this.showTutorialTip3 = false;
-            this.showTutorialTip4 = false;
+            // this.showTutorialTip2 = false;
+            // this.showTutorialTip3 = false;
+            // this.showTutorialTip4 = false;
         },
         markTutorialComplete() {
             let url =
@@ -83,14 +85,14 @@ export default {
             };
             fetch(url, requestOptions);
         },
-        skipTutorial() {
-            this.showTutorialTip1 = false;
-            this.showTutorialTip2 = false;
-            this.showTutorialTip3 = false;
-            this.showTutorialTip4 = false;
-            this.isTutorialComplete = true;
-            this.markTutorialComplete();
-        },
+        // skipTutorial() {
+        //     this.showTutorialTip1 = false;
+        //     this.showTutorialTip2 = false;
+        //     this.showTutorialTip3 = false;
+        //     this.showTutorialTip4 = false;
+        //     this.isTutorialComplete = true;
+        //     this.markTutorialComplete();
+        // },
         async getAvgTokensToMasterSkills() {
             try {
                 const response = await fetch(
@@ -244,20 +246,24 @@ export default {
         <div v-if="showTutorialTip1" class="modal">
             <div class="modal-content">
                 <p class="modal-text">
-                    The School Admin Report provides comprehensive analytics on
-                    student engagement, academic performance, and resource usage
-                    across your school.
+                    The Cost Report provides comprehensive analytics on AI token
+                    usage and associated costs across your school. Track daily
+                    token consumption, average tokens required to master each
+                    skill, and total tokens spent per skill. All chart data can
+                    be downloaded as CSV files using the download buttons, and
+                    you can toggle between total (cumulative) and weekly data
+                    views using the filter buttons at the top right.
                 </p>
                 <div class="d-flex justify-content-between">
                     <button
                         class="btn primary-btn"
                         @click="progressTutorial(1)"
                     >
-                        next
+                        close
                     </button>
-                    <button class="btn red-btn" @click="skipTutorial">
+                    <!-- <button class="btn red-btn" @click="skipTutorial">
                         exit tutorial
-                    </button>
+                    </button> -->
                 </div>
             </div>
         </div>
@@ -362,6 +368,17 @@ export default {
             class="mb-5"
         />
         <p v-else class="mb-5">No data yet</p>
+
+        <h4 class="d-flex justify-content-between mt-5">
+            Token spend per student
+        </h4>
+        <p><em>include total / monthly toggle</em></p>
+        <p>
+            <em
+                >make it clear if the student is above the free limit (eg a
+                different colour)</em
+            >
+        </p>
     </div>
 </template>
 
