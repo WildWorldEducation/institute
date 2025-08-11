@@ -948,14 +948,14 @@ router.get('/show/:id', (req, res, next) => {
         // Note: avatar has query param to deal with image caching by browser,
         // in case image is changed.
         let sqlQuery = `
-    SELECT users.id, tenant_id, first_name, last_name, username,
-    CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', users.id, '?v=', UNIX_TIMESTAMP()) AS avatar, 
-    email, role, is_deleted, is_google_auth, grade_filter, theme,
-    is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter, reputation_score, is_unlocked_skills_only_filter, cohort_id, is_audio_auto_play, tokens
-    FROM users           
-    WHERE users.id = ${conn.escape(req.params.id)} 
-    AND is_deleted = 0
-    LIMIT 1`;
+            SELECT users.id, tenant_id, first_name, last_name, username,
+            CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', users.id, '?v=', UNIX_TIMESTAMP()) AS avatar, 
+            email, role, is_deleted, is_google_auth, grade_filter, theme,
+            is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter, reputation_score, is_unlocked_skills_only_filter, cohort_id, is_audio_auto_play, tokens
+            FROM users           
+            WHERE users.id = ${conn.escape(req.params.id)} 
+            AND is_deleted = 0
+            LIMIT 1`;
 
         conn.query(sqlQuery, async (err, results) => {
             try {
@@ -1014,6 +1014,21 @@ router.get('/show/:id', (req, res, next) => {
                     }
 
                     results[0].monthly_token_usage = monthlyTokenUsage;
+
+                    // Check if student is allowed to access billing page.
+                    const canAccessBillingQuery = `
+                        SELECT can_students_access_billing
+                        FROM tenants
+                        WHERE id = ${conn.escape(results[0].tenant_id)};`;
+
+                    const canAccessBillingResult = await query(
+                        canAccessBillingQuery
+                    );
+
+                    const canAccessBilling =
+                        canAccessBillingResult[0].can_students_access_billing;
+
+                    results[0].can_students_access_billing = canAccessBilling;
 
                     res.json(results[0]);
                 } else {

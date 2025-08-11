@@ -553,7 +553,7 @@ export default {
                                     </RouterLink>
                                     <RouterLink
                                         v-if="
-                                            userDetailsStore.role == 'student'
+                                            userDetailsStore.role == 'student' && userDetailsStore.canAccessBilling == 1
                                         "
                                         to="/tokens"
                                         class="dropdown-item"
