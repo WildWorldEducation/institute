@@ -27,7 +27,7 @@ export default {
             if (this.hasLoaded) {
                 return;
             }
-            const skillId = this.$route.params.id;
+            const skillId = this.$route.params.skillId;
             if (!skillId) {
                 console.error('No skill ID found in route params');
                 this.isLoading = false;
