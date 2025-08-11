@@ -69,7 +69,10 @@ export default {
             modalTextAreaHeight: '',
             isLoading: false,
             loadingMessage: '',
-            isRecording: false
+            isRecording: false,
+            // Used to prevent multiple calls to assessMastery function
+            isGettingNewMessages: false,
+            isUserAnsweredQuestion: false
         };
     },
     async created() {
@@ -166,6 +169,13 @@ export default {
         },
         // For both tutors
         async getChatHistory() {
+            // fond the cause of the error. When user open the modal we re-check the number of question answers and if it's a multiple of 10 we call the assessMastery function.
+            // The error is that the assessMastery function is called even when the user has not answered 10 questions.
+            // The cause is that the getChatHistory function is called when the user open the modal.
+            // The solution is to call the assessMastery function only when the user has answered 10 questions.
+            // The solution is to call the getChatHistory function only when the user open the modal.
+            // The solution is to call the assessMastery function only when the user has answered 10 questions.
+
             try {
                 const requestOptions = {
                     method: 'POST',
@@ -199,18 +209,34 @@ export default {
                 } else if (this.tutorType == 'assessing') {
                     this.assessingTutorChatHistory = resData.messages;
                     this.chatHistory = this.assessingTutorChatHistory;
-                    // Assessment (every 10 answers)
-                    let numAnswers = 0;
-                    for (let i = 0; i < this.chatHistory.length; i++) {
-                        if (this.chatHistory[i].role == 'user') {
-                            numAnswers++;
-                        }
-                    }
+                    console.log(
+                        'isGettingNewMessages: ' + this.isGettingNewMessages
+                    );
+                    console.log(
+                        'isUserAnsweredQuestion: ' + this.isUserAnsweredQuestion
+                    );
+                    // Only call assessMastery function if we are getting new messages from the server
                     if (
-                        numAnswers > this.settingStore.quizMaxQuestions - 1 &&
-                        numAnswers % this.settingStore.quizMaxQuestions == 0
+                        this.isGettingNewMessages &&
+                        this.isUserAnsweredQuestion
                     ) {
-                        this.assessMastery();
+                        // Assessment (every 10 answers)
+                        let numAnswers = 0;
+                        for (let i = 0; i < this.chatHistory.length; i++) {
+                            if (this.chatHistory[i].role == 'user') {
+                                numAnswers++;
+                            }
+                        }
+                        if (
+                            numAnswers >
+                                this.settingStore.quizMaxQuestions - 1 &&
+                            numAnswers % this.settingStore.quizMaxQuestions == 0
+                        ) {
+                            this.assessMastery();
+                        }
+                        // Reset the flag
+                        this.isGettingNewMessages = false;
+                        this.isUserAnsweredQuestion = false;
                     }
                 }
 
@@ -357,6 +383,7 @@ export default {
             function isEmptyOrSpaces(message) {
                 return message === null || message.match(/^ *$/) !== null;
             }
+            // If the message is empty, the AI will ask a question.
             if (isEmptyOrSpaces(this.message)) {
                 this.askQuestion();
                 return;
@@ -398,6 +425,7 @@ export default {
 
                 this.message = '';
                 socket.emit(socketChannel, messageData);
+                this.isUserAnsweredQuestion = true;
             } catch (error) {
                 console.error(error);
                 this.waitForAIresponse = false; // Reset on error
@@ -438,6 +466,7 @@ export default {
         },
         async assessMastery() {
             // Record assessment attempt
+            console.log('userSkillsStore recordAssessmentAttempt called');
             await this.userSkillsStore.recordAssessmentAttempt(
                 this.userDetailsStore.userId,
                 this.skill.id
@@ -488,6 +517,7 @@ export default {
 
                 const response = await res.json();
                 let result = response.result.result;
+                console.log('assess result: ' + result);
                 if (result >= 70) {
                     this.makeMastered();
                 }
@@ -845,6 +875,9 @@ export default {
                     } else if (this.mode == 'modal') {
                         this.chatHistory.push(assistantMessage);
                     }
+
+                    // turn on the new message flag
+                    this.isGettingNewMessages = true;
 
                     this.generateAudio(
                         assistantMessage.index,

@@ -43,6 +43,7 @@ export const useUserSkillsStore = defineStore('userSkills', {
                     skillId: skillId
                 })
             };
+            console.log('recordAssessmentAttempt: ' + skillId);
             let url = '/user-skills/record-assessment-attempt/' + userId;
             await fetch(url, requestOptions);
         },

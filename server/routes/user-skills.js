@@ -606,10 +606,10 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                                                     ) {
                                                         if (
                                                             results[k].type ==
-                                                                'sub' &&
+                                                            'sub' &&
                                                             results[k]
                                                                 .is_accessible ==
-                                                                1
+                                                            1
                                                         ) {
                                                             results[
                                                                 j
@@ -1167,10 +1167,10 @@ router.get(
                                                             if (
                                                                 results[k]
                                                                     .type ==
-                                                                    'sub' &&
+                                                                'sub' &&
                                                                 results[k]
                                                                     .is_accessible ==
-                                                                    1
+                                                                1
                                                             ) {
                                                                 results[
                                                                     j
@@ -1660,7 +1660,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                         ) {
                                             if (
                                                 childSkills[i].type ==
-                                                    'regular' ||
+                                                'regular' ||
                                                 childSkills[i].type == 'domain'
                                             ) {
                                                 makeAccessible(
@@ -1679,7 +1679,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                                 ) {
                                                     if (
                                                         skills[j].parent ==
-                                                            childSkills[i].id &&
+                                                        childSkills[i].id &&
                                                         skills[j].type == 'sub'
                                                     ) {
                                                         subSkills.push(
@@ -1711,7 +1711,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                         ) {
                                             if (
                                                 skills[i].parent ==
-                                                    skill.parent &&
+                                                skill.parent &&
                                                 skills[i].id != skill.id
                                             ) {
                                                 if (skills[i].type == 'sub') {
@@ -1801,6 +1801,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
  */
 router.post('/record-assessment-attempt/:userId', (req, res, next) => {
     if (req.session.userName) {
+        console.log('record-assessment-attempt: ' + req.body.skillId);
         let sqlQuery = `
         INSERT INTO assessment_attempts (user_id, skill_id) 
         VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
@@ -1838,8 +1839,8 @@ router.get(
                 FROM skills s1
                 JOIN skills s2 ON s1.parent = s2.parent
                 LEFT JOIN user_skills us ON s2.id = us.skill_id AND us.user_id = ${conn.escape(
-                    req.params.userId
-                )}
+                req.params.userId
+            )}
                 WHERE s1.id = ${conn.escape(req.params.skillId)}
                 AND s2.id != ${conn.escape(req.params.skillId)}
                 AND s2.is_filtered = 'available' 
@@ -1853,8 +1854,8 @@ router.get(
                 SELECT s2.id, s2.name AS skill_name, s2.url, s2.level, 'child' as relationship_type
                 FROM skills s2
                 LEFT JOIN user_skills us ON s2.id = us.skill_id AND us.user_id = ${conn.escape(
-                    req.params.userId
-                )}
+                req.params.userId
+            )}
                 WHERE s2.parent = ${conn.escape(req.params.skillId)}
                 AND s2.is_filtered = 'available' 
                 AND s2.is_deleted = 0
