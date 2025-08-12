@@ -69,7 +69,8 @@ export default {
             modalTextAreaHeight: '',
             isLoading: false,
             loadingMessage: '',
-            isRecording: false
+            isRecording: false,
+            numberOfConversationalQuizMessages: 0
         };
     },
     async created() {
@@ -199,18 +200,11 @@ export default {
                 } else if (this.tutorType == 'assessing') {
                     this.assessingTutorChatHistory = resData.messages;
                     this.chatHistory = this.assessingTutorChatHistory;
-                    // Assessment (every 10 answers)
-                    let numAnswers = 0;
-                    for (let i = 0; i < this.chatHistory.length; i++) {
-                        if (this.chatHistory[i].role == 'user') {
-                            numAnswers++;
-                        }
-                    }
-                    if (
-                        numAnswers > this.settingStore.quizMaxQuestions - 1 &&
-                        numAnswers % this.settingStore.quizMaxQuestions == 0
-                    ) {
+                    // Assessment (every 20 messages in this unbroken session)
+                    this.numberOfConversationalQuizMessages++;
+                    if (this.numberOfConversationalQuizMessages == 20) {
                         this.assessMastery();
+                        this.numberOfConversationalQuizMessages = 0;
                     }
                 }
 
