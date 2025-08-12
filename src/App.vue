@@ -553,7 +553,10 @@ export default {
                                     </RouterLink>
                                     <RouterLink
                                         v-if="
-                                            userDetailsStore.role == 'student' && userDetailsStore.canAccessBilling == 1
+                                            userDetailsStore.role ==
+                                                'student' &&
+                                            userDetailsStore.canAccessBilling ==
+                                                1
                                         "
                                         to="/tokens"
                                         class="dropdown-item"
@@ -568,6 +571,16 @@ export default {
                                         class="dropdown-item"
                                     >
                                         Referrals
+                                    </RouterLink>
+                                    <RouterLink
+                                        v-if="
+                                            userDetailsStore.role ==
+                                            'school_admin'
+                                        "
+                                        to="/tenant-billing"
+                                        class="dropdown-item"
+                                    >
+                                        Billing
                                     </RouterLink>
                                     <RouterLink
                                         v-if="
