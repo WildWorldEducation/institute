@@ -551,8 +551,7 @@ export default {
                         <div class="explain-tool-tip triangle-top-right">
                             <div class="tool-tip-text">
                                 <p>
-                                    At the top, one can filter the skills by
-                                    grade level, and search for a specific
+                                    At the top one can search for a specific
                                     skill.
                                 </p>
                                 <div class="d-flex justify-content-between">
@@ -661,9 +660,8 @@ export default {
                         <div class="explain-tool-tip triangle-top-right">
                             <div class="tool-tip-text">
                                 <p>
-                                    At the top, one can filter the skills by
-                                    grade level, and search for a specific
-                                    skill.
+                                    One can search for a specific skill at the
+                                    top.
                                 </p>
                                 <div class="d-flex justify-content-between">
                                     <button
@@ -884,10 +882,7 @@ export default {
                 </div>
             </div>
             <div v-if="showMobileTutorialTip2">
-                <p>
-                    At the top, one can filter the skills by grade level, and
-                    search for a specific skill.
-                </p>
+                <p>One can search for a specific skill at the top.</p>
                 <div class="d-flex justify-content-between">
                     <button
                         class="btn primary-btn"
@@ -1030,10 +1025,7 @@ export default {
                 </div>
             </div>
             <div v-if="showMobileTutorialTip2">
-                <p>
-                    At the top, one can filter the skills by grade level, and
-                    search for a specific skill.
-                </p>
+                <p>One can search for a specific skill at the top.</p>
                 <div class="d-flex justify-content-between">
                     <button
                         class="btn primary-btn"
