@@ -384,14 +384,16 @@ const router = createRouter({
                 roles: ['student']
             }
         },
-        {
-            path: '/news-and-notifications',
-            name: 'news-and-notifications',
-            component: () =>
-                import(
-                    '../components/pages/dropdown-menu-pages/NewsAndNotificationsView.vue'
-                )
-        },
+        // TODO - possibly remove this feature
+        // Check with client first
+        // {
+        //     path: '/news-and-notifications',
+        //     name: 'news-and-notifications',
+        //     component: () =>
+        //         import(
+        //             '../components/pages/dropdown-menu-pages/NewsAndNotificationsView.vue'
+        //         )
+        // },
         {
             path: '/goals',
             name: 'goals',
