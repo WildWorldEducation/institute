@@ -524,12 +524,6 @@ export default {
                                         Settings
                                     </RouterLink>
                                     <RouterLink
-                                        to="/news-and-notifications"
-                                        class="dropdown-item"
-                                    >
-                                        News & Notifications
-                                    </RouterLink>
-                                    <RouterLink
                                         v-if="
                                             userDetailsStore.role === 'student'
                                         "
@@ -603,12 +597,6 @@ export default {
                                 </RouterLink>
                                 <RouterLink to="/settings" class="nav-link">
                                     Settings
-                                </RouterLink>
-                                <RouterLink
-                                    to="/news-and-notifications"
-                                    class="nav-link"
-                                >
-                                    News & Notifications
                                 </RouterLink>
                                 <RouterLink
                                     v-if="userDetailsStore.role === 'student'"
