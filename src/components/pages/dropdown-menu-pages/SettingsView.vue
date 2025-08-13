@@ -91,7 +91,7 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    if (data == 1) {
+                    if (data.can_students_access_billing == 1) {
                         this.canStudentsAccessBilling = true;
                     } else {
                         this.canStudentsAccessBilling = false;

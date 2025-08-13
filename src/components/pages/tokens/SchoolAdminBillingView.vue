@@ -1,11 +1,17 @@
 <script>
 import { useSettingsStore } from '../../../stores/SettingsStore.js';
+import { useTenantStore } from '../../../stores/TenantStore.js';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 
 export default {
     setup() {
         const settingsStore = useSettingsStore();
+        const tenantStore = useTenantStore();
+        const userDetailsStore = useUserDetailsStore();
         return {
-            settingsStore
+            settingsStore,
+            tenantStore,
+            userDetailsStore
         };
     },
     data() {
@@ -34,8 +40,36 @@ export default {
             chosenProduct: {}
         };
     },
-    async created() {},
-    async mounted() {},
+    async created() {
+        // Get free monthly AI token limit
+        if (this.settingsStore.freeTokenMonthlyLimit == 0) {
+            await this.settingsStore.getSettings();
+        }
+        await this.tenantStore.getTenantDetails(this.userDetailsStore.tenantId);
+    },
+    async mounted() {
+        // Work out date
+        // Get current year
+        this.year = new Date().getFullYear();
+        // Get current month
+        const month = [
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December'
+        ];
+
+        const d = new Date();
+        this.month = month[d.getMonth()];
+    },
     computed: {
         formattedMonthlyTokenUsage() {
             return null;
@@ -50,12 +84,30 @@ export default {
         <div class="row">
             <div class="col-md">
                 <!-- Token usage stats -->
-                <h2
-                    class="secondary-heading h4 mb-4"
-                    :class="{ 'text-center': isMobileCheck < 576 }"
-                >
-                    Monthly AI usage: {{ month }} {{ year }}
-                </h2>
+                <span class="d-flex justify-content-between">
+                    <h1
+                        class="secondary-heading h3 mb-4"
+                        :class="{ 'text-center': isMobileCheck < 576 }"
+                    >
+                        <strong>Monthly AI usage:</strong> {{ month }}
+                        {{ year }}
+                    </h1>
+                    <!-- Info button -->
+                    <button class="btn info-btn" @click="openTooltip">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 192 512"
+                            width="20"
+                            height="20"
+                            class="primary-icon"
+                        >
+                            <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                            <path
+                                d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                            />
+                        </svg>
+                    </button>
+                </span>
                 <ul>
                     <li>
                         <p>
@@ -67,13 +119,14 @@ export default {
                     </li>
                     <li>
                         <p>
-                            <strong>Token usage:</strong>
+                            <strong>Total token usage:</strong>
                             {{ formattedMonthlyTokenUsage }}
                         </p>
                     </li>
                     <li>
                         <p>
-                            <strong>Tokens:</strong>
+                            <strong>Current tokens:</strong>
+                            {{ tenantStore.tokens }}
                         </p>
                     </li>
                 </ul>
@@ -86,31 +139,6 @@ export default {
                     You are over the monthly free limit. You can't use the AI
                     features until next month.
                 </div>
-            </div>
-
-            <div
-                class="col-md d-flex"
-                :class="
-                    isMobileCheck > 576
-                        ? 'justify-content-end'
-                        : 'justify-content-center'
-                "
-            >
-                <!-- Info button -->
-                <button class="btn info-btn ms-1" @click="openTooltip">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 192 512"
-                        width="20"
-                        height="20"
-                        class="primary-icon"
-                    >
-                        <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                        <path
-                            d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
-                        />
-                    </svg>
-                </button>
             </div>
         </div>
         <hr />
@@ -190,4 +218,8 @@ export default {
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.info-btn {
+    height: 40px;
+}
+</style>

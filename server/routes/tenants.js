@@ -129,7 +129,7 @@ router.get('/show/:tenantId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-            SELECT can_students_access_billing
+            SELECT can_students_access_billing, tokens
             FROM tenants
             WHERE id = ${conn.escape(req.params.tenantId)};`;
 
@@ -139,7 +139,7 @@ router.get('/show/:tenantId', (req, res, next) => {
                     throw err;
                 }
 
-                res.json(results[0].can_students_access_billing);
+                res.json(results[0]);
             } catch (err) {
                 next(err);
             }
