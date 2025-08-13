@@ -133,6 +133,10 @@ router.post('/tenant/create-checkout-session', async (req, res) => {
             priceId = process.env.STRIPE_5000000_TOKENS_PRICE_ID;
         }
 
+        console.log(priceId);
+        console.log(tenantId);
+        console.log(numberOfTokens);
+
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             mode: 'payment',
@@ -158,7 +162,7 @@ router.get('/tenant/success', async (req, res, next) => {
         req.query.session_id
     );
 
-    return
+    console.log(session);
 
     let amountOfTokens = 0;
     if (session.amount_total == 1000) {
@@ -173,9 +177,11 @@ router.get('/tenant/success', async (req, res, next) => {
     let queryString = `
             UPDATE tenants
             SET tokens = tokens + ${amountOfTokens}
-            WHERE id = '${userId}';
+            WHERE id = '${tenantId}';
             `;
     await query(queryString);
+
+    return;
 
     // Save the receipt
     const paymentIntent = await stripe.paymentIntents.retrieve(
@@ -198,7 +204,6 @@ router.get('/tenant/success', async (req, res, next) => {
 
     res.redirect(`${process.env.BASE_URL}/tokens/completed`);
 });
-
 
 // Export the router for app to use.
 module.exports = router;
