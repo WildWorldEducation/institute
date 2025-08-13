@@ -469,7 +469,7 @@ export default {
 
 #user-information {
     border: 1px solid var(--primary-color);
-    border-radius: 12px;
+    border-radius: 12px;   
 }
 
 .user-input-information {
