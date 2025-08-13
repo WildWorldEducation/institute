@@ -13,6 +13,8 @@ const conn = require('../config/db');
 // for querying DB
 const util = require('util');
 const query = util.promisify(conn.query).bind(conn);
+const isAuthenticated = require('../middlewares/authMiddleware');
+const checkRoleHierarchy = require('../middlewares/roleMiddleware');
 
 /*------------------------------------------
 --------------------------------------------
@@ -117,6 +119,59 @@ router.get('/instructors/:tenantId', (req, res, next) => {
                 next(err);
             }
         });
+    }
+});
+
+/**
+ * Show tenant details
+ */
+router.get('/show/:tenantId', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `
+            SELECT can_students_access_billing
+            FROM tenants
+            WHERE id = ${conn.escape(req.params.tenantId)};`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results[0].can_students_access_billing);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
+ * Edit tenant details
+ */
+router.put('/:tenantId/edit', isAuthenticated, async (req, res, next) => {
+    if (req.session.role == 'school_admin') {
+        let sqlQuery = `
+            UPDATE tenants
+            SET can_students_access_billing = ${conn.escape(
+                req.body.can_students_access_billing
+            )}
+            WHERE id = ${conn.escape(req.params.tenantId)};`;
+
+        conn.query(sqlQuery, async (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                console.error(err);
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
     }
 });
 

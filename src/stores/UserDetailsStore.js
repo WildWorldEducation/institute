@@ -28,7 +28,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
             monthlyTokenUsage: 0,
             isAudioAutoPlay: 0,
             stripeCustomerId: '',
-            tenantId: null
+            tenantId: null,
+            canAccessBilling: null
         };
     },
     actions: {
@@ -63,6 +64,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.tokens = data.tokens;
                 this.isAudioAutoPlay = data.is_audio_auto_play || 0;
                 this.tenantId = data.tenant_id;
+                this.canAccessBilling = data.can_students_access_billing;
 
                 if (this.role == 'student') {
                     await this.getInstructor();

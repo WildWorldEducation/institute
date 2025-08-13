@@ -704,6 +704,14 @@ const router = createRouter({
             component: () =>
                 import('../components/pages/tokens/TokensErrorView.vue')
         },
+        // School admin billing
+        {
+            path: '/tenant-billing',
+            name: 'tenant-billing',
+            component: () =>
+                import('../components/pages/tokens/SchoolAdminBillingView.vue')
+        },
+        // Referrals
         {
             path: '/referrals',
             name: 'list-referrals',
@@ -827,6 +835,14 @@ router.beforeEach(async (to, from, next) => {
         const currentSkill = skillsStore.skillsList.find(
             (item) => item.URL == to.params.skillUrl
         );
+    }
+
+    if (to.name == 'tokens') {
+        if (userDetailsStore.canAccessBilling) {
+            next(); // proceed
+        } else {
+            next('/'); // redirect
+        }
     }
 
     // Check if initial data has been loaded and user is not logged in, redirect to login

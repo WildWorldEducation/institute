@@ -23,11 +23,20 @@ export default {
             selectedInstructorName: '',
             showWarnModal: false,
             isEditing: false,
-            isAudioAutoPlay: Boolean(this.userDetailsStore.isAudioAutoPlay)
+            isAudioAutoPlay: Boolean(this.userDetailsStore.isAudioAutoPlay),
+            canStudentsAccessBilling: null
         };
     },
     components: {
         ThemeDetails
+    },
+    async mounted() {
+        // Initialize isAudioAutoPlay from the user details store
+        this.isAudioAutoPlay = Boolean(this.userDetailsStore.isAudioAutoPlay);
+
+        if (this.userDetailsStore.role == 'school_admin')
+            // Get settings on the tenant for school admins
+            await this.getTenantSettings();
     },
     methods: {
         isInstructorLocked() {
@@ -74,11 +83,44 @@ export default {
             await this.userDetailsStore.updateAudioAutoPlay(
                 this.isAudioAutoPlay
             );
+        },
+        // School admin role only
+        getTenantSettings() {
+            fetch('/tenants/show/' + this.userDetailsStore.tenantId)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    if (data == 1) {
+                        this.canStudentsAccessBilling = true;
+                    } else {
+                        this.canStudentsAccessBilling = false;
+                    }
+                });
+        },
+        async toggleStudentsAccessBilling() {
+            try {
+                let can_students_access_billing: number;
+                if (this.canStudentsAccessBilling == true) {
+                    can_students_access_billing = 1;
+                } else {
+                    can_students_access_billing = 0;
+                }
+                const reqOptions = {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        can_students_access_billing: can_students_access_billing
+                    })
+                };
+                await fetch(
+                    `/tenants/${this.userDetailsStore.tenantId}/edit`,
+                    reqOptions
+                );
+            } catch (error) {
+                console.error('Error updating instructor:', error);
+            }
         }
-    },
-    mounted() {
-        // Initialize isAudioAutoPlay from the user details store
-        this.isAudioAutoPlay = Boolean(this.userDetailsStore.isAudioAutoPlay);
     },
     watch: {
         'userDetailsStore.isAudioAutoPlay': function (newValue) {
@@ -91,6 +133,7 @@ export default {
 <template>
     <div class="container legend-div">
         <div class="mt-2 d-flex row gap-4 justify-content-between">
+            <!-- Students only -->
             <div class="form" v-if="userDetailsStore.role === 'student'">
                 <!-- Instructor -->
                 <div class="profile-input">
@@ -152,7 +195,7 @@ export default {
                 </div>
             </div>
             <ThemeDetails />
-            <!-- Auto-Play Setting -->
+            <!-- Students only -- Auto-Play Setting -->
             <div
                 class="profile-input"
                 v-if="userDetailsStore.role === 'student'"
@@ -177,6 +220,29 @@ export default {
                     <div class="d-flex align-items-center">
                         <span class="setting-label">
                             Auto-play AI tutor speech
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <!-- School admins only -->
+            <div v-if="userDetailsStore.role === 'school_admin'">
+                <div class="setting-container d-flex align-items-center">
+                    <!-- Custom Toggle Switch -->
+                    <div class="toggle-switch-container me-3">
+                        <label class="toggle-switch">
+                            <input
+                                type="checkbox"
+                                v-model="canStudentsAccessBilling"
+                                @change="toggleStudentsAccessBilling"
+                                class="toggle-input"
+                            />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <span class="setting-label">
+                            Allow students to access billing page
                         </span>
                     </div>
                 </div>
