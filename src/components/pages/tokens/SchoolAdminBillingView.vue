@@ -23,30 +23,32 @@ export default {
             isMobileCheck: window.innerWidth,
             // For downloading invoices from Stripe
             receipts: [],
+            showTokensDropDown: false,
             products: [
-                {
-                    name: '200,000 tokens for $10',
-                    tokens: 200000
-                },
-                {
-                    name: '400,000 tokens for $20',
-                    tokens: 400000
-                },
                 {
                     name: '1,000,000 tokens for $50',
                     tokens: 1000000
+                },
+                {
+                    name: '2,000,000 tokens for $100',
+                    tokens: 2000000
+                },
+                {
+                    name: '5,000,000 tokens for $250',
+                    tokens: 5000000
                 }
             ],
             chosenProduct: {}
         };
     },
     async created() {
+         this.chosenProduct = this.products[0];
         // Get free monthly AI token limit
         if (this.settingsStore.freeTokenMonthlyLimit == 0) {
             await this.settingsStore.getSettings();
         }
         await this.tenantStore.getTenantDetails(this.userDetailsStore.tenantId);
-        await this.tenantStore.getTenantMonthlyTokenUsage(this.userDetailsStore.tenantId);        
+        await this.tenantStore.getTenantMonthlyTokenUsage(this.userDetailsStore.tenantId);
     },
     async mounted() {
         // Work out date
@@ -78,7 +80,40 @@ export default {
                 : '0';
         }
     },
-    methods: {}
+    methods: {
+        // So the dropdown closes if click on screen
+        closeOnDropdownOnClickAnywhere() {
+            const tokenDropdown = document.getElementById('token-dropdown');
+            document.body.addEventListener('click', (event) => {
+                if (!tokenDropdown.contains(event.target)) {
+                    this.showTokensDropDown = false;
+                }
+            });
+        },
+        // Purchase tokens
+        checkout(numberOfTokens) {        
+            fetch('/tokens/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: this.userDetailsStore.userId,
+                    numberOfTokens: numberOfTokens
+                })
+            })
+                .then((res) => {
+                    if (res.ok) return res.json();
+                    return res.json().then((json) => Promise.reject(json));
+                })
+                .then(({ url }) => {
+                    window.location = url;
+                })
+                .catch((e) => {
+                    console.error(e.error);
+                });
+        },
+    }
 };
 </script>
 
@@ -143,9 +178,9 @@ export default {
                             ? 'custom-select-button-focus'
                             : 'custom-select-button'
                     ]" @click="
-                            showTokensDropDown = !showTokensDropDown;
-                        closeOnDropdownOnClickAnywhere();
-                        ">
+                        showTokensDropDown = !showTokensDropDown;
+                    closeOnDropdownOnClickAnywhere();
+                    ">
                         {{ chosenProduct.name }}
                         <!-- Down arrow -->
                         <span>
@@ -169,7 +204,7 @@ export default {
                 <!-- End of custom dropdown -->
             </div>
         </div>
-        <button @click="checkout(chosenProduct.tokens)" class="btn primary-btn mt-2 mb-2">
+        <button @click="checkout(chosenProduct.tokens)" class="btn buy-btn mt-2 mb-2">
             buy
         </button>
 
@@ -189,6 +224,128 @@ export default {
 </template>
 
 <style scoped>
+.buy-btn {
+    background-color: darkgreen;
+    color: white;
+}
+
+/* Style For The Custom Select */
+.custom-select-button {
+    width: 100%;
+    height: 42px;
+    padding: 10px 0px 10px 14px;
+    border-radius: 8px;
+    gap: 8px;
+    background: linear-gradient(0deg, #ffffff, #ffffff),
+        linear-gradient(0deg, #f2f4f7, #f2f4f7);
+    border: 1px solid #f2f4f7;
+    box-shadow: 0px 1px 2px 0px #1018280d;
+    font-family: 'Poppins' sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.03em;
+    text-align: left;
+    display: flex;
+}
+
+.custom-select-button-focus {
+    width: 100%;
+    height: 42px;
+    padding: 10px 0px 10px 14px;
+    border-radius: 8px;
+    gap: 8px;
+    background: linear-gradient(0deg, #ffffff, #ffffff),
+        linear-gradient(0deg, #f2f4f7, #f2f4f7);
+    border: 1px solid #9c7eec;
+    box-shadow: 0px 0px 0px 4px #bca3ff4d;
+    font-family: 'Poppins' sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.03em;
+    text-align: left;
+    display: flex;
+}
+
+.custom-select-button:hover {
+    cursor: pointer;
+    border: 1px solid #9c7eec;
+}
+
+.custom-select-button>span {
+    margin-right: 2px;
+    margin-left: auto;
+    animation: rotationBack 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+.custom-select-button-focus>span {
+    margin-right: 2px;
+    margin-left: auto;
+    animation: rotation 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+.form-validate {
+    font-size: 0.75rem;
+    color: red;
+    font-weight: 300;
+}
+
+/* The animation key frame */
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(180deg);
+    }
+}
+
+@keyframes rotationBack {
+    from {
+        transform: rotate(180deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+.custom-select-button-focus:hover {
+    cursor: pointer;
+}
+
+.custom-dropdown-base {
+    border-radius: 8px;
+    border: 1px;
+    background: linear-gradient(0deg, #ffffff, #ffffff);
+    border: 1px solid #9c7eec;
+    box-shadow: 0px 4px 6px -2px #10182808;
+    box-shadow: 0px 12px 16px -4px #10182814;
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    top: 42px;
+}
+
+.custom-dropdown-option {
+    padding: 10px 14px 10px 14px;
+    gap: 8px;
+    color: #344054;
+    border-radius: 8px;
+}
+
+.custom-dropdown-option:hover {
+    cursor: pointer;
+    background: var(--primary-color);
+    color: white;
+}
+
+/* End of CSS style for Custom Select */
+
 .info-btn {
     height: 40px;
 }
