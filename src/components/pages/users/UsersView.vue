@@ -62,7 +62,6 @@ export default {
     },
     async created() {
         this.checkIfTutorialComplete();
-        console.log(this.user);
         // Load data
         if (
             this.userDetailsStore.role === 'platform_admin' ||
@@ -218,10 +217,7 @@ export default {
             // Show details
             if (window.innerWidth < 769) {
                 this.showDetails = true;
-                console.log('test');
             }
-
-            console.log(this.user);
 
             // Get instructor info if needed
             if (

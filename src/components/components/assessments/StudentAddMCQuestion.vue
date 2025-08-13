@@ -309,7 +309,7 @@ export default {
                             "
                             class="form-validate"
                         >
-                            please enter a explanation !
+                            Please add an explanation !
                         </div>
                     </div>
 

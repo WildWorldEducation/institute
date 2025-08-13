@@ -23,7 +23,6 @@ export default {
             showTooltip: false,
             // For downloading invoices from Stripe
             receipts: [],
-            isAITokenLimitReached: false,
             assistantsModelPrice: { input: 75, output: 150 },
             showTokensDropDown: false,
             products: [
