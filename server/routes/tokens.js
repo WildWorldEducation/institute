@@ -165,11 +165,11 @@ router.get('/tenant/success', async (req, res, next) => {
     console.log(session);
 
     let amountOfTokens = 0;
-    if (session.amount_total == 1000) {
+    if (session.amount_total == 5000) {
         amountOfTokens = 1000000;
-    } else if (session.amount_total == 2000) {
+    } else if (session.amount_total == 10000) {
         amountOfTokens = 2000000;
-    } else if (session.amount_total == 5000) {
+    } else if (session.amount_total == 25000) {
         amountOfTokens = 5000000;
     }
 
@@ -181,8 +181,6 @@ router.get('/tenant/success', async (req, res, next) => {
             `;
     await query(queryString);
 
-    return;
-
     // Save the receipt
     const paymentIntent = await stripe.paymentIntents.retrieve(
         session.payment_intent
@@ -193,16 +191,16 @@ router.get('/tenant/success', async (req, res, next) => {
     const amount = charge.amount_captured;
     const created = new Date(charge.created * 1000); // Convert seconds to JS Date
     let saveReceiptQuery = `
-            INSERT INTO user_receipts (id, user_id, amount, url, date)
+            INSERT INTO tenant_receipts (id, tenant_id, amount, url, date)
             VALUES (${conn.escape(receipt_id)}, ${conn.escape(
-        userId
+        tenantId
     )}, ${conn.escape(amount)}, ${conn.escape(receipt_url)}, ${conn.escape(
         created
     )});
             `;
     await query(saveReceiptQuery);
 
-    res.redirect(`${process.env.BASE_URL}/tokens/completed`);
+    res.redirect(`${process.env.BASE_URL}/tokens/tenant/completed`);
 });
 
 // Export the router for app to use.
