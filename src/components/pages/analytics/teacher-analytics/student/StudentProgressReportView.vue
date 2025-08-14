@@ -55,20 +55,18 @@ export default {
     <div class="container">
         <span class="d-flex justify-content-between w-100">
             <h1 class="heading">Progress Report</h1>
-            <h2 class="secondary-heading h3">{{ studentName }}</h2>
-        </span>
-        <div class="d-flex justify-content-between w-100 mb-5">
-            <h4
-                class="secondary-heading d-flex justify-content-between w-100 align-items-center"
+            <h2
+                class="secondary-heading h3 d-flex justify-content-end align-items-center"
             >
-                Progress
+                {{ studentName }}
                 <DownloadCSVBtn
                     :data="studentProgress"
                     :fileName="`Progress Report - ${studentName}`"
                     toolTip="Download progress data as CSV"
                 />
-            </h4>
-        </div>
+            </h2>
+        </span>
+
         <StudentProgressLineChart
             v-if="studentProgress.length > 0"
             :data="studentProgress"

@@ -113,14 +113,17 @@ export default {
 
         <div v-if="isDataLoaded">
             <div>
-                <div class="d-flex mb-5">
-                    <h4 class="secondary-heading">Total time on platform</h4>
+                <h4
+                    class="secondary-heading d-flex justify-content-between w-100 align-items-center"
+                >
+                    Total time on platform
                     <DownloadCSVBtn
                         :data="durationsPerDay"
                         :fileName="`Total time on platform - ${studentName}`"
                         toolTip="Download total time on platform data as CSV"
                     />
-                </div>
+                </h4>
+
                 <StudentDurationPerDayLineChart
                     v-if="durationsPerDay.length > 0"
                     :data="durationsPerDay"
@@ -128,16 +131,18 @@ export default {
                 <p v-else>There is no data to show yet.</p>
             </div>
             <div>
-                <div class="d-flex mb-5">
-                    <h4 class="secondary-heading">All skills</h4>
-                    <DownloadCSVBtn
-                        :data="allSkillsDuration"
-                        :fileName="`All skills - ${studentName}`"
-                        toolTip="Download all skills data as CSV"
-                    />
-                </div>
+                <h4 class="secondary-heading r">All skills</h4>
                 <p>{{ millisToMinutesAndSeconds(this.allSkillsDuration) }}</p>
-                <h4 class="secondary-heading">Minutes per skill</h4>
+                <h4
+                    class="secondary-heading d-flex justify-content-between w-100 align-items-center"
+                >
+                    Minutes per skill
+                    <DownloadCSVBtn
+                        :data="skillDurations"
+                        :fileName="`Minutes per skill - ${studentName}`"
+                        toolTip="Download minutes per skill data as CSV"
+                    />
+                </h4>
                 <TimePerSkillHorizontalBarChart
                     v-if="skillDurations.length > 0"
                     :data="skillDurations"
