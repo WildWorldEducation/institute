@@ -1,11 +1,17 @@
 <script>
 import { useSettingsStore } from '../../../stores/SettingsStore.js';
+import { useTenantStore } from '../../../stores/TenantStore.js';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 
 export default {
     setup() {
         const settingsStore = useSettingsStore();
+        const tenantStore = useTenantStore();
+        const userDetailsStore = useUserDetailsStore();
         return {
-            settingsStore
+            settingsStore,
+            tenantStore,
+            userDetailsStore
         };
     },
     data() {
@@ -17,31 +23,125 @@ export default {
             isMobileCheck: window.innerWidth,
             // For downloading invoices from Stripe
             receipts: [],
+            showTokensDropDown: false,
             products: [
-                {
-                    name: '200,000 tokens for $10',
-                    tokens: 200000
-                },
-                {
-                    name: '400,000 tokens for $20',
-                    tokens: 400000
-                },
                 {
                     name: '1,000,000 tokens for $50',
                     tokens: 1000000
+                },
+                {
+                    name: '2,000,000 tokens for $100',
+                    tokens: 2000000
+                },
+                {
+                    name: '5,000,000 tokens for $250',
+                    tokens: 5000000
                 }
             ],
             chosenProduct: {}
         };
     },
-    async created() {},
-    async mounted() {},
+    async created() {
+        this.chosenProduct = this.products[0];
+        // Get free monthly AI token limit
+        if (this.settingsStore.freeTokenMonthlyLimit == 0) {
+            await this.settingsStore.getSettings();
+        }
+        await this.tenantStore.getTenantDetails(this.userDetailsStore.tenantId);
+        await this.tenantStore.getTenantMonthlyTokenUsage(
+            this.userDetailsStore.tenantId
+        );
+
+        this.getReceipts();
+    },
+    async mounted() {
+        // Work out date
+        // Get current year
+        this.year = new Date().getFullYear();
+        // Get current month
+        const month = [
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December'
+        ];
+
+        const d = new Date();
+        this.month = month[d.getMonth()];
+    },
     computed: {
         formattedMonthlyTokenUsage() {
-            return null;
+            return this.tenantStore.monthlyTokenUsage
+                ? this.tenantStore.monthlyTokenUsage.toLocaleString()
+                : '0';
         }
     },
-    methods: {}
+    methods: {
+        // So the dropdown closes if click on screen
+        closeOnDropdownOnClickAnywhere() {
+            const tokenDropdown = document.getElementById('token-dropdown');
+            document.body.addEventListener('click', (event) => {
+                if (!tokenDropdown.contains(event.target)) {
+                    this.showTokensDropDown = false;
+                }
+            });
+        },
+        // Purchase tokens
+        checkout(numberOfTokens) {
+            fetch('/tokens/tenant/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    tenantId: this.userDetailsStore.tenantId,
+                    numberOfTokens: numberOfTokens
+                })
+            })
+                .then((res) => {
+                    if (res.ok) return res.json();
+                    return res.json().then((json) => Promise.reject(json));
+                })
+                .then(({ url }) => {
+                    window.location = url;
+                })
+                .catch((e) => {
+                    console.error(e.error);
+                });
+        },
+        async getReceipts() {
+            const result = await fetch(
+                '/tokens/tenant/get-receipts/' + this.userDetailsStore.tenantId
+            );
+            this.receipts = await result.json();
+        },
+        formattedStripeReceiptDate(receipt) {
+            let dateObj = new Date(receipt.date);
+            const month = dateObj.getUTCMonth() + 1; // months from 1-12
+            const day = dateObj.getUTCDate();
+            const year = dateObj.getUTCFullYear();
+            const formattedDate = year + '/' + month + '/' + day;
+            return formattedDate;
+        },
+        formattedStripeReceiptAmount(receipt) {
+            const formattedAmount = (receipt.amount / 100).toLocaleString(
+                'en-US',
+                {
+                    style: 'currency',
+                    currency: 'USD'
+                }
+            );
+            return formattedAmount;
+        }
+    }
 };
 </script>
 
@@ -50,12 +150,15 @@ export default {
         <div class="row">
             <div class="col-md">
                 <!-- Token usage stats -->
-                <h2
-                    class="secondary-heading h4 mb-4"
-                    :class="{ 'text-center': isMobileCheck < 576 }"
-                >
-                    Monthly AI usage: {{ month }} {{ year }}
-                </h2>
+                <span class="d-flex justify-content-between">
+                    <h1
+                        class="heading mb-4 h2"
+                        :class="{ 'text-center': isMobileCheck < 576 }"
+                    >
+                        Monthly AI usage
+                    </h1>
+                    <h2 class="secondary-heading h5">{{ month }} {{ year }}</h2>
+                </span>
                 <ul>
                     <li>
                         <p>
@@ -67,13 +170,14 @@ export default {
                     </li>
                     <li>
                         <p>
-                            <strong>Token usage:</strong>
+                            <strong>Total token usage:</strong>
                             {{ formattedMonthlyTokenUsage }}
                         </p>
                     </li>
                     <li>
                         <p>
-                            <strong>Tokens:</strong>
+                            <strong>Current tokens:</strong>
+                            {{ tenantStore.tokens }}
                         </p>
                     </li>
                 </ul>
@@ -86,31 +190,6 @@ export default {
                     You are over the monthly free limit. You can't use the AI
                     features until next month.
                 </div>
-            </div>
-
-            <div
-                class="col-md d-flex"
-                :class="
-                    isMobileCheck > 576
-                        ? 'justify-content-end'
-                        : 'justify-content-center'
-                "
-            >
-                <!-- Info button -->
-                <button class="btn info-btn ms-1" @click="openTooltip">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 192 512"
-                        width="20"
-                        height="20"
-                        class="primary-icon"
-                    >
-                        <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                        <path
-                            d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
-                        />
-                    </svg>
-                </button>
             </div>
         </div>
         <hr />
@@ -167,7 +246,7 @@ export default {
         </div>
         <button
             @click="checkout(chosenProduct.tokens)"
-            class="btn primary-btn mt-2 mb-2"
+            class="btn buy-btn mt-2 mb-2"
         >
             buy
         </button>
@@ -190,4 +269,130 @@ export default {
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.buy-btn {
+    background-color: darkgreen;
+    color: white;
+}
+
+/* Style For The Custom Select */
+.custom-select-button {
+    width: 100%;
+    height: 42px;
+    padding: 10px 0px 10px 14px;
+    border-radius: 8px;
+    gap: 8px;
+    background: linear-gradient(0deg, #ffffff, #ffffff),
+        linear-gradient(0deg, #f2f4f7, #f2f4f7);
+    border: 1px solid #f2f4f7;
+    box-shadow: 0px 1px 2px 0px #1018280d;
+    font-family: 'Poppins' sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.03em;
+    text-align: left;
+    display: flex;
+}
+
+.custom-select-button-focus {
+    width: 100%;
+    height: 42px;
+    padding: 10px 0px 10px 14px;
+    border-radius: 8px;
+    gap: 8px;
+    background: linear-gradient(0deg, #ffffff, #ffffff),
+        linear-gradient(0deg, #f2f4f7, #f2f4f7);
+    border: 1px solid #9c7eec;
+    box-shadow: 0px 0px 0px 4px #bca3ff4d;
+    font-family: 'Poppins' sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.03em;
+    text-align: left;
+    display: flex;
+}
+
+.custom-select-button:hover {
+    cursor: pointer;
+    border: 1px solid #9c7eec;
+}
+
+.custom-select-button > span {
+    margin-right: 2px;
+    margin-left: auto;
+    animation: rotationBack 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+.custom-select-button-focus > span {
+    margin-right: 2px;
+    margin-left: auto;
+    animation: rotation 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+.form-validate {
+    font-size: 0.75rem;
+    color: red;
+    font-weight: 300;
+}
+
+/* The animation key frame */
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(180deg);
+    }
+}
+
+@keyframes rotationBack {
+    from {
+        transform: rotate(180deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+.custom-select-button-focus:hover {
+    cursor: pointer;
+}
+
+.custom-dropdown-base {
+    border-radius: 8px;
+    border: 1px;
+    background: linear-gradient(0deg, #ffffff, #ffffff);
+    border: 1px solid #9c7eec;
+    box-shadow: 0px 4px 6px -2px #10182808;
+    box-shadow: 0px 12px 16px -4px #10182814;
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    top: 42px;
+}
+
+.custom-dropdown-option {
+    padding: 10px 14px 10px 14px;
+    gap: 8px;
+    color: #344054;
+    border-radius: 8px;
+}
+
+.custom-dropdown-option:hover {
+    cursor: pointer;
+    background: var(--primary-color);
+    color: white;
+}
+
+/* End of CSS style for Custom Select */
+
+.info-btn {
+    height: 40px;
+}
+</style>

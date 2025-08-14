@@ -711,6 +711,18 @@ const router = createRouter({
             component: () =>
                 import('../components/pages/tokens/SchoolAdminBillingView.vue')
         },
+        {
+            path: '/tokens/tenant/completed',
+            name: 'tenant-tokens-success',
+            component: () =>
+                import('../components/pages/tokens/TenantTokensSuccessView.vue')
+        },
+        {
+            path: '/tokens/tenant/error',
+            name: 'tenant-tokens-error',
+            component: () =>
+                import('../components/pages/tokens/TenantTokensErrorView.vue')
+        },
         // Referrals
         {
             path: '/referrals',

@@ -50,8 +50,6 @@ export default {
         }
 
         await this.userDetailsStore.getUserDetails();
-        console.log(this.userDetailsStore.email);
-        console.log(this.userDetailsStore.userName);
 
         // Ensure clients can always access the tutors
         if (
@@ -184,12 +182,12 @@ export default {
         <div class="row">
             <div class="col-md">
                 <!-- Token usage stats -->
-                <h2
+                <h1
                     class="secondary-heading h4 mb-4"
                     :class="{ 'text-center': isMobileCheck < 576 }"
                 >
-                    Monthly AI usage: {{ month }} {{ year }}
-                </h2>
+                    <strong>Monthly AI usage:</strong> {{ month }} {{ year }}
+                </h1>
                 <ul>
                     <li>
                         <p>
