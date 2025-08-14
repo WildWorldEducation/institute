@@ -27,7 +27,32 @@ export default {
             <strong>{{ tenantStore.tokens.toLocaleString() }}</strong>
             tokens.
         </p>
-        <p>TODO</p>
+        <p>Continue to:</p>
+        <ul>
+            <li><router-link to="/skill-tree">skill tree</router-link></li>
+            <li>
+                <router-link to="/tenant-students">student reports</router-link>
+            </li>
+            <li><router-link to="/classes">teacher reports</router-link></li>
+            <li>
+                <router-link
+                    :to="'/engagement-report/' + this.userDetailsStore.tenantId"
+                    >engagement reports</router-link
+                >
+            </li>
+            <li>
+                <router-link
+                    :to="'/academic-report/' + this.userDetailsStore.tenantId"
+                    >academic reports</router-link
+                >
+            </li>
+            <li>
+                <router-link
+                    :to="'/cost-report/' + this.userDetailsStore.tenantId"
+                    >cost reports</router-link
+                >
+            </li>
+        </ul>
     </div>
 </template>
 <style scoped></style>
