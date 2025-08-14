@@ -74,14 +74,16 @@ export default {
         <div class="d-flex flex-column">
             <span class="d-flex justify-content-between w-100">
                 <h1 class="heading">Skill Activity Report</h1>
-                <h2 class="secondary-heading h3">{{ studentName }}</h2>
+                <h2
+                    class="secondary-heading h3 d-flex justify-content-end align-items-center"
+                >
+                    {{ studentName
+                    }}<DownloadCSVBtn
+                        :data="teacherAnalyticsStore.skillActivities"
+                        :fileName="`Skill Activity Report - ${studentName}`"
+                    />
+                </h2>
             </span>
-            <div class="d-flex justify-content-end">
-                <DownloadCSVBtn
-                    :data="teacherAnalyticsStore.skillActivities"
-                    :fileName="`Skill Activity Report - ${studentName}`"
-                />
-            </div>
         </div>
         <StudentSkillActivityChart
             v-if="teacherAnalyticsStore.skillActivities.length > 0"

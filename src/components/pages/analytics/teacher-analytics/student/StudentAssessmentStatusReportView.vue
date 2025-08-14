@@ -109,15 +109,14 @@ export default {
             <h2 class="secondary-heading h3">{{ studentName }}</h2>
         </span>
         <div>
-            <div class="d-flex mb-5">
-                <h4 class="secondary-heading pt-2">Failed multiple times</h4>
+            <h4 class="secondary-heading pt-2 d-flex justify-content-between">
+                Failed multiple times
                 <DownloadCSVBtn
                     :data="teacherAnalyticsStore.studentMultipleFails"
                     :fileName="`Assessment Status Report - ${studentName}`"
                     toolTip="Download failed assessments data as CSV"
                 />
-            </div>
-
+            </h4>
             <FailedAssessmentsHorizontalBarChart
                 v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
                 :data="teacherAnalyticsStore.studentMultipleFails"
@@ -129,14 +128,14 @@ export default {
             </p>
         </div>
         <div>
-            <div class="d-flex mb-5">
-                <h4 class="secondary-heading pt-2">Passed</h4>
+            <h4 class="secondary-heading pt-2 d-flex justify-content-between">
+                Passed
                 <DownloadCSVBtn
                     :data="assessmentPasses"
                     :fileName="`Passed Assessments - ${studentName}`"
                     toolTip="Download passed assessments data as CSV"
                 />
-            </div>
+            </h4>
             <PassedAssessmentsTimelineChart
                 class="mb-5"
                 v-if="assessmentPasses.length > 0"
@@ -146,14 +145,14 @@ export default {
         </div>
 
         <div>
-            <div class="d-flex mb-5">
-                <h4 class="secondary-heading pt-2">Attempted</h4>
+            <h4 class="secondary-heading pt-2 d-flex justify-content-between">
+                Attempted
                 <DownloadCSVBtn
                     :data="assessmentAttempts"
                     :fileName="`Attempted Assessments - ${studentName}`"
                     toolTip="Download attempted assessments data as CSV"
                 />
-            </div>
+            </h4>
             <AttemptedAssessmentsTimelineChart
                 class="mb-5"
                 v-if="assessmentAttempts.length > 0"
