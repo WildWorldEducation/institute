@@ -55,6 +55,14 @@ export default {
             <h1 class="heading">Progress Report</h1>
             <h2 class="secondary-heading h3">{{ studentName }}</h2>
         </span>
+        <div class="d-flex justify-content-between w-100 mb-5">
+            <h4 class="secondary-heading">Progress</h4>
+            <DownloadCSVBtn
+                :data="studentProgress"
+                :fileName="`Progress Report - ${studentName}`"
+                toolTip="Download progress data as CSV"
+            />
+        </div>
         <StudentProgressLineChart
             v-if="studentProgress.length > 0"
             :data="studentProgress"

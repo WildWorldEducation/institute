@@ -2,6 +2,7 @@
 import { useUsersStore } from '../../../../../stores/UsersStore';
 import { useTeacherAnalyticsStore } from '../../../../../stores/TeacherAnalyticsStore';
 import StudentSkillActivityChart from '../../../../components/teacher-analytics/students/StudentSkillActivityChart.vue';
+import DownloadCSVBtn from '../../../../components/downloadCSVBtn/downloadCSVBtn.vue';
 
 export default {
     setup() {
@@ -20,7 +21,8 @@ export default {
         };
     },
     components: {
-        StudentSkillActivityChart
+        StudentSkillActivityChart,
+        DownloadCSVBtn
     },
     async created() {
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
@@ -40,7 +42,9 @@ export default {
             this.teacherAnalyticsStore.skillActivities.map((skill) => {
                 return {
                     ...skill,
-                    formattedQuantity: this.millisToMinutesAndSeconds(skill.quantity)
+                    formattedQuantity: this.millisToMinutesAndSeconds(
+                        skill.quantity
+                    )
                 };
             });
     },
@@ -56,21 +60,29 @@ export default {
                 second: '2-digit'
             });
         },
-         millisToMinutesAndSeconds(millis) {
+        millisToMinutesAndSeconds(millis) {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);
             return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
-        },  
+        }
     }
 };
 </script>
 
 <template>
     <div class="container">
-        <span class="d-flex justify-content-between w-100">
-            <h1 class="heading">Skill Activity Report</h1>
-            <h2 class="secondary-heading h3">{{ studentName }}</h2>
-        </span>
+        <div class="d-flex flex-column">
+            <span class="d-flex justify-content-between w-100">
+                <h1 class="heading">Skill Activity Report</h1>
+                <h2 class="secondary-heading h3">{{ studentName }}</h2>
+            </span>
+            <div class="d-flex justify-content-end">
+                <DownloadCSVBtn
+                    :data="teacherAnalyticsStore.skillActivities"
+                    :fileName="`Skill Activity Report - ${studentName}`"
+                />
+            </div>
+        </div>
         <StudentSkillActivityChart
             v-if="teacherAnalyticsStore.skillActivities.length > 0"
             :data="teacherAnalyticsStore.skillActivities"
