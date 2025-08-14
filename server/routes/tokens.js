@@ -119,6 +119,18 @@ router.get('/success', async (req, res, next) => {
 /*------------------------------------------
 Tenants (Schools)
 --------------------------------------------*/
+router.get('/tenant/get-receipts/:tenantId', async (req, res, next) => {
+    let queryString = `
+            SELECT url, date, amount
+            FROM tenant_receipts
+            WHERE tenant_id = ${conn.escape(req.params.tenantId)};
+            `;
+
+    let result = await query(queryString);
+
+    res.json(result);
+});
+
 let tenantId;
 router.post('/tenant/create-checkout-session', async (req, res) => {
     try {
@@ -132,10 +144,6 @@ router.post('/tenant/create-checkout-session', async (req, res) => {
         } else if (numberOfTokens == 5000000) {
             priceId = process.env.STRIPE_5000000_TOKENS_PRICE_ID;
         }
-
-        console.log(priceId);
-        console.log(tenantId);
-        console.log(numberOfTokens);
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -161,8 +169,6 @@ router.get('/tenant/success', async (req, res, next) => {
     const session = await stripe.checkout.sessions.retrieve(
         req.query.session_id
     );
-
-    console.log(session);
 
     let amountOfTokens = 0;
     if (session.amount_total == 5000) {

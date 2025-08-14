@@ -51,6 +51,8 @@ export default {
         await this.tenantStore.getTenantMonthlyTokenUsage(
             this.userDetailsStore.tenantId
         );
+
+        this.getReceipts();
     },
     async mounted() {
         // Work out date
@@ -114,6 +116,30 @@ export default {
                 .catch((e) => {
                     console.error(e.error);
                 });
+        },
+        async getReceipts() {
+            const result = await fetch(
+                '/tokens/tenant/get-receipts/' + this.userDetailsStore.tenantId
+            );
+            this.receipts = await result.json();
+        },
+        formattedStripeReceiptDate(receipt) {
+            let dateObj = new Date(receipt.date);
+            const month = dateObj.getUTCMonth() + 1; // months from 1-12
+            const day = dateObj.getUTCDate();
+            const year = dateObj.getUTCFullYear();
+            const formattedDate = year + '/' + month + '/' + day;
+            return formattedDate;
+        },
+        formattedStripeReceiptAmount(receipt) {
+            const formattedAmount = (receipt.amount / 100).toLocaleString(
+                'en-US',
+                {
+                    style: 'currency',
+                    currency: 'USD'
+                }
+            );
+            return formattedAmount;
         }
     }
 };
@@ -126,27 +152,12 @@ export default {
                 <!-- Token usage stats -->
                 <span class="d-flex justify-content-between">
                     <h1
-                        class="secondary-heading h3 mb-4"
+                        class="heading mb-4 h2"
                         :class="{ 'text-center': isMobileCheck < 576 }"
                     >
-                        <strong>Monthly AI usage:</strong> {{ month }}
-                        {{ year }}
+                        Monthly AI usage
                     </h1>
-                    <!-- Info button -->
-                    <button class="btn info-btn" @click="openTooltip">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 192 512"
-                            width="20"
-                            height="20"
-                            class="primary-icon"
-                        >
-                            <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                            <path
-                                d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
-                            />
-                        </svg>
-                    </button>
+                    <h2 class="secondary-heading h5">{{ month }} {{ year }}</h2>
                 </span>
                 <ul>
                     <li>
