@@ -3,18 +3,21 @@ import ThemeDetails from '../../components/profile-page/ThemeDetails.vue';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import { useSessionDetailsStore } from '../../../stores/SessionDetailsStore.js';
 import { useUsersStore } from '../../../stores/UsersStore';
+import { useTenantStore } from '../../../stores/TenantStore';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
         const sessionDetailsStore = useSessionDetailsStore();
         const userStore = useUsersStore();
+        const tenantStore = useTenantStore();
         userDetailsStore.getUserDetails();
         userStore.getInstructors();
         return {
             userDetailsStore,
             sessionDetailsStore,
-            userStore
+            userStore,
+            tenantStore
         };
     },
     data() {
@@ -85,18 +88,16 @@ export default {
             );
         },
         // School admin role only
-        getTenantSettings() {
-            fetch('/tenants/show/' + this.userDetailsStore.tenantId)
-                .then(function (response) {
-                    return response.json();
-                })
-                .then((data) => {
-                    if (data.can_students_access_billing == 1) {
-                        this.canStudentsAccessBilling = true;
-                    } else {
-                        this.canStudentsAccessBilling = false;
-                    }
-                });
+        async getTenantSettings() {
+            await this.tenantStore.getTenantDetails(
+                this.userDetailsStore.tenantId
+            );
+
+            if (this.tenantStore.canStudentsAccessBilling == 1) {
+                this.canStudentsAccessBilling = true;
+            } else {
+                this.canStudentsAccessBilling = false;
+            }
         },
         async toggleStudentsAccessBilling() {
             try {
