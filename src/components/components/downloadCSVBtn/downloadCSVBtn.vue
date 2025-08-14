@@ -12,6 +12,10 @@ export default {
     },
     methods: {
         downloadData() {
+            if (this.data.length === 0) {
+                alert('No data to download');
+                return;
+            }
             const headers = Object.keys(this.data[0]);
             console.log(headers);
             const csvRows = [];
