@@ -713,7 +713,18 @@ async function createRunStream(
  */
 async function saveTokenUsage(userId, skillId, tokenCount) {
     try {
-        // Update Monthly Usage
+        /**
+         * Find out amount of free tokens
+         */
+        let freeTokenAmountQueryString = `
+        SELECT free_token_monthly_limit
+        FROM settings;`;
+        let freeTokenAmountResult = await query(freeTokenAmountQueryString);
+        let freeTokenAmount = freeTokenAmountResult[0].free_token_monthly_limit;
+
+        /**
+         * Find out how much they have spent this month
+         */
         // Get current year
         let year = new Date().getFullYear();
         // Get current month
@@ -731,9 +742,42 @@ async function saveTokenUsage(userId, skillId, tokenCount) {
             'November',
             'December'
         ];
-
         const d = new Date();
         let month = monthName[d.getMonth()];
+
+        let monthlyTokenSpendQueryString = `
+        SELECT * 
+        FROM skill_tree.user_monthly_token_usage 
+        WHERE user_id = ${conn.escape(userId)} 
+        AND month = '${month}' 
+        AND year = ${year};`;
+
+        let monthlyTokenSpendResult = await query(monthlyTokenSpendQueryString);
+
+        let monthlyTokenSpend;
+        // If no result, set to 0
+        if (monthlyTokenSpendResult.length === 0) {
+            monthlyTokenSpend = 0;
+        } else {
+            monthlyTokenSpend = monthlyTokenSpendResult[0].token_count;
+        }
+
+        // if they have spent more than free tokens, deduct from their paid tokens
+        if (monthlyTokenSpend >= freeTokenAmount) {
+            /**
+             * Deduct tokens from user
+             */
+            let deductTokensQueryString = `
+                UPDATE users 
+                SET tokens = tokens - ${conn.escape(tokenCount)} 
+                WHERE id = ${conn.escape(userId)};
+                `;
+            await query(deductTokensQueryString);
+        }
+
+        /**
+         * Record monthly Usage
+         */
         let monthlyTokenUsageQueryString = `
         INSERT INTO user_monthly_token_usage (user_id, year, month, token_count) 
         VALUES(${conn.escape(userId)},
@@ -745,7 +789,9 @@ async function saveTokenUsage(userId, skillId, tokenCount) {
 
         await query(monthlyTokenUsageQueryString);
 
-        // Record daily token usage
+        /**
+         * Record daily usage
+         */
         let dailyTokenUsageQueryString = `
             INSERT INTO user_duration_tokens_per_day (user_id, date, tokens) 
             VALUES(${conn.escape(userId)}, CURDATE(), ${conn.escape(
@@ -757,7 +803,9 @@ async function saveTokenUsage(userId, skillId, tokenCount) {
 
         await query(dailyTokenUsageQueryString);
 
-        // Record the token usage for the skill
+        /**
+         * Record usage per skill
+         */
         // If the user has mastered the skill, do not update the token count
         let skillTokenUsageQueryString = `
         INSERT INTO user_skills (user_id, skill_id, token_count) 

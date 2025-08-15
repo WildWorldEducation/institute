@@ -129,7 +129,7 @@ router.get('/show/:tenantId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-            SELECT can_students_access_billing
+            SELECT can_students_access_billing, tokens
             FROM tenants
             WHERE id = ${conn.escape(req.params.tenantId)};`;
 
@@ -139,7 +139,7 @@ router.get('/show/:tenantId', (req, res, next) => {
                     throw err;
                 }
 
-                res.json(results[0].can_students_access_billing);
+                res.json(results[0]);
             } catch (err) {
                 next(err);
             }
@@ -155,8 +155,8 @@ router.put('/:tenantId/edit', isAuthenticated, async (req, res, next) => {
         let sqlQuery = `
             UPDATE tenants
             SET can_students_access_billing = ${conn.escape(
-                req.body.can_students_access_billing
-            )}
+            req.body.can_students_access_billing
+        )}
             WHERE id = ${conn.escape(req.params.tenantId)};`;
 
         conn.query(sqlQuery, async (err) => {
@@ -172,6 +172,59 @@ router.put('/:tenantId/edit', isAuthenticated, async (req, res, next) => {
         });
     } else {
         res.redirect('/login');
+    }
+});
+
+/**
+ * Get monthly token usage
+ */
+router.get('/monthly-token-usage/:tenantId', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        // Get current year
+        let year = new Date().getFullYear();
+        // Get current month
+        const monthName = [
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December'
+        ];
+
+        // Get monthly token usage for the user.
+        const d = new Date();
+        let month = monthName[d.getMonth()];
+
+        let sqlQuery = `
+            SELECT SUM(token_count) AS quantity
+            FROM
+            user_monthly_token_usage
+            JOIN users
+            ON users.id = user_monthly_token_usage.user_id
+            WHERE users.tenant_id = ${conn.escape(req.params.tenantId)}
+            AND year = ${year}
+            AND month = '${month}';`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }                
+
+                res.json(results[0].quantity);
+            } catch (err) {
+                next(err);
+            }
+        });
     }
 });
 

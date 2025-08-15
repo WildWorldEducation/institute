@@ -301,7 +301,7 @@ const router = createRouter({
                 import('../components/pages/StudentQuestionListView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['instructor', 'platform_admin', 'partner']
+                roles: ['platform_admin']
             }
         },
         {
@@ -710,6 +710,18 @@ const router = createRouter({
             name: 'tenant-billing',
             component: () =>
                 import('../components/pages/tokens/SchoolAdminBillingView.vue')
+        },
+        {
+            path: '/tokens/tenant/completed',
+            name: 'tenant-tokens-success',
+            component: () =>
+                import('../components/pages/tokens/TenantTokensSuccessView.vue')
+        },
+        {
+            path: '/tokens/tenant/error',
+            name: 'tenant-tokens-error',
+            component: () =>
+                import('../components/pages/tokens/TenantTokensErrorView.vue')
         },
         // Referrals
         {

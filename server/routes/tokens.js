@@ -22,6 +22,10 @@ const query = util.promisify(conn.query).bind(conn);
 Routes
 --------------------------------------------
 --------------------------------------------*/
+
+/*------------------------------------------
+Individual users
+--------------------------------------------*/
 router.get('/get-receipts/:userId', async (req, res, next) => {
     let queryString = `
             SELECT url, date, amount
@@ -110,6 +114,99 @@ router.get('/success', async (req, res, next) => {
     await query(saveReceiptQuery);
 
     res.redirect(`${process.env.BASE_URL}/tokens/completed`);
+});
+
+/*------------------------------------------
+Tenants (Schools)
+--------------------------------------------*/
+router.get('/tenant/get-receipts/:tenantId', async (req, res, next) => {
+    let queryString = `
+            SELECT url, date, amount
+            FROM tenant_receipts
+            WHERE tenant_id = ${conn.escape(req.params.tenantId)};
+            `;
+
+    let result = await query(queryString);
+
+    res.json(result);
+});
+
+let tenantId;
+router.post('/tenant/create-checkout-session', async (req, res) => {
+    try {
+        tenantId = req.body.tenantId;
+        const numberOfTokens = req.body.numberOfTokens;
+        let priceId = '';
+        if (numberOfTokens == 1000000) {
+            priceId = process.env.STRIPE_1000000_TOKENS_PRICE_ID;
+        } else if (numberOfTokens == 2000000) {
+            priceId = process.env.STRIPE_2000000_TOKENS_PRICE_ID;
+        } else if (numberOfTokens == 5000000) {
+            priceId = process.env.STRIPE_5000000_TOKENS_PRICE_ID;
+        }
+
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            mode: 'payment',
+            line_items: [
+                {
+                    price: priceId,
+                    quantity: 1
+                }
+            ],
+
+            success_url: `${process.env.BASE_URL}/tokens/tenant/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.BASE_URL}/tokens/tenant/error`
+        });
+
+        res.json({ url: session.url });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.get('/tenant/success', async (req, res, next) => {
+    const session = await stripe.checkout.sessions.retrieve(
+        req.query.session_id
+    );
+
+    let amountOfTokens = 0;
+    if (session.amount_total == 5000) {
+        amountOfTokens = 1000000;
+    } else if (session.amount_total == 10000) {
+        amountOfTokens = 2000000;
+    } else if (session.amount_total == 25000) {
+        amountOfTokens = 5000000;
+    }
+
+    // Save the new tokens to the DB
+    let queryString = `
+            UPDATE tenants
+            SET tokens = tokens + ${amountOfTokens}
+            WHERE id = '${tenantId}';
+            `;
+    await query(queryString);
+
+    // Save the receipt
+    const paymentIntent = await stripe.paymentIntents.retrieve(
+        session.payment_intent
+    );
+    const charge = await stripe.charges.retrieve(paymentIntent.latest_charge);
+    const receipt_id = charge.id;
+    const receipt_url = charge.receipt_url;
+    const amount = charge.amount_captured;
+    const created = new Date(charge.created * 1000); // Convert seconds to JS Date
+    let saveReceiptQuery = `
+            INSERT INTO tenant_receipts (id, tenant_id, amount, url, date)
+            VALUES (${conn.escape(receipt_id)}, ${conn.escape(
+        tenantId
+    )}, ${conn.escape(amount)}, ${conn.escape(receipt_url)}, ${conn.escape(
+        created
+    )});
+            `;
+    await query(saveReceiptQuery);
+
+    res.redirect(`${process.env.BASE_URL}/tokens/tenant/completed`);
 });
 
 // Export the router for app to use.
