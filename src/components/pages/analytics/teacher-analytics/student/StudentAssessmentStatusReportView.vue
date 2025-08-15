@@ -29,7 +29,9 @@ export default {
             studentId: this.$route.params.studentId,
             studentName: null,
             assessmentPasses: [],
-            assessmentAttempts: []
+            assessmentAttempts: [],
+            assessmentPassesDownloadData: [],
+            assessmentAttemptsDownloadData: []
             // multipleFails: []
         };
     },
@@ -45,6 +47,22 @@ export default {
 
         await this.getUserSkillMasteredHistory(this.studentId);
         await this.getAssessmentAttempts();
+        this.assessmentPassesDownloadData = this.assessmentPasses.map((e) => {
+            return {
+                skill: e.name,
+                last_visited_date: this.assessmentDate(e.last_visited_date),
+                mastered_date: this.assessmentDate(e.mastered_date)
+            };
+        });
+
+        this.assessmentAttemptsDownloadData = this.assessmentAttempts.map(
+            (e) => {
+                return {
+                    skill: e.name,
+                    date: this.assessmentDate(e.date)
+                };
+            }
+        );
 
         if (this.teacherAnalyticsStore.studentMultipleFails.length == 0) {
             await this.teacherAnalyticsStore.getStudentMultipleFails(
@@ -131,7 +149,7 @@ export default {
             <h4 class="secondary-heading pt-2 d-flex justify-content-between">
                 Passed
                 <DownloadCSVBtn
-                    :data="assessmentPasses"
+                    :data="assessmentPassesDownloadData"
                     :fileName="`Passed Assessments - ${studentName}`"
                     toolTip="Download passed assessments data as CSV"
                 />
@@ -148,7 +166,7 @@ export default {
             <h4 class="secondary-heading pt-2 d-flex justify-content-between">
                 Attempted
                 <DownloadCSVBtn
-                    :data="assessmentAttempts"
+                    :data="assessmentAttemptsDownloadData"
                     :fileName="`Attempted Assessments - ${studentName}`"
                     toolTip="Download attempted assessments data as CSV"
                 />
@@ -158,7 +176,7 @@ export default {
                 v-if="assessmentAttempts.length > 0"
                 :data="assessmentAttempts"
             />
-            <p v-else>This student has attempted any assessments yet.</p>
+            <p v-else>This student has not attempted any assessments yet.</p>
         </div>
     </div>
 </template>

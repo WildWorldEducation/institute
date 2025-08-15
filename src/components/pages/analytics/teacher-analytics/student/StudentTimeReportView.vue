@@ -23,7 +23,9 @@ export default {
             skillDurations: [],
             durationsPerDay: [],
             allSkillsDuration: 0,
-            isDataLoaded: false
+            isDataLoaded: false,
+            totalTimeOnPlatformDownloadData: [],
+            minutesPerSkillDownloadData: []
         };
     },
     async created() {
@@ -52,6 +54,14 @@ export default {
                                 this.skillDurations[i].quantity
                             );
                     }
+                    this.minutesPerSkillDownloadData = this.skillDurations.map(
+                        (e) => {
+                            return {
+                                skill: e.name,
+                                quantity: e.formattedQuantity
+                            };
+                        }
+                    );
                 })
                 .catch((error) => {
                     console.error('Error fetching last visited skills:', error);
@@ -80,6 +90,13 @@ export default {
                     }
                     data.sort((a, b) => a.date - b.date);
                     this.durationsPerDay = data;
+                    this.totalTimeOnPlatformDownloadData =
+                        this.durationsPerDay.map((e) => {
+                            return {
+                                date: e.date,
+                                quantity: e.formattedQuantity
+                            };
+                        });
                 })
                 .catch((error) => {
                     console.error(
@@ -118,7 +135,7 @@ export default {
                 >
                     Total time on platform
                     <DownloadCSVBtn
-                        :data="durationsPerDay"
+                        :data="totalTimeOnPlatformDownloadData"
                         :fileName="`Total time on platform - ${studentName}`"
                         toolTip="Download total time on platform data as CSV"
                     />
@@ -138,7 +155,7 @@ export default {
                 >
                     Minutes per skill
                     <DownloadCSVBtn
-                        :data="skillDurations"
+                        :data="minutesPerSkillDownloadData"
                         :fileName="`Minutes per skill - ${studentName}`"
                         toolTip="Download minutes per skill data as CSV"
                     />

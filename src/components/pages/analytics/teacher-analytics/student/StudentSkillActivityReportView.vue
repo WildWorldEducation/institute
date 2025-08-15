@@ -17,7 +17,8 @@ export default {
         return {
             studentId: this.$route.params.studentId,
             studentName: null,
-            visitedSkills: []
+            visitedSkills: [],
+            downloadData: []
         };
     },
     components: {
@@ -47,6 +48,14 @@ export default {
                     )
                 };
             });
+        this.downloadData = this.teacherAnalyticsStore.skillActivities.map(
+            (skill) => {
+                return {
+                    skill: skill.name,
+                    quantity: skill.formattedQuantity
+                };
+            }
+        );
     },
     methods: {
         visitedDate(date) {
@@ -79,7 +88,7 @@ export default {
                 >
                     {{ studentName
                     }}<DownloadCSVBtn
-                        :data="teacherAnalyticsStore.skillActivities"
+                        :data="downloadData"
                         :fileName="`Skill Activity Report - ${studentName}`"
                     />
                 </h2>
