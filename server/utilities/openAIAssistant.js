@@ -753,7 +753,12 @@ async function saveTokenUsage(userId, skillId, tokenCount) {
         AND year = ${year};`;
 
         let monthlyTokenSpendResult = await query(monthlyTokenSpendQueryString);
-        let monthlyTokenSpend = monthlyTokenSpendResult[0].token_count;
+        // If no result, set to 0
+        if (monthlyTokenSpendResult.length === 0) {
+            monthlyTokenSpend = 0;
+        } else {
+            let monthlyTokenSpend = monthlyTokenSpendResult[0].token_count;
+        }
 
         // if they have spent more than free tokens, deduct from their paid tokens
         if (monthlyTokenSpend > freeTokenAmount) {
