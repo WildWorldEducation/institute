@@ -329,15 +329,6 @@ export default {
                             >
                                 <li>
                                     <RouterLink
-                                        to="/cohorts"
-                                        class="dropdown-item close-on-click"
-                                        @click="isDropdownOpen = false"
-                                    >
-                                        Cohorts
-                                    </RouterLink>
-                                </li>
-                                <li>
-                                    <RouterLink
                                         to="/student-questions"
                                         class="dropdown-item close-on-click"
                                         @click="isDropdownOpen = false"
@@ -355,6 +346,21 @@ export default {
                                     </RouterLink>
                                 </li>
                             </ul>
+                        </li>
+                        <!-- Cohorts -->
+                        <li
+                            v-if="
+                                userDetailsStore.role == 'instructor' ||
+                                userDetailsStore.role == 'partner'
+                            "
+                            class="nav-item"
+                        >
+                            <RouterLink
+                                to="/cohorts"
+                                class="nav-link close-on-click"
+                            >
+                                Cohorts
+                            </RouterLink>
                         </li>
                         <li
                             v-if="userDetailsStore.role == 'school_admin'"
@@ -409,23 +415,6 @@ export default {
                             </RouterLink>
                         </li>
                         <!-- School admin reports -->
-                        <!-- <li
-                            v-if="
-                                sessionDetailsStore.isLoggedIn &&
-                                userDetailsStore.role == 'school_admin'
-                            "
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                :to="
-                                    '/school-report/' +
-                                    userDetailsStore.tenantId
-                                "
-                                class="nav-link close-on-click"
-                            >
-                                <span>School</span>
-                            </RouterLink>
-                        </li> -->
                         <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
@@ -476,7 +465,6 @@ export default {
                                 Cost
                             </RouterLink>
                         </li>
-
                         <li
                             v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item"
