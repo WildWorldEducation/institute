@@ -250,17 +250,6 @@ export default {
                                 <span>Todo</span>
                             </RouterLink>
                         </li>
-
-                        <!-- <li
-                            v-if="userDetailsStore.role == 'student'"
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                to="/learning-tracks"
-                                class="nav-link close-on-click"
-                                >Learning Tracks</RouterLink
-                            >
-                        </li> -->
                         <li
                             v-if="!sessionDetailsStore.isLoggedIn"
                             class="nav-item"
@@ -301,8 +290,9 @@ export default {
                         <!-- Students -->
                         <li
                             v-if="
-                                userDetailsStore.role == 'instructor' ||
-                                userDetailsStore.role == 'partner'
+                                (userDetailsStore.role == 'instructor' ||
+                                    userDetailsStore.role == 'partner') &&
+                                isMobileCheck >= 576
                             "
                             class="nav-item dropdown"
                         >
@@ -329,24 +319,6 @@ export default {
                             >
                                 <li>
                                     <RouterLink
-                                        to="/cohorts"
-                                        class="dropdown-item close-on-click"
-                                        @click="isDropdownOpen = false"
-                                    >
-                                        Cohorts
-                                    </RouterLink>
-                                </li>
-                                <li>
-                                    <RouterLink
-                                        to="/student-questions"
-                                        class="dropdown-item close-on-click"
-                                        @click="isDropdownOpen = false"
-                                    >
-                                        Student Questions
-                                    </RouterLink>
-                                </li>
-                                <li>
-                                    <RouterLink
                                         to="/student-assessments"
                                         class="dropdown-item close-on-click"
                                         @click="isDropdownOpen = false"
@@ -356,6 +328,40 @@ export default {
                                 </li>
                             </ul>
                         </li>
+                        <li
+                            v-else-if="
+                                (userDetailsStore.role == 'instructor' ||
+                                    userDetailsStore.role == 'partner') &&
+                                isMobileCheck < 576
+                            "
+                            class="nav-item"
+                        >
+                            <!-- Navigation link to /students -->
+                            <RouterLink
+                                to="/students"
+                                class="nav-link"
+                                @click="closeDropdown"
+                            >
+                                Students
+                            </RouterLink>
+                        </li>
+
+                        <!-- Cohorts -->
+                        <li
+                            v-if="
+                                userDetailsStore.role == 'instructor' ||
+                                userDetailsStore.role == 'partner'
+                            "
+                            class="nav-item"
+                        >
+                            <RouterLink
+                                to="/cohorts"
+                                class="nav-link close-on-click"
+                            >
+                                Cohorts
+                            </RouterLink>
+                        </li>
+                        <!-- Tenant Students -->
                         <li
                             v-if="userDetailsStore.role == 'school_admin'"
                             class="nav-item dropdown"
@@ -409,23 +415,6 @@ export default {
                             </RouterLink>
                         </li>
                         <!-- School admin reports -->
-                        <!-- <li
-                            v-if="
-                                sessionDetailsStore.isLoggedIn &&
-                                userDetailsStore.role == 'school_admin'
-                            "
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                :to="
-                                    '/school-report/' +
-                                    userDetailsStore.tenantId
-                                "
-                                class="nav-link close-on-click"
-                            >
-                                <span>School</span>
-                            </RouterLink>
-                        </li> -->
                         <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
@@ -460,6 +449,7 @@ export default {
                                 Academics
                             </RouterLink>
                         </li>
+                        <!-- Cost -->
                         <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
@@ -476,7 +466,7 @@ export default {
                                 Cost
                             </RouterLink>
                         </li>
-
+                        <!-- Dropdown menu -->
                         <li
                             v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item"
@@ -532,13 +522,16 @@ export default {
                                     >
                                         Goals
                                     </RouterLink>
+                                    <!-- Reputation -->
                                     <RouterLink
                                         v-if="
-                                            userDetailsStore.role ==
+                                            (userDetailsStore.role ==
                                                 'student' ||
-                                            userDetailsStore.role ==
-                                                'instructor' ||
-                                            userDetailsStore.role == 'partner'
+                                                userDetailsStore.role ==
+                                                    'instructor' ||
+                                                userDetailsStore.role ==
+                                                    'partner') &&
+                                            userDetailsStore.tenantId == 1
                                         "
                                         to="/reputation"
                                         class="dropdown-item"
@@ -620,17 +613,24 @@ export default {
                                 </RouterLink>
                                 <RouterLink
                                     v-if="
-                                        userDetailsStore.role == 'student' ||
-                                        userDetailsStore.role == 'instructor' ||
-                                        userDetailsStore.role == 'partner'
+                                        (userDetailsStore.role == 'student' ||
+                                            userDetailsStore.role ==
+                                                'instructor' ||
+                                            userDetailsStore.role ==
+                                                'partner') &&
+                                        userDetailsStore.tenantId == 1
                                     "
                                     to="/reputation"
                                     class="nav-link"
                                 >
                                     Reputation
                                 </RouterLink>
+                                <!-- Tokens -->
                                 <RouterLink
-                                    v-if="userDetailsStore.role == 'student'"
+                                    v-if="
+                                        userDetailsStore.role == 'student' &&
+                                        userDetailsStore.canAccessBilling == 1
+                                    "
                                     to="/tokens"
                                     class="nav-link"
                                 >
