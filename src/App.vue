@@ -250,17 +250,6 @@ export default {
                                 <span>Todo</span>
                             </RouterLink>
                         </li>
-
-                        <!-- <li
-                            v-if="userDetailsStore.role == 'student'"
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                to="/learning-tracks"
-                                class="nav-link close-on-click"
-                                >Learning Tracks</RouterLink
-                            >
-                        </li> -->
                         <li
                             v-if="!sessionDetailsStore.isLoggedIn"
                             class="nav-item"
@@ -301,8 +290,9 @@ export default {
                         <!-- Students -->
                         <li
                             v-if="
-                                userDetailsStore.role == 'instructor' ||
-                                userDetailsStore.role == 'partner'
+                                (userDetailsStore.role == 'instructor' ||
+                                    userDetailsStore.role == 'partner') &&
+                                isMobileCheck >= 576
                             "
                             class="nav-item dropdown"
                         >
@@ -338,6 +328,24 @@ export default {
                                 </li>
                             </ul>
                         </li>
+                        <li
+                            v-else-if="
+                                (userDetailsStore.role == 'instructor' ||
+                                    userDetailsStore.role == 'partner') &&
+                                isMobileCheck < 576
+                            "
+                            class="nav-item"
+                        >
+                            <!-- Navigation link to /students -->
+                            <RouterLink
+                                to="/students"
+                                class="nav-link"
+                                @click="closeDropdown"
+                            >
+                                Students
+                            </RouterLink>
+                        </li>
+
                         <!-- Cohorts -->
                         <li
                             v-if="
@@ -353,6 +361,7 @@ export default {
                                 Cohorts
                             </RouterLink>
                         </li>
+                        <!-- Tenant Students -->
                         <li
                             v-if="userDetailsStore.role == 'school_admin'"
                             class="nav-item dropdown"
