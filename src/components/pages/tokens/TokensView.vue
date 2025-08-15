@@ -191,7 +191,7 @@ export default {
                 <ul>
                     <li>
                         <p>
-                            <strong>Free limit:</strong>
+                            <strong>Free monthly tokens:</strong>
                             {{
                                 settingsStore.freeTokenMonthlyLimit.toLocaleString()
                             }}
@@ -199,14 +199,14 @@ export default {
                     </li>
                     <li>
                         <p>
-                            <strong>Current token usage:</strong>
-                            {{ formattedMonthlyTokenUsage }}
+                            <strong>Paid tokens remaining:</strong>
+                            {{ userDetailsStore.tokens.toLocaleString() }}
                         </p>
                     </li>
                     <li>
                         <p>
-                            <strong>Your tokens:</strong>
-                            {{ userDetailsStore.tokens.toLocaleString() }}
+                            <strong>Token usage:</strong>
+                            {{ formattedMonthlyTokenUsage }}
                         </p>
                     </li>
                 </ul>
