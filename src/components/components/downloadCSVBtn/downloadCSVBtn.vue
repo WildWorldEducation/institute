@@ -1,15 +1,7 @@
 <script>
 export default {
-    props: {
-        data: [],
-        fileName: '',
-        toolTip: ''
-    },
-    data() {
-        return {
-            toolTip: this.toolTip
-        };
-    },
+    props: ['data', 'fileName', 'toolTip'],
+
     methods: {
         downloadData() {
             if (this.data.length === 0) {
