@@ -329,15 +329,6 @@ export default {
                             >
                                 <li>
                                     <RouterLink
-                                        to="/student-questions"
-                                        class="dropdown-item close-on-click"
-                                        @click="isDropdownOpen = false"
-                                    >
-                                        Student Questions
-                                    </RouterLink>
-                                </li>
-                                <li>
-                                    <RouterLink
                                         to="/student-assessments"
                                         class="dropdown-item close-on-click"
                                         @click="isDropdownOpen = false"
@@ -449,6 +440,7 @@ export default {
                                 Academics
                             </RouterLink>
                         </li>
+                        <!-- Cost -->
                         <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
@@ -624,6 +616,7 @@ export default {
                                 >
                                     Reputation
                                 </RouterLink>
+                                <!-- Tokens -->
                                 <RouterLink
                                     v-if="
                                         userDetailsStore.role == 'student' &&

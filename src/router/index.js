@@ -301,7 +301,7 @@ const router = createRouter({
                 import('../components/pages/StudentQuestionListView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['instructor', 'platform_admin', 'partner']
+                roles: ['platform_admin']
             }
         },
         {
