@@ -465,6 +465,7 @@ export default {
                                 Cost
                             </RouterLink>
                         </li>
+                        <!-- Dropdown menu -->
                         <li
                             v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item"
@@ -520,13 +521,16 @@ export default {
                                     >
                                         Goals
                                     </RouterLink>
+                                    <!-- Reputation -->
                                     <RouterLink
                                         v-if="
-                                            userDetailsStore.role ==
+                                            (userDetailsStore.role ==
                                                 'student' ||
-                                            userDetailsStore.role ==
-                                                'instructor' ||
-                                            userDetailsStore.role == 'partner'
+                                                userDetailsStore.role ==
+                                                    'instructor' ||
+                                                userDetailsStore.role ==
+                                                    'partner') &&
+                                            userDetailsStore.tenantId == 1
                                         "
                                         to="/reputation"
                                         class="dropdown-item"
@@ -608,9 +612,12 @@ export default {
                                 </RouterLink>
                                 <RouterLink
                                     v-if="
-                                        userDetailsStore.role == 'student' ||
-                                        userDetailsStore.role == 'instructor' ||
-                                        userDetailsStore.role == 'partner'
+                                        (userDetailsStore.role == 'student' ||
+                                            userDetailsStore.role ==
+                                                'instructor' ||
+                                            userDetailsStore.role ==
+                                                'partner') &&
+                                        userDetailsStore.tenantId == 1
                                     "
                                     to="/reputation"
                                     class="nav-link"
@@ -618,7 +625,10 @@ export default {
                                     Reputation
                                 </RouterLink>
                                 <RouterLink
-                                    v-if="userDetailsStore.role == 'student'"
+                                    v-if="
+                                        userDetailsStore.role == 'student' &&
+                                        userDetailsStore.canAccessBilling == 1
+                                    "
                                     to="/tokens"
                                     class="nav-link"
                                 >
