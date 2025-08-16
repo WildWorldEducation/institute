@@ -98,7 +98,7 @@ export default {
             thumbnailCDN: import.meta.env
                 .VITE_CLOUDFRONT_SKILL_INFOBOX_IMAGE_THUMBNAILS_CDN_NAME,
             thumbnail: '',
-            thumbnailURL: ''
+            thumbnailURL: '',         
         };
     },
     computed: {
@@ -185,8 +185,8 @@ export default {
                 if (
                     this.userDetailsStore.email == 'collinsmalcolm@gmail.com' ||
                     this.userDetailsStore.email == 'simonehcollins@gmail.com' ||
-                    this.userDetailsStore.username == 'malcolm' ||
-                    this.userDetailsStore.username == 'simonehcollins'
+                    this.userDetailsStore.userName == 'malcolm' ||
+                    this.userDetailsStore.userName == 'simonehcollins'
                 ) {
                     return;
                 } else if (
