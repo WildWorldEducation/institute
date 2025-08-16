@@ -771,7 +771,7 @@ async function saveTokenUsage(
         const d = new Date();
         let month = monthName[d.getMonth()];
 
-        // if they have spent more than free tokens, deduct from their paid tokens
+        // if they have spent more than free token limit, deduct from their paid tokens
         if (monthlyTokenUsage >= freeMonthlyTokenLimit) {
             /**
              * Deduct tokens from user
