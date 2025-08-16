@@ -2,6 +2,7 @@
 // Import the stores.
 import { useSessionDetailsStore } from './stores/SessionDetailsStore.js';
 import { useUserDetailsStore } from './stores/UserDetailsStore.js';
+import { useTenantStore } from './stores/TenantStore.js';
 import router from './router';
 import AppTimeTracker from './components/components/teacher-analytics/AppTimeTracker.vue';
 
@@ -9,10 +10,12 @@ export default {
     setup() {
         const sessionDetailsStore = useSessionDetailsStore();
         const userDetailsStore = useUserDetailsStore();
+        const tenantStore = useTenantStore();
 
         return {
             sessionDetailsStore,
-            userDetailsStore
+            userDetailsStore,
+            tenantStore
         };
     },
     data() {
@@ -24,6 +27,7 @@ export default {
     },
     async mounted() {
         await this.userDetailsStore.getUserDetails();
+        await this.tenantStore.getTenantDetails();
         this.initDropdown();
 
         // Instructor theme
@@ -542,8 +546,7 @@ export default {
                                         v-if="
                                             userDetailsStore.role ==
                                                 'student' &&
-                                            userDetailsStore.canAccessBilling ==
-                                                1
+                                            tenantStore.billingMode == 'student'
                                         "
                                         to="/tokens"
                                         class="dropdown-item"
@@ -629,7 +632,7 @@ export default {
                                 <RouterLink
                                     v-if="
                                         userDetailsStore.role == 'student' &&
-                                        userDetailsStore.canAccessBilling == 1
+                                        tenantStore.billingMode == 'student'
                                     "
                                     to="/tokens"
                                     class="nav-link"
