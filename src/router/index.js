@@ -5,6 +5,7 @@ import { useSessionDetailsStore } from '../stores/SessionDetailsStore';
 import { useUserDetailsStore } from '../stores/UserDetailsStore';
 import { useUserSkillsStore } from '../stores/UserSkillsStore.js';
 import { useSkillsStore } from '../stores/SkillsStore.js';
+import { useTenantStore } from '../stores/TenantStore.js';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -771,6 +772,7 @@ router.beforeEach(async (to, from, next) => {
     }
     const sessionDetailsStore = useSessionDetailsStore();
     const userDetailsStore = useUserDetailsStore();
+    const tenantStore = useTenantStore();
 
     // SEO: canoncial tag.
     let link = document.createElement('link');
@@ -850,7 +852,7 @@ router.beforeEach(async (to, from, next) => {
     }
 
     if (to.name == 'tokens') {
-        if (userDetailsStore.canAccessBilling) {
+        if (tenantStore.billingMode == 'student') {
             next(); // proceed
         } else {
             next('/'); // redirect

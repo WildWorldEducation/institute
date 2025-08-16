@@ -1015,21 +1015,6 @@ router.get('/show/:id', (req, res, next) => {
 
                     results[0].monthly_token_usage = monthlyTokenUsage;
 
-                    // Check if student is allowed to access billing page.
-                    const canAccessBillingQuery = `
-                        SELECT can_students_access_billing
-                        FROM tenants
-                        WHERE id = ${conn.escape(results[0].tenant_id)};`;
-
-                    const canAccessBillingResult = await query(
-                        canAccessBillingQuery
-                    );
-
-                    const canAccessBilling =
-                        canAccessBillingResult[0].can_students_access_billing;
-
-                    results[0].can_students_access_billing = canAccessBilling;
-
                     res.json(results[0]);
                 } else {
                     res.json(results[0]);
