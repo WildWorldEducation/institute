@@ -794,7 +794,7 @@ router.beforeEach(async (to, from, next) => {
         await sessionDetailsStore.getSessionDetails();
         await userDetailsStore.getUserDetails();
     }
-    await tenantStore.getTenantDetails(userDetailsStore.tenantId);
+
     const isLoggedIn = sessionDetailsStore.isLoggedIn;
     const userRole = userDetailsStore.role;
 
