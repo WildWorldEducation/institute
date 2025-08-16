@@ -26,8 +26,7 @@ export default {
             selectedInstructorName: '',
             showWarnModal: false,
             isEditing: false,
-            isAudioAutoPlay: Boolean(this.userDetailsStore.isAudioAutoPlay),
-            canStudentsAccessBilling: null
+            isAudioAutoPlay: Boolean(this.userDetailsStore.isAudioAutoPlay)
         };
     },
     components: {
@@ -92,35 +91,6 @@ export default {
             await this.tenantStore.getTenantDetails(
                 this.userDetailsStore.tenantId
             );
-
-            if (this.tenantStore.canStudentsAccessBilling == 1) {
-                this.canStudentsAccessBilling = true;
-            } else {
-                this.canStudentsAccessBilling = false;
-            }
-        },
-        async toggleStudentsAccessBilling() {
-            try {
-                let can_students_access_billing: number;
-                if (this.canStudentsAccessBilling == true) {
-                    can_students_access_billing = 1;
-                } else {
-                    can_students_access_billing = 0;
-                }
-                const reqOptions = {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        can_students_access_billing: can_students_access_billing
-                    })
-                };
-                await fetch(
-                    `/tenants/${this.userDetailsStore.tenantId}/edit`,
-                    reqOptions
-                );
-            } catch (error) {
-                console.error('Error updating instructor:', error);
-            }
         }
     },
     watch: {
@@ -227,14 +197,19 @@ export default {
             </div>
             <!-- School admins only -->
             <div v-if="userDetailsStore.role === 'school_admin'">
+                <h2 class="secondary-heading white-heading h4">Billing Mode</h2>
                 <div class="setting-container d-flex align-items-center">
                     <!-- Custom Toggle Switch -->
                     <div class="toggle-switch-container me-3">
                         <label class="toggle-switch">
                             <input
                                 type="checkbox"
-                                v-model="canStudentsAccessBilling"
-                                @change="toggleStudentsAccessBilling"
+                                @change="
+                                    tenantStore.toggleBillingMode(
+                                        this.userDetailsStore.tenantId,
+                                        billingMode
+                                    )
+                                "
                                 class="toggle-input"
                             />
                             <span class="toggle-slider"></span>
@@ -243,7 +218,7 @@ export default {
 
                     <div class="d-flex align-items-center">
                         <span class="setting-label">
-                            Allow students to access billing page
+                            {{ tenantStore.billingMode }}
                         </span>
                     </div>
                 </div>
@@ -343,7 +318,7 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ccc;
+    background-color: #5f31dd;
     transition: 0.4s;
     border-radius: 34px;
 }
