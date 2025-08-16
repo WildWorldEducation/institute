@@ -196,7 +196,13 @@ async function saveSocraticTutorThread(data) {
 }
 
 // Only used for Speech to Text at the moment
-async function socraticTutorMessage(threadId, assistantId, messageData) {
+async function socraticTutorMessage(
+    threadId,
+    assistantId,
+    messageData,
+    freeMonthlyTokenLimit,
+    monthlyTokenUsage
+) {
     // Add a Message to the Thread
     try {
         const message = await openai.beta.threads.messages.create(threadId, {
@@ -253,7 +259,13 @@ async function socraticTutorMessage(threadId, assistantId, messageData) {
             // 0.4 is hardcoded at the moment, based on pricing and choice of models
             let ttsTokens = outputTokens * 0.4;
             let tokenCount = run.usage.total_tokens + ttsTokens;
-            saveTokenUsage(messageData.userId, messageData.skillId, tokenCount);
+            saveTokenUsage(
+                messageData.userId,
+                messageData.skillId,
+                tokenCount,
+                freeMonthlyTokenLimit,
+                monthlyTokenUsage
+            );
 
             return latestMessage;
         } else {
@@ -395,7 +407,13 @@ async function saveAssessingTutorThread(data) {
 }
 
 // Only used for Speech to text
-async function assessingTutorMessage(threadId, assistantId, messageData) {
+async function assessingTutorMessage(
+    threadId,
+    assistantId,
+    messageData,
+    freeMonthlyTokenLimit,
+    assessingTutorMessage
+) {
     try {
         // Add a Message to the Thread
         const message = await openai.beta.threads.messages.create(threadId, {
@@ -453,7 +471,13 @@ async function assessingTutorMessage(threadId, assistantId, messageData) {
             // 0.4 is hardcoded at the moment, based on pricing and choice of models
             let ttsTokens = outputTokens * 0.4;
             let tokenCount = run.usage.total_tokens + ttsTokens;
-            saveTokenUsage(messageData.userId, messageData.skillId, tokenCount);
+            saveTokenUsage(
+                messageData.userId,
+                messageData.skillId,
+                tokenCount,
+                freeMonthlyTokenLimit,
+                assessingTutorMessage
+            );
 
             return latestMessage;
         } else {
@@ -613,7 +637,9 @@ async function createRunStream(
     assistantInstruction,
     streamType,
     userId,
-    skillId
+    skillId,
+    freeMonthlyTokenLimit,
+    monthlyTokenUsage
 ) {
     try {
         if (!isEmptyMessage) {
@@ -666,7 +692,13 @@ async function createRunStream(
                     let ttsTokens = outputTokens * 0.4;
                     if (runStep.usage.total_tokens) {
                         let tokenCount = runStep.usage.total_tokens + ttsTokens;
-                        saveTokenUsage(userId, skillId, tokenCount);
+                        saveTokenUsage(
+                            userId,
+                            skillId,
+                            tokenCount,
+                            freeMonthlyTokenLimit,
+                            monthlyTokenUsage
+                        );
                     }
                 })
                 .on('toolCallCreated', (event) =>
@@ -711,20 +743,14 @@ async function createRunStream(
  * @param {string} userId
  * @param {int} tokenCount
  */
-async function saveTokenUsage(userId, skillId, tokenCount) {
+async function saveTokenUsage(
+    userId,
+    skillId,
+    tokenCount,
+    freeMonthlyTokenLimit,
+    monthlyTokenUsage
+) {
     try {
-        /**
-         * Find out amount of free tokens
-         */
-        let freeTokenAmountQueryString = `
-        SELECT free_token_monthly_limit
-        FROM settings;`;
-        let freeTokenAmountResult = await query(freeTokenAmountQueryString);
-        let freeTokenAmount = freeTokenAmountResult[0].free_token_monthly_limit;
-
-        /**
-         * Find out how much they have spent this month
-         */
         // Get current year
         let year = new Date().getFullYear();
         // Get current month
@@ -745,25 +771,8 @@ async function saveTokenUsage(userId, skillId, tokenCount) {
         const d = new Date();
         let month = monthName[d.getMonth()];
 
-        let monthlyTokenSpendQueryString = `
-        SELECT * 
-        FROM skill_tree.user_monthly_token_usage 
-        WHERE user_id = ${conn.escape(userId)} 
-        AND month = '${month}' 
-        AND year = ${year};`;
-
-        let monthlyTokenSpendResult = await query(monthlyTokenSpendQueryString);
-
-        let monthlyTokenSpend;
-        // If no result, set to 0
-        if (monthlyTokenSpendResult.length === 0) {
-            monthlyTokenSpend = 0;
-        } else {
-            monthlyTokenSpend = monthlyTokenSpendResult[0].token_count;
-        }
-
-        // if they have spent more than free tokens, deduct from their paid tokens
-        if (monthlyTokenSpend >= freeTokenAmount) {
+        // if they have spent more than free token limit, deduct from their paid tokens
+        if (monthlyTokenUsage >= freeMonthlyTokenLimit) {
             /**
              * Deduct tokens from user
              */

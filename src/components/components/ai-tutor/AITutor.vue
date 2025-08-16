@@ -117,6 +117,9 @@ export default {
             this.isAudioPlaying = false;
             this.currentIndexAudioPlaying = null;
         });
+
+        if (this.settingStore.freeTokenMonthlyLimit == 0)
+            this.settingStore.getSettings();
     },
     methods: {
         // Setting this method to allow the user to be able to create a new line with shift+enter
@@ -387,7 +390,10 @@ export default {
                     learningObjectives: this.learningObjectives,
                     // The message from the student
                     message: this.message,
-                    userId: this.userDetailsStore.userId
+                    userId: this.userDetailsStore.userId,
+                    freeMonthlyTokenLimit:
+                        this.settingStore.freeTokenMonthlyLimit,
+                    monthlyTokenUsage: this.userDetailsStore.monthlyTokenUsage
                 };
 
                 this.message = '';
@@ -417,7 +423,10 @@ export default {
                     assistantId: this.assistantData.assistantId,
                     message: '',
                     userId: this.userDetailsStore.userId,
-                    skillId: this.skill.id
+                    skillId: this.skill.id,
+                    freeMonthlyTokenLimit:
+                        this.settingStore.freeTokenMonthlyLimit,
+                    monthlyTokenUsage: this.userDetailsStore.monthlyTokenUsage
                 };
 
                 socket.emit(socketChannel, messageData);
@@ -469,7 +478,11 @@ export default {
                         skillId: this.skill.id,
                         skillLevel: this.englishSkillLevel,
                         learningObjectives: this.learningObjectives,
-                        transcriptForAssessment: this.transcriptForAssessment
+                        transcriptForAssessment: this.transcriptForAssessment,
+                        freeMonthlyTokenLimit:
+                            this.settingStore.freeTokenMonthlyLimit,
+                        monthlyTokenUsage:
+                            this.userDetailsStore.monthlyTokenUsage
                     })
                 };
 
@@ -1244,7 +1257,7 @@ export default {
                     :skill="skill"
                     :skillLevel="englishSkillLevel"
                     :learningObjectives="learningObjectives"
-                    :isAITokenLimitReached="$parent.isAITokenLimitReached"
+                    :isAITokenLimitReached="$parent.isAITokenLimitReached"                   
                     @recording-started="onRecordingStarted"
                     @recording-stopped="onRecordingStopped"
                     @message-sent="onVoiceMessageSent"

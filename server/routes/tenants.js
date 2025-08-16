@@ -129,7 +129,7 @@ router.get('/show/:tenantId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-            SELECT can_students_access_billing, tokens
+            SELECT billing_mode, tokens
             FROM tenants
             WHERE id = ${conn.escape(req.params.tenantId)};`;
 
@@ -154,9 +154,7 @@ router.put('/:tenantId/edit', isAuthenticated, async (req, res, next) => {
     if (req.session.role == 'school_admin') {
         let sqlQuery = `
             UPDATE tenants
-            SET can_students_access_billing = ${conn.escape(
-            req.body.can_students_access_billing
-        )}
+            SET billing_mode = ${conn.escape(req.body.billing_mode)}
             WHERE id = ${conn.escape(req.params.tenantId)};`;
 
         conn.query(sqlQuery, async (err) => {
@@ -218,7 +216,7 @@ router.get('/monthly-token-usage/:tenantId', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
-                }                
+                }
 
                 res.json(results[0].quantity);
             } catch (err) {
