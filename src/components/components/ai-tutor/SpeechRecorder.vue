@@ -1,4 +1,7 @@
 <script>
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
+import { useSettingsStore } from '../../../stores/SettingsStore.js';
+
 export default {
     props: [
         'tutorType',
@@ -8,6 +11,14 @@ export default {
         'isAITokenLimitReached'
     ],
     emits: ['recording-started', 'recording-stopped', 'message-sent'],
+    setup() {
+        const userDetailsStore = useUserDetailsStore();
+        const settingStore = useSettingsStore();
+        return {
+            userDetailsStore,
+            settingStore
+        };
+    },
     data() {
         return {
             chunks: [],
@@ -106,7 +117,7 @@ export default {
         },
 
         async sendAudioDataToServer(base64data) {
-            try {           
+            try {
                 const response = await fetch('/ai-tutor/stt/convert', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -117,7 +128,11 @@ export default {
                         skillLevel: this.englishSkillLevel || this.skillLevel,
                         learningObjectives: this.learningObjectives,
                         audioData: base64data,
-                        tutorType: this.tutorType
+                        tutorType: this.tutorType,
+                        freeMonthlyTokenLimit:
+                            this.settingStore.freeTokenMonthlyLimit,
+                        monthlyTokenUsage:
+                            this.userDetailsStore.monthlyTokenUsage
                     })
                 });
 

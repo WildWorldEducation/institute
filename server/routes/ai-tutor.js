@@ -407,6 +407,8 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
     try {
         const userId = req.session.userId;
         const skillId = req.body.skillId;
+        const freeMonthlyTokenLimit = req.body.freeMonthlyTokenLimit;
+        const monthlyTokenUsage = req.body.monthlyTokenUsage;
 
         let transcriptForAssessment = JSON.stringify(
             req.body.transcriptForAssessment
@@ -440,7 +442,13 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
 
         // Save the user's token usage
         let tokenCount = completion.usage.total_tokens;
-        saveTokenUsage(userId, skillId, tokenCount);
+        saveTokenUsage(
+            userId,
+            skillId,
+            tokenCount,
+            freeMonthlyTokenLimit,
+            monthlyTokenUsage
+        );
 
         let responseJSON = completion.choices[0].message.content;
         // Convert string to object.       ;
@@ -711,6 +719,9 @@ router.post('/stt/convert', async (req, res, next) => {
         const learningObjectives = req.body.learningObjectives;
         const audioData = req.body.audioData;
         const tutorType = req.body.tutorType;
+        const freeMonthlyTokenLimit = req.body.freeMonthlyTokenLimit;
+        const monthlyTokenUsage = req.body.monthlyTokenUsage;
+
         // Convert Base64 to buffer
         let bufferObj = Buffer.from(
             audioData.replace('data:audio/webm; codecs=opus;base64,', ''),
@@ -749,7 +760,9 @@ router.post('/stt/convert', async (req, res, next) => {
                 skillName,
                 skillLevel,
                 learningObjectives,
-                message
+                message,
+                freeMonthlyTokenLimit,
+                monthlyTokenUsage
             );
         else if (tutorType == 'assessing')
             await sendSpeechToAssessingAI(
@@ -759,7 +772,9 @@ router.post('/stt/convert', async (req, res, next) => {
                 skillName,
                 skillLevel,
                 learningObjectives,
-                message
+                message,
+                freeMonthlyTokenLimit,
+                monthlyTokenUsage
             );
 
         //console.log('res.end()');
@@ -784,7 +799,9 @@ async function sendSpeechToSocraticAI(
     skillName,
     skillLevel,
     learningObjectives,
-    message
+    message,
+    freeMonthlyTokenLimit,
+    monthlyTokenUsage
 ) {
     try {
         //console.log('get thread');
@@ -803,7 +820,9 @@ async function sendSpeechToSocraticAI(
         await socraticTutorMessage(
             assistantData[0].thread_id,
             assistantData[0].assistant_id,
-            messageData
+            messageData,
+            freeMonthlyTokenLimit,
+            monthlyTokenUsage
         );
     } catch (error) {
         console.error(error);
@@ -818,7 +837,9 @@ async function sendSpeechToAssessingAI(
     skillName,
     skillLevel,
     learningObjectives,
-    message
+    message,
+    freeMonthlyTokenLimit,
+    monthlyTokenUsage
 ) {
     try {
         const assistantData = await getAssessingTutorThread(userId, skillUrl);
@@ -829,12 +850,14 @@ async function sendSpeechToAssessingAI(
             skillName: skillName,
             skillLevel: skillLevel,
             learningObjectives: learningObjectives,
-            message
+            message: message
         };
         await assessingTutorMessage(
             assistantData[0].thread_id,
             assistantData[0].assistant_id,
-            messageData
+            messageData,
+            freeMonthlyTokenLimit,
+            monthlyTokenUsage
         );
     } catch (error) {
         console.error(error);

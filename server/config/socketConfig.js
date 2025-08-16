@@ -100,7 +100,9 @@ const createSocket = (server) => {
                     instructions,
                     'aiTutor',
                     messageData.userId,
-                    messageData.skillId
+                    messageData.skillId,
+                    messageData.freeMonthlyTokenLimit,
+                    messageData.monthlyTokenUsage
                 );
             });
 
@@ -174,7 +176,9 @@ const createSocket = (server) => {
                     instructions,
                     'aiTutor',
                     messageData.userId,
-                    messageData.skillId
+                    messageData.skillId,
+                    messageData.freeMonthlyTokenLimit,
+                    messageData.monthlyTokenUsage
                 );
             });
 
@@ -220,7 +224,9 @@ const createSocket = (server) => {
                     assistantInstruction,
                     'learningObjective',
                     messageData.userId,
-                    messageData.skillId
+                    messageData.skillId,
+                    messageData.freeMonthlyTokenLimit,
+                    messageData.monthlyTokenUsage
                 );
             });
 

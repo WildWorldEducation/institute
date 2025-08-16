@@ -1,15 +1,19 @@
 <script>
 import { socket, socketState } from '../../../socket.js';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
+import { useSettingsStore } from '../../../stores/SettingsStore.js';
+
 import PlayingAudioAnimation from './playingAudioAnimation.vue';
 import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const settingStore = useSettingsStore();
         const stateOfSocket = socketState;
         return {
             userDetailsStore,
+            settingStore,
             stateOfSocket
         };
     },
@@ -248,7 +252,10 @@ export default {
                     userId: this.userDetailsStore.userId,
                     skillName: this.skillName,
                     skillLevel: this.englishSkillLevel,
-                    skillId: this.skillId
+                    skillId: this.skillId,
+                    freeMonthlyTokenLimit:
+                        this.settingStore.freeTokenMonthlyLimit,
+                    monthlyTokenUsage: this.userDetailsStore.monthlyTokenUsage
                 };
 
                 socket.emit('new-learning-objective-message', messageData);
