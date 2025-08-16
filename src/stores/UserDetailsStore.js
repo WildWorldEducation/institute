@@ -64,7 +64,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.tokens = data.tokens;
                 this.isAudioAutoPlay = data.is_audio_auto_play || 0;
                 this.tenantId = data.tenant_id;
-                this.canAccessBilling = data.can_students_access_billing;
+                this.canAccessBilling = data.billing_mode;
 
                 if (this.role == 'student') {
                     await this.getInstructor();

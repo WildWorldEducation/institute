@@ -1017,7 +1017,7 @@ router.get('/show/:id', (req, res, next) => {
 
                     // Check if student is allowed to access billing page.
                     const canAccessBillingQuery = `
-                        SELECT can_students_access_billing
+                        SELECT billing_mode
                         FROM tenants
                         WHERE id = ${conn.escape(results[0].tenant_id)};`;
 
@@ -1026,9 +1026,9 @@ router.get('/show/:id', (req, res, next) => {
                     );
 
                     const canAccessBilling =
-                        canAccessBillingResult[0].can_students_access_billing;
+                        canAccessBillingResult[0].billing_mode;
 
-                    results[0].can_students_access_billing = canAccessBilling;
+                    results[0].billing_mode = canAccessBilling;
 
                     res.json(results[0]);
                 } else {
