@@ -102,7 +102,8 @@ const createSocket = (server) => {
                     messageData.userId,
                     messageData.skillId,
                     messageData.freeMonthlyTokenLimit,
-                    messageData.monthlyTokenUsage
+                    messageData.monthlyTokenUsage,
+                    messageData.billingMode
                 );
             });
 
@@ -178,7 +179,8 @@ const createSocket = (server) => {
                     messageData.userId,
                     messageData.skillId,
                     messageData.freeMonthlyTokenLimit,
-                    messageData.monthlyTokenUsage
+                    messageData.monthlyTokenUsage,
+                    messageData.billingMode
                 );
             });
 
@@ -226,7 +228,8 @@ const createSocket = (server) => {
                     messageData.userId,
                     messageData.skillId,
                     messageData.freeMonthlyTokenLimit,
-                    messageData.monthlyTokenUsage
+                    messageData.monthlyTokenUsage,
+                    messageData.billingMode
                 );
             });
 

@@ -47,6 +47,7 @@ const { textToSpeech } = require('../utilities/textToSpeech');
 const { writeFile, speechToText } = require('../utilities/speechToText');
 const isAuthenticated = require('../middlewares/authMiddleware');
 const { findSkillByUrl } = require('../utilities/skill-relate-functions');
+
 // Include API key.
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
@@ -409,6 +410,7 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
         const skillId = req.body.skillId;
         const freeMonthlyTokenLimit = req.body.freeMonthlyTokenLimit;
         const monthlyTokenUsage = req.body.monthlyTokenUsage;
+const billingMode = req.body.billingMode;
 
         let transcriptForAssessment = JSON.stringify(
             req.body.transcriptForAssessment
@@ -447,7 +449,8 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
             skillId,
             tokenCount,
             freeMonthlyTokenLimit,
-            monthlyTokenUsage
+            monthlyTokenUsage,
+            billingMode
         );
 
         let responseJSON = completion.choices[0].message.content;
@@ -721,6 +724,8 @@ router.post('/stt/convert', async (req, res, next) => {
         const tutorType = req.body.tutorType;
         const freeMonthlyTokenLimit = req.body.freeMonthlyTokenLimit;
         const monthlyTokenUsage = req.body.monthlyTokenUsage;
+        const billingMode = req.body.billingMode;
+
 
         // Convert Base64 to buffer
         let bufferObj = Buffer.from(
@@ -762,7 +767,8 @@ router.post('/stt/convert', async (req, res, next) => {
                 learningObjectives,
                 message,
                 freeMonthlyTokenLimit,
-                monthlyTokenUsage
+                monthlyTokenUsage,
+                billingMode
             );
         else if (tutorType == 'assessing')
             await sendSpeechToAssessingAI(
@@ -801,7 +807,8 @@ async function sendSpeechToSocraticAI(
     learningObjectives,
     message,
     freeMonthlyTokenLimit,
-    monthlyTokenUsage
+    monthlyTokenUsage,
+    billingMode
 ) {
     try {
         //console.log('get thread');
@@ -822,7 +829,8 @@ async function sendSpeechToSocraticAI(
             assistantData[0].assistant_id,
             messageData,
             freeMonthlyTokenLimit,
-            monthlyTokenUsage
+            monthlyTokenUsage,
+            billingMode
         );
     } catch (error) {
         console.error(error);
@@ -839,7 +847,8 @@ async function sendSpeechToAssessingAI(
     learningObjectives,
     message,
     freeMonthlyTokenLimit,
-    monthlyTokenUsage
+    monthlyTokenUsage,
+    billingMode
 ) {
     try {
         const assistantData = await getAssessingTutorThread(userId, skillUrl);
@@ -857,7 +866,8 @@ async function sendSpeechToAssessingAI(
             assistantData[0].assistant_id,
             messageData,
             freeMonthlyTokenLimit,
-            monthlyTokenUsage
+            monthlyTokenUsage,
+            billingMode
         );
     } catch (error) {
         console.error(error);
