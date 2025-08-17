@@ -1,6 +1,7 @@
 <script>
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import { useSettingsStore } from '../../../stores/SettingsStore.js';
+import { useTenantStore } from '../../../stores/TenantStore.js';
 
 export default {
     props: [
@@ -14,9 +15,11 @@ export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
         const settingStore = useSettingsStore();
+        const tenantStore = useTenantStore();
         return {
             userDetailsStore,
-            settingStore
+            settingStore,
+            tenantStore
         };
     },
     data() {
@@ -132,7 +135,9 @@ export default {
                         freeMonthlyTokenLimit:
                             this.settingStore.freeTokenMonthlyLimit,
                         monthlyTokenUsage:
-                            this.userDetailsStore.monthlyTokenUsage
+                            this.userDetailsStore.monthlyTokenUsage,
+                        billingMode: this.tenantStore.billingMode,
+                        tenantId: this.userDetailsStore.tenantId
                     })
                 });
 
@@ -367,7 +372,8 @@ export default {
 .recording-pulse {
     width: 8px;
     height: 8px;
-    background: #b91c1c; /* Darker red for better contrast */
+    background: #b91c1c;
+    /* Darker red for better contrast */
     border-radius: 50%;
     animation: pulse 1s ease-in-out infinite;
 }
@@ -394,12 +400,16 @@ export default {
     100% {
         opacity: 1;
         transform: scale(1);
-        background: #b91c1c; /* Dark red */
+        background: #b91c1c;
+        /* Dark red */
     }
+
     50% {
-        opacity: 0.85; /* Much higher opacity - still visible */
+        opacity: 0.85;
+        /* Much higher opacity - still visible */
         transform: scale(1.3);
-        background: #dc2626; /* Slightly lighter red but still dark */
+        background: #dc2626;
+        /* Slightly lighter red but still dark */
     }
 }
 
@@ -407,6 +417,7 @@ export default {
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }
@@ -417,10 +428,12 @@ export default {
         width: 36px;
         height: 36px;
     }
+
     .voice-btn svg {
         width: 18px;
         height: 18px;
     }
+
     .recording-timer {
         font-size: 11px;
         min-width: 30px;
@@ -432,6 +445,7 @@ export default {
         width: 44px;
         height: 44px;
     }
+
     .voice-btn svg {
         width: 22px;
         height: 22px;

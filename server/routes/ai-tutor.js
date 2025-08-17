@@ -47,6 +47,7 @@ const { textToSpeech } = require('../utilities/textToSpeech');
 const { writeFile, speechToText } = require('../utilities/speechToText');
 const isAuthenticated = require('../middlewares/authMiddleware');
 const { findSkillByUrl } = require('../utilities/skill-relate-functions');
+
 // Include API key.
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
@@ -201,8 +202,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                                        messageNumber
-                                    )},                       
+                    messageNumber
+                )},                       
                                     ${conn.escape(url)}
                                 )
                                 ON DUPLICATE KEY UPDATE                                 
@@ -375,8 +376,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                                        messageNumber
-                                    )},                       
+                    messageNumber
+                )},                       
                                     ${conn.escape(url)}
                                 )
                                 ON DUPLICATE KEY UPDATE                                 
@@ -409,6 +410,7 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
         const skillId = req.body.skillId;
         const freeMonthlyTokenLimit = req.body.freeMonthlyTokenLimit;
         const monthlyTokenUsage = req.body.monthlyTokenUsage;
+        const billingMode = req.body.billingMode;
 
         let transcriptForAssessment = JSON.stringify(
             req.body.transcriptForAssessment
@@ -447,7 +449,9 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
             skillId,
             tokenCount,
             freeMonthlyTokenLimit,
-            monthlyTokenUsage
+            monthlyTokenUsage,
+            billingMode,
+            tenantId
         );
 
         let responseJSON = completion.choices[0].message.content;
@@ -624,8 +628,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                                        messageNumber
-                                    )},                       
+                    messageNumber
+                )},                       
                                     ${conn.escape(url)}
                                 )
                                 ON DUPLICATE KEY UPDATE                                 
@@ -721,6 +725,9 @@ router.post('/stt/convert', async (req, res, next) => {
         const tutorType = req.body.tutorType;
         const freeMonthlyTokenLimit = req.body.freeMonthlyTokenLimit;
         const monthlyTokenUsage = req.body.monthlyTokenUsage;
+        const billingMode = req.body.billingMode;
+        const tenantId = req.body.tenantId;
+
 
         // Convert Base64 to buffer
         let bufferObj = Buffer.from(
@@ -762,7 +769,9 @@ router.post('/stt/convert', async (req, res, next) => {
                 learningObjectives,
                 message,
                 freeMonthlyTokenLimit,
-                monthlyTokenUsage
+                monthlyTokenUsage,
+                billingMode,
+                tenantId
             );
         else if (tutorType == 'assessing')
             await sendSpeechToAssessingAI(
@@ -774,7 +783,8 @@ router.post('/stt/convert', async (req, res, next) => {
                 learningObjectives,
                 message,
                 freeMonthlyTokenLimit,
-                monthlyTokenUsage
+                monthlyTokenUsage,
+                tenantId
             );
 
         //console.log('res.end()');
@@ -801,7 +811,9 @@ async function sendSpeechToSocraticAI(
     learningObjectives,
     message,
     freeMonthlyTokenLimit,
-    monthlyTokenUsage
+    monthlyTokenUsage,
+    billingMode,
+    tenantId
 ) {
     try {
         //console.log('get thread');
@@ -822,7 +834,9 @@ async function sendSpeechToSocraticAI(
             assistantData[0].assistant_id,
             messageData,
             freeMonthlyTokenLimit,
-            monthlyTokenUsage
+            monthlyTokenUsage,
+            billingMode,
+            tenantId
         );
     } catch (error) {
         console.error(error);
@@ -839,7 +853,9 @@ async function sendSpeechToAssessingAI(
     learningObjectives,
     message,
     freeMonthlyTokenLimit,
-    monthlyTokenUsage
+    monthlyTokenUsage,
+    billingMode,
+    tenantId
 ) {
     try {
         const assistantData = await getAssessingTutorThread(userId, skillUrl);
@@ -857,7 +873,9 @@ async function sendSpeechToAssessingAI(
             assistantData[0].assistant_id,
             messageData,
             freeMonthlyTokenLimit,
-            monthlyTokenUsage
+            monthlyTokenUsage,
+            billingMode,
+            tenantId
         );
     } catch (error) {
         console.error(error);

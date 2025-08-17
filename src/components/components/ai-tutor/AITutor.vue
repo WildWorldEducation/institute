@@ -3,6 +3,7 @@ import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import { useUserSkillsStore } from '../../../stores/UserSkillsStore.js';
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore.js';
 import { useSettingsStore } from '../../../stores/SettingsStore.js';
+import { useTenantStore } from '../../../stores/TenantStore.js';
 import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
 import TooltipBtn from './../share-components/TooltipBtn.vue';
 import SpeechRecorder from './SpeechRecorder.vue';
@@ -15,13 +16,15 @@ export default {
         const userSkillsStore = useUserSkillsStore();
         const skillTreeStore = useSkillTreeStore();
         const settingStore = useSettingsStore();
+        const tenantStore = useTenantStore();
         const stateOfSocket = socketState;
         return {
             stateOfSocket,
             userDetailsStore,
             userSkillsStore,
             skillTreeStore,
-            settingStore
+            settingStore,
+            tenantStore
         };
     },
     props: [
@@ -393,7 +396,9 @@ export default {
                     userId: this.userDetailsStore.userId,
                     freeMonthlyTokenLimit:
                         this.settingStore.freeTokenMonthlyLimit,
-                    monthlyTokenUsage: this.userDetailsStore.monthlyTokenUsage
+                    monthlyTokenUsage: this.userDetailsStore.monthlyTokenUsage,
+                    billingMode: this.tenantStore.billingMode,
+                    tenantId: this.userDetailsStore.tenantId
                 };
 
                 this.message = '';
@@ -426,7 +431,9 @@ export default {
                     skillId: this.skill.id,
                     freeMonthlyTokenLimit:
                         this.settingStore.freeTokenMonthlyLimit,
-                    monthlyTokenUsage: this.userDetailsStore.monthlyTokenUsage
+                    monthlyTokenUsage: this.userDetailsStore.monthlyTokenUsage,
+                    billingMode: this.tenantStore.billingMode,
+                    tenantId: this.userDetailsStore.tenantId
                 };
 
                 socket.emit(socketChannel, messageData);
@@ -482,7 +489,9 @@ export default {
                         freeMonthlyTokenLimit:
                             this.settingStore.freeTokenMonthlyLimit,
                         monthlyTokenUsage:
-                            this.userDetailsStore.monthlyTokenUsage
+                            this.userDetailsStore.monthlyTokenUsage,
+                        billingMode: this.tenantStore.billingMode,
+                        tenantId: this.userDetailsStore.tenantId
                     })
                 };
 
@@ -1257,7 +1266,7 @@ export default {
                     :skill="skill"
                     :skillLevel="englishSkillLevel"
                     :learningObjectives="learningObjectives"
-                    :isAITokenLimitReached="$parent.isAITokenLimitReached"                   
+                    :isAITokenLimitReached="$parent.isAITokenLimitReached"
                     @recording-started="onRecordingStarted"
                     @recording-stopped="onRecordingStopped"
                     @message-sent="onVoiceMessageSent"
@@ -1510,6 +1519,7 @@ export default {
     padding-top: 25px;
     padding-bottom: 20px;
 }
+
 .first-message {
     padding: 20px 0;
     margin-top: auto;
@@ -1550,6 +1560,7 @@ export default {
     border-bottom: 1px solid #e0e0e0;
     padding-bottom: 20px;
 }
+
 .hovering-info-panel {
     position: absolute;
     z-index: 1000;
@@ -1579,6 +1590,7 @@ export default {
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }
@@ -1826,10 +1838,13 @@ export default {
 
 .chat-text-area:disabled,
 .modal-textarea:disabled {
-    opacity: 0.6; /* Slightly more transparent */
+    opacity: 0.6;
+    /* Slightly more transparent */
     cursor: not-allowed;
-    background: rgba(156, 163, 175, 0.1); /* Subtle gray background */
-    color: #6b7280; /* Gray text */
+    background: rgba(156, 163, 175, 0.1);
+    /* Subtle gray background */
+    color: #6b7280;
+    /* Gray text */
 }
 
 /* Send button - unified for both modes */

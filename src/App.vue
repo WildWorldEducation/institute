@@ -27,7 +27,7 @@ export default {
     },
     async mounted() {
         await this.userDetailsStore.getUserDetails();
-        await this.tenantStore.getTenantDetails();
+        await this.tenantStore.getTenantDetails(this.userDetailsStore.tenantId);
         this.initDropdown();
 
         // Instructor theme

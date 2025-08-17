@@ -9,6 +9,7 @@ import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
 import { useShowSkillStore } from '../../stores/ShowSkillStore.js';
 import { useSettingsStore } from '../../stores/SettingsStore.js';
+import { useTenantStore } from '../../stores/TenantStore.js';
 
 // Import components
 import FlagModals from './FlagModals.vue';
@@ -27,6 +28,7 @@ export default {
         const sessionDetailsStore = useSessionDetailsStore();
         const showSkillStore = useShowSkillStore();
         const settingsStore = useSettingsStore();
+        const tenantStore = useTenantStore();
 
         // If method hasn`t been run before.
         if (tagsStore.tagsList.length == 0) {
@@ -43,7 +45,8 @@ export default {
             userSkillsStore,
             sessionDetailsStore,
             showSkillStore,
-            settingsStore
+            settingsStore,
+            tenantStore
         };
     },
     data() {
@@ -98,7 +101,7 @@ export default {
             thumbnailCDN: import.meta.env
                 .VITE_CLOUDFRONT_SKILL_INFOBOX_IMAGE_THUMBNAILS_CDN_NAME,
             thumbnail: '',
-            thumbnailURL: '',         
+            thumbnailURL: ''
         };
     },
     computed: {
@@ -142,6 +145,12 @@ export default {
 
             // Handle user-specific data
             if (this.sessionDetailsStore.isLoggedIn) {
+                // Check if student or school billing
+                if (this.tenantStore.billingMode == null)
+                    await this.tenantStore.getTenantDetails(
+                        this.userDetailsStore.tenantId
+                    );
+
                 // Run these in parallel
                 const userPromises = [this.getUserSkills()];
 
@@ -180,6 +189,9 @@ export default {
             try {
                 // Ensure user details are loaded first
                 await this.userDetailsStore.getUserDetails();
+                await this.tenantStore.getTenantDetails(
+                    this.userDetailsStore.tenantId
+                );
 
                 // Ensure clients can always access the tutors
                 if (
@@ -193,6 +205,8 @@ export default {
                     this.settingsStore &&
                     typeof this.settingsStore.getSettings === 'function'
                 ) {
+                    // Get the free monthly token limit amount
+
                     // Check if settings store exists and has the method
                     // Only get settings if free monthly tokens are 0 or not set
                     if (this.settingsStore.freeTokenMonthlyLimit === 0) {
@@ -205,16 +219,19 @@ export default {
                 }
 
                 // Check if user is over free monthly AI token limit
-                let tokenBalance =
-                    this.userDetailsStore.monthlyTokenUsage -
-                    this.settingsStore.freeTokenMonthlyLimit;
-
                 if (
                     this.settingsStore.freeTokenMonthlyLimit <=
                     this.userDetailsStore.monthlyTokenUsage
                 ) {
-                    if (tokenBalance > this.userDetailsStore.tokens) {
-                        this.isAITokenLimitReached = true;
+                    // Check billing mode
+                    if (this.tenantStore.billingMode == 'school') {
+                        if (this.tenantStore.tokens <= 0) {
+                            this.isAITokenLimitReached = true;
+                        }
+                    } else {
+                        if (this.userDetailsStore.tokens <= 0) {
+                            this.isAITokenLimitReached = true;
+                        }
                     }
                 }
             } catch (error) {
@@ -2172,9 +2189,11 @@ export default {
         transform: translateY(-20px);
         opacity: 0;
     }
+
     50% {
         transform: translateY(10px);
     }
+
     100% {
         transform: translateY(0);
         opacity: 1;
@@ -2185,6 +2204,7 @@ export default {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -2213,7 +2233,8 @@ p {
     border-style: solid; */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     width: fit-content;
-    margin-bottom: 0 !important; /* Remove any margin that might push content */
+    margin-bottom: 0 !important;
+    /* Remove any margin that might push content */
 }
 
 .narrow-info-panel {
@@ -2237,9 +2258,11 @@ p {
     text-wrap: nowrap;
     border-style: solid;
     background-color: #7f1e1e;
-    color: white; /* Matching the text color used by both buttons */
+    color: white;
+    /* Matching the text color used by both buttons */
     justify-content: center;
 }
+
 .socratic-btn {
     height: auto;
     max-height: 48px;
@@ -2347,9 +2370,11 @@ p {
         max-width: 100%;
         max-height: 38px;
     }
+
     .socratic-btn {
         max-height: 38px;
     }
+
     .share-button {
         max-height: 38px;
     }
@@ -2386,16 +2411,20 @@ p {
 .grade-school {
     background-color: #40e0d0;
 }
+
 .middle-school {
     background-color: #33a133;
     color: white;
 }
+
 .high-school {
     background-color: #ffd700;
 }
+
 .college {
     background-color: #ffa500;
 }
+
 .phd {
     background-color: #ff0000;
     color: white;

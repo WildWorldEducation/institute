@@ -169,8 +169,8 @@ async function getSocraticTutorThread(userId, skillUrl) {
         let queryString = `SELECT * 
                            FROM ai_socratic_tutor_threads 
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND skill_url = ${conn.escape(skillUrl)}`;
+            userId
+        )} AND skill_url = ${conn.escape(skillUrl)}`;
 
         const result = await query(queryString);
         return result;
@@ -201,7 +201,9 @@ async function socraticTutorMessage(
     assistantId,
     messageData,
     freeMonthlyTokenLimit,
-    monthlyTokenUsage
+    monthlyTokenUsage,
+    billingMode,
+    tenantId
 ) {
     // Add a Message to the Thread
     try {
@@ -264,7 +266,9 @@ async function socraticTutorMessage(
                 messageData.skillId,
                 tokenCount,
                 freeMonthlyTokenLimit,
-                monthlyTokenUsage
+                monthlyTokenUsage,
+                billingMode,
+                tenantId
             );
 
             return latestMessage;
@@ -380,8 +384,8 @@ async function getAssessingTutorThread(userId, skillUrl) {
         let queryString = `SELECT * 
                            FROM ai_assessing_tutor_threads 
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND skill_url = ${conn.escape(skillUrl)}`;
+            userId
+        )} AND skill_url = ${conn.escape(skillUrl)}`;
 
         const result = await query(queryString);
         return result;
@@ -412,7 +416,9 @@ async function assessingTutorMessage(
     assistantId,
     messageData,
     freeMonthlyTokenLimit,
-    assessingTutorMessage
+    monthlyTokenUsage,
+    billingMode,
+    tenantId
 ) {
     try {
         // Add a Message to the Thread
@@ -476,7 +482,9 @@ async function assessingTutorMessage(
                 messageData.skillId,
                 tokenCount,
                 freeMonthlyTokenLimit,
-                assessingTutorMessage
+                monthlyTokenUsage,
+                billingMode,
+                tenantId
             );
 
             return latestMessage;
@@ -612,8 +620,8 @@ async function getLearningObjectiveThread(userId, learningObjectiveId) {
         let queryString = `SELECT * 
                            FROM ai_tutor_learning_objective_threads
                            WHERE user_id = ${conn.escape(
-                               userId
-                           )} AND learning_objective_id = ${conn.escape(
+            userId
+        )} AND learning_objective_id = ${conn.escape(
             learningObjectiveId
         )}`;
 
@@ -639,7 +647,9 @@ async function createRunStream(
     userId,
     skillId,
     freeMonthlyTokenLimit,
-    monthlyTokenUsage
+    monthlyTokenUsage,
+    billingMode,
+    tenantId
 ) {
     try {
         if (!isEmptyMessage) {
@@ -697,7 +707,9 @@ async function createRunStream(
                             skillId,
                             tokenCount,
                             freeMonthlyTokenLimit,
-                            monthlyTokenUsage
+                            monthlyTokenUsage,
+                            billingMode,
+                            tenantId
                         );
                     }
                 })
@@ -748,7 +760,9 @@ async function saveTokenUsage(
     skillId,
     tokenCount,
     freeMonthlyTokenLimit,
-    monthlyTokenUsage
+    monthlyTokenUsage,
+    billingMode,
+    tenantId
 ) {
     try {
         // Get current year
@@ -773,14 +787,27 @@ async function saveTokenUsage(
 
         // if they have spent more than free token limit, deduct from their paid tokens
         if (monthlyTokenUsage >= freeMonthlyTokenLimit) {
-            /**
-             * Deduct tokens from user
-             */
-            let deductTokensQueryString = `
+            let deductTokensQueryString = ''
+            if (billingMode == 'student') {
+                /**
+                 * Deduct tokens from user
+                 */
+                deductTokensQueryString = `
                 UPDATE users 
                 SET tokens = tokens - ${conn.escape(tokenCount)} 
                 WHERE id = ${conn.escape(userId)};
                 `;
+            }
+            else {
+                /**
+                 * Deduct tokens from tenant/school
+                 */
+                deductTokensQueryString = `
+                UPDATE tenants 
+                SET tokens = tokens - ${conn.escape(tokenCount)} 
+                WHERE id = ${conn.escape(tenantId)};
+                `;
+            }
             await query(deductTokensQueryString);
         }
 
@@ -807,8 +834,8 @@ async function saveTokenUsage(
             tokenCount
         )})                 
             ON DUPLICATE KEY UPDATE tokens = tokens + ${conn.escape(
-                tokenCount
-            )};`;
+            tokenCount
+        )};`;
 
         await query(dailyTokenUsageQueryString);
 
