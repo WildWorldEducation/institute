@@ -137,7 +137,7 @@ export default {
                         monthlyTokenUsage:
                             this.userDetailsStore.monthlyTokenUsage,
                         billingMode: this.tenantStore.billingMode,
-                        tenantId: this.useUserDetailsStore.tenantId
+                        tenantId: this.userDetailsStore.tenantId
                     })
                 });
 
@@ -230,28 +230,56 @@ export default {
 <template>
     <div class="voice-recorder">
         <!-- Permission Button -->
-        <button v-if="!micAllowed" class="voice-btn permission" @click="allowMic()" :disabled="isAITokenLimitReached"
-            title="Allow microphone access">
+        <button
+            v-if="!micAllowed"
+            class="voice-btn permission"
+            @click="allowMic()"
+            :disabled="isAITokenLimitReached"
+            title="Allow microphone access"
+        >
             <!-- FontAwesome Microphone Icon (Solid) -->
-            <svg width="20" height="20" viewBox="0 0 384 512" fill="currentColor">
+            <svg
+                width="20"
+                height="20"
+                viewBox="0 0 384 512"
+                fill="currentColor"
+            >
                 <path
-                    d="M192 0C139 0 96 43 96 96l0 160c0 53 43 96 96 96s96-43 96-96l0-160c0-53-43-96-96-96zM64 216c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c0 89.1 66.2 162.7 152 174.4l0 33.6-48 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l72 0 72 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-48 0 0-33.6C321.8 418.7 384 345.1 384 256l0-40c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c0 70.7-57.3 128-128 128s-128-57.3-128-128l0-40z" />
+                    d="M192 0C139 0 96 43 96 96l0 160c0 53 43 96 96 96s96-43 96-96l0-160c0-53-43-96-96-96zM64 216c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c0 89.1 66.2 162.7 152 174.4l0 33.6-48 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l72 0 72 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-48 0 0-33.6C321.8 418.7 384 345.1 384 256l0-40c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c0 70.7-57.3 128-128 128s-128-57.3-128-128l0-40z"
+                />
             </svg>
         </button>
 
         <!-- Recording/Processing Button with Timer -->
         <div v-else class="recording-container">
-            <button class="voice-btn" :class="{ recording, processing: isLoading }" @click="recordSpeech()"
+            <button
+                class="voice-btn"
+                :class="{ recording, processing: isLoading }"
+                @click="recordSpeech()"
                 :disabled="isAITokenLimitReached || isLoading"
-                :title="recording ? 'Stop recording' : 'Start recording'">
+                :title="recording ? 'Stop recording' : 'Start recording'"
+            >
                 <!-- FontAwesome Microphone Icon (Solid) -->
-                <svg v-if="!recording && !isLoading" width="20" height="20" viewBox="0 0 384 512" fill="currentColor">
+                <svg
+                    v-if="!recording && !isLoading"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 384 512"
+                    fill="currentColor"
+                >
                     <path
-                        d="M192 0C139 0 96 43 96 96l0 160c0 53 43 96 96 96s96-43 96-96l0-160c0-53-43-96-96-96zM64 216c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c0 89.1 66.2 162.7 152 174.4l0 33.6-48 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l72 0 72 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-48 0 0-33.6C321.8 418.7 384 345.1 384 256l0-40c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c0 70.7-57.3 128-128 128s-128-57.3-128-128l0-40z" />
+                        d="M192 0C139 0 96 43 96 96l0 160c0 53 43 96 96 96s96-43 96-96l0-160c0-53-43-96-96-96zM64 216c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c0 89.1 66.2 162.7 152 174.4l0 33.6-48 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l72 0 72 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-48 0 0-33.6C321.8 418.7 384 345.1 384 256l0-40c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c0 70.7-57.3 128-128 128s-128-57.3-128-128l0-40z"
+                    />
                 </svg>
 
                 <!-- Stop Icon -->
-                <svg v-else-if="recording" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <svg
+                    v-else-if="recording"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                >
                     <path d="M6,6H18V18H6V6Z" />
                 </svg>
 
@@ -264,7 +292,7 @@ export default {
                 <div class="recording-pulse"></div>
                 <span class="recording-timer">{{
                     formatTime(recordingDuration)
-                    }}</span>
+                }}</span>
             </div>
         </div>
     </div>
@@ -368,7 +396,6 @@ export default {
 }
 
 @keyframes pulse {
-
     0%,
     100% {
         opacity: 1;
