@@ -3,6 +3,7 @@ import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import { useUserSkillsStore } from '../../../stores/UserSkillsStore.js';
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore.js';
 import { useSettingsStore } from '../../../stores/SettingsStore.js';
+import { useTenantStore } from '../../../stores/TenantStore.js';
 import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
 import TooltipBtn from './../share-components/TooltipBtn.vue';
 import SpeechRecorder from './SpeechRecorder.vue';
@@ -15,13 +16,15 @@ export default {
         const userSkillsStore = useUserSkillsStore();
         const skillTreeStore = useSkillTreeStore();
         const settingStore = useSettingsStore();
+        const tenantStore = useTenantStore();
         const stateOfSocket = socketState;
         return {
             stateOfSocket,
             userDetailsStore,
             userSkillsStore,
             skillTreeStore,
-            settingStore
+            settingStore,
+            tenantStore
         };
     },
     props: [
@@ -393,7 +396,8 @@ export default {
                     userId: this.userDetailsStore.userId,
                     freeMonthlyTokenLimit:
                         this.settingStore.freeTokenMonthlyLimit,
-                    monthlyTokenUsage: this.userDetailsStore.monthlyTokenUsage
+                    monthlyTokenUsage: this.userDetailsStore.monthlyTokenUsage,
+                    billingMode: this.tenantStore.billingMode
                 };
 
                 this.message = '';
@@ -426,7 +430,8 @@ export default {
                     skillId: this.skill.id,
                     freeMonthlyTokenLimit:
                         this.settingStore.freeTokenMonthlyLimit,
-                    monthlyTokenUsage: this.userDetailsStore.monthlyTokenUsage
+                    monthlyTokenUsage: this.userDetailsStore.monthlyTokenUsage,
+                    billingMode: this.tenantStore.billingMode
                 };
 
                 socket.emit(socketChannel, messageData);
@@ -482,7 +487,8 @@ export default {
                         freeMonthlyTokenLimit:
                             this.settingStore.freeTokenMonthlyLimit,
                         monthlyTokenUsage:
-                            this.userDetailsStore.monthlyTokenUsage
+                            this.userDetailsStore.monthlyTokenUsage,
+                        billingMode: this.tenantStore.billingMode
                     })
                 };
 
@@ -565,7 +571,7 @@ export default {
                 this.skill.name,
                 this.skill.level,
                 this.skill.url,
-                (val) => {}
+                (val) => { }
             );
         },
         removeStreamMessage() {
@@ -579,11 +585,10 @@ export default {
                 this.$parent.showGuestTooltip();
             } else {
                 this.isLoading = true;
-                this.loadingMessage = `Loading ${
-                    type === 'socratic'
+                this.loadingMessage = `Loading ${type === 'socratic'
                         ? 'Socratic Tutor'
                         : 'Conversational Test'
-                }...`;
+                    }...`;
 
                 this.hasTutorButtonBeenClicked = true;
                 this.showTutorModal(type);
@@ -878,109 +883,59 @@ export default {
     <!-- Modal for 'modal mode'-->
     <div v-if="mode === 'modal'" class="modal"></div>
     <!-- Tutor UI -->
-    <div
-        :class="{
-            'container mt-3': mode === 'docked',
-            'modal-mode-container': mode === 'modal'
-        }"
-    >
+    <div :class="{
+        'container mt-3': mode === 'docked',
+        'modal-mode-container': mode === 'modal'
+    }">
         <!-- Heading, tooltip and minimise/maximise buttons -->
-        <div
-            class="d-flex flex-column flex-md-row gap-2 align-items-baseline mb-1"
-        >
+        <div class="d-flex flex-column flex-md-row gap-2 align-items-baseline mb-1">
             <div class="d-flex flex-row w-100 justify-content-between">
                 <div class="d-flex gap-2">
                     <!-- Info button -->
                     <span class="d-flex gap-2">
-                        <TooltipBtn
-                            v-if="mode === 'docked' && tutorType == 'socratic'"
-                            class="d-none d-md-block"
+                        <TooltipBtn v-if="mode === 'docked' && tutorType == 'socratic'" class="d-none d-md-block"
                             toolTipText="Press the 'generate speech' button to hear the tutor speak with AI generated speech."
-                            bubbleWidth="350px"
-                            trianglePosition="left"
-                            absoluteTop="37px"
-                        />
-                        <TooltipBtn
-                            v-else-if="
-                                mode === 'docked' && tutorType == 'assessing'
-                            "
-                            class="d-none d-md-block"
-                            toolTipText="Your dialog with the Conversational Test will continue indefinitely until 70% of your
-                                    answers are deemed to be correct."
-                            bubbleWidth="350px"
-                            trianglePosition="left"
-                            absoluteTop="37px"
-                        />
+                            bubbleWidth="350px" trianglePosition="left" absoluteTop="37px" />
+                        <TooltipBtn v-else-if="
+                            mode === 'docked' && tutorType == 'assessing'
+                        " class="d-none d-md-block" toolTipText="Your dialog with the Conversational Test will continue indefinitely until 70% of your
+                                    answers are deemed to be correct." bubbleWidth="350px" trianglePosition="left"
+                            absoluteTop="37px" />
                         <!-- Mobile tooltip has smaller width -->
-                        <TooltipBtn
-                            v-if="mode === 'docked' && tutorType == 'socratic'"
-                            class="d-md-none"
+                        <TooltipBtn v-if="mode === 'docked' && tutorType == 'socratic'" class="d-md-none"
                             toolTipText="Press the 'generate speech' button to hear the tutor speak with AI generated speech."
-                            bubbleWidth="100px"
-                            trianglePosition="left"
-                            absoluteTop="37px"
-                        />
-                        <TooltipBtn
-                            v-else-if="
-                                mode === 'docked' && tutorType == 'assessing'
-                            "
-                            class="d-md-none"
-                            toolTipText="Your dialog with the Conversational Test will continue indefinitely until 70% of your
-                                    answers are deemed to be correct."
-                            bubbleWidth="100px"
-                            trianglePosition="left"
-                            absoluteTop="37px"
-                        />
+                            bubbleWidth="100px" trianglePosition="left" absoluteTop="37px" />
+                        <TooltipBtn v-else-if="
+                            mode === 'docked' && tutorType == 'assessing'
+                        " class="d-md-none" toolTipText="Your dialog with the Conversational Test will continue indefinitely until 70% of your
+                                    answers are deemed to be correct." bubbleWidth="100px" trianglePosition="left"
+                            absoluteTop="37px" />
                     </span>
                     <!-- Tutor loading animation (modal mode) -->
-                    <div
-                        v-if="mode === 'modal' && waitForAIresponse"
-                        class="ai-tutor-processing mt-1"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 640 512"
-                            width="18"
-                            height="18"
-                            fill="black"
-                        >
+                    <div v-if="mode === 'modal' && waitForAIresponse" class="ai-tutor-processing mt-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" width="18" height="18"
+                            fill="black">
                             <path
-                                d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
-                            />
+                                d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z" />
                         </svg>
                         <span v-if="isMobileCheck > 576">Thinking</span>
                         <TutorLoadingSymbol />
                     </div>
-                    <TooltipBtn
-                        v-else-if="mode === 'modal' && tutorType == 'assessing'"
-                        class="d-none d-md-block"
+                    <TooltipBtn v-else-if="mode === 'modal' && tutorType == 'assessing'" class="d-none d-md-block"
                         toolTipText="Your dialog with the Conversational Test will continue indefinitely until 70% of your
-                                    answers are deemed to be correct."
-                        bubbleWidth="350px"
-                        trianglePosition="left"
-                        absoluteTop="37px"
-                    />
+                                    answers are deemed to be correct." bubbleWidth="350px" trianglePosition="left"
+                        absoluteTop="37px" />
                 </div>
 
                 <div class="d-flex">
                     <!-- Dock button -->
                     <div title="Dock AI tutor" b-tooltip.hover>
-                        <button
-                            v-if="mode === 'modal'"
-                            class="primary-btn btn close-btn ms-2"
-                            @click="hideTutorModal(tutorType)"
-                            aria-label="Close"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 384 512"
-                                fill="white"
-                                width="16"
-                            >
+                        <button v-if="mode === 'modal'" class="primary-btn btn close-btn ms-2"
+                            @click="hideTutorModal(tutorType)" aria-label="Close">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="white" width="16">
                                 <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
                                 <path
-                                    d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
-                                />
+                                    d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
                             </svg>
                         </button>
                     </div>
@@ -988,10 +943,8 @@ export default {
             </div>
         </div>
         <!-- AI Tutor Tooltip -->
-        <div
-            v-if="userDetailsStore.role == 'student' && showTutorialTip7"
-            class="tool-tip-base d-flex justify-content-start"
-        >
+        <div v-if="userDetailsStore.role == 'student' && showTutorialTip7"
+            class="tool-tip-base d-flex justify-content-start">
             <div class="explain-tool-tip hovering-info-panel triangle-top-left">
                 <div class="tool-tip-text">
                     <p>
@@ -1001,16 +954,10 @@ export default {
                         at any time during your learning journey.
                     </p>
                     <div class="d-flex justify-content-between">
-                        <button
-                            class="btn primary-btn"
-                            @click="$emit('progressTutorial', 7)"
-                        >
+                        <button class="btn primary-btn" @click="$emit('progressTutorial', 7)">
                             next
                         </button>
-                        <button
-                            class="btn red-btn"
-                            @click="$emit('skipTutorial')"
-                        >
+                        <button class="btn red-btn" @click="$emit('skipTutorial')">
                             exit tutorial
                         </button>
                     </div>
@@ -1018,47 +965,32 @@ export default {
             </div>
         </div>
         <!-- notification -->
-        <div
-            class="alert alert-warning mt-1"
-            role="alert"
-            v-if="$parent.isAITokenLimitReached"
-        >
+        <div class="alert alert-warning mt-1" role="alert" v-if="$parent.isAITokenLimitReached">
             You have reached your monthly AI token limit. Please recharge your
             tokens to use more.
         </div>
         <!--Tutor types and STT-->
-        <div
-            v-if="mode === 'docked' || mode === 'hide'"
-            class="d-flex flex-column justify-content-between"
-        >
+        <div v-if="mode === 'docked' || mode === 'hide'" class="d-flex flex-column justify-content-between">
             <!--Tutor types -->
             <div class="container-fluid p-0">
                 <div class="row mb-2 mb-md-3 g-2">
                     <!-- Socratic Tutor -->
                     <div class="col-12 col-md-6">
-                        <button
-                            class="btn socratic-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap"
-                            :class="{
-                                'text-decoration-underline':
-                                    mode !== 'hide' && tutorType === 'socratic',
-                                disabled:
-                                    hasTutorButtonBeenClicked ||
-                                    $parent.isAITokenLimitReached
-                            }"
-                            @click="handleTutorClick('socratic')"
-                        >
+                        <button class="btn socratic-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap" :class="{
+                            'text-decoration-underline':
+                                mode !== 'hide' && tutorType === 'socratic',
+                            disabled:
+                                hasTutorButtonBeenClicked ||
+                                $parent.isAITokenLimitReached
+                        }" @click="handleTutorClick('socratic')">
                             Socratic Tutor
                         </button>
                         <!-- Socratic Tutor Tooltip -->
-                        <div
-                            v-if="
-                                userDetailsStore.role == 'student' &&
-                                showTutorialTip8
-                            "
-                        >
-                            <div
-                                class="explain-tool-tip hovering-info-panel triangle-top-left"
-                            >
+                        <div v-if="
+                            userDetailsStore.role == 'student' &&
+                            showTutorialTip8
+                        ">
+                            <div class="explain-tool-tip hovering-info-panel triangle-top-left">
                                 <div class="tool-tip-text">
                                     <p>
                                         The Socratic Tutor helps you learn
@@ -1069,18 +1001,12 @@ export default {
                                         understanding of concepts.
                                     </p>
                                     <div class="d-flex justify-content-between">
-                                        <button
-                                            class="btn primary-btn"
-                                            @click="
-                                                $emit('progressTutorial', 8)
-                                            "
-                                        >
+                                        <button class="btn primary-btn" @click="
+                                            $emit('progressTutorial', 8)
+                                            ">
                                             next
                                         </button>
-                                        <button
-                                            class="btn red-btn"
-                                            @click="$emit('skipTutorial')"
-                                        >
+                                        <button class="btn red-btn" @click="$emit('skipTutorial')">
                                             exit tutorial
                                         </button>
                                     </div>
@@ -1090,42 +1016,32 @@ export default {
                     </div>
                     <!-- Conversational Test -->
                     <div class="col-12 col-md-6" v-if="!$parent.isMastered">
-                        <button
-                            class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap"
-                            :class="{
-                                'text-decoration-underline':
-                                    tutorType === 'assessing',
-                                disabled:
-                                    (skill.type === 'super' &&
-                                        !areAllSubskillsMastered) ||
-                                    hasTutorButtonBeenClicked ||
-                                    $parent.isAITokenLimitReached
-                            }"
-                            @click="
+                        <button class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap" :class="{
+                            'text-decoration-underline':
+                                tutorType === 'assessing',
+                            disabled:
+                                (skill.type === 'super' &&
+                                    !areAllSubskillsMastered) ||
+                                hasTutorButtonBeenClicked ||
+                                $parent.isAITokenLimitReached
+                        }" @click="
                                 skill.type === 'super' &&
-                                !areAllSubskillsMastered
+                                    !areAllSubskillsMastered
                                     ? null
                                     : handleTutorClick('assessing')
-                            "
-                            :title="
-                                skill.type === 'super' &&
-                                !areAllSubskillsMastered
+                                " :title="skill.type === 'super' &&
+                                    !areAllSubskillsMastered
                                     ? 'Master all subskills first to unlock this assessment'
                                     : ''
-                            "
-                        >
+                                ">
                             Conversational Test
                         </button>
                         <!-- Conversational Test Tooltip -->
-                        <div
-                            v-if="
-                                userDetailsStore.role == 'student' &&
-                                showTutorialTip9
-                            "
-                        >
-                            <div
-                                class="explain-tool-tip hovering-info-panel triangle-top-left"
-                            >
+                        <div v-if="
+                            userDetailsStore.role == 'student' &&
+                            showTutorialTip9
+                        ">
+                            <div class="explain-tool-tip hovering-info-panel triangle-top-left">
                                 <div class="tool-tip-text">
                                     <p>
                                         Your dialog with the Conversational Test
@@ -1133,18 +1049,12 @@ export default {
                                         your answers are deemed to be correct.
                                     </p>
                                     <div class="d-flex justify-content-between">
-                                        <button
-                                            class="btn primary-btn"
-                                            @click="
-                                                $emit('progressTutorial', 9)
-                                            "
-                                        >
+                                        <button class="btn primary-btn" @click="
+                                            $emit('progressTutorial', 9)
+                                            ">
                                             next
                                         </button>
-                                        <button
-                                            class="btn red-btn"
-                                            @click="$emit('skipTutorial')"
-                                        >
+                                        <button class="btn red-btn" @click="$emit('skipTutorial')">
                                             exit tutorial
                                         </button>
                                     </div>
@@ -1155,43 +1065,28 @@ export default {
                 </div>
                 <!-- Link to test page -->
                 <div class="row g-2">
-                    <div
-                        class="col-12 col-md-6 offset-md-6"
-                        v-if="
-                            !$parent.isMastered &&
-                            skill.type != 'domain' &&
-                            skill.id
-                        "
-                    >
+                    <div class="col-12 col-md-6 offset-md-6" v-if="
+                        !$parent.isMastered &&
+                        skill.type != 'domain' &&
+                        skill.id
+                    ">
                         <!-- MC Test -->
-                        <button
-                            class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 d-block text-nowrap"
-                            :class="{
-                                disabled:
-                                    skill.type === 'super' &&
-                                    !areAllSubskillsMastered
-                            }"
-                            @click="navigateToAssessment"
-                            :disabled="
+                        <button class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 d-block text-nowrap" :class="{
+                            disabled:
                                 skill.type === 'super' &&
                                 !areAllSubskillsMastered
-                            "
-                        >
+                        }" @click="navigateToAssessment" :disabled="skill.type === 'super' &&
+                                !areAllSubskillsMastered
+                                ">
                             Multiple-Choice Test
                         </button>
                     </div>
                     <!-- Explanation message for disabled button -->
-                    <div
-                        v-if="
-                            skill.type === 'super' && !areAllSubskillsMastered
-                        "
-                        class="text-end small"
-                        :class="{ 'text-center': isMobileCheck < 576 }"
-                    >
-                        <em
-                            >To unlock the tests, first master all the cluster
-                            skills</em
-                        >
+                    <div v-if="
+                        skill.type === 'super' && !areAllSubskillsMastered
+                    " class="text-end small" :class="{ 'text-center': isMobileCheck < 576 }">
+                        <em>To unlock the tests, first master all the cluster
+                            skills</em>
                     </div>
                 </div>
             </div>
@@ -1207,80 +1102,40 @@ export default {
             <div v-if="mode != 'hide'" class="d-flex justify-content-between">
                 <!-- Toggle chat button -->
                 <button class="btn plus-btn ms-1" @click="showChat = !showChat">
-                    <svg
-                        v-if="!showChat"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 448 512"
-                        width="18"
-                        height="18"
-                    >
+                    <svg v-if="!showChat" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="18"
+                        height="18">
                         <!-- SVG path for plus icon -->
                         <path
-                            d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
-                        />
+                            d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z" />
                     </svg>
-                    <svg
-                        v-else
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 448 512"
-                        width="18"
-                        height="18"
-                    >
+                    <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="18" height="18">
                         <!-- SVG path for minus icon -->
                         <path
-                            d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                        />
+                            d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
                     </svg>
                 </button>
             </div>
         </div>
         <!-- User input (docked mode) -->
-        <div
-            class="input-container"
-            v-if="mode === 'docked' && !$parent.isAITokenLimitReached"
-        >
+        <div class="input-container" v-if="mode === 'docked' && !$parent.isAITokenLimitReached">
             <div class="input-wrapper">
-                <textarea
-                    ref="messageInput"
-                    class="chat-text-area"
-                    v-model="message"
-                    placeholder="Type your message or use voice input..."
-                    @keydown.enter="handleKeyDown"
-                    @input="autoResizeTextarea"
-                    :disabled="isRecording"
-                ></textarea>
+                <textarea ref="messageInput" class="chat-text-area" v-model="message"
+                    placeholder="Type your message or use voice input..." @keydown.enter="handleKeyDown"
+                    @input="autoResizeTextarea" :disabled="isRecording"></textarea>
 
                 <!-- Integrated Speech Recorder -->
-                <SpeechRecorder
-                    class="voice-input-button"
-                    :tutorType="tutorType"
-                    :skill="skill"
-                    :skillLevel="englishSkillLevel"
-                    :learningObjectives="learningObjectives"
-                    :isAITokenLimitReached="$parent.isAITokenLimitReached"                   
-                    @recording-started="onRecordingStarted"
-                    @recording-stopped="onRecordingStopped"
-                    @message-sent="onVoiceMessageSent"
-                    @message-error="onVoiceMessageError"
-                />
+                <SpeechRecorder class="voice-input-button" :tutorType="tutorType" :skill="skill"
+                    :skillLevel="englishSkillLevel" :learningObjectives="learningObjectives"
+                    :isAITokenLimitReached="$parent.isAITokenLimitReached" @recording-started="onRecordingStarted"
+                    @recording-stopped="onRecordingStopped" @message-sent="onVoiceMessageSent"
+                    @message-error="onVoiceMessageError" />
 
                 <!-- Send button -->
-                <button
-                    class="btn send-btn"
-                    :class="{
-                        'socratic-btn': tutorType === 'socratic',
-                        'assessing-btn': tutorType === 'assessing'
-                    }"
-                    @click="sendMessage()"
-                    :disabled="isRecording"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="18"
-                        height="18"
-                        fill="white"
-                    >
+                <button class="btn send-btn" :class="{
+                    'socratic-btn': tutorType === 'socratic',
+                    'assessing-btn': tutorType === 'assessing'
+                }" @click="sendMessage()" :disabled="isRecording">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="white">
                         <path d="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
                     </svg>
                 </button>
@@ -1288,147 +1143,90 @@ export default {
         </div>
 
         <!-- Tutor loading animation (docked mode) -->
-        <div
-            v-if="mode === 'docked' && waitForAIresponse"
-            class="ai-tutor-processing mt-1"
-        >
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 640 512"
-                width="18"
-                height="18"
-                fill="black"
-            >
+        <div v-if="mode === 'docked' && waitForAIresponse" class="ai-tutor-processing mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" width="18" height="18" fill="black">
                 <path
-                    d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
-                />
+                    d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z" />
             </svg>
             Thinking
             <TutorLoadingSymbol />
         </div>
-        <div
-            v-if="
-                showChat &&
-                mode !== 'hide' &&
-                (chatHistory.length > 0 ||
-                    waitForAIresponse ||
-                    stateOfSocket.isStreaming)
-            "
-            class="d-flex flex-column align-items-start tutor-chatting-section"
-            :class="{
+        <div v-if="
+            showChat &&
+            mode !== 'hide' &&
+            (chatHistory.length > 0 ||
+                waitForAIresponse ||
+                stateOfSocket.isStreaming)
+        " class="d-flex flex-column align-items-start tutor-chatting-section" :class="{
                 'tutor-chatting-waiting-response-section':
                     mode === 'modal' && waitForAIresponse
-            }"
-        >
+            }">
             <!-- Message thread -->
-            <div
-                v-if="showChat && mode != 'hide'"
-                class="d-flex flex-column mx-auto"
-                :class="{
-                    'docked-chat-history': mode === 'docked',
-                    'modal-chat-history': mode === 'modal',
-                    'socratic-chat': tutorType === 'socratic',
-                    'assessing-chat': tutorType === 'assessing'
-                }"
-                ref="messageInputDiv"
-            >
+            <div v-if="showChat && mode != 'hide'" class="d-flex flex-column mx-auto" :class="{
+                'docked-chat-history': mode === 'docked',
+                'modal-chat-history': mode === 'modal',
+                'socratic-chat': tutorType === 'socratic',
+                'assessing-chat': tutorType === 'assessing'
+            }" ref="messageInputDiv">
                 <!-- Currently streaming message (docked mode) -->
-                <div
-                    v-if="
-                        stateOfSocket.isStreaming &&
-                        stateOfSocket.streamType === 'aiTutor' &&
-                        mode == 'docked'
-                    "
-                    class="d-flex my-3 tutor-conversation streamed-message"
-                    v-html="
-                        applyMarkDownFormatting(stateOfSocket.streamingMessage)
-                    "
-                ></div>
+                <div v-if="
+                    stateOfSocket.isStreaming &&
+                    stateOfSocket.streamType === 'aiTutor' &&
+                    mode == 'docked'
+                " class="d-flex my-3 tutor-conversation streamed-message" v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)
+                        "></div>
                 <!-- Chat history -->
                 <template v-for="(message, index) in sortedChatHistory">
                     <!-- Student messages -->
-                    <div
-                        v-if="message.role === 'user'"
-                        class="d-flex justify-content-end message-divider"
-                    >
+                    <div v-if="message.role === 'user'" class="d-flex justify-content-end message-divider">
                         <div class="user-conversation">
                             <em>{{ message.content[0].text.value }}</em>
                         </div>
                     </div>
 
                     <!-- AI tutor messages with conditional border styling -->
-                    <div
-                        v-else-if="
-                            message.role === 'assistant' &&
-                            message.content[0].type == 'text'
-                        "
-                        class="d-flex justify-content-between w-100"
-                        :class="{
+                    <div v-else-if="
+                        message.role === 'assistant' &&
+                        message.content[0].type == 'text'
+                    " class="d-flex justify-content-between w-100" :class="{
                             'message-divider': index !== 0,
                             'first-message': index === 0
                             // 'last-message': index === chatHistory.length - 1
-                        }"
-                    >
+                        }">
                         <div class="tutor-conversation">
-                            <div
-                                v-html="
-                                    applyMarkDownFormatting(
-                                        message.content[0].text.value
-                                    )
-                                "
-                            ></div>
+                            <div v-html="applyMarkDownFormatting(
+                                message.content[0].text.value
+                            )
+                                "></div>
                         </div>
                         <!-- Generate / Play audio -->
                         <!-- Loading animation -->
-                        <div
-                            v-if="
-                                message.isAudioGenerating &&
-                                message.role === 'assistant'
-                            "
-                            class="d-flex"
-                        >
+                        <div v-if="
+                            message.isAudioGenerating &&
+                            message.role === 'assistant'
+                        " class="d-flex">
                             <span class="speech-loader"></span>
                         </div>
 
                         <!-- Play/pause button, playing animation -->
-                        <button
-                            v-else-if="
-                                !waitForGenerateAudio &&
-                                !message.isAudioGenerating &&
-                                message.role === 'assistant'
-                            "
-                            @click="playAudio(message.index)"
-                            class="btn speechButton"
-                        >
-                            <svg
-                                v-if="isAudioPlaying == false"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                fill="yellow"
-                                height="18"
-                                width="18"
-                            >
+                        <button v-else-if="
+                            !waitForGenerateAudio &&
+                            !message.isAudioGenerating &&
+                            message.role === 'assistant'
+                        " @click="playAudio(message.index)" class="btn speechButton">
+                            <svg v-if="isAudioPlaying == false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+                                fill="yellow" height="18" width="18">
                                 <path
-                                    d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c7.6-4.2 16.8-4.1 24.3 .5l144 88c7.1 4.4 11.5 12.1 11.5 20.5s-4.4 16.1-11.5 20.5l-144 88c-7.4 4.5-16.7 4.7-24.3 .5s-12.3-12.2-12.3-20.9l0-176c0-8.7 4.7-16.7 12.3-20.9z"
-                                />
+                                    d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c7.6-4.2 16.8-4.1 24.3 .5l144 88c7.1 4.4 11.5 12.1 11.5 20.5s-4.4 16.1-11.5 20.5l-144 88c-7.4 4.5-16.7 4.7-24.3 .5s-12.3-12.2-12.3-20.9l0-176c0-8.7 4.7-16.7 12.3-20.9z" />
                             </svg>
-                            <div
-                                v-else-if="
-                                    isAudioPlaying == true &&
-                                    message.index === currentIndexAudioPlaying
-                                "
-                                class="d-flex gap-1 align-items-center"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 512 512"
-                                    fill="yellow"
-                                    height="18"
-                                    width="18"
-                                >
+                            <div v-else-if="
+                                isAudioPlaying == true &&
+                                message.index === currentIndexAudioPlaying
+                            " class="d-flex gap-1 align-items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="yellow" height="18"
+                                    width="18">
                                     <path
-                                        d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z"
-                                    />
+                                        d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm192-96l128 0c17.7 0 32 14.3 32 32l0 128c0 17.7-14.3 32-32 32l-128 0c-17.7 0-32-14.3-32-32l0-128c0-17.7 14.3-32 32-32z" />
                                 </svg>
                                 <PlayingAudioAnimation />
                             </div>
@@ -1438,63 +1236,31 @@ export default {
                 </template>
 
                 <!-- Currently streaming message (modal mode) -->
-                <div
-                    v-if="
-                        stateOfSocket.isStreaming &&
-                        stateOfSocket.streamType === 'aiTutor' &&
-                        mode == 'modal'
-                    "
-                    class="d-flex my-3 tutor-conversation streamed-message"
-                    :class="{
+                <div v-if="
+                    stateOfSocket.isStreaming &&
+                    stateOfSocket.streamType === 'aiTutor' &&
+                    mode == 'modal'
+                " class="d-flex my-3 tutor-conversation streamed-message" :class="{
                         'mt-auto':
                             (isNewSocraticChat && tutorType == 'socratic') ||
                             (isNewAssessingChat && tutorType == 'assessing')
-                    }"
-                    v-html="
-                        applyMarkDownFormatting(stateOfSocket.streamingMessage)
-                    "
-                ></div>
+                    }" v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)
+                        "></div>
             </div>
             <!-- User input (modal mode) -->
-            <div
-                class="modal-input"
-                v-if="mode === 'modal' && !$parent.isAITokenLimitReached"
-            >
+            <div class="modal-input" v-if="mode === 'modal' && !$parent.isAITokenLimitReached">
                 <div class="input-row">
-                    <textarea
-                        ref="modalMessageInput"
-                        class="modal-textarea"
-                        v-model="message"
-                        placeholder="Type your message or use voice input..."
-                        @keydown.enter="handleKeyDown"
-                        @input="autoResizeModalTextarea"
-                        :disabled="isRecording"
-                    ></textarea>
+                    <textarea ref="modalMessageInput" class="modal-textarea" v-model="message"
+                        placeholder="Type your message or use voice input..." @keydown.enter="handleKeyDown"
+                        @input="autoResizeModalTextarea" :disabled="isRecording"></textarea>
 
-                    <SpeechRecorder
-                        :tutorType="tutorType"
-                        :skill="skill"
-                        :skillLevel="englishSkillLevel"
-                        :learningObjectives="learningObjectives"
-                        :isAITokenLimitReached="$parent.isAITokenLimitReached"
-                        @recording-started="onRecordingStarted"
-                        @recording-stopped="onRecordingStopped"
-                        @message-sent="onVoiceMessageSent"
-                        @message-error="onVoiceMessageError"
-                    />
+                    <SpeechRecorder :tutorType="tutorType" :skill="skill" :skillLevel="englishSkillLevel"
+                        :learningObjectives="learningObjectives" :isAITokenLimitReached="$parent.isAITokenLimitReached"
+                        @recording-started="onRecordingStarted" @recording-stopped="onRecordingStopped"
+                        @message-sent="onVoiceMessageSent" @message-error="onVoiceMessageError" />
 
-                    <button
-                        class="send-btn"
-                        @click="sendMessage()"
-                        :disabled="isRecording"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            width="18"
-                            height="18"
-                            fill="white"
-                        >
+                    <button class="send-btn" @click="sendMessage()" :disabled="isRecording">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="white">
                             <path d="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
                         </svg>
                     </button>
@@ -1510,6 +1276,7 @@ export default {
     padding-top: 25px;
     padding-bottom: 20px;
 }
+
 .first-message {
     padding: 20px 0;
     margin-top: auto;
@@ -1550,6 +1317,7 @@ export default {
     border-bottom: 1px solid #e0e0e0;
     padding-bottom: 20px;
 }
+
 .hovering-info-panel {
     position: absolute;
     z-index: 1000;
@@ -1579,6 +1347,7 @@ export default {
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }
@@ -1826,10 +1595,13 @@ export default {
 
 .chat-text-area:disabled,
 .modal-textarea:disabled {
-    opacity: 0.6; /* Slightly more transparent */
+    opacity: 0.6;
+    /* Slightly more transparent */
     cursor: not-allowed;
-    background: rgba(156, 163, 175, 0.1); /* Subtle gray background */
-    color: #6b7280; /* Gray text */
+    background: rgba(156, 163, 175, 0.1);
+    /* Subtle gray background */
+    color: #6b7280;
+    /* Gray text */
 }
 
 /* Send button - unified for both modes */
