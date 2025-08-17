@@ -147,7 +147,7 @@ export default {
             if (this.sessionDetailsStore.isLoggedIn) {
                 // Check if student or school billing
                 if (this.tenantStore.billingMode == null)
-                    this.tenantStore.getTenantDetails(this.userDetailsStore.tenantId)
+                    await this.tenantStore.getTenantDetails(this.userDetailsStore.tenantId)
 
                 // Run these in parallel
                 const userPromises = [this.getUserSkills()];
@@ -214,6 +214,8 @@ export default {
                     return;
                 }
 
+console.log("check")
+console.log(this.tenantStore.billingMode)
                 // Check if user is over free monthly AI token limit
                 if (
                     this.settingsStore.freeTokenMonthlyLimit <=
@@ -222,6 +224,7 @@ export default {
                     // Check billing mode
                     if (this.tenantStore.billingMode == 'school') {
                         if (this.tenantStore.tokens <= 0) {
+                            console.log(this.tenantStore.tokens)
                             this.isAITokenLimitReached = true;
                         }
                     }
