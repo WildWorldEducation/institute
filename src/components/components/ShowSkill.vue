@@ -200,6 +200,9 @@ export default {
                     this.settingsStore &&
                     typeof this.settingsStore.getSettings === 'function'
                 ) {
+
+                    // Get the free monthly token limit amount
+
                     // Check if settings store exists and has the method
                     // Only get settings if free monthly tokens are 0 or not set
                     if (this.settingsStore.freeTokenMonthlyLimit === 0) {
@@ -212,18 +215,23 @@ export default {
                 }
 
                 // Check if user is over free monthly AI token limit
-                let tokenBalance =
-                    this.userDetailsStore.monthlyTokenUsage -
-                    this.settingsStore.freeTokenMonthlyLimit;
-
                 if (
                     this.settingsStore.freeTokenMonthlyLimit <=
                     this.userDetailsStore.monthlyTokenUsage
                 ) {
-                    if (tokenBalance > this.userDetailsStore.tokens) {
-                        this.isAITokenLimitReached = true;
+                    // Check billing mode
+                    if (this.tenantStore.billingMode == 'school') {
+                        if (this.tenantStore.tokens <= 0) {
+                            this.isAITokenLimitReached = true;
+                        }
+                    }
+                    else {
+                        if (this.userDetailsStore.tokens <= 0) {
+                            this.isAITokenLimitReached = true;
+                        }
                     }
                 }
+
             } catch (error) {
                 console.error('Error in checkTokenUsage:', error);
                 // Set a default state to prevent complete failure
@@ -959,8 +967,7 @@ export default {
                             !isMastered &&
                             skill.type === 'super' &&
                             !areAllSubskillsMastered
-                        " class="btn me-1 assessment-btn" style="opacity: 0.7"
-                            @click="showUnmasteredSubskillsModal"
+                        " class="btn me-1 assessment-btn" style="opacity: 0.7" @click="showUnmasteredSubskillsModal"
                             title="Click to see which subskills need to be mastered">
                             Master Subskills First
                         </button>
@@ -1131,8 +1138,8 @@ export default {
                 <div v-if="
                     userDetailsStore.role == 'student' && showTutorialTip3
                 " class="tool-tip-base d-flex justify-content-start" :class="{
-                        'justify-content-end': isMobileCheck > 576
-                    }">
+                    'justify-content-end': isMobileCheck > 576
+                }">
                     <div class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel" :class="{
                         'triangle-top-middle': isMobileCheck > 576
                     }">
@@ -1225,8 +1232,8 @@ export default {
                     userDetailsStore.role == 'instructor' &&
                     showTutorialTip2
                 " class="tool-tip-base d-flex justify-content-start" :class="{
-                        'justify-content-end': isMobileCheck > 576
-                    }">
+                    'justify-content-end': isMobileCheck > 576
+                }">
                     <div class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel" :class="{
                         'triangle-top-middle': isMobileCheck > 576
                     }">
@@ -1403,9 +1410,9 @@ export default {
                             sessionDetailsStore.isLoggedIn &&
                             userDetailsStore.role == 'student'
                         " class="btn plus-btn" @click="
-                                learningObjective.showAI =
-                                !learningObjective.showAI
-                                ">
+                            learningObjective.showAI =
+                            !learningObjective.showAI
+                            ">
                             <svg v-if="!learningObjective.showAI" xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 448 512" width="18" height="18">
                                 <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
