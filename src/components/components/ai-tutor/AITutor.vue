@@ -397,7 +397,8 @@ export default {
                     freeMonthlyTokenLimit:
                         this.settingStore.freeTokenMonthlyLimit,
                     monthlyTokenUsage: this.userDetailsStore.monthlyTokenUsage,
-                    billingMode: this.tenantStore.billingMode
+                    billingMode: this.tenantStore.billingMode,
+                    tenantId: this.userDetailsStore.tenantId
                 };
 
                 this.message = '';
@@ -431,7 +432,8 @@ export default {
                     freeMonthlyTokenLimit:
                         this.settingStore.freeTokenMonthlyLimit,
                     monthlyTokenUsage: this.userDetailsStore.monthlyTokenUsage,
-                    billingMode: this.tenantStore.billingMode
+                    billingMode: this.tenantStore.billingMode,
+                    tenantId: this.userDetailsStore.tenantId
                 };
 
                 socket.emit(socketChannel, messageData);
@@ -488,7 +490,8 @@ export default {
                             this.settingStore.freeTokenMonthlyLimit,
                         monthlyTokenUsage:
                             this.userDetailsStore.monthlyTokenUsage,
-                        billingMode: this.tenantStore.billingMode
+                        billingMode: this.tenantStore.billingMode,
+                        tenantId: this.userDetailsStore.tenantId
                     })
                 };
 

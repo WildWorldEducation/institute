@@ -202,8 +202,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                                        messageNumber
-                                    )},                       
+                    messageNumber
+                )},                       
                                     ${conn.escape(url)}
                                 )
                                 ON DUPLICATE KEY UPDATE                                 
@@ -376,8 +376,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                                        messageNumber
-                                    )},                       
+                    messageNumber
+                )},                       
                                     ${conn.escape(url)}
                                 )
                                 ON DUPLICATE KEY UPDATE                                 
@@ -410,7 +410,7 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
         const skillId = req.body.skillId;
         const freeMonthlyTokenLimit = req.body.freeMonthlyTokenLimit;
         const monthlyTokenUsage = req.body.monthlyTokenUsage;
-const billingMode = req.body.billingMode;
+        const billingMode = req.body.billingMode;
 
         let transcriptForAssessment = JSON.stringify(
             req.body.transcriptForAssessment
@@ -450,7 +450,8 @@ const billingMode = req.body.billingMode;
             tokenCount,
             freeMonthlyTokenLimit,
             monthlyTokenUsage,
-            billingMode
+            billingMode,
+            tenantId
         );
 
         let responseJSON = completion.choices[0].message.content;
@@ -627,8 +628,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                                        messageNumber
-                                    )},                       
+                    messageNumber
+                )},                       
                                     ${conn.escape(url)}
                                 )
                                 ON DUPLICATE KEY UPDATE                                 
@@ -725,6 +726,7 @@ router.post('/stt/convert', async (req, res, next) => {
         const freeMonthlyTokenLimit = req.body.freeMonthlyTokenLimit;
         const monthlyTokenUsage = req.body.monthlyTokenUsage;
         const billingMode = req.body.billingMode;
+        const tenantId = req.body.tenantId;
 
 
         // Convert Base64 to buffer
@@ -768,7 +770,8 @@ router.post('/stt/convert', async (req, res, next) => {
                 message,
                 freeMonthlyTokenLimit,
                 monthlyTokenUsage,
-                billingMode
+                billingMode,
+                tenantId
             );
         else if (tutorType == 'assessing')
             await sendSpeechToAssessingAI(
@@ -780,7 +783,8 @@ router.post('/stt/convert', async (req, res, next) => {
                 learningObjectives,
                 message,
                 freeMonthlyTokenLimit,
-                monthlyTokenUsage
+                monthlyTokenUsage,
+                tenantId
             );
 
         //console.log('res.end()');
@@ -808,7 +812,8 @@ async function sendSpeechToSocraticAI(
     message,
     freeMonthlyTokenLimit,
     monthlyTokenUsage,
-    billingMode
+    billingMode,
+    tenantId
 ) {
     try {
         //console.log('get thread');
@@ -830,7 +835,8 @@ async function sendSpeechToSocraticAI(
             messageData,
             freeMonthlyTokenLimit,
             monthlyTokenUsage,
-            billingMode
+            billingMode,
+            tenantId
         );
     } catch (error) {
         console.error(error);
@@ -848,7 +854,8 @@ async function sendSpeechToAssessingAI(
     message,
     freeMonthlyTokenLimit,
     monthlyTokenUsage,
-    billingMode
+    billingMode,
+    tenantId
 ) {
     try {
         const assistantData = await getAssessingTutorThread(userId, skillUrl);
@@ -867,7 +874,8 @@ async function sendSpeechToAssessingAI(
             messageData,
             freeMonthlyTokenLimit,
             monthlyTokenUsage,
-            billingMode
+            billingMode,
+            tenantId
         );
     } catch (error) {
         console.error(error);

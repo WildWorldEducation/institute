@@ -259,7 +259,8 @@ export default {
                     freeMonthlyTokenLimit:
                         this.settingStore.freeTokenMonthlyLimit,
                     monthlyTokenUsage: this.userDetailsStore.monthlyTokenUsage,
-                    billingMode: this.tenantStore.billingMode
+                    billingMode: this.tenantStore.billingMode,
+                    tenantId: this.userDetailsStore.tenantId
                 };
 
                 socket.emit('new-learning-objective-message', messageData);

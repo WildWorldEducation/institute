@@ -202,7 +202,8 @@ async function socraticTutorMessage(
     messageData,
     freeMonthlyTokenLimit,
     monthlyTokenUsage,
-    billingMode
+    billingMode,
+    tenantId
 ) {
     // Add a Message to the Thread
     try {
@@ -266,7 +267,8 @@ async function socraticTutorMessage(
                 tokenCount,
                 freeMonthlyTokenLimit,
                 monthlyTokenUsage,
-                billingMode
+                billingMode,
+                tenantId
             );
 
             return latestMessage;
@@ -415,7 +417,8 @@ async function assessingTutorMessage(
     messageData,
     freeMonthlyTokenLimit,
     monthlyTokenUsage,
-    billingMode
+    billingMode,
+    tenantId
 ) {
     try {
         // Add a Message to the Thread
@@ -480,7 +483,8 @@ async function assessingTutorMessage(
                 tokenCount,
                 freeMonthlyTokenLimit,
                 monthlyTokenUsage,
-                billingMode
+                billingMode,
+                tenantId
             );
 
             return latestMessage;
@@ -644,7 +648,8 @@ async function createRunStream(
     skillId,
     freeMonthlyTokenLimit,
     monthlyTokenUsage,
-    billingMode
+    billingMode,
+    tenantId
 ) {
     try {
         if (!isEmptyMessage) {
@@ -703,7 +708,8 @@ async function createRunStream(
                             tokenCount,
                             freeMonthlyTokenLimit,
                             monthlyTokenUsage,
-                            billingMode
+                            billingMode,
+                            tenantId
                         );
                     }
                 })
@@ -755,7 +761,8 @@ async function saveTokenUsage(
     tokenCount,
     freeMonthlyTokenLimit,
     monthlyTokenUsage,
-    billingMode
+    billingMode,
+    tenantId
 ) {
     try {
         // Get current year
@@ -798,7 +805,7 @@ async function saveTokenUsage(
                 deductTokensQueryString = `
                 UPDATE tenants 
                 SET tokens = tokens - ${conn.escape(tokenCount)} 
-                WHERE id = ${conn.escape(userId)};
+                WHERE id = ${conn.escape(tenantId)};
                 `;
             }
             await query(deductTokensQueryString);

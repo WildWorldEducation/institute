@@ -136,7 +136,8 @@ export default {
                             this.settingStore.freeTokenMonthlyLimit,
                         monthlyTokenUsage:
                             this.userDetailsStore.monthlyTokenUsage,
-                        billingMode: this.tenantStore.billingMode
+                        billingMode: this.tenantStore.billingMode,
+                        tenantId: this.useUserDetailsStore.tenantId
                     })
                 });
 
