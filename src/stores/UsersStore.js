@@ -93,11 +93,11 @@ export const useUsersStore = defineStore('users', {
             }
         },
         async getPartners() {
-            fetch('/users/partners')
+            await fetch('/users/partners')
                 .then(async function (response) {
                     return response.json();
                 })
-                .then(async (data) => {                  
+                .then(async (data) => {
                     this.partners = data;
                 });
         }
