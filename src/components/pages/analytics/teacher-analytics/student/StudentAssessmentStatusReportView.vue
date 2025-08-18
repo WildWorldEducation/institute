@@ -5,6 +5,7 @@ import { useTeacherAnalyticsStore } from '../../../../../stores/TeacherAnalytics
 import PassedAssessmentsTimelineChart from '../../../../components/teacher-analytics/students/PassedAssessmentsTimelineChart.vue';
 import AttemptedAssessmentsTimelineChart from '../../../../components/teacher-analytics/students/AttemptedAssessmentsTimelineChart.vue';
 import FailedAssessmentsHorizontalBarChart from '../../../../components/teacher-analytics/students/FailedAssessmentsHorizontalBarChart.vue';
+import DownloadCSVBtn from '../../../../components/downloadCSVBtn/downloadCSVBtn.vue';
 
 export default {
     setup() {
@@ -20,14 +21,17 @@ export default {
     components: {
         FailedAssessmentsHorizontalBarChart,
         PassedAssessmentsTimelineChart,
-        AttemptedAssessmentsTimelineChart
+        AttemptedAssessmentsTimelineChart,
+        DownloadCSVBtn
     },
     data() {
         return {
             studentId: this.$route.params.studentId,
             studentName: null,
             assessmentPasses: [],
-            assessmentAttempts: []
+            assessmentAttempts: [],
+            assessmentPassesDownloadData: [],
+            assessmentAttemptsDownloadData: []
             // multipleFails: []
         };
     },
@@ -43,6 +47,12 @@ export default {
 
         await this.getUserSkillMasteredHistory(this.studentId);
         await this.getAssessmentAttempts();
+        this.assessmentPassesDownloadData = this.assessmentPasses.map((e) => {
+            return {
+                skill: e.name,
+                date: this.assessmentDate(e.mastered_date)
+            };
+        });
 
         if (this.teacherAnalyticsStore.studentMultipleFails.length == 0) {
             await this.teacherAnalyticsStore.getStudentMultipleFails(
@@ -67,6 +77,13 @@ export default {
                             labelName: `${e.name}`
                         };
                     });
+                    this.assessmentAttemptsDownloadData =
+                        this.assessmentAttempts.map((e) => {
+                            return {
+                                skill: e.name,
+                                date: this.assessmentDate(e.date)
+                            };
+                        });
                 })
                 .catch((error) => {
                     console.error('Error fetching last visited skills:', error);
@@ -106,31 +123,58 @@ export default {
             <h1 class="heading">Assessment Status Report</h1>
             <h2 class="secondary-heading h3">{{ studentName }}</h2>
         </span>
-        <h4 class="secondary-heading">Failed multiple times</h4>
-        <FailedAssessmentsHorizontalBarChart
-            v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
-            :data="teacherAnalyticsStore.studentMultipleFails"
-            colour="darkred"
-            class="mb-5"
-        />
-        <p v-else>
-            This student has not failed any assessments more than once yet.
-        </p>
-        <h4 class="secondary-heading">Passed</h4>
-        <PassedAssessmentsTimelineChart
-            class="mb-5"
-            v-if="assessmentPasses.length > 0"
-            :data="assessmentPasses"
-        />
-        <p v-else>This student has not completed any assessments yet.</p>
+        <div>
+            <h4 class="secondary-heading pt-2 d-flex justify-content-between">
+                Failed multiple times
+                <DownloadCSVBtn
+                    :data="teacherAnalyticsStore.studentMultipleFails"
+                    :fileName="`Assessment Status Report - ${studentName}`"
+                    toolTip="Download failed assessments data as CSV"
+                />
+            </h4>
+            <FailedAssessmentsHorizontalBarChart
+                v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
+                :data="teacherAnalyticsStore.studentMultipleFails"
+                colour="darkred"
+                class="mb-5"
+            />
+            <p v-else>
+                This student has not failed any assessments more than once yet.
+            </p>
+        </div>
+        <div>
+            <h4 class="secondary-heading pt-2 d-flex justify-content-between">
+                Passed
+                <DownloadCSVBtn
+                    :data="assessmentPassesDownloadData"
+                    :fileName="`Passed Assessments - ${studentName}`"
+                    toolTip="Download passed assessments data as CSV"
+                />
+            </h4>
+            <PassedAssessmentsTimelineChart
+                class="mb-5"
+                v-if="assessmentPasses.length > 0"
+                :data="assessmentPasses"
+            />
+            <p v-else>This student has not completed any assessments yet.</p>
+        </div>
 
-        <h4 class="secondary-heading">Attempted</h4>
-        <AttemptedAssessmentsTimelineChart
-            class="mb-5"
-            v-if="assessmentAttempts.length > 0"
-            :data="assessmentAttempts"
-        />
-        <p v-else>This student has attempted any assessments yet.</p>
+        <div>
+            <h4 class="secondary-heading pt-2 d-flex justify-content-between">
+                Attempted
+                <DownloadCSVBtn
+                    :data="assessmentAttemptsDownloadData"
+                    :fileName="`Attempted Assessments - ${studentName}`"
+                    toolTip="Download attempted assessments data as CSV"
+                />
+            </h4>
+            <AttemptedAssessmentsTimelineChart
+                class="mb-5"
+                v-if="assessmentAttempts.length > 0"
+                :data="assessmentAttempts"
+            />
+            <p v-else>This student has not attempted any assessments yet.</p>
+        </div>
     </div>
 </template>
 
