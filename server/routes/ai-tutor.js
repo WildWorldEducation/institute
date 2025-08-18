@@ -411,6 +411,7 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
         const freeMonthlyTokenLimit = req.body.freeMonthlyTokenLimit;
         const monthlyTokenUsage = req.body.monthlyTokenUsage;
         const billingMode = req.body.billingMode;
+        const tenantId = req.body.tenantId;
 
         let transcriptForAssessment = JSON.stringify(
             req.body.transcriptForAssessment
