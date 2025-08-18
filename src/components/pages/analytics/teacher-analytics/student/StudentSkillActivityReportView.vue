@@ -86,11 +86,11 @@ export default {
                 <h2
                     class="secondary-heading h3 d-flex justify-content-end align-items-center"
                 >
-                    {{ studentName
-                    }}<DownloadCSVBtn
+                    <DownloadCSVBtn
                         :data="downloadData"
                         :fileName="`Skill Activity Report - ${studentName}`"
                     />
+                    {{ studentName }}
                 </h2>
             </span>
         </div>

@@ -58,12 +58,12 @@ export default {
             <h2
                 class="secondary-heading h3 d-flex justify-content-end align-items-center"
             >
-                {{ studentName }}
                 <DownloadCSVBtn
                     :data="studentProgress"
                     :fileName="`Progress Report - ${studentName}`"
                     toolTip="Download progress data as CSV"
                 />
+                {{ studentName }}
             </h2>
         </span>
 
