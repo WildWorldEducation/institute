@@ -2433,6 +2433,28 @@ router.get('/reputation-events/:userId', isAuthenticated, (req, res, next) => {
     });
 });
 
+/*
+ * Partners
+ */
+// List partners
+router.get('/partners', isAuthenticated, isPlatformAdmin, (req, res, next) => {
+    let sqlQuery = `SELECT username
+    FROM users
+    WHERE role = 'partner'
+    AND is_deleted = 0;`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.json(results);
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
 // router.get('*', (req, res) => {
 //     res.redirect('/');
 // });

@@ -741,7 +741,7 @@ const router = createRouter({
             path: '/partners',
             name: 'partners',
             component: () =>
-                import('../components/pages/dropdown-menu-pages/Partners.vue')
+                import('../components/pages/partners/PartnersListView.vue')
         },
         {
             path: '/student-payments',
