@@ -52,7 +52,7 @@ export default {
             (skill) => {
                 return {
                     skill: skill.name,
-                    quantity: skill.formattedQuantity
+                    minutes: skill.formattedQuantity
                 };
             }
         );
