@@ -65,9 +65,9 @@ export default {
                 .enter()
                 .append('rect') // Create rect elements for each data point
                 .attr('class', 'bar')
-                .attr('x', 0) // Start bars at x=0 (left edge)              
+                .attr('x', 0) // Start bars at x=0 (left edge)
                 .attr('y', (d) => yScale(d.name))
-                
+
                 .attr('width', (d) =>
                     d.quantity > 0 ? xScale(d.quantity) : xScale(1)
                 ) // Width based on duration value
@@ -90,7 +90,7 @@ export default {
                 .attr('class', 'axis-label')
                 .style('font-size', '16px')
                 .attr('transform', `translate(${width / 2},${height + 35})`) // Center below x-axis
-                .style('text-anchor', 'middle')              
+                .style('text-anchor', 'middle')
                 .text('Duration (minutes)');
 
             // Add value labels on bars
@@ -133,5 +133,4 @@ export default {
     <div id="student-skill-activity-chart-container"></div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

@@ -2,6 +2,7 @@
 import { useUsersStore } from '../../../../../stores/UsersStore';
 import TimePerSkillHorizontalBarChart from '../../../../components/teacher-analytics/students/TimePerSkillHorizontalBarChart.vue';
 import StudentDurationPerDayLineChart from '../../../../components/teacher-analytics/students/StudentDurationPerDayLineChart.vue';
+import DownloadCSVBtn from '../../../../components/downloadCSVBtn/downloadCSVBtn.vue';
 
 export default {
     setup() {
@@ -12,7 +13,8 @@ export default {
     },
     components: {
         TimePerSkillHorizontalBarChart,
-        StudentDurationPerDayLineChart
+        StudentDurationPerDayLineChart,
+        DownloadCSVBtn
     },
     data() {
         return {
@@ -21,7 +23,9 @@ export default {
             skillDurations: [],
             durationsPerDay: [],
             allSkillsDuration: 0,
-            isDataLoaded: false
+            isDataLoaded: false,
+            totalTimeOnPlatformDownloadData: [],
+            minutesPerSkillDownloadData: []
         };
     },
     async created() {
@@ -50,6 +54,14 @@ export default {
                                 this.skillDurations[i].quantity
                             );
                     }
+                    this.minutesPerSkillDownloadData = this.skillDurations.map(
+                        (e) => {
+                            return {
+                                skill: e.name,
+                                quantity: e.formattedQuantity
+                            };
+                        }
+                    );
                 })
                 .catch((error) => {
                     console.error('Error fetching last visited skills:', error);
@@ -78,6 +90,13 @@ export default {
                     }
                     data.sort((a, b) => a.date - b.date);
                     this.durationsPerDay = data;
+                    this.totalTimeOnPlatformDownloadData =
+                        this.durationsPerDay.map((e) => {
+                            return {
+                                date: e.date,
+                                minutes: e.formattedQuantity
+                            };
+                        });
                 })
                 .catch((error) => {
                     console.error(
@@ -110,22 +129,45 @@ export default {
         </p>
 
         <div v-if="isDataLoaded">
-            <h4 class="secondary-heading">Total time on platform</h4>
-            <StudentDurationPerDayLineChart
-                v-if="durationsPerDay.length > 0"
-                :data="durationsPerDay"
-            />
-            <p v-else>There is no data to show yet.</p>
-            <h4 class="secondary-heading">All skills</h4>
-            <p>{{ millisToMinutesAndSeconds(this.allSkillsDuration) }}</p>
-            <h4 class="secondary-heading">Minutes per skill</h4>
-            <TimePerSkillHorizontalBarChart
-                v-if="skillDurations.length > 0"
-                :data="skillDurations"
-                colour="darkgreen"
-            />
-            <div v-else>
-                <p>No skills visited by this student.</p>
+            <div>
+                <h4
+                    class="secondary-heading d-flex justify-content-between w-100 align-items-center"
+                >
+                    Total time on platform
+                    <DownloadCSVBtn
+                        :data="totalTimeOnPlatformDownloadData"
+                        :fileName="`Total time on platform - ${studentName}`"
+                        toolTip="Download total time on platform data as CSV"
+                    />
+                </h4>
+
+                <StudentDurationPerDayLineChart
+                    v-if="durationsPerDay.length > 0"
+                    :data="durationsPerDay"
+                />
+                <p v-else>There is no data to show yet.</p>
+            </div>
+            <div>
+                <h4 class="secondary-heading r">All skills</h4>
+                <p>{{ millisToMinutesAndSeconds(this.allSkillsDuration) }}</p>
+                <h4
+                    class="secondary-heading d-flex justify-content-between w-100 align-items-center"
+                >
+                    Minutes per skill
+                    <DownloadCSVBtn
+                        :data="minutesPerSkillDownloadData"
+                        :fileName="`Minutes per skill - ${studentName}`"
+                        toolTip="Download minutes per skill data as CSV"
+                    />
+                </h4>
+                <TimePerSkillHorizontalBarChart
+                    v-if="skillDurations.length > 0"
+                    :data="skillDurations"
+                    colour="darkgreen"
+                />
+                <div v-else>
+                    <p>No skills visited by this student.</p>
+                </div>
             </div>
         </div>
     </div>

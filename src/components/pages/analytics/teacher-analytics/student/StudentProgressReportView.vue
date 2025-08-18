@@ -1,6 +1,7 @@
 <script>
 import { useUsersStore } from '../../../../../stores/UsersStore';
 import StudentProgressLineChart from '../../../../components/teacher-analytics/students/StudentProgressLineChart.vue';
+import DownloadCSVBtn from '../../../../components/downloadCSVBtn/downloadCSVBtn.vue';
 export default {
     setup() {
         const usersStore = useUsersStore();
@@ -9,7 +10,8 @@ export default {
         };
     },
     components: {
-        StudentProgressLineChart
+        StudentProgressLineChart,
+        DownloadCSVBtn
     },
     data() {
         return {
@@ -53,8 +55,18 @@ export default {
     <div class="container">
         <span class="d-flex justify-content-between w-100">
             <h1 class="heading">Progress Report</h1>
-            <h2 class="secondary-heading h3">{{ studentName }}</h2>
+            <h2
+                class="secondary-heading h3 d-flex justify-content-end align-items-center"
+            >
+                {{ studentName }}
+                <DownloadCSVBtn
+                    :data="studentProgress"
+                    :fileName="`Progress Report - ${studentName}`"
+                    toolTip="Download progress data as CSV"
+                />
+            </h2>
         </span>
+
         <StudentProgressLineChart
             v-if="studentProgress.length > 0"
             :data="studentProgress"
