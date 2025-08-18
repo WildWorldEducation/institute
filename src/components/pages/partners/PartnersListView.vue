@@ -68,7 +68,11 @@ export default {
         <h1 class="heading">Partners</h1>
         <ul>
             <li v-for="partner in partners">
-                <p>{{ partner.username }}</p>
+                <p>
+                    <RouterLink :to="`/partners/${partner.id}`">{{
+                        partner.username
+                    }}</RouterLink>
+                </p>
             </li>
         </ul>
     </div>

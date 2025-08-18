@@ -744,6 +744,12 @@ const router = createRouter({
                 import('../components/pages/partners/PartnersListView.vue')
         },
         {
+            path: '/partners/:partnerId',
+            name: 'partner',
+            component: () =>
+                import('../components/pages/partners/PartnerView.vue')
+        },
+        {
             path: '/student-payments',
             name: 'student-payments',
             component: () =>

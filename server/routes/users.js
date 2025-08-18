@@ -2438,7 +2438,7 @@ router.get('/reputation-events/:userId', isAuthenticated, (req, res, next) => {
  */
 // List partners
 router.get('/partners', isAuthenticated, isPlatformAdmin, (req, res, next) => {
-    let sqlQuery = `SELECT username
+    let sqlQuery = `SELECT id, username
     FROM users
     WHERE role = 'partner'
     AND is_deleted = 0;`;
