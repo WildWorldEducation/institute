@@ -1,6 +1,5 @@
 <script>
 import { useUsersStore } from '../../../stores/UsersStore';
-
 export default {
     setup() {
         const usersStore = useUsersStore();
@@ -9,24 +8,12 @@ export default {
         };
     },
     data() {
-        return {
-            partners: []
-        };
+        return {};
     },
     created() {
-        this.getPartners();
+        this.usersStore.getPartners();
     },
     methods: {
-        getPartners() {
-            fetch('/users/partners')
-                .then(function (response) {
-                    return response.json();
-                })
-                .then(async (data) => {
-                    this.partners = data;
-                    console.log(this.partners);
-                });
-        }
         // getPartners() {
         //     fetch('/referrals/list')
         //         .then(function (response) {
@@ -55,7 +42,6 @@ export default {
         //                     }
         //                 }
         //             }
-
         //             console.log(this.referrals);
         //         });
         // }
@@ -67,7 +53,7 @@ export default {
     <div class="container bg-light rounded">
         <h1 class="heading">Partners</h1>
         <ul>
-            <li v-for="partner in partners">
+            <li v-for="partner in usersStore.partners">
                 <p>
                     <RouterLink :to="`/partners/${partner.id}`">{{
                         partner.username

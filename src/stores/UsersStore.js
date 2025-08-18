@@ -8,7 +8,8 @@ export const useUsersStore = defineStore('users', {
         editors: [],
         studentsOfInstructor: [],
         studentsPerTenant: [],
-        selectedUserId: null // Add this to track selected user
+        selectedUserId: null, // Add this to track selected user,
+        partners: []
     }),
     actions: {
         setSelectedUser(id) {
@@ -90,6 +91,15 @@ export const useUsersStore = defineStore('users', {
                     }
                 );
             }
+        },
+        async getPartners() {
+            fetch('/users/partners')
+                .then(async function (response) {
+                    return response.json();
+                })
+                .then(async (data) => {                  
+                    this.partners = data;
+                });
         }
     }
 });
