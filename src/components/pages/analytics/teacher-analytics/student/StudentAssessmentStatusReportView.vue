@@ -50,19 +50,9 @@ export default {
         this.assessmentPassesDownloadData = this.assessmentPasses.map((e) => {
             return {
                 skill: e.name,
-                last_visited_date: this.assessmentDate(e.last_visited_date),
-                mastered_date: this.assessmentDate(e.mastered_date)
+                date: this.assessmentDate(e.mastered_date)
             };
         });
-
-        this.assessmentAttemptsDownloadData = this.assessmentAttempts.map(
-            (e) => {
-                return {
-                    skill: e.name,
-                    date: this.assessmentDate(e.date)
-                };
-            }
-        );
 
         if (this.teacherAnalyticsStore.studentMultipleFails.length == 0) {
             await this.teacherAnalyticsStore.getStudentMultipleFails(
@@ -87,6 +77,13 @@ export default {
                             labelName: `${e.name}`
                         };
                     });
+                    this.assessmentAttemptsDownloadData =
+                        this.assessmentAttempts.map((e) => {
+                            return {
+                                skill: e.name,
+                                date: this.assessmentDate(e.date)
+                            };
+                        });
                 })
                 .catch((error) => {
                     console.error('Error fetching last visited skills:', error);

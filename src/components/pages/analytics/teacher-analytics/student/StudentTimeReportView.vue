@@ -94,7 +94,7 @@ export default {
                         this.durationsPerDay.map((e) => {
                             return {
                                 date: e.date,
-                                quantity: e.formattedQuantity
+                                minutes: e.formattedQuantity
                             };
                         });
                 })
