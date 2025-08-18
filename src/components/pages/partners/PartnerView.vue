@@ -18,19 +18,21 @@ export default {
         // Get partner details
         if (this.usersStore.partners.length == 0) {
             await this.usersStore.getPartners();
+            console.log('test');
         }
+        console.log(this.usersStore.partners);
         for (let i = 0; i < this.usersStore.partners.length; i++) {
             if (this.partnerId == this.usersStore.partners[i].id) {
                 this.partner.username = this.usersStore.partners[i].username;
             }
         }
 
-        // this.getReferrals();
+        this.getReferrals();
     },
     methods: {
         getReferrals() {
-            fetch('/referrals/' + this.partnerId)
-                .then(function (response) {
+            fetch('/referrals/' + this.partnerId + '/list')
+                .then(async function (response) {
                     return response.json();
                 })
                 .then(async (data) => {
@@ -68,6 +70,15 @@ export default {
         <h1 v-if="partner.username" class="heading">
             {{ partner.username }}'s Referrals
         </h1>
+        <ul>
+            <li v-for="referral in referrals" :key="referral.id">
+                <p>
+                    <RouterLink :to="`/partners/${referral.id}`">{{
+                        referral.username
+                    }}</RouterLink>
+                </p>
+            </li>
+        </ul>
     </div>
 </template>
 
