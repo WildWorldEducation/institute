@@ -46,7 +46,7 @@ router.get('/list', (req, res, next) => {
  */
 router.get('/:partner/list', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = `SELECT referred_user_id, referrer_user_id 
+        let sqlQuery = `SELECT referred_user_id
             FROM referrals
             WHERE referrer_user_id = ${conn.escape(req.params.partner)};`;
 

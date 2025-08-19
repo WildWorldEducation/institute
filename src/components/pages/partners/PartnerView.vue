@@ -18,9 +18,8 @@ export default {
         // Get partner details
         if (this.usersStore.partners.length == 0) {
             await this.usersStore.getPartners();
-            console.log('test');
         }
-        console.log(this.usersStore.partners);
+
         for (let i = 0; i < this.usersStore.partners.length; i++) {
             if (this.partnerId == this.usersStore.partners[i].id) {
                 this.partner.username = this.usersStore.partners[i].username;
@@ -63,11 +62,12 @@ export default {
             {{ partner.username }}'s Referrals
         </h1>
         <ul>
-            <li v-for="referral in referrals" :key="referral.id">
+            <li v-for="referral in referrals" :key="referral.referred_user_id">
                 <p>
-                    <RouterLink :to="`/partners/${referral.id}`">{{
-                        referral.referredUser
-                    }}</RouterLink>
+                    <RouterLink
+                        :to="`/student-payments/${referral.referred_user_id}`"
+                        >{{ referral.referredUser }}</RouterLink
+                    >
                 </p>
             </li>
         </ul>
