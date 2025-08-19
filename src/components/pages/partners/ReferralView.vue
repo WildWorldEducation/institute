@@ -13,7 +13,6 @@ export default {
     },
     data() {
         return {
-            partnerId: this.$route.params.partnerId,
             referredUserId: this.$route.params.referredUserId,
             receipts: [],
             student: null,
@@ -21,7 +20,6 @@ export default {
         };
     },
     async created() {
-        console.log(this.$route.params.partnerId);
         await this.getStudentInfo();
         await this.getReferral();
     },
@@ -42,8 +40,7 @@ export default {
                 console.error('Error fetching student info:', error);
             }
         },
-
-        getReferral() {
+        async getReferral() {
             fetch(`/referrals/get-receipts/${this.referredUserId}`)
                 .then(function (response) {
                     return response.json();
@@ -54,31 +51,20 @@ export default {
                     this.loading = false;
                 });
         },
-
-        formatCurrency(amount) {
-            return new Intl.NumberFormat('en-US', {
+        formattedStripeReceiptAmount(amount) {
+            const formattedAmount = (amount / 100).toLocaleString('en-US', {
                 style: 'currency',
                 currency: 'USD'
-            }).format(amount);
+            });
+            return formattedAmount;
         },
-
-        formatDate(dateString) {
-            const options = {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            };
-            return new Date(dateString).toLocaleDateString('en-US', options);
-        },
-
-        getStatusClass(status) {
-            const statusClasses = {
-                completed: 'badge-success',
-                pending: 'badge-warning',
-                failed: 'badge-danger',
-                refunded: 'badge-secondary'
-            };
-            return statusClasses[status] || 'badge-secondary';
+        formattedStripeReceiptDate(date) {
+            let dateObj = new Date(date);
+            const month = dateObj.getUTCMonth() + 1; // months from 1-12
+            const day = dateObj.getUTCDate();
+            const year = dateObj.getUTCFullYear();
+            const formattedDate = year + '/' + month + '/' + day;
+            return formattedDate;
         },
 
         getTotalPayments() {
@@ -102,18 +88,20 @@ export default {
 
 <template>
     <div class="container bg-light rounded">
-        <!-- Back button -->
-        <div class="mb-3">
-            <button @click="goBack" class="btn btn-outline-secondary">
-                ← Back to Referrals
+        <!-- Top row -->
+        <div class="d-flex justify-content-between flex-wrap">
+            <!-- Student name as page heading -->
+            <h1 class="heading" v-if="student">
+                {{ student.username }}
+            </h1>
+            <h1 class="heading" v-else>Student ID: {{ referredUserId }}</h1>
+            <button
+                @click="goBack"
+                class="btn btn-outline-secondary primary-btn"
+            >
+                ← Back
             </button>
         </div>
-
-        <!-- Student name as page heading -->
-        <h1 class="heading" v-if="student">
-            {{ student.username }}
-        </h1>
-        <h1 class="heading" v-else>Student ID: {{ referredUserId }}</h1>
 
         <!-- Loading state -->
         <div v-if="loading" class="text-center py-4">
@@ -127,14 +115,10 @@ export default {
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Student Summary</h5>
                         <p class="card-text">
-                            <strong>Username:</strong> {{ student.username
-                            }}<br />
-                            <strong>Email:</strong> {{ student.email || 'N/A'
-                            }}<br />
                             <strong>Total Payments:</strong>
-                            {{ formatCurrency(getTotalPayments()) }}<br />
+                            {{ formattedStripeReceiptAmount(getTotalPayments())
+                            }}<br />
                             <strong>Number of Transactions:</strong>
                             {{ receipts.length }}
                         </p>
@@ -145,8 +129,6 @@ export default {
 
         <!-- Payments list -->
         <div v-if="!loading">
-            <h3>Payment History</h3>
-
             <div v-if="receipts.length === 0" class="alert alert-info">
                 No payments found for this student.
             </div>
@@ -156,78 +138,37 @@ export default {
                     <thead class="table-dark">
                         <tr>
                             <th>Date</th>
-                            <th>Description</th>
                             <th>Amount</th>
-                            <th>Payment Method</th>
                             <th>Transaction ID</th>
-                            <th v-if="receipts.some((r) => r.status)">
-                                Status
-                            </th>
+                            <th>Compensation Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="receipt in receipts" :key="receipt.id">
                             <td>
-                                {{
-                                    formatDate(
-                                        receipt.created_at ||
-                                            receipt.payment_date
-                                    )
-                                }}
-                            </td>
-                            <td>
-                                {{
-                                    receipt.description ||
-                                    receipt.course_name ||
-                                    'Payment'
-                                }}
+                                {{ formattedStripeReceiptDate(receipt.date) }}
                             </td>
                             <td class="fw-bold">
-                                {{ formatCurrency(receipt.amount) }}
+                                {{
+                                    formattedStripeReceiptAmount(receipt.amount)
+                                }}
                             </td>
-                            <td>{{ receipt.payment_method || 'N/A' }}</td>
                             <td class="font-monospace small">
-                                {{ receipt.transaction_id || receipt.id }}
+                                <a :href="receipt.url" target="_blank">View</a>
                             </td>
-                            <td v-if="receipts.some((r) => r.status)">
+                            <td>
                                 <span
-                                    v-if="receipt.status"
-                                    class="badge"
-                                    :class="getStatusClass(receipt.status)"
+                                    v-if="receipt.is_partner_compensated == 1"
+                                    class="badge badge-success"
+                                    >Paid</span
                                 >
-                                    {{
-                                        receipt.status.charAt(0).toUpperCase() +
-                                        receipt.status.slice(1)
-                                    }}
-                                </span>
-                                <span v-else class="badge badge-success"
-                                    >Completed</span
+                                <span v-else class="badge badge-warning"
+                                    >Pending</span
                                 >
                             </td>
                         </tr>
                     </tbody>
                 </table>
-            </div>
-
-            <!-- Payment summary -->
-            <div v-if="receipts.length > 0" class="row mt-4">
-                <div class="col-md-6 offset-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title">Payment Summary</h6>
-                            <div class="d-flex justify-content-between">
-                                <span>Total Payments:</span>
-                                <strong>{{
-                                    formatCurrency(getTotalPayments())
-                                }}</strong>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <span>Total Transactions:</span>
-                                <strong>{{ receipts.length }}</strong>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
