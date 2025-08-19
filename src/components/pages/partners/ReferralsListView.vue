@@ -213,7 +213,7 @@ export default {
                     </router-link>
                 </li>
             </ul>
-            <p v-else class="text-muted">
+            <p v-else>
                 No referrals yet. Share your referral link to start earning!
             </p>
         </div>
