@@ -61,7 +61,6 @@ export default {
                     console.log(this.referrals);
                 });
         },
-
         async copyReferralLink() {
             try {
                 await this.copyToClipboard(this.referralLink);
@@ -69,7 +68,6 @@ export default {
                 console.error('Copy failed:', err);
             }
         },
-
         async copyToClipboard(text) {
             // Clear any existing timeout
             if (this.copyTimeoutId) {
@@ -105,7 +103,6 @@ export default {
                 throw new Error('Could not copy to clipboard');
             }
         },
-
         showCopyFeedback() {
             this.copySuccess = true;
             this.copyTimeoutId = setTimeout(() => {
@@ -114,7 +111,6 @@ export default {
             }, 3000);
         }
     },
-
     beforeUnmount() {
         // Clean up timeout when component is destroyed
         if (this.copyTimeoutId) {
@@ -211,12 +207,7 @@ export default {
                     class="mb-2"
                 >
                     <router-link
-                        :to="
-                            '/referrals/' +
-                            referral.referrer_user_id +
-                            '/' +
-                            referral.referred_user_id
-                        "
+                        :to="'/referrals/' + referral.referred_user_id"
                     >
                         {{ referral.referredUser }}
                     </router-link>
