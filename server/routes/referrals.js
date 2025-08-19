@@ -108,5 +108,31 @@ router.put('/:receiptId/update', async (req, res, next) => {
     }
 });
 
+/**
+ * If partner adds student, create referral
+ */
+router.post('/create-referral', async (req, res, next) => {
+    try {
+        let referrerSQLQuery = `
+            INSERT INTO referrals (referred_user_id, referrer_user_id)
+            VALUES (${conn.escape(req.body.student_id)}, ${conn.escape(
+            req.body.instructor_id
+        )})
+            ON DUPLICATE KEY UPDATE referred_user_id = ${conn.escape(
+                req.body.student_id
+            )}, referrer_user_id= ${conn.escape(req.body.instructor_id)};
+        `;
+
+        await query(referrerSQLQuery);
+
+        res.end();
+    } catch (error) {
+        console.error(error);
+        res.status = 500;
+        res.json({ mess: 'something went wrong' });
+        next(error);
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;

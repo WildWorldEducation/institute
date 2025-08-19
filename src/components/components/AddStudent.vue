@@ -147,6 +147,19 @@ export default {
                 });
                 // Update instructor's student list
                 await this.instructorStudentsStore.getInstructorStudentsList();
+
+                if (this.userDetailsStore.role == 'partner') {
+                    // Assign the instructor/partner
+                    await fetch('/referrals/create-referral', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            instructor_id: this.instructorId,
+                            student_id: this.newUserId
+                        })
+                    });
+                }
+
                 await this.usersStore.getUsers();
                 this.isLoading = false;
                 alert('account created');
