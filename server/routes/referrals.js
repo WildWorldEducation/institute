@@ -70,7 +70,7 @@ router.get('/:partner/list', (req, res, next) => {
  */
 router.get('/get-receipts/:userId', async (req, res, next) => {
     let queryString = `
-            SELECT url, date, amount
+            SELECT id, url, date, amount, is_partner_compensated
             FROM user_receipts            
             WHERE user_id = ${conn.escape(req.params.userId)};
             `;
