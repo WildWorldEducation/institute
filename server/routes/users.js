@@ -1144,8 +1144,7 @@ router.put(
             SET first_name = ${conn.escape(req.body.firstname)}, 
             last_name = ${conn.escape(req.body.lastname)}, 
             username = ${conn.escape(req.body.username)}, 
-            email = ${conn.escape(req.body.email)}, 
-            password = ${conn.escape(req.body.password)},
+            email = ${conn.escape(req.body.email)},        
             role = ${conn.escape(req.body.role)},
             tenant_id = ${conn.escape(req.body.tenant_id)}
             WHERE id = ${conn.escape(req.params.id)};`;
