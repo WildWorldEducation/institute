@@ -67,7 +67,7 @@ export default {
                         {{ formattedStripeReceiptAmount(payment.amount) }}
                     </li>
                     <li>
-                        <strong>amount owed to partner:</strong>
+                        <strong>commission:</strong>
                         {{ formattedStripeReceiptAmount(payment.amount / 3) }}
                     </li>
                     <li>

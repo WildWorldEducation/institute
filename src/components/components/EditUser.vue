@@ -34,7 +34,7 @@ export default {
                 last_name: false,
                 email: false,
                 emailFormat: false,
-                password: false,
+                // password: false,
                 // this validate is fire when image profile upload is not square
                 notSquareImg: false,
                 // flag to show warning when cancel crop
@@ -163,7 +163,6 @@ export default {
                     email: this.user.email,
                     avatar: this.user.avatar,
                     role: this.user.role,
-                    password: this.user.password,
                     tenant_id: this.user.tenant.id
                 })
             };
@@ -507,6 +506,15 @@ export default {
                                 <div
                                     class="custom-dropdown-option"
                                     @click="
+                                        user.role = 'partner';
+                                        showRoleDropDown = false;
+                                    "
+                                >
+                                    partner
+                                </div>
+                                <div
+                                    class="custom-dropdown-option"
+                                    @click="
                                         user.role = 'editor';
                                         showRoleDropDown = false;
                                     "
@@ -629,7 +637,7 @@ export default {
                     </div>
 
                     <!-- Password -->
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label class="form-label">Password</label>
                         <input
                             v-model="user.password"
@@ -645,7 +653,7 @@ export default {
                         >
                             please enter a password !
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="d-flex justify-content-end gap-4">
                         <router-link class="btn red-btn" to="/users"
