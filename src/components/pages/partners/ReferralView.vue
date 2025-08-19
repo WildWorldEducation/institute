@@ -139,6 +139,7 @@ export default {
                         <tr>
                             <th>Date</th>
                             <th>Amount</th>
+                            <th>Commission</th>
                             <th>Transaction ID</th>
                             <th>Compensation Status</th>
                         </tr>
@@ -151,6 +152,13 @@ export default {
                             <td class="fw-bold">
                                 {{
                                     formattedStripeReceiptAmount(receipt.amount)
+                                }}
+                            </td>
+                            <td class="fw-bold">
+                                {{
+                                    formattedStripeReceiptAmount(
+                                        receipt.amount / 3
+                                    )
                                 }}
                             </td>
                             <td class="font-monospace small">
