@@ -741,13 +741,19 @@ const router = createRouter({
             path: '/partners',
             name: 'partners',
             component: () =>
-                import('../components/pages/dropdown-menu-pages/Partners.vue')
+                import('../components/pages/partners/PartnersListView.vue')
         },
         {
-            path: '/student-payments',
+            path: '/partners/:partnerId',
+            name: 'partner',
+            component: () =>
+                import('../components/pages/partners/PartnerView.vue')
+        },
+        {
+            path: '/student-payments/:studentId',
             name: 'student-payments',
             component: () =>
-                import('../components/pages/tokens/StudentPayments.vue')
+                import('../components/pages/partners/StudentPaymentsView.vue')
         },
         {
             path: '/:pathMatch(.*)*',

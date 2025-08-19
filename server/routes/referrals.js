@@ -46,7 +46,7 @@ router.get('/list', (req, res, next) => {
  */
 router.get('/:partner/list', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = `SELECT referred_user_id, referrer_user_id 
+        let sqlQuery = `SELECT referred_user_id
             FROM referrals
             WHERE referrer_user_id = ${conn.escape(req.params.partner)};`;
 
@@ -70,7 +70,7 @@ router.get('/:partner/list', (req, res, next) => {
  */
 router.get('/get-receipts/:userId', async (req, res, next) => {
     let queryString = `
-            SELECT url, date, amount
+            SELECT id, url, date, amount, is_partner_compensated
             FROM user_receipts            
             WHERE user_id = ${conn.escape(req.params.userId)};
             `;
@@ -78,6 +78,34 @@ router.get('/get-receipts/:userId', async (req, res, next) => {
     let result = await query(queryString);
 
     res.json(result);
+});
+
+/**
+ * Mark referred student payment as compensated to the referring partner
+ */
+router.put('/:receiptId/update', async (req, res, next) => {
+    if (req.session.role == 'platform_admin') {
+        let sqlQuery = `
+            UPDATE user_receipts
+            SET is_partner_compensated = ${conn.escape(
+                req.body.is_partner_compensated
+            )}
+            WHERE id = ${conn.escape(req.params.receiptId)};`;
+
+        conn.query(sqlQuery, async (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                console.error(err);
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
 });
 
 // Export the router for app to use.

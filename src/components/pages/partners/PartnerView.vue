@@ -1,25 +1,37 @@
 <script>
 import { useUsersStore } from '../../../stores/UsersStore';
-
 export default {
     setup() {
-         const usersStore = useUsersStore();
+        const usersStore = useUsersStore();
         return {
             usersStore
         };
     },
-    data() { 
+    data() {
         return {
+            partnerId: this.$route.params.partnerId,
+            partner: {},
             referrals: []
-        };       
+        };
     },
-    created() {
-        this.getPartners();
+    async created() {
+        // Get partner details
+        if (this.usersStore.partners.length == 0) {
+            await this.usersStore.getPartners();
+        }
+
+        for (let i = 0; i < this.usersStore.partners.length; i++) {
+            if (this.partnerId == this.usersStore.partners[i].id) {
+                this.partner.username = this.usersStore.partners[i].username;
+            }
+        }
+
+        this.getReferrals();
     },
     methods: {
-        getPartners() {
-            fetch('/referrals/list')
-                .then(function (response) {
+        getReferrals() {
+            fetch('/referrals/' + this.partnerId + '/list')
+                .then(async function (response) {
                     return response.json();
                 })
                 .then(async (data) => {
@@ -35,18 +47,8 @@ export default {
                                 this.referrals[i].referredUser =
                                     this.usersStore.users[j].username;
                             }
-                            // Get referring user
-                            if (
-                                this.referrals[i].referrer_user_id ==
-                                this.usersStore.users[j].id
-                            ) {
-                                this.referrals[i].referringUser =
-                                    this.usersStore.users[j].username;
-                            }
                         }
                     }
-
-                    console.log(this.referrals);
                 });
         }
     }
@@ -55,15 +57,16 @@ export default {
 
 <template>
     <div class="container bg-light rounded">
-        <h1>Partners</h1>
+        <h1 v-if="partner.username" class="heading">
+            {{ partner.username }}'s Referrals
+        </h1>
         <ul>
-            <li v-for="referral in referrals">
-                <p><strong>{{ referral.referringUser }}</strong> referred
-                <strong>{{ referral.referredUser }}</strong>
-                <ul>
-                    <li>status: {{ referral.status }}</li>
-                    <li>referrer paid: {{ referral.is_reward_issued }}</li>
-                </ul>
+            <li v-for="referral in referrals" :key="referral.referred_user_id">
+                <p>
+                    <RouterLink
+                        :to="`/student-payments/${referral.referred_user_id}`"
+                        >{{ referral.referredUser }}</RouterLink
+                    >
                 </p>
             </li>
         </ul>
