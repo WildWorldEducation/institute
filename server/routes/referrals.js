@@ -80,5 +80,33 @@ router.get('/get-receipts/:userId', async (req, res, next) => {
     res.json(result);
 });
 
+/**
+ * Mark referred student payment as compensated to the referring partner
+ */
+router.put('/:receiptId/update', async (req, res, next) => {
+    if (req.session.role == 'platform_admin') {
+        let sqlQuery = `
+            UPDATE user_receipts
+            SET is_partner_compensated = ${conn.escape(
+                req.body.is_partner_compensated
+            )}
+            WHERE id = ${conn.escape(req.params.receiptId)};`;
+
+        conn.query(sqlQuery, async (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                console.error(err);
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;

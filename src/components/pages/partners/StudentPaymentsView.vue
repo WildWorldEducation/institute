@@ -1,16 +1,6 @@
 <script>
-// import { useUsersStore } from '../../../stores/UsersStore';
-// import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
-
 export default {
-    setup() {
-        // const usersStore = useUsersStore();
-        // const usersDetailsStore = useUserDetailsStore();
-        // return {
-        //     usersStore,
-        //     usersDetailsStore
-        // };
-    },
+    setup() {},
     data() {
         return {
             studentId: this.$route.params.studentId,
@@ -18,9 +8,6 @@ export default {
         };
     },
     async created() {
-        // if (typeof this.usersDetailsStore.userId == 'undefined') {
-        //     await this.usersDetailsStore.getUserDetails();
-        // }
         this.getPayments();
     },
     methods: {
@@ -31,11 +18,21 @@ export default {
                 })
                 .then(async (data) => {
                     this.payments = data;
-                    console.log(data);
                 });
         },
-        toggleIsCompensated(paymentId, isPaid) {
-            console.log(paymentId);
+        async toggleIsCompensated(paymentId, isPaid) {
+            try {
+                const reqOptions = {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        is_partner_compensated: isPaid
+                    })
+                };
+                await fetch(`/referrals/${paymentId}/update`, reqOptions);
+            } catch (error) {
+                console.error('Error updating instructor:', error);
+            }
         },
         formattedStripeReceiptAmount(amount) {
             const formattedAmount = (amount / 100).toLocaleString('en-US', {
@@ -79,7 +76,7 @@ export default {
                             id="one"
                             value="0"
                             v-model="payment.is_partner_compensated"
-                            @click="toggleIsCompensated(payment.id, false)"
+                            @click="toggleIsCompensated(payment.id, 0)"
                         />
                         <label class="me-4 ms-2" for="one">Not paid</label>
 
@@ -87,7 +84,7 @@ export default {
                             type="radio"
                             id="two"
                             value="1"
-                            @click="toggleIsCompensated(payment.id, true)"
+                            @click="toggleIsCompensated(payment.id, 1)"
                             v-model="payment.is_partner_compensated"
                         />
                         <label class="ms-2" for="two">Paid</label>
