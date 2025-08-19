@@ -48,14 +48,6 @@ export default {
                                 this.referrals[i].referredUser =
                                     this.usersStore.users[j].username;
                             }
-                            // Get referring user
-                            if (
-                                this.referrals[i].referrer_user_id ==
-                                this.usersStore.users[j].id
-                            ) {
-                                this.referrals[i].referringUser =
-                                    this.usersStore.users[j].username;
-                            }
                         }
                     }
                     console.log(this.referrals);
@@ -74,7 +66,7 @@ export default {
             <li v-for="referral in referrals" :key="referral.id">
                 <p>
                     <RouterLink :to="`/partners/${referral.id}`">{{
-                        referral.username
+                        referral.referredUser
                     }}</RouterLink>
                 </p>
             </li>
