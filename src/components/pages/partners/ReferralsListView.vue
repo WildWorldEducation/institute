@@ -126,9 +126,8 @@ export default {
 
 <template>
     <div class="container bg-light rounded">
-        <div class="d-flex justify-content-between align-items-start mb-4">
+        <div class="d-flex justify-content-between align-items-start">
             <h1 class="heading">Referrals</h1>
-
             <!-- Student Referral Link Section - Top Right -->
             <div
                 v-if="usersDetailsStore.role == 'partner'"
@@ -205,26 +204,22 @@ export default {
 
         <!-- Existing Referrals List -->
         <div class="referrals-list">
-            <h3 class="secondary-heading h5 mb-3">Your Referrals</h3>
-            <ul v-if="referrals.length > 0" class="list-unstyled">
+            <ul v-if="referrals.length > 0">
                 <li
                     v-for="referral in referrals"
                     :key="referral.id"
                     class="mb-2"
                 >
-                    <div class="referral-item p-3 border rounded">
-                        <router-link
-                            :to="
-                                '/referrals/' +
-                                referral.referrer_user_id +
-                                '/' +
-                                referral.referred_user_id
-                            "
-                            class="text-decoration-none"
-                        >
-                            <strong>{{ referral.referredUser }}</strong>
-                        </router-link>
-                    </div>
+                    <router-link
+                        :to="
+                            '/referrals/' +
+                            referral.referrer_user_id +
+                            '/' +
+                            referral.referred_user_id
+                        "
+                    >
+                        {{ referral.referredUser }}
+                    </router-link>
                 </li>
             </ul>
             <p v-else class="text-muted">
