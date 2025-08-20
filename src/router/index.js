@@ -653,7 +653,7 @@ const router = createRouter({
             name: 'cost-report',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/CostReportView.vue'
+                    '../components/pages/analytics/school-admin-analytics/CostReportDashboardView.vue'
                 ),
             meta: {
                 title: 'Cost Report',
@@ -666,7 +666,7 @@ const router = createRouter({
             name: 'engagement-report',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/EngagementReportView.vue'
+                    '../components/pages/analytics/school-admin-analytics/EngagementReportDashboardView.vue'
                 ),
             meta: {
                 title: 'Engagement Report',
