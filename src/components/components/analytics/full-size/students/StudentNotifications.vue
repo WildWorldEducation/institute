@@ -1,6 +1,6 @@
 <script>
 import { RouterLink } from 'vue-router';
-import { useTeacherAnalyticsStore } from '../../../../stores/TeacherAnalyticsStore';
+import { useTeacherAnalyticsStore } from '../../../../../stores/TeacherAnalyticsStore';
 export default {
     setup() {
         const teacherAnalyticsStore = useTeacherAnalyticsStore();

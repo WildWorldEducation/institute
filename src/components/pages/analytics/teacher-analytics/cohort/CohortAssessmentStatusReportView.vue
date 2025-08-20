@@ -1,9 +1,9 @@
 <script>
 import { useCohortsStore } from '../../../../../stores/CohortsStore';
 import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
-import CohortPassedAssessmentsHorizontalBarChart from '../../../../components/teacher-analytics/cohorts/CohortPassedAssessmentsHorizontalChart.vue';
-import CohortAttemptedAssessmentsHorizontalChart from '../../../../components/teacher-analytics/cohorts/CohortAttemptedAssessmentsHorizontalChart.vue';
-import FailedAssessmentsHorizontalBarChart from '../../../../components/teacher-analytics/students/FailedAssessmentsHorizontalBarChart.vue';
+import CohortPassedAssessmentsHorizontalBarChart from '../../../../components/analytics/full-size/cohorts/CohortPassedAssessmentsHorizontalChart.vue';
+import CohortAttemptedAssessmentsHorizontalChart from '../../../../components/analytics/full-size/cohorts/CohortAttemptedAssessmentsHorizontalChart.vue';
+import FailedAssessmentsHorizontalBarChart from '../../../../components/analytics/full-size/students/FailedAssessmentsHorizontalBarChart.vue';
 
 export default {
     setup() {

@@ -4,7 +4,7 @@ import { useSessionDetailsStore } from './stores/SessionDetailsStore.js';
 import { useUserDetailsStore } from './stores/UserDetailsStore.js';
 import { useTenantStore } from './stores/TenantStore.js';
 import router from './router';
-import AppTimeTracker from './components/components/teacher-analytics/AppTimeTracker.vue';
+import AppTimeTracker from './components/components/analytics/AppTimeTracker.vue';
 
 export default {
     setup() {

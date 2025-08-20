@@ -378,7 +378,7 @@ const router = createRouter({
             name: 'my-progress',
             component: () =>
                 import(
-                    '../components/pages/analytics/StudentAnalyticsView.vue'
+                    '../components/pages/analytics/StudentAnalyticsDashboardView.vue'
                 ),
             meta: {
                 requiresAuth: true,
@@ -679,7 +679,7 @@ const router = createRouter({
             name: 'academic-report',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/AcademicReportView.vue'
+                    '../components/pages/analytics/school-admin-analytics/AcademicReportDashboardView.vue'
                 ),
             meta: {
                 title: 'Academic Report',

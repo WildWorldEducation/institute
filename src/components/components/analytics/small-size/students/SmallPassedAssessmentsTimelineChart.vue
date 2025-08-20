@@ -1,7 +1,7 @@
 <script>
 import milestones from 'd3-milestones';
-import { useUserDetailsStore } from '../../../../stores/UserDetailsStore.js';
-import { useUserSkillsStore } from '../../../../stores/UserSkillsStore.js';
+import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore.js';
+import { useUserSkillsStore } from '../../../../../stores/UserSkillsStore.js';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
@@ -18,6 +18,8 @@ export default {
         };
     },
     async mounted() {
+        console.log(this.data);
+
         this.drawTimeLineChartWithMilesStone();
         this.calculateChartLength(this.data);
     },
@@ -34,12 +36,6 @@ export default {
                 .orientation(this.chartOrientation)
                 .renderCallback(() => {
                     this.changeLabelColor();
-                    if (this.chartOrientation === 'vertical') {
-                        const milestonesDivs =
-                            document.getElementsByClassName('milestones');
-                        const milestonesDiv = milestonesDivs[0];
-                        milestonesDiv.style.marginLeft = '30%';
-                    }
                 })
                 .render(this.data);
             this.changeBulletColor();
@@ -108,10 +104,6 @@ export default {
                 default:
                     break;
             }
-        },
-        handleOrientationBtnClick(direction) {
-            this.chartOrientation = direction;
-            this.drawTimeLineChartWithMilesStone();
         }
     }
 };

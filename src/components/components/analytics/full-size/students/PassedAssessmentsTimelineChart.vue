@@ -1,7 +1,7 @@
 <script>
 import milestones from 'd3-milestones';
-import { useUserDetailsStore } from '../../../../stores/UserDetailsStore.js';
-import { useUserSkillsStore } from '../../../../stores/UserSkillsStore.js';
+import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore.js';
+import { useUserSkillsStore } from '../../../../../stores/UserSkillsStore.js';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
@@ -23,9 +23,9 @@ export default {
     },
     methods: {
         drawTimeLineChartWithMilesStone() {
-            milestones('#attempted-assessments-timeline')
+            milestones('#passed-assessments-timeline')
                 .mapping({
-                    timestamp: 'date',
+                    timestamp: 'mastered_date',
                     text: 'labelName'
                 })
                 .aggregateBy('week')
@@ -117,10 +117,10 @@ export default {
 };
 </script>
 <template>
-    <div id="attempted-assessments-timeline"></div>
+    <div id="passed-assessments-timeline"></div>
 </template>
 <style>
-#attempted-assessments-timeline {
+#passed-assessments-timeline {
     position: relative;
 }
 
