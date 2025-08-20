@@ -1,7 +1,7 @@
 <script>
-import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
-import { useTeacherAnalyticsStore } from '../../../stores/TeacherAnalyticsStore';
-import { useUserSkillsStore } from '../../../stores/UserSkillsStore';
+import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
+import { useTeacherAnalyticsStore } from '../../../../stores/TeacherAnalyticsStore';
+import { useUserSkillsStore } from '../../../../stores/UserSkillsStore';
 import PassedAssessmentsTimelineChart from '../../components/teacher-analytics/students/PassedAssessmentsTimelineChart.vue';
 import AttemptedAssessmentsTimelineChart from '../../components/teacher-analytics/students/AttemptedAssessmentsTimelineChart.vue';
 import FailedAssessmentsHorizontalBarChart from '../../components/teacher-analytics/students/FailedAssessmentsHorizontalBarChart.vue';

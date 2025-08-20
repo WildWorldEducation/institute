@@ -1,5 +1,5 @@
 <script>
-import SkillTimeTracker from '../components/teacher-analytics/students/SkillTimeTracker.vue';
+import SkillTimeTracker from '../components/analytics/SkillTimeTracker.vue';
 
 export default {
     data() {

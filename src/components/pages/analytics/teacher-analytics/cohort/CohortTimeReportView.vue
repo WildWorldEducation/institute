@@ -1,9 +1,9 @@
 <script>
 import { useCohortsStore } from '../../../../../stores/CohortsStore';
 import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
-import CohortDurationPerDayLineChart from '../../../../components/teacher-analytics/cohorts/CohortDurationPerDayLineChart.vue';
-import CohortCompareDurationHorizontalChart from '../../../../components/teacher-analytics/cohorts/CohortCompareDurationHorizontalChart.vue';
-import CohortDurationPerSkillHorizontalBarChart from '../../../../components/teacher-analytics/cohorts/CohortDurationPerSkillHorizontalBarChart.vue';
+import CohortDurationPerDayLineChart from '../../../../components/analytics/full-size/cohorts/CohortDurationPerDayLineChart.vue';
+import CohortCompareDurationHorizontalChart from '../../../../components/analytics/full-size/cohorts/CohortCompareDurationHorizontalChart.vue';
+import CohortDurationPerSkillHorizontalBarChart from '../../../../components/analytics/full-size/cohorts/CohortDurationPerSkillHorizontalBarChart.vue';
 
 export default {
     setup() {

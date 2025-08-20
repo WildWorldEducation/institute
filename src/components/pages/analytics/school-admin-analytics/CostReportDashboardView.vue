@@ -1,7 +1,7 @@
 <script>
-import TenantAvgInteractionTimePerSkillHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantAvgInteractionTimePerSkillHorizontalBarChart.vue';
-import TenantPercentageStudentsMasteredAtLeastOneSkillPieChart from '../../../components/teacher-analytics/tenants/TenantPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
-import TenantDurationPerDayLineChart from '../../../components/teacher-analytics/tenants/TenantDurationPerDayLineChart.vue';
+import TenantAvgTokensToMasterSkillsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantAvgTokensToMasterSkillsHorizontalBarChart.vue';
+import TenantTokensPerSkillHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantTokensPerSkillHorizontalBarChart.vue';
+import TenantTokensPerDayLineChart from '../../../components/analytics/full-size/tenants/TenantTokensPerDayLineChart.vue';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
 
@@ -12,16 +12,13 @@ export default {
         return { userDetailsStore, analyticsStore };
     },
     components: {
-        TenantAvgInteractionTimePerSkillHorizontalBarChart,
-        TenantPercentageStudentsMasteredAtLeastOneSkillPieChart,
-        TenantDurationPerDayLineChart
+        TenantAvgTokensToMasterSkillsHorizontalBarChart,
+        TenantTokensPerSkillHorizontalBarChart,
+        TenantTokensPerDayLineChart
     },
     data() {
         return {
             tenantId: this.$route.params.tenantId,
-            // Engagement -----------------------
-            durationPerDay: [],
-            percentageStudentsMasteredOneSkill: [],
             isDataWeekly: false,
             // Tutorial tooltips
             isTutorialComplete: false,
@@ -35,13 +32,10 @@ export default {
     async created() {
         // Check tutorial progress
         await this.checkIfTutorialComplete();
-        // Engagement -----------------------
-        if (this.analyticsStore.avgTimeOnSkills.length == 0)
-            await this.getAvgTimeOnSkills();
-        if (this.analyticsStore.durationPerDay.length == 0)
-            await this.getTenantDuration();
-        if (this.analyticsStore.percentageStudentsMasteredOneSkill.length == 0)
-            await this.getPercentageStudentsMasteredOneSkill();
+        // Resource usage
+        await this.getAvgTokensToMasterSkills();
+        await this.getTotalTokensPerSkill();
+        await this.getTotalTokensPerDay();
     },
     methods: {
         // Tutorial methods
@@ -99,83 +93,66 @@ export default {
         //     this.isTutorialComplete = true;
         //     this.markTutorialComplete();
         // },
-        // Engagement -----------------------
-        async getAvgTimeOnSkills() {
+        async getAvgTokensToMasterSkills() {
             try {
                 const response = await fetch(
-                    `/student-analytics/avg-times-on-skills/tenant/${this.tenantId}`
+                    `/student-analytics/avg-tokens-to-master-skills/tenant/${this.tenantId}`
                 );
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
-
-                this.analyticsStore.avgTimeOnSkills = Array.isArray(data)
+                this.analyticsStore.avgTokensToMasterSkills = Array.isArray(
+                    data
+                )
                     ? data
                     : [];
-                for (
-                    let i = 0;
-                    i < this.analyticsStore.avgTimeOnSkills.length;
-                    i++
-                ) {
-                    this.analyticsStore.avgTimeOnSkills[i].minutes =
-                        this.millisToMinutesAndSeconds(
-                            this.analyticsStore.avgTimeOnSkills[i].milliseconds
-                        );
-                }
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
                     error
                 );
-                this.avgTimeOnSkills = [];
+                this.analyticsStore.avgTokensToMasterSkills = [];
             }
         },
-        async getTenantDuration() {
-            this.analyticsStore.durationPerDay = [];
-            let url = `/student-analytics/tenant-duration-per-day/${this.dataMode}/${this.tenantId}`;
-            fetch(url)
+        async getTotalTokensPerSkill() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/total-tokens-per-skill/tenant/${this.tenantId}`
+                );
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                this.analyticsStore.totalTokensPerSkill = Array.isArray(data)
+                    ? data
+                    : [];
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.analyticsStore.totalTokensPerSkill = [];
+            }
+        },
+        async getTotalTokensPerDay() {
+            this.analyticsStore.totalTokensPerDay = [];
+            fetch(
+                `/student-analytics/tenant-tokens-per-day/${this.dataMode}/${this.tenantId}`
+            )
                 .then((response) => response.json())
-                .then(async (data) => {
-                    this.analyticsStore.durationPerDay = [];
+                .then((data) => {
                     for (let i = 0; i < data.length; i++) {
                         data[i].date = new Date(data[i].date);
-                        data[i].minutes = data[i].milliseconds / (1000 * 60);
-                        this.analyticsStore.durationPerDay.push(data[i]);
                     }
-                    this.analyticsStore.durationPerDay.sort(
-                        (a, b) => a.date - b.date
-                    );
+                    data.sort((a, b) => a.date - b.date);
+                    this.analyticsStore.totalTokensPerDay = data;
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
                 });
         },
-        async getPercentageStudentsMasteredOneSkill() {
-            this.analyticsStore.percentageStudentsMasteredOneSkill = [];
-            try {
-                let url = `/student-analytics/percentage-students-mastered-one-skill/tenant/${this.dataMode}/${this.tenantId}`;
-                let response = await fetch(url);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                this.analyticsStore.percentageStudentsMasteredOneSkill =
-                    await response.json();
-            } catch (error) {
-                console.error(
-                    'Error fetching cohort mastered assessments:',
-                    error
-                );
-                this.analyticsStore.percentageStudentsMasteredOneSkill = [];
-            }
-        },
         // Utilities
-        millisToMinutesAndSeconds(millis) {
-            var minutes = Math.floor(millis / 60000);
-            var seconds = ((millis % 60000) / 1000).toFixed(0);
-            return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
-        },
         downloadData(data, name) {
             const headers = Object.keys(data[0]);
             console.log(headers);
@@ -201,17 +178,16 @@ export default {
             if (this.dataMode == 'total') this.dataMode = 'weekly';
             else this.dataMode = 'total';
 
-            await this.getTenantDuration();
-            await this.getPercentageStudentsMasteredOneSkill();
+            await this.getTotalTokensPerDay();
         }
     }
 };
 </script>
 
 <template>
-    <div class="container">
+    <div class="container-fluid">
         <span class="d-flex justify-content-between w-100">
-            <h1 class="heading">Engagement Report</h1>
+            <h1 class="heading">Cost Report</h1>
             <span>
                 <!-- Filter Buttons -->
                 <div
@@ -270,12 +246,13 @@ export default {
         <div v-if="showTutorialTip1" class="modal">
             <div class="modal-content">
                 <p class="modal-text">
-                    The School Admin Engagement Report provides comprehensive
-                    analytics on student engagement and platform usage across
-                    your school. You can download chart data as CSV files using
-                    the download buttons next to each chart, and toggle between
-                    cumulative (total) and weekly data views using the filter
-                    buttons at the top right.
+                    The Cost Report provides comprehensive analytics on AI token
+                    usage and associated costs across your school. Track daily
+                    token consumption, average tokens required to master each
+                    skill, and total tokens spent per skill. All chart data can
+                    be downloaded as CSV files using the download buttons, and
+                    you can toggle between total (cumulative) and weekly data
+                    views using the filter buttons at the top right.
                 </p>
                 <div class="d-flex justify-content-between">
                     <button
@@ -284,106 +261,146 @@ export default {
                     >
                         close
                     </button>
+                    <!-- <button class="btn red-btn" @click="skipTutorial">
+                        exit tutorial
+                    </button> -->
                 </div>
             </div>
         </div>
 
-        <h4 class="d-flex justify-content-between">
-            Time spent on platform per day
+        <div class="charts-grid">
+            <div class="chart">
+                <h2 class="h6 d-flex justify-content-between">
+                    Tokens spent per day
+                    <button
+                        class="btn"
+                        @click="
+                            downloadData(
+                                analyticsStore.totalTokensPerDay,
+                                'Tokens-per-day'
+                            )
+                        "
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            width="18"
+                            height="18"
+                        >
+                            <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                            />
+                        </svg>
+                    </button>
+                </h2>
+                <TenantTokensPerDayLineChart
+                    v-if="analyticsStore.totalTokensPerDay.length > 0"
+                    :data="analyticsStore.totalTokensPerDay"
+                    colour="#5f31dd"
+                    class="mb-5"
+                />
+                <p v-else>No data yet</p>
+                <p>
+                    <em
+                        >Please note recording of tokens per skill stops after
+                        student mastery of that skill</em
+                    >
+                </p>
+            </div>
 
-            <button
-                class="btn"
-                @click="
-                    downloadData(analyticsStore.durationPerDay, 'Time-per-day')
-                "
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 384 512"
-                    width="18"
-                    height="18"
-                >
-                    <!-- Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                    <path
-                        d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
-                    />
-                </svg>
-            </button>
-        </h4>
-        <TenantDurationPerDayLineChart
-            v-if="analyticsStore.durationPerDay.length > 0"
-            :data="analyticsStore.durationPerDay"
-            colour="#5f31dd"
-            class="mb-5"
-        />
-        <div v-else style="height: 500px">No data yet</div>
+            <div class="chart">
+                <h2 class="h6 d-flex justify-content-between">
+                    Average number of tokens spent to master a skill
+                    <button
+                        class="btn"
+                        @click="
+                            downloadData(
+                                analyticsStore.avgTokensToMasterSkills,
+                                'Avg-tokens-to-master-skill'
+                            )
+                        "
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            width="18"
+                            height="18"
+                        >
+                            <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                            />
+                        </svg>
+                    </button>
+                </h2>
+                <TenantAvgTokensToMasterSkillsHorizontalBarChart
+                    v-if="analyticsStore.avgTokensToMasterSkills.length > 0"
+                    :data="analyticsStore.avgTokensToMasterSkills"
+                    colour="darkgreen"
+                />
+                <p v-else>No data yet</p>
+            </div>
 
-        <h4 class="d-flex justify-content-between">
-            Average interaction time per skill (minutes)
-            <button
-                class="btn"
-                @click="
-                    downloadData(
-                        analyticsStore.avgTimeOnSkills,
-                        'Avg-time-per-skill'
-                    )
-                "
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 384 512"
-                    width="18"
-                    height="18"
-                >
-                    <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                    <path
-                        d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
-                    />
-                </svg>
-            </button>
-        </h4>
-        <TenantAvgInteractionTimePerSkillHorizontalBarChart
-            v-if="analyticsStore.avgTimeOnSkills.length > 0"
-            :data="analyticsStore.avgTimeOnSkills"
-            colour="purple"
-            class="mb-5"
-        />
-        <p v-else>No data yet</p>
+            <div class="chart">
+                <h2 class="h6 d-flex justify-content-between">
+                    Tokens spent per skill
+                    <button
+                        class="btn"
+                        @click="
+                            downloadData(
+                                analyticsStore.totalTokensPerSkill,
+                                'Tokens-per-skill'
+                            )
+                        "
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            width="18"
+                            height="18"
+                        >
+                            <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                            />
+                        </svg>
+                    </button>
+                </h2>
+                <TenantTokensPerSkillHorizontalBarChart
+                    v-if="analyticsStore.totalTokensPerSkill.length > 0"
+                    :data="analyticsStore.totalTokensPerSkill"
+                    colour="#5f31dd"
+                    class="mb-5"
+                />
+                <p v-else class="mb-5">No data yet</p>
+            </div>
 
-        <h4 class="d-flex justify-content-between">
-            Percentage of students who completed at least one skill (cumulative)
-            <button
-                class="btn"
-                @click="
-                    downloadData(
-                        analyticsStore.percentageStudentsMasteredOneSkill,
-                        'Percentage-students-completed-one-skill'
-                    )
-                "
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 384 512"
-                    width="18"
-                    height="18"
+            <h4 class="d-flex justify-content-between mt-5">
+                Token spend per student
+            </h4>
+            <p><em>include total / monthly toggle</em></p>
+            <p>
+                <em
+                    >make it clear if the student is above the free limit (eg a
+                    different colour)</em
                 >
-                    <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                    <path
-                        d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
-                    />
-                </svg>
-            </button>
-        </h4>
-        <TenantPercentageStudentsMasteredAtLeastOneSkillPieChart
-            v-if="analyticsStore.percentageStudentsMasteredOneSkill.length > 0"
-            :data="analyticsStore.percentageStudentsMasteredOneSkill"
-            class="mb-5"
-        />
-        <p v-else class="mb-5">No data yet</p>
+            </p>
+        </div>
     </div>
 </template>
 
 <style scoped>
+.chart {
+    box-shadow: 5px 10px 5px lightblue;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-gap: 20px;
+}
+
 /* Modals */
 .modal {
     display: block;

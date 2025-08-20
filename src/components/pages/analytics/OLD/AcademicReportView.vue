@@ -1,12 +1,12 @@
 <script>
-import TenantProgressLineChart from '../../../components/teacher-analytics/tenants/TenantProgressLineChart.vue';
-import TenantNumSkillsPassedPerNumStudentsHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantNumSkillsPassedPerNumStudentsHorizontalBarChart.vue';
-import TenantPassedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantPassedAssessmentsHorizontalBarChart.vue';
-import TenantAssessmentsAttemptedHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantAssessmentsAttemptedHorizontalBarChart.vue';
-import TenantFailedAssessmentsHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantFailedAssessmentsHorizontalBarChart.vue';
-import TenantFailedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
-import TenantPassedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
-import TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/teacher-analytics/tenants/TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import TenantProgressLineChart from '../../../components/analytics/full-size/tenants/TenantProgressLineChart.vue';
+import TenantNumSkillsPassedPerNumStudentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantNumSkillsPassedPerNumStudentsHorizontalBarChart.vue';
+import TenantPassedAssessmentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantPassedAssessmentsHorizontalBarChart.vue';
+import TenantAssessmentsAttemptedHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantAssessmentsAttemptedHorizontalBarChart.vue';
+import TenantFailedAssessmentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantFailedAssessmentsHorizontalBarChart.vue';
+import TenantFailedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import TenantPassedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
 
