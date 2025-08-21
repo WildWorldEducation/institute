@@ -1,12 +1,12 @@
 <script>
-import TenantProgressLineChart from '../../../components/analytics/full-size/tenants/TenantProgressLineChart.vue';
-import TenantNumSkillsPassedPerNumStudentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantNumSkillsPassedPerNumStudentsHorizontalBarChart.vue';
-import TenantPassedAssessmentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantPassedAssessmentsHorizontalBarChart.vue';
-import TenantAssessmentsAttemptedHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantAssessmentsAttemptedHorizontalBarChart.vue';
-import TenantFailedAssessmentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantFailedAssessmentsHorizontalBarChart.vue';
-import TenantFailedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
-import TenantPassedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
-import TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import SmallTenantProgressLineChart from '../../../components/analytics/small-size/tenants/academics/SmallTenantProgressLineChart.vue';
+import SmallTenantNumSkillsPassedPerNumStudentsHorizontalBarChart from '../../../components/analytics/small-size/tenants/academics/SmallTenantNumSkillsPassedPerNumStudentsHorizontalBarChart.vue';
+import SmallTenantPassedAssessmentsHorizontalBarChart from '../../../components/analytics/small-size/tenants/academics/SmallTenantPassedAssessmentsHorizontalBarChart.vue';
+import SmallTenantAssessmentsAttemptedHorizontalBarChart from '../../../components/analytics/small-size/tenants/academics/SmallTenantAssessmentsAttemptedHorizontalBarChart.vue';
+import SmallTenantFailedAssessmentsHorizontalBarChart from '../../../components/analytics/small-size/tenants/academics/SmallTenantFailedAssessmentsHorizontalBarChart.vue';
+import SmallTenantFailedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/analytics/small-size/tenants/academics/SmallTenantFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import SmallTenantPassedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/analytics/small-size/tenants/academics/SmallTenantPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import SmallTenantAttemptedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/analytics/small-size/tenants/academics/SmallTenantAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
 
@@ -17,14 +17,14 @@ export default {
         return { userDetailsStore, analyticsStore };
     },
     components: {
-        TenantProgressLineChart,
-        TenantNumSkillsPassedPerNumStudentsHorizontalBarChart,
-        TenantPassedAssessmentsHorizontalBarChart,
-        TenantAssessmentsAttemptedHorizontalBarChart,
-        TenantFailedAssessmentsHorizontalBarChart,
-        TenantFailedAssessmentsByRootSubjectHorizontalBarChart,
-        TenantPassedAssessmentsByRootSubjectHorizontalBarChart,
-        TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart
+        SmallTenantProgressLineChart,
+        SmallTenantNumSkillsPassedPerNumStudentsHorizontalBarChart,
+        SmallTenantPassedAssessmentsHorizontalBarChart,
+        SmallTenantAssessmentsAttemptedHorizontalBarChart,
+        SmallTenantFailedAssessmentsHorizontalBarChart,
+        SmallTenantFailedAssessmentsByRootSubjectHorizontalBarChart,
+        SmallTenantPassedAssessmentsByRootSubjectHorizontalBarChart,
+        SmallTenantAttemptedAssessmentsByRootSubjectHorizontalBarChart
     },
     data() {
         return {
@@ -356,7 +356,7 @@ export default {
                         </svg>
                     </button>
                 </h2>
-                <TenantProgressLineChart
+                <SmallTenantProgressLineChart
                     v-if="analyticsStore.tenantProgress.length > 0"
                     :data="analyticsStore.tenantProgress"
                     colour="#5f31dd"
@@ -392,7 +392,7 @@ export default {
                             </svg>
                         </button>
                     </h2>
-                    <TenantPassedAssessmentsByRootSubjectHorizontalBarChart
+                    <SmallTenantPassedAssessmentsByRootSubjectHorizontalBarChart
                         v-if="
                             analyticsStore.rootSubjectsPassedAssessments
                                 .length > 0
@@ -428,7 +428,7 @@ export default {
                             </svg>
                         </button>
                     </h2>
-                    <TenantFailedAssessmentsByRootSubjectHorizontalBarChart
+                    <SmallTenantFailedAssessmentsByRootSubjectHorizontalBarChart
                         v-if="
                             analyticsStore.rootSubjectsFailedAssessments
                                 .length > 0
@@ -464,7 +464,7 @@ export default {
                             </svg>
                         </button>
                     </h2>
-                    <TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart
+                    <SmallTenantAttemptedAssessmentsByRootSubjectHorizontalBarChart
                         v-if="
                             analyticsStore.rootSubjectsAttemptedAssessments
                                 .length > 0
@@ -501,7 +501,7 @@ export default {
                             </svg>
                         </button>
                     </h2>
-                    <TenantNumSkillsPassedPerNumStudentsHorizontalBarChart
+                    <SmallTenantNumSkillsPassedPerNumStudentsHorizontalBarChart
                         v-if="
                             analyticsStore.numSkillsPassedPerNumStudents
                                 .length > 0
@@ -540,7 +540,7 @@ export default {
                             </svg>
                         </button>
                     </h2>
-                    <TenantPassedAssessmentsHorizontalBarChart
+                    <SmallTenantPassedAssessmentsHorizontalBarChart
                         v-if="analyticsStore.passedAssessments.length > 0"
                         :data="analyticsStore.passedAssessments"
                         colour="darkgreen"
@@ -574,7 +574,7 @@ export default {
                             </svg>
                         </button>
                     </h2>
-                    <TenantAssessmentsAttemptedHorizontalBarChart
+                    <SmallTenantAssessmentsAttemptedHorizontalBarChart
                         v-if="analyticsStore.attemptedAssessments.length > 0"
                         :data="analyticsStore.attemptedAssessments"
                         colour="#5f31dd"
@@ -607,7 +607,7 @@ export default {
                             </svg>
                         </button>
                     </h2>
-                    <TenantFailedAssessmentsHorizontalBarChart
+                    <SmallTenantFailedAssessmentsHorizontalBarChart
                         v-if="analyticsStore.failedAssessments.length > 0"
                         :data="analyticsStore.failedAssessments"
                         colour="darkred"

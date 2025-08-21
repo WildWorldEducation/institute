@@ -1,7 +1,7 @@
 <script>
-import TenantAvgInteractionTimePerSkillHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantAvgInteractionTimePerSkillHorizontalBarChart.vue';
-import TenantPercentageStudentsMasteredAtLeastOneSkillPieChart from '../../../components/analytics/full-size/tenants/TenantPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
-import TenantDurationPerDayLineChart from '../../../components/analytics/full-size/tenants/TenantDurationPerDayLineChart.vue';
+import SmallTenantAvgInteractionTimePerSkillHorizontalBarChart from '../../../components/analytics/small-size/tenants/engagement/SmallTenantAvgInteractionTimePerSkillHorizontalBarChart.vue';
+import SmallTenantPercentageStudentsMasteredAtLeastOneSkillPieChart from '../../../components/analytics/small-size/tenants/engagement/SmallTenantPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
+import SmallTenantDurationPerDayLineChart from '../../../components/analytics/small-size/tenants/engagement/SmallTenantDurationPerDayLineChart.vue';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
 
@@ -12,9 +12,9 @@ export default {
         return { userDetailsStore, analyticsStore };
     },
     components: {
-        TenantAvgInteractionTimePerSkillHorizontalBarChart,
-        TenantPercentageStudentsMasteredAtLeastOneSkillPieChart,
-        TenantDurationPerDayLineChart
+        SmallTenantAvgInteractionTimePerSkillHorizontalBarChart,
+        SmallTenantPercentageStudentsMasteredAtLeastOneSkillPieChart,
+        SmallTenantDurationPerDayLineChart
     },
     data() {
         return {
@@ -91,14 +91,6 @@ export default {
             };
             fetch(url, requestOptions);
         },
-        // skipTutorial() {
-        //     this.showTutorialTip1 = false;
-        //     this.showTutorialTip2 = false;
-        //     this.showTutorialTip3 = false;
-        //     this.showTutorialTip4 = false;
-        //     this.isTutorialComplete = true;
-        //     this.markTutorialComplete();
-        // },
         // Engagement -----------------------
         async getAvgTimeOnSkills() {
             try {
@@ -315,7 +307,7 @@ export default {
                         </svg>
                     </button>
                 </h2>
-                <TenantDurationPerDayLineChart
+                <SmallTenantDurationPerDayLineChart
                     v-if="analyticsStore.durationPerDay.length > 0"
                     :data="analyticsStore.durationPerDay"
                     colour="#5f31dd"
@@ -349,7 +341,7 @@ export default {
                         </svg>
                     </button>
                 </h2>
-                <TenantAvgInteractionTimePerSkillHorizontalBarChart
+                <SmallTenantAvgInteractionTimePerSkillHorizontalBarChart
                     v-if="analyticsStore.avgTimeOnSkills.length > 0"
                     :data="analyticsStore.avgTimeOnSkills"
                     colour="purple"
@@ -383,7 +375,7 @@ export default {
                         </svg>
                     </button>
                 </h2>
-                <TenantPercentageStudentsMasteredAtLeastOneSkillPieChart
+                <SmallTenantPercentageStudentsMasteredAtLeastOneSkillPieChart
                     v-if="
                         analyticsStore.percentageStudentsMasteredOneSkill
                             .length > 0

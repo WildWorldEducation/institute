@@ -1,7 +1,7 @@
 <script>
-import TenantAvgTokensToMasterSkillsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantAvgTokensToMasterSkillsHorizontalBarChart.vue';
-import TenantTokensPerSkillHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantTokensPerSkillHorizontalBarChart.vue';
-import TenantTokensPerDayLineChart from '../../../components/analytics/full-size/tenants/TenantTokensPerDayLineChart.vue';
+import SmallTenantAvgTokensToMasterSkillsHorizontalBarChart from '../../../components/analytics/small-size/tenants/cost/SmallTenantAvgTokensToMasterSkillsHorizontalBarChart.vue';
+import SmallTenantTokensPerSkillHorizontalBarChart from '../../../components/analytics/small-size/tenants/cost/SmallTenantTokensPerSkillHorizontalBarChart.vue';
+import SmallTenantTokensPerDayLineChart from '../../../components/analytics/small-size/tenants/cost/SmallTenantTokensPerDayLineChart.vue';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
 
@@ -12,9 +12,9 @@ export default {
         return { userDetailsStore, analyticsStore };
     },
     components: {
-        TenantAvgTokensToMasterSkillsHorizontalBarChart,
-        TenantTokensPerSkillHorizontalBarChart,
-        TenantTokensPerDayLineChart
+        SmallTenantAvgTokensToMasterSkillsHorizontalBarChart,
+        SmallTenantTokensPerSkillHorizontalBarChart,
+        SmallTenantTokensPerDayLineChart
     },
     data() {
         return {
@@ -295,7 +295,7 @@ export default {
                         </svg>
                     </button>
                 </h2>
-                <TenantTokensPerDayLineChart
+                <SmallTenantTokensPerDayLineChart
                     v-if="analyticsStore.totalTokensPerDay.length > 0"
                     :data="analyticsStore.totalTokensPerDay"
                     colour="#5f31dd"
@@ -336,7 +336,7 @@ export default {
                         </svg>
                     </button>
                 </h2>
-                <TenantAvgTokensToMasterSkillsHorizontalBarChart
+                <SmallTenantAvgTokensToMasterSkillsHorizontalBarChart
                     v-if="analyticsStore.avgTokensToMasterSkills.length > 0"
                     :data="analyticsStore.avgTokensToMasterSkills"
                     colour="darkgreen"
@@ -370,7 +370,7 @@ export default {
                         </svg>
                     </button>
                 </h2>
-                <TenantTokensPerSkillHorizontalBarChart
+                <SmallTenantTokensPerSkillHorizontalBarChart
                     v-if="analyticsStore.totalTokensPerSkill.length > 0"
                     :data="analyticsStore.totalTokensPerSkill"
                     colour="#5f31dd"
