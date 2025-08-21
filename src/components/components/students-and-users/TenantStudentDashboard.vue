@@ -173,7 +173,7 @@ export default {
 </script>
 
 <template>
-    <div id="user-information" class="container mt-1 bg-light p-2">
+    <div id="user-information" class="container-fluid mt-1 bg-light p-2">
         <!-- The X to close the user details popup windows when on phone view -->
         <div
             class="flex-row-reverse d-flex d-md-none align-items-end mb-2"
@@ -206,7 +206,6 @@ export default {
         <div class="row">
             <div class="d-flex flex-column">
                 <div class="d-flex justify-content-between">
-                    <h1 class="heading">Student Reports</h1>
                     <button class="btn me-1" @click="$parent.restartTutorial">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -222,103 +221,151 @@ export default {
                         </svg>
                     </button>
                 </div>
-                <h2 class="secondary-heading">Engagement</h2>
-                <h4>Total time on platform</h4>
-                <StudentDurationPerDayLineChart
-                    v-if="durationsPerDay.length > 1"
-                    :data="durationsPerDay"
-                />
-                <p v-else>There is no data to show yet.</p>
+                <div class="charts-grid">
+                    <div class="chart">
+                        <h2 class="h6">Total time on platform</h2>
+                        <p><i>Make line darker</i></p>
+                        <StudentDurationPerDayLineChart
+                            v-if="durationsPerDay.length > 1"
+                            :data="durationsPerDay"
+                        />
+                        <p v-else>There is no data to show yet.</p>
+                    </div>
 
-                <h4 class="mt-4">Skills visited</h4>
-                <StudentSkillActivityChart
-                    v-if="teacherAnalyticsStore.skillActivities.length > 0"
-                    :data="teacherAnalyticsStore.skillActivities"
-                />
-                <p v-else>No skills visited by this student.</p>
+                    <div class="chart">
+                        <h2 class="h6">Skill mastery progress</h2>
+                        <p><i>Make line darker</i></p>
+                        <StudentProgressLineChart
+                            v-if="studentProgress.length > 0"
+                            :data="studentProgress"
+                            colour="#5f31dd"
+                        />
+                        <p v-else>No data to show yet.</p>
+                    </div>
 
-                <h2 class="secondary-heading mt-5">Academics</h2>
-                <h4>Skill mastery progress</h4>
-                <StudentProgressLineChart
-                    v-if="studentProgress.length > 0"
-                    :data="studentProgress"
-                    colour="#5f31dd"
-                />
-                <p v-else>No data to show yet.</p>
+                    <div class="chart">
+                        <h2 class="h6">Skills visited</h2>
+                        <p><i>Show which skills are visited most</i></p>
+                        <StudentSkillActivityChart
+                            v-if="
+                                teacherAnalyticsStore.skillActivities.length > 0
+                            "
+                            :data="teacherAnalyticsStore.skillActivities"
+                        />
+                        <p v-else>No skills visited by this student.</p>
+                    </div>
 
-                <h3 class="secondary-heading mt-4">By subject</h3>
-                <h4 class="">Failed more than once</h4>
-                <StudentFailedAssessmentsByRootSubjectHorizontalBarChart
-                    v-if="
-                        analyticsStore.studentRootSubjectsFailedAssessments
-                            .length > 0
-                    "
-                    :data="analyticsStore.studentRootSubjectsFailedAssessments"
-                    colour="darkred"
-                    class="mb-5"
-                />
-                <p v-else>No data yet</p>
+                    <div>
+                        <p><i>Combine into one, so as to compare them</i></p>
+                        <div class="chart">
+                            <h2 class="h6">Subjects failed</h2>
+                            <StudentFailedAssessmentsByRootSubjectHorizontalBarChart
+                                v-if="
+                                    analyticsStore
+                                        .studentRootSubjectsFailedAssessments
+                                        .length > 0
+                                "
+                                :data="
+                                    analyticsStore.studentRootSubjectsFailedAssessments
+                                "
+                                colour="darkred"
+                                class="mb-5"
+                            />
+                            <p v-else>No data yet</p>
+                        </div>
 
-                <h4 class="">Passed</h4>
-                <StudentPassedAssessmentsByRootSubjectHorizontalBarChart
-                    v-if="
-                        analyticsStore.studentRootSubjectsPassedAssessments
-                            .length > 0
-                    "
-                    :data="analyticsStore.studentRootSubjectsPassedAssessments"
-                    colour="darkgreen"
-                    class="mb-5"
-                />
-                <p v-else>No data yet</p>
+                        <div class="chart">
+                            <h2 class="h6">Subjects passed</h2>
+                            <StudentPassedAssessmentsByRootSubjectHorizontalBarChart
+                                v-if="
+                                    analyticsStore
+                                        .studentRootSubjectsPassedAssessments
+                                        .length > 0
+                                "
+                                :data="
+                                    analyticsStore.studentRootSubjectsPassedAssessments
+                                "
+                                colour="darkgreen"
+                                class="mb-5"
+                            />
+                            <p v-else>No data yet</p>
+                        </div>
 
-                <h4 class="">Attempted</h4>
-                <StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart
-                    v-if="
-                        analyticsStore.studentRootSubjectsAttemptedAssessments
-                            .length > 0
-                    "
-                    :data="
-                        analyticsStore.studentRootSubjectsAttemptedAssessments
-                    "
-                    colour="darkblue"
-                    class="mb-5"
-                />
-                <p v-else>No data yet</p>
+                        <div class="chart">
+                            <h2 class="h6">Subjects attempted</h2>
+                            <StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart
+                                v-if="
+                                    analyticsStore
+                                        .studentRootSubjectsAttemptedAssessments
+                                        .length > 0
+                                "
+                                :data="
+                                    analyticsStore.studentRootSubjectsAttemptedAssessments
+                                "
+                                colour="darkblue"
+                                class="mb-5"
+                            />
+                            <p v-else>No data yet</p>
+                        </div>
+                    </div>
 
-                <h3 class="secondary-heading mt-4">By skill</h3>
-                <h4>Assessments failed</h4>
-                <FailedAssessmentsHorizontalBarChart
-                    v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
-                    :data="teacherAnalyticsStore.studentMultipleFails"
-                    colour="darkred"
-                />
-                <p v-else>
-                    This student has not failed any assessments more than once
-                    yet.
-                </p>
-                <h4 class="mt-4">Assessments passed</h4>
-                <PassedAssessmentsTimelineChart
-                    v-if="assessmentPasses.length > 0"
-                    :data="assessmentPasses"
-                />
-                <p v-else>
-                    This student has not completed any assessments yet.
-                </p>
-                <h4 class="mt-4">Assessments attempted</h4>
-                <AttemptedAssessmentsTimelineChart
-                    class="mb-5"
-                    v-if="assessmentAttempts.length > 0"
-                    :data="assessmentAttempts"
-                />
-                <p v-else class="mb-5">
-                    This student has attempted any assessments yet.
-                </p>
+                    <!-- <div class="chart">
+                        <h2 class="h6">Assessments failed</h2>
+                        <FailedAssessmentsHorizontalBarChart
+                            v-if="
+                                teacherAnalyticsStore.studentMultipleFails
+                                    .length > 0
+                            "
+                            :data="teacherAnalyticsStore.studentMultipleFails"
+                            colour="darkred"
+                        />
+                        <p v-else>
+                            This student has not failed any assessments more
+                            than once yet.
+                        </p>
+                    </div> -->
+
+                    <div class="chart">
+                        <h2 class="h6">Assessments passed</h2>
+                        <p><i>Maybe remove</i></p>
+                        <PassedAssessmentsTimelineChart
+                            v-if="assessmentPasses.length > 0"
+                            :data="assessmentPasses"
+                        />
+                        <p v-else>
+                            This student has not completed any assessments yet.
+                        </p>
+                    </div>
+
+                    <div class="chart">
+                        <h2 class="h6">Assessments attempted</h2>
+                        <p><i>Maybe remove</i></p>
+                        <AttemptedAssessmentsTimelineChart
+                            class="mb-5"
+                            v-if="assessmentAttempts.length > 0"
+                            :data="assessmentAttempts"
+                        />
+                        <p v-else class="mb-5">
+                            This student has attempted any assessments yet.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+.chart {
+    box-shadow: 5px 10px 5px lightblue;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-gap: 20px;
+}
+
 .fit-content {
     max-width: fit-content;
 }

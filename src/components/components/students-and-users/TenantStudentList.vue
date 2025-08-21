@@ -43,15 +43,10 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-1">
+    <div class="">
         <!-- School Admins -->
         <div v-for="student in usersStore.studentsPerTenant" :key="student.id">
-            <div class="d-flex bg-light rounded p-2">
-                <img
-                    class="user-avatars"
-                    v-if="student.avatar != null"
-                    :src="student.avatar"
-                />
+            <div class="d-flex bg-light rounded p-1">
                 <button
                     :class="
                         student.id === selectedItemId
@@ -70,7 +65,6 @@ export default {
 <style scoped>
 .user-avatars {
     width: 80px;
-    height: 80px;
     border-radius: 12px;
     border: 1px solid var(--primary-color);
     margin-right: 22px;
@@ -79,13 +73,12 @@ export default {
 .user-buttons {
     font-family: 'Poppins', sans-serif;
     width: 283px;
-    height: 80px;
     border-radius: 8px;
     border: 1px solid var(--primary-color);
     background-color: #c8d7da;
     color: black;
     overflow: hidden;
-    padding: 16px, 28px, 16px, 28px;
+    padding: 16px 28px;
     font-size: 1.25rem;
     font-weight: 400;
 }
@@ -99,13 +92,12 @@ export default {
 .isCurrentlyChoose {
     font-family: 'Poppins', sans-serif;
     width: 283px;
-    height: 80px;
+    padding: 16px 28px;
     border-radius: 8px;
     border: 1px solid var(--primary-color);
     background-color: var(--primary-color);
     overflow: hidden;
     color: white;
-    padding: 16px, 28px, 16px, 28px;
     font-size: 1.25rem;
     font-weight: 400;
 }

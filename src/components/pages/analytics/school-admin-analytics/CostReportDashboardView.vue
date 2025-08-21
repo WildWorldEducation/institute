@@ -187,7 +187,7 @@ export default {
 <template>
     <div class="container-fluid">
         <span class="d-flex justify-content-between w-100">
-            <h1 class="heading">Cost Report</h1>
+            <h1 class="secondary-heading h4">Cost Report</h1>
             <span>
                 <!-- Filter Buttons -->
                 <div
@@ -272,6 +272,7 @@ export default {
             <div class="chart">
                 <h2 class="h6 d-flex justify-content-between">
                     Tokens spent per day
+                    <p><i>Make line darker</i></p>
                     <button
                         class="btn"
                         @click="
@@ -312,6 +313,7 @@ export default {
             <div class="chart">
                 <h2 class="h6 d-flex justify-content-between">
                     Average number of tokens spent to master a skill
+                    <p><i>Make sure amount and skill visibile</i></p>
                     <button
                         class="btn"
                         @click="
@@ -345,6 +347,7 @@ export default {
             <div class="chart">
                 <h2 class="h6 d-flex justify-content-between">
                     Tokens spent per skill
+                    <p><i>Make sure amount and skill visibile</i></p>
                     <button
                         class="btn"
                         @click="
@@ -376,7 +379,7 @@ export default {
                 <p v-else class="mb-5">No data yet</p>
             </div>
 
-            <h4 class="d-flex justify-content-between mt-5">
+            <!-- <h4 class="d-flex justify-content-between mt-5">
                 Token spend per student
             </h4>
             <p><em>include total / monthly toggle</em></p>
@@ -385,7 +388,7 @@ export default {
                     >make it clear if the student is above the free limit (eg a
                     different colour)</em
                 >
-            </p>
+            </p> -->
         </div>
     </div>
 </template>

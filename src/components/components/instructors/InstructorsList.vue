@@ -90,9 +90,9 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-1">
+    <div class="">
         <div v-for="instructor in instructors" :key="instructor.id">
-            <div class="d-flex bg-light rounded p-2">
+            <div class="d-flex bg-light rounded p-1">
                 <button
                     :class="
                         instructor.id === $parent.selectedInstructor.id
@@ -111,7 +111,6 @@ export default {
 <style>
 .cohort-buttons {
     font-family: 'Poppins', sans-serif;
-    height: 80px;
     width: 100%;
     border-radius: 8px;
     border: 1px solid var(--primary-color);
@@ -134,7 +133,6 @@ export default {
 
 .isCurrentlySelected {
     font-family: 'Poppins', sans-serif;
-    height: 80px;
     width: 100%;
     border-radius: 8px;
     border: 1px solid var(--primary-color);

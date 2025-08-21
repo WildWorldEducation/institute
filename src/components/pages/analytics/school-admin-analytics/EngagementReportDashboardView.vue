@@ -210,7 +210,8 @@ export default {
 
 <template>
     <div class="container-fluid">
-        <span class="d-flex justify-content-end w-100 mb-2">
+        <span class="d-flex justify-content-between w-100 mb-2">
+            <h1 class="secondary-heading h4">Engagement Report</h1>
             <span>
                 <!-- Filter Buttons -->
                 <div
@@ -291,6 +292,7 @@ export default {
             <div class="chart">
                 <h2 class="h6 d-flex justify-content-between">
                     Time per day
+                    <p><i>Make line darker</i></p>
                     <button
                         class="btn"
                         @click="
@@ -324,6 +326,7 @@ export default {
             <div class="chart">
                 <h2 class="h6 d-flex justify-content-between">
                     Average interaction time per skill
+                    <p><i>Show which skills are visited most</i></p>
                     <button
                         class="btn"
                         @click="
@@ -357,6 +360,7 @@ export default {
             <div class="chart">
                 <h2 class="h6 d-flex justify-content-between">
                     Students who completed at least one skill
+                    <p><i>Take out of box</i></p>
                     <button
                         class="btn"
                         @click="

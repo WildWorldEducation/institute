@@ -1,6 +1,6 @@
 <script>
 import TenantStudentList from '../../components/students-and-users/TenantStudentList.vue';
-import TenantStudentDetails from '../../components/students-and-users/TenantStudentDetails.vue';
+import TenantStudentDashboard from '../../components/students-and-users/TenantStudentDashboard.vue';
 
 // Import the stores.
 import { useUsersStore } from '../../../stores/UsersStore';
@@ -46,7 +46,7 @@ export default {
     },
     components: {
         TenantStudentList,
-        TenantStudentDetails
+        TenantStudentDashboard
     },
     async created() {
         await this.usersStore.getStudentsPerTenant(
@@ -225,15 +225,15 @@ export default {
     >
         <span class="loader"></span>
     </div>
-    <div v-else id="user-container" class="container-fluid">
+    <div v-else class="container-fluid">
         <div class="row position-relative">
-            <div class="col-lg-4 col-md-5">
+            <div class="col-lg-2">
                 <TenantStudentList ref="usersListRef" />
             </div>
             <!-- User detail view for PC and Tablet View -->
-            <div class="col-lg-8 col-md-7 d-none d-md-block">
+            <div class="col-lg-10 d-none d-md-block">
                 <div class="row user-form-data-row">
-                    <TenantStudentDetails
+                    <TenantStudentDashboard
                         ref="tenantStudentDetailsRef"
                         :userId="user.id"
                     />
@@ -288,22 +288,12 @@ export default {
     height: 77px;
 }
 
-#user-container {
-    padding-left: 35px;
-    padding-right: 46px;
-}
-
 /* Mobile */
 @media (max-width: 480px) {
     #first-content-row {
         padding-top: 20px;
         padding-left: 20px;
         padding-right: 20px;
-    }
-
-    #user-container {
-        padding-left: 10px;
-        padding-right: 10px;
     }
 
     #user-detail-section {
@@ -318,11 +308,6 @@ export default {
 
 /* Tablets */
 @media (min-width: 481px) and (max-width: 1024px) {
-    #user-container {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-
     .user-form-data-row {
         margin-right: 0px;
     }

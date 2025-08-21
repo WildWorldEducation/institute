@@ -130,7 +130,7 @@ export default {
 </script>
 
 <template>
-    <div id="user-information" class="container mt-1 bg-light p-2">
+    <div id="user-information" class="container bg-light p-2">
         <!-- The X to close the user details popup windows when on phone view -->
         <div
             class="flex-row-reverse d-flex d-md-none align-items-end mb-2"
@@ -159,7 +159,6 @@ export default {
             </h1>
         </div>
         <div class="d-flex justify-content-between">
-            <h1 class="heading">Teacher Reports</h1>
             <button class="btn me-1" @click="$parent.restartTutorial">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -175,103 +174,117 @@ export default {
                 </svg>
             </button>
         </div>
+        <div class="charts-grid">
+            <div class="chart">
+                <h2 class="h6">Time on platform</h2>
+                <p><i>Make line darker</i></p>
+                <CohortDurationPerDayLineChart
+                    v-if="durationsPerDay.length > 0"
+                    :data="durationsPerDay"
+                    colour="#5f31dd"
+                    ref="cohortDurationPerDayLineChart"
+                />
+                <p v-else>No data available</p>
+            </div>
 
-        <h2 class="secondary-heading">Engagement</h2>
-        <div>
-            <h4>Time on platform</h4>
-            <CohortDurationPerDayLineChart
-                v-if="durationsPerDay.length > 0"
-                :data="durationsPerDay"
-                colour="#5f31dd"
-                ref="cohortDurationPerDayLineChart"
-            />
-            <p v-else>No data available</p>
+            <div class="chart">
+                <h2 class="h6">Skill mastery progress</h2>
+                <p><i>Make line darker</i></p>
+                <CohortProgressLineChart
+                    v-if="classProgress.length > 0"
+                    :data="classProgress"
+                    colour="#5f31dd"
+                    ref="cohortProgressLineChart"
+                />
+                <p v-else>No data available</p>
+            </div>
 
-            <h4 class="mt-4">Skills visited</h4>
-            <CohortSkillActivityChart
-                v-if="analyticsStore.cohortSkillActivities.length > 0"
-                :data="analyticsStore.cohortSkillActivities"
-            />
-            <p v-else>No skills visited by this student.</p>
+            <div class="chart">
+                <h2 class="h6">Skills visited</h2>
+                <p><i>Show which skills are visited most</i></p>
+                <CohortSkillActivityChart
+                    v-if="analyticsStore.cohortSkillActivities.length > 0"
+                    :data="analyticsStore.cohortSkillActivities"
+                />
+                <p v-else>No skills visited by this student.</p>
+            </div>
 
-            <h2 class="secondary-heading mt-5">Academics</h2>
-            <h4>Skill mastery progress</h4>
-            <CohortProgressLineChart
-                v-if="classProgress.length > 0"
-                :data="classProgress"
-                colour="#5f31dd"
-                ref="cohortProgressLineChart"
-            />
-            <p v-else>No data available</p>
+            <div>
+                <div class="chart">
+                    <p><i>Take out of box</i></p>
+                    <h2 class="h6">
+                        Percentage of students who completed at least one skill
+                    </h2>
+                    <CohortPercentageStudentsMasteredAtLeastOneSkillPieChart
+                        ref="cohortPercentageStudentsMasteredAtLeastOneSkillPieChart"
+                        class="mb-5"
+                    />
+                </div>
+                <p><i>Combine into one, so as to compare</i></p>
+                <div class="chart">
+                    <h2 class="h6">Failed more than once</h2>
+                    <CohortFailedAssessmentsByRootSubjectHorizontalBarChart
+                        v-if="
+                            analyticsStore.cohortRootSubjectsFailedAssessments
+                                .length > 0
+                        "
+                        :data="
+                            analyticsStore.cohortRootSubjectsFailedAssessments
+                        "
+                        colour="darkred"
+                        class="mb-5"
+                    />
+                    <p v-else>No data yet</p>
+                </div>
 
-            <h4 class="mt-4">
-                Percentage of students who completed at least one skill
-            </h4>
-            <CohortPercentageStudentsMasteredAtLeastOneSkillPieChart
-                ref="cohortPercentageStudentsMasteredAtLeastOneSkillPieChart"
-                class="mb-5"
-            />
+                <div class="chart">
+                    <h2 class="h6">Passed</h2>
+                    <CohortPassedAssessmentsByRootSubjectHorizontalBarChart
+                        v-if="
+                            analyticsStore.cohortRootSubjectsPassedAssessments
+                                .length > 0
+                        "
+                        :data="
+                            analyticsStore.cohortRootSubjectsPassedAssessments
+                        "
+                        colour="darkgreen"
+                        class="mb-5"
+                    />
+                    <p v-else>No data yet</p>
+                </div>
 
-            <h3 class="secondary-heading">By subject</h3>
-            <h4 class="">Failed more than once</h4>
-            <CohortFailedAssessmentsByRootSubjectHorizontalBarChart
-                v-if="
-                    analyticsStore.cohortRootSubjectsFailedAssessments.length >
-                    0
-                "
-                :data="analyticsStore.cohortRootSubjectsFailedAssessments"
-                colour="darkred"
-                class="mb-5"
-            />
-            <p v-else>No data yet</p>
-
-            <h4 class="">Passed</h4>
-            <CohortPassedAssessmentsByRootSubjectHorizontalBarChart
-                v-if="
-                    analyticsStore.cohortRootSubjectsPassedAssessments.length >
-                    0
-                "
-                :data="analyticsStore.cohortRootSubjectsPassedAssessments"
-                colour="darkgreen"
-                class="mb-5"
-            />
-            <p v-else>No data yet</p>
-
-            <h4 class="">Attempted</h4>
-            <CohortAttemptedAssessmentsByRootSubjectHorizontalBarChart
-                v-if="
-                    analyticsStore.cohortRootSubjectsAttemptedAssessments
-                        .length > 0
-                "
-                :data="analyticsStore.cohortRootSubjectsAttemptedAssessments"
-                colour="darkblue"
-                class="mb-5"
-            />
-            <p v-else>No data yet</p>
-            <!-- 
-            <h4 class="secondary-heading mt-4">Assessments attempted</h4>
-            <AttemptedAssessmentsTimelineChart class="mb-5" v-if="assessmentAttempts.length > 0"
-                :data="assessmentAttempts" />
-            <p v-else>This student has attempted any assessments yet.</p>
-
-        
-            <h4 class="secondary-heading mt-4">Assessments passed</h4>
-            <PassedAssessmentsTimelineChart class="mb-5" v-if="assessmentPasses.length > 0" :data="assessmentPasses" />
-            <p v-else>
-                This student has not completed any assessments yet.
-            </p>
-            <h4 class="secondary-heading mt-4">Assessments failed</h4>
-            <FailedAssessmentsHorizontalBarChart v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
-                :data="teacherAnalyticsStore.studentMultipleFails" colour="darkred" class="mb-5" />
-            <p v-else>
-                This student has not failed any assessments more than once
-                yet.
-            </p> -->
+                <div class="chart">
+                    <h2 class="h6">Attempted</h2>
+                    <CohortAttemptedAssessmentsByRootSubjectHorizontalBarChart
+                        v-if="
+                            analyticsStore
+                                .cohortRootSubjectsAttemptedAssessments.length >
+                            0
+                        "
+                        :data="
+                            analyticsStore.cohortRootSubjectsAttemptedAssessments
+                        "
+                        colour="darkblue"
+                        class="mb-5"
+                    />
+                    <p v-else>No data yet</p>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+.chart {
+    box-shadow: 5px 10px 5px lightblue;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-gap: 20px;
+}
+
 .remove-student-btn {
     font-weight: 500;
 }
