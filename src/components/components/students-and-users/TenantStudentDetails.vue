@@ -5,15 +5,15 @@ import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import { useTeacherAnalyticsStore } from '../../../stores/TeacherAnalyticsStore';
 import { useAnalyticsStore } from '../../../stores/AnalyticsStore';
 import { useUserSkillsStore } from '../../../stores/UserSkillsStore';
-import StudentProgressLineChart from '../../components/teacher-analytics/students/StudentProgressLineChart.vue';
-import StudentSkillActivityChart from '../../components/teacher-analytics/students/StudentSkillActivityChart.vue';
-import PassedAssessmentsTimelineChart from '../../components/teacher-analytics/students/PassedAssessmentsTimelineChart.vue';
-import AttemptedAssessmentsTimelineChart from '../../components/teacher-analytics/students/AttemptedAssessmentsTimelineChart.vue';
-import FailedAssessmentsHorizontalBarChart from '../../components/teacher-analytics/students/FailedAssessmentsHorizontalBarChart.vue';
-import StudentDurationPerDayLineChart from '../../components/teacher-analytics/students/StudentDurationPerDayLineChart.vue';
-import StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart from '../../components/teacher-analytics/students/StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
-import StudentFailedAssessmentsByRootSubjectHorizontalBarChart from '../../components/teacher-analytics/students/StudentFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
-import StudentPassedAssessmentsByRootSubjectHorizontalBarChart from '../../components/teacher-analytics/students/StudentPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import StudentProgressLineChart from '../../components/analytics/full-size/students/StudentProgressLineChart.vue';
+import StudentSkillActivityChart from '../../components/analytics/full-size/students/StudentSkillActivityChart.vue';
+import PassedAssessmentsTimelineChart from '../../components/analytics/full-size/students/PassedAssessmentsTimelineChart.vue';
+import AttemptedAssessmentsTimelineChart from '../../components/analytics/full-size/students/AttemptedAssessmentsTimelineChart.vue';
+import FailedAssessmentsHorizontalBarChart from '../../components/analytics/full-size/students/FailedAssessmentsHorizontalBarChart.vue';
+import StudentDurationPerDayLineChart from '../../components/analytics/full-size/students/StudentDurationPerDayLineChart.vue';
+import StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart from '../../components/analytics/full-size/students/StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import StudentFailedAssessmentsByRootSubjectHorizontalBarChart from '../../components/analytics/full-size/students/StudentFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import StudentPassedAssessmentsByRootSubjectHorizontalBarChart from '../../components/analytics/full-size/students/StudentPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
 
 export default {
     props: ['userId'],

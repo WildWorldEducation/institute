@@ -2,13 +2,13 @@
 import { useCohortsStore } from '../../../stores/CohortsStore.js';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import { useAnalyticsStore } from '../../../stores/AnalyticsStore.js';
-import CohortPercentageStudentsMasteredAtLeastOneSkillPieChart from './../teacher-analytics/cohorts/CohortPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
-import CohortProgressLineChart from './../teacher-analytics/cohorts/CohortProgressLineChart.vue';
-import CohortDurationPerDayLineChart from './../teacher-analytics/cohorts/CohortDurationPerDayLineChart.vue';
-import CohortSkillActivityChart from './../teacher-analytics/cohorts/CohortSkillActivityChart.vue';
-import CohortFailedAssessmentsByRootSubjectHorizontalBarChart from './../teacher-analytics/cohorts/CohortFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
-import CohortPassedAssessmentsByRootSubjectHorizontalBarChart from './../teacher-analytics/cohorts/CohortPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
-import CohortAttemptedAssessmentsByRootSubjectHorizontalBarChart from './../teacher-analytics/cohorts/CohortAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import CohortPercentageStudentsMasteredAtLeastOneSkillPieChart from './../analytics/full-size/cohorts/CohortPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
+import CohortProgressLineChart from './../analytics/full-size/cohorts/CohortProgressLineChart.vue';
+import CohortDurationPerDayLineChart from './../analytics/full-size/cohorts/CohortDurationPerDayLineChart.vue';
+import CohortSkillActivityChart from './../analytics/full-size/cohorts/CohortSkillActivityChart.vue';
+import CohortFailedAssessmentsByRootSubjectHorizontalBarChart from './../analytics/full-size/cohorts/CohortFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import CohortPassedAssessmentsByRootSubjectHorizontalBarChart from './../analytics/full-size/cohorts/CohortPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import CohortAttemptedAssessmentsByRootSubjectHorizontalBarChart from './../analytics/full-size/cohorts/CohortAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
 
 export default {
     setup() {
