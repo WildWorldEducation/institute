@@ -37,11 +37,17 @@ export default {
         await this.checkIfTutorialComplete();
         // Engagement -----------------------
         if (this.analyticsStore.avgTimeOnSkills.length == 0)
-            await this.getAvgTimeOnSkills();
+            await this.analyticsStore.getAvgTimeOnSkills(this.tenantId);
         if (this.analyticsStore.durationPerDay.length == 0)
-            await this.getTenantDuration();
+            await this.analyticsStore.getTenantDuration(
+                this.tenantId,
+                this.dataMode
+            );
         if (this.analyticsStore.percentageStudentsMasteredOneSkill.length == 0)
-            await this.getPercentageStudentsMasteredOneSkill();
+            await this.analyticsStore.getPercentageStudentsMasteredOneSkill(
+                this.tenantId,
+                this.dataMode
+            );
     },
     methods: {
         // Tutorial methods
@@ -91,77 +97,7 @@ export default {
             };
             fetch(url, requestOptions);
         },
-        // Engagement -----------------------
-        async getAvgTimeOnSkills() {
-            try {
-                const response = await fetch(
-                    `/student-analytics/avg-times-on-skills/tenant/${this.tenantId}`
-                );
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
 
-                this.analyticsStore.avgTimeOnSkills = Array.isArray(data)
-                    ? data
-                    : [];
-                for (
-                    let i = 0;
-                    i < this.analyticsStore.avgTimeOnSkills.length;
-                    i++
-                ) {
-                    this.analyticsStore.avgTimeOnSkills[i].minutes =
-                        this.millisToMinutesAndSeconds(
-                            this.analyticsStore.avgTimeOnSkills[i].milliseconds
-                        );
-                }
-            } catch (error) {
-                console.error(
-                    'Error fetching cohort mastered assessments:',
-                    error
-                );
-                this.avgTimeOnSkills = [];
-            }
-        },
-        async getTenantDuration() {
-            this.analyticsStore.durationPerDay = [];
-            let url = `/student-analytics/tenant-duration-per-day/${this.dataMode}/${this.tenantId}`;
-            fetch(url)
-                .then((response) => response.json())
-                .then(async (data) => {
-                    this.analyticsStore.durationPerDay = [];
-                    for (let i = 0; i < data.length; i++) {
-                        data[i].date = new Date(data[i].date);
-                        data[i].minutes = data[i].milliseconds / (1000 * 60);
-                        this.analyticsStore.durationPerDay.push(data[i]);
-                    }
-                    this.analyticsStore.durationPerDay.sort(
-                        (a, b) => a.date - b.date
-                    );
-                })
-                .catch((error) => {
-                    console.error('Error fetching student progress:', error);
-                });
-        },
-        async getPercentageStudentsMasteredOneSkill() {
-            this.analyticsStore.percentageStudentsMasteredOneSkill = [];
-            try {
-                let url = `/student-analytics/percentage-students-mastered-one-skill/tenant/${this.dataMode}/${this.tenantId}`;
-                let response = await fetch(url);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                this.analyticsStore.percentageStudentsMasteredOneSkill =
-                    await response.json();
-            } catch (error) {
-                console.error(
-                    'Error fetching cohort mastered assessments:',
-                    error
-                );
-                this.analyticsStore.percentageStudentsMasteredOneSkill = [];
-            }
-        },
         // Utilities
         millisToMinutesAndSeconds(millis) {
             var minutes = Math.floor(millis / 60000);
@@ -201,9 +137,8 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid">
-        <span class="d-flex justify-content-between w-100 mb-2">
-            <h1 class="secondary-heading h4">Engagement Report</h1>
+    <div class="container position-relative">
+        <span class="controls">
             <span>
                 <!-- Filter Buttons -->
                 <div
@@ -280,124 +215,44 @@ export default {
             </div>
         </div>
 
-        <div class="charts-grid">
-            <div class="chart">
-                <h2 class="h6 d-flex justify-content-between">
-                    Time per day
-                    <p><i>Make line darker</i></p>
-                    <button
-                        class="btn"
-                        @click="
-                            downloadData(
-                                analyticsStore.durationPerDay,
-                                'Time-per-day'
-                            )
-                        "
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 384 512"
-                            width="18"
-                            height="18"
-                        >
-                            <!-- Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                            <path
-                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
-                            />
-                        </svg>
-                    </button>
-                </h2>
+        <div class="">
+            <div class="d-flex justify-content-between">
                 <SmallTenantDurationPerDayLineChart
                     v-if="analyticsStore.durationPerDay.length > 0"
                     :data="analyticsStore.durationPerDay"
                     colour="#5f31dd"
-                    class="mb-5"
+                    class=""
                 />
-                <div v-else style="height: 500px">No data yet</div>
-            </div>
-            <div class="chart">
-                <h2 class="h6 d-flex justify-content-between">
-                    Average interaction time per skill
-                    <p><i>Show which skills are visited most</i></p>
-                    <button
-                        class="btn"
-                        @click="
-                            downloadData(
-                                analyticsStore.avgTimeOnSkills,
-                                'Avg-time-per-skill'
-                            )
-                        "
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 384 512"
-                            width="18"
-                            height="18"
-                        >
-                            <!-- Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                            <path
-                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
-                            />
-                        </svg>
-                    </button>
-                </h2>
-                <SmallTenantAvgInteractionTimePerSkillHorizontalBarChart
-                    v-if="analyticsStore.avgTimeOnSkills.length > 0"
-                    :data="analyticsStore.avgTimeOnSkills"
-                    colour="purple"
-                    class="mb-5"
-                />
-                <p v-else>No data yet</p>
-            </div>
-            <div class="chart">
-                <h2 class="h6 d-flex justify-content-between">
-                    Students who completed at least one skill
-                    <p><i>Take out of box</i></p>
-                    <button
-                        class="btn"
-                        @click="
-                            downloadData(
-                                analyticsStore.percentageStudentsMasteredOneSkill,
-                                'Percentage-students-completed-one-skill'
-                            )
-                        "
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 384 512"
-                            width="18"
-                            height="18"
-                        >
-                            <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                            <path
-                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
-                            />
-                        </svg>
-                    </button>
-                </h2>
+                <div v-else>No data yet</div>
+
                 <SmallTenantPercentageStudentsMasteredAtLeastOneSkillPieChart
                     v-if="
                         analyticsStore.percentageStudentsMasteredOneSkill
                             .length > 0
                     "
                     :data="analyticsStore.percentageStudentsMasteredOneSkill"
-                    class="mb-5"
+                    class=""
                 />
-                <p v-else class="mb-5">No data yet</p>
+                <p v-else class="">No data yet</p>
+            </div>
+            <div class="row">
+                show by subject. will fit
+                <SmallTenantAvgInteractionTimePerSkillHorizontalBarChart
+                    v-if="analyticsStore.avgTimeOnSkills.length > 0"
+                    :data="analyticsStore.avgTimeOnSkills"
+                    colour="purple"
+                    class=""
+                />
+                <p v-else>No data yet</p>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-.chart {
-    box-shadow: 5px 10px 5px lightblue;
-}
-
-.charts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    grid-gap: 20px;
+.controls {
+    position: absolute;
+    left: 10px;
 }
 
 /* Modals */

@@ -265,8 +265,68 @@ export const useAnalyticsStore = defineStore('analytics', {
             }
         },
         // Tenant ----
-        // Academics
-        
+        // Engagement
+        async getAvgTimeOnSkills(tenantId) {
+            try {
+                const response = await fetch(
+                    `/student-analytics/avg-times-on-skills/tenant/${tenantId}`
+                );
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                this.avgTimeOnSkills = Array.isArray(data) ? data : [];
+                for (let i = 0; i < this.avgTimeOnSkills.length; i++) {
+                    this.avgTimeOnSkills[i].minutes =
+                        this.millisToMinutesAndSeconds(
+                            this.avgTimeOnSkills[i].milliseconds
+                        );
+                }
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.avgTimeOnSkills = [];
+            }
+        },
+        async getTenantDuration(tenantId, dataMode) {
+            this.durationPerDay = [];
+            let url = `/student-analytics/tenant-duration-per-day/${dataMode}/${tenantId}`;
+            fetch(url)
+                .then((response) => response.json())
+                .then(async (data) => {
+                    this.durationPerDay = [];
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                        data[i].minutes = data[i].milliseconds / (1000 * 60);
+                        this.durationPerDay.push(data[i]);
+                    }
+                    this.durationPerDay.sort((a, b) => a.date - b.date);
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
+        async getPercentageStudentsMasteredOneSkill(tenantId, dataMode) {
+            this.percentageStudentsMasteredOneSkill = [];
+            try {
+                let url = `/student-analytics/percentage-students-mastered-one-skill/tenant/${dataMode}/${tenantId}`;
+                let response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                this.percentageStudentsMasteredOneSkill = await response.json();
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.percentageStudentsMasteredOneSkill = [];
+            }
+        },
         millisToMinutesAndSeconds(millis) {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);

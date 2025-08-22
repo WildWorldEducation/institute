@@ -15,8 +15,8 @@ export default {
         let data = this.data;
 
         // Specify the chart’s dimensions.
-        const width = 928;
-        const height = Math.min(width, 250);
+        const width = 200;
+        const height = Math.min(width, 200);
 
         // Create the color scale.
         const color = d3
@@ -63,7 +63,7 @@ export default {
             .attr('viewBox', [-width / 2, -height / 2, width, height])
             .attr(
                 'style',
-                'max-width: 100%; height: auto; font: 10px sans-serif;'
+                'max-width: 100%; height: auto; font: 14px sans-serif;'
             );
 
         // Add a sector path for each value.
@@ -74,42 +74,15 @@ export default {
             .join('path')
             .attr('fill', (d) => {
                 if (d.data.name === 'Mastered one skill') {
-                    return 'darkgreen';
+                    return 'green';
                 } else if (d.data.name === 'Mastered no skills') {
-                    return 'darkred';
+                    return 'red';
                 }
             })
             .attr('d', arc)
             .append('title')
             .text(
                 (d) => `${d.data.name}: ${d.data.value.toLocaleString('en-US')}`
-            );
-
-        // Create a new arc generator to place a label close to the edge.
-        // The label shows the value if there is enough room.
-        svg.append('g')
-            .attr('text-anchor', 'middle')
-            .selectAll()
-            .data(arcs)
-            .join('text')
-            .attr('transform', (d) => `translate(${arcLabel.centroid(d)})`)
-            .call((text) =>
-                text
-                    .append('tspan')
-                    .attr('y', '-0.4em')
-                    .attr('fill', 'white')
-                    .attr('font-weight', 'bold')
-                    .text((d) => d.data.name)
-            )
-            .call((text) =>
-                text
-                    .filter((d) => d.endAngle - d.startAngle > 0.25)
-                    .append('tspan')
-                    .attr('x', 0)
-                    .attr('fill', 'white')
-                    .attr('y', '1em')
-                    .attr('fill-opacity', 1)
-                    .text((d) => d.data.value.toLocaleString('en-US'))
             );
     },
     computed: {}
