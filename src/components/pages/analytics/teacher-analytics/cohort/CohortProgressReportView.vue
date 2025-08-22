@@ -85,7 +85,9 @@ export default {
                 <h2 class="secondary-heading h3 mt-1">{{ cohortName }}</h2>
                 <DownloadCSVBtn
                     :data="cohortProgressDownloadData"
-                    :fileName="`${cohortName}-progress.csv`"
+                    :fileName="`${
+                        cohortName ? cohortName : 'All Students'
+                    }-progress.csv`"
                 />
             </div>
         </span>
