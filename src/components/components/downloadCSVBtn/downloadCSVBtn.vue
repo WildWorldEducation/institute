@@ -9,9 +9,13 @@ export default {
                 return;
             }
             const headers = Object.keys(this.data[0]);
-            console.log(headers);
+
             const csvRows = [];
-            csvRows.push(headers.join(','));
+            const downloadHeaders = headers.map((h) => {
+                const tileCase = this.camelCaseToWords(h);
+                return tileCase.charAt(0).toUpperCase() + tileCase.slice(1);
+            });
+            csvRows.push(downloadHeaders.join(','));
             for (const row of this.data) {
                 const values = headers.map((h) => {
                     const val = row[h];
@@ -27,6 +31,9 @@ export default {
             link.href = URL.createObjectURL(blob);
             link.download = this.fileName + '.csv';
             link.click();
+        },
+        camelCaseToWords(str) {
+            return str.replace(/([A-Z])/g, ' $1').trim();
         }
     }
 };
