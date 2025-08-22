@@ -1,7 +1,7 @@
 <script>
 import { useCohortsStore } from '../../../../../stores/CohortsStore';
 import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
-import CohortProgressLineChart from '../../../../components/teacher-analytics/cohorts/CohortProgressLineChart.vue';
+import CohortProgressLineChart from '../../../../components/analytics/full-size/cohorts/CohortProgressLineChart.vue';
 import DownloadCSVBtn from '../../../../components/downloadCSVBtn/downloadCSVBtn.vue';
 
 export default {
@@ -18,7 +18,8 @@ export default {
         return {
             cohortId: this.$route.params.cohortId,
             cohortName: '',
-            cohortProgress: []
+            cohortProgress: [],
+            cohortProgressDownloadData: []
         };
     },
     async created() {
