@@ -1,32 +1,3 @@
-<template>
-    <div class="dashboard">
-        <!-- Sidebar -->
-        <div class="sidebar" :class="{ hidden: !showSidebar }">
-            <h2>Sidebar</h2>
-            <ul>
-                <li><a href="#">Menu Item 1</a></li>
-                <li><a href="#">Menu Item 2</a></li>
-                <li><a href="#">Menu Item 3</a></li>
-            </ul>
-        </div>
-
-        <!-- Main Content -->
-        <div class="main">
-            <header class="header">
-                <button @click="toggleSidebar">
-                    {{ showSidebar ? 'Hide Sidebar' : 'Show Sidebar' }}
-                </button>
-                <h1>Dashboard</h1>
-            </header>
-
-            <div class="content">
-                <!-- This is where charts / dashboard cards go -->
-                <p>Empty dashboard. Add your charts here!</p>
-            </div>
-        </div>
-    </div>
-</template>
-
 <script>
 export default {
     name: 'Dashboard',
@@ -42,6 +13,35 @@ export default {
     }
 };
 </script>
+
+<template>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar" :class="{ hidden: !showSidebar }">
+            <h2>Sidebar</h2>
+            <ul>
+                <li><a href="#">Menu Item 1</a></li>
+                <li><a href="#">Menu Item 2</a></li>
+                <li><a href="#">Menu Item 3</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main">
+            <header class="header">
+                <button class="btn primary-btn" @click="toggleSidebar">
+                    {{ showSidebar ? 'Hide Sidebar' : 'Show Sidebar' }}
+                </button>
+                <h1>Dashboard</h1>
+            </header>
+
+            <div class="content">
+                <!-- This is where charts / dashboard cards go -->
+                <p>Add charts here</p>
+            </div>
+        </div>
+    </div>
+</template>
 
 <style scoped>
 .dashboard {
