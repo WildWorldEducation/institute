@@ -56,7 +56,7 @@ export default {
 <template>
     <div class="container bg-light rounded">
         <h1 class="heading">Student Payments</h1>
-        <ul>
+        <ul v-if="payments.length > 0">
             <li v-for="payment in payments">
                 <h2 class="h6">
                     {{ formattedStripeReceiptDate(payment.date) }}
@@ -92,6 +92,7 @@ export default {
                 </ul>
             </li>
         </ul>
+        <p v-else>No payments found.</p>
     </div>
 </template>
 
