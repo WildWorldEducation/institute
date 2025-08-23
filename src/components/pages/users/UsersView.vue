@@ -314,7 +314,8 @@ export default {
             }
         },
         updateShowUserDetails(newUser) {
-            this.setUserState(newUser);
+            //this.setUserState(newUser);
+            this.user = newUser;
             this.usersStore.selectedUserId = newUser.id;
         },
         // Tutorial methods unchanged
