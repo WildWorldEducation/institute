@@ -1,44 +1,109 @@
-<script>
-import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
-import { useTeacherAnalyticsStore } from '../../../stores/TeacherAnalyticsStore';
-import { useAnalyticsStore } from '../../../stores/AnalyticsStore';
-import { useUserSkillsStore } from '../../../stores/UserSkillsStore';
+<template>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar" :class="{ hidden: !showSidebar }">
+            <h2>Sidebar</h2>
+            <ul>
+                <li><a href="#">Menu Item 1</a></li>
+                <li><a href="#">Menu Item 2</a></li>
+                <li><a href="#">Menu Item 3</a></li>
+            </ul>
+        </div>
 
+        <!-- Main Content -->
+        <div class="main">
+            <header class="header">
+                <button @click="toggleSidebar">
+                    {{ showSidebar ? 'Hide Sidebar' : 'Show Sidebar' }}
+                </button>
+                <h1>Dashboard</h1>
+            </header>
+
+            <div class="content">
+                <!-- This is where charts / dashboard cards go -->
+                <p>Empty dashboard. Add your charts here!</p>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
 export default {
-    setup() {
-        const userDetailsStore = useUserDetailsStore();
-        const teacherAnalyticsStore = useTeacherAnalyticsStore();
-        const userSkillsStore = useUserSkillsStore();
-        const analyticsStore = useAnalyticsStore();
-        return {
-            userDetailsStore,
-            teacherAnalyticsStore,
-            userSkillsStore,
-            analyticsStore
-        };
-    },
-    components: {},
+    name: 'Dashboard',
     data() {
         return {
-            studentId: this.userDetailsStore.userId
+            showSidebar: true
         };
     },
-    async created() {
-        await this.analyticsStore.getStudentDurationPerDay(this.studentId);
-        await this.analyticsStore.getStudentSkillDurations(this.studentId);
-        await this.analyticsStore.getAvgTokensToMasterSkills(this.studentId);
-        await this.analyticsStore.getStudentAssessmentPasses(this.studentId);
-        await this.analyticsStore.getStudentAssessmentAttempts(this.studentId);
-        await this.teacherAnalyticsStore.getStudentMultipleFails(
-            this.studentId
-        );
-    },
-    methods: {}
+    methods: {
+        toggleSidebar() {
+            this.showSidebar = !this.showSidebar;
+        }
+    }
 };
 </script>
 
-<template>
-    <div class="container-fluid"></div>
-</template>
+<style scoped>
+.dashboard {
+    display: flex;
+    height: 100vh;
+    font-family: sans-serif;
+    overflow: hidden;
+}
 
-<style scoped></style>
+/* Sidebar */
+.sidebar {
+    width: 220px;
+    background: #2c3e50;
+    color: white;
+    padding: 1rem;
+    box-sizing: border-box;
+    transition: width 0.3s ease, opacity 0.3s ease;
+}
+
+.sidebar.hidden {
+    width: 0;
+    opacity: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.sidebar h2 {
+    margin-top: 0;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    margin: 0.5rem 0;
+}
+
+.sidebar a {
+    color: white;
+    text-decoration: none;
+}
+
+/* Main section */
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    transition: margin-left 0.3s ease;
+}
+
+.header {
+    background: #f5f5f5;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.content {
+    flex: 1;
+    padding: 1rem;
+}
+</style>
