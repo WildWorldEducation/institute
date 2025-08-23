@@ -86,7 +86,7 @@ export default {
         <div class="row">
             <!-- Name and basic details -->
             <div class="col-12 col-md-7">
-                <h1 v-if="isMobileCheck < 576" class="secondary-heading h3">
+                <h1 class="secondary-heading h3">
                     {{ this.$parent.user.username }}
                 </h1>
 
