@@ -111,8 +111,16 @@ export default {
             .join('path')
             .attr('fill', 'none')
             .attr('stroke', (d) => color(d.name))
-            .attr('stroke-width', 2.5)
+            .attr('stroke-width', 3)
             .attr('d', (d) => line(d.values));
+
+        svg.selectAll('.legend')
+            .data(series)
+            .join('text')
+            .attr('x', width - marginRight - 80)
+            .attr('y', (d, i) => marginTop + i * 20)
+            .attr('fill', (d) => color(d.name))
+            .text((d) => d.name);
     }
 };
 </script>

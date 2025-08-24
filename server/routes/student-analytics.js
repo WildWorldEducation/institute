@@ -356,15 +356,34 @@ router.get('/student-progress/:tenantId/:studentId', async (req, res, next) => {
     if (req.session.userName) {
         try {
             // First, get the date the student started on the platform
-            let firstInteractionSQLQuery = `SELECT date
+            let studentFirstInteractionSQLQuery = `SELECT date
             FROM user_duration_tokens_per_day
             WHERE user_id = ${conn.escape(req.params.studentId)}  
             ORDER BY date ASC
             LIMIT 1;`;
 
-            let firstInteractionResult = await query(firstInteractionSQLQuery);
+            let studentFirstInteractionResult = await query(
+                studentFirstInteractionSQLQuery
+            );
 
-            if (firstInteractionResult.length === 0) {
+            let tenantFirstInteractionSQLQuery = `
+                SELECT date
+                FROM user_duration_tokens_per_day
+                JOIN users
+                on users.id = user_duration_tokens_per_day.user_id
+                WHERE tenant_id = 2
+                ORDER BY date ASC
+                LIMIT 1;
+                `;
+
+            let tenantFirstInteractionResult = await query(
+                tenantFirstInteractionSQLQuery
+            );
+
+            if (
+                studentFirstInteractionResult.length === 0 ||
+                tenantFirstInteractionResult.length === 0
+            ) {
                 return res.status(404).json({
                     error: 'No skill activity'
                 });
@@ -394,8 +413,6 @@ router.get('/student-progress/:tenantId/:studentId', async (req, res, next) => {
 
             let avgProgressResults = await query(AverageProgressQuery);
 
-            console.log(avgProgressResults);
-
             let studentProgressQuery = `
                     SELECT CAST(mastered_date AS DATE) AS date, SUM(COUNT(*)) OVER(ORDER BY date) AS quantity
                     FROM user_skills
@@ -415,19 +432,36 @@ router.get('/student-progress/:tenantId/:studentId', async (req, res, next) => {
                 });
             }
 
-            let flag = false;
+            let studentFlag = false;
             for (let i = 0; i < studentProgressResults.length; i++) {
                 if (
-                    firstInteractionResult[0].date ==
+                    studentFirstInteractionResult[0].date ==
                     studentProgressResults[i].date
                 ) {
-                    flag = true;
+                    studentFlag = true;
                 }
             }
 
-            if (!flag) {
+            if (!studentFlag) {
                 studentProgressResults.unshift({
-                    date: firstInteractionResult[0].date,
+                    date: studentFirstInteractionResult[0].date,
+                    quantity: 0
+                });
+            }
+
+            let tenantFlag = false;
+            for (let i = 0; i < avgProgressResults.length; i++) {
+                if (
+                    tenantFirstInteractionResult[0].date ==
+                    avgProgressResults[i].date
+                ) {
+                    tenantFlag = true;
+                }
+            }
+
+            if (!tenantFlag) {
+                avgProgressResults.unshift({
+                    date: tenantFirstInteractionResult[0].date,
                     quantity: 0
                 });
             }
