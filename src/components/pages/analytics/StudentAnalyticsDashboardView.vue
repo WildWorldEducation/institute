@@ -26,16 +26,18 @@ export default {
             isLifeData: false,
             isCSData: false,
             isSAndIData: false,
-            isDIData: false,
-
+            isDIData: false
         };
     },
     components: {
         ProgressChart
     },
     async created() {
-        await this.analyticsStore.getStudentProgress(this.userDetailsStore.userId, this.userDetailsStore.tenantId);
-        console.log(this.analyticsStore.progress)
+        await this.analyticsStore.getStudentProgress(
+            this.userDetailsStore.userId,
+            this.userDetailsStore.tenantId
+        );
+        console.log(this.analyticsStore.progress);
     },
 
     methods: {
@@ -50,18 +52,30 @@ export default {
     <div class="dashboard">
         <!-- Sidebar -->
         <!-- dont show on mobile -->
-        <div v-if="screenWidth > 768" class="sidebar" :class="{ hidden: !showSidebar }">
+        <div
+            v-if="screenWidth > 768"
+            class="sidebar"
+            :class="{ hidden: !showSidebar }"
+        >
             <!-- filters - student and / or school average -->
             <h1 class="h2">Who</h1>
             <p>
                 <label class="control control-checkbox">
-                    <input type="checkbox" value="true" v-model="isStudentData" />
+                    <input
+                        type="checkbox"
+                        value="true"
+                        v-model="isStudentData"
+                    />
                     You
                 </label>
             </p>
             <p>
                 <label class="control control-checkbox">
-                    <input type="checkbox" value="true" v-model="isSchoolData" />
+                    <input
+                        type="checkbox"
+                        value="true"
+                        v-model="isSchoolData"
+                    />
                     School average
                 </label>
             </p>
@@ -70,43 +84,71 @@ export default {
             <ul>
                 <li>
                     <label class="control control-checkbox">
-                        <input type="checkbox" value="true" v-model="isLanguageData" />
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isLanguageData"
+                        />
                         Language
                     </label>
                 </li>
                 <li>
                     <label class="control control-checkbox">
-                        <input type="checkbox" value="true" v-model="isMathData" />
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isMathData"
+                        />
                         Math
                     </label>
                 </li>
                 <li>
                     <label class="control control-checkbox">
-                        <input type="checkbox" value="true" v-model="isHistoryData" />
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isHistoryData"
+                        />
                         History
                     </label>
                 </li>
                 <li>
                     <label class="control control-checkbox">
-                        <input type="checkbox" value="true" v-model="isLifeData" />
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isLifeData"
+                        />
                         Life
                     </label>
                 </li>
                 <li>
                     <label class="control control-checkbox">
-                        <input type="checkbox" value="true" v-model="isCSData" />
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isCSData"
+                        />
                         Computer Science
                     </label>
                 </li>
                 <li>
                     <label class="control control-checkbox">
-                        <input type="checkbox" value="true" v-model="isSAndIData" />
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isSAndIData"
+                        />
                         Science & Invention
                     </label>
                 </li>
                 <li>
                     <label class="control control-checkbox">
-                        <input type="checkbox" value="true" v-model="isDIData" />
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isDIData"
+                        />
                         Dangerous Ideas
                     </label>
                 </li>
@@ -125,9 +167,15 @@ export default {
             <div class="content container-fluid">
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
-                    <div id="progress-chart-container" class="col-md chart-container p-0">
-                        <ProgressChart v-if="analyticsStore.progress.student.length > 0"
-                            :data="analyticsStore.progress" colour="purple" />
+                    <div
+                        id="progress-chart-container"
+                        class="col-md chart-container p-0"
+                    >
+                        <ProgressChart
+                            v-if="analyticsStore.progress.student.length > 0"
+                            :data="analyticsStore.progress"
+                            colour="purple"
+                        />
                         <p v-else>No data yet</p>
                     </div>
                     <div class="col-md chart-container p-0">2</div>
@@ -146,7 +194,6 @@ export default {
     height: 100%;
     width: 100%;
 }
-
 
 .dash-row {
     height: 50%;

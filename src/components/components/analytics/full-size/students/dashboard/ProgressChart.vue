@@ -5,25 +5,32 @@ export default {
     name: 'ProgressChart',
     props: ['data', 'colour'],
     data() {
-        return {
-            
-        };
+        return {};
     },
     mounted() {
         const data = this.data.student;
 
+        // Convert object into array of series
+        const series = Object.entries(this.data).map(([name, values]) => ({
+            name,
+            values
+        }));
+
+        console.log(series);
+
         const container = d3.select('#progress-chart-container');
 
         // Declare the chart dimensions and margins.
-        const width = document.getElementById('progress-chart-container').clientWidth;;
-        const height = document.getElementById('progress-chart-container').clientHeight;;
+        const width = document.getElementById(
+            'progress-chart-container'
+        ).clientWidth;
+        const height = document.getElementById(
+            'progress-chart-container'
+        ).clientHeight;
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 0;
         const marginLeft = 0;
-
-console.log(width)
-console.log(height)
 
         // Declare the x (horizontal position) scale.
         const x = d3.scaleUtc(
@@ -37,6 +44,11 @@ console.log(height)
             [height - marginBottom, marginTop]
         );
 
+        const color = d3
+            .scaleOrdinal()
+            .domain(series.map((s) => s.name))
+            .range(d3.schemeCategory10);
+
         // Declare the line generator.
         const line = d3
             .line()
@@ -49,21 +61,21 @@ console.log(height)
             .append('svg')
             .attr('width', '100%')
             .attr('height', '100%')
-            .attr('viewBox', [0, 0, +Math.min(width,height), +Math.min(width,height)])
-            .attr('preserveAspectRatio','xMinYMin')
-          //   .append("g")
+            .attr('viewBox', [
+                0,
+                0,
+                +Math.min(width, height),
+                +Math.min(width, height)
+            ])
+            .attr('preserveAspectRatio', 'xMinYMin');
+        //   .append("g")
         //.attr("transform", "translate(" + Math.min(width,height) / 2 + "," + Math.min(width,height) / 2 + ")")
-            //.attr('style', 'max-width: 100%; height: auto; height: intrinsic;');
+        //.attr('style', 'max-width: 100%; height: auto; height: intrinsic;');
 
         // Add the x-axis.
         svg.append('g')
             .attr('transform', `translate(0,${height - marginBottom})`)
-            .call(
-                d3
-                    .axisBottom(x)
-                    .ticks(data.length)
-                    .tickSizeOuter(0)
-            );
+            .call(d3.axisBottom(x).ticks(data.length).tickSizeOuter(0));
 
         // Add the y-axis, remove the domain line, add grid lines and a label.
         svg.append('g')
@@ -87,17 +99,24 @@ console.log(height)
             );
 
         // Append a path for the line.
-        svg.append('path')
+        // svg.append('path')
+        //     .attr('fill', 'none')
+        //     .attr('stroke', '#5f31dd')
+        //     .attr('stroke-width', 3)
+        //     .attr('d', line(data));
+
+        // Draw the lines
+        svg.selectAll('.line')
+            .data(series)
+            .join('path')
             .attr('fill', 'none')
-            .attr('stroke', '#5f31dd')
-            .attr('stroke-width', 3)
-            .attr('d', line(data));
+            .attr('stroke', (d) => color(d.name))
+            .attr('stroke-width', 2.5)
+            .attr('d', (d) => line(d.values));
     }
 };
 </script>
 
-<template>
-   
-</template>
+<template></template>
 
 <style scoped></style>

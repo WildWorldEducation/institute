@@ -24,7 +24,10 @@ export const useAnalyticsStore = defineStore('analytics', {
             totalTokensPerDay: [],
             // Student level --------------------------
             // Dashboard
-            progress: [],
+            progress: {
+                student: [],
+                tenant: []
+            },
             // Other
             studentDurationsPerDay: [],
             studentSkillDurations: [],
@@ -44,17 +47,23 @@ export const useAnalyticsStore = defineStore('analytics', {
     actions: {
         // Student
         async getStudentProgress(studentId, tenantId) {
-           await fetch(`/student-analytics/student-progress/${tenantId}/${studentId}`)
+            await fetch(
+                `/student-analytics/student-progress/${tenantId}/${studentId}`
+            )
                 .then((response) => response.json())
                 .then((data) => {
                     for (let i = 0; i < data.studentProgress.length; i++) {
-                        data.studentProgress[i].date = new Date(data.studentProgress[i].date);
+                        data.studentProgress[i].date = new Date(
+                            data.studentProgress[i].date
+                        );
                     }
                     data.studentProgress.sort((a, b) => a.date - b.date);
                     this.progress.student = data.studentProgress;
 
                     for (let i = 0; i < data.tenantAvgProgress.length; i++) {
-                        data.tenantAvgProgress[i].date = new Date(data.tenantAvgProgress[i].date);
+                        data.tenantAvgProgress[i].date = new Date(
+                            data.tenantAvgProgress[i].date
+                        );
                     }
                     data.tenantAvgProgress.sort((a, b) => a.date - b.date);
                     this.progress.tenant = data.tenantAvgProgress;
