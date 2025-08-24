@@ -3,7 +3,7 @@
 import { useUsersStore } from '../../../stores/UsersStore';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import TooltipBtn from './../share-components/TooltipBtn.vue';
-import StudentNotifications from './../teacher-analytics/students/StudentNotifications.vue';
+import StudentNotifications from './../analytics/full-size/students/StudentNotifications.vue';
 
 export default {
     props: ['userId'],
@@ -86,7 +86,7 @@ export default {
         <div class="row">
             <!-- Name and basic details -->
             <div class="col-12 col-md-7">
-                <h1 v-if="isMobileCheck < 576" class="secondary-heading h3">
+                <h1 class="secondary-heading h3">
                     {{ this.$parent.user.username }}
                 </h1>
 
@@ -469,7 +469,7 @@ export default {
 
 #user-information {
     border: 1px solid var(--primary-color);
-    border-radius: 12px;   
+    border-radius: 12px;
 }
 
 .user-input-information {

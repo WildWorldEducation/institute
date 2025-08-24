@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { useUserSkillsStore } from './UserSkillsStore.js';
 
 export const useAnalyticsStore = defineStore('analytics', {
     state: () => {
@@ -22,6 +23,11 @@ export const useAnalyticsStore = defineStore('analytics', {
             totalTokensPerSkill: [],
             totalTokensPerDay: [],
             // Student level --------------------------
+            studentDurationsPerDay: [],
+            studentSkillDurations: [],
+            studentTokensPerSkills: [],
+            studentAssessmentPasses: [],
+            studentAssessmentAttempts: [],
             studentRootSubjectsFailedAssessments: [],
             studentRootSubjectsPassedAssessments: [],
             studentRootSubjectsAttemptedAssessments: [],
@@ -34,6 +40,97 @@ export const useAnalyticsStore = defineStore('analytics', {
     },
     actions: {
         // Student
+        async getStudentDurationPerDay(studentId) {
+            fetch(`/student-analytics/student-duration-per-day/${studentId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].formattedQuantity = data[i].quantity / 1000;
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.studentDurationsPerDay = data;
+                })
+                .catch((error) => {
+                    console.error(
+                        'Error fetching student duration per day:',
+                        error
+                    );
+                });
+        },
+        async getStudentSkillDurations(studentId) {
+            fetch(`/student-analytics/skill-durations/${studentId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    this.studentSkillDurations = data;
+                    for (
+                        let i = 0;
+                        i < this.studentSkillDurations.length;
+                        i++
+                    ) {
+                        this.studentSkillDurations[i].formattedQuantity =
+                            this.millisToMinutesAndSeconds(
+                                this.studentSkillDurations[i].quantity
+                            );
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching last visited skills:', error);
+                });
+        },
+        async getAvgTokensToMasterSkills(studentId) {
+            try {
+                const response = await fetch(
+                    `/student-analytics/avg-tokens-to-master-skills/student/${studentId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                this.studentTokensPerSkills = Array.isArray(data) ? data : [];
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.studentTokensPerSkills = [];
+            }
+        },
+        async getStudentAssessmentPasses(studentId) {
+            const userSkillsStore = useUserSkillsStore();
+            await userSkillsStore.getMasteredSkills(studentId);
+            this.studentAssessmentPasses = userSkillsStore.masteredSkills.map(
+                (e) => {
+                    return {
+                        ...e,
+                        url: `/skills/${e.url}`,
+                        // labelName: `${e.rootParent} - ${e.name}`
+                        labelName: `${e.name}`
+                    };
+                }
+            );
+        },
+        async getStudentAssessmentAttempts(studentId) {
+            fetch(
+                `/student-analytics/started-unmastered-assessments/${studentId}`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    this.studentAssessmentAttempts = data.map((e) => {
+                        return {
+                            ...e,
+                            url: `/skills/${e.url}`,
+                            // labelName: `${e.rootParent} - ${e.name}`
+                            labelName: `${e.name}`
+                        };
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error fetching last visited skills:', error);
+                });
+        },
         async getStudentFailedAssessmentsBySubject(studentId) {
             try {
                 const response = await fetch(

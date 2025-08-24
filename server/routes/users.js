@@ -1144,8 +1144,7 @@ router.put(
             SET first_name = ${conn.escape(req.body.firstname)}, 
             last_name = ${conn.escape(req.body.lastname)}, 
             username = ${conn.escape(req.body.username)}, 
-            email = ${conn.escape(req.body.email)}, 
-            password = ${conn.escape(req.body.password)},
+            email = ${conn.escape(req.body.email)},        
             role = ${conn.escape(req.body.role)},
             tenant_id = ${conn.escape(req.body.tenant_id)}
             WHERE id = ${conn.escape(req.params.id)};`;
@@ -2420,6 +2419,28 @@ router.get('/reputation-events/:userId', isAuthenticated, (req, res, next) => {
     FROM user_actions
     WHERE user_id = ${conn.escape(req.params.userId)}
     AND action = 'receive-reputation';`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.json(results);
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
+/*
+ * Partners
+ */
+// List partners
+router.get('/partners', isAuthenticated, isPlatformAdmin, (req, res, next) => {
+    let sqlQuery = `SELECT id, username
+    FROM users
+    WHERE role = 'partner'
+    AND is_deleted = 0;`;
 
     conn.query(sqlQuery, (err, results) => {
         try {

@@ -2,7 +2,7 @@
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import { useShowSkillStore } from '../../stores/ShowSkillStore.js';
 import ShowSkill from '../components/ShowSkill.vue';
-import SkillTimeTracker from '../components/teacher-analytics/students/SkillTimeTracker.vue';
+import SkillTimeTracker from '../components/analytics/SkillTimeTracker.vue';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();

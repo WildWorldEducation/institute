@@ -1,6 +1,6 @@
 <script>
 import { useUsersStore } from '../../../../../stores/UsersStore';
-import StudentProgressLineChart from '../../../../components/teacher-analytics/students/StudentProgressLineChart.vue';
+import StudentProgressLineChart from '../../../../components/analytics/full-size/students/StudentProgressLineChart.vue';
 import DownloadCSVBtn from '../../../../components/downloadCSVBtn/downloadCSVBtn.vue';
 export default {
     setup() {

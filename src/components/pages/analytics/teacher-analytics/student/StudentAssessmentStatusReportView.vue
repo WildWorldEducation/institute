@@ -2,9 +2,9 @@
 import { useUsersStore } from '../../../../../stores/UsersStore';
 import { useUserSkillsStore } from '../../../../../stores/UserSkillsStore';
 import { useTeacherAnalyticsStore } from '../../../../../stores/TeacherAnalyticsStore';
-import PassedAssessmentsTimelineChart from '../../../../components/teacher-analytics/students/PassedAssessmentsTimelineChart.vue';
-import AttemptedAssessmentsTimelineChart from '../../../../components/teacher-analytics/students/AttemptedAssessmentsTimelineChart.vue';
-import FailedAssessmentsHorizontalBarChart from '../../../../components/teacher-analytics/students/FailedAssessmentsHorizontalBarChart.vue';
+import PassedAssessmentsTimelineChart from '../../../../components/analytics/full-size/students/PassedAssessmentsTimelineChart.vue';
+import AttemptedAssessmentsTimelineChart from '../../../../components/analytics/full-size/students/AttemptedAssessmentsTimelineChart.vue';
+import FailedAssessmentsHorizontalBarChart from '../../../../components/analytics/full-size/students/FailedAssessmentsHorizontalBarChart.vue';
 import DownloadCSVBtn from '../../../../components/downloadCSVBtn/downloadCSVBtn.vue';
 
 export default {

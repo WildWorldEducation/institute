@@ -3,7 +3,7 @@ import { useSkillsStore } from '../../stores/SkillsStore';
 import { useShowSkillStore } from '../../stores/ShowSkillStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import Assessment from '../components/assessments/Assessment.vue';
-import SkillTimeTracker from '../components/teacher-analytics/students/SkillTimeTracker.vue';
+import SkillTimeTracker from '../components/analytics/SkillTimeTracker.vue';
 
 export default {
     setup() {

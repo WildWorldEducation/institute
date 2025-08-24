@@ -314,8 +314,10 @@ export default {
             }
         },
         updateShowUserDetails(newUser) {
-            this.setUserState(newUser);
+            //this.setUserState(newUser);
+            this.user = newUser;
             this.usersStore.selectedUserId = newUser.id;
+            this.$refs.usersListRef.selectUser(newUser);
         },
         // Tutorial methods unchanged
         async checkIfTutorialComplete() {

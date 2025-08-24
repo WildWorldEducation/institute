@@ -378,7 +378,7 @@ const router = createRouter({
             name: 'my-progress',
             component: () =>
                 import(
-                    '../components/pages/analytics/StudentAnalyticsView.vue'
+                    '../components/pages/analytics/StudentAnalyticsDashboardView.vue'
                 ),
             meta: {
                 requiresAuth: true,
@@ -665,7 +665,7 @@ const router = createRouter({
             name: 'cost-report',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/CostReportView.vue'
+                    '../components/pages/analytics/school-admin-analytics/CostReportDashboardView.vue'
                 ),
             meta: {
                 title: 'Cost Report',
@@ -678,7 +678,7 @@ const router = createRouter({
             name: 'engagement-report',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/EngagementReportView.vue'
+                    '../components/pages/analytics/school-admin-analytics/EngagementReportDashboardView.vue'
                 ),
             meta: {
                 title: 'Engagement Report',
@@ -691,7 +691,7 @@ const router = createRouter({
             name: 'academic-report',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/AcademicReportView.vue'
+                    '../components/pages/analytics/school-admin-analytics/AcademicReportDashboardView.vue'
                 ),
             meta: {
                 title: 'Academic Report',
@@ -741,25 +741,31 @@ const router = createRouter({
             path: '/referrals',
             name: 'list-referrals',
             component: () =>
-                import('../components/pages/referrals/ListReferrals.vue')
+                import('../components/pages/partners/ReferralsListView.vue')
         },
         {
-            path: '/referrals/:partnerId/:referredUserId',
+            path: '/referrals/:referredUserId',
             name: 'show-referral',
             component: () =>
-                import('../components/pages/referrals/ShowReferral.vue')
+                import('../components/pages/partners/ReferralView.vue')
         },
         {
             path: '/partners',
             name: 'partners',
             component: () =>
-                import('../components/pages/dropdown-menu-pages/Partners.vue')
+                import('../components/pages/partners/PartnersListView.vue')
         },
         {
-            path: '/student-payments',
+            path: '/partners/:partnerId',
+            name: 'partner',
+            component: () =>
+                import('../components/pages/partners/PartnerView.vue')
+        },
+        {
+            path: '/student-payments/:studentId',
             name: 'student-payments',
             component: () =>
-                import('../components/pages/tokens/StudentPayments.vue')
+                import('../components/pages/partners/StudentPaymentsView.vue')
         },
         {
             path: '/:pathMatch(.*)*',
