@@ -15,12 +15,15 @@ export default {
         const container = d3.select('#progress-chart-container');
 
         // Declare the chart dimensions and margins.
-        const width = 928;
-        const height = 500;
-        const marginTop = 20;
-        const marginRight = 30;
-        const marginBottom = 30;
-        const marginLeft = 40;
+        const width = document.getElementById('progress-chart-container').clientWidth;;
+        const height = document.getElementById('progress-chart-container').clientHeight;;
+        const marginTop = 0;
+        const marginRight = 0;
+        const marginBottom = 0;
+        const marginLeft = 0;
+
+console.log(width)
+console.log(height)
 
         // Declare the x (horizontal position) scale.
         const x = d3.scaleUtc(
@@ -44,10 +47,13 @@ export default {
         const svg = d3
             .select('#progress-chart-container')
             .append('svg')
-            .attr('width', width)
-            .attr('height', height)
-            .attr('viewBox', [0, 0, width, height])
-            .attr('style', 'max-width: 100%; height: auto; height: intrinsic;');
+            .attr('width', '100%')
+            .attr('height', '100%')
+            .attr('viewBox', [0, 0, +Math.min(width,height), +Math.min(width,height)])
+            .attr('preserveAspectRatio','xMinYMin')
+          //   .append("g")
+        //.attr("transform", "translate(" + Math.min(width,height) / 2 + "," + Math.min(width,height) / 2 + ")")
+            //.attr('style', 'max-width: 100%; height: auto; height: intrinsic;');
 
         // Add the x-axis.
         svg.append('g')
@@ -73,7 +79,7 @@ export default {
             .call((g) =>
                 g
                     .append('text')
-                    .attr('x', -marginLeft)
+                    .attr('x', 0)
                     .attr('y', 10)
                     .attr('fill', 'currentColor')
                     .attr('text-anchor', 'start')
@@ -84,14 +90,14 @@ export default {
         svg.append('path')
             .attr('fill', 'none')
             .attr('stroke', '#5f31dd')
-            .attr('stroke-width', 1.5)
+            .attr('stroke-width', 3)
             .attr('d', line(data));
     }
 };
 </script>
 
 <template>
-    <div id="progress-chart-container"></div>
+   
 </template>
 
 <style scoped></style>

@@ -125,16 +125,16 @@ export default {
             <div class="content container-fluid">
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
-                    <div class="col-md chart-container">
+                    <div id="progress-chart-container" class="col-md chart-container p-0">
                         <ProgressChart v-if="analyticsStore.studentProgress.length > 0"
                             :data="analyticsStore.studentProgress" colour="purple" />
                         <p v-else>No data yet</p>
                     </div>
-                    <div class="col-md chart-container">2</div>
+                    <div class="col-md chart-container p-0">2</div>
                 </div>
                 <div class="dash-row row">
-                    <div class="col-md chart-container">3</div>
-                    <div class="col-md chart-container">4</div>
+                    <div class="col-md chart-container p-0">3</div>
+                    <div class="col-md chart-container p-0">4</div>
                 </div>
             </div>
         </div>
@@ -142,6 +142,12 @@ export default {
 </template>
 
 <style scoped>
+#progress-chart-container {
+    height: 100%;
+    width: 100%;
+}
+
+
 .dash-row {
     height: 50%;
 }
