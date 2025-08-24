@@ -23,6 +23,9 @@ export const useAnalyticsStore = defineStore('analytics', {
             totalTokensPerSkill: [],
             totalTokensPerDay: [],
             // Student level --------------------------
+            // Dashboard
+            studentProgress: [],
+            // Other
             studentDurationsPerDay: [],
             studentSkillDurations: [],
             studentTokensPerSkills: [],
@@ -40,6 +43,20 @@ export const useAnalyticsStore = defineStore('analytics', {
     },
     actions: {
         // Student
+        async getStudentProgress(studentId) {
+            fetch(`/student-analytics/student-progress/${studentId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.studentProgress = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
         async getStudentDurationPerDay(studentId) {
             fetch(`/student-analytics/student-duration-per-day/${studentId}`)
                 .then((response) => response.json())
