@@ -512,6 +512,15 @@ export default {
                                         My Progress
                                     </RouterLink>
                                     <RouterLink
+                                        v-if="
+                                            userDetailsStore.role == 'student'
+                                        "
+                                        to="/old-my-progress"
+                                        class="dropdown-item"
+                                    >
+                                        OLD My Progress
+                                    </RouterLink>
+                                    <RouterLink
                                         to="/settings"
                                         class="dropdown-item"
                                     >

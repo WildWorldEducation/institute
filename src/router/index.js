@@ -385,6 +385,18 @@ const router = createRouter({
                 roles: ['student']
             }
         },
+         {
+            path: '/old-my-progress',
+            name: 'old-my-progress',
+            component: () =>
+                import(
+                    '../components/pages/analytics/StudentAnalyticsViewOLD.vue'
+                ),
+            meta: {
+                requiresAuth: true,
+                roles: ['student']
+            }
+        },
         // TODO - possibly remove this feature
         // Check with client first
         // {
