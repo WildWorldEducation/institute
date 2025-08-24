@@ -10,7 +10,7 @@ export default {
         };
     },
     mounted() {
-        const data = this.data;
+        const data = this.data.student;
 
         const container = d3.select('#progress-chart-container');
 

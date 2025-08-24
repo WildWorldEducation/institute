@@ -34,8 +34,8 @@ export default {
         ProgressChart
     },
     async created() {
-        await this.analyticsStore.getStudentProgress(this.userDetailsStore.userId);
-        console.log(this.analyticsStore.studentProgress)
+        await this.analyticsStore.getStudentProgress(this.userDetailsStore.userId, this.userDetailsStore.tenantId);
+        console.log(this.analyticsStore.progress)
     },
 
     methods: {
@@ -126,8 +126,8 @@ export default {
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
                     <div id="progress-chart-container" class="col-md chart-container p-0">
-                        <ProgressChart v-if="analyticsStore.studentProgress.length > 0"
-                            :data="analyticsStore.studentProgress" colour="purple" />
+                        <ProgressChart v-if="analyticsStore.progress.student.length > 0"
+                            :data="analyticsStore.progress" colour="purple" />
                         <p v-else>No data yet</p>
                     </div>
                     <div class="col-md chart-container p-0">2</div>
