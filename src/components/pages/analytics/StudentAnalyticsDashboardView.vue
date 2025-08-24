@@ -18,16 +18,107 @@ export default {
 <template>
     <div class="dashboard">
         <!-- Sidebar -->
+        <!-- dont show on mobile -->
         <div
             v-if="screenWidth > 768"
             class="sidebar"
             :class="{ hidden: !showSidebar }"
         >
-            <h2>Sidebar</h2>
+            <!-- filters - student and / or school average -->
+            <h1 class="h2">Who</h1>
+            <p>
+                <label class="control control-checkbox">
+                    <input
+                        type="checkbox"
+                        value="true"
+                        v-model="isAnotherInstanceOfExistingSkill"
+                    />
+                    You
+                </label>
+            </p>
+            <p>
+                <label class="control control-checkbox">
+                    <input
+                        type="checkbox"
+                        value="true"
+                        v-model="isAnotherInstanceOfExistingSkill"
+                    />
+                    School average
+                </label>
+            </p>
+
+            <h1 class="h2">Subjects</h1>
             <ul>
-                <li><a href="#">Menu Item 1</a></li>
-                <li><a href="#">Menu Item 2</a></li>
-                <li><a href="#">Menu Item 3</a></li>
+                <li>
+                    <label class="control control-checkbox">
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isAnotherInstanceOfExistingSkill"
+                        />
+                        Language
+                    </label>
+                </li>
+                <li>
+                    <label class="control control-checkbox">
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isAnotherInstanceOfExistingSkill"
+                        />
+                        Math
+                    </label>
+                </li>
+                <li>
+                    <label class="control control-checkbox">
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isAnotherInstanceOfExistingSkill"
+                        />
+                        History
+                    </label>
+                </li>
+                <li>
+                    <label class="control control-checkbox">
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isAnotherInstanceOfExistingSkill"
+                        />
+                        Life
+                    </label>
+                </li>
+                <li>
+                    <label class="control control-checkbox">
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isAnotherInstanceOfExistingSkill"
+                        />
+                        Computer Science
+                    </label>
+                </li>
+                <li>
+                    <label class="control control-checkbox">
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isAnotherInstanceOfExistingSkill"
+                        />
+                        Science & Invention
+                    </label>
+                </li>
+                <li>
+                    <label class="control control-checkbox">
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isAnotherInstanceOfExistingSkill"
+                        />
+                        Dangerous Ideas
+                    </label>
+                </li>
             </ul>
         </div>
 
