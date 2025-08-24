@@ -3,12 +3,12 @@ import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import { useTeacherAnalyticsStore } from '../../../stores/TeacherAnalyticsStore';
 import { useAnalyticsStore } from '../../../stores/AnalyticsStore';
 import { useUserSkillsStore } from '../../../stores/UserSkillsStore';
-import SmallStudentDurationPerDayLineChart from '../../components/analytics/small-size/students/SmallStudentDurationPerDayLineChart.vue';
-import SmallTimePerSkillHorizontalBarChart from '../../components/analytics/small-size/students/SmallTimePerSkillHorizontalBarChart.vue';
-import SmallStudentAvgTokensToMasterSkillsHorizontalBarChart from '../../components/analytics/small-size/students/SmallStudentAvgTokensToMasterSkillsHorizontalBarChart.vue';
-import SmallPassedAssessmentsTimelineChart from '../../components/analytics/small-size/students/SmallPassedAssessmentsTimelineChart.vue';
-import SmallAttemptedAssessmentsTimelineChart from '../../components/analytics/small-size/students/SmallAttemptedAssessmentsTimelineChart.vue';
-import SmallFailedAssessmentsHorizontalBarChart from '../../components/analytics/small-size/students/SmallFailedAssessmentsHorizontalBarChart.vue';
+import StudentDurationPerDayLineChart from '../../components/analytics/full-size/students/StudentDurationPerDayLineChart.vue';
+import TimePerSkillHorizontalBarChart from '../../components/analytics/full-size/students/TimePerSkillHorizontalBarChart.vue';
+import StudentAvgTokensToMasterSkillsHorizontalBarChart from '../../components/analytics/full-size/students/StudentAvgTokensToMasterSkillsHorizontalBarChart.vue';
+import PassedAssessmentsTimelineChart from '../../components/analytics/full-size/students/PassedAssessmentsTimelineChart.vue';
+import AttemptedAssessmentsTimelineChart from '../../components/analytics/full-size/students/AttemptedAssessmentsTimelineChart.vue';
+import FailedAssessmentsHorizontalBarChart from '../../components/analytics/full-size/students/FailedAssessmentsHorizontalBarChart.vue';
 
 export default {
     setup() {
@@ -24,12 +24,12 @@ export default {
         };
     },
     components: {
-        SmallStudentDurationPerDayLineChart,
-        SmallTimePerSkillHorizontalBarChart,
-        SmallStudentAvgTokensToMasterSkillsHorizontalBarChart,
-        SmallPassedAssessmentsTimelineChart,
-        SmallAttemptedAssessmentsTimelineChart,
-        SmallFailedAssessmentsHorizontalBarChart
+        StudentDurationPerDayLineChart,
+        TimePerSkillHorizontalBarChart,
+        StudentAvgTokensToMasterSkillsHorizontalBarChart,
+        PassedAssessmentsTimelineChart,
+        AttemptedAssessmentsTimelineChart,
+        FailedAssessmentsHorizontalBarChart
     },
     data() {
         return {
@@ -55,7 +55,7 @@ export default {
         <div class="charts-grid">
             <div class="chart">
                 <h2 class="h6">Time per day</h2>
-                <SmallStudentDurationPerDayLineChart
+                <StudentDurationPerDayLineChart
                     v-if="analyticsStore.studentDurationsPerDay.length > 0"
                     :data="analyticsStore.studentDurationsPerDay"
                     colour="black"
@@ -64,7 +64,7 @@ export default {
             </div>
             <div class="chart">
                 <h2 class="h6">Time per skill</h2>
-                <SmallTimePerSkillHorizontalBarChart
+                <TimePerSkillHorizontalBarChart
                     v-if="analyticsStore.studentSkillDurations.length > 0"
                     :data="analyticsStore.studentSkillDurations"
                     colour="purple"
@@ -73,7 +73,7 @@ export default {
             </div>
             <div class="chart">
                 <h2 class="h6">Tokens per skill</h2>
-                <SmallStudentAvgTokensToMasterSkillsHorizontalBarChart
+                <StudentAvgTokensToMasterSkillsHorizontalBarChart
                     class=""
                     v-if="analyticsStore.studentTokensPerSkills.length > 0"
                     :data="analyticsStore.studentTokensPerSkills"
@@ -83,7 +83,7 @@ export default {
             </div>
             <div class="chart">
                 <h2 class="h6">Passed</h2>
-                <SmallPassedAssessmentsTimelineChart
+                <PassedAssessmentsTimelineChart
                     class=""
                     v-if="analyticsStore.studentAssessmentPasses.length > 0"
                     :data="analyticsStore.studentAssessmentPasses"
@@ -94,7 +94,7 @@ export default {
             </div>
             <div class="chart">
                 <h2 class="h6">Attempted</h2>
-                <SmallAttemptedAssessmentsTimelineChart
+                <AttemptedAssessmentsTimelineChart
                     class=""
                     v-if="analyticsStore.studentAssessmentAttempts.length > 0"
                     :data="analyticsStore.studentAssessmentAttempts"
@@ -103,7 +103,7 @@ export default {
             </div>
             <div class="chart">
                 <h2 class="h6">Failed multiple times</h2>
-                <SmallFailedAssessmentsHorizontalBarChart
+                <FailedAssessmentsHorizontalBarChart
                     v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
                     :data="teacherAnalyticsStore.studentMultipleFails"
                     colour="darkred"
