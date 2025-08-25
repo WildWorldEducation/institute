@@ -1,6 +1,7 @@
 <script>
 import { useCohortsStore } from '../../../../../stores/CohortsStore';
 import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
+import DownloadCSVBtn from '../../../../components/downloadCSVBtn/downloadCSVBtn.vue';
 import CohortDurationPerDayLineChart from '../../../../components/analytics/full-size/cohorts/CohortDurationPerDayLineChart.vue';
 import CohortCompareDurationHorizontalChart from '../../../../components/analytics/full-size/cohorts/CohortCompareDurationHorizontalChart.vue';
 import CohortDurationPerSkillHorizontalBarChart from '../../../../components/analytics/full-size/cohorts/CohortDurationPerSkillHorizontalBarChart.vue';
@@ -17,7 +18,8 @@ export default {
     components: {
         CohortDurationPerDayLineChart,
         CohortCompareDurationHorizontalChart,
-        CohortDurationPerSkillHorizontalBarChart
+        CohortDurationPerSkillHorizontalBarChart,
+        DownloadCSVBtn
     },
     data() {
         return {
@@ -25,7 +27,10 @@ export default {
             cohortName: '',
             durationsPerDay: [],
             studentTotalDurations: [],
-            studentDurationsPerSkill: []
+            studentDurationsPerSkill: [],
+            durationsPerDayDownloadData: [],
+            studentTotalDurationsDownloadData: [],
+            studentDurationsPerSkillDownloadData: []
         };
     },
     async created() {
@@ -61,6 +66,14 @@ export default {
                     }
                     data.sort((a, b) => a.date - b.date);
                     this.durationsPerDay = data;
+                    this.durationsPerDayDownloadData = data.map((d) => {
+                        return {
+                            date: new Date(d.date).toLocaleDateString(),
+                            minutesSpent: this.millisToMinutesAndSeconds(
+                                d.quantity
+                            )
+                        };
+                    });
                 })
                 .catch((error) => {
                     console.error(
@@ -82,6 +95,14 @@ export default {
                     }
                     data.sort((a, b) => a.date - b.date);
                     this.durationsPerDay = data;
+                    this.durationsPerDayDownloadData = data.map((d) => {
+                        return {
+                            date: new Date(d.date).toLocaleDateString(),
+                            minutesSpent: this.millisToMinutesAndSeconds(
+                                d.quantity
+                            )
+                        };
+                    });
                 })
                 .catch((error) => {
                     console.error(
@@ -101,6 +122,14 @@ export default {
                     }
                     data.sort((a, b) => a.date - b.date);
                     this.studentTotalDurations = data;
+                    this.studentTotalDurationsDownloadData = data.map((d) => {
+                        return {
+                            studentName: d.name,
+                            minutesSpent: this.millisToMinutesAndSeconds(
+                                d.quantity
+                            )
+                        };
+                    });
                 })
                 .catch((error) => {
                     console.error(
@@ -122,6 +151,14 @@ export default {
                     }
                     data.sort((a, b) => a.date - b.date);
                     this.studentTotalDurations = data;
+                    this.studentTotalDurationsDownloadData = data.map((d) => {
+                        return {
+                            studentName: d.name,
+                            minutesSpent: this.millisToMinutesAndSeconds(
+                                d.quantity
+                            )
+                        };
+                    });
                 })
                 .catch((error) => {
                     console.error(
@@ -141,6 +178,16 @@ export default {
                             this.millisToMinutesAndSeconds(data[i].quantity);
                     }
                     this.studentDurationsPerSkill = data;
+                    this.studentDurationsPerSkillDownloadData = data.map(
+                        (d) => {
+                            return {
+                                skill: d.name,
+                                minutesSpent: this.millisToMinutesAndSeconds(
+                                    d.quantity
+                                )
+                            };
+                        }
+                    );
                 })
                 .catch((error) => {
                     console.error(
@@ -160,6 +207,16 @@ export default {
                             this.millisToMinutesAndSeconds(data[i].quantity);
                     }
                     this.studentDurationsPerSkill = data;
+                    this.studentDurationsPerSkillDownloadData = data.map(
+                        (d) => {
+                            return {
+                                skill: d.name,
+                                minutesSpent: this.millisToMinutesAndSeconds(
+                                    d.quantity
+                                )
+                            };
+                        }
+                    );
                 })
                 .catch((error) => {
                     console.error(
@@ -183,33 +240,54 @@ export default {
             <h1 class="heading">Time Report</h1>
             <h2 class="secondary-heading h3">{{ cohortName }}</h2>
         </span>
+        <div>
+            <h4 class="secondary-heading d-flex justify-content-between">
+                Total time on platform per day
+                <DownloadCSVBtn
+                    :data="durationsPerDayDownloadData"
+                    fileName="Total time on platform per day"
+                />
+            </h4>
+            <CohortDurationPerDayLineChart
+                :data="durationsPerDay"
+                v-if="durationsPerDay.length > 0"
+                class="mb-5"
+            />
+            <p v-else>No time recorded yet</p>
+        </div>
 
-        <h4 class="secondary-heading">Total time on platform per day</h4>
-        <CohortDurationPerDayLineChart
-            :data="durationsPerDay"
-            v-if="durationsPerDay.length > 0"
-            class="mb-5"
-        />
-        <p v-else>No time recorded yet</p>
+        <div>
+            <h4 class="secondary-heading mt-4 d-flex justify-content-between">
+                Total time on platform, comparing students
+                <DownloadCSVBtn
+                    :data="studentTotalDurationsDownloadData"
+                    fileName="Total time on platform, comparing students"
+                />
+            </h4>
+            <CohortCompareDurationHorizontalChart
+                :data="studentTotalDurations"
+                :colour="'#5f31dd'"
+                v-if="studentTotalDurations.length > 0"
+                class="mb-5"
+            />
+            <p v-else>No time recorded yet</p>
+        </div>
 
-        <h4 class="secondary-heading mt-4">
-            Total time on platform, comparing students
-        </h4>
-        <CohortCompareDurationHorizontalChart
-            :data="studentTotalDurations"
-            :colour="'#5f31dd'"
-            v-if="studentTotalDurations.length > 0"
-            class="mb-5"
-        />
-        <p v-else>No time recorded yet</p>
-
-        <h4 class="secondary-heading mt-4">Minutes per skill</h4>
-        <CohortDurationPerSkillHorizontalBarChart
-            :data="studentDurationsPerSkill"
-            class="mb-5"
-            :colour="'#5f31dd'"
-            v-if="studentDurationsPerSkill.length > 0"
-        />
+        <div>
+            <h4 class="secondary-heading mt-4 d-flex justify-content-between">
+                Minutes per skill
+                <DownloadCSVBtn
+                    :data="studentDurationsPerSkillDownloadData"
+                    fileName="Minutes per skill"
+                />
+            </h4>
+            <CohortDurationPerSkillHorizontalBarChart
+                :data="studentDurationsPerSkill"
+                class="mb-5"
+                :colour="'#5f31dd'"
+                v-if="studentDurationsPerSkill.length > 0"
+            />
+        </div>
     </div>
 </template>
 
