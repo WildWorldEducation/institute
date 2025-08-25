@@ -100,15 +100,7 @@ export default {
                         .attr('x2', width - marginLeft - marginRight)
                         .attr('stroke-opacity', 0.1)
                 )
-                .call((g) =>
-                    g
-                        .append('text')
-                        .attr('x', 0)
-                        .attr('y', 10)
-                        .attr('fill', 'currentColor')
-                        .attr('text-anchor', 'start')
-                        .text('↑ Skills mastered')
-                );
+              ;
 
             // Draw the lines
             svg.selectAll('.line')

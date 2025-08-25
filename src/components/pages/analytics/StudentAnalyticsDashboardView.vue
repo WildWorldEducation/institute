@@ -229,8 +229,11 @@ export default {
                 <div class="dash-row row">
                     <div
                         id="progress-chart-container"
-                        class="col-md chart-container p-0"
+                        class="col-md chart-container p-0 position-relative"
                     >
+                        <h2 class="position-absolute chart-heading h5">
+                            Skills mastered
+                        </h2>
                         <ProgressChart
                             ref="progressChart"
                             v-if="
@@ -238,7 +241,6 @@ export default {
                                 progressData.average.length > 0
                             "
                         />
-                        <!-- <p v-else>No data yet</p> -->
                     </div>
                     <div class="col-md chart-container p-0">
                         <div
@@ -254,8 +256,16 @@ export default {
                     </div>
                 </div>
                 <div class="dash-row row">
-                    <div class="col-md chart-container p-0"></div>
-                    <div class="col-md chart-container p-0">4</div>
+                    <div class="col-md chart-container p-0 position-relative">
+                        <h2 class="position-absolute chart-heading h5">
+                            Time spent
+                        </h2>
+                    </div>
+                    <div class="col-md chart-container p-0 position-relative">
+                        <h2 class="position-absolute chart-heading h5">
+                            Tokens used
+                        </h2>
+                    </div>
                 </div>
             </div>
         </div>
@@ -263,6 +273,11 @@ export default {
 </template>
 
 <style scoped>
+.chart-heading {
+    top: 5px;
+    left: 5px;
+}
+
 #progress-chart-container {
     height: 100%;
     width: 100%;
