@@ -378,7 +378,7 @@ const router = createRouter({
             name: 'my-progress',
             component: () =>
                 import(
-                    '../components/pages/analytics/StudentAnalyticsDashboardView.vue'
+                    '../components/pages/analytics/student-analytics/StudentAnalyticsDashboardView.vue'
                 ),
             meta: {
                 requiresAuth: true,

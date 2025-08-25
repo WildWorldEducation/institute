@@ -35,7 +35,7 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid">
+    <div class="container">
         <!-- <div class="row">
             <h2 class="h6">Time per day</h2>
             <StudentDurationPerDayLineChart

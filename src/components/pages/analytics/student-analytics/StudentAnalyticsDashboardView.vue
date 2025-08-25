@@ -1,9 +1,9 @@
 <script>
 import { RouterLink } from 'vue-router';
-import { useAnalyticsStore } from '../../../stores/AnalyticsStore';
-import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
+import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 
-import ProgressChart from '../../components/analytics/full-size/students/dashboard/ProgressChart.vue';
+import ProgressChart from '../../../components/analytics/full-size/students/dashboard/ProgressChart.vue';
 export default {
     name: 'Student-Dashboard',
     setup() {

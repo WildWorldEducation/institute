@@ -42,7 +42,7 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid">
+    <div class="container">
         <div class="row">
             <h2 class="h4 heading">Passed</h2>
             <PassedAssessmentsTimelineChart
@@ -52,7 +52,8 @@ export default {
             />
             <p v-else>This student has not completed any assessments yet.</p>
         </div>
-        <div class="row mt-5">
+        <hr class="mt-5 mb-5" />
+        <div class="row">
             <h2 class="h4 heading">Attempted</h2>
             <AttemptedAssessmentsTimelineChart
                 class=""
@@ -61,7 +62,8 @@ export default {
             />
             <p v-else>This student has attempted any assessments yet.</p>
         </div>
-        <div class="row mt-5">
+        <hr class="mt-5 mb-5" />
+        <div class="row mt-5 mb-5">
             <h2 class="h4 heading">Failed multiple times</h2>
             <FailedAssessmentsHorizontalBarChart
                 v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
