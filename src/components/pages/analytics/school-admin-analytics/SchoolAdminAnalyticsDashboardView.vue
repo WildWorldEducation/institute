@@ -42,7 +42,7 @@ export default {
     async created() {
         await this.usersStore.getInstructorsByTenant(
             this.userDetailsStore.tenantId
-        );        
+        );                  
        
         //        await this.HandleProgressData();
     },
@@ -168,7 +168,7 @@ export default {
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
                     <RouterLink
-                        to="/my-progress/skills"
+                        to="/reports/academics"
                         id="progress-chart-container"
                         class="col-md chart-container p-0 position-relative"
                     >
@@ -180,7 +180,7 @@ export default {
                 </div>
                 <div class="dash-row row">
                     <RouterLink
-                        to="/my-progress/time"
+                        to="/reports/engagement"
                         class="col-md chart-container p-0 position-relative"
                     >
                         <h2 class="position-absolute chart-heading h5">
@@ -188,7 +188,7 @@ export default {
                         </h2>
                     </RouterLink>
                     <RouterLink
-                        to="/my-progress/tokens"
+                        to="/reports/cost"
                         class="col-md chart-container p-0 position-relative"
                     >
                         <h2 class="position-absolute chart-heading h5">Cost</h2>

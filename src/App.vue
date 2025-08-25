@@ -378,19 +378,7 @@ export default {
                                     Students
                                 </RouterLink>
                             </div>
-                        </li>
-                        <!-- Tenant Cohorts -->
-                        <li
-                            v-if="userDetailsStore.role == 'school_admin'"
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                to="/classes"
-                                class="nav-link close-on-click"
-                            >
-                                Teachers
-                            </RouterLink>
-                        </li>
+                        </li>                       
                         <!-- Tenants -->
                         <li
                             v-if="userDetailsStore.role == 'platform_admin'"
