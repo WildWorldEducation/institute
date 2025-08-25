@@ -1,4 +1,5 @@
 <script>
+import { RouterLink } from 'vue-router';
 import { useAnalyticsStore } from '../../../stores/AnalyticsStore';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 
@@ -227,7 +228,8 @@ export default {
             <div class="content container-fluid">
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
-                    <div
+                    <RouterLink
+                        to="/my-progress/skills"
                         id="progress-chart-container"
                         class="col-md chart-container p-0 position-relative"
                     >
@@ -241,7 +243,7 @@ export default {
                                 progressData.average.length > 0
                             "
                         />
-                    </div>
+                    </RouterLink>
                     <div class="col-md chart-container p-0">
                         <div
                             v-if="isAboveTheCurve"

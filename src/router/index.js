@@ -385,7 +385,19 @@ const router = createRouter({
                 roles: ['student']
             }
         },
-         {
+        {
+            path: '/my-progress/skills',
+            name: 'my-progress-skills',
+            component: () =>
+                import(
+                    '../components/pages/analytics/student-analytics/StudentAnalyticsSkillsView.vue'
+                ),
+            meta: {
+                requiresAuth: true,
+                roles: ['student']
+            }
+        },
+        {
             path: '/old-my-progress',
             name: 'old-my-progress',
             component: () =>
