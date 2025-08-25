@@ -266,11 +266,14 @@ export default {
                             Time spent
                         </h2>
                     </RouterLink>
-                    <div class="col-md chart-container p-0 position-relative">
+                    <RouterLink
+                        to="/my-progress/tokens"
+                        class="col-md chart-container p-0 position-relative"
+                    >
                         <h2 class="position-absolute chart-heading h5">
                             Tokens used
                         </h2>
-                    </div>
+                    </RouterLink>
                 </div>
             </div>
         </div>

@@ -410,11 +410,11 @@ const router = createRouter({
             }
         },
         {
-            path: '/old-my-progress',
-            name: 'old-my-progress',
+            path: '/my-progress/tokens',
+            name: 'my-progress-tokens',
             component: () =>
                 import(
-                    '../components/pages/analytics/StudentAnalyticsViewOLD.vue'
+                    '../components/pages/analytics/student-analytics/StudentAnalyticsTokensView.vue'
                 ),
             meta: {
                 requiresAuth: true,

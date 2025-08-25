@@ -1,8 +1,8 @@
 <script>
-import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
-import { useTeacherAnalyticsStore } from '../../../stores/TeacherAnalyticsStore';
-import { useAnalyticsStore } from '../../../stores/AnalyticsStore';
-import { useUserSkillsStore } from '../../../stores/UserSkillsStore';
+import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
+import { useTeacherAnalyticsStore } from '../../../../stores/TeacherAnalyticsStore';
+import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
+import { useUserSkillsStore } from '../../../../stores/UserSkillsStore';
 import StudentDurationPerDayLineChart from '../../components/analytics/full-size/students/StudentDurationPerDayLineChart.vue';
 import TimePerSkillHorizontalBarChart from '../../components/analytics/full-size/students/TimePerSkillHorizontalBarChart.vue';
 import StudentAvgTokensToMasterSkillsHorizontalBarChart from '../../components/analytics/full-size/students/StudentAvgTokensToMasterSkillsHorizontalBarChart.vue';
