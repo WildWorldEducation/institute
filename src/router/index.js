@@ -685,40 +685,14 @@ const router = createRouter({
         },
         // School Admin analytics
         {
-            path: '/cost-report/:tenantId',
-            name: 'cost-report',
+            path: '/dashboard',
+            name: 'school-admin-dashboard',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/CostReportDashboardView.vue'
+                    '../components/pages/analytics/school-admin-analytics/SchoolAdminAnalyticsDashboardView.vue'
                 ),
             meta: {
-                title: 'Cost Report',
-                requiresAuth: true,
-                roles: ['school_admin']
-            }
-        },
-        {
-            path: '/engagement-report/:tenantId',
-            name: 'engagement-report',
-            component: () =>
-                import(
-                    '../components/pages/analytics/school-admin-analytics/EngagementReportDashboardView.vue'
-                ),
-            meta: {
-                title: 'Engagement Report',
-                requiresAuth: true,
-                roles: ['school_admin']
-            }
-        },
-        {
-            path: '/academic-report/:tenantId',
-            name: 'academic-report',
-            component: () =>
-                import(
-                    '../components/pages/analytics/school-admin-analytics/AcademicReportDashboardView.vue'
-                ),
-            meta: {
-                title: 'Academic Report',
+                title: 'School Admin Dashboard',
                 requiresAuth: true,
                 roles: ['school_admin']
             }

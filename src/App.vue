@@ -427,6 +427,20 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink
+                                to="/dashboard"
+                                class="nav-link close-on-click"
+                            >
+                                Dashboard
+                            </RouterLink>
+                        </li>
+                        <!-- <li
+                            v-if="
+                                sessionDetailsStore.isLoggedIn &&
+                                userDetailsStore.role == 'school_admin'
+                            "
+                            class="nav-item"
+                        >
+                            <RouterLink
                                 :to="
                                     '/engagement-report/' +
                                     userDetailsStore.tenantId
@@ -435,8 +449,8 @@ export default {
                             >
                                 Engagement
                             </RouterLink>
-                        </li>
-                        <li
+                        </li> -->
+                        <!-- <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
                                 userDetailsStore.role == 'school_admin'
@@ -452,9 +466,9 @@ export default {
                             >
                                 Academics
                             </RouterLink>
-                        </li>
+                        </li> -->
                         <!-- Cost -->
-                        <li
+                        <!-- <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
                                 userDetailsStore.role == 'school_admin'
@@ -469,7 +483,7 @@ export default {
                             >
                                 Cost
                             </RouterLink>
-                        </li>
+                        </li> -->
                         <!-- Dropdown menu -->
                         <li
                             v-if="sessionDetailsStore.isLoggedIn"
