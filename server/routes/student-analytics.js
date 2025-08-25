@@ -350,6 +350,132 @@ router.get('/student-progress/:studentId', (req, res, next) => {
     }
 });
 
+/* Get student progress (number of total skills mastered over time) */
+router.get('/student-progress/:tenantId/:studentId', async (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        try {
+            // First, get the date the student started on the platform
+            let studentFirstInteractionSQLQuery = `SELECT date
+            FROM user_duration_tokens_per_day
+            WHERE user_id = ${conn.escape(req.params.studentId)}  
+            ORDER BY date ASC
+            LIMIT 1;`;
+
+            let studentFirstInteractionResult = await query(
+                studentFirstInteractionSQLQuery
+            );
+
+            let tenantFirstInteractionSQLQuery = `
+                SELECT date
+                FROM user_duration_tokens_per_day
+                JOIN users
+                on users.id = user_duration_tokens_per_day.user_id
+                WHERE tenant_id = 2
+                ORDER BY date ASC
+                LIMIT 1;
+                `;
+
+            let tenantFirstInteractionResult = await query(
+                tenantFirstInteractionSQLQuery
+            );
+
+            if (
+                studentFirstInteractionResult.length === 0 ||
+                tenantFirstInteractionResult.length === 0
+            ) {
+                return res.status(404).json({
+                    error: 'No skill activity'
+                });
+            }
+
+            let numStudentQuery = ` SELECT COUNT(*) AS quantity
+                    FROM users
+                    WHERE tenant_id = ${conn.escape(req.params.tenantId)}
+                    AND role = 'student'
+                    AND is_deleted = 0`;
+
+            let numStudentResults = await query(numStudentQuery);
+
+            let numStudents = numStudentResults[0].quantity;
+
+            let AverageProgressQuery = `SELECT CAST(mastered_date AS DATE) AS date, (SUM(COUNT(*)) OVER(ORDER BY date))/${numStudents} AS quantity
+                    FROM user_skills
+                    JOIN skills
+                    ON skills.id = user_skills.skill_id
+                    JOIN users
+                    ON users.id = user_skills.user_id
+                    WHERE is_mastered = 1
+                    AND tenant_id = ${conn.escape(req.params.tenantId)}
+                    AND type <> 'domain'      
+                    GROUP BY date
+                    ORDER BY date ASC;`;
+
+            let avgProgressResults = await query(AverageProgressQuery);
+
+            let studentProgressQuery = `
+                    SELECT CAST(mastered_date AS DATE) AS date, SUM(COUNT(*)) OVER(ORDER BY date) AS quantity
+                    FROM user_skills
+                    JOIN skills
+                    ON skills.id = user_skills.skill_id
+                    WHERE is_mastered = 1
+                    AND user_id = ${conn.escape(req.params.studentId)}        
+                    AND type <> 'domain'      
+                    GROUP BY date
+                    ORDER BY date ASC;`;
+
+            let studentProgressResults = await query(studentProgressQuery);
+
+            if (studentProgressResults.length === 0) {
+                return res.status(404).json({
+                    error: 'No skill activity'
+                });
+            }
+
+            let studentFlag = false;
+            for (let i = 0; i < studentProgressResults.length; i++) {
+                if (
+                    studentFirstInteractionResult[0].date ==
+                    studentProgressResults[i].date
+                ) {
+                    studentFlag = true;
+                }
+            }
+
+            if (!studentFlag) {
+                studentProgressResults.unshift({
+                    date: studentFirstInteractionResult[0].date,
+                    quantity: 0
+                });
+            }
+
+            let tenantFlag = false;
+            for (let i = 0; i < avgProgressResults.length; i++) {
+                if (
+                    tenantFirstInteractionResult[0].date ==
+                    avgProgressResults[i].date
+                ) {
+                    tenantFlag = true;
+                }
+            }
+
+            if (!tenantFlag) {
+                avgProgressResults.unshift({
+                    date: tenantFirstInteractionResult[0].date,
+                    quantity: 0
+                });
+            }
+
+            res.json({
+                studentProgress: studentProgressResults,
+                tenantAvgProgress: avgProgressResults
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
+});
+
 router.get(
     '/avg-tokens-to-master-skills/student/:studentId',
     (req, res, next) => {
@@ -462,14 +588,14 @@ router.get(
                             return acc;
                         },
                         {}
-                    );              
+                    );
 
                     const result = Object.entries(totalsMap).map(
                         ([key, value]) => ({
                             name: key,
                             quantity: value
                         })
-                    );                  
+                    );
 
                     res.json(result);
                 } catch (err) {
@@ -642,7 +768,6 @@ router.get(
         }
     }
 );
-
 
 /**
  * PER COHORT -------------------------------------------------
@@ -1383,7 +1508,9 @@ router.get(
             JOIN instructor_students
             ON users.id = instructor_students.student_id
             WHERE is_mastered = 1
-            AND instructor_students.instructor_id = ${conn.escape(req.params.instructorId)}) 
+            AND instructor_students.instructor_id = ${conn.escape(
+                req.params.instructorId
+            )}) 
             group by id, name
             HAVING COUNT(*) > 1;`;
 
@@ -1464,7 +1591,9 @@ router.get(
                 ON skills.id = user_skills.skill_id
                 JOIN instructor_students
                 ON user_skills.user_id = instructor_students.student_id
-                WHERE instructor_students.instructor_id = ${conn.escape(req.params.instructorId)}          
+                WHERE instructor_students.instructor_id = ${conn.escape(
+                    req.params.instructorId
+                )}          
                 AND is_mastered = 1
                 AND type <> 'domain'
                 GROUP BY name;`;
@@ -1546,7 +1675,9 @@ router.get(
                 ON skills.id = assessment_attempts.skill_id
                JOIN instructor_students
                 ON assessment_attempts.user_id = instructor_students.student_id
-                WHERE instructor_students.instructor_id = ${conn.escape(req.params.instructorId)}  
+                WHERE instructor_students.instructor_id = ${conn.escape(
+                    req.params.instructorId
+                )}  
                 GROUP BY name
                 ORDER BY quantity DESC;`;
 
@@ -1604,7 +1735,6 @@ router.get(
         }
     }
 );
-
 
 /**
  * PER TENANT --------------------------------------

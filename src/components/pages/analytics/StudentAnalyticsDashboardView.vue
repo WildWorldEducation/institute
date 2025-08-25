@@ -15,6 +15,7 @@ export default {
     },
     data() {
         return {
+            // hide for mobile phones
             showSidebar: true,
             screenWidth: screen.width,
             // Sidebar variables
@@ -27,18 +28,79 @@ export default {
             isCSData: false,
             isSAndIData: false,
             isDIData: false,
-
+            // copy of data from store
+            progressData: {
+                student: [],
+                average: []
+            },
+            // Notifications
+            isAboveTheCurve: false
         };
     },
     components: {
         ProgressChart
     },
     async created() {
-        await this.analyticsStore.getStudentProgress(this.userDetailsStore.userId);
-        console.log(this.analyticsStore.studentProgress)
-    },
+        await this.analyticsStore.getStudentProgress(
+            this.userDetailsStore.userId,
+            this.userDetailsStore.tenantId
+        );
 
+        // Notifications
+        if (
+            this.analyticsStore.progress.student[
+                this.analyticsStore.progress.student.length - 1
+            ].quantity >
+            this.analyticsStore.progress.tenant[
+                this.analyticsStore.progress.tenant.length - 1
+            ].quantity
+        ) {
+            this.isAboveTheCurve = true;
+        }
+
+        await this.HandleProgressData();
+    },
     methods: {
+        async HandleProgressData() {
+            // If "You" checked
+            if (this.isStudentData) {
+                this.progressData.student = [];
+                for (
+                    let i = 0;
+                    i < this.analyticsStore.progress.student.length;
+                    i++
+                ) {
+                    this.progressData.student.push(
+                        this.analyticsStore.progress.student[i]
+                    );
+                }
+            } else {
+                this.progressData.student = [];
+            }
+
+            // If "School average" checked
+            if (this.isSchoolData) {
+                this.progressData.average = [];
+                for (
+                    let i = 0;
+                    i < this.analyticsStore.progress.tenant.length;
+                    i++
+                ) {
+                    this.progressData.average.push(
+                        this.analyticsStore.progress.tenant[i]
+                    );
+                }
+            } else {
+                this.progressData.average = [];
+            }
+
+            this.$nextTick(() => {
+                if (this.$refs.progressChart) {
+                    // Access the ref here
+                    this.$refs.progressChart.createChart(this.progressData);
+                }
+            });
+        },
         toggleSidebar() {
             this.showSidebar = !this.showSidebar;
         }
@@ -50,18 +112,30 @@ export default {
     <div class="dashboard">
         <!-- Sidebar -->
         <!-- dont show on mobile -->
-        <div v-if="screenWidth > 768" class="sidebar" :class="{ hidden: !showSidebar }">
+        <div
+            v-if="screenWidth > 768"
+            class="sidebar"
+            :class="{ hidden: !showSidebar }"
+        >
             <!-- filters - student and / or school average -->
             <h1 class="h2">Who</h1>
             <p>
                 <label class="control control-checkbox">
-                    <input type="checkbox" value="true" v-model="isStudentData" />
+                    <input
+                        type="checkbox"
+                        v-model="isStudentData"
+                        @change="HandleProgressData"
+                    />
                     You
                 </label>
             </p>
             <p>
                 <label class="control control-checkbox">
-                    <input type="checkbox" value="true" v-model="isSchoolData" />
+                    <input
+                        type="checkbox"
+                        v-model="isSchoolData"
+                        @change="HandleProgressData"
+                    />
                     School average
                 </label>
             </p>
@@ -70,43 +144,71 @@ export default {
             <ul>
                 <li>
                     <label class="control control-checkbox">
-                        <input type="checkbox" value="true" v-model="isLanguageData" />
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isLanguageData"
+                        />
                         Language
                     </label>
                 </li>
                 <li>
                     <label class="control control-checkbox">
-                        <input type="checkbox" value="true" v-model="isMathData" />
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isMathData"
+                        />
                         Math
                     </label>
                 </li>
                 <li>
                     <label class="control control-checkbox">
-                        <input type="checkbox" value="true" v-model="isHistoryData" />
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isHistoryData"
+                        />
                         History
                     </label>
                 </li>
                 <li>
                     <label class="control control-checkbox">
-                        <input type="checkbox" value="true" v-model="isLifeData" />
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isLifeData"
+                        />
                         Life
                     </label>
                 </li>
                 <li>
                     <label class="control control-checkbox">
-                        <input type="checkbox" value="true" v-model="isCSData" />
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isCSData"
+                        />
                         Computer Science
                     </label>
                 </li>
                 <li>
                     <label class="control control-checkbox">
-                        <input type="checkbox" value="true" v-model="isSAndIData" />
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isSAndIData"
+                        />
                         Science & Invention
                     </label>
                 </li>
                 <li>
                     <label class="control control-checkbox">
-                        <input type="checkbox" value="true" v-model="isDIData" />
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isDIData"
+                        />
                         Dangerous Ideas
                     </label>
                 </li>
@@ -125,15 +227,34 @@ export default {
             <div class="content container-fluid">
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
-                    <div id="progress-chart-container" class="col-md chart-container p-0">
-                        <ProgressChart v-if="analyticsStore.studentProgress.length > 0"
-                            :data="analyticsStore.studentProgress" colour="purple" />
-                        <p v-else>No data yet</p>
+                    <div
+                        id="progress-chart-container"
+                        class="col-md chart-container p-0"
+                    >
+                        <ProgressChart
+                            ref="progressChart"
+                            v-if="
+                                progressData.student.length > 0 ||
+                                progressData.average.length > 0
+                            "
+                        />
+                        <!-- <p v-else>No data yet</p> -->
                     </div>
-                    <div class="col-md chart-container p-0">2</div>
+                    <div class="col-md chart-container p-0">
+                        <div
+                            v-if="isAboveTheCurve"
+                            class="alert alert-success"
+                            role="alert"
+                        >
+                            Nice going, you're above the curve!
+                        </div>
+                        <div v-else class="alert alert-warning" role="alert">
+                            You're below the curve, keep trying!
+                        </div>
+                    </div>
                 </div>
                 <div class="dash-row row">
-                    <div class="col-md chart-container p-0">3</div>
+                    <div class="col-md chart-container p-0"></div>
                     <div class="col-md chart-container p-0">4</div>
                 </div>
             </div>
@@ -146,7 +267,6 @@ export default {
     height: 100%;
     width: 100%;
 }
-
 
 .dash-row {
     height: 50%;
