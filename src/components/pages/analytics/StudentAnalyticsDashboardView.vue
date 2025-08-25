@@ -1,4 +1,5 @@
 <script>
+import { RouterLink } from 'vue-router';
 import { useAnalyticsStore } from '../../../stores/AnalyticsStore';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 
@@ -227,7 +228,8 @@ export default {
             <div class="content container-fluid">
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
-                    <div
+                    <RouterLink
+                        to="/my-progress/skills"
                         id="progress-chart-container"
                         class="col-md chart-container p-0 position-relative"
                     >
@@ -241,7 +243,7 @@ export default {
                                 progressData.average.length > 0
                             "
                         />
-                    </div>
+                    </RouterLink>
                     <div class="col-md chart-container p-0">
                         <div
                             v-if="isAboveTheCurve"
@@ -256,16 +258,22 @@ export default {
                     </div>
                 </div>
                 <div class="dash-row row">
-                    <div class="col-md chart-container p-0 position-relative">
+                    <RouterLink
+                        to="/my-progress/time"
+                        class="col-md chart-container p-0 position-relative"
+                    >
                         <h2 class="position-absolute chart-heading h5">
                             Time spent
                         </h2>
-                    </div>
-                    <div class="col-md chart-container p-0 position-relative">
+                    </RouterLink>
+                    <RouterLink
+                        to="/my-progress/tokens"
+                        class="col-md chart-container p-0 position-relative"
+                    >
                         <h2 class="position-absolute chart-heading h5">
                             Tokens used
                         </h2>
-                    </div>
+                    </RouterLink>
                 </div>
             </div>
         </div>

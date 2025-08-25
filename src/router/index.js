@@ -385,12 +385,36 @@ const router = createRouter({
                 roles: ['student']
             }
         },
-         {
-            path: '/old-my-progress',
-            name: 'old-my-progress',
+        {
+            path: '/my-progress/skills',
+            name: 'my-progress-skills',
             component: () =>
                 import(
-                    '../components/pages/analytics/StudentAnalyticsViewOLD.vue'
+                    '../components/pages/analytics/student-analytics/StudentAnalyticsSkillsView.vue'
+                ),
+            meta: {
+                requiresAuth: true,
+                roles: ['student']
+            }
+        },
+        {
+            path: '/my-progress/time',
+            name: 'my-progress-time',
+            component: () =>
+                import(
+                    '../components/pages/analytics/student-analytics/StudentAnalyticsTimeView.vue'
+                ),
+            meta: {
+                requiresAuth: true,
+                roles: ['student']
+            }
+        },
+        {
+            path: '/my-progress/tokens',
+            name: 'my-progress-tokens',
+            component: () =>
+                import(
+                    '../components/pages/analytics/student-analytics/StudentAnalyticsTokensView.vue'
                 ),
             meta: {
                 requiresAuth: true,
