@@ -15,6 +15,7 @@ export default {
     },
     data() {
         return {
+            // hide for mobile phones
             showSidebar: true,
             screenWidth: screen.width,
             // Sidebar variables
@@ -26,7 +27,12 @@ export default {
             isLifeData: false,
             isCSData: false,
             isSAndIData: false,
-            isDIData: false
+            isDIData: false,
+            // copy of data from store
+            progressData: {
+                student: [],
+                average: []
+            }
         };
     },
     components: {
@@ -37,10 +43,48 @@ export default {
             this.userDetailsStore.userId,
             this.userDetailsStore.tenantId
         );
-        console.log(this.analyticsStore.progress);
+        await this.HandleProgressData();
     },
-
     methods: {
+        async HandleProgressData() {
+            // If "You" checked
+            if (this.isStudentData) {
+                this.progressData.student = [];
+                for (
+                    let i = 0;
+                    i < this.analyticsStore.progress.student.length;
+                    i++
+                ) {
+                    this.progressData.student.push(
+                        this.analyticsStore.progress.student[i]
+                    );
+                }
+            } else {
+                this.progressData.student = [];
+            }
+
+            // If "School average" checked
+            if (this.isSchoolData) {
+                this.progressData.average = [];
+                for (
+                    let i = 0;
+                    i < this.analyticsStore.progress.tenant.length;
+                    i++
+                ) {
+                    this.progressData.average.push(
+                        this.analyticsStore.progress.tenant[i]
+                    );
+                }
+            } else {
+                this.progressData.average = [];
+            }
+            this.$nextTick(() => {
+                if (this.$refs.progressChart) {
+                    // Access the ref here
+                    this.$refs.progressChart.createChart(this.progressData);
+                }
+            });
+        },
         toggleSidebar() {
             this.showSidebar = !this.showSidebar;
         }
@@ -63,8 +107,8 @@ export default {
                 <label class="control control-checkbox">
                     <input
                         type="checkbox"
-                        value="true"
                         v-model="isStudentData"
+                        @change="HandleProgressData"
                     />
                     You
                 </label>
@@ -73,8 +117,8 @@ export default {
                 <label class="control control-checkbox">
                     <input
                         type="checkbox"
-                        value="true"
                         v-model="isSchoolData"
+                        @change="HandleProgressData"
                     />
                     School average
                 </label>
@@ -172,11 +216,13 @@ export default {
                         class="col-md chart-container p-0"
                     >
                         <ProgressChart
-                            v-if="analyticsStore.progress.student.length > 0"
-                            :data="analyticsStore.progress"
-                            colour="purple"
+                            ref="progressChart"
+                            v-if="
+                                progressData.student.length > 0 ||
+                                progressData.average.length > 0
+                            "
                         />
-                        <p v-else>No data yet</p>
+                        <!-- <p v-else>No data yet</p> -->
                     </div>
                     <div class="col-md chart-container p-0">2</div>
                 </div>
