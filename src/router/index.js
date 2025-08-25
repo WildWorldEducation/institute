@@ -398,6 +398,18 @@ const router = createRouter({
             }
         },
         {
+            path: '/my-progress/time',
+            name: 'my-progress-time',
+            component: () =>
+                import(
+                    '../components/pages/analytics/student-analytics/StudentAnalyticsTimeView.vue'
+                ),
+            meta: {
+                requiresAuth: true,
+                roles: ['student']
+            }
+        },
+        {
             path: '/old-my-progress',
             name: 'old-my-progress',
             component: () =>
