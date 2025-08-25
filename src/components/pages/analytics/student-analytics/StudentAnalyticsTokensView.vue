@@ -31,7 +31,7 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid">
+    <div class="container">
         <div class="row">
             <h2 class="h4 heading">Tokens per skill</h2>
             <StudentAvgTokensToMasterSkillsHorizontalBarChart
