@@ -32,7 +32,9 @@ export default {
             progressData: {
                 student: [],
                 average: []
-            }
+            },
+            // Notifications
+            isAboveTheCurve: false
         };
     },
     components: {
@@ -43,6 +45,19 @@ export default {
             this.userDetailsStore.userId,
             this.userDetailsStore.tenantId
         );
+
+        // Notifications
+        if (
+            this.analyticsStore.progress.student[
+                this.analyticsStore.progress.student.length - 1
+            ].quantity >
+            this.analyticsStore.progress.tenant[
+                this.analyticsStore.progress.tenant.length - 1
+            ].quantity
+        ) {
+            this.isAboveTheCurve = true;
+        }
+
         await this.HandleProgressData();
     },
     methods: {
@@ -78,6 +93,7 @@ export default {
             } else {
                 this.progressData.average = [];
             }
+
             this.$nextTick(() => {
                 if (this.$refs.progressChart) {
                     // Access the ref here
@@ -224,10 +240,21 @@ export default {
                         />
                         <!-- <p v-else>No data yet</p> -->
                     </div>
-                    <div class="col-md chart-container p-0">2</div>
+                    <div class="col-md chart-container p-0">
+                        <div
+                            v-if="isAboveTheCurve"
+                            class="alert alert-success"
+                            role="alert"
+                        >
+                            Nice going, you're above the curve!
+                        </div>
+                        <div v-else class="alert alert-warning" role="alert">
+                            You're below the curve, keep trying!
+                        </div>
+                    </div>
                 </div>
                 <div class="dash-row row">
-                    <div class="col-md chart-container p-0">3</div>
+                    <div class="col-md chart-container p-0"></div>
                     <div class="col-md chart-container p-0">4</div>
                 </div>
             </div>

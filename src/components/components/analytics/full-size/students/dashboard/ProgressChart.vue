@@ -110,22 +110,16 @@ export default {
                         .text('↑ Skills mastered')
                 );
 
-            // Append a path for the line.
-            // svg.append('path')
-            //     .attr('fill', 'none')
-            //     .attr('stroke', '#5f31dd')
-            //     .attr('stroke-width', 3)
-            //     .attr('d', line(data));
-
             // Draw the lines
-            // svg.selectAll('.line')
-            //     .data(series)
-            //     .join('path')
-            //     .attr('fill', 'none')
-            //     .attr('stroke', (d) => color(d.name))
-            //     .attr('stroke-width', 3)
-            //     .attr('d', (d) => line(d.values));
-        }
+            svg.selectAll('.line')
+                .data(series)
+                .join('path')
+                .attr('fill', 'none')
+                .attr('stroke', (d) => color(d.name))
+                .attr('stroke-width', 3)
+                .attr('d', (d) => line(d.values));
+        },
+        updateChart(data) {}
     }
 };
 </script>
