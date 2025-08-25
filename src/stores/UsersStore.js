@@ -40,11 +40,11 @@ export const useUsersStore = defineStore('users', {
             const data = await result.json();
             this.instructors = data;
         },
-        async getInstructorsByTenant(tenantId) {
+        async getInstructorsByTenant(tenantId) {           
             const result = await fetch(
                 '/users/instructors/tenant/' + tenantId + '/list'
             );
-            const data = await result.json();
+            const data = await result.json()      
             this.instructors = data;
         },
         async getEditors() {

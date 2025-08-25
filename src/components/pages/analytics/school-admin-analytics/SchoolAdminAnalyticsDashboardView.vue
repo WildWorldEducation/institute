@@ -42,8 +42,8 @@ export default {
     async created() {
         await this.usersStore.getInstructorsByTenant(
             this.userDetailsStore.tenantId
-        );
-        console.log(this.usersStore.instructors);
+        );        
+       
         //        await this.HandleProgressData();
     },
     methods: {
@@ -77,13 +77,13 @@ export default {
                 </label>
             </p>
             <p>
-                <label class="control control-checkbox">
+                <label v-for="teacher in usersStore.instructors" class="control control-checkbox">
                     <input
                         type="checkbox"
-                        v-model="isStudentData"
+                        v-model="isStudentData" 
                         @change="HandleProgressData"
                     />
-                    Teachers
+                    {{ teacher.username }}'s class
                 </label>
             </p>
 

@@ -916,7 +916,7 @@ router.get('/instructors/list', (req, res, next) => {
 router.get('/instructors/tenant/:tenantId/list', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     let sqlQuery = `SELECT id, username FROM users
-        WHERE role = 'instructor'
+        WHERE (role = 'instructor' OR role = 'partner')     
         AND is_deleted = 0
         AND tenant_id = ${conn.escape(req.params.tenantId)};`;
 
