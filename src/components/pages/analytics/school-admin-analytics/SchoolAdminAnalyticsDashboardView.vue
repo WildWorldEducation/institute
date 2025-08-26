@@ -40,7 +40,12 @@ export default {
     },
     components: {},
     async created() {
+        // Get teachers
         await this.usersStore.getInstructorsByTenant(
+            this.userDetailsStore.tenantId
+        );
+        // Get students
+        await this.usersStore.getStudentsPerTenant(
             this.userDetailsStore.tenantId
         );
 
@@ -66,27 +71,94 @@ export default {
         >
             <!-- filters - student and / or school average -->
             <h1 class="h2">Who</h1>
-            <p>
-                <label class="control control-checkbox">
-                    <input
-                        type="checkbox"
-                        v-model="isSchoolData"
-                        @change="HandleProgressData"
-                    />
-                    School total
-                </label>
-            </p>
-            <p>
-                <label
-                    v-for="teacher in usersStore.instructors"
-                    class="control control-checkbox"
-                >
-                    <input type="checkbox" @change="HandleProgressData" />
-                    {{ teacher.username }}'s class
-                </label>
-            </p>
+            <label class="control control-checkbox mb-2">
+                <input
+                    type="checkbox"
+                    v-model="isSchoolData"
+                    @change="HandleProgressData"
+                />
+                Everyone
+            </label>
 
-            <h1 class="h2">Subjects</h1>
+            <!-- Teachers' classes -->
+            <div class="accordion accordion-flush" id="classesAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button
+                            class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#classes"
+                            aria-expanded="false"
+                            aria-controls="classes"
+                        >
+                            <strong>Classes</strong>
+                        </button>
+                    </h2>
+                    <div
+                        id="classes"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingOne"
+                        data-bs-parent="#classesAccordion"
+                    >
+                        <div class="accordion-body">
+                            <p>
+                                <label
+                                    v-for="teacher in usersStore.instructors"
+                                    class="control control-checkbox"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        @change="HandleProgressData"
+                                    />
+                                    {{ teacher.username }}'s class
+                                </label>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Students -->
+            <div class="accordion accordion-flush" id="studentAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button
+                            class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#students"
+                            aria-expanded="false"
+                            aria-controls="students"
+                        >
+                            <strong>Students</strong>
+                        </button>
+                    </h2>
+                    <div
+                        id="students"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingOne"
+                        data-bs-parent="#studentAccordion"
+                    >
+                        <div class="accordion-body">
+                            <p>
+                                <label
+                                    v-for="student in usersStore.studentsPerTenant"
+                                    class="control control-checkbox"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        @change="HandleProgressData"
+                                    />
+                                    {{ student.username }}
+                                </label>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h1 class="h2 mt-3">Subjects</h1>
             <ul>
                 <li>
                     <label class="control control-checkbox">
