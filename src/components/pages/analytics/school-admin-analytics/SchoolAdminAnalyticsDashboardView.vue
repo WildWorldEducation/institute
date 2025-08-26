@@ -112,7 +112,11 @@ export default {
                                         type="checkbox"
                                         @change="HandleProgressData"
                                     />
-                                    {{ teacher.username }}'s class
+                                    <RouterLink
+                                        :to="`/reports/class/${teacher.id}`"
+                                        >{{ teacher.username }}'s
+                                        class</RouterLink
+                                    >
                                 </label>
                             </p>
                         </div>

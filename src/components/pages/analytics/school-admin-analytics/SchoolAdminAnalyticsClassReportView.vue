@@ -1,14 +1,15 @@
 <script>
-import { useCohortsStore } from '../../../stores/CohortsStore.js';
-import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
-import { useAnalyticsStore } from '../../../stores/AnalyticsStore.js';
-import CohortPercentageStudentsMasteredAtLeastOneSkillPieChart from './../analytics/full-size/cohorts/CohortPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
-import CohortProgressLineChart from './../analytics/full-size/cohorts/CohortProgressLineChart.vue';
-import CohortDurationPerDayLineChart from './../analytics/full-size/cohorts/CohortDurationPerDayLineChart.vue';
-import CohortSkillActivityChart from './../analytics/full-size/cohorts/CohortSkillActivityChart.vue';
-import CohortFailedAssessmentsByRootSubjectHorizontalBarChart from './../analytics/full-size/cohorts/CohortFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
-import CohortPassedAssessmentsByRootSubjectHorizontalBarChart from './../analytics/full-size/cohorts/CohortPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
-import CohortAttemptedAssessmentsByRootSubjectHorizontalBarChart from './../analytics/full-size/cohorts/CohortAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import { useCohortsStore } from '../../../../stores/CohortsStore.js';
+import { useUserDetailsStore } from '../../../../stores/UserDetailsStore.js';
+import { useAnalyticsStore } from '../../../../stores/AnalyticsStore.js';
+import CohortProgressLineChart from '/src/components/components/analytics/full-size/cohorts/CohortProgressLineChart.vue';
+
+import CohortPercentageStudentsMasteredAtLeastOneSkillPieChart from '/src/components/components/analytics/full-size/cohorts/CohortPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
+import CohortDurationPerDayLineChart from '/src/components/components/analytics/full-size/cohorts/CohortDurationPerDayLineChart.vue';
+import CohortSkillActivityChart from '/src/components/components/analytics/full-size/cohorts/CohortSkillActivityChart.vue';
+import CohortFailedAssessmentsByRootSubjectHorizontalBarChart from '/src/components/components/analytics/full-size/cohorts/CohortFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import CohortPassedAssessmentsByRootSubjectHorizontalBarChart from '/src/components/components/analytics/full-size/cohorts/CohortPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import CohortAttemptedAssessmentsByRootSubjectHorizontalBarChart from '/src/components/components/analytics/full-size/cohorts/CohortAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
 
 export default {
     setup() {
@@ -23,6 +24,7 @@ export default {
     },
     data() {
         return {
+            teacherId: this.$route.params.teacherId,
             isMobileCheck: window.innerWidth,
             percentageStudentsMasteredOneSkill: [],
             isLoaded: false,
@@ -35,16 +37,16 @@ export default {
         await this.getInstructorPercentageStudentsMasteredAtLeastOneSkill();
         await this.getTenantClassDurationPerDay();
         await this.analyticsStore.getTeacherClassSkillActivityReport(
-            this.$parent.selectedInstructor.id
+            this.teacherId
         );
         await this.analyticsStore.getTeacherClassFailedAssessmentsBySubject(
-            this.$parent.selectedInstructor.id
+            this.teacherId
         );
         await this.analyticsStore.getTeacherClassPassedAssessmentsBySubject(
-            this.$parent.selectedInstructor.id
+            this.teacherId
         );
         await this.analyticsStore.getTeacherClassAttemptedAssessmentsBySubject(
-            this.$parent.selectedInstructor.id
+            this.teacherId
         );
     },
     components: {
@@ -58,9 +60,7 @@ export default {
     },
     methods: {
         async getTenantClassProgress() {
-            fetch(
-                `/student-analytics/all-students-progress/${this.$parent.selectedInstructor.id}`
-            )
+            fetch(`/student-analytics/all-students-progress/${this.teacherId}`)
                 .then((response) => response.json())
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {
@@ -76,7 +76,7 @@ export default {
         async getInstructorPercentageStudentsMasteredAtLeastOneSkill() {
             try {
                 const response = await fetch(
-                    `/student-analytics/percentage-students-mastered-one-skill/instructor/${this.$parent.selectedInstructor.id}`
+                    `/student-analytics/percentage-students-mastered-one-skill/instructor/${this.teacherId}`
                 );
 
                 if (!response.ok) {
@@ -101,7 +101,7 @@ export default {
         },
         async getTenantClassDurationPerDay() {
             fetch(
-                `/student-analytics/all-students-duration-per-day/${this.$parent.selectedInstructor.id}`
+                `/student-analytics/all-students-duration-per-day/${this.teacherId}`
             )
                 .then((response) => response.json())
                 .then((data) => {
@@ -130,27 +130,7 @@ export default {
 </script>
 
 <template>
-    <div id="user-information" class="container mt-1 bg-light p-2">
-        <!-- The X to close the user details popup windows when on phone view -->
-        <div
-            class="flex-row-reverse d-flex d-md-none align-items-end mb-2"
-            @click="this.$parent.showDetails = false"
-        >
-            <div id="close-popup-btn">
-                <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        d="M0.312625 14.5205L4.83312 9.99999L0.312625 5.49218C0.111396 5.29025 -0.00159545 5.0168 -0.00159545 4.73172C-0.00159545 4.44665 0.111396 4.17319 0.312625 3.97126L3.96282 0.312625C4.16474 0.111396 4.4382 -0.00159545 4.72327 -0.00159545C5.00835 -0.00159545 5.2818 0.111396 5.48373 0.312625L9.99999 4.83312L14.5205 0.312625C14.6204 0.21056 14.7397 0.12947 14.8714 0.0741101C15.003 0.0187502 15.1444 -0.00976563 15.2873 -0.00976562C15.4301 -0.00976563 15.5715 0.0187502 15.7032 0.0741101C15.8349 0.12947 15.9541 0.21056 16.0541 0.312625L19.6874 3.96282C19.8886 4.16474 20.0016 4.4382 20.0016 4.72327C20.0016 5.00835 19.8886 5.2818 19.6874 5.48373L15.1669 9.99999L19.6874 14.5205C19.8883 14.7217 20.0012 14.9944 20.0012 15.2788C20.0012 15.5632 19.8883 15.836 19.6874 16.0372L16.0541 19.6874C15.8529 19.8883 15.5801 20.0012 15.2957 20.0012C15.0113 20.0012 14.7386 19.8883 14.5374 19.6874L9.99999 15.1669L5.49218 19.6874C5.29025 19.8886 5.0168 20.0016 4.73172 20.0016C4.44665 20.0016 4.17319 19.8886 3.97126 19.6874L0.312625 16.0541C0.21056 15.9541 0.12947 15.8349 0.0741101 15.7032C0.0187502 15.5715 -0.00976563 15.4301 -0.00976562 15.2873C-0.00976563 15.1444 0.0187502 15.003 0.0741101 14.8714C0.12947 14.7397 0.21056 14.6204 0.312625 14.5205Z"
-                        fill="white"
-                    />
-                </svg>
-            </div>
-        </div>
+    <div class="container bg-light">
         <!-- Row: Avatar, name and basic details -->
         <div class="row" v-if="isMobileCheck < 576">
             <!-- Name and basic details -->
@@ -159,7 +139,7 @@ export default {
             </h1>
         </div>
         <div class="d-flex justify-content-between">
-            <h1 class="heading">Teacher Reports</h1>
+            <h1 class="heading">Teacher Report</h1>
             <button class="btn me-1" @click="$parent.restartTutorial">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -177,97 +157,81 @@ export default {
         </div>
 
         <h2 class="secondary-heading">Engagement</h2>
-        <div>
-            <h4>Time on platform</h4>
-            <CohortDurationPerDayLineChart
-                v-if="durationsPerDay.length > 0"
-                :data="durationsPerDay"
-                colour="#5f31dd"
-                ref="cohortDurationPerDayLineChart"
-            />
-            <p v-else>No data available</p>
+        <h4>Time on platform</h4>
+        <CohortDurationPerDayLineChart
+            v-if="durationsPerDay.length > 0"
+            :data="durationsPerDay"
+            colour="#5f31dd"
+            ref="cohortDurationPerDayLineChart"
+        />
+        <p v-else>No data available</p>
 
-            <h4 class="mt-4">Skills visited</h4>
-            <CohortSkillActivityChart
-                v-if="analyticsStore.cohortSkillActivities.length > 0"
-                :data="analyticsStore.cohortSkillActivities"
-            />
-            <p v-else>No skills visited by this student.</p>
+        <hr class="mt-5 mb-5" />
 
-            <h2 class="secondary-heading mt-5">Academics</h2>
-            <h4>Skill mastery progress</h4>
-            <CohortProgressLineChart
-                v-if="classProgress.length > 0"
-                :data="classProgress"
-                colour="#5f31dd"
-                ref="cohortProgressLineChart"
-            />
-            <p v-else>No data available</p>
+        <h4 class="mt-4">Skills visited</h4>
+        <CohortSkillActivityChart
+            v-if="analyticsStore.cohortSkillActivities.length > 0"
+            :data="analyticsStore.cohortSkillActivities"
+        />
+        <p v-else>No skills visited by this student.</p>
 
-            <h4 class="mt-4">
-                Percentage of students who completed at least one skill
-            </h4>
-            <CohortPercentageStudentsMasteredAtLeastOneSkillPieChart
-                ref="cohortPercentageStudentsMasteredAtLeastOneSkillPieChart"
-                class="mb-5"
-            />
+        <hr class="mt-5 mb-5" />
 
-            <h3 class="secondary-heading">By subject</h3>
-            <h4 class="">Failed more than once</h4>
-            <CohortFailedAssessmentsByRootSubjectHorizontalBarChart
-                v-if="
-                    analyticsStore.cohortRootSubjectsFailedAssessments.length >
-                    0
-                "
-                :data="analyticsStore.cohortRootSubjectsFailedAssessments"
-                colour="darkred"
-                class="mb-5"
-            />
-            <p v-else>No data yet</p>
+        <h2 class="secondary-heading mt-5">Academics</h2>
+        <h4>Skill mastery progress</h4>
+        <CohortProgressLineChart
+            v-if="classProgress.length > 0"
+            :data="classProgress"
+            colour="#5f31dd"
+            ref="cohortProgressLineChart"
+        />
+        <p v-else>No data available</p>
 
-            <h4 class="">Passed</h4>
-            <CohortPassedAssessmentsByRootSubjectHorizontalBarChart
-                v-if="
-                    analyticsStore.cohortRootSubjectsPassedAssessments.length >
-                    0
-                "
-                :data="analyticsStore.cohortRootSubjectsPassedAssessments"
-                colour="darkgreen"
-                class="mb-5"
-            />
-            <p v-else>No data yet</p>
+        <hr class="mt-5 mb-5" />
 
-            <h4 class="">Attempted</h4>
-            <CohortAttemptedAssessmentsByRootSubjectHorizontalBarChart
-                v-if="
-                    analyticsStore.cohortRootSubjectsAttemptedAssessments
-                        .length > 0
-                "
-                :data="analyticsStore.cohortRootSubjectsAttemptedAssessments"
-                colour="darkblue"
-                class="mb-5"
-            />
-            <p v-else>No data yet</p>
-            <!-- 
-            <h4 class="secondary-heading mt-4">Assessments attempted</h4>
-            <AttemptedAssessmentsTimelineChart class="mb-5" v-if="assessmentAttempts.length > 0"
-                :data="assessmentAttempts" />
-            <p v-else>This student has attempted any assessments yet.</p>
+        <h4 class="mt-4">
+            Percentage of students who completed at least one skill
+        </h4>
+        <CohortPercentageStudentsMasteredAtLeastOneSkillPieChart
+            ref="cohortPercentageStudentsMasteredAtLeastOneSkillPieChart"
+            class="mb-5"
+        />
 
-        
-            <h4 class="secondary-heading mt-4">Assessments passed</h4>
-            <PassedAssessmentsTimelineChart class="mb-5" v-if="assessmentPasses.length > 0" :data="assessmentPasses" />
-            <p v-else>
-                This student has not completed any assessments yet.
-            </p>
-            <h4 class="secondary-heading mt-4">Assessments failed</h4>
-            <FailedAssessmentsHorizontalBarChart v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
-                :data="teacherAnalyticsStore.studentMultipleFails" colour="darkred" class="mb-5" />
-            <p v-else>
-                This student has not failed any assessments more than once
-                yet.
-            </p> -->
-        </div>
+        <hr class="mt-5 mb-5" />
+
+        <h3 class="secondary-heading">By subject</h3>
+        <h4 class="">Failed more than once</h4>
+        <CohortFailedAssessmentsByRootSubjectHorizontalBarChart
+            v-if="analyticsStore.cohortRootSubjectsFailedAssessments.length > 0"
+            :data="analyticsStore.cohortRootSubjectsFailedAssessments"
+            colour="darkred"
+            class="mb-5"
+        />
+        <p v-else>No data yet</p>
+
+        <hr class="mt-5 mb-5" />
+
+        <h4 class="">Passed</h4>
+        <CohortPassedAssessmentsByRootSubjectHorizontalBarChart
+            v-if="analyticsStore.cohortRootSubjectsPassedAssessments.length > 0"
+            :data="analyticsStore.cohortRootSubjectsPassedAssessments"
+            colour="darkgreen"
+            class="mb-5"
+        />
+        <p v-else>No data yet</p>
+
+        <hr class="mt-5 mb-5" />
+
+        <h4 class="">Attempted</h4>
+        <CohortAttemptedAssessmentsByRootSubjectHorizontalBarChart
+            v-if="
+                analyticsStore.cohortRootSubjectsAttemptedAssessments.length > 0
+            "
+            :data="analyticsStore.cohortRootSubjectsAttemptedAssessments"
+            colour="darkblue"
+            class="mb-5"
+        />
+        <p v-else>No data yet</p>
     </div>
 </template>
 
@@ -278,11 +242,6 @@ export default {
 
 .fit-content {
     max-width: fit-content;
-}
-
-#user-information {
-    border: 1px solid var(--primary-color);
-    border-radius: 12px;
 }
 
 .user-input-information {
