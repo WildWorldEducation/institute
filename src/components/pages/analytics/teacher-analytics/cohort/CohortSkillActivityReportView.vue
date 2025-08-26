@@ -2,6 +2,7 @@
 import { useCohortsStore } from '../../../../../stores/CohortsStore';
 import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
 import CohortSkillActivityChart from '../../../../components/analytics/full-size/cohorts/CohortSkillActivityChart.vue';
+import DownloadCSVBtn from '../../../../components/downloadCSVBtn/downloadCSVBtn.vue';
 
 export default {
     setup() {
@@ -17,11 +18,13 @@ export default {
             cohortId: this.$route.params.cohortId,
             cohortName: '',
             visitedSkills: [],
-            skillActivities: []
+            skillActivities: [],
+            skillActivitiesDownloadData: []
         };
     },
     components: {
-        CohortSkillActivityChart
+        CohortSkillActivityChart,
+        DownloadCSVBtn
     },
     async created() {
         if (this.cohortsStore.cohorts.length < 1) {
@@ -58,6 +61,17 @@ export default {
                     throw new Error('Network response was not ok');
                 }
                 this.skillActivities = await response.json();
+                this.skillActivitiesDownloadData = this.skillActivities.map(
+                    (skill) => {
+                        return {
+                            skill: skill.name,
+                            minutesSpent: this.millisecondsToHours(
+                                skill.quantity,
+                                2
+                            )
+                        };
+                    }
+                );
             } catch (error) {
                 console.error('Error fetching skill activity report:', error);
             }
@@ -71,6 +85,17 @@ export default {
                     throw new Error('Network response was not ok');
                 }
                 this.skillActivities = await response.json();
+                this.skillActivitiesDownloadData = this.skillActivities.map(
+                    (skill) => {
+                        return {
+                            skill: skill.name,
+                            minutesSpent: this.millisecondsToHours(
+                                skill.quantity,
+                                2
+                            )
+                        };
+                    }
+                );
             } catch (error) {
                 console.error(
                     'Error fetching skill activity report for all students:',
@@ -103,7 +128,14 @@ export default {
     <div class="container">
         <span class="d-flex justify-content-between w-100">
             <h1 class="heading">Skill Activity Report</h1>
-            <h2 class="secondary-heading h3">{{ cohortName }}</h2>
+            <div class="d-flex align-items-center">
+                <h2 class="secondary-heading h3 mt-1">{{ cohortName }}</h2>
+                <DownloadCSVBtn
+                    v-if="this.skillActivities.length > 0"
+                    :data="skillActivitiesDownloadData"
+                    :fileName="`${cohortName}-skill-activity.csv`"
+                />
+            </div>
         </span>
 
         <div v-if="this.skillActivities.length > 0" class="mb-4">

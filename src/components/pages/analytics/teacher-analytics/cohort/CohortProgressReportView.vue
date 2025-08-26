@@ -2,6 +2,7 @@
 import { useCohortsStore } from '../../../../../stores/CohortsStore';
 import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
 import CohortProgressLineChart from '../../../../components/analytics/full-size/cohorts/CohortProgressLineChart.vue';
+import DownloadCSVBtn from '../../../../components/downloadCSVBtn/downloadCSVBtn.vue';
 
 export default {
     setup() {
@@ -12,12 +13,13 @@ export default {
             userDetailsStore
         };
     },
-    components: { CohortProgressLineChart },
+    components: { CohortProgressLineChart, DownloadCSVBtn },
     data() {
         return {
             cohortId: this.$route.params.cohortId,
             cohortName: '',
-            cohortProgress: []
+            cohortProgress: [],
+            cohortProgressDownloadData: []
         };
     },
     async created() {
@@ -46,6 +48,10 @@ export default {
                     }
                     data.sort((a, b) => a.date - b.date);
                     this.cohortProgress = data;
+                    this.cohortProgressDownloadData = data.map((item) => ({
+                        date: item.date,
+                        skillsMastered: item.quantity
+                    }));
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
@@ -62,6 +68,10 @@ export default {
                     }
                     data.sort((a, b) => a.date - b.date);
                     this.cohortProgress = data;
+                    this.cohortProgressDownloadData = data.map((item) => ({
+                        date: item.date,
+                        skillsMastered: item.quantity
+                    }));
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
@@ -75,7 +85,15 @@ export default {
     <div class="container">
         <span class="d-flex justify-content-between w-100">
             <h1 class="heading">Progress Report</h1>
-            <h2 class="secondary-heading h3">{{ cohortName }}</h2>
+            <div class="d-flex align-items-center">
+                <h2 class="secondary-heading h3 mt-1">{{ cohortName }}</h2>
+                <DownloadCSVBtn
+                    :data="cohortProgressDownloadData"
+                    :fileName="`${
+                        cohortName ? cohortName : 'All Students'
+                    }-progress.csv`"
+                />
+            </div>
         </span>
         <CohortProgressLineChart
             v-if="cohortProgress.length > 0"
