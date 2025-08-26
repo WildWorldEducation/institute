@@ -3,7 +3,7 @@ import { RouterLink } from 'vue-router';
 import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 
-import ProgressChart from '../../../components/analytics/full-size/dashboard/ProgressChart.vue';
+import StudentProgressChart from '../../../components/analytics/full-size/students/dashboard/StudentProgressChart.vue';
 export default {
     name: 'Student-Dashboard',
     setup() {
@@ -39,7 +39,7 @@ export default {
         };
     },
     components: {
-        ProgressChart
+        StudentProgressChart
     },
     async created() {
         await this.analyticsStore.getStudentProgress(
@@ -236,7 +236,7 @@ export default {
                         <h2 class="position-absolute chart-heading h5">
                             Skills mastered
                         </h2>
-                        <ProgressChart
+                        <StudentProgressChart
                             ref="progressChart"
                             v-if="
                                 progressData.student.length > 0 ||

@@ -2,7 +2,7 @@
 import * as d3 from 'd3';
 
 export default {
-    name: 'ProgressChart',
+    name: 'SchoolProgressChart',
     props: [],
     data() {
         return {
@@ -99,8 +99,7 @@ export default {
                         .clone()
                         .attr('x2', width - marginLeft - marginRight)
                         .attr('stroke-opacity', 0.1)
-                )
-              ;
+                );
 
             // Draw the lines
             svg.selectAll('.line')

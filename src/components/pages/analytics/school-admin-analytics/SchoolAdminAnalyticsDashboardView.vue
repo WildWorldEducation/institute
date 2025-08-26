@@ -3,8 +3,7 @@ import { RouterLink } from 'vue-router';
 import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import { useUsersStore } from '../../../../stores/UsersStore';
-
-import ProgressChart from '../../../components/analytics/full-size/dashboard/ProgressChart.vue';
+import SchoolProgressChart from '../../../components/analytics/full-size/tenants/dashboard/SchoolProgressChart.vue';
 
 export default {
     name: 'School-Admin-Dashboard',
@@ -42,9 +41,13 @@ export default {
         };
     },
     components: {
-        ProgressChart
+        SchoolProgressChart
     },
     async created() {
+        await this.analyticsStore.getSchoolProgress(
+            this.userDetailsStore.tenantId
+        );
+
         // Get teachers
         await this.usersStore.getInstructorsByTenant(
             this.userDetailsStore.tenantId
@@ -54,10 +57,29 @@ export default {
             this.userDetailsStore.tenantId
         );
 
-        //        await this.HandleProgressData();
+        await this.HandleProgressData();
     },
     methods: {
-        async HandleProgressData() {},
+        async HandleProgressData() {
+            // If "Everyone" checked
+            this.progressData.school = [];
+            for (
+                let i = 0;
+                i < this.analyticsStore.progress.tenant.length;
+                i++
+            ) {
+                this.progressData.school.push(
+                    this.analyticsStore.progress.tenant[i]
+                );
+            }
+
+            this.$nextTick(() => {
+                if (this.$refs.progressChart) {
+                    // Access the ref here
+                    this.$refs.progressChart.createChart(this.progressData);
+                }
+            });
+        },
         toggleSidebar() {
             this.showSidebar = !this.showSidebar;
         }
@@ -260,7 +282,7 @@ export default {
                         <h2 class="position-absolute chart-heading h5">
                             Academics (Skills mastered)
                         </h2>
-                        <ProgressChart
+                        <SchoolProgressChart
                             ref="progressChart"
                             v-if="progressData.school.length > 0"
                         />
