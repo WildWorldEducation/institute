@@ -296,6 +296,21 @@ export const useAnalyticsStore = defineStore('analytics', {
                 this.cohortRootSubjectsAttemptedAssessments = [];
             }
         },
+        // School
+        async getSchoolProgress(tenantId) {
+            await fetch(`/student-analytics/school-progress/${tenantId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.progress.tenant = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
         millisToMinutesAndSeconds(millis) {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);

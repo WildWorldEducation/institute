@@ -1739,6 +1739,88 @@ router.get(
 /**
  * PER TENANT --------------------------------------
  */
+
+/* Dashboard: School Progress */
+router.get('/school-progress/:tenantId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        
+        // First, get the date the first student in the tenant student started on the platform
+        let firstInteractionSQLQuery = `
+            SELECT date
+            FROM user_duration_tokens_per_day
+            JOIN users
+            ON users.id = user_duration_tokens_per_day.user_id
+            WHERE tenant_id = ${conn.escape(req.params.tenantId)}  
+            ORDER BY date ASC
+            LIMIT 1;`;
+
+        conn.query(firstInteractionSQLQuery, (err, firstInteractionResult) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                if (firstInteractionResult.length === 0) {
+                    return res.status(404).json({
+                        error: 'No skill activity'
+                    });
+                }
+
+                let sqlQuery = `
+                    SELECT CAST(mastered_date AS DATE) AS date, SUM(COUNT(*)) OVER(ORDER BY date) AS quantity
+                    FROM user_skills
+                    JOIN users
+                    ON users.id = user_skills.user_id
+                    JOIN skills
+                    ON skills.id = user_skills.skill_id
+                    WHERE is_mastered = 1
+                    AND tenant_id = ${conn.escape(req.params.tenantId)}        
+                    AND type <> 'domain'      
+                    GROUP BY date
+                    ORDER BY date ASC;`;
+
+                conn.query(sqlQuery, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        if (results.length === 0) {
+                            return res.status(404).json({
+                                error: 'No skill activity'
+                            });
+                        }
+
+                        let flag = false;
+                        for (let i = 0; i < results.length; i++) {
+                            if (
+                                firstInteractionResult[0].date ==
+                                results[i].date
+                            ) {
+                                flag = true;
+                            }
+                        }
+
+                        if (!flag) {
+                            results.unshift({
+                                date: firstInteractionResult[0].date,
+                                quantity: 0
+                            });
+                        }
+
+                        res.json(results);
+                    } catch (err) {
+                        next(err);
+                    }
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 router.get(
     '/avg-tokens-to-master-skills/tenant/:tenantId',
     (req, res, next) => {

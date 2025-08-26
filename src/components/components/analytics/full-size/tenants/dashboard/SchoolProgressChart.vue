@@ -15,8 +15,7 @@ export default {
             // First, clear line(s)
             d3.select('svg').remove();
 
-            if (data.student.length > 0) this.axisData = data.student;
-            else if (data.average.length > 0) this.axisData = data.average;
+            if (data.school.length > 0) this.axisData = data.school;
             else this.axisData = [];
 
             // Convert object into array of series
