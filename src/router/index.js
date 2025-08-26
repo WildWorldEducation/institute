@@ -685,40 +685,53 @@ const router = createRouter({
         },
         // School Admin analytics
         {
-            path: '/cost-report/:tenantId',
-            name: 'cost-report',
+            path: '/dashboard',
+            name: 'school-admin-dashboard',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/CostReportDashboardView.vue'
+                    '../components/pages/analytics/school-admin-analytics/SchoolAdminAnalyticsDashboardView.vue'
                 ),
             meta: {
-                title: 'Cost Report',
+                title: 'School Admin Dashboard',
                 requiresAuth: true,
                 roles: ['school_admin']
             }
         },
         {
-            path: '/engagement-report/:tenantId',
-            name: 'engagement-report',
+            path: '/reports/academics',
+            name: 'school-admin-academics',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/EngagementReportDashboardView.vue'
+                    '../components/pages/analytics/school-admin-analytics/SchoolAdminAnalyticsAcademicReportView.vue'
                 ),
             meta: {
-                title: 'Engagement Report',
+                title: 'School Admin Academics',
                 requiresAuth: true,
                 roles: ['school_admin']
             }
         },
         {
-            path: '/academic-report/:tenantId',
-            name: 'academic-report',
+            path: '/reports/engagement',
+            name: 'school-admin-engagement',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/AcademicReportDashboardView.vue'
+                    '../components/pages/analytics/school-admin-analytics/SchoolAdminAnalyticsEngagementReportView.vue'
                 ),
             meta: {
-                title: 'Academic Report',
+                title: 'School Admin Engagement',
+                requiresAuth: true,
+                roles: ['school_admin']
+            }
+        },
+        {
+            path: '/reports/cost',
+            name: 'school-admin-cost',
+            component: () =>
+                import(
+                    '../components/pages/analytics/school-admin-analytics/SchoolAdminAnalyticsCostReportView.vue'
+                ),
+            meta: {
+                title: 'School Admin Cost',
                 requiresAuth: true,
                 roles: ['school_admin']
             }

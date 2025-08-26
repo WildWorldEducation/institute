@@ -912,6 +912,26 @@ router.get('/instructors/list', (req, res, next) => {
     });
 });
 
+// List all instructors for a tenant.
+router.get('/instructors/tenant/:tenantId/list', (req, res, next) => {
+    res.setHeader('Content-Type', 'application/json');
+    let sqlQuery = `SELECT id, username FROM users
+        WHERE (role = 'instructor' OR role = 'partner')     
+        AND is_deleted = 0
+        AND tenant_id = ${conn.escape(req.params.tenantId)};`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.json(results);
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
 // List all students of a tenant.
 router.get(
     '/tenant/:tenantId/students/list',
