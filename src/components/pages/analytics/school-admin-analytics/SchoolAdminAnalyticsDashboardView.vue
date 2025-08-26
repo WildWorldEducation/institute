@@ -4,6 +4,8 @@ import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import { useUsersStore } from '../../../../stores/UsersStore';
 
+import ProgressChart from '../../../components/analytics/full-size/dashboard/ProgressChart.vue';
+
 export default {
     name: 'School-Admin-Dashboard',
     setup() {
@@ -39,7 +41,9 @@ export default {
             isAboveTheCurve: false
         };
     },
-    components: {},
+    components: {
+        ProgressChart
+    },
     async created() {
         // Get teachers
         await this.usersStore.getInstructorsByTenant(
@@ -113,6 +117,7 @@ export default {
                                         @change="HandleProgressData"
                                     />
                                     <RouterLink
+                                        target="_blank"
                                         :to="`/reports/class/${teacher.id}`"
                                         >{{ teacher.username }}'s
                                         class</RouterLink
@@ -156,6 +161,7 @@ export default {
                                         @change="HandleProgressData"
                                     />
                                     <RouterLink
+                                        target="_blank"
                                         :to="`/reports/student/${student.id}`"
                                         >{{ student.username }}</RouterLink
                                     >
@@ -252,8 +258,12 @@ export default {
                         class="col-md chart-container p-0 position-relative"
                     >
                         <h2 class="position-absolute chart-heading h5">
-                            Academics
+                            Academics (Skills mastered)
                         </h2>
+                        <ProgressChart
+                            ref="progressChart"
+                            v-if="progressData.school.length > 0"
+                        />
                     </RouterLink>
                     <div class="col-md chart-container p-0 position-relative">
                         <h2 class="position-absolute chart-heading h5">
