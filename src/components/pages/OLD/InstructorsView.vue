@@ -1,7 +1,7 @@
 <script>
-import InstructorsList from '../../components/instructors/InstructorsList.vue';
-import InstructorDetails from '../../components/instructors/InstructorDetails.vue';
-import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import InstructorsList from '../../components/OLD/InstructorsList.vue';
+import InstructorDetails from '../analytics/school-admin-analytics/SchoolAdminAnalyticsClassReportView.vue';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import { useAnalyticsStore } from '../../../stores/AnalyticsStore.js';
 
 export default {

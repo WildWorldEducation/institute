@@ -112,7 +112,11 @@ export default {
                                         type="checkbox"
                                         @change="HandleProgressData"
                                     />
-                                    {{ teacher.username }}'s class
+                                    <RouterLink
+                                        :to="`/reports/class/${teacher.id}`"
+                                        >{{ teacher.username }}'s
+                                        class</RouterLink
+                                    >
                                 </label>
                             </p>
                         </div>
@@ -151,7 +155,10 @@ export default {
                                         type="checkbox"
                                         @change="HandleProgressData"
                                     />
-                                    {{ student.username }}
+                                    <RouterLink
+                                        :to="`/reports/student/${student.id}`"
+                                        >{{ student.username }}</RouterLink
+                                    >
                                 </label>
                             </p>
                         </div>
@@ -248,7 +255,11 @@ export default {
                             Academics
                         </h2>
                     </RouterLink>
-                    <div class="col-md chart-container p-0"></div>
+                    <div class="col-md chart-container p-0 position-relative">
+                        <h2 class="position-absolute chart-heading h5">
+                            Notifications
+                        </h2>
+                    </div>
                 </div>
                 <div class="dash-row row">
                     <RouterLink
@@ -335,8 +346,7 @@ export default {
 }
 
 .sidebar a {
-    color: white;
-    text-decoration: none;
+    color: blue;
 }
 
 /* Main section */
