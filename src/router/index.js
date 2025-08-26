@@ -253,16 +253,7 @@ const router = createRouter({
                 roles: ['instructor', 'platform_admin', 'partner']
             }
         },
-        {
-            path: '/tenant-students',
-            name: 'tenant-students',
-            component: () =>
-                import('../components/pages/users/TenantStudentsView.vue'),
-            meta: {
-                requiresAuth: true,
-                roles: ['school_admin']
-            }
-        },
+
         // School admins only - classes from their school only
         {
             path: '/classes',
@@ -698,14 +689,14 @@ const router = createRouter({
             }
         },
         {
-            path: '/reports/academics',
-            name: 'school-admin-academics',
+            path: '/reports/student/:studentId',
+            name: 'school-admin-students',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/SchoolAdminAnalyticsAcademicReportView.vue'
+                    '../components/pages/analytics/school-admin-analytics/SchoolAdminAnalyticsStudentReportView.vue'
                 ),
             meta: {
-                title: 'School Admin Academics',
+                title: 'School Admin Students',
                 requiresAuth: true,
                 roles: ['school_admin']
             }
