@@ -18,7 +18,7 @@ export default {
     },
     data() {
         return {
-            tenantId: this.$route.params.tenantId,
+            tenantId: this.userDetailsStore.tenantId,
             isDataWeekly: false,
             // Tutorial tooltips
             isTutorialComplete: false,
@@ -185,7 +185,7 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid">
+    <div class="container">
         <span class="d-flex justify-content-between w-100">
             <h1 class="heading">Cost Report</h1>
             <span>
@@ -268,139 +268,127 @@ export default {
             </div>
         </div>
 
-        <div class="charts-grid">
-            <div class="chart">
-                <h2 class="h6 d-flex justify-content-between">
-                    Tokens spent per day
-                    <button
-                        class="btn"
-                        @click="
-                            downloadData(
-                                analyticsStore.totalTokensPerDay,
-                                'Tokens-per-day'
-                            )
-                        "
+        <div class="row">
+            <h2 class="h4 heading d-flex justify-content-between">
+                Tokens spent per day
+                <button
+                    class="btn"
+                    @click="
+                        downloadData(
+                            analyticsStore.totalTokensPerDay,
+                            'Tokens-per-day'
+                        )
+                    "
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 384 512"
-                            width="18"
-                            height="18"
-                        >
-                            <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                            <path
-                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
-                            />
-                        </svg>
-                    </button>
-                </h2>
-                <TenantTokensPerDayLineChart
-                    v-if="analyticsStore.totalTokensPerDay.length > 0"
-                    :data="analyticsStore.totalTokensPerDay"
-                    colour="#5f31dd"
-                    class="mb-5"
-                />
-                <p v-else>No data yet</p>
-                <p>
-                    <em
-                        >Please note recording of tokens per skill stops after
-                        student mastery of that skill</em
-                    >
-                </p>
-            </div>
-
-            <div class="chart">
-                <h2 class="h6 d-flex justify-content-between">
-                    Average number of tokens spent to master a skill
-                    <button
-                        class="btn"
-                        @click="
-                            downloadData(
-                                analyticsStore.avgTokensToMasterSkills,
-                                'Avg-tokens-to-master-skill'
-                            )
-                        "
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 384 512"
-                            width="18"
-                            height="18"
-                        >
-                            <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                            <path
-                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
-                            />
-                        </svg>
-                    </button>
-                </h2>
-                <TenantAvgTokensToMasterSkillsHorizontalBarChart
-                    v-if="analyticsStore.avgTokensToMasterSkills.length > 0"
-                    :data="analyticsStore.avgTokensToMasterSkills"
-                    colour="darkgreen"
-                />
-                <p v-else>No data yet</p>
-            </div>
-
-            <div class="chart">
-                <h2 class="h6 d-flex justify-content-between">
-                    Tokens spent per skill
-                    <button
-                        class="btn"
-                        @click="
-                            downloadData(
-                                analyticsStore.totalTokensPerSkill,
-                                'Tokens-per-skill'
-                            )
-                        "
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 384 512"
-                            width="18"
-                            height="18"
-                        >
-                            <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                            <path
-                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
-                            />
-                        </svg>
-                    </button>
-                </h2>
-                <TenantTokensPerSkillHorizontalBarChart
-                    v-if="analyticsStore.totalTokensPerSkill.length > 0"
-                    :data="analyticsStore.totalTokensPerSkill"
-                    colour="#5f31dd"
-                    class="mb-5"
-                />
-                <p v-else class="mb-5">No data yet</p>
-            </div>
-
-            <h4 class="d-flex justify-content-between mt-5">
-                Token spend per student
-            </h4>
-            <p><em>include total / monthly toggle</em></p>
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                        />
+                    </svg>
+                </button>
+            </h2>
+            <TenantTokensPerDayLineChart
+                v-if="analyticsStore.totalTokensPerDay.length > 0"
+                :data="analyticsStore.totalTokensPerDay"
+                colour="#5f31dd"
+                class="mb-5"
+            />
+            <p v-else>No data yet</p>
             <p>
                 <em
-                    >make it clear if the student is above the free limit (eg a
-                    different colour)</em
+                    >Please note recording of tokens per skill stops after
+                    student mastery of that skill</em
                 >
             </p>
         </div>
+        <hr class="mt-5 mb-5" />
+        <div class="row">
+            <h2 class="h4 heading d-flex justify-content-between">
+                Average number of tokens spent to master a skill
+                <button
+                    class="btn"
+                    @click="
+                        downloadData(
+                            analyticsStore.avgTokensToMasterSkills,
+                            'Avg-tokens-to-master-skill'
+                        )
+                    "
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18"
+                    >
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                        />
+                    </svg>
+                </button>
+            </h2>
+            <TenantAvgTokensToMasterSkillsHorizontalBarChart
+                v-if="analyticsStore.avgTokensToMasterSkills.length > 0"
+                :data="analyticsStore.avgTokensToMasterSkills"
+                colour="darkgreen"
+            />
+            <p v-else>No data yet</p>
+        </div>
+        <hr class="mt-5 mb-5" />
+        <div class="row">
+            <h2 class="h4 heading d-flex justify-content-between">
+                Tokens spent per skill
+                <button
+                    class="btn"
+                    @click="
+                        downloadData(
+                            analyticsStore.totalTokensPerSkill,
+                            'Tokens-per-skill'
+                        )
+                    "
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18"
+                    >
+                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                        />
+                    </svg>
+                </button>
+            </h2>
+            <TenantTokensPerSkillHorizontalBarChart
+                v-if="analyticsStore.totalTokensPerSkill.length > 0"
+                :data="analyticsStore.totalTokensPerSkill"
+                colour="#5f31dd"
+                class="mb-5"
+            />
+            <p v-else class="mb-5">No data yet</p>
+        </div>
+
+        <!-- <h4 class="d-flex justify-content-between mt-5">
+            Token spend per student
+        </h4>
+        <p><em>include total / monthly toggle</em></p>
+        <p>
+            <em
+                >make it clear if the student is above the free limit (eg a
+                different colour)</em
+            >
+        </p> -->
     </div>
 </template>
 
 <style scoped>
-.chart {
-    box-shadow: 5px 10px 5px lightblue;
-}
-
-.charts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    grid-gap: 20px;
-}
-
 /* Modals */
 .modal {
     display: block;
