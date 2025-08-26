@@ -4,6 +4,7 @@ import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
 import CohortPassedAssessmentsHorizontalBarChart from '../../../../components/analytics/full-size/cohorts/CohortPassedAssessmentsHorizontalChart.vue';
 import CohortAttemptedAssessmentsHorizontalChart from '../../../../components/analytics/full-size/cohorts/CohortAttemptedAssessmentsHorizontalChart.vue';
 import FailedAssessmentsHorizontalBarChart from '../../../../components/analytics/full-size/students/FailedAssessmentsHorizontalBarChart.vue';
+import DownloadCSVBtn from '../../../../components/downloadCSVBtn/downloadCSVBtn.vue';
 
 export default {
     setup() {
@@ -17,7 +18,8 @@ export default {
     components: {
         CohortPassedAssessmentsHorizontalBarChart,
         CohortAttemptedAssessmentsHorizontalChart,
-        FailedAssessmentsHorizontalBarChart
+        FailedAssessmentsHorizontalBarChart,
+        DownloadCSVBtn
     },
     data() {
         return {
@@ -25,7 +27,11 @@ export default {
             cohortName: '',
             masteredSkillQuantities: [],
             failedAssessmentQuantities: [],
-            attemptedAssessmentQuantities: []
+            attemptedAssessmentQuantities: [],
+            masteredSkillQuantitiesDownloadData: [],
+            attemptedAssessmentQuantitiesDownloadData: [],
+
+            failedAssessmentQuantitiesDownloadData: []
         };
     },
     async created() {
@@ -63,6 +69,10 @@ export default {
 
                 const data = await response.json();
                 this.masteredSkillQuantities = Array.isArray(data) ? data : [];
+                this.masteredSkillQuantitiesDownloadData = data.map((item) => ({
+                    student: item.name,
+                    quantity: item.quantity
+                }));
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
@@ -84,6 +94,10 @@ export default {
 
                 const data = await response.json();
                 this.masteredSkillQuantities = Array.isArray(data) ? data : [];
+                this.masteredSkillQuantitiesDownloadData = data.map((item) => ({
+                    student: item.name,
+                    quantity: item.quantity
+                }));
             } catch (error) {
                 console.error(
                     'Error fetching all students mastered assessments:',
@@ -107,6 +121,12 @@ export default {
                 this.attemptedAssessmentQuantities = Array.isArray(data)
                     ? data
                     : [];
+                this.attemptedAssessmentQuantitiesDownloadData = data.map(
+                    (item) => ({
+                        student: item.name,
+                        quantity: item.quantity
+                    })
+                );
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
@@ -206,29 +226,54 @@ export default {
             <h1 class="heading">Assessment Status Report</h1>
             <h2 class="secondary-heading h3">{{ cohortName }}</h2>
         </span>
+        <div class="mb-4">
+            <h4
+                class="secondary-heading d-flex justify-content-between mt-5 mb-2"
+            >
+                <span>Passed</span>
+                <DownloadCSVBtn
+                    :data="masteredSkillQuantitiesDownloadData"
+                    :fileName="`${cohortName}-passed-assessments.csv`"
+                />
+            </h4>
+            <CohortPassedAssessmentsHorizontalBarChart
+                v-if="masteredSkillQuantities.length > 0"
+                :data="masteredSkillQuantities"
+                colour="darkgreen"
+                class="mb-4"
+            />
+        </div>
 
-        <h4 class="secondary-heading">Passed</h4>
-        <CohortPassedAssessmentsHorizontalBarChart
-            v-if="masteredSkillQuantities.length > 0"
-            :data="masteredSkillQuantities"
-            colour="darkgreen"
-            class="mb-4"
-        />
+        <div class="mb-4">
+            <h4 class="secondary-heading d-flex justify-content-between">
+                <span>Attempted</span>
+                <DownloadCSVBtn
+                    :data="attemptedAssessmentQuantitiesDownloadData"
+                    :fileName="`${cohortName}-attempted-assessments.csv`"
+                />
+            </h4>
+            <CohortAttemptedAssessmentsHorizontalChart
+                v-if="attemptedAssessmentQuantities.length > 0"
+                :data="attemptedAssessmentQuantities"
+                colour="darkblue"
+                class="mb-4"
+            />
+        </div>
 
-        <h4 class="secondary-heading">Attempted</h4>
-        <CohortAttemptedAssessmentsHorizontalChart
-            v-if="attemptedAssessmentQuantities.length > 0"
-            :data="attemptedAssessmentQuantities"
-            colour="darkblue"
-            class="mb-4"
-        />
-
-        <h4 class="secondary-heading">Failed multiple times</h4>
-        <FailedAssessmentsHorizontalBarChart
-            v-if="failedAssessmentQuantities.length > 0"
-            :data="failedAssessmentQuantities"
-            colour="darkred"
-        />
+        <div class="mb-4">
+            <h4 class="secondary-heading d-flex justify-content-between">
+                <span>Failed multiple times</span>
+                <DownloadCSVBtn
+                    :data="failedAssessmentQuantities"
+                    :fileName="`${cohortName}-failed-assessments.csv`"
+                />
+            </h4>
+            <FailedAssessmentsHorizontalBarChart
+                v-if="failedAssessmentQuantities.length > 0"
+                :data="failedAssessmentQuantities"
+                colour="darkred"
+            />
+        </div>
     </div>
 </template>
 
