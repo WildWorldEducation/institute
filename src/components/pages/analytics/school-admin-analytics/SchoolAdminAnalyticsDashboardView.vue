@@ -3,7 +3,7 @@ import { RouterLink } from 'vue-router';
 import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import { useUsersStore } from '../../../../stores/UsersStore';
-import ProgressChart from '../../../components/analytics/full-size/dashboard/ProgressChart.vue';
+import SchoolProgressChart from '../../../components/analytics/full-size/tenants/dashboard/SchoolProgressChart.vue';
 
 export default {
     name: 'School-Admin-Dashboard',
@@ -41,7 +41,7 @@ export default {
         };
     },
     components: {
-        ProgressChart
+        SchoolProgressChart
     },
     async created() {
         await this.analyticsStore.getSchoolProgress(
@@ -57,7 +57,7 @@ export default {
             this.userDetailsStore.tenantId
         );
 
-        //        await this.HandleProgressData();
+        await this.HandleProgressData();
     },
     methods: {
         async HandleProgressData() {
@@ -280,7 +280,7 @@ export default {
                         <h2 class="position-absolute chart-heading h5">
                             Academics
                         </h2>
-                        <ProgressChart
+                        <SchoolProgressChart
                             ref="progressChart"
                             v-if="progressData.school.length > 0"
                         />
