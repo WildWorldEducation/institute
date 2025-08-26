@@ -48,6 +48,10 @@ export default {
                     }
                     data.sort((a, b) => a.date - b.date);
                     this.cohortProgress = data;
+                    this.cohortProgressDownloadData = data.map((item) => ({
+                        date: item.date,
+                        skillsMastered: item.quantity
+                    }));
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
@@ -66,7 +70,7 @@ export default {
                     this.cohortProgress = data;
                     this.cohortProgressDownloadData = data.map((item) => ({
                         date: item.date,
-                        skillMastered: item.quantity
+                        skillsMastered: item.quantity
                     }));
                 })
                 .catch((error) => {

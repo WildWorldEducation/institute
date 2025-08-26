@@ -94,6 +94,10 @@ export default {
 
                 const data = await response.json();
                 this.masteredSkillQuantities = Array.isArray(data) ? data : [];
+                this.masteredSkillQuantitiesDownloadData = data.map((item) => ({
+                    student: item.name,
+                    quantity: item.quantity
+                }));
             } catch (error) {
                 console.error(
                     'Error fetching all students mastered assessments:',

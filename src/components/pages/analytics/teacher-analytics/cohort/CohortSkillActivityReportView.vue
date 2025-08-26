@@ -61,6 +61,17 @@ export default {
                     throw new Error('Network response was not ok');
                 }
                 this.skillActivities = await response.json();
+                this.skillActivitiesDownloadData = this.skillActivities.map(
+                    (skill) => {
+                        return {
+                            skill: skill.name,
+                            minutesSpent: this.millisecondsToHours(
+                                skill.quantity,
+                                2
+                            )
+                        };
+                    }
+                );
             } catch (error) {
                 console.error('Error fetching skill activity report:', error);
             }
