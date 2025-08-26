@@ -22,6 +22,7 @@ export default {
             showSidebar: true,
             screenWidth: screen.width,
             // Sidebar variables
+            isEveryone: true,
             isSchoolData: false,
             isLanguageData: false,
             isMathData: false,
@@ -74,7 +75,7 @@ export default {
             <label class="control control-checkbox mb-2">
                 <input
                     type="checkbox"
-                    v-model="isSchoolData"
+                    v-model="isEveryone"
                     @change="HandleProgressData"
                 />
                 Everyone
@@ -271,6 +272,13 @@ export default {
 </template>
 
 <style scoped>
+/* Accordions */
+.accordion-button {
+    background-color: #2c3e50;
+    color: white;
+    border-radius: 0px !important;
+}
+
 .chart-heading {
     top: 5px;
     left: 5px;
