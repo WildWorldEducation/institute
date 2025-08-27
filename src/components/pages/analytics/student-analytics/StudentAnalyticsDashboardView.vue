@@ -34,6 +34,10 @@ export default {
                 student: [],
                 average: []
             },
+            tokensData: {
+                student: [],
+                average: []
+            },
             // Notifications
             isAboveTheCurve: false
         };
@@ -42,6 +46,7 @@ export default {
         StudentProgressChart
     },
     async created() {
+        // Get total progress data
         await this.analyticsStore.getStudentProgress(
             this.userDetailsStore.userId,
             this.userDetailsStore.tenantId
@@ -99,6 +104,46 @@ export default {
                 if (this.$refs.progressChart) {
                     // Access the ref here
                     this.$refs.progressChart.createChart(this.progressData);
+                }
+            });
+        },
+        async HandleTokensData() {
+            // If "You" checked
+            if (this.isStudentData) {
+                this.tokensData.student = [];
+                for (
+                    let i = 0;
+                    i < this.analyticsStore.tokens.student.length;
+                    i++
+                ) {
+                    this.tokensData.student.push(
+                        this.analyticsStore.tokens.student[i]
+                    );
+                }
+            } else {
+                this.tokensData.student = [];
+            }
+
+            // If "School average" checked
+            if (this.isSchoolData) {
+                this.tokensData.average = [];
+                for (
+                    let i = 0;
+                    i < this.analyticsStore.tokens.tenant.length;
+                    i++
+                ) {
+                    this.tokensData.average.push(
+                        this.analyticsStore.tokens.tenant[i]
+                    );
+                }
+            } else {
+                this.tokensData.average = [];
+            }
+
+            this.$nextTick(() => {
+                if (this.$refs.progressChart) {
+                    // Access the ref here
+                    this.$refs.progressChart.createChart(this.tokensData);
                 }
             });
         },
