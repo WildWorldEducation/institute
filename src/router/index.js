@@ -412,6 +412,18 @@ const router = createRouter({
                 roles: ['student']
             }
         },
+        {
+            path: '/my-progress/super-challenging',
+            name: 'my-progress-super-challenging',
+            component: () =>
+                import(
+                    '../components/pages/analytics/student-analytics/StudentAnalyticsFailedView.vue'
+                ),
+            meta: {
+                requiresAuth: true,
+                roles: ['student']
+            }
+        },
         // TODO - possibly remove this feature
         // Check with client first
         // {
