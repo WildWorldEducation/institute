@@ -109,8 +109,7 @@ export default {
                 .attr('stroke', (d) => color(d.name))
                 .attr('stroke-width', 3)
                 .attr('d', (d) => line(d.values));
-        },
-        updateChart(data) {}
+        }
     }
 };
 </script>
