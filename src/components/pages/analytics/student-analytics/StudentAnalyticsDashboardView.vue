@@ -4,6 +4,7 @@ import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 
 import StudentProgressChart from '../../../components/analytics/full-size/students/dashboard/StudentProgressChart.vue';
+import StudentComparisonChart from '../../../components/analytics/full-size/students/dashboard/StudentComparisonChart.vue';
 export default {
     name: 'Student-Dashboard',
     setup() {
@@ -21,7 +22,7 @@ export default {
             screenWidth: screen.width,
             // Sidebar variables
             isStudentData: true,
-            isSchoolData: false,
+            isSchoolData: true,
             isLanguageData: false,
             isMathData: false,
             isHistoryData: false,
@@ -39,12 +40,24 @@ export default {
         };
     },
     components: {
-        StudentProgressChart
+        StudentProgressChart,
+        StudentComparisonChart
     },
     async created() {
+        // Get total progress data
         await this.analyticsStore.getStudentProgress(
             this.userDetailsStore.userId,
             this.userDetailsStore.tenantId
+        );
+
+        // Get subject comparison data
+        await this.analyticsStore.getStudentPassedAssessmentsBySubject(
+            this.userDetailsStore.userId
+        );
+
+        console.log(
+            'Student root subjects passed assessments:',
+            this.analyticsStore.studentRootSubjectsPassedAssessments
         );
 
         // Notifications
@@ -60,6 +73,7 @@ export default {
         }
 
         await this.HandleProgressData();
+        await this.HandleComparisonData();
     },
     methods: {
         async HandleProgressData() {
@@ -102,6 +116,16 @@ export default {
                 }
             });
         },
+        async HandleComparisonData() {
+            this.$nextTick(() => {
+                if (this.$refs.comparisonChart) {
+                    // Access the ref here
+                    this.$refs.comparisonChart.createChart(
+                        this.analyticsStore.studentRootSubjectsPassedAssessments
+                    );
+                }
+            });
+        },
         toggleSidebar() {
             this.showSidebar = !this.showSidebar;
         }
@@ -111,111 +135,6 @@ export default {
 
 <template>
     <div class="dashboard">
-        <!-- Sidebar -->
-        <!-- dont show on mobile -->
-        <div
-            v-if="screenWidth > 768"
-            class="sidebar"
-            :class="{ hidden: !showSidebar }"
-        >
-            <!-- filters - student and / or school average -->
-            <h1 class="h2">Who</h1>
-            <p>
-                <label class="control control-checkbox">
-                    <input
-                        type="checkbox"
-                        v-model="isStudentData"
-                        @change="HandleProgressData"
-                    />
-                    You
-                </label>
-            </p>
-            <p>
-                <label class="control control-checkbox">
-                    <input
-                        type="checkbox"
-                        v-model="isSchoolData"
-                        @change="HandleProgressData"
-                    />
-                    School average
-                </label>
-            </p>
-
-            <h1 class="h2">Subjects</h1>
-            <ul>
-                <li>
-                    <label class="control control-checkbox">
-                        <input
-                            type="checkbox"
-                            value="true"
-                            v-model="isLanguageData"
-                        />
-                        Language
-                    </label>
-                </li>
-                <li>
-                    <label class="control control-checkbox">
-                        <input
-                            type="checkbox"
-                            value="true"
-                            v-model="isMathData"
-                        />
-                        Math
-                    </label>
-                </li>
-                <li>
-                    <label class="control control-checkbox">
-                        <input
-                            type="checkbox"
-                            value="true"
-                            v-model="isHistoryData"
-                        />
-                        History
-                    </label>
-                </li>
-                <li>
-                    <label class="control control-checkbox">
-                        <input
-                            type="checkbox"
-                            value="true"
-                            v-model="isLifeData"
-                        />
-                        Life
-                    </label>
-                </li>
-                <li>
-                    <label class="control control-checkbox">
-                        <input
-                            type="checkbox"
-                            value="true"
-                            v-model="isCSData"
-                        />
-                        Computer Science
-                    </label>
-                </li>
-                <li>
-                    <label class="control control-checkbox">
-                        <input
-                            type="checkbox"
-                            value="true"
-                            v-model="isSAndIData"
-                        />
-                        Science & Invention
-                    </label>
-                </li>
-                <li>
-                    <label class="control control-checkbox">
-                        <input
-                            type="checkbox"
-                            value="true"
-                            v-model="isDIData"
-                        />
-                        Dangerous Ideas
-                    </label>
-                </li>
-            </ul>
-        </div>
-
         <!-- Main Content -->
         <div class="main">
             <!-- <header class="header">
@@ -225,36 +144,149 @@ export default {
                 <h1>Dashboard</h1>
             </header> -->
 
+            <!-- <div
+                v-if="screenWidth > 768"
+                class="sidebar"
+                :class="{ hidden: !showSidebar }"
+            >
+               
+                <p>
+                    <label class="control control-checkbox">
+                        <input
+                            type="checkbox"
+                            v-model="isStudentData"
+                            @change="HandleProgressData"
+                        />
+                        You
+                    </label>
+                </p>
+                <p>
+                    <label class="control control-checkbox">
+                        <input
+                            type="checkbox"
+                            v-model="isSchoolData"
+                            @change="HandleProgressData"
+                        />
+                        School average
+                    </label>
+                </p>
+
+                <ul>
+                    <li>
+                        <label class="control control-checkbox">
+                            <input
+                                type="checkbox"
+                                value="true"
+                                v-model="isLanguageData"
+                            />
+                            Language
+                        </label>
+                    </li>
+                    <li>
+                        <label class="control control-checkbox">
+                            <input
+                                type="checkbox"
+                                value="true"
+                                v-model="isMathData"
+                            />
+                            Math
+                        </label>
+                    </li>
+                    <li>
+                        <label class="control control-checkbox">
+                            <input
+                                type="checkbox"
+                                value="true"
+                                v-model="isHistoryData"
+                            />
+                            History
+                        </label>
+                    </li>
+                    <li>
+                        <label class="control control-checkbox">
+                            <input
+                                type="checkbox"
+                                value="true"
+                                v-model="isLifeData"
+                            />
+                            Life
+                        </label>
+                    </li>
+                    <li>
+                        <label class="control control-checkbox">
+                            <input
+                                type="checkbox"
+                                value="true"
+                                v-model="isCSData"
+                            />
+                            Computer Science
+                        </label>
+                    </li>
+                    <li>
+                        <label class="control control-checkbox">
+                            <input
+                                type="checkbox"
+                                value="true"
+                                v-model="isSAndIData"
+                            />
+                            Science & Invention
+                        </label>
+                    </li>
+                    <li>
+                        <label class="control control-checkbox">
+                            <input
+                                type="checkbox"
+                                value="true"
+                                v-model="isDIData"
+                            />
+                            Dangerous Ideas
+                        </label>
+                    </li>
+                </ul>
+            </div> -->
+
             <div class="content container-fluid">
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
                     <RouterLink
                         to="/my-progress/skills"
-                        id="progress-chart-container"
-                        class="col-md chart-container p-0 position-relative"
+                        class="col-md-6 h-100 p-0 position-relative"
                     >
-                        <h2 class="position-absolute chart-heading h5">
-                            Skills mastered
-                        </h2>
-                        <StudentProgressChart
-                            ref="progressChart"
-                            v-if="
-                                progressData.student.length > 0 ||
-                                progressData.average.length > 0
-                            "
-                        />
+                        <div id="progress-chart-container">
+                            <div class="position-absolute chart-heading">
+                                <h2 class="heading h5">Progress</h2>
+                                <strong>You</strong><br />
+                                <span style="color: #ff7f0e"
+                                    ><strong>School average</strong></span
+                                >
+                            </div>
+
+                            <StudentProgressChart
+                                ref="progressChart"
+                                v-if="
+                                    progressData.student.length > 0 ||
+                                    progressData.average.length > 0
+                                "
+                            />
+                        </div>
                     </RouterLink>
-                    <div class="col-md chart-container p-0">
-                        <div
-                            v-if="isAboveTheCurve"
-                            class="alert alert-success"
-                            role="alert"
-                        >
-                            Nice going, you're above the curve!
-                        </div>
-                        <div v-else class="alert alert-warning" role="alert">
-                            You're below the curve, keep trying!
-                        </div>
+                    <div class="col-md-6 position-relative">
+                        <h2 class="heading chart-heading h5 mt-1">
+                            Subject comparison
+                        </h2>
+                        <p><em>TODO: different color for each subject</em></p>
+                        <StudentComparisonChart
+                            ref="comparisonChart"
+                            v-if="
+                                analyticsStore
+                                    .studentRootSubjectsPassedAssessments
+                                    .length > 0
+                            "
+                            :data="
+                                analyticsStore.studentRootSubjectsPassedAssessments
+                            "
+                            :colour="'#5f31dd'"
+                        />
                     </div>
                 </div>
                 <div class="dash-row row">
@@ -270,9 +302,19 @@ export default {
                         to="/my-progress/tokens"
                         class="col-md chart-container p-0 position-relative"
                     >
-                        <h2 class="position-absolute chart-heading h5">
-                            Tokens used
-                        </h2>
+                        <div class="card">
+                            <div class="card-body">Skills passed: 25</div>
+                        </div>
+                        <div
+                            v-if="isAboveTheCurve"
+                            class="alert alert-success"
+                            role="alert"
+                        >
+                            Nice going, you're above the curve!
+                        </div>
+                        <div v-else class="alert alert-warning" role="alert">
+                            You're below the curve, keep trying!
+                        </div>
                     </RouterLink>
                 </div>
             </div>
@@ -297,6 +339,7 @@ export default {
 
 .chart-container {
     border: 1px solid black;
+    height: 100%;
 }
 
 .dashboard {
@@ -308,12 +351,14 @@ export default {
 
 /* Sidebar */
 .sidebar {
-    width: 220px;
+    width: 200px;
     background: #2c3e50;
     color: white;
     padding: 1rem;
     box-sizing: border-box;
     transition: width 0.3s ease, opacity 0.3s ease;
+    height: 100%;
+    overflow-y: auto;
 }
 
 .sidebar.hidden {
