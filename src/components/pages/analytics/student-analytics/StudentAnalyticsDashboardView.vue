@@ -254,14 +254,18 @@ export default {
             <div class="content container">
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
-                    <RouterLink
-                        to="/my-progress/skills"
-                        class="col-md-6 h-100 p-0 position-relative"
-                    >
+                    <div class="col-md-6 h-100 p-0 position-relative">
                         <div id="progress-chart-container">
                             <div class="position-absolute chart-heading">
-                                <h2 class="heading h5">Progress over time</h2>
-                                <strong>You</strong><br />
+                                <RouterLink to="/my-progress/skills" class=""
+                                    ><h2 class="heading h5">
+                                        Progress over time
+                                    </h2>
+                                </RouterLink>
+
+                                <span style="color: #5f31dd">
+                                    <strong>You</strong></span
+                                ><br />
                                 <span style="color: #ff7f0e"
                                     ><strong>School average</strong></span
                                 >
@@ -275,7 +279,8 @@ export default {
                                 "
                             />
                         </div>
-                    </RouterLink>
+                    </div>
+
                     <div class="col-md-6 position-relative">
                         <h2 class="heading chart-heading h5 mt-1">
                             Subject comparison
@@ -296,20 +301,24 @@ export default {
                     </div>
                 </div>
                 <div class="dash-row row">
-                    <RouterLink
-                        to="/my-progress/time"
-                        class="col-md p-0 position-relative"
-                    >
-                        <h2 class="heading position-absolute chart-heading h5">
-                            Study time
-                        </h2>
-                    </RouterLink>
+                    <div class="col-md p-0 position-relative">
+                        <div class="position-absolute chart-heading">
+                            <RouterLink to="/my-progress/time">
+                                <h2 class="heading h5">Study time</h2>
+                            </RouterLink>
+                        </div>
+                    </div>
                     <div class="col-md p-0 position-relative">
                         <div class="row">
                             <div class="col">
-                                <h2 class="h5 heading">
-                                    Super challenging skills
-                                </h2>
+                                <RouterLink
+                                    to="/my-progress/super-challenging"
+                                    class="col"
+                                >
+                                    <h2 class="h5 heading">
+                                        Super challenging skills
+                                    </h2>
+                                </RouterLink>
                                 <ul
                                     v-if="
                                         teacherAnalyticsStore
@@ -333,7 +342,10 @@ export default {
                                         <strong>Total time spent:</strong> 5:00
                                     </li>
                                     <li>
-                                        <strong>Tokens used:</strong> 10,000
+                                        <RouterLink to="/my-progress/tokens"
+                                            ><strong>Tokens used:</strong>
+                                            10,000</RouterLink
+                                        >
                                     </li>
                                 </ul>
                             </div>
@@ -354,7 +366,6 @@ export default {
         </div>
     </div>
 </template>
-
 <style scoped>
 .chart-heading {
     top: 5px;
