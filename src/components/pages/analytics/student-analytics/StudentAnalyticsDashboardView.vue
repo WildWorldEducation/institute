@@ -1,6 +1,7 @@
 <script>
 import { RouterLink } from 'vue-router';
 import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
+import { useTeacherAnalyticsStore } from '../../../../stores/TeacherAnalyticsStore';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 
 import StudentProgressChart from '../../../components/analytics/full-size/students/dashboard/StudentProgressChart.vue';
@@ -10,9 +11,12 @@ export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
         const analyticsStore = useAnalyticsStore();
+        const teacherAnalyticsStore = useTeacherAnalyticsStore();
+
         return {
             userDetailsStore,
-            analyticsStore
+            analyticsStore,
+            teacherAnalyticsStore
         };
     },
     data() {
@@ -55,10 +59,12 @@ export default {
             this.userDetailsStore.userId
         );
 
-        console.log(
-            'Student root subjects passed assessments:',
-            this.analyticsStore.studentRootSubjectsPassedAssessments
+        // Get data for "super challenging"
+        await this.teacherAnalyticsStore.getStudentMultipleFails(
+            this.userDetailsStore.userId
         );
+
+        console.log(this.teacherAnalyticsStore.studentMultipleFails);
 
         // Notifications
         if (
@@ -245,7 +251,7 @@ export default {
                 </ul>
             </div> -->
 
-            <div class="content container-fluid">
+            <div class="content container">
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
                     <RouterLink
@@ -254,7 +260,7 @@ export default {
                     >
                         <div id="progress-chart-container">
                             <div class="position-absolute chart-heading">
-                                <h2 class="heading h5">Progress</h2>
+                                <h2 class="heading h5">Progress over time</h2>
                                 <strong>You</strong><br />
                                 <span style="color: #ff7f0e"
                                     ><strong>School average</strong></span
@@ -292,20 +298,47 @@ export default {
                 <div class="dash-row row">
                     <RouterLink
                         to="/my-progress/time"
-                        class="col-md chart-container p-0 position-relative"
+                        class="col-md p-0 position-relative"
                     >
-                        <h2 class="position-absolute chart-heading h5">
-                            Time spent
+                        <h2 class="heading position-absolute chart-heading h5">
+                            Study time
                         </h2>
                     </RouterLink>
-                    <RouterLink
-                        to="/my-progress/tokens"
-                        class="col-md chart-container p-0 position-relative"
-                    >
-                        <div class="card">
-                            <div class="card-body">Skills passed: 25</div>
+                    <div class="col-md p-0 position-relative">
+                        <div class="row">
+                            <div class="col">
+                                <h2 class="h5 heading">
+                                    Super challenging skills
+                                </h2>
+                                <ul
+                                    v-if="
+                                        teacherAnalyticsStore
+                                            .studentMultipleFails.length > 0
+                                    "
+                                >
+                                    <li
+                                        v-for="skill in teacherAnalyticsStore.studentMultipleFails"
+                                        :key="skill.id"
+                                    >
+                                        {{ skill.name }}
+                                    </li>
+                                </ul>
+                                <p v-else>Nothing to worry about yet</p>
+                            </div>
+                            <div class="col">
+                                <h2 class="h5 heading">Stats</h2>
+                                <ul>
+                                    <li><strong>Skills passed:</strong> 25</li>
+                                    <li>
+                                        <strong>Total time spent:</strong> 5:00
+                                    </li>
+                                    <li>
+                                        <strong>Tokens used:</strong> 10,000
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
-                        <div
+                        <!-- <div
                             v-if="isAboveTheCurve"
                             class="alert alert-success"
                             role="alert"
@@ -314,8 +347,8 @@ export default {
                         </div>
                         <div v-else class="alert alert-warning" role="alert">
                             You're below the curve, keep trying!
-                        </div>
-                    </RouterLink>
+                        </div> -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -345,7 +378,6 @@ export default {
 .dashboard {
     display: flex;
     height: calc(100vh - 88px);
-    font-family: sans-serif;
     overflow: hidden;
 }
 
