@@ -1,5 +1,5 @@
 <script>
-// import TenantStudentList from '../../components/OLD/TenantStudentList.vue';
+import TenantStudentList from '../../components/students-and-users/TenantStudentList.vue';
 // import TenantStudentDetails from '../analytics/school-admin-analytics/TenantStudentDetails.vue';
 
 // Import the stores.

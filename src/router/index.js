@@ -701,6 +701,16 @@ const router = createRouter({
             }
         },
         {
+            path: '/tenant-students',
+            name: 'tenant-students',
+            component: () =>
+                import('../components/pages/users/TenantStudentsView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['school_admin']
+            }
+        },
+        {
             path: '/reports/class/:teacherId',
             name: 'school-admin-classes',
             component: () =>
