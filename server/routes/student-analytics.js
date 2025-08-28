@@ -114,7 +114,7 @@ router.get('/multiple-fails/:studentId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT skills.id, skills.name, COUNT(name) AS quantity
+            SELECT skills.id, skills.name, url, COUNT(name) AS quantity
                     FROM assessment_attempts
                     JOIN skills ON skills.id = assessment_attempts.skill_id
                     WHERE assessment_attempts.user_id = ${conn.escape(
@@ -127,7 +127,7 @@ router.get('/multiple-fails/:studentId', (req, res, next) => {
                         req.params.studentId
                     )}
                     AND is_mastered = 1)  
-                    group by id, name
+                    group by id, name, url
                     HAVING COUNT(*) > 1;`;
 
         conn.query(sqlQuery, (err, results) => {
