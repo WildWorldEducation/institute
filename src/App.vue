@@ -349,7 +349,20 @@ export default {
                                 Students
                             </RouterLink>
                         </li>
-
+                        <!-- Tenant Students -->
+                        <li
+                            v-if="userDetailsStore.role == 'school_admin'"
+                            class="nav-item dropdown"
+                        >
+                            <div class="d-flex align-items-center">
+                                <RouterLink
+                                    to="/tenant-students"
+                                    class="nav-link"
+                                >
+                                    Students
+                                </RouterLink>
+                            </div>
+                        </li>
                         <!-- Cohorts -->
                         <li
                             v-if="
@@ -364,7 +377,19 @@ export default {
                             >
                                 Cohorts
                             </RouterLink>
-                        </li>                                      
+                        </li>
+                        <!-- Tenant Cohorts -->
+                        <li
+                            v-if="userDetailsStore.role == 'school_admin'"
+                            class="nav-item"
+                        >
+                            <RouterLink
+                                to="/classes"
+                                class="nav-link close-on-click"
+                            >
+                                Teachers
+                            </RouterLink>
+                        </li>
                         <!-- Tenants -->
                         <li
                             v-if="userDetailsStore.role == 'platform_admin'"

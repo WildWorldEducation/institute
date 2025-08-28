@@ -1,6 +1,6 @@
 <script>
-// import TenantStudentList from '../../components/OLD/TenantStudentList.vue';
-// import TenantStudentDetails from '../analytics/school-admin-analytics/TenantStudentDetails.vue';
+import TenantStudentList from '../../components/students-and-users/TenantStudentList.vue';
+import TenantStudentDetails from '../../components/students-and-users/TenantStudentDetails.vue';
 
 // Import the stores.
 import { useUsersStore } from '../../../stores/UsersStore';

@@ -259,7 +259,7 @@ const router = createRouter({
             path: '/classes',
             name: 'classes',
             component: () =>
-                import('../components/pages/OLD/InstructorsView.vue'),
+                import('../components/pages/users/InstructorsView.vue'),
             meta: {
                 requiresAuth: true,
                 roles: ['school_admin']
@@ -696,6 +696,16 @@ const router = createRouter({
                 ),
             meta: {
                 title: 'School Admin Dashboard',
+                requiresAuth: true,
+                roles: ['school_admin']
+            }
+        },
+        {
+            path: '/tenant-students',
+            name: 'tenant-students',
+            component: () =>
+                import('../components/pages/users/TenantStudentsView.vue'),
+            meta: {
                 requiresAuth: true,
                 roles: ['school_admin']
             }
