@@ -4,6 +4,7 @@ import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import { useUsersStore } from '../../../../stores/UsersStore';
 import SchoolProgressChart from '../../../components/analytics/full-size/tenants/dashboard/SchoolProgressChart.vue';
+import SchoolComparisonChart from '../../../components/analytics/full-size/tenants/dashboard/SchoolComparisonChart.vue';
 
 export default {
     name: 'School-Admin-Dashboard',
@@ -41,12 +42,18 @@ export default {
         };
     },
     components: {
-        SchoolProgressChart
+        SchoolProgressChart,
+        SchoolComparisonChart
     },
     async created() {
+        // Student progress
         await this.analyticsStore.getSchoolProgress(
             this.userDetailsStore.tenantId
         );
+
+        // Subject comparison
+        if (this.analyticsStore.rootSubjectsPassedAssessments.length == 0)
+            await this.getPassedAssessmentsBySubject();
 
         // Get teachers
         await this.usersStore.getInstructorsByTenant(
@@ -80,6 +87,36 @@ export default {
                 }
             });
         },
+        async getPassedAssessmentsBySubject() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/passed-assessments-by-subject/tenant/${this.userDetailsStore.tenantId}`
+                );
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                this.analyticsStore.rootSubjectsPassedAssessments =
+                    await response.json();
+
+                console.log(this.analyticsStore.rootSubjectsPassedAssessments);
+
+                this.$nextTick(() => {
+                    if (this.$refs.comparisonChart) {
+                        console.log('Creating comparison chart');
+                        // Access the ref here
+                        this.$refs.comparisonChart.createChart(
+                            this.analyticsStore.rootSubjectsPassedAssessments
+                        );
+                    }
+                });
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.analyticsStore.rootSubjectsPassedAssessments = [];
+            }
+        },
         toggleSidebar() {
             this.showSidebar = !this.showSidebar;
         }
@@ -91,13 +128,13 @@ export default {
     <div class="dashboard">
         <!-- Sidebar -->
         <!-- dont show on mobile -->
-        <div
+        <!-- <div
             v-if="screenWidth > 768"
             class="sidebar"
             :class="{ hidden: !showSidebar }"
-        >
-            <!-- filters - student and / or school average -->
-            <h1 class="h2">Who</h1>
+        > -->
+        <!-- filters - student and / or school average -->
+        <!-- <h1 class="h2">Who</h1>
             <label class="control control-checkbox mb-2">
                 <input
                     type="checkbox"
@@ -105,10 +142,10 @@ export default {
                     @change="HandleProgressData"
                 />
                 Everyone
-            </label>
+            </label> -->
 
-            <!-- Teachers' classes -->
-            <div class="accordion accordion-flush" id="classesAccordion">
+        <!-- Teachers' classes -->
+        <!-- <div class="accordion accordion-flush" id="classesAccordion">
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="headingOne">
                         <button
@@ -149,10 +186,10 @@ export default {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
-            <!-- Students -->
-            <div class="accordion accordion-flush" id="studentAccordion">
+        <!-- Students -->
+        <!-- <div class="accordion accordion-flush" id="studentAccordion">
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="headingOne">
                         <button
@@ -192,9 +229,9 @@ export default {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
-            <h1 class="h2 mt-3">Subjects</h1>
+        <!-- <h1 class="h2 mt-3">Subjects</h1>
             <ul>
                 <li>
                     <label class="control control-checkbox">
@@ -267,46 +304,72 @@ export default {
                     </label>
                 </li>
             </ul>
-        </div>
+        </div> -->
 
         <!-- Main Content -->
-        <div class="main">
-            <div class="content container-fluid">
-                <!-- This is where charts / dashboard cards go -->
-                <div class="dash-row row">
+
+        <div class="content container">
+            <div class="row top-row">
+                <div class="col-md text-center">
+                    <h2 class="h5 heading m-0">Avg # Skills Mastered</h2>
+                    <span class="top-row-text">10</span>
+                </div>
+                <div class="col-md text-center">
+                    <h2 class="h5 heading m-0">Students</h2>
+                    <span class="top-row-text">35</span>
+                </div>
+                <div class="col-md text-center">
+                    <h2 class="h5 heading m-0">Teachers</h2>
+                    <span class="top-row-text">5</span>
+                </div>
+                <div class="col-md text-center">
+                    <h2 class="h5 heading m-0">AI Tutor Usage</h2>
+                    <span class="top-row-text">$500</span>
+                </div>
+            </div>
+            <!-- This is where charts / dashboard cards go -->
+            <div class="dash-row row">
+                <div
+                    id="progress-chart-container"
+                    class="col-md position-relative"
+                >
                     <RouterLink
                         to="/reports/academics"
-                        id="progress-chart-container"
-                        class="col-md chart-container p-0 position-relative"
+                        class="me-2 position-absolute chart-heading"
                     >
-                        <h2 class="position-absolute chart-heading h5">
-                            Academics (Skills mastered)
-                        </h2>
-                        <SchoolProgressChart
-                            ref="progressChart"
-                            v-if="progressData.school.length > 0"
-                        />
+                        <h2 class="heading h5">Student progress</h2>
                     </RouterLink>
-                    <div class="col-md chart-container p-0 position-relative">
-                        <h2 class="position-absolute chart-heading h5">
-                            Notifications
-                        </h2>
-                    </div>
+                    <SchoolProgressChart
+                        ref="progressChart"
+                        v-if="progressData.school.length > 0"
+                    />
                 </div>
-                <div class="dash-row row">
-                    <RouterLink
-                        to="/reports/engagement"
-                        class="col-md chart-container p-0 position-relative"
-                    >
-                        <h2 class="position-absolute chart-heading h5">
-                            Engagement
-                        </h2>
-                    </RouterLink>
+                <div class="col-md">
+                    <h2 class="heading chart-heading h5">Subject comparison</h2>
+                    <SchoolComparisonChart
+                        v-if="
+                            analyticsStore.rootSubjectsPassedAssessments
+                                .length > 0
+                        "
+                        ref="comparisonChart"
+                    />
+                </div>
+            </div>
+            <div class="dash-row row mt-2">
+                <div class="col-md position-relative">
                     <RouterLink
                         to="/reports/cost"
-                        class="col-md chart-container p-0 position-relative"
+                        class="me-2 position-absolute chart-heading"
                     >
-                        <h2 class="position-absolute chart-heading h5">Cost</h2>
+                        <h2 class="heading h5">Cost By Subject</h2>
+                    </RouterLink>
+                </div>
+                <div class="col-md position-relative">
+                    <RouterLink
+                        to="/reports/engagement"
+                        class="position-absolute chart-heading"
+                    >
+                        <h2 class="heading h5">Student Engagement</h2>
                     </RouterLink>
                 </div>
             </div>
@@ -315,6 +378,20 @@ export default {
 </template>
 
 <style scoped>
+.top-row {
+    height: 15%;
+}
+
+.dash-row {
+    height: 42.5%;
+}
+
+.top-row-text {
+    font-size: 2.5rem;
+    font-family: 'Poppins';
+    font-weight: 500;
+}
+
 /* Accordions */
 .accordion-button {
     background-color: #2c3e50;
@@ -330,14 +407,6 @@ export default {
 #progress-chart-container {
     height: 100%;
     width: 100%;
-}
-
-.dash-row {
-    height: 50%;
-}
-
-.chart-container {
-    border: 1px solid black;
 }
 
 .dashboard {
