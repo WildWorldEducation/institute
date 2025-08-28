@@ -28,7 +28,7 @@ export default {
     },
     async created() {
         await this.analyticsStore.getStudentAssessmentPasses(this.studentId);
-        await this.analyticsStore.getStudentAssessmentAttempts(this.studentId);
+        //  await this.analyticsStore.getStudentAssessmentAttempts(this.studentId);
     },
     methods: {}
 };
@@ -37,7 +37,7 @@ export default {
 <template>
     <div class="container">
         <div class="row">
-            <h2 class="h4 heading">Passed</h2>
+            <h2 class="h4 heading">Passed Assessments</h2>
             <PassedAssessmentsTimelineChart
                 class=""
                 v-if="analyticsStore.studentAssessmentPasses.length > 0"
@@ -45,8 +45,8 @@ export default {
             />
             <p v-else>This student has not completed any assessments yet.</p>
         </div>
-        <hr class="mt-5 mb-5" />
-        <div class="row mb-5">
+        <!-- <hr class="mt-5 mb-5" /> -->
+        <!-- <div class="row mb-5">
             <h2 class="h4 heading">Attempted</h2>
             <AttemptedAssessmentsTimelineChart
                 class=""
@@ -54,7 +54,7 @@ export default {
                 :data="analyticsStore.studentAssessmentAttempts"
             />
             <p v-else>This student has attempted any assessments yet.</p>
-        </div>
+        </div> -->
     </div>
 </template>
 
