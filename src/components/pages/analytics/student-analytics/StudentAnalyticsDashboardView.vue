@@ -143,114 +143,6 @@ export default {
     <div class="dashboard">
         <!-- Main Content -->
         <div class="main">
-            <!-- <header class="header">
-                <button class="btn primary-btn" @click="toggleSidebar">
-                    {{ showSidebar ? 'Hide Sidebar' : 'Show Sidebar' }}
-                </button>
-                <h1>Dashboard</h1>
-            </header> -->
-
-            <!-- <div
-                v-if="screenWidth > 768"
-                class="sidebar"
-                :class="{ hidden: !showSidebar }"
-            >
-               
-                <p>
-                    <label class="control control-checkbox">
-                        <input
-                            type="checkbox"
-                            v-model="isStudentData"
-                            @change="HandleProgressData"
-                        />
-                        You
-                    </label>
-                </p>
-                <p>
-                    <label class="control control-checkbox">
-                        <input
-                            type="checkbox"
-                            v-model="isSchoolData"
-                            @change="HandleProgressData"
-                        />
-                        School average
-                    </label>
-                </p>
-
-                <ul>
-                    <li>
-                        <label class="control control-checkbox">
-                            <input
-                                type="checkbox"
-                                value="true"
-                                v-model="isLanguageData"
-                            />
-                            Language
-                        </label>
-                    </li>
-                    <li>
-                        <label class="control control-checkbox">
-                            <input
-                                type="checkbox"
-                                value="true"
-                                v-model="isMathData"
-                            />
-                            Math
-                        </label>
-                    </li>
-                    <li>
-                        <label class="control control-checkbox">
-                            <input
-                                type="checkbox"
-                                value="true"
-                                v-model="isHistoryData"
-                            />
-                            History
-                        </label>
-                    </li>
-                    <li>
-                        <label class="control control-checkbox">
-                            <input
-                                type="checkbox"
-                                value="true"
-                                v-model="isLifeData"
-                            />
-                            Life
-                        </label>
-                    </li>
-                    <li>
-                        <label class="control control-checkbox">
-                            <input
-                                type="checkbox"
-                                value="true"
-                                v-model="isCSData"
-                            />
-                            Computer Science
-                        </label>
-                    </li>
-                    <li>
-                        <label class="control control-checkbox">
-                            <input
-                                type="checkbox"
-                                value="true"
-                                v-model="isSAndIData"
-                            />
-                            Science & Invention
-                        </label>
-                    </li>
-                    <li>
-                        <label class="control control-checkbox">
-                            <input
-                                type="checkbox"
-                                value="true"
-                                v-model="isDIData"
-                            />
-                            Dangerous Ideas
-                        </label>
-                    </li>
-                </ul>
-            </div> -->
-
             <div class="content container">
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
@@ -326,10 +218,15 @@ export default {
                                     "
                                 >
                                     <li
+                                        class="failed-skills"
                                         v-for="skill in teacherAnalyticsStore.studentMultipleFails"
                                         :key="skill.id"
                                     >
-                                        {{ skill.name }}
+                                        <RouterLink
+                                            :to="'/skills/' + skill.url"
+                                            target="_blank"
+                                            >{{ skill.name }}</RouterLink
+                                        >
                                     </li>
                                 </ul>
                                 <p v-else>Nothing to worry about yet</p>
@@ -367,6 +264,11 @@ export default {
     </div>
 </template>
 <style scoped>
+.failed-skills a {
+    color: darkred;
+    text-decoration: none;
+}
+
 .chart-heading {
     top: 5px;
     left: 5px;
