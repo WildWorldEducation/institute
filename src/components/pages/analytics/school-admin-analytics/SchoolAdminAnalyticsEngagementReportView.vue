@@ -178,7 +178,7 @@ export default {
         },
         downloadData(data, name) {
             const headers = Object.keys(data[0]);
-            console.log(headers);
+
             const csvRows = [];
             csvRows.push(headers.join(','));
             for (const row of data) {

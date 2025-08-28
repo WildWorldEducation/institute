@@ -5,6 +5,7 @@ import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import { useUsersStore } from '../../../../stores/UsersStore';
 import SchoolProgressChart from '../../../components/analytics/full-size/tenants/dashboard/SchoolProgressChart.vue';
 import SchoolComparisonChart from '../../../components/analytics/full-size/tenants/dashboard/SchoolComparisonChart.vue';
+import SchoolTimeChart from '../../../components/analytics/full-size/tenants/dashboard/SchoolTimeChart.vue';
 
 export default {
     name: 'School-Admin-Dashboard',
@@ -43,7 +44,8 @@ export default {
     },
     components: {
         SchoolProgressChart,
-        SchoolComparisonChart
+        SchoolComparisonChart,
+        SchoolTimeChart
     },
     async created() {
         // Student progress
@@ -53,21 +55,13 @@ export default {
 
         // Subject comparison
         if (this.analyticsStore.rootSubjectsPassedAssessments.length == 0)
-            await this.getPassedAssessmentsBySubject();
+            await this.getComparisonData();
 
-        // Get teachers
-        await this.usersStore.getInstructorsByTenant(
-            this.userDetailsStore.tenantId
-        );
-        // Get students
-        await this.usersStore.getStudentsPerTenant(
-            this.userDetailsStore.tenantId
-        );
-
-        await this.HandleProgressData();
+        await this.getProgressData();
+        await this.getTimeData();
     },
     methods: {
-        async HandleProgressData() {
+        async getProgressData() {
             // If "Everyone" checked
             this.progressData.school = [];
             for (
@@ -87,7 +81,7 @@ export default {
                 }
             });
         },
-        async getPassedAssessmentsBySubject() {
+        async getComparisonData() {
             try {
                 const response = await fetch(
                     `/student-analytics/passed-assessments-by-subject/tenant/${this.userDetailsStore.tenantId}`
@@ -98,11 +92,8 @@ export default {
                 this.analyticsStore.rootSubjectsPassedAssessments =
                     await response.json();
 
-                console.log(this.analyticsStore.rootSubjectsPassedAssessments);
-
                 this.$nextTick(() => {
                     if (this.$refs.comparisonChart) {
-                        console.log('Creating comparison chart');
                         // Access the ref here
                         this.$refs.comparisonChart.createChart(
                             this.analyticsStore.rootSubjectsPassedAssessments
@@ -117,8 +108,34 @@ export default {
                 this.analyticsStore.rootSubjectsPassedAssessments = [];
             }
         },
-        toggleSidebar() {
-            this.showSidebar = !this.showSidebar;
+        async getTimeData() {
+            this.analyticsStore.durationPerDay = [];
+            let url = `/student-analytics/tenant-duration-per-day/weekly/${this.userDetailsStore.tenantId}`;
+            fetch(url)
+                .then((response) => response.json())
+                .then(async (data) => {
+                    this.analyticsStore.durationPerDay = [];
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                        data[i].minutes = data[i].milliseconds / (1000 * 60);
+                        this.analyticsStore.durationPerDay.push(data[i]);
+                    }
+                    this.analyticsStore.durationPerDay.sort(
+                        (a, b) => a.date - b.date
+                    );
+
+                    this.$nextTick(() => {
+                        if (this.$refs.timeChart) {
+                            // Access the ref here
+                            this.$refs.timeChart.createChart(
+                                this.analyticsStore.durationPerDay
+                            );
+                        }
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
         }
     }
 };
@@ -126,186 +143,6 @@ export default {
 
 <template>
     <div class="dashboard">
-        <!-- Sidebar -->
-        <!-- dont show on mobile -->
-        <!-- <div
-            v-if="screenWidth > 768"
-            class="sidebar"
-            :class="{ hidden: !showSidebar }"
-        > -->
-        <!-- filters - student and / or school average -->
-        <!-- <h1 class="h2">Who</h1>
-            <label class="control control-checkbox mb-2">
-                <input
-                    type="checkbox"
-                    v-model="isEveryone"
-                    @change="HandleProgressData"
-                />
-                Everyone
-            </label> -->
-
-        <!-- Teachers' classes -->
-        <!-- <div class="accordion accordion-flush" id="classesAccordion">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingOne">
-                        <button
-                            class="accordion-button collapsed"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#classes"
-                            aria-expanded="false"
-                            aria-controls="classes"
-                        >
-                            <strong>Classes</strong>
-                        </button>
-                    </h2>
-                    <div
-                        id="classes"
-                        class="accordion-collapse collapse"
-                        aria-labelledby="headingOne"
-                        data-bs-parent="#classesAccordion"
-                    >
-                        <div class="accordion-body">
-                            <p>
-                                <label
-                                    v-for="teacher in usersStore.instructors"
-                                    class="control control-checkbox"
-                                >
-                                    <input
-                                        type="checkbox"
-                                        @change="HandleProgressData"
-                                    />
-                                    <RouterLink
-                                        target="_blank"
-                                        :to="`/reports/class/${teacher.id}`"
-                                        >{{ teacher.username }}'s
-                                        class</RouterLink
-                                    >
-                                </label>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
-
-        <!-- Students -->
-        <!-- <div class="accordion accordion-flush" id="studentAccordion">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingOne">
-                        <button
-                            class="accordion-button collapsed"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#students"
-                            aria-expanded="false"
-                            aria-controls="students"
-                        >
-                            <strong>Students</strong>
-                        </button>
-                    </h2>
-                    <div
-                        id="students"
-                        class="accordion-collapse collapse"
-                        aria-labelledby="headingOne"
-                        data-bs-parent="#studentAccordion"
-                    >
-                        <div class="accordion-body">
-                            <p>
-                                <label
-                                    v-for="student in usersStore.studentsPerTenant"
-                                    class="control control-checkbox"
-                                >
-                                    <input
-                                        type="checkbox"
-                                        @change="HandleProgressData"
-                                    />
-                                    <RouterLink
-                                        target="_blank"
-                                        :to="`/reports/student/${student.id}`"
-                                        >{{ student.username }}</RouterLink
-                                    >
-                                </label>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
-
-        <!-- <h1 class="h2 mt-3">Subjects</h1>
-            <ul>
-                <li>
-                    <label class="control control-checkbox">
-                        <input
-                            type="checkbox"
-                            value="true"
-                            v-model="isLanguageData"
-                        />
-                        Language
-                    </label>
-                </li>
-                <li>
-                    <label class="control control-checkbox">
-                        <input
-                            type="checkbox"
-                            value="true"
-                            v-model="isMathData"
-                        />
-                        Math
-                    </label>
-                </li>
-                <li>
-                    <label class="control control-checkbox">
-                        <input
-                            type="checkbox"
-                            value="true"
-                            v-model="isHistoryData"
-                        />
-                        History
-                    </label>
-                </li>
-                <li>
-                    <label class="control control-checkbox">
-                        <input
-                            type="checkbox"
-                            value="true"
-                            v-model="isLifeData"
-                        />
-                        Life
-                    </label>
-                </li>
-                <li>
-                    <label class="control control-checkbox">
-                        <input
-                            type="checkbox"
-                            value="true"
-                            v-model="isCSData"
-                        />
-                        Computer Science
-                    </label>
-                </li>
-                <li>
-                    <label class="control control-checkbox">
-                        <input
-                            type="checkbox"
-                            value="true"
-                            v-model="isSAndIData"
-                        />
-                        Science & Invention
-                    </label>
-                </li>
-                <li>
-                    <label class="control control-checkbox">
-                        <input
-                            type="checkbox"
-                            value="true"
-                            v-model="isDIData"
-                        />
-                        Dangerous Ideas
-                    </label>
-                </li>
-            </ul>
-        </div> -->
-
         <!-- Main Content -->
 
         <div class="content container">
@@ -351,11 +188,12 @@ export default {
                             analyticsStore.rootSubjectsPassedAssessments
                                 .length > 0
                         "
+                        :colour="'#5f31dd'"
                         ref="comparisonChart"
                     />
                 </div>
             </div>
-            <div class="dash-row row mt-2">
+            <div class="dash-row row mt-2 mb-2">
                 <div class="col-md position-relative">
                     <RouterLink
                         to="/reports/cost"
@@ -365,12 +203,18 @@ export default {
                     </RouterLink>
                 </div>
                 <div class="col-md position-relative">
-                    <RouterLink
-                        to="/reports/engagement"
-                        class="position-absolute chart-heading"
-                    >
-                        <h2 class="heading h5">Student Engagement</h2>
-                    </RouterLink>
+                    <div id="time-chart-container">
+                        <RouterLink
+                            to="/reports/engagement"
+                            class="position-absolute chart-heading"
+                        >
+                            <h2 class="heading h5">Student Engagement</h2>
+                            <SchoolTimeChart
+                                v-if="analyticsStore.durationPerDay.length > 0"
+                                ref="timeChart"
+                            />
+                        </RouterLink>
+                    </div>
                 </div>
             </div>
         </div>
@@ -383,7 +227,7 @@ export default {
 }
 
 .dash-row {
-    height: 42.5%;
+    height: 38%;
 }
 
 .top-row-text {
@@ -405,6 +249,11 @@ export default {
 }
 
 #progress-chart-container {
+    height: 100%;
+    width: 100%;
+}
+
+#time-chart-container {
     height: 100%;
     width: 100%;
 }

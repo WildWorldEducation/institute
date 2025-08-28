@@ -1,0 +1,81 @@
+<script>
+import * as d3 from 'd3';
+
+export default {
+    name: 'SchoolTimeChart',
+    props: ['colour'],
+    data() {
+        return {};
+    },
+    mounted() {},
+    methods: {
+        createChart(data) {
+            const container = d3.select('#school-time-chart-container');
+            // Declare the chart dimensions and margins.
+            const width = document.getElementById(
+                'time-chart-container'
+            ).clientWidth;
+            const height = document.getElementById(
+                'time-chart-container'
+            ).clientHeight;
+            const marginTop = 0;
+            const marginRight = 0;
+            const marginBottom = 0;
+            const marginLeft = 0;
+
+            // Declare the x (horizontal position) scale.
+            const x = d3.scaleUtc(
+                d3.extent(data, (d) => d.date),
+                [marginLeft, width - marginRight]
+            );
+
+            // Declare the y (vertical position) scale.
+            const y = d3.scaleLinear(
+                [0, d3.max(data, (d) => d.minutes)],
+                [height - marginBottom, marginTop]
+            );
+
+            // Declare the line generator.
+            const line = d3
+                .line()
+                .x((d) => x(d.date))
+                .y((d) => y(d.minutes));
+
+            // Create the SVG container.
+            const svg = d3
+                .select('#school-time-chart-container')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('viewBox', [0, 0, width, height])
+                .attr(
+                    'style',
+                    'max-width: 100%; height: auto; height: intrinsic;'
+                );
+
+            // Add the x-axis.
+            svg.append('g')
+                .attr('transform', `translate(0,${height - marginBottom})`)
+                .call(
+                    d3
+                        .axisBottom(x)
+                        .ticks(data.length / 2)
+                        .tickSizeOuter(0)
+                );
+
+            // Append a path for the line.
+            svg.append('path')
+                .attr('fill', 'none')
+                .attr('stroke', '#ff7f0e')
+                .attr('stroke-width', 3)
+                .attr('d', line(data));
+        }
+    }
+};
+</script>
+
+<template>
+    <div id="school-time-chart-container"></div>
+</template>
+
+<style scoped></style>
