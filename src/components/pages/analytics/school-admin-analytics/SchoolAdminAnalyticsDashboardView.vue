@@ -329,19 +329,21 @@ export default {
             </div>
             <!-- This is where charts / dashboard cards go -->
             <div class="dash-row row">
-                <RouterLink
-                    to="/reports/academics"
+                <div
                     id="progress-chart-container"
-                    class="col-md position-relative me-2"
+                    class="col-md position-relative"
                 >
-                    <h2 class="heading position-absolute chart-heading h5">
-                        Student progress
-                    </h2>
+                    <RouterLink
+                        to="/reports/academics"
+                        class="me-2 position-absolute chart-heading"
+                    >
+                        <h2 class="heading h5">Student progress</h2>
+                    </RouterLink>
                     <SchoolProgressChart
                         ref="progressChart"
                         v-if="progressData.school.length > 0"
                     />
-                </RouterLink>
+                </div>
                 <div class="col-md">
                     <h2 class="heading chart-heading h5">Subject comparison</h2>
                     <SchoolComparisonChart
@@ -354,19 +356,22 @@ export default {
                 </div>
             </div>
             <div class="dash-row row mt-2">
-                <RouterLink
-                    to="/reports/engagement"
-                    class="col-md position-relative me-2"
-                >
-                    <h2 class="heading position-absolute chart-heading h5">
-                        Cost By Subject
-                    </h2>
-                </RouterLink>
-                <RouterLink to="/reports/cost" class="col-md position-relative">
-                    <h2 class="heading position-absolute chart-heading h5">
-                        Student Engagement
-                    </h2>
-                </RouterLink>
+                <div class="col-md position-relative">
+                    <RouterLink
+                        to="/reports/cost"
+                        class="me-2 position-absolute chart-heading"
+                    >
+                        <h2 class="heading h5">Cost By Subject</h2>
+                    </RouterLink>
+                </div>
+                <div class="col-md position-relative">
+                    <RouterLink
+                        to="/reports/engagement"
+                        class="position-absolute chart-heading"
+                    >
+                        <h2 class="heading h5">Student Engagement</h2>
+                    </RouterLink>
+                </div>
             </div>
         </div>
     </div>
