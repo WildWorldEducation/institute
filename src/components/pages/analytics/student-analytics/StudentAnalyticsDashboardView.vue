@@ -192,6 +192,7 @@ export default {
                         />
                     </div>
                 </div>
+                
                 <div class="dash-row row">
                     <div class="col-md p-0 position-relative">
                         <div class="position-absolute chart-heading">
@@ -207,6 +208,7 @@ export default {
                             />
                         </div>
                     </div>
+
                     <div class="col-md p-0 position-relative">
                         <div class="row">
                             <div class="col">
@@ -266,6 +268,7 @@ export default {
                         </div> -->
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
