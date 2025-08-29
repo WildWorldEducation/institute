@@ -158,8 +158,7 @@ export default {
                 {{ this.cohortsStore.selectedCohort.name }}
             </h1>
         </div>
-        <div class="d-flex justify-content-between">
-            <h1 class="heading">Teacher Reports</h1>
+        <div class="d-flex info-button">
             <button class="btn me-1" @click="$parent.restartTutorial">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -272,8 +271,10 @@ export default {
 </template>
 
 <style scoped>
-.remove-student-btn {
-    font-weight: 500;
+.info-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
 }
 
 .fit-content {
