@@ -245,6 +245,51 @@ router.get('/skill-activity-report/:studentId', (req, res, next) => {
     }
 });
 
+/* Get duration on platform per student per day, as well as the school average */
+router.get(
+    '/student-duration-per-day/:studentId/:tenantId',
+    async (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+
+            // Get student data
+            let studentQuery = `
+            SELECT date, duration AS quantity
+            FROM user_duration_tokens_per_day            
+            WHERE user_id = ${conn.escape(req.params.studentId)}
+            AND date >= NOW() - INTERVAL 1 WEEK                               
+            ORDER BY date ASC;`;
+            let studentResult = await query(studentQuery);
+
+            // get number of students
+            let numStudentQuery = ` SELECT COUNT(*) AS quantity
+                    FROM users
+                    WHERE tenant_id = ${conn.escape(req.params.tenantId)}
+                    AND role = 'student'
+                    AND is_deleted = 0`;
+            let numStudentResults = await query(numStudentQuery);
+            let numStudents = numStudentResults[0].quantity;
+
+            let averageProgressQuery = `
+                SELECT date, SUM(duration)/${numStudents} AS quantity
+                FROM user_duration_tokens_per_day            
+                JOIN users
+                ON user_duration_tokens_per_day.user_id = users.id
+                WHERE tenant_id = ${conn.escape(req.params.tenantId)}   
+                AND date >= NOW() - INTERVAL 1 WEEK    
+                GROUP BY date                
+                ORDER BY date ASC;`;
+            let averageProgressResults = await query(averageProgressQuery);
+
+            res.json({
+                studentTime: studentResult,
+                averageTime: averageProgressResults
+            });
+        }
+    }
+);
+
 /* Get duration on platform per student per day */
 router.get('/student-duration-per-day/:studentId', (req, res, next) => {
     // Check if logged in.
@@ -1744,7 +1789,6 @@ router.get(
 router.get('/school-progress/:tenantId', (req, res, next) => {
     // Check if logged in.
     if (req.session.userName) {
-        
         // First, get the date the first student in the tenant student started on the platform
         let firstInteractionSQLQuery = `
             SELECT date

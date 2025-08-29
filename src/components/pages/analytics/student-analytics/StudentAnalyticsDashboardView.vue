@@ -7,6 +7,7 @@ import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import StudentProgressChart from '../../../components/analytics/full-size/students/dashboard/StudentProgressChart.vue';
 import StudentTimeChart from '../../../components/analytics/full-size/students/dashboard/StudentTimeChart.vue';
 import StudentComparisonChart from '../../../components/analytics/full-size/students/dashboard/StudentComparisonChart.vue';
+
 export default {
     name: 'Student-Dashboard',
     setup() {
@@ -61,6 +62,12 @@ export default {
             this.userDetailsStore.userId
         );
 
+        // Get time data
+        await this.analyticsStore.getStudentTime(
+            this.userDetailsStore.userId,
+            this.userDetailsStore.tenantId
+        );
+
         // Get data for "super challenging"
         await this.teacherAnalyticsStore.getStudentMultipleFails(
             this.userDetailsStore.userId
@@ -80,6 +87,7 @@ export default {
 
         await this.HandleProgressData();
         await this.HandleComparisonData();
+        await this.HandleTimeData();
     },
     methods: {
         async HandleProgressData() {
@@ -129,6 +137,14 @@ export default {
                     this.$refs.comparisonChart.createChart(
                         this.analyticsStore.studentRootSubjectsPassedAssessments
                     );
+                }
+            });
+        },
+        async HandleTimeData() {
+            this.$nextTick(() => {
+                if (this.$refs.timeChart) {
+                    // Access the ref here
+                    this.$refs.timeChart.createChart(this.analyticsStore.time);
                 }
             });
         },
@@ -195,18 +211,27 @@ export default {
                 </div>
 
                 <div class="dash-row row">
-                    <div class="col-md">
-                        <div class="chart-heading">
-                            <RouterLink to="/my-progress/time">
-                                <h2 class="heading h5">Study time</h2>
-                            </RouterLink>
-                            <StudentTimeChart
-                                ref="timeChart"
-                                v-if="
-                                    timeData.student.length > 0 ||
-                                    timeData.average.length > 0
-                                "
-                            />
+                    <div class="col-md h-100 position-relative">
+                        <div id="time-chart-container">
+                            <div class="position-absolute chart-heading">
+                                <RouterLink to="/my-progress/time">
+                                    <h2 class="heading h5">Study time</h2>
+                                </RouterLink>
+                                <span style="color: #5f31dd">
+                                    <strong>You</strong></span
+                                ><br />
+                                <span style="color: #ff7f0e"
+                                    ><strong>School average</strong></span
+                                >
+                                <StudentTimeChart
+                                    ref="timeChart"
+                                    v-if="
+                                        analyticsStore.time.student.length >
+                                            0 ||
+                                        analyticsStore.time.tenant.length > 0
+                                    "
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -300,7 +325,8 @@ export default {
     .dash-row {
         height: unset;
     }
-    #progress-chart-container {
+    #progress-chart-container,
+    #time-chart-container {
         height: 200px;
     }
     .main {

@@ -28,6 +28,10 @@ export const useAnalyticsStore = defineStore('analytics', {
                 student: [],
                 tenant: []
             },
+            time: {
+                student: [],
+                tenant: []
+            },
             // Other
             studentDurationsPerDay: [],
             studentSkillDurations: [],
@@ -72,8 +76,41 @@ export const useAnalyticsStore = defineStore('analytics', {
                     console.error('Error fetching student progress:', error);
                 });
         },
+        async getStudentTime(studentId, tenantId) {
+            await fetch(
+                `/student-analytics/student-duration-per-day/${studentId}/${tenantId}`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.studentTime.length; i++) {
+                        data.studentTime[i].formattedQuantity =
+                            data.studentTime[i].quantity / 1000;
+                        data.studentTime[i].date = new Date(
+                            data.studentTime[i].date
+                        );
+                    }
+                    data.studentTime.sort((a, b) => a.date - b.date);
+                    this.time.student = data.studentTime;
+
+                    for (let i = 0; i < data.averageTime.length; i++) {
+                        data.averageTime[i].formattedQuantity =
+                            data.averageTime[i].quantity / 1000;
+                        data.averageTime[i].date = new Date(
+                            data.averageTime[i].date
+                        );
+                    }
+                    data.averageTime.sort((a, b) => a.date - b.date);
+                    this.time.tenant = data.averageTime;
+                })
+                .catch((error) => {
+                    console.error(
+                        'Error fetching student duration per day:',
+                        error
+                    );
+                });
+        },
         async getStudentDurationPerDay(studentId) {
-            fetch(`/student-analytics/student-duration-per-day/${studentId}`)
+            fetch(`/student-analytics/student-duration-per-day/${studentId}}`)
                 .then((response) => response.json())
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {
