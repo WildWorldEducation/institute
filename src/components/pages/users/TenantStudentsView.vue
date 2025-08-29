@@ -291,6 +291,7 @@ export default {
 #user-container {
     padding-left: 35px;
     padding-right: 46px;
+    overflow-y: auto;
 }
 
 /* Mobile */

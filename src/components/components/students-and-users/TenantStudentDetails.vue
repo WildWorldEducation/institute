@@ -205,8 +205,7 @@ export default {
         </div>
         <div class="row">
             <div class="d-flex flex-column">
-                <div class="d-flex justify-content-between">
-                    <h1 class="heading">Student Reports</h1>
+                <div class="d-flex info-button">
                     <button class="btn me-1" @click="$parent.restartTutorial">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -319,6 +318,12 @@ export default {
 </template>
 
 <style scoped>
+.info-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
 .fit-content {
     max-width: fit-content;
 }
