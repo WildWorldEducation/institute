@@ -145,25 +145,26 @@ export default {
     <div class="dashboard">
         <!-- Main Content -->
 
-        <div class="content container">
+        <div class="container">
             <div class="row top-row">
-                <div class="col-md text-center">
+                <div class="col-sm">
                     <h2 class="h5 heading m-0">Avg # Skills Mastered</h2>
                     <span class="top-row-text">10</span>
                 </div>
-                <div class="col-md text-center">
+                <div class="col-sm">
                     <h2 class="h5 heading m-0">Students</h2>
                     <span class="top-row-text">35</span>
                 </div>
-                <div class="col-md text-center">
+                <div class="col-sm">
                     <h2 class="h5 heading m-0">Teachers</h2>
                     <span class="top-row-text">5</span>
                 </div>
-                <div class="col-md text-center">
+                <div class="col-sm">
                     <h2 class="h5 heading m-0">AI Tutor Usage</h2>
                     <span class="top-row-text">$500</span>
                 </div>
             </div>
+
             <!-- This is where charts / dashboard cards go -->
             <div class="dash-row row">
                 <div
@@ -193,6 +194,7 @@ export default {
                     />
                 </div>
             </div>
+
             <div class="dash-row row mt-2 mb-2">
                 <div class="col-md position-relative">
                     <RouterLink
@@ -224,10 +226,58 @@ export default {
 <style scoped>
 .top-row {
     height: 15%;
+    text-align: center;
 }
 
 .dash-row {
     height: 38%;
+}
+
+#progress-chart-container,
+#comparison-chart-container,
+#time-chart-container {
+    height: 100%;
+    width: 100%;
+}
+
+.dashboard {
+    display: flex;
+    height: calc(100vh - 88px);
+    overflow: hidden;
+}
+
+/* Styles for screens smaller than 600px (e.g., most mobile phones) */
+@media (max-width: 599px) {
+    .top-row {
+        height: unset;
+        text-align: left;
+    }
+
+    .dash-row {
+        height: unset;
+    }
+
+    #progress-chart-container {
+        height: 200px;
+    }
+
+    .main {
+        overflow-y: auto;
+    }
+
+    .row {
+        margin-bottom: 1rem;
+    }
+
+    .dashboard {
+        overflow: auto;
+        height: unset;
+    }
+
+    .col-md {
+        min-height: 100px;
+        margin-bottom: 1rem;
+    }
 }
 
 .top-row-text {
@@ -245,24 +295,7 @@ export default {
 
 .chart-heading {
     top: 5px;
-    left: 5px;
-}
-
-#progress-chart-container {
-    height: 100%;
-    width: 100%;
-}
-
-#time-chart-container {
-    height: 100%;
-    width: 100%;
-}
-
-.dashboard {
-    display: flex;
-    height: calc(100vh - 88px);
-    font-family: sans-serif;
-    overflow: hidden;
+    left: 12px;
 }
 
 /* Sidebar */
@@ -313,10 +346,5 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
-
-.content {
-    flex: 1;
-    height: 100%;
 }
 </style>

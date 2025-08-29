@@ -387,7 +387,7 @@ export default {
                                 to="/classes"
                                 class="nav-link close-on-click"
                             >
-                                Teachers
+                                Classes
                             </RouterLink>
                         </li>
                         <!-- Tenants -->
