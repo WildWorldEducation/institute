@@ -294,12 +294,13 @@ export default {
         height: unset;
     }
     #progress-chart-container {
-        height: 50vh;
+        height: 200px;
     }
     .main {
         overflow-y: auto;
     }
 
+    .col-md,
     .row {
         margin-bottom: 1rem;
     }
