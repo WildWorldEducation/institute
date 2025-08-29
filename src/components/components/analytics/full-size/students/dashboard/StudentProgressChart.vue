@@ -103,7 +103,10 @@ export default {
                 .data(series)
                 .join('path')
                 .attr('fill', 'none')
-                .attr('stroke', (d) => color(d.name))
+                .attr('stroke', (d) => {
+                    if (d.name == 'student') return 'green'; // green
+                    else return '#ff7f0e'; // orange
+                })
                 .attr('stroke-width', 3)
                 .attr('d', (d) => line(d.values));
         }

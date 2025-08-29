@@ -53,14 +53,28 @@ export default {
 
             // Append a rect for each skill.
             svg.append('g')
-                .attr('fill', this.colour)
+
                 .selectAll()
                 .data(data)
                 .join('rect')
                 .attr('x', x(0))
                 .attr('y', (d) => y(d.name))
                 .attr('width', (d) => x(d.quantity) - x(0))
-                .attr('height', y.bandwidth());
+                .attr('height', y.bandwidth())
+                // .selectAll('rect')
+                .attr('fill', function (d) {
+                    if (d.name == 'Language') return 'green'; // green
+                    else if (d.name == 'Mathematics') return 'blue'; // blue
+                    else if (d.name == 'Science & Invention')
+                        return 'purple'; // purple
+                    else if (d.name == 'Computer Science')
+                        return 'pink'; // pink
+                    else if (d.name == 'Dangerous Ideas')
+                        return 'brown'; // brown
+                    else if (d.name == 'History') return 'cyan'; // cyan
+                    else if (d.name == 'Life') return 'magenta'; // magenta
+                    else return '#ff7f0e'; // orange
+                });
 
             // Append a label for each name.
             svg.append('g')
