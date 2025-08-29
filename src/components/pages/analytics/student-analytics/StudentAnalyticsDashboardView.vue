@@ -146,7 +146,7 @@ export default {
             <div class="content container">
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
-                    <div class="col-md-6 h-100 p-0 position-relative">
+                    <div class="col-md-6 h-100 position-relative">
                         <div id="progress-chart-container">
                             <div class="position-absolute chart-heading">
                                 <RouterLink to="/my-progress/skills" class=""
@@ -162,7 +162,6 @@ export default {
                                     ><strong>School average</strong></span
                                 >
                             </div>
-
                             <StudentProgressChart
                                 ref="progressChart"
                                 v-if="
@@ -173,38 +172,40 @@ export default {
                         </div>
                     </div>
 
-                    <div class="col-md-6 position-relative">
-                        <h2 class="heading chart-heading h5 mt-1">
-                            Subject comparison
-                        </h2>
-                        <p><em>TODO: different color for each subject</em></p>
-                        <StudentComparisonChart
-                            ref="comparisonChart"
-                            v-if="
-                                analyticsStore
-                                    .studentRootSubjectsPassedAssessments
-                                    .length > 0
-                            "
-                            :data="
-                                analyticsStore.studentRootSubjectsPassedAssessments
-                            "
-                            :colour="'#5f31dd'"
-                        />
+                    <div class="col-md-6">
+                        <div id="comparison-chart-container">
+                            <h2 class="heading h5 mt-1">Subject comparison</h2>
+                            <p>
+                                <em>TODO: different color for each subject</em>
+                            </p>
+                            <StudentComparisonChart
+                                ref="comparisonChart"
+                                v-if="
+                                    analyticsStore
+                                        .studentRootSubjectsPassedAssessments
+                                        .length > 0
+                                "
+                                :data="
+                                    analyticsStore.studentRootSubjectsPassedAssessments
+                                "
+                                :colour="'#5f31dd'"
+                            />
+                        </div>
                     </div>
                 </div>
-                
+
                 <div class="dash-row row">
-                    <div class="col-md p-0 position-relative">
-                        <div class="position-absolute chart-heading">
+                    <div class="col-md">
+                        <div class="chart-heading">
                             <RouterLink to="/my-progress/time">
                                 <h2 class="heading h5">Study time</h2>
                             </RouterLink>
                         </div>
                     </div>
 
-                    <div class="col-md p-0 position-relative">
+                    <div class="col-md position-relative">
                         <div class="row">
-                            <div class="col">
+                            <div class="col-md">
                                 <RouterLink
                                     to="/my-progress/super-challenging"
                                     class="col"
@@ -233,7 +234,7 @@ export default {
                                 </ul>
                                 <p v-else>Nothing to worry about yet</p>
                             </div>
-                            <div class="col">
+                            <div class="col-md">
                                 <h2 class="h5 heading">Stats</h2>
                                 <ul>
                                     <li><strong>Skills passed:</strong> 25</li>
@@ -261,7 +262,6 @@ export default {
                         </div> -->
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -274,16 +274,35 @@ export default {
 
 .chart-heading {
     top: 5px;
-    left: 5px;
+    left: 12px;
 }
 
-#progress-chart-container {
+#comparison-chart-container,
+#progress-chart-container,
+#time-chart-container {
     height: 100%;
     width: 100%;
 }
 
 .dash-row {
     height: 50%;
+}
+
+/* Styles for screens smaller than 600px (e.g., most mobile phones) */
+@media (max-width: 599px) {
+    .dash-row {
+        height: unset;
+    }
+    #progress-chart-container {
+        height: 50vh;
+    }
+    .main {
+        overflow-y: auto;
+    }
+
+    .row {
+        margin-bottom: 1rem;
+    }
 }
 
 .chart-container {
