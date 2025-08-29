@@ -2,7 +2,7 @@
 import * as d3 from 'd3';
 
 export default {
-    name: 'SchoolProgressChart',
+    name: 'SchoolTimeChart',
     props: [],
     data() {
         return {
@@ -22,14 +22,14 @@ export default {
                 values
             }));
 
-            const container = d3.select('#progress-chart-container');
+            const container = d3.select('#time-chart-container');
 
             // Declare the chart dimensions and margins.
             const width = document.getElementById(
-                'progress-chart-container'
+                'time-chart-container'
             ).clientWidth;
             const height = document.getElementById(
-                'progress-chart-container'
+                'time-chart-container'
             ).clientHeight;
             const marginTop = 0;
             const marginRight = 0;
@@ -61,7 +61,7 @@ export default {
 
             // Create the SVG container.
             const svg = d3
-                .select('#progress-chart-container')
+                .select('#time-chart-container')
                 .append('svg')
                 .attr('width', '100%')
                 .attr('height', '100%')

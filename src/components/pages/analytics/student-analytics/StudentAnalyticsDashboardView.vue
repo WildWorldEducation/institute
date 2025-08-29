@@ -5,6 +5,7 @@ import { useTeacherAnalyticsStore } from '../../../../stores/TeacherAnalyticsSto
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 
 import StudentProgressChart from '../../../components/analytics/full-size/students/dashboard/StudentProgressChart.vue';
+import StudentTimeChart from '../../../components/analytics/full-size/students/dashboard/StudentTimeChart.vue';
 import StudentComparisonChart from '../../../components/analytics/full-size/students/dashboard/StudentComparisonChart.vue';
 export default {
     name: 'Student-Dashboard',
@@ -45,7 +46,8 @@ export default {
     },
     components: {
         StudentProgressChart,
-        StudentComparisonChart
+        StudentComparisonChart,
+        StudentTimeChart
     },
     async created() {
         // Get total progress data
@@ -63,8 +65,6 @@ export default {
         await this.teacherAnalyticsStore.getStudentMultipleFails(
             this.userDetailsStore.userId
         );
-
-        console.log(this.teacherAnalyticsStore.studentMultipleFails);
 
         // Notifications
         if (
@@ -198,6 +198,13 @@ export default {
                             <RouterLink to="/my-progress/time">
                                 <h2 class="heading h5">Study time</h2>
                             </RouterLink>
+                            <StudentTimeChart
+                                ref="timeChart"
+                                v-if="
+                                    timeData.student.length > 0 ||
+                                    timeData.average.length > 0
+                                "
+                            />
                         </div>
                     </div>
                     <div class="col-md p-0 position-relative">
