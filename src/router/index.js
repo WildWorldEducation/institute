@@ -39,7 +39,7 @@ const router = createRouter({
             meta: {
                 title: 'Student skill tree',
                 requiresAuth: true,
-                roles: ['instructor', 'platform_admin', 'partner']
+                roles: ['instructor', 'platform_admin', 'partner', 'school_admin']
             }
         },
         {
