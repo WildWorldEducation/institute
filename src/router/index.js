@@ -39,7 +39,12 @@ const router = createRouter({
             meta: {
                 title: 'Student skill tree',
                 requiresAuth: true,
-                roles: ['instructor', 'platform_admin', 'partner', 'school_admin']
+                roles: [
+                    'instructor',
+                    'platform_admin',
+                    'partner',
+                    'school_admin'
+                ]
             }
         },
         {
@@ -93,7 +98,12 @@ const router = createRouter({
             meta: {
                 title: 'Student skills',
                 requiresAuth: true,
-                roles: ['instructor', 'platform_admin', 'partner']
+                roles: [
+                    'instructor',
+                    'platform_admin',
+                    'partner',
+                    'school_admin'
+                ]
             }
         },
         {
@@ -577,7 +587,12 @@ const router = createRouter({
             meta: {
                 title: 'Student goals',
                 requiresAuth: true,
-                roles: ['instructor', 'platform_admin', 'partner']
+                roles: [
+                    'instructor',
+                    'platform_admin',
+                    'partner',
+                    'school_admin'
+                ]
             }
         },
         // Analytics - students
@@ -591,7 +606,7 @@ const router = createRouter({
             meta: {
                 title: 'Student Assessment Report',
                 requiresAuth: true,
-                roles: ['instructor', 'partner']
+                roles: ['instructor', 'partner', 'school_admin']
             }
         },
         {
@@ -604,7 +619,7 @@ const router = createRouter({
             meta: {
                 title: 'Student Progress Report',
                 requiresAuth: true,
-                roles: ['instructor', 'partner']
+                roles: ['instructor', 'partner', 'school_admin']
             }
         },
         {
@@ -617,7 +632,7 @@ const router = createRouter({
             meta: {
                 title: 'Student Skill Activity Report',
                 requiresAuth: true,
-                roles: ['instructor', 'partner']
+                roles: ['instructor', 'partner', 'school_admin']
             }
         },
         {
@@ -630,7 +645,7 @@ const router = createRouter({
             meta: {
                 title: 'Student Time Report',
                 requiresAuth: true,
-                roles: ['instructor', 'partner']
+                roles: ['instructor', 'partner', 'school_admin']
             }
         },
         // Analytics - cohorts
