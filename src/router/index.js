@@ -341,7 +341,10 @@ const router = createRouter({
             path: '/edit/student/:id/',
             name: 'edit-student',
             component: () => import('../components/components/EditStudent.vue'),
-            meta: { requiresAuth: true, roles: ['instructor', 'partner'] }
+            meta: {
+                requiresAuth: true,
+                roles: ['instructor', 'partner', 'school_admin']
+            }
         },
         {
             path: '/users/activity-report/:id',
@@ -454,7 +457,10 @@ const router = createRouter({
             name: 'edit-student-password',
             component: () =>
                 import('../components/pages/ChangeStudentPasswordView.vue'),
-            meta: { requiresAuth: true, roles: ['instructor', 'partner'] }
+            meta: {
+                requiresAuth: true,
+                roles: ['instructor', 'partner', 'school_admin']
+            }
         },
         {
             path: '/reputation',

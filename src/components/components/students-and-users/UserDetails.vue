@@ -267,7 +267,8 @@ export default {
                 <router-link
                     v-if="
                         userDetailsStore.role == 'instructor' ||
-                        this.userDetailsStore.role == 'partner'
+                        userDetailsStore.role == 'partner' ||
+                        userDetailsStore.role == 'school_admin'
                     "
                     :to="`/edit/student/${this.$parent.user.id}`"
                     class="btn primary-btn mt-1"
@@ -314,7 +315,8 @@ export default {
                 <div
                     v-if="
                         userDetailsStore.role == 'instructor' ||
-                        this.userDetailsStore.role == 'partner'
+                        userDetailsStore.role == 'partner' ||
+                        userDetailsStore.role == 'school_admin'
                     "
                     class="mt-1 d-flex flex-column"
                 >
@@ -325,6 +327,10 @@ export default {
                         Change password
                     </router-link>
                     <button
+                        v-if="
+                            userDetailsStore.role == 'instructor' ||
+                            userDetailsStore.role == 'partner'
+                        "
                         class="btn btn-danger mt-1 remove-student-btn fit-content"
                         @click="showRemoveStudentModal = true"
                     >
