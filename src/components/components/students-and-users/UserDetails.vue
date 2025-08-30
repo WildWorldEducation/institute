@@ -160,11 +160,12 @@ export default {
                         </svg>
                     </button>
                 </div>
-                <!-- Instructors -->
+                <!-- Instructors and School admins-->
                 <h2
                     v-if="
                         this.userDetailsStore.role == 'instructor' ||
-                        this.userDetailsStore.role == 'partner'
+                        this.userDetailsStore.role == 'partner' ||
+                        this.userDetailsStore.role == 'school_admin'
                     "
                     class="secondary-heading h4"
                 >
@@ -173,7 +174,8 @@ export default {
                 <div
                     v-if="
                         this.userDetailsStore.role == 'instructor' ||
-                        this.userDetailsStore.role == 'partner'
+                        this.userDetailsStore.role == 'partner' ||
+                        this.userDetailsStore.role == 'school_admin'
                     "
                     class="d-flex flex-column"
                 >
@@ -208,17 +210,6 @@ export default {
                     >
                         Assessment status
                     </router-link>
-                    <!-- <p>Possible others</p>
-                    <ul>
-                        <li>
-                            animated skill tree, that grows over time, showing
-                            student mastering new skills
-                        </li>
-                        <li>
-                            timeline of student skill activity:
-                            https://observablehq.com/@tezzutezzu/world-history-timeline
-                        </li>
-                    </ul> -->
                     <!-- Time on Platform -->
                     <router-link
                         :to="`/student/${this.$parent.user.id}/total-time`"
@@ -264,7 +255,8 @@ export default {
                 <h2
                     v-if="
                         this.userDetailsStore.role == 'instructor' ||
-                        this.userDetailsStore.role == 'partner'
+                        this.userDetailsStore.role == 'partner' ||
+                        this.userDetailsStore.role == 'school_admin'
                     "
                     class="secondary-heading h4"
                 >
@@ -343,7 +335,8 @@ export default {
                 <div
                     v-if="
                         this.userDetailsStore.role == 'instructor' ||
-                        this.userDetailsStore.role == 'partner'
+                        this.userDetailsStore.role == 'partner' ||
+                        this.userDetailsStore.role == 'school_admin'
                     "
                     class="mt-4"
                 >
