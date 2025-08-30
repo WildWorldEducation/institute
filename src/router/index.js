@@ -260,7 +260,12 @@ const router = createRouter({
             component: () => import('../components/pages/users/UsersView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['instructor', 'platform_admin', 'partner']
+                roles: [
+                    'instructor',
+                    'platform_admin',
+                    'partner',
+                    'school_admin'
+                ]
             }
         },
 

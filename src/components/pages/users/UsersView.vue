@@ -1,5 +1,6 @@
 <script>
 import UsersList from '../../components/students-and-users/UsersList.vue';
+import TenantStudentList from '../../components/students-and-users/TenantStudentList.vue';
 import UserDetails from '../../components/students-and-users/UserDetails.vue';
 
 // Import the stores.
@@ -57,6 +58,7 @@ export default {
     },
     components: {
         UsersList,
+        TenantStudentList,
         UserDetails,
         SearchUserBar
     },
@@ -74,6 +76,12 @@ export default {
         } else if (this.userDetailsStore.role === 'editor') {
             if (this.usersStore.editors.length < 1) {
                 await this.usersStore.getEditors();
+            }
+        } else if (this.userDetailsStore.role === 'school_admin') {
+            if (this.usersStore.studentsPerTenant.length < 1) {
+                await this.usersStore.getStudentsPerTenant(
+                    this.userDetailsStore.tenantId
+                );
             }
         }
 
@@ -480,6 +488,10 @@ export default {
     <div v-else id="user-container" class="container-fluid">
         <div class="row position-relative">
             <div class="col-lg-4 col-md-5">
+                <TenantStudentList
+                    v-if="userDetailsStore.role == 'school_admin'"
+                    ref="usersListRef"
+                />
                 <UsersList ref="usersListRef" />
             </div>
             <!-- User detail view for PC and Tablet View -->

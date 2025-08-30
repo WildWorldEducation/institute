@@ -295,7 +295,8 @@ export default {
                         <li
                             v-if="
                                 (userDetailsStore.role == 'instructor' ||
-                                    userDetailsStore.role == 'partner') &&
+                                    userDetailsStore.role == 'partner' ||
+                                    userDetailsStore.role == 'school_admin') &&
                                 isMobileCheck >= 576
                             "
                             class="nav-item dropdown"
@@ -312,6 +313,10 @@ export default {
 
                                 <!-- Dropdown toggle button -->
                                 <button
+                                    v-if="
+                                        userDetailsStore.role == 'instructor' ||
+                                        userDetailsStore.role == 'partner'
+                                    "
                                     class="nav-link dropdown-toggle border-0 bg-transparent"
                                 ></button>
                             </div>
@@ -335,7 +340,8 @@ export default {
                         <li
                             v-else-if="
                                 (userDetailsStore.role == 'instructor' ||
-                                    userDetailsStore.role == 'partner') &&
+                                    userDetailsStore.role == 'partner' ||
+                                    userDetailsStore.role == 'school_admin') &&
                                 isMobileCheck < 576
                             "
                             class="nav-item"
@@ -350,7 +356,7 @@ export default {
                             </RouterLink>
                         </li>
                         <!-- Tenant Students -->
-                        <li
+                        <!-- <li
                             v-if="userDetailsStore.role == 'school_admin'"
                             class="nav-item dropdown"
                         >
@@ -362,7 +368,7 @@ export default {
                                     Students
                                 </RouterLink>
                             </div>
-                        </li>
+                        </li> -->
                         <!-- Cohorts -->
                         <li
                             v-if="
