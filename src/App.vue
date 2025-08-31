@@ -355,20 +355,6 @@ export default {
                                 Students
                             </RouterLink>
                         </li>
-                        <!-- Tenant Students -->
-                        <!-- <li
-                            v-if="userDetailsStore.role == 'school_admin'"
-                            class="nav-item dropdown"
-                        >
-                            <div class="d-flex align-items-center">
-                                <RouterLink
-                                    to="/tenant-students"
-                                    class="nav-link"
-                                >
-                                    Students
-                                </RouterLink>
-                            </div>
-                        </li> -->
                         <!-- Cohorts -->
                         <li
                             v-if="
