@@ -26,14 +26,12 @@ export default {
         return {
             showModal: false,
             showRemoveStudentModal: false,
-            localIsSkillsLocked: null,
             mode: 'big',
             isMobileCheck: window.innerWidth,
             studentProgress: []
         };
     },
     async created() {
-        this.localIsSkillsLocked = this.isSkillsLocked;
     },
     computed: {
         studentName() {
@@ -299,12 +297,13 @@ export default {
 
                 <div
                     v-if="
-                        this.$parent.user.role == 'student' &&
-                        userDetailsStore.role == 'platform_admin'
+                        userDetailsStore.role == 'platform_admin' ||
+                            userDetailsStore.role== 'school_admin'
+                        
                     "
                     class="mb-3"
                 >
-                    <h2 class="secondary-heading h4">Instructor</h2>
+                    <h3 class="secondary-heading h5 mt-2">Instructor</h3>
                     <input
                         class="form-control user-input-information"
                         type="text"
