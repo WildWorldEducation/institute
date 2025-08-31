@@ -101,6 +101,9 @@ export default {
         // Handle initial user selection
         this.initializeSelectedUser();
 
+
+
+
         // Mark initialization as complete
         this.$nextTick(() => {
             this.isInitializing = false;
@@ -259,6 +262,13 @@ export default {
 
                 if (this.usersStore.studentsPerTenant.length < 1) {
                     await this.usersStore.getStudentsPerTenant(tenantId);
+                }
+
+                // for loop to find the instructor of the student
+                for (let i = 0; i < this.instructorStudentsStore.instructorStudentsList.length; i++) {
+                    if (this.instructorStudentsStore.instructorStudentsList[i].student_id == this.user.id) {
+                        this.user.isSkillsLocked = this.instructorStudentsStore.instructorStudentsList[i].is_skills_locked
+                    }
                 }
             }
         },
