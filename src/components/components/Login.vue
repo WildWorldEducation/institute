@@ -99,7 +99,7 @@ export default {
                             router.push({ name: 'tenants' });
                         } else if (data.role == 'school_admin') {
                             router.push({
-                                name: 'skill-tree'
+                                name: 'school-admin-dashboard'
                             });
                         } else router.push({ name: 'skills' });
                     } else if (data.account == 'wrong-password') {
