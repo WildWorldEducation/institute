@@ -231,7 +231,8 @@ export default {
             if (
                 this.user.role === 'student' ||
                 this.userDetailsStore.role === 'instructor' ||
-                this.userDetailsStore.role === 'partner'
+                this.userDetailsStore.role === 'partner' ||
+                this.userDetailsStore.role === 'school_admin'
             ) {
                 this.getInstructor();
             }
