@@ -1,6 +1,7 @@
 <script>
 import TenantStudentList from '../../components/students-and-users/TenantStudentList.vue';
 import TenantStudentDetails from '../../components/students-and-users/TenantStudentDetails.vue';
+import UserDetails from '../../components/students-and-users/UserDetails.vue';
 
 // Import the stores.
 import { useUsersStore } from '../../../stores/UsersStore';
@@ -46,7 +47,8 @@ export default {
     },
     components: {
         TenantStudentList,
-        TenantStudentDetails
+        TenantStudentDetails,
+        UserDetails
     },
     async created() {
         await this.usersStore.getStudentsPerTenant(
@@ -233,7 +235,11 @@ export default {
             <!-- User detail view for PC and Tablet View -->
             <div class="col-lg-8 col-md-7 d-none d-md-block">
                 <div class="row user-form-data-row">
-                    <TenantStudentDetails
+                    <!-- <TenantStudentDetails
+                        ref="tenantStudentDetailsRef"
+                        :userId="user.id"
+                    /> -->
+                    <UserDetails
                         ref="tenantStudentDetailsRef"
                         :userId="user.id"
                     />
@@ -246,7 +252,8 @@ export default {
                 id="user-detail-section"
             >
                 <div class="row">
-                    <TenantStudentDetails :userId="user.id" />
+                    <!-- <TenantStudentDetails :userId="user.id" /> -->
+                    <UserDetails :userId="user.id" />
                 </div>
             </div>
         </div>

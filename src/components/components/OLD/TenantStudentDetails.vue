@@ -11,6 +11,7 @@ import PassedAssessmentsTimelineChart from '../../components/analytics/full-size
 import AttemptedAssessmentsTimelineChart from '../../components/analytics/full-size/students/AttemptedAssessmentsTimelineChart.vue';
 import FailedAssessmentsHorizontalBarChart from '../../components/analytics/full-size/students/FailedAssessmentsHorizontalBarChart.vue';
 import StudentDurationPerDayLineChart from '../../components/analytics/full-size/students/StudentDurationPerDayLineChart.vue';
+
 import StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart from '../../components/analytics/full-size/students/StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
 import StudentFailedAssessmentsByRootSubjectHorizontalBarChart from '../../components/analytics/full-size/students/StudentFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
 import StudentPassedAssessmentsByRootSubjectHorizontalBarChart from '../../components/analytics/full-size/students/StudentPassedAssessmentsByRootSubjectHorizontalBarChart.vue';

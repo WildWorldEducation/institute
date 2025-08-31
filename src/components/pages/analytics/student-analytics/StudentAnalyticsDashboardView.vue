@@ -191,9 +191,6 @@ export default {
                     <div class="col-md-6">
                         <div id="comparison-chart-container">
                             <h2 class="heading h5 mt-1">Subject comparison</h2>
-                            <p>
-                                <em>TODO: different color for each subject</em>
-                            </p>
                             <StudentComparisonChart
                                 ref="comparisonChart"
                                 v-if="

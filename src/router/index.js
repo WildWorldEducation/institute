@@ -39,7 +39,12 @@ const router = createRouter({
             meta: {
                 title: 'Student skill tree',
                 requiresAuth: true,
-                roles: ['instructor', 'platform_admin', 'partner']
+                roles: [
+                    'instructor',
+                    'platform_admin',
+                    'partner',
+                    'school_admin'
+                ]
             }
         },
         {
@@ -93,7 +98,12 @@ const router = createRouter({
             meta: {
                 title: 'Student skills',
                 requiresAuth: true,
-                roles: ['instructor', 'platform_admin', 'partner']
+                roles: [
+                    'instructor',
+                    'platform_admin',
+                    'partner',
+                    'school_admin'
+                ]
             }
         },
         {
@@ -250,7 +260,12 @@ const router = createRouter({
             component: () => import('../components/pages/users/UsersView.vue'),
             meta: {
                 requiresAuth: true,
-                roles: ['instructor', 'platform_admin', 'partner']
+                roles: [
+                    'instructor',
+                    'platform_admin',
+                    'partner',
+                    'school_admin'
+                ]
             }
         },
 
@@ -331,7 +346,10 @@ const router = createRouter({
             path: '/edit/student/:id/',
             name: 'edit-student',
             component: () => import('../components/components/EditStudent.vue'),
-            meta: { requiresAuth: true, roles: ['instructor', 'partner'] }
+            meta: {
+                requiresAuth: true,
+                roles: ['instructor', 'partner', 'school_admin']
+            }
         },
         {
             path: '/users/activity-report/:id',
@@ -444,7 +462,10 @@ const router = createRouter({
             name: 'edit-student-password',
             component: () =>
                 import('../components/pages/ChangeStudentPasswordView.vue'),
-            meta: { requiresAuth: true, roles: ['instructor', 'partner'] }
+            meta: {
+                requiresAuth: true,
+                roles: ['instructor', 'partner', 'school_admin']
+            }
         },
         {
             path: '/reputation',
@@ -577,7 +598,12 @@ const router = createRouter({
             meta: {
                 title: 'Student goals',
                 requiresAuth: true,
-                roles: ['instructor', 'platform_admin', 'partner']
+                roles: [
+                    'instructor',
+                    'platform_admin',
+                    'partner',
+                    'school_admin'
+                ]
             }
         },
         // Analytics - students
@@ -591,7 +617,7 @@ const router = createRouter({
             meta: {
                 title: 'Student Assessment Report',
                 requiresAuth: true,
-                roles: ['instructor', 'partner']
+                roles: ['instructor', 'partner', 'school_admin']
             }
         },
         {
@@ -604,7 +630,7 @@ const router = createRouter({
             meta: {
                 title: 'Student Progress Report',
                 requiresAuth: true,
-                roles: ['instructor', 'partner']
+                roles: ['instructor', 'partner', 'school_admin']
             }
         },
         {
@@ -617,7 +643,7 @@ const router = createRouter({
             meta: {
                 title: 'Student Skill Activity Report',
                 requiresAuth: true,
-                roles: ['instructor', 'partner']
+                roles: ['instructor', 'partner', 'school_admin']
             }
         },
         {
@@ -630,7 +656,7 @@ const router = createRouter({
             meta: {
                 title: 'Student Time Report',
                 requiresAuth: true,
-                roles: ['instructor', 'partner']
+                roles: ['instructor', 'partner', 'school_admin']
             }
         },
         // Analytics - cohorts
@@ -696,16 +722,6 @@ const router = createRouter({
                 ),
             meta: {
                 title: 'School Admin Dashboard',
-                requiresAuth: true,
-                roles: ['school_admin']
-            }
-        },
-        {
-            path: '/tenant-students',
-            name: 'tenant-students',
-            component: () =>
-                import('../components/pages/users/TenantStudentsView.vue'),
-            meta: {
                 requiresAuth: true,
                 roles: ['school_admin']
             }
