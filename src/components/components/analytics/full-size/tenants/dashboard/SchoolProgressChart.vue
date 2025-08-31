@@ -9,7 +9,7 @@ export default {
             axisData: []
         };
     },
-    mounted() {},
+    mounted() { },
     methods: {
         createChart(data) {
             // First, clear line(s)
@@ -79,26 +79,23 @@ export default {
             //.attr('style', 'max-width: 100%; height: auto; height: intrinsic;');
 
             // Add the x-axis.
-            // svg.append('g')
-            //     .attr('transform', `translate(0,${height - marginBottom})`)
-            //     .call(
-            //         d3
-            //             .axisBottom(x)
-            //             .ticks(this.axisData.length)
-            //             .tickSizeOuter(0)
-            //     );
+            console.log(height)
+            console.log(marginBottom)
+            svg.append("g")
+                .attr("transform", `translate(0,${height-1000}px)`)
+                .call(d3.axisBottom(x).ticks(width/100).tickSizeOuter(0));
 
             // Add the y-axis, remove the domain line, add grid lines and a label.
-            // svg.append('g')
-            //     .attr('transform', `translate(${marginLeft},0)`)
-            //     .call(d3.axisLeft(y).ticks(height / 80))
-            //     .call((g) =>
-            //         g
-            //             .selectAll('.tick line')
-            //             .clone()
-            //             .attr('x2', width - marginLeft - marginRight)
-            //             .attr('stroke-opacity', 0.1)
-            //     );
+            svg.append('g')
+                .attr('transform', `translate(${marginLeft},0)`)
+                .call(d3.axisLeft(y).ticks(height / 80))
+                .call((g) =>
+                    g
+                        .selectAll('.tick line')
+                        .clone()
+                        .attr('x2', width - marginLeft - marginRight)
+                        .attr('stroke-opacity', 0.1)
+                );
 
             // Draw the lines
             svg.selectAll('.line')
@@ -109,7 +106,7 @@ export default {
                 .attr('stroke-width', 3)
                 .attr('d', (d) => line(d.values));
         },
-        updateChart(data) {}
+
     }
 };
 </script>

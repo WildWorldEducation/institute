@@ -175,7 +175,7 @@ export default {
                         to="/reports/academics"
                         class="me-2 position-absolute chart-heading"
                     >
-                        <h2 class="heading h5">Student progress</h2>
+                        <h2 class="heading h5">Progress</h2>
                     </RouterLink>
                     <SchoolProgressChart
                         ref="progressChart"
@@ -210,7 +210,7 @@ export default {
                             to="/reports/engagement"
                             class="position-absolute chart-heading"
                         >
-                            <h2 class="heading h5">Student Engagement</h2>
+                            <h2 class="heading h5">Engagement</h2>
                             <SchoolTimeChart
                                 v-if="analyticsStore.durationPerDay.length > 0"
                                 ref="timeChart"
