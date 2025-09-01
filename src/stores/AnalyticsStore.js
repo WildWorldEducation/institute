@@ -84,7 +84,7 @@ export const useAnalyticsStore = defineStore('analytics', {
                 .then((data) => {
                     for (let i = 0; i < data.studentTime.length; i++) {
                         data.studentTime[i].formattedQuantity =
-                            data.studentTime[i].quantity / 1000;
+                            data.studentTime[i].quantity / (1000 * 60);
                         data.studentTime[i].date = new Date(
                             data.studentTime[i].date
                         );
@@ -94,7 +94,7 @@ export const useAnalyticsStore = defineStore('analytics', {
 
                     for (let i = 0; i < data.averageTime.length; i++) {
                         data.averageTime[i].formattedQuantity =
-                            data.averageTime[i].quantity / 1000;
+                            data.averageTime[i].quantity / (1000 * 60);
                         data.averageTime[i].date = new Date(
                             data.averageTime[i].date
                         );

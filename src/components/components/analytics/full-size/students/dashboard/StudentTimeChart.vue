@@ -12,9 +12,30 @@ export default {
     mounted() {},
     methods: {
         createChart(data) {
-            if (data.student.length > 0) this.axisData = data.student;
-            else if (data.average.length > 0) this.axisData = data.average;
-            else this.axisData = [];
+            console.log(data);
+
+            // Work out which array to use for the axes
+            if (data.student.length == 0) {
+                this.axisData = data.tenant;
+            } else if (data.tenant.length == 0) {
+                this.axisData = data.student;
+            } else {
+                // find which array has the highest number
+                const highestStudentValue = data.student.reduce(
+                    (max, obj) => Math.max(max, obj.quantity),
+                    -Infinity
+                );
+                const highestAverageValue = data.tenant.reduce(
+                    (max, obj) => Math.max(max, obj.quantity),
+                    -Infinity
+                );
+
+                if (highestStudentValue >= highestAverageValue) {
+                    this.axisData = data.student;
+                } else {
+                    this.axisData = data.tenant;
+                }
+            }
 
             // Convert object into array of series
             const series = Object.entries(data).map(([name, values]) => ({
@@ -34,7 +55,7 @@ export default {
             const marginTop = 0;
             const marginRight = 20;
             const marginBottom = 20;
-            const marginLeft = 60;
+            const marginLeft = 20;
 
             // Declare the x (horizontal position) scale.
             const x = d3.scaleUtc(
@@ -44,7 +65,7 @@ export default {
 
             // Declare the y (vertical position) scale.
             const y = d3.scaleLinear(
-                [0, d3.max(this.axisData, (d) => d.quantity)],
+                [0, d3.max(this.axisData, (d) => d.formattedQuantity)],
                 [height - marginBottom, marginTop]
             );
 
@@ -57,7 +78,7 @@ export default {
             const line = d3
                 .line()
                 .x((d) => x(d.date))
-                .y((d) => y(d.quantity));
+                .y((d) => y(d.formattedQuantity));
 
             // Create the SVG container.
             const svg = d3

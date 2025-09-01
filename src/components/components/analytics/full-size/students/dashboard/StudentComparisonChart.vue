@@ -15,7 +15,7 @@ export default {
             // Specify the chart’s dimensions, based on a bar’s height.
             const barHeight = 25;
             const marginTop = 0;
-            const marginRight = 0;
+            const marginRight = 20;
             const marginBottom = 10;
             const marginLeft = 200;
             const width = 700;
@@ -53,7 +53,6 @@ export default {
 
             // Append a rect for each skill.
             svg.append('g')
-
                 .selectAll()
                 .data(data)
                 .join('rect')
@@ -68,7 +67,7 @@ export default {
                     else if (d.name == 'Science & Invention')
                         return 'purple'; // purple
                     else if (d.name == 'Computer Science')
-                        return 'pink'; // pink
+                        return 'deeppink'; // pink
                     else if (d.name == 'Dangerous Ideas')
                         return 'brown'; // brown
                     else if (d.name == 'History') return 'cyan'; // cyan
@@ -87,7 +86,7 @@ export default {
                 .attr('y', (d) => y(d.name) + y.bandwidth() / 2)
                 .attr('dy', '0.35em')
                 .attr('dx', -4)
-                .text((d) => format(d.quantity))
+                .text((d) => d.quantity)
                 .call((text) =>
                     text
                         .filter((d) => x(d.quantity) - x(0) < 20) // short bars
