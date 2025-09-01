@@ -1,1 +1,0 @@
-import{_ as o,o as s,c as t,a as e}from"./main-77db2c2e.js";const n={name:"Error"},a={class:"container"},c=e("h1",{class:"heading"},"Payment Error",-1),r=e("p",null,"Payment cancelled.",-1),_=[c,r];function d(i,l,p,h,m,f){return s(),t("div",a,_)}const E=o(n,[["render",d]]);export{E as default};
