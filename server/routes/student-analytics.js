@@ -491,6 +491,13 @@ router.get('/student-progress/:tenantId/:studentId', async (req, res, next) => {
                 }
 
                 if (
+                    tenantFirstInteractionResult[0].date ==
+                    studentProgressResults[i].date
+                ) {
+                    tenantStartFlag = true;
+                }
+
+                if (
                     today.toDateString() ==
                     studentProgressResults[i].date.toDateString()
                 ) {
@@ -518,13 +525,6 @@ router.get('/student-progress/:tenantId/:studentId', async (req, res, next) => {
             let tenantEndFlag = false;
             for (let i = 0; i < avgProgressResults.length; i++) {
                 if (
-                    tenantFirstInteractionResult[0].date ==
-                    avgProgressResults[i].date
-                ) {
-                    tenantStartFlag = true;
-                }
-
-                if (
                     today.toDateString() ==
                     avgProgressResults[i].date.toDateString()
                 ) {
@@ -534,7 +534,7 @@ router.get('/student-progress/:tenantId/:studentId', async (req, res, next) => {
 
             if (!tenantStartFlag) {
                 avgProgressResults.unshift({
-                    date: tenantFirstInteractionResult[0].date,
+                    date: studentFirstInteractionResult[0].date,
                     quantity: 0
                 });
             }
