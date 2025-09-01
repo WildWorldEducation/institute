@@ -62,7 +62,6 @@ export default {
     },
     methods: {
         async getProgressData() {
-            // If "Everyone" checked
             this.progressData.school = [];
             for (
                 let i = 0;
