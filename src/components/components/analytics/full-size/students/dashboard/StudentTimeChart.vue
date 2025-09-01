@@ -12,6 +12,7 @@ export default {
     mounted() {},
     methods: {
         createChart(data) {
+            console.log('Creating time chart with data: ', data);
             if (data.student.length > 0) this.axisData = data.student;
             else if (data.average.length > 0) this.axisData = data.average;
             else this.axisData = [];
@@ -34,7 +35,7 @@ export default {
             const marginTop = 0;
             const marginRight = 20;
             const marginBottom = 20;
-            const marginLeft = 60;
+            const marginLeft = 20;
 
             // Declare the x (horizontal position) scale.
             const x = d3.scaleUtc(
@@ -44,7 +45,7 @@ export default {
 
             // Declare the y (vertical position) scale.
             const y = d3.scaleLinear(
-                [0, d3.max(this.axisData, (d) => d.quantity)],
+                [0, d3.max(this.axisData, (d) => d.formattedQuantity)],
                 [height - marginBottom, marginTop]
             );
 
@@ -57,7 +58,7 @@ export default {
             const line = d3
                 .line()
                 .x((d) => x(d.date))
-                .y((d) => y(d.quantity));
+                .y((d) => y(d.formattedQuantity));
 
             // Create the SVG container.
             const svg = d3
