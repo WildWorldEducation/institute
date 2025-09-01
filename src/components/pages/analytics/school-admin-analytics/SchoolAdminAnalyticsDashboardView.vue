@@ -142,47 +142,44 @@ export default {
 
 <template>
     <div class="dashboard">
-        <!-- Main Content -->
-
         <div class="container-fluid">
             <div class="row top-row">
-                <div class="col-sm">
-                    <h2 class="h5 heading m-0">Avg # Skills Mastered</h2>
-                    <span class="top-row-text">10</span>
+                <div class="col-sm top-row-text">
+                    <strong>Skills Mastered: </strong>
+                    <span>10</span>
                 </div>
-                <div class="col-sm">
-                    <h2 class="h5 heading m-0">Students</h2>
-                    <span class="top-row-text">35</span>
+                <div class="col-sm top-row-text">
+                    <strong>Students: </strong>
+                    <span>35</span>
                 </div>
-                <div class="col-sm">
-                    <h2 class="h5 heading m-0">Teachers</h2>
-                    <span class="top-row-text">5</span>
+                <div class="col-sm top-row-text">
+                    <strong>Teachers: </strong>
+                    <span>5</span>
                 </div>
-                <div class="col-sm">
-                    <h2 class="h5 heading m-0">AI Tutor Usage</h2>
-                    <span class="top-row-text">$500</span>
+                <div class="col-sm top-row-text">
+                    <strong>AI Tutor Usage: </strong>
+                    <span>$500</span>
                 </div>
             </div>
 
             <!-- This is where charts / dashboard cards go -->
             <div class="dash-row row">
-                <div
-                    id="progress-chart-container"
-                    class="col-md position-relative"
-                >
-                    <RouterLink
-                        to="/reports/academics"
-                        class="me-2 position-absolute chart-heading"
-                    >
+                <div class="col-md h-100">
+                    <RouterLink to="/reports/academics" class="">
                         <h2 class="heading h5">Progress</h2>
                     </RouterLink>
-                    <SchoolProgressChart
-                        ref="progressChart"
-                        v-if="progressData.school.length > 0"
-                    />
+                    <div
+                        id="progress-chart-container"
+                        class="position-relative"
+                    >
+                        <SchoolProgressChart
+                            ref="progressChart"
+                            v-if="progressData.school.length > 0"
+                        />
+                    </div>
                 </div>
                 <div class="col-md">
-                    <h2 class="heading chart-heading h5">Subject comparison</h2>
+                    <h2 class="heading h5">Subject comparison</h2>
                     <SchoolComparisonChart
                         v-if="
                             analyticsStore.rootSubjectsPassedAssessments
@@ -224,18 +221,24 @@ export default {
 
 <style scoped>
 .top-row {
-    height: 15%;
+    height: 8%;
     text-align: center;
+    font-size: 1.2rem;
+    font-family: 'Poppins';
 }
 
 .dash-row {
-    height: 38%;
+    height: 45%;
+}
+
+#comparison-chart-container {
+    height: 100%;
+    width: 100%;
 }
 
 #progress-chart-container,
-#comparison-chart-container,
 #time-chart-container {
-    height: 100%;
+    height: calc(100% - 35px);
     width: 100%;
 }
 
@@ -268,10 +271,10 @@ export default {
         margin-bottom: 1rem;
     }
 
-    .dashboard {
+    /* .dashboard {
         overflow: auto;
         height: unset;
-    }
+    } */
 
     .col-md {
         min-height: 100px;
@@ -280,8 +283,6 @@ export default {
 }
 
 .top-row-text {
-    font-size: 2.5rem;
-    font-family: 'Poppins';
     font-weight: 500;
 }
 
