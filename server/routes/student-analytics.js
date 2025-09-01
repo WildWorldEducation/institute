@@ -1836,20 +1836,40 @@ router.get('/school-progress/:tenantId', (req, res, next) => {
                             });
                         }
 
-                        let flag = false;
+                        // Checking if beginning and end dates need to be added,
+                        // in order to show the progress from when the school started, to today.
+                        let startFlag = false;
+                        let endFlag = false;
+                        const today = new Date();
                         for (let i = 0; i < results.length; i++) {
                             if (
                                 firstInteractionResult[0].date ==
                                 results[i].date
                             ) {
-                                flag = true;
+                                startFlag = true;
+                            }
+
+                            if (
+                                today.toDateString() ==
+                                results[i].date.toDateString()
+                            ) {
+                                endFlag = true;
                             }
                         }
 
-                        if (!flag) {
+                        // If not, add it to the beginning
+                        if (!startFlag) {
                             results.unshift({
                                 date: firstInteractionResult[0].date,
                                 quantity: 0
+                            });
+                        }
+
+                        // If not, add it to the end
+                        if (!endFlag) {
+                            results.push({
+                                date: today,
+                                quantity: results[results.length - 1].quantity
                             });
                         }
 
