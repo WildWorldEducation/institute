@@ -15,7 +15,7 @@ export default {
             // Specify the chart’s dimensions, based on a bar’s height.
             const barHeight = 40;
             const marginTop = 0;
-            const marginRight = 0;
+            const marginRight = 20;
             const marginBottom = 10;
             const marginLeft = 200;
             const width = 1000;
@@ -53,14 +53,47 @@ export default {
 
             // Append a rect for each skill.
             svg.append('g')
-                .attr('fill', this.colour)
                 .selectAll()
                 .data(data)
                 .join('rect')
                 .attr('x', x(0))
                 .attr('y', (d) => y(d.name))
                 .attr('width', (d) => x(d.quantity) - x(0))
-                .attr('height', y.bandwidth());
+                .attr('height', y.bandwidth())
+                // .selectAll('rect')
+                .attr('fill', function (d) {
+                    if (d.name == 'Language') return 'green'; // green
+                    else if (d.name == 'Mathematics') return 'blue'; // blue
+                    else if (d.name == 'Science & Invention')
+                        return 'purple'; // purple
+                    else if (d.name == 'Computer Science')
+                        return 'deeppink'; // pink
+                    else if (d.name == 'Dangerous Ideas')
+                        return 'brown'; // brown
+                    else if (d.name == 'History') return 'cyan'; // cyan
+                    else if (d.name == 'Life') return 'magenta'; // magenta
+                    else return '#ff7f0e'; // orange
+                });
+
+            // Append a label for each name.
+            svg.append('g')
+                .attr('fill', 'white')
+                .attr('text-anchor', 'end')
+                .selectAll()
+                .data(data)
+                .join('text')
+                .attr('x', (d) => x(d.quantity))
+                .attr('y', (d) => y(d.name) + y.bandwidth() / 2)
+                .attr('dy', '0.35em')
+                .attr('dx', -4)
+                .text((d) => d.quantity)
+                .call((text) =>
+                    text
+                        .filter((d) => x(d.quantity) - x(0) < 20) // short bars
+                        .attr('dx', +4)
+                        .attr('fill', 'black')
+                        .attr('text-anchor', 'start')
+                );
 
             // Create the axes.
             svg.append('g')
