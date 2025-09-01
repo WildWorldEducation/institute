@@ -32,9 +32,9 @@ export default {
                 'time-chart-container'
             ).clientHeight;
             const marginTop = 0;
-            const marginRight = 0;
-            const marginBottom = 0;
-            const marginLeft = 0;
+            const marginRight = 20;
+            const marginBottom = 20;
+            const marginLeft = 60;
 
             // Declare the x (horizontal position) scale.
             const x = d3.scaleUtc(
@@ -72,6 +72,32 @@ export default {
                     +Math.min(width, height)
                 ])
                 .attr('preserveAspectRatio', 'xMinYMin');
+
+            // Add the x-axis.
+            svg.append('g')
+                .attr('transform', `translate(0,${height - marginBottom})`)
+                .call(d3.axisBottom(x).ticks(data.length).tickSizeOuter(0));
+
+            // Add the y-axis, remove the domain line, add grid lines and a label.
+            svg.append('g')
+                .attr('transform', `translate(${marginLeft},0)`)
+                .call(d3.axisLeft(y).ticks(height / 40))
+                .call((g) => g.select('.domain').remove())
+                .call((g) =>
+                    g
+                        .selectAll('.tick line')
+                        .clone()
+                        .attr('x2', width - marginLeft - marginRight)
+                        .attr('stroke-opacity', 0.2)
+                )
+                .call((g) =>
+                    g
+                        .append('text')
+                        .attr('x', -marginLeft)
+                        .attr('y', 10)
+                        .attr('fill', 'currentColor')
+                        .attr('text-anchor', 'start')
+                );
 
             // Draw the lines
             svg.selectAll('.line')

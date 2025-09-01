@@ -159,25 +159,22 @@ export default {
     <div class="dashboard">
         <!-- Main Content -->
         <div class="main">
-            <div class="content container">
+            <div class="content container-fluid">
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
                     <div class="col-md-6 h-100 position-relative">
+                        <RouterLink to="/my-progress/skills" class=""
+                            ><h2 class="heading h5">Progress over time</h2>
+                        </RouterLink>
                         <div id="progress-chart-container">
-                            <div class="position-absolute chart-heading">
-                                <RouterLink to="/my-progress/skills" class=""
-                                    ><h2 class="heading h5">
-                                        Progress over time
-                                    </h2>
-                                </RouterLink>
-
+                            <!-- <div class="position-absolute chart-heading">
                                 <span style="color: #5f31dd">
                                     <strong>You</strong></span
                                 ><br />
                                 <span style="color: #ff7f0e"
                                     ><strong>School average</strong></span
                                 >
-                            </div>
+                            </div> -->
                             <StudentProgressChart
                                 ref="progressChart"
                                 v-if="
@@ -209,26 +206,25 @@ export default {
 
                 <div class="dash-row row">
                     <div class="col-md h-100 position-relative">
+                        <RouterLink to="/my-progress/time">
+                            <h2 class="heading h5">Study time</h2>
+                        </RouterLink>
                         <div id="time-chart-container">
-                            <div class="position-absolute chart-heading">
-                                <RouterLink to="/my-progress/time">
-                                    <h2 class="heading h5">Study time</h2>
-                                </RouterLink>
+                            <!-- <div class="position-absolute chart-heading">
                                 <span style="color: #5f31dd">
                                     <strong>You</strong></span
                                 ><br />
                                 <span style="color: #ff7f0e"
                                     ><strong>School average</strong></span
                                 >
-                                <StudentTimeChart
-                                    ref="timeChart"
-                                    v-if="
-                                        analyticsStore.time.student.length >
-                                            0 ||
-                                        analyticsStore.time.tenant.length > 0
-                                    "
-                                />
-                            </div>
+                            </div> -->
+                            <StudentTimeChart
+                                ref="timeChart"
+                                v-if="
+                                    analyticsStore.time.student.length > 0 ||
+                                    analyticsStore.time.tenant.length > 0
+                                "
+                            />
                         </div>
                     </div>
 
@@ -306,10 +302,14 @@ export default {
     left: 12px;
 }
 
-#comparison-chart-container,
+#comparison-chart-container {
+    height: 100%;
+    width: 100%;
+}
+
 #progress-chart-container,
 #time-chart-container {
-    height: 100%;
+    height: calc(100% - 35px);
     width: 100%;
 }
 
