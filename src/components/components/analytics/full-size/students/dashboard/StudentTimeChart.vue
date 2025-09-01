@@ -12,10 +12,30 @@ export default {
     mounted() {},
     methods: {
         createChart(data) {
-            console.log('Creating time chart with data: ', data);
-            if (data.student.length > 0) this.axisData = data.student;
-            else if (data.average.length > 0) this.axisData = data.average;
-            else this.axisData = [];
+            console.log(data);
+
+            // Work out which array to use for the axes
+            if (data.student.length == 0) {
+                this.axisData = data.tenant;
+            } else if (data.tenant.length == 0) {
+                this.axisData = data.student;
+            } else {
+                // find which array has the highest number
+                const highestStudentValue = data.student.reduce(
+                    (max, obj) => Math.max(max, obj.quantity),
+                    -Infinity
+                );
+                const highestAverageValue = data.tenant.reduce(
+                    (max, obj) => Math.max(max, obj.quantity),
+                    -Infinity
+                );
+
+                if (highestStudentValue >= highestAverageValue) {
+                    this.axisData = data.student;
+                } else {
+                    this.axisData = data.tenant;
+                }
+            }
 
             // Convert object into array of series
             const series = Object.entries(data).map(([name, values]) => ({

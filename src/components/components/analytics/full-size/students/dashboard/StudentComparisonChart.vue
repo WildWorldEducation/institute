@@ -53,7 +53,6 @@ export default {
 
             // Append a rect for each skill.
             svg.append('g')
-
                 .selectAll()
                 .data(data)
                 .join('rect')
