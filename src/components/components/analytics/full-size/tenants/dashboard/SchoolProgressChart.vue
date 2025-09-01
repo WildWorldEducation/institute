@@ -9,7 +9,7 @@ export default {
             axisData: []
         };
     },
-    mounted() { },
+    mounted() {},
     methods: {
         createChart(data) {
             // First, clear line(s)
@@ -34,9 +34,9 @@ export default {
                 'progress-chart-container'
             ).clientHeight;
             const marginTop = 0;
-            const marginRight = 0;
-            const marginBottom = 0;
-            const marginLeft = 0;
+            const marginRight = 20;
+            const marginBottom = 20;
+            const marginLeft = 20;
 
             // Declare the x (horizontal position) scale.
             const x = d3.scaleUtc(
@@ -79,22 +79,34 @@ export default {
             //.attr('style', 'max-width: 100%; height: auto; height: intrinsic;');
 
             // Add the x-axis.
-            console.log(height)
-            console.log(marginBottom)
-            svg.append("g")
-                .attr("transform", `translate(0,${height-1000}px)`)
-                .call(d3.axisBottom(x).ticks(width/100).tickSizeOuter(0));
+            svg.append('g')
+                .attr('transform', `translate(0,${height - 20})`)
+                .call(
+                    d3
+                        .axisBottom(x)
+                        .ticks(width / 100)
+                        .tickSizeOuter(0)
+                );
 
             // Add the y-axis, remove the domain line, add grid lines and a label.
             svg.append('g')
                 .attr('transform', `translate(${marginLeft},0)`)
-                .call(d3.axisLeft(y).ticks(height / 80))
+                .call(d3.axisLeft(y).ticks(height / 40))
+                .call((g) => g.select('.domain').remove())
                 .call((g) =>
                     g
                         .selectAll('.tick line')
                         .clone()
                         .attr('x2', width - marginLeft - marginRight)
-                        .attr('stroke-opacity', 0.1)
+                        .attr('stroke-opacity', 0.2)
+                )
+                .call((g) =>
+                    g
+                        .append('text')
+                        .attr('x', -marginLeft)
+                        .attr('y', 10)
+                        .attr('fill', 'currentColor')
+                        .attr('text-anchor', 'start')
                 );
 
             // Draw the lines
@@ -102,11 +114,10 @@ export default {
                 .data(series)
                 .join('path')
                 .attr('fill', 'none')
-                .attr('stroke', (d) => color(d.name))
+                .attr('stroke', (d) => 'green')
                 .attr('stroke-width', 3)
                 .attr('d', (d) => line(d.values));
-        },
-
+        }
     }
 };
 </script>

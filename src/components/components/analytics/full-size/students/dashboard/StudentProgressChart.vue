@@ -32,9 +32,9 @@ export default {
                 'progress-chart-container'
             ).clientHeight;
             const marginTop = 0;
-            const marginRight = 0;
-            const marginBottom = 0;
-            const marginLeft = 0;
+            const marginRight = 20;
+            const marginBottom = 20;
+            const marginLeft = 20;
 
             // Declare the x (horizontal position) scale.
             const x = d3.scaleUtc(
@@ -72,31 +72,28 @@ export default {
                     +Math.min(width, height)
                 ])
                 .attr('preserveAspectRatio', 'xMinYMin');
-            //   .append("g")
-            //.attr("transform", "translate(" + Math.min(width,height) / 2 + "," + Math.min(width,height) / 2 + ")")
-            //.attr('style', 'max-width: 100%; height: auto; height: intrinsic;');
 
             // Add the x-axis.
-            // svg.append('g')
-            //     .attr('transform', `translate(0,${height - marginBottom})`)
-            //     .call(
-            //         d3
-            //             .axisBottom(x)
-            //             .ticks(this.axisData.length)
-            //             .tickSizeOuter(0)
-            //     );
+            svg.append('g')
+                .attr('transform', `translate(0,${height - 20})`)
+                .call(
+                    d3
+                        .axisBottom(x)
+                        .ticks(width / 100)
+                        .tickSizeOuter(0)
+                );
 
             // Add the y-axis, remove the domain line, add grid lines and a label.
-            // svg.append('g')
-            //     .attr('transform', `translate(${marginLeft},0)`)
-            //     .call(d3.axisLeft(y).ticks(height / 80))
-            //     .call((g) =>
-            //         g
-            //             .selectAll('.tick line')
-            //             .clone()
-            //             .attr('x2', width - marginLeft - marginRight)
-            //             .attr('stroke-opacity', 0.1)
-            //     );
+            svg.append('g')
+                .attr('transform', `translate(${marginLeft},0)`)
+                .call(d3.axisLeft(y).ticks(height / 80))
+                .call((g) =>
+                    g
+                        .selectAll('.tick line')
+                        .clone()
+                        .attr('x2', width - marginLeft - marginRight)
+                        .attr('stroke-opacity', 0.1)
+                );
 
             // Draw the lines
             svg.selectAll('.line')

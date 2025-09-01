@@ -145,7 +145,7 @@ export default {
     <div class="dashboard">
         <!-- Main Content -->
 
-        <div class="container">
+        <div class="container-fluid">
             <div class="row top-row">
                 <div class="col-sm">
                     <h2 class="h5 heading m-0">Avg # Skills Mastered</h2>
