@@ -161,13 +161,13 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid">
+    <div class="container-fluid chart-page">
         <span class="d-flex justify-content-between w-100">
             <h1 class="heading h2">Engagement</h1>
             <h2 class="tertiary-heading h4">{{ studentName }}</h2>
         </span>
 
-        <div class="row">
+        <div class="row h-100">
             <div class="col h-100 position-relative">
                 <div id="time-chart-container">
                     <DownloadCSVBtn
@@ -200,18 +200,24 @@ export default {
                         toolTip="Download minutes per skill data as CSV"
                     />
                 </h4>
-                <StudentSkillActivityChart
-                    ref="activityChart"
-                    v-if="teacherAnalyticsStore.skillActivities.length > 0"
-                />
-                <p v-else>No skills visited by this student.</p>
+                <div id="activity-chart-container">
+                    <StudentSkillActivityChart
+                        ref="activityChart"
+                        v-if="teacherAnalyticsStore.skillActivities.length > 0"
+                    />
+                    <p v-else>No skills visited by this student.</p>
+                </div>
             </div>
         </div>
     </div>
-    <p>&nbsp;</p>
 </template>
 
 <style scoped>
+.chart-page {
+    height: calc(100vh - 88px);
+    overflow: hidden;
+}
+
 #activity-chart-container,
 #time-chart-container {
     height: calc(100% - 35px);
