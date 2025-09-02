@@ -5,8 +5,6 @@ import { useTeacherAnalyticsStore } from '../../../../../stores/TeacherAnalytics
 import { useAnalyticsStore } from '../../../../../stores/AnalyticsStore';
 import StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart from '../../../../components/analytics/full-size/students/StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
 import StudentFailedAssessmentsByRootSubjectHorizontalBarChart from '../../../../components/analytics/full-size/students/StudentFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
-import StudentPassedAssessmentsByRootSubjectHorizontalBarChart from '../../../../components/analytics/full-size/students/StudentPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
-import PassedAssessmentsTimelineChart from '../../../../components/analytics/full-size/students/PassedAssessmentsTimelineChart.vue';
 import AttemptedAssessmentsTimelineChart from '../../../../components/analytics/full-size/students/AttemptedAssessmentsTimelineChart.vue';
 import FailedAssessmentsHorizontalBarChart from '../../../../components/analytics/full-size/students/FailedAssessmentsHorizontalBarChart.vue';
 import DownloadCSVBtn from '../../../../components/downloadCSVBtn/downloadCSVBtn.vue';
@@ -26,11 +24,9 @@ export default {
     },
     components: {
         FailedAssessmentsHorizontalBarChart,
-        PassedAssessmentsTimelineChart,
         AttemptedAssessmentsTimelineChart,
         StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart,
         StudentFailedAssessmentsByRootSubjectHorizontalBarChart,
-        StudentPassedAssessmentsByRootSubjectHorizontalBarChart,
         DownloadCSVBtn
     },
     data() {
@@ -71,9 +67,7 @@ export default {
         await this.analyticsStore.getStudentFailedAssessmentsBySubject(
             this.studentId
         );
-        await this.analyticsStore.getStudentPassedAssessmentsBySubject(
-            this.studentId
-        );
+       
         await this.analyticsStore.getStudentAttemptedAssessmentsBySubject(
             this.studentId
         );
@@ -119,7 +113,6 @@ export default {
         },
         async getUserSkillMasteredHistory(studentId) {
             await this.userSkillsStore.getMasteredSkills(studentId);
-
             this.assessmentPasses = this.userSkillsStore.masteredSkills.map(
                 (e) => {
                     return {
@@ -143,59 +136,65 @@ export default {
         <div>
             <h3 class="secondary-heading">By subject</h3>
             <h4 class="secondary-heading">Failed more than once</h4>
-            <StudentFailedAssessmentsByRootSubjectHorizontalBarChart v-if="
-                analyticsStore.studentRootSubjectsFailedAssessments
-                    .length > 0
-            " :data="analyticsStore.studentRootSubjectsFailedAssessments" colour="darkred" class="mb-5" />
+            <StudentFailedAssessmentsByRootSubjectHorizontalBarChart
+                v-if="
+                    analyticsStore.studentRootSubjectsFailedAssessments.length >
+                    0
+                "
+                :data="analyticsStore.studentRootSubjectsFailedAssessments"
+                colour="darkred"
+                class="mb-5"
+            />
             <p v-else>No data yet</p>
 
-            <h4 class="secondary-heading">Passed</h4>
-            <StudentPassedAssessmentsByRootSubjectHorizontalBarChart v-if="
-                analyticsStore.studentRootSubjectsPassedAssessments
-                    .length > 0
-            " :data="analyticsStore.studentRootSubjectsPassedAssessments" colour="darkgreen" class="mb-5" />
-            <p v-else>No data yet</p>
+            
 
             <h4 class="secondary-heading">Attempted</h4>
-            <StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart v-if="
-                analyticsStore.studentRootSubjectsAttemptedAssessments
-                    .length > 0
-            " :data="analyticsStore.studentRootSubjectsAttemptedAssessments
-                        " colour="darkblue" class="mb-5" />
+            <StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart
+                v-if="
+                    analyticsStore.studentRootSubjectsAttemptedAssessments
+                        .length > 0
+                "
+                :data="analyticsStore.studentRootSubjectsAttemptedAssessments"
+                colour="darkblue"
+                class="mb-5"
+            />
             <p v-else>No data yet</p>
 
             <h3 class="secondary-heading mt-4">By skill</h3>
             <h4 class="secondary-heading d-flex justify-content-between">
                 Failed multiple times
-                <DownloadCSVBtn :data="teacherAnalyticsStore.studentMultipleFails"
+                <DownloadCSVBtn
+                    :data="teacherAnalyticsStore.studentMultipleFails"
                     :fileName="`Assessment Status Report - ${studentName}`"
-                    toolTip="Download failed assessments data as CSV" />
+                    toolTip="Download failed assessments data as CSV"
+                />
             </h4>
-            <FailedAssessmentsHorizontalBarChart v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
-                :data="teacherAnalyticsStore.studentMultipleFails" colour="darkred" class="mb-5" />
+            <FailedAssessmentsHorizontalBarChart
+                v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
+                :data="teacherAnalyticsStore.studentMultipleFails"
+                colour="darkred"
+                class="mb-5"
+            />
             <p v-else>
                 This student has not failed any assessments more than once yet.
             </p>
         </div>
-        <div>
-            <h4 class="secondary-heading pt-2 d-flex justify-content-between">
-                Passed
-                <DownloadCSVBtn :data="assessmentPassesDownloadData" :fileName="`Passed Assessments - ${studentName}`"
-                    toolTip="Download passed assessments data as CSV" />
-            </h4>
-            <PassedAssessmentsTimelineChart class="mb-5" v-if="assessmentPasses.length > 0" :data="assessmentPasses" />
-            <p v-else>This student has not completed any assessments yet.</p>
-        </div>
-
+       
         <div>
             <h4 class="secondary-heading pt-2 d-flex justify-content-between">
                 Attempted
-                <DownloadCSVBtn :data="assessmentAttemptsDownloadData"
+                <DownloadCSVBtn
+                    :data="assessmentAttemptsDownloadData"
                     :fileName="`Attempted Assessments - ${studentName}`"
-                    toolTip="Download attempted assessments data as CSV" />
+                    toolTip="Download attempted assessments data as CSV"
+                />
             </h4>
-            <AttemptedAssessmentsTimelineChart class="mb-5" v-if="assessmentAttempts.length > 0"
-                :data="assessmentAttempts" />
+            <AttemptedAssessmentsTimelineChart
+                class="mb-5"
+                v-if="assessmentAttempts.length > 0"
+                :data="assessmentAttempts"
+            />
             <p v-else>This student has not attempted any assessments yet.</p>
         </div>
     </div>
