@@ -83,7 +83,7 @@ export default {
         <div class="row">
             <!-- Name and basic details -->
             <div class="col-12 col-md-7">
-                <h1 class="secondary-heading h3">
+                <h1 class="heading h3">
                     {{ this.$parent.user.username }}
                 </h1>
 
@@ -166,7 +166,7 @@ export default {
                     "
                     class="secondary-heading h4"
                 >
-                    Check progress
+                    Progress
                 </h2>
                 <div
                     v-if="
@@ -176,21 +176,22 @@ export default {
                     "
                     class="d-flex flex-column"
                 >
+                    <router-link
+                        :to="`/student/${this.$parent.user.id}/progress-report`"
+                        class="fit-content"
+                        target="_blank"
+                    >
+                        Skills passed
+                    </router-link>
                     <!-- Skill Tree -->
                     <router-link
                         :to="`/student/${this.$parent.user.id}/skill-tree`"
-                        class="fit-content"
+                        class="fit-content mt-2"
                         target="_blank"
                     >
                         Skill tree
                     </router-link>
-                    <router-link
-                        :to="`/student/${this.$parent.user.id}/progress-report`"
-                        class="fit-content mt-2"
-                        target="_blank"
-                    >
-                        Progress
-                    </router-link>
+
                     <!-- Tracking Report -->
                     <h2 class="secondary-heading h4 mt-4">Check activity</h2>
                     <router-link
@@ -208,22 +209,12 @@ export default {
                     >
                         Engagement
                     </router-link>
-                    <!-- Goals -->
-                    <h2 class="secondary-heading h4 mt-4">Assign work</h2>
-                    <router-link
-                        :to="'/student/' + this.$parent.user.id + '/skills'"
-                        class="fit-content"
-                        target="_blank"
-                    >
-                        Assign goals
-                    </router-link>
-                    <router-link
-                        :to="'/student/' + this.$parent.user.id + '/goals'"
-                        class="mt-2 fit-content mb-3"
-                        target="_blank"
-                    >
-                        See current goals
-                    </router-link>
+                    <StudentNotifications
+                        v-if="
+                            userDetailsStore.role == 'instructor' ||
+                            userDetailsStore.role == 'partner'
+                        "
+                    />
                 </div>
                 <!-- Editors -->
                 <div class="mt-2">
@@ -389,12 +380,25 @@ export default {
                     />
                     <label for="two">Yes</label>
                 </div>
-                <StudentNotifications
-                    v-if="
-                        userDetailsStore.role == 'instructor' ||
-                        userDetailsStore.role == 'partner'
-                    "
-                />
+
+                <!-- Goals -->
+                <h2 class="secondary-heading h4 mt-4">Assign work</h2>
+                <div class="d-flex flex-column">
+                    <router-link
+                        :to="'/student/' + this.$parent.user.id + '/skills'"
+                        class="fit-content"
+                        target="_blank"
+                    >
+                        Assign goals
+                    </router-link>
+                    <router-link
+                        :to="'/student/' + this.$parent.user.id + '/goals'"
+                        class="mt-2 fit-content mb-3"
+                        target="_blank"
+                    >
+                        See current goals
+                    </router-link>
+                </div>
             </div>
         </div>
     </div>
