@@ -212,7 +212,8 @@ export default {
                     <StudentNotifications
                         v-if="
                             userDetailsStore.role == 'instructor' ||
-                            userDetailsStore.role == 'partner'
+                            userDetailsStore.role == 'partner' ||
+                            userDetailsStore.role == 'school_admin'
                         "
                     />
                 </div>
