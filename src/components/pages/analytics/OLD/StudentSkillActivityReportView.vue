@@ -1,6 +1,6 @@
 <script>
-import { useUsersStore } from '../../../../../stores/UsersStore';
-import { useTeacherAnalyticsStore } from '../../../../../stores/TeacherAnalyticsStore';
+import { useUsersStore } from '../../../../stores/UsersStore';
+import { useTeacherAnalyticsStore } from '../../../../stores/TeacherAnalyticsStore';
 import StudentSkillActivityChart from '../../../../components/analytics/full-size/students/StudentSkillActivityChart.vue';
 import DownloadCSVBtn from '../../../../components/downloadCSVBtn/downloadCSVBtn.vue';
 
@@ -17,7 +17,6 @@ export default {
         return {
             studentId: this.$route.params.studentId,
             studentName: null,
-            visitedSkills: [],
             downloadData: []
         };
     },
@@ -25,38 +24,7 @@ export default {
         StudentSkillActivityChart,
         DownloadCSVBtn
     },
-    async created() {
-        if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
-        const foundObject = this.usersStore.users.find(
-            (student) => student.id === this.studentId
-        );
-        if (foundObject) {
-            this.studentName = foundObject.username;
-        }
-
-        if (this.teacherAnalyticsStore.skillActivities.length == 0) {
-            await this.teacherAnalyticsStore.getSkillActivityReport(
-                this.studentId
-            );
-        }
-        this.teacherAnalyticsStore.skillActivities =
-            this.teacherAnalyticsStore.skillActivities.map((skill) => {
-                return {
-                    ...skill,
-                    formattedQuantity: this.millisToMinutesAndSeconds(
-                        skill.quantity
-                    )
-                };
-            });
-        this.downloadData = this.teacherAnalyticsStore.skillActivities.map(
-            (skill) => {
-                return {
-                    skill: skill.name,
-                    minutes: skill.formattedQuantity
-                };
-            }
-        );
-    },
+    async created() {},
     methods: {
         visitedDate(date) {
             let jsDate = new Date(date);

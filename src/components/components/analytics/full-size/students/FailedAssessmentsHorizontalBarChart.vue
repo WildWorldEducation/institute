@@ -90,7 +90,7 @@ export default {
 
         svg.append('g')
             .attr('transform', `translate(${marginLeft},0)`)
-            .attr('style', 'font-size: 10px')
+            .attr('style', 'font-size: 16px')
             .call(d3.axisLeft(y).tickSizeOuter(0));
     }
 };

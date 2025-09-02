@@ -43,8 +43,8 @@ export default {
             const svg = d3
                 .select('#student-comparison-container')
                 .append('svg')
-                .attr('width', width)
-                .attr('height', height)
+                .attr('width', '100%')
+                .attr('height', '100%')
                 .attr('viewBox', [0, 0, width, height])
                 .attr(
                     'style',
@@ -60,7 +60,6 @@ export default {
                 .attr('y', (d) => y(d.name))
                 .attr('width', (d) => x(d.quantity) - x(0))
                 .attr('height', y.bandwidth())
-                // .selectAll('rect')
                 .attr('fill', function (d) {
                     if (d.name == 'Language') return 'green'; // green
                     else if (d.name == 'Mathematics') return 'blue'; // blue

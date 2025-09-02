@@ -10,16 +10,19 @@ export default {
     mounted() {
         const data = this.data;
 
-        const container = d3.select(
-            '#student-duration-per-day-chart-container'
-        );
+        const container = d3.select('#time-chart-container');
 
         // Declare the chart dimensions and margins.
-        const width = 928;
-        const height = 500;
+        // Declare the chart dimensions and margins.
+        const width = document.getElementById(
+            'time-chart-container'
+        ).clientWidth;
+        const height = document.getElementById(
+            'time-chart-container'
+        ).clientHeight;
         const marginTop = 20;
         const marginRight = 30;
-        const marginBottom = 30;
+        const marginBottom = 40;
         const marginLeft = 40;
 
         // Declare the x (horizontal position) scale.
@@ -42,25 +45,32 @@ export default {
 
         // Create the SVG container.
         const svg = d3
-            .select('#student-duration-per-day-chart-container')
+            .select('#time-chart-container')
             .append('svg')
-            .attr('width', width)
-            .attr('height', height)
-            .attr('viewBox', [0, 0, width, height])
-            .attr('style', 'max-width: 100%; height: auto; height: intrinsic;');
+            .attr('width', '100%')
+            .attr('height', '100%')
+            .attr('viewBox', [
+                0,
+                0,
+                +Math.min(width, height),
+                +Math.min(width, height)
+            ])
+            .attr('preserveAspectRatio', 'xMinYMin');
 
         // Add the x-axis.
         svg.append('g')
+            .style('font-size', '12px')
             .attr('transform', `translate(0,${height - marginBottom})`)
             .call(
                 d3
                     .axisBottom(x)
-                    .ticks(data.length)
+                    .ticks(data.length / 2)
                     .tickSizeOuter(0)
             );
 
         // Add the y-axis, remove the domain line, add grid lines and a label.
         svg.append('g')
+            .style('font-size', '12px')
             .attr('transform', `translate(${marginLeft},0)`)
             .call(d3.axisLeft(y).ticks(height / 80))
             .call((g) =>
@@ -74,7 +84,8 @@ export default {
                 g
                     .append('text')
                     .attr('x', -marginLeft)
-                    .attr('y', 10)
+                    .attr('y', 15)
+                    .style('font-size', '16px')
                     .attr('fill', 'currentColor')
                     .attr('text-anchor', 'start')
                     .text('↑ Duration in minutes')
@@ -83,15 +94,13 @@ export default {
         // Append a path for the line.
         svg.append('path')
             .attr('fill', 'none')
-            .attr('stroke', '#5f31dd')
-            .attr('stroke-width', 1.5)
+            .attr('stroke', 'green')
+            .attr('stroke-width', 3)
             .attr('d', line(data));
     }
 };
 </script>
 
-<template>
-    <div id="student-duration-per-day-chart-container"></div>
-</template>
+<template></template>
 
 <style scoped></style>

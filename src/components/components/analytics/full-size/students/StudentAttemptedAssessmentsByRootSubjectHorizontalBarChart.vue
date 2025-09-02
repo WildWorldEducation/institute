@@ -5,14 +5,10 @@ export default {
     name: 'StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart',
     props: ['data', 'colour'],
     data() {
-        return {
-            padding: 60
-        };
+        return {};
     },
     mounted() {
-        const container = d3.select(
-            '#student-attempted-assessments-by-root-subject-chart-container'
-        );
+        const container = d3.select('#assessment-timeline-chart-container');
 
         // Specify the chart’s dimensions, based on a bar’s height.
         const barHeight = 25;
@@ -20,12 +16,12 @@ export default {
         const marginRight = 0;
         const marginBottom = 10;
         const marginLeft = 300;
-        const width = 700;
-        const height =
-            Math.ceil((this.data.length + 0.1) * barHeight) +
-            marginTop +
-            marginBottom;
-
+        const width = document.getElementById(
+            'assessment-timeline-chart-container'
+        ).clientWidth;
+        const height = document.getElementById(
+            'assessment-timeline-chart-container'
+        ).clientHeight;
         // Create the scales.
         const x = d3
             .scaleLinear()
@@ -43,9 +39,7 @@ export default {
 
         // Create the SVG container.
         const svg = d3
-            .select(
-                '#student-attempted-assessments-by-root-subject-chart-container'
-            )
+            .select('#assessment-timeline-chart-container')
             .append('svg')
             .attr('width', width)
             .attr('height', height)
@@ -57,14 +51,25 @@ export default {
 
         // Append a rect for each skill.
         svg.append('g')
-            .attr('fill', this.colour)
             .selectAll()
             .data(this.data)
             .join('rect')
             .attr('x', x(0))
             .attr('y', (d) => y(d.name))
             .attr('width', (d) => x(d.quantity) - x(0))
-            .attr('height', y.bandwidth());
+            .attr('height', y.bandwidth())
+            .attr('fill', function (d) {
+                if (d.name == 'Language') return 'green'; // green
+                else if (d.name == 'Mathematics') return 'blue'; // blue
+                else if (d.name == 'Science & Invention')
+                    return 'purple'; // purple
+                else if (d.name == 'Computer Science')
+                    return 'deeppink'; // pink
+                else if (d.name == 'Dangerous Ideas') return 'brown'; // brown
+                else if (d.name == 'History') return 'cyan'; // cyan
+                else if (d.name == 'Life') return 'magenta'; // magenta
+                else return '#ff7f0e'; // orange
+            });
 
         // Append a label for each name.
         svg.append('g')
@@ -94,17 +99,13 @@ export default {
 
         svg.append('g')
             .attr('transform', `translate(${marginLeft},0)`)
-              .attr('style', 'font-size: 16px')
+            .attr('style', 'font-size: 16px')
             .call(d3.axisLeft(y).tickSizeOuter(0));
     },
     computed: {}
 };
 </script>
 
-<template>
-    <div
-        id="student-attempted-assessments-by-root-subject-chart-container"
-    ></div>
-</template>
+<template></template>
 
 <style scoped></style>

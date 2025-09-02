@@ -318,6 +318,7 @@ router.get('/student-duration-per-day/:studentId', (req, res, next) => {
     }
 });
 
+// Think this route can be deleted, as replaced by below one, which show comparison and is up to date
 /* Get student progress (number of total skills mastered over time) */
 router.get('/student-progress/:studentId', (req, res, next) => {
     // Check if logged in.

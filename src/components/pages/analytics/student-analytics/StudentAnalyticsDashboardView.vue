@@ -107,7 +107,6 @@ export default {
                 this.progressData.student = [];
             }
 
-            // If "School average" checked
             if (this.isSchoolData) {
                 this.progressData.average = [];
                 for (

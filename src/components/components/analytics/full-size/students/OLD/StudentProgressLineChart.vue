@@ -5,12 +5,11 @@ export default {
     name: 'StudentProgressLineChart',
     props: ['data', 'colour'],
     data() {
-        return {
-            padding: 60
-        };
+        return {};
     },
     mounted() {
         const data = this.data;
+        console.log(data);
 
         const container = d3.select('#student-progress-line-chart-container');
 
@@ -52,12 +51,7 @@ export default {
         // Add the x-axis.
         svg.append('g')
             .attr('transform', `translate(0,${height - marginBottom})`)
-            .call(
-                d3
-                    .axisBottom(x)
-                    .ticks(data.length)
-                    .tickSizeOuter(0)
-            );
+            .call(d3.axisBottom(x).ticks(data.length).tickSizeOuter(0));
 
         // Add the y-axis, remove the domain line, add grid lines and a label.
         svg.append('g')
