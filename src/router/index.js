@@ -621,6 +621,19 @@ const router = createRouter({
             }
         },
         {
+            path: '/student/:studentId/multiple-fails',
+            name: 'student-multiple-fails',
+            component: () =>
+                import(
+                    '../components/pages/analytics/teacher-analytics/student/StudentMultipleFailsReportView.vue'
+                ),
+            meta: {
+                title: 'Student Multiple Fails Report',
+                requiresAuth: true,
+                roles: ['instructor', 'partner', 'school_admin']
+            }
+        },
+        {
             path: '/student/:studentId/progress-report',
             name: 'student-progress-report',
             component: () =>
@@ -632,7 +645,7 @@ const router = createRouter({
                 requiresAuth: true,
                 roles: ['instructor', 'partner', 'school_admin']
             }
-        },    
+        },
         {
             path: '/student/:studentId/total-time',
             name: 'student-time-report',

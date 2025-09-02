@@ -195,11 +195,11 @@ export default {
                     <!-- Tracking Report -->
                     <h2 class="secondary-heading h4 mt-4">Check activity</h2>
                     <router-link
-                        :to="`/student/${this.$parent.user.id}/assessment-status`"
+                        :to="`/student/${this.$parent.user.id}/multiple-fails`"
                         class="fit-content"
                         target="_blank"
                     >
-                        Assessment status
+                        Multiple fails
                     </router-link>
                     <!-- Time on Platform -->
                     <router-link

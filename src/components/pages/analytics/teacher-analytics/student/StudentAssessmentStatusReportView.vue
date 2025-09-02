@@ -67,7 +67,7 @@ export default {
         await this.analyticsStore.getStudentFailedAssessmentsBySubject(
             this.studentId
         );
-       
+
         await this.analyticsStore.getStudentAttemptedAssessmentsBySubject(
             this.studentId
         );
@@ -130,24 +130,40 @@ export default {
 <template>
     <div class="container">
         <span class="d-flex justify-content-between w-100">
-            <h1 class="heading">Assessment Status Report</h1>
-            <h2 class="secondary-heading h3">{{ studentName }}</h2>
+            <h1 class="heading h4">Challenging areas</h1>
+            <h2 class="tertiary-heading h4">{{ studentName }}</h2>
         </span>
         <div>
-            <h3 class="secondary-heading">By subject</h3>
-            <h4 class="secondary-heading">Failed more than once</h4>
-            <StudentFailedAssessmentsByRootSubjectHorizontalBarChart
-                v-if="
-                    analyticsStore.studentRootSubjectsFailedAssessments.length >
-                    0
-                "
-                :data="analyticsStore.studentRootSubjectsFailedAssessments"
-                colour="darkred"
-                class="mb-5"
-            />
-            <p v-else>No data yet</p>
+            <div class="">
+                <StudentFailedAssessmentsByRootSubjectHorizontalBarChart
+                    v-if="
+                        analyticsStore.studentRootSubjectsFailedAssessments
+                            .length > 0
+                    "
+                    :data="analyticsStore.studentRootSubjectsFailedAssessments"
+                    colour="darkred"
+                    class="mb-5"
+                />
+                <p v-else>No data yet</p>
+            </div>
 
-            
+            <div class="">
+                <DownloadCSVBtn
+                    :data="teacherAnalyticsStore.studentMultipleFails"
+                    :fileName="`Assessment Status Report - ${studentName}`"
+                    toolTip="Download failed assessments data as CSV"
+                />
+                <FailedAssessmentsHorizontalBarChart
+                    v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
+                    :data="teacherAnalyticsStore.studentMultipleFails"
+                    colour="darkred"
+                    class="mb-5"
+                />
+                <p v-else>
+                    This student has not failed any assessments more than once
+                    yet.
+                </p>
+            </div>
 
             <h4 class="secondary-heading">Attempted</h4>
             <StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart
@@ -160,27 +176,8 @@ export default {
                 class="mb-5"
             />
             <p v-else>No data yet</p>
-
-            <h3 class="secondary-heading mt-4">By skill</h3>
-            <h4 class="secondary-heading d-flex justify-content-between">
-                Failed multiple times
-                <DownloadCSVBtn
-                    :data="teacherAnalyticsStore.studentMultipleFails"
-                    :fileName="`Assessment Status Report - ${studentName}`"
-                    toolTip="Download failed assessments data as CSV"
-                />
-            </h4>
-            <FailedAssessmentsHorizontalBarChart
-                v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
-                :data="teacherAnalyticsStore.studentMultipleFails"
-                colour="darkred"
-                class="mb-5"
-            />
-            <p v-else>
-                This student has not failed any assessments more than once yet.
-            </p>
         </div>
-       
+
         <div>
             <h4 class="secondary-heading pt-2 d-flex justify-content-between">
                 Attempted
