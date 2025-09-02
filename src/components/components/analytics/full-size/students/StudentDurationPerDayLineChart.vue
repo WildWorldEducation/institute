@@ -17,7 +17,7 @@ export default {
         // Declare the chart dimensions and margins.
         const width = 928;
         const height = 500;
-        const marginTop = 20;
+        const marginTop = 30;
         const marginRight = 30;
         const marginBottom = 30;
         const marginLeft = 40;
@@ -51,16 +51,18 @@ export default {
 
         // Add the x-axis.
         svg.append('g')
+            .style('font-size', '12px')
             .attr('transform', `translate(0,${height - marginBottom})`)
             .call(
                 d3
                     .axisBottom(x)
-                    .ticks(data.length)
+                    .ticks(data.length / 2)
                     .tickSizeOuter(0)
             );
 
         // Add the y-axis, remove the domain line, add grid lines and a label.
         svg.append('g')
+            .style('font-size', '12px')
             .attr('transform', `translate(${marginLeft},0)`)
             .call(d3.axisLeft(y).ticks(height / 80))
             .call((g) =>
@@ -75,6 +77,7 @@ export default {
                     .append('text')
                     .attr('x', -marginLeft)
                     .attr('y', 10)
+                    .style('font-size', '16px')
                     .attr('fill', 'currentColor')
                     .attr('text-anchor', 'start')
                     .text('↑ Duration in minutes')
@@ -84,7 +87,7 @@ export default {
         svg.append('path')
             .attr('fill', 'none')
             .attr('stroke', '#5f31dd')
-            .attr('stroke-width', 1.5)
+            .attr('stroke-width', 3)
             .attr('d', line(data));
     }
 };

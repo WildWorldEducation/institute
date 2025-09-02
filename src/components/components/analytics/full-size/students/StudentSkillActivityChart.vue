@@ -3,7 +3,6 @@ import * as d3 from 'd3';
 
 export default {
     name: 'StudentSkillActivityChart',
-    props: ['data', 'colour'],
     data() {
         return {
             chartHeight: 400,
@@ -11,19 +10,9 @@ export default {
             labelWidth: 20
         };
     },
-    watch: {
-        data: {
-            handler() {
-                this.labelWidth = this.calculateLongestLabelWidth();
-                this.chartHeight = this.calculateChartHeight();
-                this.drawChart();
-            }
-        }
-    },
-
     methods: {
-        drawChart() {
-            const data = this.data;
+        createChart(data) {
+            console.log('Drawing chart with data:', data);
             if (!data || data.length === 0) {
                 console.warn('No data available for the chart');
                 return;

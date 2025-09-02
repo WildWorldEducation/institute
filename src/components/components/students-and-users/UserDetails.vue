@@ -213,7 +213,7 @@ export default {
                         class="fit-content mt-2"
                         target="_blank"
                     >
-                        Time on platform
+                        Engagement
                     </router-link>
                     <!-- Goals -->
                     <h2 class="secondary-heading h4 mt-4">Assign work</h2>

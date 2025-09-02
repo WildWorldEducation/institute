@@ -1,19 +1,24 @@
 <script>
 import { useUsersStore } from '../../../../../stores/UsersStore';
+import { useTeacherAnalyticsStore } from '../../../../../stores/TeacherAnalyticsStore';
 import TimePerSkillHorizontalBarChart from '../../../../components/analytics/full-size/students/TimePerSkillHorizontalBarChart.vue';
+import StudentSkillActivityChart from '../../../../components/analytics/full-size/students/StudentSkillActivityChart.vue';
 import StudentDurationPerDayLineChart from '../../../../components/analytics/full-size/students/StudentDurationPerDayLineChart.vue';
 import DownloadCSVBtn from '../../../../components/downloadCSVBtn/downloadCSVBtn.vue';
 
 export default {
     setup() {
         const usersStore = useUsersStore();
+        const teacherAnalyticsStore = useTeacherAnalyticsStore();
         return {
-            usersStore
+            usersStore,
+            teacherAnalyticsStore
         };
     },
     components: {
         TimePerSkillHorizontalBarChart,
         StudentDurationPerDayLineChart,
+        StudentSkillActivityChart,
         DownloadCSVBtn
     },
     data() {
@@ -37,46 +42,48 @@ export default {
             this.studentName = foundObject.username;
         }
 
-        await this.getSkillDuration();
-        await this.getAllSkillsDuration();
+        //await this.getSkillDuration();
+        //    await this.getAllSkillsDuration();
         await this.getStudentDurationPerDay();
+        await this.getStudentActivity();
         this.isDataLoaded = true;
     },
     methods: {
-        async getSkillDuration() {
-            fetch(`/student-analytics/skill-durations/${this.studentId}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    this.skillDurations = data;
-                    for (let i = 0; i < this.skillDurations.length; i++) {
-                        this.skillDurations[i].formattedQuantity =
-                            this.millisToMinutesAndSeconds(
-                                this.skillDurations[i].quantity
-                            );
-                    }
-                    this.minutesPerSkillDownloadData = this.skillDurations.map(
-                        (e) => {
-                            return {
-                                skill: e.name,
-                                quantity: e.formattedQuantity
-                            };
-                        }
-                    );
-                })
-                .catch((error) => {
-                    console.error('Error fetching last visited skills:', error);
-                });
-        },
-        async getAllSkillsDuration() {
-            fetch(`/student-analytics/all-skills-duration/${this.studentId}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    this.allSkillsDuration = data.duration;
-                })
-                .catch((error) => {
-                    console.error('Error fetching last visited skills:', error);
-                });
-        },
+        // async getSkillDuration() {
+        //     fetch(`/student-analytics/skill-durations/${this.studentId}`)
+        //         .then((response) => response.json())
+        //         .then((data) => {
+        //             this.skillDurations = data;
+        //             for (let i = 0; i < this.skillDurations.length; i++) {
+        //                 this.skillDurations[i].formattedQuantity =
+        //                     this.millisToMinutesAndSeconds(
+        //                         this.skillDurations[i].quantity
+        //                     );
+        //             }
+        //             console.log(this.skillDurations);
+        //             this.minutesPerSkillDownloadData = this.skillDurations.map(
+        //                 (e) => {
+        //                     return {
+        //                         skill: e.name,
+        //                         quantity: e.formattedQuantity
+        //                     };
+        //                 }
+        //             );
+        //         })
+        //         .catch((error) => {
+        //             console.error('Error fetching last visited skills:', error);
+        //         });
+        // },
+        // async getAllSkillsDuration() {
+        //     fetch(`/student-analytics/all-skills-duration/${this.studentId}`)
+        //         .then((response) => response.json())
+        //         .then((data) => {
+        //             this.allSkillsDuration = data.duration;
+        //         })
+        //         .catch((error) => {
+        //             console.error('Error fetching last visited skills:', error);
+        //         });
+        // },
         async getStudentDurationPerDay() {
             fetch(
                 `/student-analytics/student-duration-per-day/${this.studentId}`
@@ -105,7 +112,51 @@ export default {
                     );
                 });
         },
+        async getStudentActivity() {
+            if (this.usersStore.users.length < 1)
+                await this.usersStore.getUsers();
+            const foundObject = this.usersStore.users.find(
+                (student) => student.id === this.studentId
+            );
+            if (foundObject) {
+                this.studentName = foundObject.username;
+            }
 
+            if (this.teacherAnalyticsStore.skillActivities.length == 0) {
+                await this.teacherAnalyticsStore.getSkillActivityReport(
+                    this.studentId
+                );
+            }
+            this.teacherAnalyticsStore.skillActivities =
+                this.teacherAnalyticsStore.skillActivities.map((skill) => {
+                    return {
+                        ...skill,
+                        formattedQuantity: this.millisToMinutesAndSeconds(
+                            skill.quantity
+                        )
+                    };
+                });
+
+            this.$nextTick(() => {
+                console.log('1');
+                if (this.$refs.activityChart) {
+                    console.log('2');
+                    // Access the ref here
+                    this.$refs.activityChart.createChart(
+                        this.teacherAnalyticsStore.skillActivities
+                    );
+                }
+            });
+
+            this.downloadData = this.teacherAnalyticsStore.skillActivities.map(
+                (skill) => {
+                    return {
+                        skill: skill.name,
+                        minutes: skill.formattedQuantity
+                    };
+                }
+            );
+        },
         millisToMinutesAndSeconds(millis) {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);
@@ -116,62 +167,57 @@ export default {
 </script>
 
 <template>
-    <div class="container">
+    <div class="container-fluid">
         <span class="d-flex justify-content-between w-100">
-            <h1 class="heading">Time Report</h1>
-            <h2 class="secondary-heading h3">{{ studentName }}</h2>
+            <h1 class="heading h2">Engagement</h1>
+            <h2 class="tertiary-heading h4">{{ studentName }}</h2>
         </span>
-        <p>
-            <em>
-                Please note that time spent on external sources (e.g. websites)
-                related to skills is not measured.</em
-            >
-        </p>
 
-        <div v-if="isDataLoaded">
-            <div>
-                <h4
-                    class="secondary-heading d-flex justify-content-between w-100 align-items-center"
-                >
-                    Total time on platform
-                    <DownloadCSVBtn
-                        :data="totalTimeOnPlatformDownloadData"
-                        :fileName="`Total time on platform - ${studentName}`"
-                        toolTip="Download total time on platform data as CSV"
-                    />
-                </h4>
+        <div class="row" v-if="isDataLoaded">
+            <div class="col position-relative">
+                <DownloadCSVBtn
+                    :data="totalTimeOnPlatformDownloadData"
+                    :fileName="`Total time on platform - ${studentName}`"
+                    toolTip="Download total time on platform data as CSV"
+                    class="position-absolute download-btn"
+                />
 
                 <StudentDurationPerDayLineChart
                     v-if="durationsPerDay.length > 0"
                     :data="durationsPerDay"
                 />
                 <p v-else>There is no data to show yet.</p>
+                <p>
+                    <em>
+                        Please note that time spent on external sources (e.g.
+                        websites) related to skills is not measured.</em
+                    >
+                </p>
             </div>
-            <div>
-                <h4 class="secondary-heading r">All skills</h4>
-                <p>{{ millisToMinutesAndSeconds(this.allSkillsDuration) }}</p>
+            <div class="col">
                 <h4
                     class="secondary-heading d-flex justify-content-between w-100 align-items-center"
                 >
-                    Minutes per skill
                     <DownloadCSVBtn
                         :data="minutesPerSkillDownloadData"
                         :fileName="`Minutes per skill - ${studentName}`"
                         toolTip="Download minutes per skill data as CSV"
                     />
                 </h4>
-                <TimePerSkillHorizontalBarChart
-                    v-if="skillDurations.length > 0"
-                    :data="skillDurations"
-                    colour="darkgreen"
+                <StudentSkillActivityChart
+                    v-if="teacherAnalyticsStore.skillActivities.length > 0"
+                    ref="activityChart"
                 />
-                <div v-else>
-                    <p>No skills visited by this student.</p>
-                </div>
+                <p v-else>No skills visited by this student.</p>
             </div>
         </div>
     </div>
     <p>&nbsp;</p>
 </template>
 
-<style></style>
+<style scoped>
+.download-btn {
+    right: 10px;
+    top: 10px;
+}
+</style>

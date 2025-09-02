@@ -730,7 +730,7 @@ Themes
     --primary-color: #040095;
     --primary-contrast-color: white;
 
-    --secondary-color: gold;
+    --secondary-color: purple;
     --secondary-contrast-color: #040095;
 
     --tertiary-color: #040095;
@@ -817,7 +817,7 @@ body {
 }
 
 .tertiary-heading {
-    color: var(--tertiary-color) !important;
+    color: var(--secondary-color) !important;
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
 }
