@@ -12,7 +12,6 @@ export default {
     },
     methods: {
         createChart(data) {
-            console.log('Drawing chart with data:', data);
             if (!data || data.length === 0) {
                 console.warn('No data available for the chart');
                 return;
@@ -37,20 +36,20 @@ export default {
             // Y scale for task names (ordinal scale)
             const yScale = d3
                 .scaleBand()
-                .domain(this.data.map((d) => d.name)) // Map task names to scale domain
+                .domain(data.map((d) => d.name)) // Map task names to scale domain
                 .range([0, height]) // Set output range
                 .padding(0.3); // Add padding between bars
 
             // X scale for time duration (linear scale)
             const xScale = d3
                 .scaleLinear()
-                .domain([0, d3.max(this.data, (d) => d.quantity)]) // Domain from 0 to max duration
+                .domain([0, d3.max(data, (d) => d.quantity)]) // Domain from 0 to max duration
                 .range([0, width]);
 
             // Draw the chart using D3.js
             // Create bars
             g.selectAll('.bar')
-                .data(this.data) // Bind data to selection
+                .data(data) // Bind data to selection
                 .enter()
                 .append('rect') // Create rect elements for each data point
                 .attr('class', 'bar')
@@ -84,7 +83,7 @@ export default {
 
             // Add value labels on bars
             g.selectAll('.bar-label')
-                .data(this.data)
+                .data(data)
                 .enter()
                 .append('text')
                 .attr('class', 'bar-label')
@@ -95,7 +94,7 @@ export default {
                 .text((d) => d.formattedQuantity); // Display duration value
         },
         calculateChartHeight() {
-            if (this.data.length > 0) {
+            if (data.length > 0) {
                 const numRows = this.data.length;
                 const rowHeight = 30; // Height of each row in pixels
                 const result = numRows * rowHeight + 100; // Add some padding
@@ -107,7 +106,7 @@ export default {
         calculateLongestLabelWidth() {
             // find the longest skill name length
             let maxLength = 0;
-            for (const skill of this.data) {
+            for (const skill of data) {
                 maxLength = Math.max(maxLength, skill.name.length);
             }
 

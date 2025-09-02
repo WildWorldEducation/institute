@@ -28,7 +28,6 @@ export default {
             skillDurations: [],
             durationsPerDay: [],
             allSkillsDuration: 0,
-            isDataLoaded: false,
             totalTimeOnPlatformDownloadData: [],
             minutesPerSkillDownloadData: []
         };
@@ -42,11 +41,8 @@ export default {
             this.studentName = foundObject.username;
         }
 
-        //await this.getSkillDuration();
-        //    await this.getAllSkillsDuration();
         await this.getStudentDurationPerDay();
         await this.getStudentActivity();
-        this.isDataLoaded = true;
     },
     methods: {
         // async getSkillDuration() {
@@ -138,9 +134,7 @@ export default {
                 });
 
             this.$nextTick(() => {
-                console.log('1');
                 if (this.$refs.activityChart) {
-                    console.log('2');
                     // Access the ref here
                     this.$refs.activityChart.createChart(
                         this.teacherAnalyticsStore.skillActivities
@@ -173,20 +167,22 @@ export default {
             <h2 class="tertiary-heading h4">{{ studentName }}</h2>
         </span>
 
-        <div class="row" v-if="isDataLoaded">
-            <div class="col position-relative">
-                <DownloadCSVBtn
-                    :data="totalTimeOnPlatformDownloadData"
-                    :fileName="`Total time on platform - ${studentName}`"
-                    toolTip="Download total time on platform data as CSV"
-                    class="position-absolute download-btn"
-                />
+        <div class="row">
+            <div class="col h-100 position-relative">
+                <div id="time-chart-container">
+                    <DownloadCSVBtn
+                        :data="totalTimeOnPlatformDownloadData"
+                        :fileName="`Total time on platform - ${studentName}`"
+                        toolTip="Download total time on platform data as CSV"
+                        class="position-absolute download-btn"
+                    />
 
-                <StudentDurationPerDayLineChart
-                    v-if="durationsPerDay.length > 0"
-                    :data="durationsPerDay"
-                />
-                <p v-else>There is no data to show yet.</p>
+                    <StudentDurationPerDayLineChart
+                        v-if="durationsPerDay.length > 0"
+                        :data="durationsPerDay"
+                    />
+                    <p v-else>There is no data to show yet.</p>
+                </div>
                 <p>
                     <em>
                         Please note that time spent on external sources (e.g.
@@ -194,7 +190,7 @@ export default {
                     >
                 </p>
             </div>
-            <div class="col">
+            <div class="col h-100">
                 <h4
                     class="secondary-heading d-flex justify-content-between w-100 align-items-center"
                 >
@@ -205,8 +201,8 @@ export default {
                     />
                 </h4>
                 <StudentSkillActivityChart
-                    v-if="teacherAnalyticsStore.skillActivities.length > 0"
                     ref="activityChart"
+                    v-if="teacherAnalyticsStore.skillActivities.length > 0"
                 />
                 <p v-else>No skills visited by this student.</p>
             </div>
@@ -216,6 +212,12 @@ export default {
 </template>
 
 <style scoped>
+#activity-chart-container,
+#time-chart-container {
+    height: calc(100% - 35px);
+    width: 100%;
+}
+
 .download-btn {
     right: 10px;
     top: 10px;
