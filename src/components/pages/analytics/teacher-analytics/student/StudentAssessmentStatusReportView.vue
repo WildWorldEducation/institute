@@ -110,7 +110,10 @@ export default {
         </div>
 
         <div class="row mt-5">
-            <div class="position-relative">
+            <div
+                id="assessment-timeline-chart-container"
+                class="position-relative"
+            >
                 <DownloadCSVBtn
                     :data="assessmentAttemptsDownloadData"
                     :fileName="`Attempted Assessments - ${studentName}`"
@@ -131,6 +134,11 @@ export default {
 </template>
 
 <style scoped>
+#assessment-timeline-chart-container {
+    width: 100%;
+    height: calc(100% - 88px);
+}
+
 .download-btn {
     right: 10px;
     top: 10px;
