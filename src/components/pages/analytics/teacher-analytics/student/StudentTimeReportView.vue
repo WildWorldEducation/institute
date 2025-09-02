@@ -163,12 +163,12 @@ export default {
 <template>
     <div class="container-fluid chart-page">
         <span class="d-flex justify-content-between w-100">
-            <h1 class="heading h2">Engagement</h1>
+            <h1 class="heading h4">Time spent</h1>
             <h2 class="tertiary-heading h4">{{ studentName }}</h2>
         </span>
 
         <div class="row h-100">
-            <div class="col h-100 position-relative">
+            <div class="col-lg chart-col position-relative">
                 <div id="time-chart-container">
                     <DownloadCSVBtn
                         :data="totalTimeOnPlatformDownloadData"
@@ -183,29 +183,17 @@ export default {
                     />
                     <p v-else>There is no data to show yet.</p>
                 </div>
-                <p>
-                    <em>
-                        Please note that time spent on external sources (e.g.
-                        websites) related to skills is not measured.</em
-                    >
-                </p>
             </div>
-            <div class="col h-100">
-                <h4
-                    class="secondary-heading d-flex justify-content-between w-100 align-items-center"
-                >
+            <div class="col-lg chart-col position-relative">
+                <div id="activity-chart-container">
                     <DownloadCSVBtn
                         :data="minutesPerSkillDownloadData"
                         :fileName="`Minutes per skill - ${studentName}`"
                         toolTip="Download minutes per skill data as CSV"
+                        class="position-absolute download-btn"
                     />
-                </h4>
-                <div id="activity-chart-container">
-                    <StudentSkillActivityChart
-                        ref="activityChart"
-                        v-if="teacherAnalyticsStore.skillActivities.length > 0"
-                    />
-                    <p v-else>No skills visited by this student.</p>
+                    <StudentSkillActivityChart ref="activityChart" />
+                    <!-- <p v-else>No skills visited by this student.</p> -->
                 </div>
             </div>
         </div>
@@ -213,6 +201,10 @@ export default {
 </template>
 
 <style scoped>
+.chart-col {
+    height: 100%;
+}
+
 .chart-page {
     height: calc(100vh - 88px);
     overflow: hidden;
@@ -227,5 +219,12 @@ export default {
 .download-btn {
     right: 10px;
     top: 10px;
+}
+
+/* Styles for screens smaller than 600px (e.g., most mobile phones) */
+@media (max-width: 992px) {
+    .chart-col {
+        height: 50%;
+    }
 }
 </style>

@@ -3,13 +3,6 @@ import * as d3 from 'd3';
 
 export default {
     name: 'StudentSkillActivityChart',
-    data() {
-        return {
-            chartHeight: 400,
-            chartWidth: 900,
-            labelWidth: 20
-        };
-    },
     methods: {
         createChart(data) {
             if (!data || data.length === 0) {
@@ -17,15 +10,21 @@ export default {
                 return;
             }
 
-            const margin = { top: 20, right: 400, bottom: 40, left: 200 };
-            const width = 400;
-            const height = this.chartHeight - margin.top - margin.bottom;
+            // Declare the chart dimensions and margins.
+            const width = document.getElementById(
+                'activity-chart-container'
+            ).clientWidth;
+            const height = document.getElementById(
+                'activity-chart-container'
+            ).clientHeight;
+
+            const margin = { top: 20, right: 0, bottom: 60, left: 200 };
 
             const svg = d3
-                .select('#student-skill-activity-chart-container')
+                .select('#activity-chart-container')
                 .append('svg')
-                .attr('width', width + margin.left + margin.right)
-                .attr('height', height + margin.top + margin.bottom);
+                .attr('width', '100%')
+                .attr('height', '100%');
 
             // Create main group for the chart
             const g = svg
@@ -37,8 +36,8 @@ export default {
             const yScale = d3
                 .scaleBand()
                 .domain(data.map((d) => d.name)) // Map task names to scale domain
-                .range([0, height]) // Set output range
-                .padding(0.3); // Add padding between bars
+                .range([0, height - 35]) // Set output range
+                .padding(0.2); // Add padding between bars
 
             // X scale for time duration (linear scale)
             const xScale = d3
@@ -55,14 +54,13 @@ export default {
                 .attr('class', 'bar')
                 .attr('x', 0) // Start bars at x=0 (left edge)
                 .attr('y', (d) => yScale(d.name))
-
                 .attr('width', (d) =>
-                    d.quantity > 0 ? xScale(d.quantity) : xScale(1)
+                    d.quantity > 0 ? xScale(d.quantity / 2) : xScale(1)
                 ) // Width based on duration value
                 .attr('height', (d) =>
                     d.quantity > 0 ? yScale.bandwidth() : 1
                 ) // Height from scale bandwidth
-                .attr('fill', '#5f31dd'); // Set bar color
+                .attr('fill', 'green'); // Set bar color
 
             // Create Y axis (left side, showing task names)
             g.append('g').attr('class', 'axis').call(d3.axisLeft(yScale)); // Create left-oriented axis with task labels
@@ -87,38 +85,16 @@ export default {
                 .enter()
                 .append('text')
                 .attr('class', 'bar-label')
-                .attr('x', (d) => xScale(d.quantity) + 5) // Position slightly right of bar end
+                .attr('x', (d) => xScale(d.quantity / 2) + 5) // Position slightly right of bar end
                 .attr('y', (d) => yScale(d.name) + yScale.bandwidth() / 2) // Center vertically on bar
                 .attr('dy', '0.35em') // Fine-tune vertical alignment
                 .style('font-size', '14px')
                 .text((d) => d.formattedQuantity); // Display duration value
-        },
-        calculateChartHeight() {
-            if (data.length > 0) {
-                const numRows = this.data.length;
-                const rowHeight = 30; // Height of each row in pixels
-                const result = numRows * rowHeight + 100; // Add some padding
-                return result;
-            } else {
-                return 400; // Default height if no data
-            }
-        },
-        calculateLongestLabelWidth() {
-            // find the longest skill name length
-            let maxLength = 0;
-            for (const skill of data) {
-                maxLength = Math.max(maxLength, skill.name.length);
-            }
-
-            const labelWidth = maxLength + 10; // Estimate width based on character length
-            return labelWidth; // Add some padding
         }
     }
 };
 </script>
 
-<template>
-    <div id="student-skill-activity-chart-container"></div>
-</template>
+<template></template>
 
 <style scoped></style>

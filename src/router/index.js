@@ -632,20 +632,7 @@ const router = createRouter({
                 requiresAuth: true,
                 roles: ['instructor', 'partner', 'school_admin']
             }
-        },
-        {
-            path: '/student/:studentId/skill-activity',
-            name: 'student-skill-activity',
-            component: () =>
-                import(
-                    '../components/pages/analytics/teacher-analytics/student/StudentSkillActivityReportView.vue'
-                ),
-            meta: {
-                title: 'Student Skill Activity Report',
-                requiresAuth: true,
-                roles: ['instructor', 'partner', 'school_admin']
-            }
-        },
+        },    
         {
             path: '/student/:studentId/total-time',
             name: 'student-time-report',

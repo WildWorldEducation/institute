@@ -1,6 +1,6 @@
 <script>
-import { useUsersStore } from '../../../../../stores/UsersStore';
-import { useTeacherAnalyticsStore } from '../../../../../stores/TeacherAnalyticsStore';
+import { useUsersStore } from '../../../../stores/UsersStore';
+import { useTeacherAnalyticsStore } from '../../../../stores/TeacherAnalyticsStore';
 import StudentSkillActivityChart from '../../../../components/analytics/full-size/students/StudentSkillActivityChart.vue';
 import DownloadCSVBtn from '../../../../components/downloadCSVBtn/downloadCSVBtn.vue';
 
