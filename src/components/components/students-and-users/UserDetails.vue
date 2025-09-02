@@ -194,13 +194,6 @@ export default {
 
                     <!-- Tracking Report -->
                     <h2 class="secondary-heading h4 mt-4">Check activity</h2>
-                    <router-link
-                        :to="`/student/${this.$parent.user.id}/multiple-fails`"
-                        class="fit-content"
-                        target="_blank"
-                    >
-                        Multiple fails
-                    </router-link>
                     <!-- Time on Platform -->
                     <router-link
                         :to="`/student/${this.$parent.user.id}/total-time`"
@@ -209,6 +202,21 @@ export default {
                     >
                         Engagement
                     </router-link>
+                    <router-link
+                        :to="`/student/${this.$parent.user.id}/multiple-fails`"
+                        class="fit-content mt-2"
+                        target="_blank"
+                    >
+                        Multiple fails
+                    </router-link>
+                    <router-link
+                        :to="`/student/${this.$parent.user.id}/assessment-status`"
+                        class="fit-content mt-2"
+                        target="_blank"
+                    >
+                        Assessments attempted
+                    </router-link>
+
                     <StudentNotifications
                         v-if="
                             userDetailsStore.role == 'instructor' ||
