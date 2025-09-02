@@ -31,6 +31,9 @@ export default {
             const height = document.getElementById(
                 'progress-chart-container'
             ).clientHeight;
+
+            console.log(height);
+
             const marginTop = 5;
             const marginRight = 20;
             const marginBottom = 20;
