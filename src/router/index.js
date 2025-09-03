@@ -740,19 +740,6 @@ const router = createRouter({
             }
         },
         {
-            path: '/reports/student/:studentId',
-            name: 'school-admin-students',
-            component: () =>
-                import(
-                    '../components/pages/analytics/school-admin-analytics/SchoolAdminAnalyticsStudentReportView.vue'
-                ),
-            meta: {
-                title: 'School Admin Students',
-                requiresAuth: true,
-                roles: ['school_admin']
-            }
-        },
-        {
             path: '/reports/academics',
             name: 'school-admin-academics',
             component: () =>
