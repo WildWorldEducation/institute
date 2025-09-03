@@ -88,7 +88,7 @@ export default {
 </script>
 
 <template>
-    <div class="container chart-page">
+    <div class="container-fluid chart-page">
         <span class="d-flex justify-content-between w-100">
             <h1 class="heading h4">Attempted assessments</h1>
             <h2 class="tertiary-heading h4">{{ studentName }}</h2>
@@ -140,7 +140,7 @@ export default {
 <style scoped>
 .chart-page {
     height: calc(100vh - 88px);
-    overflow: hidden;
+    overflow: auto;
 }
 
 .chart-row {

@@ -12,9 +12,28 @@ export default {
     mounted() {},
     methods: {
         createChart(data) {
-            if (data.student.length > 0) this.axisData = data.student;
-            else if (data.average.length > 0) this.axisData = data.average;
-            else this.axisData = [];
+            // Work out which array to use for the axes
+            if (data.student.length == 0) {
+                this.axisData = data.average;
+            } else if (data.average.length == 0) {
+                this.axisData = data.student;
+            } else {
+                // find which array has the highest number
+                const highestStudentValue = data.student.reduce(
+                    (max, obj) => Math.max(max, obj.quantity),
+                    -Infinity
+                );
+                const highestAverageValue = data.average.reduce(
+                    (max, obj) => Math.max(max, obj.quantity),
+                    -Infinity
+                );
+
+                if (highestStudentValue >= highestAverageValue) {
+                    this.axisData = data.student;
+                } else {
+                    this.axisData = data.average;
+                }
+            }
 
             // Convert object into array of series
             const series = Object.entries(data).map(([name, values]) => ({
