@@ -21,22 +21,12 @@ export default {
     },
     data() {
         return {
-            // hide for mobile phones
-            showSidebar: true,
-            screenWidth: screen.width,
-            // Sidebar variables
-            isEveryone: true,
-            isSchoolData: false,
-            isLanguageData: false,
-            isMathData: false,
-            isHistoryData: false,
-            isLifeData: false,
-            isCSData: false,
-            isSAndIData: false,
-            isDIData: false,
+            // Chart variables
+            progressChartMode: 'teacher', // school or teacher
             // copy of data from store
             progressData: {
-                school: []
+                school: [],
+                teacher: []
             },
             // Notifications
             isAboveTheCurve: false
@@ -48,20 +38,21 @@ export default {
         SchoolTimeChart
     },
     async created() {
-        // Student progress
-        await this.analyticsStore.getSchoolProgress(
-            this.userDetailsStore.tenantId
-        );
-
         // Subject comparison
         if (this.analyticsStore.rootSubjectsPassedAssessments.length == 0)
             await this.getComparisonData();
 
-        await this.getProgressData();
+        //await this.getSchoolProgressData();
+        await this.getClassProgressData();
         await this.getTimeData();
     },
     methods: {
-        async getProgressData() {
+        // Progress chart
+        async getSchoolProgressData() {
+            await this.analyticsStore.getSchoolProgress(
+                this.userDetailsStore.tenantId
+            );
+
             this.progressData.school = [];
             for (
                 let i = 0;
@@ -80,33 +71,26 @@ export default {
                 }
             });
         },
-        async getComparisonData() {
-            try {
-                const response = await fetch(
-                    `/student-analytics/passed-assessments-by-subject/tenant/${this.userDetailsStore.tenantId}`
-                );
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                this.analyticsStore.rootSubjectsPassedAssessments =
-                    await response.json();
+        async getClassProgressData() {
+            await this.analyticsStore.getClassProgress(
+                '01982d32-db35-7550-83aa-bc32039d99eb'
+            );
 
-                this.$nextTick(() => {
-                    if (this.$refs.comparisonChart) {
-                        // Access the ref here
-                        this.$refs.comparisonChart.createChart(
-                            this.analyticsStore.rootSubjectsPassedAssessments
-                        );
-                    }
-                });
-            } catch (error) {
-                console.error(
-                    'Error fetching cohort mastered assessments:',
-                    error
+            this.progressData.teacher = [];
+            for (let i = 0; i < this.analyticsStore.classProgress.length; i++) {
+                this.progressData.teacher.push(
+                    this.analyticsStore.classProgress[i]
                 );
-                this.analyticsStore.rootSubjectsPassedAssessments = [];
             }
+
+            this.$nextTick(() => {
+                if (this.$refs.progressChart) {
+                    // Access the ref here
+                    this.$refs.progressChart.createChart(this.progressData);
+                }
+            });
         },
+        // Time chart
         async getTimeData() {
             this.analyticsStore.durationPerDay = [];
             let url = `/student-analytics/tenant-duration-per-day/weekly/${this.userDetailsStore.tenantId}`;
@@ -135,6 +119,33 @@ export default {
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
                 });
+        },
+        async getComparisonData() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/passed-assessments-by-subject/tenant/${this.userDetailsStore.tenantId}`
+                );
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                this.analyticsStore.rootSubjectsPassedAssessments =
+                    await response.json();
+
+                this.$nextTick(() => {
+                    if (this.$refs.comparisonChart) {
+                        // Access the ref here
+                        this.$refs.comparisonChart.createChart(
+                            this.analyticsStore.rootSubjectsPassedAssessments
+                        );
+                    }
+                });
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.analyticsStore.rootSubjectsPassedAssessments = [];
+            }
         }
     }
 };
@@ -174,7 +185,10 @@ export default {
                     >
                         <SchoolProgressChart
                             ref="progressChart"
-                            v-if="progressData.school.length > 0"
+                            v-if="
+                                progressData.school.length > 0 ||
+                                analyticsStore.classProgress.length > 0
+                            "
                         />
                     </div>
                 </div>

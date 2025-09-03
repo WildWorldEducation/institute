@@ -12,19 +12,19 @@ export default {
     mounted() {},
     methods: {
         createChart(data) {
+            console.log('Creating chart with data:', data);
             // First, clear line(s)
             //    d3.select('svg').remove();
+            let progressData = [];
+            if (this.$parent.progressChartMode === 'school') {
+                this.axisData = data.school;
+                progressData = data.school;
+            } else {
+                this.axisData = data.teacher;
+                progressData = data.teacher;
+            }
 
-            if (data.school.length > 0) this.axisData = data.school;
-            else this.axisData = [];
-
-            // Convert object into array of series
-            const series = Object.entries(data).map(([name, values]) => ({
-                name,
-                values
-            }));
-
-            const container = d3.select('#progress-chart-container');
+            console.log('Progress data for chart:', progressData);
 
             // Declare the chart dimensions and margins.
             const width = document.getElementById(
@@ -50,11 +50,6 @@ export default {
                 [height - marginBottom, marginTop]
             );
 
-            const color = d3
-                .scaleOrdinal()
-                .domain(series.map((s) => s.name))
-                .range(d3.schemeCategory10);
-
             // Declare the line generator.
             const line = d3
                 .line()
@@ -65,18 +60,13 @@ export default {
             const svg = d3
                 .select('#progress-chart-container')
                 .append('svg')
-                .attr('width', '100%')
-                .attr('height', '100%')
-                .attr('viewBox', [
-                    0,
-                    0,
-                    +Math.min(width, height),
-                    +Math.min(width, height)
-                ])
-                .attr('preserveAspectRatio', 'xMinYMin');
-            //   .append("g")
-            //.attr("transform", "translate(" + Math.min(width,height) / 2 + "," + Math.min(width,height) / 2 + ")")
-            //.attr('style', 'max-width: 100%; height: auto; height: intrinsic;');
+                .attr('width', width)
+                .attr('height', height)
+                .attr('viewBox', [0, 0, width, height])
+                .attr(
+                    'style',
+                    'max-width: 100%; height: auto; height: intrinsic;'
+                );
 
             // Add the x-axis.
             svg.append('g')
@@ -109,14 +99,12 @@ export default {
                         .attr('text-anchor', 'start')
                 );
 
-            // Draw the lines
-            svg.selectAll('.line')
-                .data(series)
-                .join('path')
+            // Append a path for the line.
+            svg.append('path')
                 .attr('fill', 'none')
-                .attr('stroke', (d) => 'green')
+                .attr('stroke', 'green')
                 .attr('stroke-width', 3)
-                .attr('d', (d) => line(d.values));
+                .attr('d', line(progressData));
         }
     }
 };

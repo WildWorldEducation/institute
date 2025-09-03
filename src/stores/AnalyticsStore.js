@@ -41,7 +41,8 @@ export const useAnalyticsStore = defineStore('analytics', {
             studentRootSubjectsFailedAssessments: [],
             studentRootSubjectsPassedAssessments: [],
             studentRootSubjectsAttemptedAssessments: [],
-            // Cohort/Class/Teacher level
+            // Class level
+            classProgress: [],
             cohortSkillActivities: [],
             cohortRootSubjectsFailedAssessments: [],
             cohortRootSubjectsPassedAssessments: [],
@@ -254,7 +255,21 @@ export const useAnalyticsStore = defineStore('analytics', {
                 this.studentRootSubjectsAttemptedAssessments = [];
             }
         },
-        // Cohort
+        // Class
+        async getClassProgress(teacherId) {
+            await fetch(`/student-analytics/all-students-progress/${teacherId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.classProgress = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
         async getTeacherClassSkillActivityReport(instructorId) {
             try {
                 const response = await fetch(
