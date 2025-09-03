@@ -19,7 +19,7 @@ export default {
 </script>
 
 <template>
-    <h2 class="secondary-heading h4 mt-4">Notifications</h2>
+    <h3 class="secondary-heading h5 mt-4">Notifications</h3>
     <RouterLink
         v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
         class="alert alert-danger notification"
