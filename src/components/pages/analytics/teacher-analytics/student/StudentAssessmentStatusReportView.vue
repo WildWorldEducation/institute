@@ -10,12 +10,10 @@ export default {
     setup() {
         const usersStore = useUsersStore();
         const userSkillsStore = useUserSkillsStore();
-
         const analyticsStore = useAnalyticsStore();
         return {
             usersStore,
             userSkillsStore,
-
             analyticsStore
         };
     },
@@ -46,7 +44,6 @@ export default {
         await this.analyticsStore.getStudentAttemptedAssessmentsBySubject(
             this.studentId
         );
-        this.isLoaded = true;
     },
     methods: {
         async getAssessmentAttempts() {
@@ -91,25 +88,32 @@ export default {
 </script>
 
 <template>
-    <div class="container">
+    <div class="container-fluid chart-page">
         <span class="d-flex justify-content-between w-100">
             <h1 class="heading h4">Attempted assessments</h1>
             <h2 class="tertiary-heading h4">{{ studentName }}</h2>
         </span>
-        <div class="row">
-            <StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart
-                v-if="
-                    analyticsStore.studentRootSubjectsAttemptedAssessments
-                        .length > 0
-                "
-                :data="analyticsStore.studentRootSubjectsAttemptedAssessments"
-                colour="darkblue"
-                class="mt-3"
-            />
-            <p v-else>No data yet</p>
+        <div class="row chart-row">
+            <h3 class="secondary-heading h5">Subject Comparison</h3>
+            <div
+                id="assessment-comparison-chart-container"
+                class="position-relative h-100"
+            >
+                <StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart
+                    v-if="
+                        analyticsStore.studentRootSubjectsAttemptedAssessments
+                            .length > 0
+                    "
+                    :data="
+                        analyticsStore.studentRootSubjectsAttemptedAssessments
+                    "
+                />
+                <p v-else>No data yet</p>
+            </div>
         </div>
 
-        <div class="row mt-5">
+        <div class="row mt-5 chart-row">
+            <h3 class="secondary-heading h5">Timeline</h3>
             <div
                 id="assessment-timeline-chart-container"
                 class="position-relative"
@@ -134,9 +138,19 @@ export default {
 </template>
 
 <style scoped>
-#assessment-timeline-chart-container {
+.chart-page {
+    height: calc(100vh - 88px);
+    overflow: auto;
+}
+
+.chart-row {
+    height: 50%;
+}
+
+#assessment-timeline-chart-container,
+#assessment-comparison-chart-container {
     width: 100%;
-    height: calc(100% - 88px);
+    height: 100%;
 }
 
 .download-btn {

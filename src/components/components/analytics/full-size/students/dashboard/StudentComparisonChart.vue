@@ -61,7 +61,7 @@ export default {
                 .attr('width', (d) => x(d.quantity) - x(0))
                 .attr('height', y.bandwidth())
                 .attr('fill', function (d) {
-                    if (d.name == 'Language') return 'green'; // green
+                    if (d.name == 'Language') return 'DarkMagenta';
                     else if (d.name == 'Mathematics') return 'blue'; // blue
                     else if (d.name == 'Science & Invention')
                         return 'purple'; // purple

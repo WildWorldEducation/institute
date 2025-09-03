@@ -130,21 +130,22 @@ export default {
 <template>
     <div class="container-fluid chart-page">
         <span class="d-flex justify-content-between w-100">
-            <h1 class="heading h4">Progress</h1>
+            <h1 class="heading h4">Assessments passed</h1>
             <h2
                 class="tertiary-heading h4 d-flex justify-content-end align-items-center"
             >
-                <DownloadCSVBtn
-                    :data="progressData"
-                    :fileName="`Progress Report - ${studentName}`"
-                    toolTip="Download progress data as CSV"
-                />
                 {{ studentName }}
             </h2>
         </span>
         <div class="row chart-row">
             <div class="col-lg-8 chart-col position-relative">
                 <div id="progress-chart-container">
+                    <DownloadCSVBtn
+                        :data="progressData"
+                        :fileName="`Progress Report - ${studentName}`"
+                        toolTip="Download progress data as CSV"
+                        class="position-absolute download-btn"
+                    />
                     <StudentProgressChart
                         ref="progressChart"
                         v-if="
@@ -157,32 +158,40 @@ export default {
                 </div>
             </div>
             <div class="col-lg-4 chart-col position-relative">
-                <StudentPassedAssessmentsByRootSubjectHorizontalBarChart
-                    v-if="
-                        analyticsStore.studentRootSubjectsPassedAssessments
-                            .length > 0
-                    "
-                    :data="analyticsStore.studentRootSubjectsPassedAssessments"
-                    colour="darkgreen"
-                    class="mb-5"
-                />
-                <p v-else>No data yet</p>
+                <div id="student-passed-subjects-chart-container">
+                    <StudentPassedAssessmentsByRootSubjectHorizontalBarChart
+                        v-if="
+                            analyticsStore.studentRootSubjectsPassedAssessments
+                                .length > 0
+                        "
+                        :data="
+                            analyticsStore.studentRootSubjectsPassedAssessments
+                        "
+                        colour="darkgreen"
+                        class="mb-5"
+                    />
+                    <p v-else>No data yet</p>
+                </div>
             </div>
         </div>
         <div class="row chart-row position-relative">
-            <DownloadCSVBtn
-                :data="assessmentPassesDownloadData"
-                :fileName="`Passed Assessments - ${studentName}`"
-                toolTip="Download passed assessments data as CSV"
-                class="position-absolute download-btn"
-            />
+            <div class="position-relative">
+                <DownloadCSVBtn
+                    :data="assessmentPassesDownloadData"
+                    :fileName="`Passed Assessments - ${studentName}`"
+                    toolTip="Download passed assessments data as CSV"
+                    class="position-absolute download-btn"
+                />
 
-            <PassedAssessmentsTimelineChart
-                class="mb-5"
-                v-if="assessmentPasses.length > 0"
-                :data="assessmentPasses"
-            />
-            <p v-else>This student has not completed any assessments yet.</p>
+                <PassedAssessmentsTimelineChart
+                    class="mb-5"
+                    v-if="assessmentPasses.length > 0"
+                    :data="assessmentPasses"
+                />
+                <p v-else>
+                    This student has not completed any assessments yet.
+                </p>
+            </div>
         </div>
     </div>
 </template>
@@ -203,11 +212,16 @@ export default {
 
 .chart-page {
     height: calc(100vh - 88px);
-    overflow: hidden;
+    overflow: auto;
 }
 
 #progress-chart-container {
     height: calc(100% - 35px);
+    width: 100%;
+}
+
+#student-passed-subjects-chart-container {
+    height: 100%;
     width: 100%;
 }
 

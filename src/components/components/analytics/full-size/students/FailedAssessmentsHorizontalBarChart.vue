@@ -5,24 +5,20 @@ export default {
     name: 'FailedAssessmentsHorizontalBarChart',
     props: ['data', 'colour'],
     data() {
-        return {
-            padding: 60
-        };
+        return {};
     },
     mounted() {
-        const container = d3.select('#failed-assessments-chart-container');
-
         // Specify the chart’s dimensions, based on a bar’s height.
-        const barHeight = 25;
         const marginTop = 0;
         const marginRight = 0;
-        const marginBottom = 10;
-        const marginLeft = 300;
-        const width = 700;
-        const height =
-            Math.ceil((this.data.length + 0.1) * barHeight) +
-            marginTop +
-            marginBottom;
+        const marginBottom = 0;
+        const marginLeft = 200;
+        const width = document.getElementById(
+            'fails-by-skill-chart-container'
+        ).clientWidth;
+        const height = document.getElementById(
+            'fails-by-skill-chart-container'
+        ).clientHeight;
 
         // Create the scales.
         const x = d3
@@ -34,22 +30,19 @@ export default {
             .scaleBand()
             .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
-            .padding(0.1);
+            .padding(0.2);
 
         // Create a value format.
         const format = x.tickFormat(20);
 
         // Create the SVG container.
         const svg = d3
-            .select('#failed-assessments-chart-container')
+            .select('#fails-by-skill-chart-container')
             .append('svg')
-            .attr('width', width)
-            .attr('height', height)
-            .attr('viewBox', [0, 0, width, height])
-            .attr(
-                'style',
-                'max-width: 100%; height: 100%; font: 14px sans-serif;'
-            );
+            .attr('width', '100%')
+            .attr('height', '100%')
+            .attr('viewBox', [0, 0, '100%', '100%'])
+            .attr('preserveAspectRatio', 'xMinYMin');
 
         // Append a rect for each skill.
         svg.append('g')
@@ -96,8 +89,6 @@ export default {
 };
 </script>
 
-<template>
-    <div id="failed-assessments-chart-container"></div>
-</template>
+<template></template>
 
 <style scoped></style>

@@ -3,25 +3,26 @@ import * as d3 from 'd3';
 
 export default {
     name: 'StudentAttemptedAssessmentsByRootSubjectHorizontalBarChart',
-    props: ['data', 'colour'],
+    props: ['data'],
     data() {
         return {};
     },
     mounted() {
-        const container = d3.select('#assessment-timeline-chart-container');
+        console.log(this.data);
+        const container = d3.select('#assessment-comparison-chart-container');
 
         // Specify the chart’s dimensions, based on a bar’s height.
-        const barHeight = 25;
         const marginTop = 0;
-        const marginRight = 0;
+        const marginRight = 10;
         const marginBottom = 10;
-        const marginLeft = 300;
+        const marginLeft = 200;
         const width = document.getElementById(
-            'assessment-timeline-chart-container'
+            'assessment-comparison-chart-container'
         ).clientWidth;
         const height = document.getElementById(
-            'assessment-timeline-chart-container'
+            'assessment-comparison-chart-container'
         ).clientHeight;
+
         // Create the scales.
         const x = d3
             .scaleLinear()
@@ -32,18 +33,18 @@ export default {
             .scaleBand()
             .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
-            .padding(0.1);
+            .padding(0.2);
 
         // Create a value format.
         const format = x.tickFormat(20);
 
         // Create the SVG container.
         const svg = d3
-            .select('#assessment-timeline-chart-container')
+            .select('#assessment-comparison-chart-container')
             .append('svg')
-            .attr('width', width)
-            .attr('height', height)
-            .attr('viewBox', [0, 0, width, height])
+            .attr('width', '100%')
+            .attr('height', '100%')
+            .attr('viewBox', [0, 0, '100%', '100%'])
             .attr(
                 'style',
                 'max-width: 100%; height: 100%; font: 14px sans-serif;'
@@ -59,7 +60,7 @@ export default {
             .attr('width', (d) => x(d.quantity) - x(0))
             .attr('height', y.bandwidth())
             .attr('fill', function (d) {
-                if (d.name == 'Language') return 'green'; // green
+                if (d.name == 'Language') return 'DarkMagenta';
                 else if (d.name == 'Mathematics') return 'blue'; // blue
                 else if (d.name == 'Science & Invention')
                     return 'purple'; // purple

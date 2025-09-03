@@ -62,7 +62,7 @@ export default {
                 .attr('height', y.bandwidth())
                 // .selectAll('rect')
                 .attr('fill', function (d) {
-                    if (d.name == 'Language') return 'green'; // green
+                    if (d.name == 'Language') return 'DarkMagenta';
                     else if (d.name == 'Mathematics') return 'blue'; // blue
                     else if (d.name == 'Science & Invention')
                         return 'purple'; // purple
