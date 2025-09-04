@@ -3,6 +3,7 @@ import { useAnalyticsStore } from '../../../../../../stores/AnalyticsStore';
 import { useUserDetailsStore } from '../../../../../../stores/UserDetailsStore';
 import { useUsersStore } from '../../../../../../stores/UsersStore';
 import TeacherProgressChart from './TeacherProgressChart.vue';
+import TeacherTimeChart from './TeacherTimeChart.vue';
 
 export default {
     name: 'Teacher-Analytics-Dashboard',
@@ -28,7 +29,8 @@ export default {
         };
     },
     components: {
-        TeacherProgressChart
+        TeacherProgressChart,
+        TeacherTimeChart
     },
     async created() {
         await this.getProgressData();
