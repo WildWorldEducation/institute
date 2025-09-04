@@ -1,7 +1,21 @@
 <script>
+import { useAnalyticsStore } from '../../../../../../stores/AnalyticsStore';
+import { useUserDetailsStore } from '../../../../../../stores/UserDetailsStore';
+import { useUsersStore } from '../../../../../../stores/UsersStore';
+import TeacherProgressChart from './TeacherProgressChart.vue';
+
 export default {
     name: 'Teacher-Analytics-Dashboard',
-    setup() {},
+    setup() {
+        const userDetailsStore = useUserDetailsStore();
+        const analyticsStore = useAnalyticsStore();
+        const usersStore = useUsersStore();
+        return {
+            userDetailsStore,
+            analyticsStore,
+            usersStore
+        };
+    },
     data() {
         return {
             // Chart variables
@@ -9,17 +23,19 @@ export default {
             // copy of data from store
             progressData: {
                 school: [],
-                teacher: []
-            },
-            // Notifications
-            isAboveTheCurve: false
+                class: []
+            }
         };
     },
-    components: {},
-    async created() {},
+    components: {
+        TeacherProgressChart
+    },
+    async created() {
+        await this.getProgressData();
+    },
     methods: {
         // Progress chart
-        async getSchoolProgressData() {
+        async getProgressData() {
             await this.analyticsStore.getSchoolProgress(
                 this.userDetailsStore.tenantId
             );
@@ -35,21 +51,13 @@ export default {
                 );
             }
 
-            this.$nextTick(() => {
-                if (this.$refs.progressChart) {
-                    // Access the ref here
-                    this.$refs.progressChart.createChart(this.progressData);
-                }
-            });
-        },
-        async getClassProgressData() {
             await this.analyticsStore.getClassProgress(
-                '01982d32-db35-7550-83aa-bc32039d99eb'
+                this.userDetailsStore.userId
             );
 
-            this.progressData.teacher = [];
+            this.progressData.class = [];
             for (let i = 0; i < this.analyticsStore.classProgress.length; i++) {
-                this.progressData.teacher.push(
+                this.progressData.class.push(
                     this.analyticsStore.classProgress[i]
                 );
             }
@@ -136,6 +144,15 @@ export default {
                 </div>
                 <div class="col-sm top-row-text"></div>
                 <div class="col-sm top-row-text"></div>
+            </div>
+            <div id="progress-chart-container">
+                <TeacherProgressChart
+                    ref="progressChart"
+                    v-if="
+                        progressData.school.length > 0 ||
+                        progressData.class.length > 0
+                    "
+                />
             </div>
 
             <!-- This is where charts / dashboard cards go -->
