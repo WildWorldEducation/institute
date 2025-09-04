@@ -413,7 +413,9 @@ export default {
                         <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
-                                userDetailsStore.role == 'school_admin'
+                                (userDetailsStore.role == 'school_admin' ||
+                                    userDetailsStore.role == 'partner' ||
+                                    userDetailsStore.role == 'instructor')
                             "
                             class="nav-item"
                         >

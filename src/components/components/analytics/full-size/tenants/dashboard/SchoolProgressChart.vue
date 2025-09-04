@@ -12,7 +12,6 @@ export default {
     mounted() {},
     methods: {
         createChart(data) {
-            console.log('Creating chart with data:', data);
             // First, clear line(s)
             //    d3.select('svg').remove();
             let progressData = [];
@@ -23,8 +22,6 @@ export default {
                 this.axisData = data.teacher;
                 progressData = data.teacher;
             }
-
-            console.log('Progress data for chart:', progressData);
 
             // Declare the chart dimensions and margins.
             const width = document.getElementById(

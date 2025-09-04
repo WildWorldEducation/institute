@@ -715,15 +715,13 @@ const router = createRouter({
         // School Admin analytics
         {
             path: '/dashboard',
-            name: 'school-admin-dashboard',
+            name: 'dashboard',
             component: () =>
-                import(
-                    '../components/pages/analytics/school-admin-analytics/SchoolAdminAnalyticsDashboardView.vue'
-                ),
+                import('../components/pages/analytics/DashboardView.vue'),
             meta: {
-                title: 'School Admin Dashboard',
+                title: 'Dashboard',
                 requiresAuth: true,
-                roles: ['school_admin']
+                roles: ['school_admin', 'instructor', 'partner']
             }
         },
         {
