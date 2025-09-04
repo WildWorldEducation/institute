@@ -145,18 +145,8 @@ export default {
                 <div class="col-sm top-row-text"></div>
                 <div class="col-sm top-row-text"></div>
             </div>
-            <div id="progress-chart-container">
-                <TeacherProgressChart
-                    ref="progressChart"
-                    v-if="
-                        progressData.school.length > 0 ||
-                        progressData.class.length > 0
-                    "
-                />
-            </div>
-
             <!-- This is where charts / dashboard cards go -->
-            <!-- <div class="dash-row row">
+            <div class="dash-row row">
                 <div class="col-md h-100">
                     <RouterLink to="/reports/academics" class="">
                         <h2 class="heading h5">Progress</h2>
@@ -165,28 +155,19 @@ export default {
                         id="progress-chart-container"
                         class="position-relative"
                     >
-                        <SchoolProgressChart
+                        <TeacherProgressChart
                             ref="progressChart"
                             v-if="
                                 progressData.school.length > 0 ||
-                                analyticsStore.classProgress.length > 0
+                                progressData.class.length > 0
                             "
                         />
                     </div>
                 </div>
                 <div class="col-md">
                     <h2 class="heading h5">Subject comparison</h2>
-                    <SchoolComparisonChart
-                        v-if="
-                            analyticsStore.rootSubjectsPassedAssessments
-                                .length > 0
-                        "
-                        :colour="'#5f31dd'"
-                        ref="comparisonChart"
-                    />
                 </div>
             </div>
-
             <div class="dash-row row mt-2 mb-2">
                 <div class="col-md position-relative">
                     <RouterLink
@@ -203,14 +184,10 @@ export default {
                             class="position-absolute chart-heading"
                         >
                             <h2 class="heading h5">Engagement</h2>
-                            <SchoolTimeChart
-                                v-if="analyticsStore.durationPerDay.length > 0"
-                                ref="timeChart"
-                            />
                         </RouterLink>
                     </div>
                 </div>
-            </div> -->
+            </div>
         </div>
     </div>
 </template>
