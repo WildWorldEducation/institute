@@ -35,6 +35,10 @@ export default {
             if (this.userDetailsStore.role == 'school_admin') {
                 this.$parent.updateCohortDetails(cohort);
             }
+            if (window.innerWidth < 769) {
+                this.$emit('showDetails');
+                console.log('showDetails emitted');
+            }
         },
         restartTutorial() {
             this.showTutorialTip2 = false;
