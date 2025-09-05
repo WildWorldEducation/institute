@@ -100,7 +100,7 @@ export default {
         <div class="row" v-if="isMobileCheck < 576">
             <!-- Name and basic details -->
             <h1 class="secondary-heading h3">
-                {{ this.cohortsStore.selectedCohort.name }}
+                {{ this.cohortsStore.selectedCohort.name || 'All students' }}
             </h1>
         </div>
         <div
