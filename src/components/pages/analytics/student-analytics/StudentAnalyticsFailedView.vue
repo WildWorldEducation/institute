@@ -30,20 +30,33 @@ export default {
 </script>
 
 <template>
-    <div class="container">
-        <div class="row mt-5 mb-5">
+    <div class="container-fluid chart-page">
+        <p>TODO: add failed by subject chart</p>
+        <div class="row h-100">
             <h2 class="h4 heading">Failed multiple times</h2>
-            <FailedAssessmentsHorizontalBarChart
-                v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
-                :data="teacherAnalyticsStore.studentMultipleFails"
-                colour="darkred"
-                class=""
-            />
-            <p v-else>
-                This student has not failed any assessments more than once yet.
-            </p>
+            <div id="fails-by-skill-chart-container">
+                <FailedAssessmentsHorizontalBarChart
+                    v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
+                    :data="teacherAnalyticsStore.studentMultipleFails"
+                    colour="darkred"
+                />
+                <p v-else>
+                    This student has not failed any assessments more than once
+                    yet.
+                </p>
+            </div>
         </div>
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.chart-page {
+    height: calc(100vh - 88px);
+    overflow: hidden;
+}
+
+#fails-by-skill-chart-container {
+    height: 100%;
+    width: 100%;
+}
+</style>

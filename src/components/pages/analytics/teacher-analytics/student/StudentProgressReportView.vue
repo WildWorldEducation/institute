@@ -131,63 +131,42 @@ export default {
     <div class="container-fluid chart-page">
         <span class="d-flex justify-content-between w-100">
             <h1 class="heading h4">Assessments passed</h1>
-            <h2
-                class="tertiary-heading h4 d-flex justify-content-end align-items-center"
-            >
+            <h2 class="tertiary-heading h4 d-flex justify-content-end align-items-center">
                 {{ studentName }}
             </h2>
         </span>
         <div class="row chart-row">
             <div class="col-lg-8 chart-col position-relative">
                 <div id="progress-chart-container">
-                    <DownloadCSVBtn
-                        :data="progressData"
-                        :fileName="`Progress Report - ${studentName}`"
-                        toolTip="Download progress data as CSV"
-                        class="position-absolute download-btn"
-                    />
-                    <StudentProgressChart
-                        ref="progressChart"
-                        v-if="
-                            progressData.student.length > 0 ||
-                            progressData.average.length > 0
-                        "
-                        :data="progressData"
-                    />
+                    <DownloadCSVBtn :data="progressData" :fileName="`Progress Report - ${studentName}`"
+                        toolTip="Download progress data as CSV" class="position-absolute download-btn" />
+                    <StudentProgressChart ref="progressChart" v-if="
+                        progressData.student.length > 0 ||
+                        progressData.average.length > 0
+                    " :data="progressData" />
                     <p v-else>There is no data to show yet.</p>
                 </div>
+                <figcaption class="position-absolute"><span style="color: green">{{ studentName }}</span> vs <span
+                        style="color:#ff7f0e">class average</span></figcaption>
             </div>
-            <div class="col-lg-4 chart-col position-relative">
+            <div class="col-lg-4 chart-col">
                 <div id="student-passed-subjects-chart-container">
                     <StudentPassedAssessmentsByRootSubjectHorizontalBarChart
-                        v-if="
-                            analyticsStore.studentRootSubjectsPassedAssessments
-                                .length > 0
-                        "
-                        :data="
-                            analyticsStore.studentRootSubjectsPassedAssessments
-                        "
-                        colour="darkgreen"
-                        class="mb-5"
-                    />
+                        v-if="analyticsStore.studentRootSubjectsPassedAssessments.length > 0"
+                        :data="analyticsStore.studentRootSubjectsPassedAssessments" />
+
                     <p v-else>No data yet</p>
                 </div>
+                <figcaption class="">By subject</figcaption>
             </div>
         </div>
         <div class="row chart-row position-relative">
             <div class="position-relative">
-                <DownloadCSVBtn
-                    :data="assessmentPassesDownloadData"
-                    :fileName="`Passed Assessments - ${studentName}`"
-                    toolTip="Download passed assessments data as CSV"
-                    class="position-absolute download-btn"
-                />
+                <DownloadCSVBtn :data="assessmentPassesDownloadData" :fileName="`Passed Assessments - ${studentName}`"
+                    toolTip="Download passed assessments data as CSV" class="position-absolute download-btn" />
 
-                <PassedAssessmentsTimelineChart
-                    class="mb-5"
-                    v-if="assessmentPasses.length > 0"
-                    :data="assessmentPasses"
-                />
+                <PassedAssessmentsTimelineChart class="mb-5" v-if="assessmentPasses.length > 0"
+                    :data="assessmentPasses" />
                 <p v-else>
                     This student has not completed any assessments yet.
                 </p>
@@ -221,7 +200,7 @@ export default {
 }
 
 #student-passed-subjects-chart-container {
-    height: 100%;
+    height: calc(100% - 35px);
     width: 100%;
 }
 

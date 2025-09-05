@@ -13,7 +13,7 @@ export default {
         // Specify the chart’s dimensions, based on a bar’s height.
         const marginTop = 0;
         const marginRight = 0;
-        const marginBottom = 0;
+        const marginBottom = 20;
         const marginLeft = 200;
         const width = document.getElementById(
             'student-passed-subjects-chart-container'
