@@ -31,7 +31,7 @@ export default {
             studentProgress: []
         };
     },
-    async created() {},
+    async created() { },
     computed: {
         studentName() {
             return `${this.$parent.user.username}`.trim();
@@ -60,22 +60,12 @@ export default {
 <template>
     <div id="user-information" class="container mt-1 bg-light p-2">
         <!-- The X to close the user details popup windows when on phone view -->
-        <div
-            class="flex-row-reverse d-flex d-md-none align-items-end mb-2"
-            @click="this.$parent.showDetails = false"
-        >
+        <div class="flex-row-reverse d-flex d-md-none align-items-end mb-2" @click="this.$parent.showDetails = false">
             <div id="close-popup-btn">
-                <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M0.312625 14.5205L4.83312 9.99999L0.312625 5.49218C0.111396 5.29025 -0.00159545 5.0168 -0.00159545 4.73172C-0.00159545 4.44665 0.111396 4.17319 0.312625 3.97126L3.96282 0.312625C4.16474 0.111396 4.4382 -0.00159545 4.72327 -0.00159545C5.00835 -0.00159545 5.2818 0.111396 5.48373 0.312625L9.99999 4.83312L14.5205 0.312625C14.6204 0.21056 14.7397 0.12947 14.8714 0.0741101C15.003 0.0187502 15.1444 -0.00976563 15.2873 -0.00976562C15.4301 -0.00976563 15.5715 0.0187502 15.7032 0.0741101C15.8349 0.12947 15.9541 0.21056 16.0541 0.312625L19.6874 3.96282C19.8886 4.16474 20.0016 4.4382 20.0016 4.72327C20.0016 5.00835 19.8886 5.2818 19.6874 5.48373L15.1669 9.99999L19.6874 14.5205C19.8883 14.7217 20.0012 14.9944 20.0012 15.2788C20.0012 15.5632 19.8883 15.836 19.6874 16.0372L16.0541 19.6874C15.8529 19.8883 15.5801 20.0012 15.2957 20.0012C15.0113 20.0012 14.7386 19.8883 14.5374 19.6874L9.99999 15.1669L5.49218 19.6874C5.29025 19.8886 5.0168 20.0016 4.73172 20.0016C4.44665 20.0016 4.17319 19.8886 3.97126 19.6874L0.312625 16.0541C0.21056 15.9541 0.12947 15.8349 0.0741101 15.7032C0.0187502 15.5715 -0.00976563 15.4301 -0.00976562 15.2873C-0.00976563 15.1444 0.0187502 15.003 0.0741101 14.8714C0.12947 14.7397 0.21056 14.6204 0.312625 14.5205Z"
-                        fill="white"
-                    />
+                        fill="white" />
                 </svg>
             </div>
         </div>
@@ -83,177 +73,129 @@ export default {
         <div class="row">
             <!-- Name and basic details -->
             <div class="col-12 col-md-7">
-                <h1 class="heading h3">
+                <!-- <h1 class="heading h3">
                     {{ this.$parent.user.username }}
-                </h1>
+                </h1> -->
 
                 <!-- Role (platform admin only) -->
-                <div
-                    v-if="userDetailsStore.role == 'platform_admin'"
-                    class="mb-3"
-                >
+                <div v-if="userDetailsStore.role == 'platform_admin'" class="mb-3">
                     <label class="form-label">Role</label>
-                    <input
-                        class="form-control user-input-information"
-                        type="text"
-                        v-model="this.$parent.user.role"
-                        disabled
-                    />
+                    <input class="form-control user-input-information" type="text" v-model="this.$parent.user.role"
+                        disabled />
                 </div>
             </div>
         </div>
         <div class="row">
-            <!-- Data column -->
+            <!-- Insights column -->
             <div class="col-12 col-md-5">
                 <!-- Platform Admin -->
                 <div class="d-flex flex-column">
-                    <router-link
-                        v-if="userDetailsStore.role == 'platform_admin'"
-                        :to="'/users/edit/' + this.$parent.user.id"
-                        class="btn primary-btn mb-2"
-                    >
+                    <!-- Show instructor -->
+                    <div v-if="
+                        userDetailsStore.role == 'platform_admin'
+                    " class="mt-2 mb-3">
+                        <h3 class="secondary-heading h6">Instructor:</h3>
+                        {{ this.$parent.instructor }}
+                    </div>
+                    <router-link v-if="userDetailsStore.role == 'platform_admin'"
+                        :to="'/users/edit/' + this.$parent.user.id" class="btn primary-btn mb-2">
                         Edit&nbsp;
                         <!-- Pencil icon -->
-                        <svg
-                            width="19"
-                            height="20"
-                            viewBox="0 0 19 20"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
+                        <svg width="19" height="20" viewBox="0 0 19 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
-                                fill="white"
-                            />
-                            <path
-                                d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
-                                fill="white"
-                            />
+                                fill="white" />
+                            <path d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
+                                fill="white" />
                             <path
                                 d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
-                                fill="white"
-                            />
+                                fill="white" />
                         </svg>
                     </router-link>
                     <!-- Delete button -->
-                    <button
-                        v-if="userDetailsStore.role == 'platform_admin'"
-                        class="btn red-btn"
-                        @click="showModal = true"
-                    >
+                    <button v-if="userDetailsStore.role == 'platform_admin'" class="btn red-btn"
+                        @click="showModal = true">
                         Delete&nbsp;
                         <!-- X icon -->
-                        <svg
-                            width="18"
-                            height="18"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M0.312625 14.5205L4.83312 9.99999L0.312625 5.49218C0.111396 5.29025 -0.00159545 5.0168 -0.00159545 4.73172C-0.00159545 4.44665 0.111396 4.17319 0.312625 3.97126L3.96282 0.312625C4.16474 0.111396 4.4382 -0.00159545 4.72327 -0.00159545C5.00835 -0.00159545 5.2818 0.111396 5.48373 0.312625L9.99999 4.83312L14.5205 0.312625C14.6204 0.21056 14.7397 0.12947 14.8714 0.0741101C15.003 0.0187502 15.1444 -0.00976563 15.2873 -0.00976562C15.4301 -0.00976563 15.5715 0.0187502 15.7032 0.0741101C15.8349 0.12947 15.9541 0.21056 16.0541 0.312625L19.6874 3.96282C19.8886 4.16474 20.0016 4.4382 20.0016 4.72327C20.0016 5.00835 19.8886 5.2818 19.6874 5.48373L15.1669 9.99999L19.6874 14.5205C19.8883 14.7217 20.0012 14.9944 20.0012 15.2788C20.0012 15.5632 19.8883 15.836 19.6874 16.0372L16.0541 19.6874C15.8529 19.8883 15.5801 20.0012 15.2957 20.0012C15.0113 20.0012 14.7386 19.8883 14.5374 19.6874L9.99999 15.1669L5.49218 19.6874C5.29025 19.8886 5.0168 20.0016 4.73172 20.0016C4.44665 20.0016 4.17319 19.8886 3.97126 19.6874L0.312625 16.0541C0.21056 15.9541 0.12947 15.8349 0.0741101 15.7032C0.0187502 15.5715 -0.00976563 15.4301 -0.00976562 15.2873C-0.00976563 15.1444 0.0187502 15.003 0.0741101 14.8714C0.12947 14.7397 0.21056 14.6204 0.312625 14.5205Z"
-                                fill="white"
-                            />
+                                fill="white" />
                         </svg>
                     </button>
                 </div>
                 <!-- Instructors and School admins-->
-                <div
-                    v-if="
-                        this.userDetailsStore.role == 'instructor' ||
-                        this.userDetailsStore.role == 'partner' ||
-                        this.userDetailsStore.role == 'school_admin'
-                    "
-                    class="d-flex flex-column"
-                >
-                    <h2 class="secondary-heading h4">Data</h2>
-                    <h3 class="secondary-heading h5">Progress</h3>
-                    <router-link
-                        :to="`/student/${this.$parent.user.id}/progress-report`"
-                        class="fit-content"
-                        target="_blank"
-                    >
-                        Skills passed
-                    </router-link>
-                    <!-- Skill Tree -->
-                    <router-link
-                        :to="`/student/${this.$parent.user.id}/skill-tree`"
-                        class="fit-content mt-2"
-                        target="_blank"
-                    >
-                        Skill tree
-                    </router-link>
-
-                    <h3 class="secondary-heading h5 mt-4">Other activity</h3>
-                    <!-- Time on Platform -->
-                    <router-link
-                        :to="`/student/${this.$parent.user.id}/total-time`"
-                        class="fit-content"
-                        target="_blank"
-                    >
-                        Engagement
-                    </router-link>
-                    <router-link
-                        :to="`/student/${this.$parent.user.id}/multiple-fails`"
-                        class="fit-content mt-2"
-                        target="_blank"
-                    >
-                        Multiple fails
-                    </router-link>
-                    <router-link
-                        :to="`/student/${this.$parent.user.id}/assessment-status`"
-                        class="fit-content mt-2"
-                        target="_blank"
-                    >
+                <div v-if="
+                    this.userDetailsStore.role == 'instructor' ||
+                    this.userDetailsStore.role == 'partner' ||
+                    this.userDetailsStore.role == 'school_admin'
+                " class="d-flex flex-column">
+                    <h2 class="heading h4">Insights</h2>
+                    <!-- Show instructor -->
+                    <div v-if="
+                        userDetailsStore.role == 'school_admin'
+                    " class="mb-3">
+                        <h3 class="secondary-heading h5">Teacher</h3>
+                        {{ this.$parent.instructor }}
+                    </div>
+                    <ul>
+                        <!-- Skill Tree -->
+                        <li>
+                            <p><router-link :to="`/student/${this.$parent.user.id}/skill-tree`" class="fit-content"
+                                    target="_blank">
+                                    Skill tree
+                                </router-link></p>
+                        </li>
+                        <li>
+                            <p><router-link :to="`/student/${this.$parent.user.id}/progress-report`" class="fit-content"
+                                    target="_blank">
+                                    Progress Report
+                                </router-link></p>
+                        </li>
+                        <li>
+                            <!-- Time on Platform -->
+                            <p><router-link :to="`/student/${this.$parent.user.id}/total-time`" class="fit-content"
+                                    target="_blank">
+                                    Engagement Report
+                                </router-link></p>
+                        </li>
+                        <li>
+                            <p><router-link :to="`/student/${this.$parent.user.id}/multiple-fails`" class="fit-content"
+                                    target="_blank">
+                                    Challenges Report
+                                </router-link></p>
+                        </li>
+                    </ul>
+                    <!-- <router-link :to="`/student/${this.$parent.user.id}/assessment-status`" class="fit-content mt-2"
+                        target="_blank">
                         Assessments attempted
-                    </router-link>
+                    </router-link> -->
 
-                    <StudentNotifications
-                        v-if="
-                            userDetailsStore.role == 'instructor' ||
-                            userDetailsStore.role == 'partner' ||
-                            userDetailsStore.role == 'school_admin'
-                        "
-                    />
+                    <StudentNotifications v-if="
+                        userDetailsStore.role == 'instructor' ||
+                        userDetailsStore.role == 'partner' ||
+                        userDetailsStore.role == 'school_admin'
+                    " />
                 </div>
                 <!-- Editors -->
                 <div class="mt-2">
-                    <router-link
-                        v-if="
-                            userDetailsStore.role == 'platform_admin' ||
-                            userDetailsStore.role == 'editor'
-                        "
-                        target="_blank"
-                        :to="'/users/activity-report/' + this.$parent.user.id"
-                        class="btn primary-btn"
-                    >
+                    <router-link v-if="
+                        userDetailsStore.role == 'platform_admin' ||
+                        userDetailsStore.role == 'editor'
+                    " target="_blank" :to="'/users/activity-report/' + this.$parent.user.id" class="btn primary-btn">
                         Activity Report
                     </router-link>
                 </div>
             </div>
-            <!-- Edit column -->
+            <!-- Actions column -->
             <div class="col-12 col-md-7">
-                <!-- Show instructor -->
-                <div
-                    v-if="
-                        userDetailsStore.role == 'school_admin' ||
-                        userDetailsStore.role == 'platform_admin'
-                    "
-                    class="mt-2 mb-3"
-                >
-                    <h3 class="secondary-heading h6">Instructor:</h3>
-                    {{ this.$parent.instructor }}
-                </div>
-
-                <div
-                    v-if="
-                        this.userDetailsStore.role == 'instructor' ||
-                        this.userDetailsStore.role == 'partner' ||
-                        this.userDetailsStore.role == 'school_admin'
-                    "
-                >
-                    <h2 class="secondary-heading h4">
-                        Edit account & set goals
+                <div v-if="
+                    this.userDetailsStore.role == 'instructor' ||
+                    this.userDetailsStore.role == 'partner' ||
+                    this.userDetailsStore.role == 'school_admin'
+                ">
+                    <h2 class="heading h4">
+                        Actions
                     </h2>
                     <!-- Lock skill progress -->
                     <div class="">
@@ -262,113 +204,58 @@ export default {
                                 Lock skill progress?
                             </h3>
                             <div class="tooltip-wrapper">
-                                <TooltipBtn
-                                    v-if="mode === 'big'"
-                                    class="d-none d-md-block"
-                                    toolTipText="This will prevent the student from being able to
+                                <TooltipBtn v-if="mode === 'big'" class="d-none d-md-block" toolTipText="This will prevent the student from being able to
                                 master skills in the case that they have not
                                 already mastered the skills that come before
-                                them."
-                                    bubbleWidth="350px"
-                                    trianglePosition="left"
-                                    absoluteTop="37px"
-                                />
+                                them." bubbleWidth="350px" trianglePosition="left" absoluteTop="37px" />
                                 <!-- Mobile tooltip have smaller width -->
-                                <TooltipBtn
-                                    v-if="mode === 'big'"
-                                    class="d-md-none"
-                                    toolTipText="This will prevent the student from being able to
+                                <TooltipBtn v-if="mode === 'big'" class="d-md-none" toolTipText="This will prevent the student from being able to
                                 master skills in the case that they have not
                                 already mastered the skills that come before
-                                them."
-                                    bubbleWidth="100px"
-                                    trianglePosition="left"
-                                    absoluteTop="37px"
-                                />
+                                them." bubbleWidth="100px" trianglePosition="left" absoluteTop="37px" />
                             </div>
                         </div>
-                        <input
-                            type="radio"
-                            value="0"
-                            v-model="$parent.user.isSkillsLocked"
-                            @change="updateSkillsLock()"
-                        />
-                        <label for="one">No</label>
+                        <input type="radio" value="0" v-model="$parent.user.isSkillsLocked"
+                            @change="updateSkillsLock()" />
+                        <label for="one">&nbsp;No</label>
                         &nbsp;
-                        <input
-                            type="radio"
-                            value="1"
-                            v-model="$parent.user.isSkillsLocked"
-                            @change="updateSkillsLock()"
-                        />
-                        <label for="two">Yes</label>
+                        <input type="radio" value="1" v-model="$parent.user.isSkillsLocked"
+                            @change="updateSkillsLock()" />
+                        <label for="two">&nbsp;Yes</label>
                     </div>
                     <!-- Goals -->
-                    <h3 class="secondary-heading h5 mt-4">Assign work</h3>
-                    <div class="d-flex flex-column">
-                        <router-link
-                            :to="'/student/' + this.$parent.user.id + '/skills'"
-                            class="fit-content"
-                            target="_blank"
-                        >
-                            Assign goals
-                        </router-link>
-                        <router-link
-                            :to="'/student/' + this.$parent.user.id + '/goals'"
-                            class="mt-2 fit-content mb-3"
-                            target="_blank"
-                        >
-                            See current goals
-                        </router-link>
-                    </div>
-                    <h3 class="secondary-heading h5 mt-3">Edit account</h3>
+                    <h3 class="secondary-heading h5 mt-4">Assign work</h3>                   
+                        <ul>
+                            <li>
+                                <p><router-link :to="'/student/' + this.$parent.user.id + '/skills'" class="fit-content"
+                                        target="_blank">
+                                        Assign goals
+                                    </router-link></p>
+                            </li>
+                            <li>
+                                <p><router-link :to="'/student/' + this.$parent.user.id + '/goals'"
+                                        class="mt-2 fit-content" target="_blank">
+                                        See current goals
+                                    </router-link></p>
+                            </li>
+                        </ul>                   
+                    <h3 class="secondary-heading h5 mt-4">Edit account</h3>
                     <!-- Edit User -->
-                    <router-link
-                        :to="`/edit/student/${this.$parent.user.id}`"
-                        class="btn primary-btn mt-1"
-                    >
-                        Edit profile&nbsp;
-                        <!-- Pencil icon -->
-                        <svg
-                            width="19"
-                            height="20"
-                            viewBox="0 0 19 20"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
-                                fill="white"
-                            />
-                            <path
-                                d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
-                                fill="white"
-                            />
-                            <path
-                                d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
-                                fill="white"
-                            />
-                        </svg>
+                    <router-link :to="`/edit/student/${this.$parent.user.id}`" class="btn primary-btn mt-1">
+                        Edit profile
                     </router-link>
                     <!-- Change password and remove student buttons -->
                     <div class="mt-1 d-flex flex-column">
-                        <router-link
-                            :to="
-                                '/edit-student-password/' + this.$parent.user.id
-                            "
-                            class="btn primary-btn"
-                        >
+                        <router-link :to="'/edit-student-password/' + this.$parent.user.id
+                            " class="btn primary-btn">
                             Change password
                         </router-link>
-                        <button
-                            v-if="
-                                userDetailsStore.role == 'instructor' ||
-                                userDetailsStore.role == 'partner'
-                            "
-                            class="btn btn-danger mt-1 remove-student-btn fit-content"
-                            @click="showRemoveStudentModal = true"
-                        >
-                            Remove Student
+                        <button v-if="
+                            userDetailsStore.role == 'instructor' ||
+                            userDetailsStore.role == 'partner'
+                        " class="btn btn-danger mt-1 remove-student-btn fit-content"
+                            @click="showRemoveStudentModal = true">
+                            Remove student from class
                         </button>
                     </div>
                 </div>
@@ -381,24 +268,16 @@ export default {
             <div class="modal-content">
                 <p>Are you sure you want to delete this user?</p>
                 <div style="display: flex; gap: 10px">
-                    <button
-                        type="button"
-                        class="btn btn-danger"
-                        @click="
-                            usersStore.deleteUser(userId);
-                            showModal = false;
-                            this.$parent.showDetails = false;
-                            // Call parent method
-                            this.$parent.changeUserToDefault();
-                        "
-                    >
+                    <button type="button" class="btn btn-danger" @click="
+                        usersStore.deleteUser(userId);
+                    showModal = false;
+                    this.$parent.showDetails = false;
+                    // Call parent method
+                    this.$parent.changeUserToDefault();
+                    ">
                         Yes
                     </button>
-                    <button
-                        type="button"
-                        class="btn btn-dark"
-                        @click="showModal = false"
-                    >
+                    <button type="button" class="btn btn-dark" @click="showModal = false">
                         No
                     </button>
                 </div>
@@ -411,18 +290,10 @@ export default {
             <div class="modal-content">
                 <p>Are you sure you want to remove this student?</p>
                 <div style="display: flex; gap: 10px">
-                    <button
-                        type="button"
-                        class="btn btn-danger"
-                        @click="removeStudentFromInstructor()"
-                    >
+                    <button type="button" class="btn btn-danger" @click="removeStudentFromInstructor()">
                         Yes
                     </button>
-                    <button
-                        type="button"
-                        class="btn btn-dark"
-                        @click="showRemoveStudentModal = false"
-                    >
+                    <button type="button" class="btn btn-dark" @click="showRemoveStudentModal = false">
                         No
                     </button>
                 </div>
@@ -474,7 +345,7 @@ export default {
     max-width: fit-content;
 }
 
-.green-btn > svg {
+.green-btn>svg {
     margin-left: 15px;
 }
 
