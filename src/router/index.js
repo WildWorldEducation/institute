@@ -280,6 +280,18 @@ const router = createRouter({
                 roles: ['school_admin']
             }
         },
+        {
+            path: '/class-dashboard',
+            name: 'class-dashboard',
+            component: () =>
+                import(
+                    '../components/pages/analytics/school-admin-analytics/SchoolAdminsClassDashboardView.vue'
+                ),
+            meta: {
+                requiresAuth: true,
+                roles: ['school_admin']
+            }
+        },
         // Platform admin only
         {
             path: '/tenants',
