@@ -25,7 +25,7 @@ export default {
         class="alert alert-danger notification"
         role="alert"
         target="_blank"
-        :to="'/student/' + $parent.userId + '/assessment-status'"
+        :to="'/student/' + $parent.userId + '/multiple-fails'"
     >
         This student is struggling with one or more assessments.
     </RouterLink>
