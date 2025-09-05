@@ -233,11 +233,41 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink
-                                to="/skill-tree"
+                            
+                              <div class="d-flex align-items-center">
+                                <!-- Navigation link to /skll-tree -->
+                               <RouterLink 
+                                to="/skill-tree"    
                                 class="nav-link close-on-click"
+                                  @click="closeDropdown"
                                 >Skill Tree</RouterLink
                             >
+
+                                <!-- Dropdown toggle button -->
+                                <button
+                                    v-if="
+                                        userDetailsStore.role == 'instructor' ||
+                                        userDetailsStore.role == 'partner'
+                                    "
+                                    class="nav-link dropdown-toggle border-0 bg-transparent"
+                                ></button>
+                            </div>
+
+                            <!-- Dropdown menu (conditionally shown) -->
+                            <ul
+                                class="dropdown-menu"
+                                :class="{ show: isDropdownOpen }"
+                            >
+                                <li>
+                                    <RouterLink
+                                        to="/skills"
+                                        class="dropdown-item close-on-click"
+                                        @click="isDropdownOpen = false"
+                                    >
+                                        Skills list
+                                    </RouterLink>
+                                </li>
+                            </ul>
                         </li>
                         <li
                             v-if="
@@ -425,58 +455,7 @@ export default {
                             >
                                 Dashboard
                             </RouterLink>
-                        </li>
-                        <!-- <li
-                            v-if="
-                                sessionDetailsStore.isLoggedIn &&
-                                userDetailsStore.role == 'school_admin'
-                            "
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                :to="
-                                    '/engagement-report/' +
-                                    userDetailsStore.tenantId
-                                "
-                                class="nav-link close-on-click"
-                            >
-                                Engagement
-                            </RouterLink>
-                        </li> -->
-                        <!-- <li
-                            v-if="
-                                sessionDetailsStore.isLoggedIn &&
-                                userDetailsStore.role == 'school_admin'
-                            "
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                :to="
-                                    '/academic-report/' +
-                                    userDetailsStore.tenantId
-                                "
-                                class="nav-link close-on-click"
-                            >
-                                Academics
-                            </RouterLink>
-                        </li> -->
-                        <!-- Cost -->
-                        <!-- <li
-                            v-if="
-                                sessionDetailsStore.isLoggedIn &&
-                                userDetailsStore.role == 'school_admin'
-                            "
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                :to="
-                                    '/cost-report/' + userDetailsStore.tenantId
-                                "
-                                class="nav-link close-on-click"
-                            >
-                                Cost
-                            </RouterLink>
-                        </li> -->
+                        </li>                       
                         <!-- Dropdown menu -->
                         <li
                             v-if="sessionDetailsStore.isLoggedIn"
