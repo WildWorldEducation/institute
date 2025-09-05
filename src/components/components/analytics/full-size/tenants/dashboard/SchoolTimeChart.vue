@@ -10,7 +10,6 @@ export default {
     mounted() {},
     methods: {
         createChart(data) {
-            const container = d3.select('#school-time-chart-container');
             // Declare the chart dimensions and margins.
             const width = document.getElementById(
                 'time-chart-container'
