@@ -22,7 +22,7 @@ export default {
     data() {
         return {
             // Chart variables
-            progressChartMode: 'teacher', // school or teacher
+            progressChartMode: 'school', // school or teacher
             // copy of data from store
             progressData: {
                 school: [],
@@ -42,8 +42,8 @@ export default {
         if (this.analyticsStore.rootSubjectsPassedAssessments.length == 0)
             await this.getComparisonData();
 
-        //await this.getSchoolProgressData();
-        await this.getClassProgressData();
+        await this.getSchoolProgressData();
+      //  await this.getClassProgressData();
         await this.getTimeData();
     },
     methods: {
