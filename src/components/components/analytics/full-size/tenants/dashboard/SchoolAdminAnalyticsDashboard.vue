@@ -1,11 +1,11 @@
 <script>
 import { RouterLink } from 'vue-router';
-import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
-import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
-import { useUsersStore } from '../../../../stores/UsersStore';
-import SchoolProgressChart from '../../../components/analytics/full-size/tenants/dashboard/SchoolProgressChart.vue';
-import SchoolComparisonChart from '../../../components/analytics/full-size/tenants/dashboard/SchoolComparisonChart.vue';
-import SchoolTimeChart from '../../../components/analytics/full-size/tenants/dashboard/SchoolTimeChart.vue';
+import { useAnalyticsStore } from '../../../../../../stores/AnalyticsStore';
+import { useUserDetailsStore } from '../../../../../../stores/UserDetailsStore';
+import { useUsersStore } from '../../../../../../stores/UsersStore';
+import SchoolProgressChart from './SchoolProgressChart.vue';
+import SchoolComparisonChart from './SchoolComparisonChart.vue';
+import SchoolTimeChart from './SchoolTimeChart.vue';
 
 export default {
     name: 'School-Admin-Dashboard',

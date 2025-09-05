@@ -2,7 +2,7 @@
 import * as d3 from 'd3';
 
 export default {
-    name: 'SchoolProgressChart',
+    name: 'TeacherProgressChart',
     props: [],
     data() {
         return {
@@ -12,16 +12,34 @@ export default {
     mounted() {},
     methods: {
         createChart(data) {
-            // First, clear line(s)
-            //    d3.select('svg').remove();
-            let progressData = [];
-            if (this.$parent.progressChartMode === 'school') {
-                this.axisData = data.school;
-                progressData = data.school;
+            // Work out which array to use for the axes
+            if (data.class.length == 0) {
+                this.axisData = data.average;
+            } else if (data.school.length == 0) {
+                this.axisData = data.class;
             } else {
-                this.axisData = data.teacher;
-                progressData = data.teacher;
+                // find which array has the highest number
+                const highestClassValue = data.class.reduce(
+                    (max, obj) => Math.max(max, obj.quantity),
+                    -Infinity
+                );
+                const highestSchoolValue = data.school.reduce(
+                    (max, obj) => Math.max(max, obj.quantity),
+                    -Infinity
+                );
+
+                if (highestClassValue >= highestSchoolValue) {
+                    this.axisData = data.class;
+                } else {
+                    this.axisData = data.school;
+                }
             }
+
+            // Convert object into array of series
+            const series = Object.entries(data).map(([name, values]) => ({
+                name,
+                values
+            }));
 
             // Declare the chart dimensions and margins.
             const width = document.getElementById(
@@ -30,6 +48,7 @@ export default {
             const height = document.getElementById(
                 'progress-chart-container'
             ).clientHeight;
+
             const marginTop = 5;
             const marginRight = 20;
             const marginBottom = 20;
@@ -47,6 +66,11 @@ export default {
                 [height - marginBottom, marginTop]
             );
 
+            const color = d3
+                .scaleOrdinal()
+                .domain(series.map((s) => s.name))
+                .range(d3.schemeCategory10);
+
             // Declare the line generator.
             const line = d3
                 .line()
@@ -57,13 +81,15 @@ export default {
             const svg = d3
                 .select('#progress-chart-container')
                 .append('svg')
-                .attr('width', width)
-                .attr('height', height)
-                .attr('viewBox', [0, 0, width, height])
-                .attr(
-                    'style',
-                    'max-width: 100%; height: auto; height: intrinsic;'
-                );
+                .attr('width', '100%')
+                .attr('height', '100%')
+                .attr('viewBox', [
+                    0,
+                    0,
+                    +Math.min(width, height),
+                    +Math.min(width, height)
+                ])
+                .attr('preserveAspectRatio', 'xMinYMin');
 
             // Add the x-axis.
             svg.append('g')
@@ -78,30 +104,26 @@ export default {
             // Add the y-axis, remove the domain line, add grid lines and a label.
             svg.append('g')
                 .attr('transform', `translate(${marginLeft},0)`)
-                .call(d3.axisLeft(y).ticks(height / 40))
-                .call((g) => g.select('.domain').remove())
+                .call(d3.axisLeft(y).ticks(height / 80))
                 .call((g) =>
                     g
                         .selectAll('.tick line')
                         .clone()
                         .attr('x2', width - marginLeft - marginRight)
-                        .attr('stroke-opacity', 0.2)
-                )
-                .call((g) =>
-                    g
-                        .append('text')
-                        .attr('x', -marginLeft)
-                        .attr('y', 10)
-                        .attr('fill', 'currentColor')
-                        .attr('text-anchor', 'start')
+                        .attr('stroke-opacity', 0.1)
                 );
 
-            // Append a path for the line.
-            svg.append('path')
+            // Draw the lines
+            svg.selectAll('.line')
+                .data(series)
+                .join('path')
                 .attr('fill', 'none')
-                .attr('stroke', 'green')
+                .attr('stroke', (d) => {
+                    if (d.name == 'class') return 'green'; // green
+                    else return '#ff7f0e'; // orange
+                })
                 .attr('stroke-width', 3)
-                .attr('d', line(progressData));
+                .attr('d', (d) => line(d.values));
         }
     }
 };

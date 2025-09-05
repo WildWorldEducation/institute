@@ -13,29 +13,21 @@ export default {
     data() {
         return {};
     },
-    async created() {},
-    mounted() {}
+    async created() { },
+    mounted() { }
 };
 </script>
 
 <template>
-    <h3 class="secondary-heading h5 mt-4">Notifications</h3>
-    <RouterLink
-        v-if="teacherAnalyticsStore.studentMultipleFails.length > 0"
-        class="alert alert-danger notification"
-        role="alert"
-        target="_blank"
-        :to="'/student/' + $parent.userId + '/assessment-status'"
-    >
+    <h3 v-if="teacherAnalyticsStore.studentMultipleFails.length > 0 ||
+        teacherAnalyticsStore.isLowActivity
+    " class="secondary-heading h5">Notifications</h3>
+    <RouterLink v-if="teacherAnalyticsStore.studentMultipleFails.length > 0" class="alert alert-danger notification"
+        role="alert" target="_blank" :to="'/student/' + $parent.userId + '/multiple-fails'">
         This student is struggling with one or more assessments.
     </RouterLink>
-    <RouterLink
-        v-if="teacherAnalyticsStore.isLowActivity"
-        class="alert alert-danger notification"
-        role="alert"
-        target="_blank"
-        :to="'/student/' + $parent.userId + '/total-time'"
-    >
+    <RouterLink v-if="teacherAnalyticsStore.isLowActivity" class="alert alert-danger notification" role="alert"
+        target="_blank" :to="'/student/' + $parent.userId + '/total-time'">
         This student has not visited any skills for 3 days of more.
     </RouterLink>
 </template>
