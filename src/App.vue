@@ -22,7 +22,8 @@ export default {
         return {
             isMobileCheck: window.innerWidth,
             currentTab: null,
-            isDropdownOpen: false
+            isStudentsDropdownOpen: false,
+            isSkillsDropdownOpen: false
         };
     },
     async mounted() {
@@ -73,11 +74,11 @@ export default {
 
                 // If clicking the toggle button, toggle the dropdown
                 if (dropdownToggle && dropdownToggle.contains(e.target)) {
-                    this.isDropdownOpen = !this.isDropdownOpen;
+                    this.isStudentsDropdownOpen = !this.isStudentsDropdownOpen;
                 }
                 // If clicking outside the dropdown, close it
                 else if (!dropdown.contains(e.target)) {
-                    this.isDropdownOpen = false;
+                    this.isStudentsDropdownOpen = false;
                 }
             });
         },
@@ -153,7 +154,7 @@ export default {
     <header>
         <nav
             id="navbar"
-            class="navbar navbar-expand-sm nav-bar"
+            class="navbar navbar-expand-sm nav-bar pt-0 pb-0"
             :class="{
                 'fixed-top':
                     $route.name == 'skill-tree' ||
@@ -233,21 +234,24 @@ export default {
                             "
                             class="nav-item"
                         >
-                            
-                              <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center">
                                 <!-- Navigation link to /skll-tree -->
-                               <RouterLink 
-                                to="/skill-tree"    
-                                class="nav-link close-on-click"
-                                  @click="closeDropdown"
-                                >Skill Tree</RouterLink
-                            >
+                                <RouterLink
+                                    to="/skill-tree"
+                                    class="nav-link"
+                                    @click="closeDropdown"
+                                    >Skill Tree</RouterLink
+                                >
 
                                 <!-- Dropdown toggle button -->
                                 <button
                                     v-if="
                                         userDetailsStore.role == 'instructor' ||
                                         userDetailsStore.role == 'partner'
+                                    "
+                                    @click="
+                                        isSkillsDropdownOpen =
+                                            !isSkillsDropdownOpen
                                     "
                                     class="nav-link dropdown-toggle border-0 bg-transparent"
                                 ></button>
@@ -256,13 +260,13 @@ export default {
                             <!-- Dropdown menu (conditionally shown) -->
                             <ul
                                 class="dropdown-menu"
-                                :class="{ show: isDropdownOpen }"
+                                :class="{ show: isSkillsDropdownOpen }"
                             >
                                 <li>
                                     <RouterLink
                                         to="/skills"
                                         class="dropdown-item close-on-click"
-                                        @click="isDropdownOpen = false"
+                                        @click="isSkillsDropdownOpen = false"
                                     >
                                         Skills list
                                     </RouterLink>
@@ -288,9 +292,7 @@ export default {
                             v-if="!sessionDetailsStore.isLoggedIn"
                             class="nav-item"
                         >
-                            <RouterLink
-                                to="/skill-tree"
-                                class="nav-link close-on-click"
+                            <RouterLink to="/skill-tree" class="nav-link"
                                 >Skill Tree</RouterLink
                             >
                         </li>
@@ -354,13 +356,13 @@ export default {
                             <!-- Dropdown menu (conditionally shown) -->
                             <ul
                                 class="dropdown-menu"
-                                :class="{ show: isDropdownOpen }"
+                                :class="{ show: isStudentsDropdownOpen }"
                             >
                                 <li>
                                     <RouterLink
                                         to="/student-assessments"
                                         class="dropdown-item close-on-click"
-                                        @click="isDropdownOpen = false"
+                                        @click="isStudentsDropdownOpen = false"
                                     >
                                         Mark Assessments
                                     </RouterLink>
@@ -455,7 +457,7 @@ export default {
                             >
                                 Dashboard
                             </RouterLink>
-                        </li>                       
+                        </li>
                         <!-- Dropdown menu -->
                         <li
                             v-if="sessionDetailsStore.isLoggedIn"
