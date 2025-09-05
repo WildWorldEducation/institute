@@ -156,16 +156,16 @@ export default {
         <div class="container-fluid">
             <div class="row top-row">
                 <div class="col-sm top-row-text">
-                    <strong>Skills Mastered: </strong>
-                    <span>10</span>
-                </div>
-                <div class="col-sm top-row-text">
                     <strong>Students: </strong>
                     <span>35</span>
                 </div>
                 <div class="col-sm top-row-text">
                     <strong>Teachers: </strong>
                     <span>5</span>
+                </div>
+                <div class="col-sm top-row-text">
+                    <strong>Skills Mastered: </strong>
+                    <span>10</span>
                 </div>
                 <div class="col-sm top-row-text">
                     <strong>Cost: </strong>

@@ -458,7 +458,7 @@ export default {
                                 to="/dashboard"
                                 class="nav-link close-on-click"
                             >
-                                Dashboard
+                                Weekly Dashboard
                             </RouterLink>
                         </li>
                         <!-- Dropdown menu -->
