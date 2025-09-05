@@ -224,6 +224,7 @@ export default {
                                 >Search</RouterLink
                             >
                         </li>
+                        <!-- Skill tree -->
                         <li
                             v-if="
                                 userDetailsStore.role == 'student' ||
@@ -430,7 +431,9 @@ export default {
                         <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
-                                userDetailsStore.role != 'school_admin'
+                                userDetailsStore.role != 'school_admin' &&
+                                userDetailsStore.role != 'instructor' &&
+                                userDetailsStore.role != 'partner'
                             "
                             class="nav-item"
                         >
