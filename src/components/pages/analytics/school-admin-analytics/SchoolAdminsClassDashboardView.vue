@@ -30,7 +30,9 @@ export default {
                 teacher: []
             },
             // Notifications
-            isAboveTheCurve: false
+            isAboveTheCurve: false,
+            teachers: [],
+            selectedTeacher: {}
         };
     },
     components: {
@@ -40,6 +42,11 @@ export default {
         InstructorsList
     },
     async created() {
+        // Get teachers
+        if (this.teachers.length < 1) {
+            await this.getTeachers(this.userDetailsStore.tenantId);
+        }
+
         // Subject comparison
         if (this.analyticsStore.rootSubjectsPassedAssessments.length == 0)
             await this.getComparisonData();
@@ -49,6 +56,15 @@ export default {
         await this.getTimeData();
     },
     methods: {
+        async getTeachers(tenantId) {
+            const result = await fetch('/tenants/instructors/' + tenantId);
+            const data = await result.json();
+            this.teachers = data;
+            this.selectedTeacher = this.teachers[0];
+        },
+        selectTeacher(teacher) {
+            this.selectedTeacher = teacher;
+        },
         // Progress chart
         async getSchoolProgressData() {
             await this.analyticsStore.getSchoolProgress(
@@ -154,22 +170,33 @@ export default {
 </script>
 
 <template>
-    <div class="row">
+    <div class="dashboard">
         <!-- Left column -->
         <div class="col-lg-1 col-md-2">
-            <InstructorsList :instructors="instructorsPerTenant" />
+            <div v-for="teacher in teachers" :key="teacher.id">
+                <div class="d-flex bg-light rounded p-2">
+                    <button
+                        :class="
+                            teacher.id === selectedTeacher.id
+                                ? 'isCurrentlySelected'
+                                : 'teacher-buttons'
+                        "
+                        @click="selectTeacher(teacher)"
+                    >
+                        {{ teacher.username }}
+                    </button>
+                </div>
+            </div>
         </div>
+        <!-- Right column -->
         <div class="col-lg-11 col-md-10 dashboard">
             <div class="container-fluid">
-                <div class="row top-row">
+                <div class="row top-row text-start">
                     <div class="col-sm top-row-text">
                         <strong>Students: </strong>
-                        <span>35</span>
+                        <span>10</span>
                     </div>
-                    <div class="col-sm top-row-text">
-                        <strong>Teachers: </strong>
-                        <span>5</span>
-                    </div>
+                    <div class="col-sm top-row-text"></div>
                     <div class="col-sm top-row-text">
                         <strong>Skills Mastered: </strong>
                         <span>10</span>
@@ -244,6 +271,39 @@ export default {
 </template>
 
 <style scoped>
+.dashboard {
+    display: flex;
+    height: calc(100vh - 88px);
+    overflow: hidden;
+}
+
+.isCurrentlySelected {
+    font-family: 'Poppins', sans-serif;
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--primary-color);
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.teacher-buttons {
+    font-family: 'Poppins', sans-serif;
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--primary-color);
+    background-color: #c8d7da;
+    color: black;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
 .dashboard {
     display: flex;
     height: calc(100vh - 88px);
