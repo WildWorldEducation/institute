@@ -25,10 +25,10 @@ export default {
             // Chart variables
             progressChartMode: 'school', // school or teacher
             // copy of data from store
-            progressData: {
-                school: [],
-                teacher: []
-            },
+            // progressData: {
+            //     school: [],
+            //     teacher: []
+            // },
             // Notifications
             isAboveTheCurve: false,
             teachers: [],
@@ -52,9 +52,8 @@ export default {
         if (this.analyticsStore.rootSubjectsPassedAssessments.length == 0)
             await this.getComparisonData();
 
-        await this.getSchoolProgressData();
         //  await this.getClassProgressData();
-        await this.getTimeData();
+        await this.getSchoolData();
     },
     methods: {
         async getTeachers(tenantId) {
@@ -65,14 +64,40 @@ export default {
             }
             this.teachers = data;
         },
-        selectElement(element) {
+        async selectElement(element) {
             if (element.type === 'teacher') {
                 this.selectedTeacher = element;
                 this.isSchoolSelected = false;
+                // Reset the arrays
+                this.analyticsStore.progress.tenant = [];
+                this.analyticsStore.durationPerDay = [];
+                this.clearCharts();
             } else if (element === 'school') {
+                this.clearCharts;
                 this.isSchoolSelected = true;
                 this.selectedTeacher = {};
+                await this.getSchoolData();
             }
+        },
+        clearCharts() {
+            // Clear existing charts
+            const parentDiv = document.getElementById(
+                'progress-chart-container'
+            );
+            const svgElement = parentDiv.querySelector('svg');
+            if (svgElement) {
+                // Check if the SVG element exists
+                svgElement.remove();
+            }
+        },
+        async getSchoolData() {
+            // Reset the arrays
+            this.analyticsStore.progress.tenant = [];
+            this.analyticsStore.durationPerDay = [];
+
+            this.progressChartMode = 'school';
+            await this.getSchoolProgressData();
+            await this.getTimeData();
         },
         // Progress chart
         async getSchoolProgressData() {
@@ -80,40 +105,12 @@ export default {
                 this.userDetailsStore.tenantId
             );
 
-            this.progressData.school = [];
-            for (
-                let i = 0;
-                i < this.analyticsStore.progress.tenant.length;
-                i++
-            ) {
-                this.progressData.school.push(
-                    this.analyticsStore.progress.tenant[i]
-                );
-            }
-
             this.$nextTick(() => {
                 if (this.$refs.progressChart) {
                     // Access the ref here
-                    this.$refs.progressChart.createChart(this.progressData);
-                }
-            });
-        },
-        async getClassProgressData() {
-            await this.analyticsStore.getClassProgress(
-                '01982d32-db35-7550-83aa-bc32039d99eb'
-            );
-
-            this.progressData.teacher = [];
-            for (let i = 0; i < this.analyticsStore.classProgress.length; i++) {
-                this.progressData.teacher.push(
-                    this.analyticsStore.classProgress[i]
-                );
-            }
-
-            this.$nextTick(() => {
-                if (this.$refs.progressChart) {
-                    // Access the ref here
-                    this.$refs.progressChart.createChart(this.progressData);
+                    this.$refs.progressChart.createChart(
+                        this.analyticsStore.progress.tenant
+                    );
                 }
             });
         },
@@ -121,7 +118,7 @@ export default {
         async getTimeData() {
             this.analyticsStore.durationPerDay = [];
             let url = `/student-analytics/tenant-duration-per-day/weekly/${this.userDetailsStore.tenantId}`;
-            fetch(url)
+            await fetch(url)
                 .then((response) => response.json())
                 .then(async (data) => {
                     this.analyticsStore.durationPerDay = [];
@@ -174,6 +171,25 @@ export default {
                 this.analyticsStore.rootSubjectsPassedAssessments = [];
             }
         }
+        // async getClassProgressData() {
+        //     await this.analyticsStore.getClassProgress(
+        //         '01982d32-db35-7550-83aa-bc32039d99eb'
+        //     );
+
+        //     this.progressData.teacher = [];
+        //     for (let i = 0; i < this.analyticsStore.classProgress.length; i++) {
+        //         this.progressData.teacher.push(
+        //             this.analyticsStore.classProgress[i]
+        //         );
+        //     }
+
+        //     this.$nextTick(() => {
+        //         if (this.$refs.progressChart) {
+        //             // Access the ref here
+        //             this.$refs.progressChart.createChart(this.progressData);
+        //         }
+        //     });
+        // }
     }
 };
 </script>
@@ -235,17 +251,12 @@ export default {
                         <RouterLink to="/reports/academics" class="">
                             <h2 class="heading h5">Progress</h2>
                         </RouterLink>
-                        <div
-                            id="progress-chart-container"
-                            class="position-relative"
-                        >
+                        <div id="progress-chart-container">
                             <SchoolProgressChart
                                 ref="progressChart"
-                                v-if="
-                                    progressData.school.length > 0 ||
-                                    analyticsStore.classProgress.length > 0
-                                "
+                                v-if="analyticsStore.progress.tenant.length > 0"
                             />
+                            <p v-else>No data</p>
                         </div>
                     </div>
                     <div class="col-md">
@@ -270,20 +281,16 @@ export default {
                             <h2 class="heading h5">Cost By Subject</h2>
                         </RouterLink>
                     </div>
-                    <div class="col-md position-relative">
+                    <div class="col-md h-100">
+                        <RouterLink to="/reports/engagement">
+                            <h2 class="heading h5">Engagement</h2>
+                        </RouterLink>
                         <div id="time-chart-container">
-                            <RouterLink
-                                to="/reports/engagement"
-                                class="position-absolute chart-heading"
-                            >
-                                <h2 class="heading h5">Engagement</h2>
-                                <SchoolTimeChart
-                                    v-if="
-                                        analyticsStore.durationPerDay.length > 0
-                                    "
-                                    ref="timeChart"
-                                />
-                            </RouterLink>
+                            <SchoolTimeChart
+                                v-if="analyticsStore.durationPerDay.length > 0"
+                                ref="timeChart"
+                            />
+                            <p v-else>No data</p>
                         </div>
                     </div>
                 </div>

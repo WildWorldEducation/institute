@@ -3,10 +3,9 @@ import * as d3 from 'd3';
 
 export default {
     name: 'SchoolProgressChart',
-    props: [],
     data() {
         return {
-            axisData: []
+            // axisData: []
         };
     },
     mounted() {},
@@ -14,14 +13,14 @@ export default {
         createChart(data) {
             // First, clear line(s)
             //    d3.select('svg').remove();
-            let progressData = [];
-            if (this.$parent.progressChartMode === 'school') {
-                this.axisData = data.school;
-                progressData = data.school;
-            } else {
-                this.axisData = data.teacher;
-                progressData = data.teacher;
-            }
+            // let progressData = [];
+            // if (this.$parent.progressChartMode === 'school') {
+            //     this.axisData = data.tenant;
+            //     progressData = data.tenant;
+            // } else {
+            //     this.axisData = data.teacher;
+            //     progressData = data.teacher;
+            // }
 
             // Declare the chart dimensions and margins.
             const width = document.getElementById(
@@ -37,13 +36,13 @@ export default {
 
             // Declare the x (horizontal position) scale.
             const x = d3.scaleUtc(
-                d3.extent(this.axisData, (d) => d.date),
+                d3.extent(data, (d) => d.date),
                 [marginLeft, width - marginRight]
             );
 
             // Declare the y (vertical position) scale.
             const y = d3.scaleLinear(
-                [0, d3.max(this.axisData, (d) => d.quantity)],
+                [0, d3.max(data, (d) => d.quantity)],
                 [height - marginBottom, marginTop]
             );
 
@@ -101,7 +100,7 @@ export default {
                 .attr('fill', 'none')
                 .attr('stroke', 'green')
                 .attr('stroke-width', 3)
-                .attr('d', line(progressData));
+                .attr('d', line(data));
         }
     }
 };
