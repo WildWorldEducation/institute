@@ -28,6 +28,7 @@ export default {
         selectInstructor(instructor) {
             this.$parent.selectedInstructor = instructor;
             this.$parent.updateInstructorDetails(instructor);
+            if (window.innerWidth < 769) this.$emit('showDetails');
         },
         restartTutorial() {
             this.showTutorialTip2 = false;

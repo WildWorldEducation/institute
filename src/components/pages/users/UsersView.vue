@@ -100,8 +100,11 @@ export default {
 
         this.isLoading = false;
 
+        // Only initialize user if on PC screen
         // Handle initial user selection
-        this.initializeSelectedUser();
+        if (window.innerWidth > 768) {
+            this.initializeSelectedUser();
+        }
 
         // Mark initialization as complete
         this.$nextTick(() => {
