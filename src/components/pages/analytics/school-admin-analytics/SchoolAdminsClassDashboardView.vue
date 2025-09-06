@@ -32,7 +32,8 @@ export default {
             // Notifications
             isAboveTheCurve: false,
             teachers: [],
-            selectedTeacher: {}
+            selectedTeacher: {},
+            isSchoolSelected: true
         };
     },
     components: {
@@ -59,11 +60,19 @@ export default {
         async getTeachers(tenantId) {
             const result = await fetch('/tenants/instructors/' + tenantId);
             const data = await result.json();
+            for (let i = 0; i < data.length; i++) {
+                data[i].type = 'teacher';
+            }
             this.teachers = data;
-            this.selectedTeacher = this.teachers[0];
         },
-        selectTeacher(teacher) {
-            this.selectedTeacher = teacher;
+        selectElement(element) {
+            if (element.type === 'teacher') {
+                this.selectedTeacher = element;
+                this.isSchoolSelected = false;
+            } else if (element === 'school') {
+                this.isSchoolSelected = true;
+                this.selectedTeacher = {};
+            }
         },
         // Progress chart
         async getSchoolProgressData() {
@@ -173,15 +182,27 @@ export default {
     <div class="dashboard">
         <!-- Left column -->
         <div class="col-lg-1 col-md-2">
+            <div class="d-flex bg-light rounded p-2">
+                <button
+                    :class="
+                        isSchoolSelected
+                            ? 'isCurrentlySelected'
+                            : 'side-buttons'
+                    "
+                    @click="selectElement('school')"
+                >
+                    school
+                </button>
+            </div>
             <div v-for="teacher in teachers" :key="teacher.id">
                 <div class="d-flex bg-light rounded p-2">
                     <button
                         :class="
                             teacher.id === selectedTeacher.id
                                 ? 'isCurrentlySelected'
-                                : 'teacher-buttons'
+                                : 'side-buttons'
                         "
-                        @click="selectTeacher(teacher)"
+                        @click="selectElement(teacher)"
                     >
                         {{ teacher.username }}
                     </button>
@@ -191,6 +212,7 @@ export default {
         <!-- Right column -->
         <div class="col-lg-11 col-md-10 dashboard">
             <div class="container-fluid">
+                <!-- Top row -->
                 <div class="row top-row text-start">
                     <div class="col-sm top-row-text">
                         <strong>Students: </strong>
@@ -290,7 +312,7 @@ export default {
     justify-content: center;
 }
 
-.teacher-buttons {
+.side-buttons {
     font-family: 'Poppins', sans-serif;
     width: 100%;
     border-radius: 8px;
