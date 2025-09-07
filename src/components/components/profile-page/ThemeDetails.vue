@@ -20,6 +20,7 @@ export default {
     methods: {
         async chooseTheme() {
             await this.userDetailsStore.updateTheme(this.theme);
+            window.location.reload(true);
         }
     }
 };

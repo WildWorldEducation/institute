@@ -31,7 +31,7 @@ export default {
         await this.userDetailsStore.getUserDetails();
         console.log('userDetailsStore');
         console.log(this.userDetailsStore);
-        await this.tenantStore.getTenantDetails(this.userDetailsStore.tenantId);
+        //await this.tenantStore.getTenantDetails(this.userDetailsStore.tenantId);
         this.initDropdown();
 
         // Instructor theme
@@ -742,8 +742,8 @@ Themes
     --skill-tree-color: white;
 
     --stroke-width: 1px;
+    background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
     --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
-    background-image: var(--background-image);
     background-repeat: no-repeat;
     background-attachment: fixed;
 
@@ -786,9 +786,11 @@ Themes
 
 /* Background image */
 body {
-    background-image: var(--background-image);
+    background-image: var(--background-image) !important;
     background-size: cover;
     background-color: var(--background-color);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 /* Headings */
