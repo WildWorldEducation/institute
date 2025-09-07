@@ -16,6 +16,7 @@ export default {
     mounted() {},
     methods: {
         createChart(data) {
+           
             // Declare the chart dimensions and margins.
             const width = document.getElementById(
                 'time-chart-container'
@@ -30,7 +31,7 @@ export default {
 
             // Declare the x (horizontal position) scale.
             const x = d3.scaleUtc(
-                d3.extent(this.analyticsStore.durationPerDay, (d) => d.date),
+                d3.extent(this.analyticsStore.time.tenant, (d) => d.date),
                 [marginLeft, width - marginRight]
             );
 
@@ -38,7 +39,7 @@ export default {
             const y = d3.scaleLinear(
                 [
                     0,
-                    d3.max(this.analyticsStore.durationPerDay, (d) => d.minutes)
+                    d3.max(this.analyticsStore.time.tenant, (d) => d.minutes)
                 ],
                 [height - marginBottom, marginTop]
             );

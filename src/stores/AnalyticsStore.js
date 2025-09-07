@@ -365,6 +365,21 @@ export const useAnalyticsStore = defineStore('analytics', {
                     console.error('Error fetching student progress:', error);
                 });
         },
+        async getSchoolTime(tenantId) {
+            await fetch(`/student-analytics/tenant-duration-per-day/weekly/${tenantId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                         data[i].minutes = data[i].milliseconds / (1000 * 60);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.time.tenant = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
         millisToMinutesAndSeconds(millis) {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);

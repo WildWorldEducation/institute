@@ -88,12 +88,12 @@ export default {
         async getSchoolData() {
             this.progressChartMode = 'school';
             await this.getSchoolProgressData();
-            await this.getTimeData();
+            await this.getSchoolTimeData();
         },
         async getClassData() {
             this.progressChartMode = 'teacher';
             await this.getClassProgressData(this.selectedTeacher.id);
-            await this.getTimeData();
+            await this.getClassTimeData();
         },
         // Progress chart
         async getSchoolProgressData() {
@@ -111,34 +111,20 @@ export default {
             });
         },
         // Time chart
-        async getTimeData() {
-            this.analyticsStore.durationPerDay = [];
-            let url = `/student-analytics/tenant-duration-per-day/weekly/${this.userDetailsStore.tenantId}`;
-            await fetch(url)
-                .then((response) => response.json())
-                .then(async (data) => {
-                    this.analyticsStore.durationPerDay = [];
-                    for (let i = 0; i < data.length; i++) {
-                        data[i].date = new Date(data[i].date);
-                        data[i].minutes = data[i].milliseconds / (1000 * 60);
-                        this.analyticsStore.durationPerDay.push(data[i]);
-                    }
-                    this.analyticsStore.durationPerDay.sort(
-                        (a, b) => a.date - b.date
-                    );
+        async getSchoolTimeData() {
+            await this.analyticsStore.getSchoolTime(
+                this.userDetailsStore.tenantId
+            );
 
-                    this.$nextTick(() => {
-                        if (this.$refs.timeChart) {
-                            // Access the ref here
-                            this.$refs.timeChart.createChart(
-                                this.analyticsStore.durationPerDay
-                            );
-                        }
-                    });
-                })
-                .catch((error) => {
-                    console.error('Error fetching student progress:', error);
-                });
+            this.$nextTick(() => {
+                if (this.$refs.timeChart) {
+                    // Access the ref here
+                    this.$refs.timeChart.createChart(
+                        this.analyticsStore.time.tenant
+                    );
+                }
+            });
+
         },
         async getComparisonData() {
             try {
@@ -188,27 +174,19 @@ export default {
         <!-- Left column -->
         <div class="col-lg-1 col-md-2">
             <div class="d-flex bg-light rounded p-2">
-                <button
-                    :class="
-                        isSchoolSelected
-                            ? 'isCurrentlySelected'
-                            : 'side-buttons'
-                    "
-                    @click="selectElement('school')"
-                >
+                <button :class="isSchoolSelected
+                        ? 'isCurrentlySelected'
+                        : 'side-buttons'
+                    " @click="selectElement('school')">
                     school
                 </button>
             </div>
             <div v-for="teacher in teachers" :key="teacher.id">
                 <div class="d-flex bg-light rounded p-2">
-                    <button
-                        :class="
-                            teacher.id === selectedTeacher.id
-                                ? 'isCurrentlySelected'
-                                : 'side-buttons'
-                        "
-                        @click="selectElement(teacher)"
-                    >
+                    <button :class="teacher.id === selectedTeacher.id
+                            ? 'isCurrentlySelected'
+                            : 'side-buttons'
+                        " @click="selectElement(teacher)">
                         {{ teacher.username }}
                     </button>
                 </div>
@@ -241,35 +219,25 @@ export default {
                             <h2 class="heading h5">Progress</h2>
                         </RouterLink>
                         <div id="progress-chart-container">
-                            <SchoolProgressChart
-                                ref="progressChart"
-                                v-if="
-                                    analyticsStore.progress.tenant.length > 0 ||
-                                    analyticsStore.progress.class.length > 0
-                                "
-                            />
+                            <SchoolProgressChart ref="progressChart" v-if="
+                                analyticsStore.progress.tenant.length > 0 ||
+                                analyticsStore.progress.class.length > 0
+                            " />
                             <p v-else>No data</p>
                         </div>
                     </div>
                     <div class="col-md">
                         <h2 class="heading h5">Subject comparison</h2>
-                        <SchoolComparisonChart
-                            v-if="
-                                analyticsStore.rootSubjectsPassedAssessments
-                                    .length > 0
-                            "
-                            :colour="'#5f31dd'"
-                            ref="comparisonChart"
-                        />
+                        <SchoolComparisonChart v-if="
+                            analyticsStore.rootSubjectsPassedAssessments
+                                .length > 0
+                        " :colour="'#5f31dd'" ref="comparisonChart" />
                     </div>
                 </div>
 
                 <div class="dash-row row mt-2 mb-2">
                     <div class="col-md position-relative">
-                        <RouterLink
-                            to="/reports/cost"
-                            class="me-2 position-absolute chart-heading"
-                        >
+                        <RouterLink to="/reports/cost" class="me-2 position-absolute chart-heading">
                             <h2 class="heading h5">Cost By Subject</h2>
                         </RouterLink>
                     </div>
@@ -278,10 +246,7 @@ export default {
                             <h2 class="heading h5">Engagement</h2>
                         </RouterLink>
                         <div id="time-chart-container">
-                            <SchoolTimeChart
-                                v-if="analyticsStore.durationPerDay.length > 0"
-                                ref="timeChart"
-                            />
+                            <SchoolTimeChart v-if="analyticsStore.time.tenant.length > 0" ref="timeChart" />
                             <p v-else>No data</p>
                         </div>
                     </div>
