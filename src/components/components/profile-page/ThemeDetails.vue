@@ -18,8 +18,8 @@ export default {
         await this.userDetailsStore.getUserDetails();
     },
     methods: {
-        chooseTheme() {
-            this.userDetailsStore.updateTheme(this.theme);
+        async chooseTheme() {
+            await this.userDetailsStore.updateTheme(this.theme);
         }
     }
 };

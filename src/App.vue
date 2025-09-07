@@ -27,7 +27,10 @@ export default {
         };
     },
     async mounted() {
+        console.log('mounted');
         await this.userDetailsStore.getUserDetails();
+        console.log('userDetailsStore');
+        console.log(this.userDetailsStore);
         await this.tenantStore.getTenantDetails(this.userDetailsStore.tenantId);
         this.initDropdown();
 
@@ -740,8 +743,10 @@ Themes
 
     --stroke-width: 1px;
     --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
+    background-image: var(--background-image);
     background-repeat: no-repeat;
     background-attachment: fixed;
+
 }
 
 

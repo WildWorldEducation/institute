@@ -274,6 +274,10 @@ export default {
     width: 100%;
     z-index: 2;
     top: 80px;
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .profile-input {

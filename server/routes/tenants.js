@@ -126,25 +126,42 @@ router.get('/instructors/:tenantId', (req, res, next) => {
  * Show tenant details
  */
 router.get('/show/:tenantId', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `
+    // if (req.session.userName) {
+    //     res.setHeader('Content-Type', 'application/json');
+    //     let sqlQuery = `
+    //         SELECT billing_mode, tokens
+    //         FROM tenants
+    //         WHERE id = ${conn.escape(req.params.tenantId)};`;
+
+    //     conn.query(sqlQuery, (err, results) => {
+    //         try {
+    //             if (err) {
+    //                 throw err;
+    //             }
+
+    //             res.json(results[0]);
+    //         } catch (err) {
+    //             next(err);
+    //         }
+    //     });
+    // }
+    res.setHeader('Content-Type', 'application/json');
+    let sqlQuery = `
             SELECT billing_mode, tokens
             FROM tenants
             WHERE id = ${conn.escape(req.params.tenantId)};`;
 
-        conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-
-                res.json(results[0]);
-            } catch (err) {
-                next(err);
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
             }
-        });
-    }
+
+            res.json(results[0]);
+        } catch (err) {
+            next(err);
+        }
+    });
 });
 
 /**

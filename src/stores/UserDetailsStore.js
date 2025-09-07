@@ -112,7 +112,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 skillTreeStore.updateSkillTree(student);
             });
         },
-        updateTheme(theme) {
+        async updateTheme(theme) {
+            console.log('updateTheme', theme);
             if (theme == 'instructor') {
                 this.theme = 'instructor';
                 document.body.classList.remove('editor-theme');
@@ -136,7 +137,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
             };
 
             var url = '/users/theme/' + this.userId + '/edit';
-            fetch(url, requestOptions);
+            await fetch(url, requestOptions);
         },
         async updateAudioAutoPlay(isAutoPlay) {
             // Update local state

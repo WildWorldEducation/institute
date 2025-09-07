@@ -182,8 +182,8 @@ router.post('/new-user/add', async (req, res, next) => {
                                             data.id
                                         )}, ${conn.escape(referrerId)})
                                             ON DUPLICATE KEY UPDATE referred_user_id = ${conn.escape(
-                                                data.id
-                                            )}, referrer_user_id= ${conn.escape(
+                                            data.id
+                                        )}, referrer_user_id= ${conn.escape(
                                             referrerId
                                         )};
                                         `;
@@ -196,8 +196,8 @@ router.post('/new-user/add', async (req, res, next) => {
                                             referrerId
                                         )}, ${conn.escape(data.id)})
                                             ON DUPLICATE KEY UPDATE instructor_id = ${conn.escape(
-                                                referrerId
-                                            )}, student_id = ${conn.escape(
+                                            referrerId
+                                        )}, student_id = ${conn.escape(
                                             data.id
                                         )};
                                         `;
@@ -372,8 +372,8 @@ router.post('/new-instructor/add', async (req, res, next) => {
                                     const getReferrerSQLIDQuery = `SELECT id
                                         FROM users
                                         WHERE username = ${conn.escape(
-                                            req.body.referrer_username
-                                        )};`;
+                                        req.body.referrer_username
+                                    )};`;
 
                                     const res = await query(
                                         getReferrerSQLIDQuery
@@ -1059,8 +1059,8 @@ router.get('/instructor/:studentId', (req, res, next) => {
     LEFT JOIN instructor_students 
     ON users.id = instructor_students.instructor_id
     WHERE instructor_students.student_id = ${conn.escape(
-        req.params.studentId
-    )};`;
+            req.params.studentId
+        )};`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -1198,8 +1198,8 @@ router.put('/:studentId/instructor/edit', isAuthenticated, (req, res, next) => {
         // Check for duplicate username or email
         const checkDuplicateQuery = `
             SELECT * FROM users WHERE (username = ${conn.escape(
-                req.body.username
-            )} 
+            req.body.username
+        )} 
             OR email = ${conn.escape(req.body.email)}) AND id != ${conn.escape(
             req.params.studentId
         )}`;
@@ -1369,8 +1369,8 @@ router.put(
     (req, res, next) => {
         let sqlQuery = `
             DELETE FROM instructor_students WHERE instructor_id = ${conn.escape(
-                req.session.userId
-            )} AND student_id = ${conn.escape(req.params.id)}`;
+            req.session.userId
+        )} AND student_id = ${conn.escape(req.params.id)}`;
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -1484,11 +1484,11 @@ router.put('/profile/:id/edit-password', isAuthenticated, (req, res, next) => {
                         // Update the password in the database
                         let updatePasswordQuery = `UPDATE users 
                                          SET password = ${conn.escape(
-                                             hashedNewPassword
-                                         )}
+                            hashedNewPassword
+                        )}
                                          WHERE id = ${conn.escape(
-                                             req.params.id
-                                         )};`;
+                            req.params.id
+                        )};`;
 
                         conn.query(updatePasswordQuery, (err, results) => {
                             try {
@@ -1575,8 +1575,8 @@ router.put(
             // Update the user's auto-play preference
             const sqlQuery = `UPDATE users 
                           SET is_audio_auto_play = ${conn.escape(
-                              isAudioAutoPlay
-                          )} 
+                isAudioAutoPlay
+            )} 
                           WHERE id = ${conn.escape(req.params.userId)};`;
 
             conn.query(sqlQuery, (err) => {
