@@ -1,8 +1,15 @@
 <script>
+import { useAnalyticsStore } from '../../../../../../stores/AnalyticsStore';
 import * as d3 from 'd3';
 
 export default {
     name: 'SchoolProgressChart',
+    setup() {
+        const analyticsStore = useAnalyticsStore();
+        return {
+            analyticsStore
+        };
+    },
     data() {
         return {
             // axisData: []
@@ -11,18 +18,6 @@ export default {
     mounted() {},
     methods: {
         createChart(data) {
-            console.log('Creating progress chart with data:', data);
-            // First, clear line(s)
-            //    d3.select('svg').remove();
-            // let progressData = [];
-            // if (this.$parent.progressChartMode === 'school') {
-            //     this.axisData = data.tenant;
-            //     progressData = data.tenant;
-            // } else {
-            //     this.axisData = data.teacher;
-            //     progressData = data.teacher;
-            // }
-
             // Declare the chart dimensions and margins.
             const width = document.getElementById(
                 'progress-chart-container'
@@ -35,15 +30,23 @@ export default {
             const marginBottom = 20;
             const marginLeft = 20;
 
+            // We use the data from the school set set the axes,
+            // even if we are displaying the class data.
             // Declare the x (horizontal position) scale.
             const x = d3.scaleUtc(
-                d3.extent(data, (d) => d.date),
+                d3.extent(this.analyticsStore.progress.tenant, (d) => d.date),
                 [marginLeft, width - marginRight]
             );
 
             // Declare the y (vertical position) scale.
             const y = d3.scaleLinear(
-                [0, d3.max(data, (d) => d.quantity)],
+                [
+                    0,
+                    d3.max(
+                        this.analyticsStore.progress.tenant,
+                        (d) => d.quantity
+                    )
+                ],
                 [height - marginBottom, marginTop]
             );
 

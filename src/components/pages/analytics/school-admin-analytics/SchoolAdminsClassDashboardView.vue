@@ -78,7 +78,6 @@ export default {
         },
         clearCharts() {
             // Reset the arrays
-            this.analyticsStore.progress.tenant = [];
             this.analyticsStore.progress.class = [];
             this.analyticsStore.durationPerDay = [];
             // Clear existing charts
