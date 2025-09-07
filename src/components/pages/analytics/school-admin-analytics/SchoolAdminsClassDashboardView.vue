@@ -65,21 +65,22 @@ export default {
             this.teachers = data;
         },
         async selectElement(element) {
+            this.clearCharts();
             if (element.type === 'teacher') {
                 this.selectedTeacher = element;
                 this.isSchoolSelected = false;
-                // Reset the arrays
-                this.analyticsStore.progress.tenant = [];
-                this.analyticsStore.durationPerDay = [];
-                this.clearCharts();
+                await this.getClassData();
             } else if (element === 'school') {
-                this.clearCharts;
                 this.isSchoolSelected = true;
                 this.selectedTeacher = {};
                 await this.getSchoolData();
             }
         },
         clearCharts() {
+            // Reset the arrays
+            this.analyticsStore.progress.tenant = [];
+            this.analyticsStore.progress.class = [];
+            this.analyticsStore.durationPerDay = [];
             // Clear existing charts
             const parentDiv = document.getElementById(
                 'progress-chart-container'
@@ -91,12 +92,13 @@ export default {
             }
         },
         async getSchoolData() {
-            // Reset the arrays
-            this.analyticsStore.progress.tenant = [];
-            this.analyticsStore.durationPerDay = [];
-
             this.progressChartMode = 'school';
             await this.getSchoolProgressData();
+            await this.getTimeData();
+        },
+        async getClassData() {
+            this.progressChartMode = 'teacher';
+            await this.getClassProgressData(this.selectedTeacher.id);
             await this.getTimeData();
         },
         // Progress chart
@@ -170,26 +172,19 @@ export default {
                 );
                 this.analyticsStore.rootSubjectsPassedAssessments = [];
             }
+        },
+        async getClassProgressData() {
+            await this.analyticsStore.getClassProgress(this.selectedTeacher.id);
+
+            this.$nextTick(() => {
+                if (this.$refs.progressChart) {
+                    // Access the ref here
+                    this.$refs.progressChart.createChart(
+                        this.analyticsStore.progress.class
+                    );
+                }
+            });
         }
-        // async getClassProgressData() {
-        //     await this.analyticsStore.getClassProgress(
-        //         '01982d32-db35-7550-83aa-bc32039d99eb'
-        //     );
-
-        //     this.progressData.teacher = [];
-        //     for (let i = 0; i < this.analyticsStore.classProgress.length; i++) {
-        //         this.progressData.teacher.push(
-        //             this.analyticsStore.classProgress[i]
-        //         );
-        //     }
-
-        //     this.$nextTick(() => {
-        //         if (this.$refs.progressChart) {
-        //             // Access the ref here
-        //             this.$refs.progressChart.createChart(this.progressData);
-        //         }
-        //     });
-        // }
     }
 };
 </script>
@@ -254,7 +249,10 @@ export default {
                         <div id="progress-chart-container">
                             <SchoolProgressChart
                                 ref="progressChart"
-                                v-if="analyticsStore.progress.tenant.length > 0"
+                                v-if="
+                                    analyticsStore.progress.tenant.length > 0 ||
+                                    analyticsStore.progress.class.length > 0
+                                "
                             />
                             <p v-else>No data</p>
                         </div>

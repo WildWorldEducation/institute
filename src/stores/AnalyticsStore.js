@@ -26,6 +26,7 @@ export const useAnalyticsStore = defineStore('analytics', {
             // Dashboard
             progress: {
                 student: [],
+                class: [],
                 tenant: []
             },
             time: {
@@ -264,7 +265,7 @@ export const useAnalyticsStore = defineStore('analytics', {
                         data[i].date = new Date(data[i].date);
                     }
                     data.sort((a, b) => a.date - b.date);
-                    this.classProgress = data;
+                    this.progress.class = data;
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);

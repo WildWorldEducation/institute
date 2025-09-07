@@ -11,6 +11,7 @@ export default {
     mounted() {},
     methods: {
         createChart(data) {
+            console.log('Creating progress chart with data:', data);
             // First, clear line(s)
             //    d3.select('svg').remove();
             // let progressData = [];
