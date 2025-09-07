@@ -1200,6 +1200,38 @@ router.get('/cohort-skill-activity-report/:cohortId', (req, res, next) => {
 /**
  * FOR ALL STUDENTS OF AN INSTRUCTOR -------------------------------------------------------
  */
+
+router.get('/all-students-duration-per-day/:dataMode/:teacherId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery = `
+            SELECT date, SUM(duration) AS quantity
+            FROM user_duration_tokens_per_day
+            JOIN instructor_students
+            ON instructor_students.student_id = user_duration_tokens_per_day.user_id
+            WHERE instructor_students.instructor_id = ${conn.escape(
+                req.params.teacherId
+            )}              
+            GROUP BY date
+            ORDER BY date ASC;`;
+
+        conn.query(sqlQuery, (err, result) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(result);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+
 /* Get mastered skills, though not domains/categories */
 router.get('/mastered-skills/all-students/:userId', (req, res, next) => {
     // Check if logged in.
@@ -2364,7 +2396,7 @@ router.get('/tenant-duration-per-day/:dataMode/:tenantId', (req, res, next) => {
         let sqlQuery;
         if (req.params.dataMode == 'total') {
             sqlQuery = `
-            SELECT date, SUM(duration) AS milliseconds
+            SELECT date, SUM(duration) AS quantity
             FROM user_duration_tokens_per_day            
             JOIN users
             ON users.id = user_duration_tokens_per_day.user_id
@@ -2373,7 +2405,7 @@ router.get('/tenant-duration-per-day/:dataMode/:tenantId', (req, res, next) => {
             ORDER BY date ASC;`;
         } else {
             sqlQuery = `
-             SELECT date, SUM(duration) AS milliseconds
+             SELECT date, SUM(duration) AS quantity
             FROM user_duration_tokens_per_day            
             JOIN users
             ON users.id = user_duration_tokens_per_day.user_id

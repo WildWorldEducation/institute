@@ -47,7 +47,7 @@ export default {
         if (this.analyticsStore.rootSubjectsPassedAssessments.length == 0)
             await this.getComparisonData();
 
-        //  await this.getClassProgressData();
+        
         await this.getSchoolData();
     },
     methods: {
@@ -76,10 +76,18 @@ export default {
             this.analyticsStore.progress.class = [];
             this.analyticsStore.durationPerDay = [];
             // Clear existing charts
-            const parentDiv = document.getElementById(
+            let parentDiv = document.getElementById(
                 'progress-chart-container'
             );
-            const svgElement = parentDiv.querySelector('svg');
+            let svgElement = parentDiv.querySelector('svg');
+            if (svgElement) {
+                // Check if the SVG element exists
+                svgElement.remove();
+            }
+            parentDiv = document.getElementById(
+                'time-chart-container'
+            );
+            svgElement = parentDiv.querySelector('svg');
             if (svgElement) {
                 // Check if the SVG element exists
                 svgElement.remove();
@@ -164,7 +172,22 @@ export default {
                     );
                 }
             });
-        }
+        },
+        async getClassTimeData() {
+            await this.analyticsStore.getClassTime(
+                this.selectedTeacher.id
+            );
+
+            this.$nextTick(() => {
+                if (this.$refs.timeChart) {
+                    // Access the ref here
+                    this.$refs.timeChart.createChart(
+                        this.analyticsStore.time.class
+                    );
+                }
+            });
+
+        },
     }
 };
 </script>
@@ -246,7 +269,7 @@ export default {
                             <h2 class="heading h5">Engagement</h2>
                         </RouterLink>
                         <div id="time-chart-container">
-                            <SchoolTimeChart v-if="analyticsStore.time.tenant.length > 0" ref="timeChart" />
+                            <SchoolTimeChart v-if="analyticsStore.time.tenant.length > 0 || analyticsStore.time.class.length > 0" ref="timeChart" />
                             <p v-else>No data</p>
                         </div>
                     </div>

@@ -272,6 +272,21 @@ export const useAnalyticsStore = defineStore('analytics', {
                     console.error('Error fetching student progress:', error);
                 });
         },
+        async getClassTime(teacherId) {
+            await fetch(`/student-analytics/all-students-duration-per-day/weekly/${teacherId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                        data[i].minutes = data[i].quantity / (1000 * 60);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.time.class = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
         async getTeacherClassSkillActivityReport(instructorId) {
             try {
                 const response = await fetch(
@@ -371,7 +386,7 @@ export const useAnalyticsStore = defineStore('analytics', {
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {
                         data[i].date = new Date(data[i].date);
-                         data[i].minutes = data[i].milliseconds / (1000 * 60);
+                         data[i].minutes = data[i].quantity / (1000 * 60);
                     }
                     data.sort((a, b) => a.date - b.date);
                     this.time.tenant = data;
