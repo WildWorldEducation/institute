@@ -1213,7 +1213,8 @@ router.get('/all-students-duration-per-day/:dataMode/:teacherId', (req, res, nex
             ON instructor_students.student_id = user_duration_tokens_per_day.user_id
             WHERE instructor_students.instructor_id = ${conn.escape(
                 req.params.teacherId
-            )}              
+            )}       
+             AND date >= NOW() - INTERVAL 1 WEEK       
             GROUP BY date
             ORDER BY date ASC;`;
 
@@ -2400,7 +2401,8 @@ router.get('/tenant-duration-per-day/:dataMode/:tenantId', (req, res, next) => {
             FROM user_duration_tokens_per_day            
             JOIN users
             ON users.id = user_duration_tokens_per_day.user_id
-            WHERE users.tenant_id = ${conn.escape(req.params.tenantId)}  
+            WHERE users.tenant_id = ${conn.escape(req.params.tenantId)} 
+            AND users.role = "student"
             GROUP BY date
             ORDER BY date ASC;`;
         } else {
@@ -2411,6 +2413,7 @@ router.get('/tenant-duration-per-day/:dataMode/:tenantId', (req, res, next) => {
             ON users.id = user_duration_tokens_per_day.user_id
             WHERE users.tenant_id = ${conn.escape(req.params.tenantId)}  
             AND date >= NOW() - INTERVAL 1 WEEK
+            AND users.role = "student"
             GROUP BY date
             ORDER BY date ASC;`;
         }

@@ -178,6 +178,8 @@ export default {
                 this.selectedTeacher.id
             );
 
+            console.log(this.analyticsStore.time.class);
+
             this.$nextTick(() => {
                 if (this.$refs.timeChart) {
                     // Access the ref here
