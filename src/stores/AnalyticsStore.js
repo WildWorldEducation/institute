@@ -31,6 +31,7 @@ export const useAnalyticsStore = defineStore('analytics', {
             },
             time: {
                 student: [],
+                class: [],
                 tenant: []
             },
             // Other

@@ -24,11 +24,6 @@ export default {
         return {
             // Chart variables
             progressChartMode: 'school', // school or teacher
-            // copy of data from store
-            // progressData: {
-            //     school: [],
-            //     teacher: []
-            // },
             // Notifications
             isAboveTheCurve: false,
             teachers: [],
