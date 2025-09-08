@@ -42,32 +42,14 @@ export default {
                 this.userDetailsStore.tenantId
             );
 
-            this.progressData.school = [];
-            for (
-                let i = 0;
-                i < this.analyticsStore.progress.tenant.length;
-                i++
-            ) {
-                this.progressData.school.push(
-                    this.analyticsStore.progress.tenant[i]
-                );
-            }
-
             await this.analyticsStore.getClassProgress(
                 this.userDetailsStore.userId
-            );
-
-            this.progressData.class = [];
-            for (let i = 0; i < this.analyticsStore.classProgress.length; i++) {
-                this.progressData.class.push(
-                    this.analyticsStore.classProgress[i]
-                );
-            }
+            );            
 
             this.$nextTick(() => {
                 if (this.$refs.progressChart) {
                     // Access the ref here
-                    this.$refs.progressChart.createChart(this.progressData);
+                    this.$refs.progressChart.createChart(this.analyticsStore.progress);
                 }
             });
         },
@@ -132,7 +114,7 @@ export default {
 };
 </script>
 
-<template>
+<template>  
     <div class="dashboard">
         <div class="container-fluid">
             <div class="row top-row">
@@ -160,8 +142,8 @@ export default {
                         <TeacherProgressChart
                             ref="progressChart"
                             v-if="
-                                progressData.school.length > 0 ||
-                                progressData.class.length > 0
+                                analyticsStore.progress.tenant.length > 0 ||
+                                analyticsStore.progress.class.length > 0
                             "
                         />
                     </div>

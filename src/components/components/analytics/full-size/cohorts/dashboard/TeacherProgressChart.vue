@@ -11,11 +11,11 @@ export default {
     },
     mounted() {},
     methods: {
-        createChart(data) {
+        createChart(data) {            
             // Work out which array to use for the axes
             if (data.class.length == 0) {
-                this.axisData = data.average;
-            } else if (data.school.length == 0) {
+                this.axisData = data.tenant;
+            } else if (data.tenant.length == 0) {
                 this.axisData = data.class;
             } else {
                 // find which array has the highest number
@@ -23,15 +23,15 @@ export default {
                     (max, obj) => Math.max(max, obj.quantity),
                     -Infinity
                 );
-                const highestSchoolValue = data.school.reduce(
+                const highestTenantValue = data.tenant.reduce(
                     (max, obj) => Math.max(max, obj.quantity),
                     -Infinity
                 );
 
-                if (highestClassValue >= highestSchoolValue) {
+                if (highestClassValue >= highestTenantValue) {
                     this.axisData = data.class;
                 } else {
-                    this.axisData = data.school;
+                    this.axisData = data.tenant;
                 }
             }
 

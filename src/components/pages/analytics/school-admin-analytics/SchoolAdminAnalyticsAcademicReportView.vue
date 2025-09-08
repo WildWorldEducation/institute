@@ -1,5 +1,4 @@
 <script>
-import TenantProgressLineChart from '../../../components/analytics/full-size/tenants/TenantProgressLineChart.vue';
 import TenantNumSkillsPassedPerNumStudentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantNumSkillsPassedPerNumStudentsHorizontalBarChart.vue';
 import TenantPassedAssessmentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantPassedAssessmentsHorizontalBarChart.vue';
 import TenantAssessmentsAttemptedHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantAssessmentsAttemptedHorizontalBarChart.vue';
@@ -16,8 +15,7 @@ export default {
         const analyticsStore = useAnalyticsStore();
         return { userDetailsStore, analyticsStore };
     },
-    components: {
-        TenantProgressLineChart,
+    components: {        
         TenantNumSkillsPassedPerNumStudentsHorizontalBarChart,
         TenantPassedAssessmentsHorizontalBarChart,
         TenantAssessmentsAttemptedHorizontalBarChart,
@@ -41,9 +39,7 @@ export default {
     },
     async created() {
         // Check tutorial progress
-        await this.checkIfTutorialComplete();
-        if (this.analyticsStore.tenantProgress.length == 0)
-            await this.getTenantProgress();
+        await this.checkIfTutorialComplete();        
         if (this.analyticsStore.numSkillsPassedPerNumStudents.length == 0)
             await this.getNumSkillsPassedPerNumStudents();
         if (this.analyticsStore.passedAssessments.length == 0)
@@ -115,20 +111,7 @@ export default {
         //     this.isTutorialComplete = true;
         //     this.markTutorialComplete();
         // },
-        async getTenantProgress() {
-            fetch(`/student-analytics/tenant-progress/${this.tenantId}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    for (let i = 0; i < data.length; i++) {
-                        data[i].date = new Date(data[i].date);
-                    }
-                    data.sort((a, b) => a.date - b.date);
-                    this.analyticsStore.tenantProgress = data;
-                })
-                .catch((error) => {
-                    console.error('Error fetching student progress:', error);
-                });
-        },
+    
         async getNumSkillsPassedPerNumStudents() {
             try {
                 const response = await fetch(
@@ -255,8 +238,7 @@ export default {
         },
         // Utilities
         downloadData(data, name) {
-            const headers = Object.keys(data[0]);
-            console.log(headers);
+            const headers = Object.keys(data[0]);          
             const csvRows = [];
             csvRows.push(headers.join(','));
             for (const row of data) {
@@ -328,38 +310,7 @@ export default {
                 </div>
             </div>
         </div>
-
-        <div class="row">
-            <h2 class="h4 heading d-flex justify-content-between">
-                Skill mastery progress
-                <button
-                    class="btn"
-                    @click="
-                        downloadData(analyticsStore.tenantProgress, 'Progress')
-                    "
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 384 512"
-                        width="18"
-                        height="18"
-                    >
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                        <path
-                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
-                        />
-                    </svg>
-                </button>
-            </h2>
-            <TenantProgressLineChart
-                v-if="analyticsStore.tenantProgress.length > 0"
-                :data="analyticsStore.tenantProgress"
-                colour="#5f31dd"
-                class=""
-            />
-            <p v-else>No data yet</p>
-        </div>
-        <hr class="mt-5 mb-5" />
+            
         <div class="row">
             <h2 class="h4 heading d-flex justify-content-between">
                 Failed more than once
