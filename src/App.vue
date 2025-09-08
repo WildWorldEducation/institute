@@ -403,29 +403,6 @@ export default {
                                 Cohorts
                             </RouterLink>
                         </li>
-                        <!-- Classes -->
-                        <li
-                            v-if="userDetailsStore.role == 'school_admin'"
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                to="/classes"
-                                class="nav-link close-on-click"
-                            >
-                                Classes
-                            </RouterLink>
-                        </li>
-                        <li
-                            v-if="userDetailsStore.role == 'school_admin'"
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                to="/class-dashboard"
-                                class="nav-link close-on-click"
-                            >
-                                Class dash
-                            </RouterLink>
-                        </li>
                         <!-- Tenants -->
                         <li
                             v-if="userDetailsStore.role == 'platform_admin'"
@@ -469,7 +446,7 @@ export default {
                                 to="/dashboard"
                                 class="nav-link close-on-click"
                             >
-                                Weekly Dashboard
+                                Dashboard
                             </RouterLink>
                         </li>
                         <!-- Dropdown menu -->
