@@ -3,21 +3,25 @@ import * as d3 from 'd3';
 
 export default {
     name: 'TenantDurationPerDayLineChart',
-    props: ['data', 'colour'],
+    props: ['data'],
     data() {
         return {};
     },
     mounted() {
         const data = this.data;
-        const container = d3.select('#tenant-duration-per-day-chart-container');
 
         // Declare the chart dimensions and margins.
-        const width = 928;
-        const height = 500;
-        const marginTop = 20;
-        const marginRight = 30;
-        const marginBottom = 30;
-        const marginLeft = 40;
+        const width = document.getElementById(
+            'engagement-chart-container'
+        ).clientWidth;
+        const height = document.getElementById(
+            'engagement-chart-container'
+        ).clientHeight;
+
+        const marginTop = 5;
+        const marginRight = 20;
+        const marginBottom = 20;
+        const marginLeft = 20;
 
         // Declare the x (horizontal position) scale.
         const x = d3.scaleUtc(

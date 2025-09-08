@@ -236,7 +236,7 @@ export default {
                 <div class="dash-row row">
                     <div class="col-md h-100">
                         <RouterLink
-                            to="/reports/academics"
+                            to="/progress-report"
                             class=""
                             target="_blank"
                         >
@@ -277,7 +277,7 @@ export default {
                         </RouterLink>
                     </div>
                     <div class="col-md h-100">
-                        <RouterLink to="/reports/engagement" target="_blank">
+                        <RouterLink to="/engagement-report" target="_blank">
                             <h2 class="heading h5">Weekly engagement</h2>
                         </RouterLink>
                         <div id="time-chart-container">
