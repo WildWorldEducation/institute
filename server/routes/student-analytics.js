@@ -1201,12 +1201,14 @@ router.get('/cohort-skill-activity-report/:cohortId', (req, res, next) => {
  * FOR ALL STUDENTS OF AN INSTRUCTOR -------------------------------------------------------
  */
 
-router.get('/all-students-duration-per-day/:dataMode/:teacherId', (req, res, next) => {
-    // Check if logged in.
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
+router.get(
+    '/all-students-duration-per-day/:dataMode/:teacherId',
+    (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
 
-        let sqlQuery = `
+            let sqlQuery = `
             SELECT date, SUM(duration) AS quantity
             FROM user_duration_tokens_per_day
             JOIN instructor_students
@@ -1218,20 +1220,20 @@ router.get('/all-students-duration-per-day/:dataMode/:teacherId', (req, res, nex
             GROUP BY date
             ORDER BY date ASC;`;
 
-        conn.query(sqlQuery, (err, result) => {
-            try {
-                if (err) {
-                    throw err;
+            conn.query(sqlQuery, (err, result) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    res.json(result);
+                } catch (err) {
+                    next(err);
                 }
-
-                res.json(result);
-            } catch (err) {
-                next(err);
-            }
-        });
+            });
+        }
     }
-});
-
+);
 
 /* Get mastered skills, though not domains/categories */
 router.get('/mastered-skills/all-students/:userId', (req, res, next) => {
@@ -2423,6 +2425,37 @@ router.get('/tenant-duration-per-day/:dataMode/:tenantId', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
+
+                // add missing dates, giving them 0 as quantity.
+                if (req.params.dataMode != 'total') {
+                    // Fill missing dates with 0
+                    function fillMissingDates(data, days = 7) {
+                        const today = new Date();
+                        const dates = [];
+                        for (let i = days - 1; i >= 0; i--) {
+                            const date = new Date(today);
+                            date.setDate(today.getDate() - i);
+                            dates.push(date);
+                        }
+                        const dataMap = new Map();
+                        data.forEach((item) => {
+                            const dateStr = item.date
+                                .toISOString()
+                                .split('T')[0];
+                            dataMap.set(dateStr, item.quantity);
+                        });
+                        const filled = dates.map((date) => {
+                            const dateStr = date.toISOString().split('T')[0];
+                            return {
+                                date,
+                                quantity: dataMap.get(dateStr) || 0
+                            };
+                        });
+                        return filled;
+                    }
+                    result = fillMissingDates(result);
+                }
+
                 res.json(result);
             } catch (err) {
                 next(err);
