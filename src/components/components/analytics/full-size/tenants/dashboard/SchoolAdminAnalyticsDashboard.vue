@@ -43,7 +43,7 @@ export default {
             await this.getComparisonData();
 
         await this.getSchoolProgressData();
-      //  await this.getClassProgressData();
+        //  await this.getClassProgressData();
         await this.getTimeData();
     },
     methods: {
@@ -168,8 +168,8 @@ export default {
                     <span>5</span>
                 </div>
                 <div class="col-sm top-row-text">
-                    <strong>AI Tutor Usage: </strong>
-                    <span>$500</span>
+                    <strong>Cost: </strong>
+                    <span>$0</span>
                 </div>
             </div>
 
