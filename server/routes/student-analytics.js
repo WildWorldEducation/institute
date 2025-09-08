@@ -1226,6 +1226,38 @@ router.get(
                         throw err;
                     }
 
+                    // add missing dates, giving them 0 as quantity.
+                    if (req.params.dataMode != 'total') {
+                        // Fill missing dates with 0
+                        function fillMissingDates(data, days = 7) {
+                            const today = new Date();
+                            const dates = [];
+                            for (let i = days - 1; i >= 0; i--) {
+                                const date = new Date(today);
+                                date.setDate(today.getDate() - i);
+                                dates.push(date);
+                            }
+                            const dataMap = new Map();
+                            data.forEach((item) => {
+                                const dateStr = item.date
+                                    .toISOString()
+                                    .split('T')[0];
+                                dataMap.set(dateStr, item.quantity);
+                            });
+                            const filled = dates.map((date) => {
+                                const dateStr = date
+                                    .toISOString()
+                                    .split('T')[0];
+                                return {
+                                    date,
+                                    quantity: dataMap.get(dateStr) || 0
+                                };
+                            });
+                            return filled;
+                        }
+                        result = fillMissingDates(result);
+                    }
+
                     res.json(result);
                 } catch (err) {
                     next(err);
