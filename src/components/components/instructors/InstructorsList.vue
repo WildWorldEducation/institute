@@ -109,7 +109,7 @@ export default {
     </div>
 </template>
 
-<style>
+<style scoped>
 .cohort-buttons {
     font-family: 'Poppins', sans-serif;
     height: 80px;

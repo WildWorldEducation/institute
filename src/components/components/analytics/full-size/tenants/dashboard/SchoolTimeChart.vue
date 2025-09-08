@@ -1,15 +1,22 @@
 <script>
 import * as d3 from 'd3';
+import { useAnalyticsStore } from '../../../../../../stores/AnalyticsStore';
 
 export default {
     name: 'SchoolTimeChart',
-    props: ['colour'],
+    setup() {
+        const analyticsStore = useAnalyticsStore();
+        return {
+            analyticsStore
+        };
+    },
     data() {
         return {};
     },
     mounted() {},
     methods: {
         createChart(data) {
+           
             // Declare the chart dimensions and margins.
             const width = document.getElementById(
                 'time-chart-container'
@@ -24,13 +31,16 @@ export default {
 
             // Declare the x (horizontal position) scale.
             const x = d3.scaleUtc(
-                d3.extent(data, (d) => d.date),
+                d3.extent(this.analyticsStore.time.tenant, (d) => d.date),
                 [marginLeft, width - marginRight]
             );
 
             // Declare the y (vertical position) scale.
             const y = d3.scaleLinear(
-                [0, d3.max(data, (d) => d.minutes)],
+                [
+                    0,
+                    d3.max(this.analyticsStore.time.tenant, (d) => d.minutes)
+                ],
                 [height - marginBottom, marginTop]
             );
 
