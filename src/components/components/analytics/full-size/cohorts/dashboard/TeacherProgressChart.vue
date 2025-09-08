@@ -12,6 +12,7 @@ export default {
     mounted() {},
     methods: {
         createChart(data) {            
+            console.log(data);
             // Work out which array to use for the axes
             if (data.class.length == 0) {
                 this.axisData = data.tenant;
@@ -64,12 +65,7 @@ export default {
             const y = d3.scaleLinear(
                 [0, d3.max(this.axisData, (d) => d.quantity)],
                 [height - marginBottom, marginTop]
-            );
-
-            const color = d3
-                .scaleOrdinal()
-                .domain(series.map((s) => s.name))
-                .range(d3.schemeCategory10);
+            );        
 
             // Declare the line generator.
             const line = d3
