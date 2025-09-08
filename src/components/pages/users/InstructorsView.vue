@@ -37,7 +37,7 @@ export default {
             await this.getInstructorsPerTenant(this.userDetailsStore.tenantId);
             this.selectedInstructor = this.instructorsPerTenant[0];
         }
-        if (window.innerWidth < 769) this.showDetails = true;
+
         this.isLoading = false;
     },
     methods: {
@@ -120,7 +120,10 @@ export default {
         <div class="row position-relative">
             <!-- Left column -->
             <div class="col-lg-4 col-md-5">
-                <InstructorsList :instructors="instructorsPerTenant" />
+                <InstructorsList
+                    :instructors="instructorsPerTenant"
+                    @showDetails="showDetails = true"
+                />
             </div>
             <!-- Right column -->
             <!-- User detail view for PC and Tablet View -->
@@ -142,7 +145,7 @@ export default {
                 id="user-detail-section"
             >
                 <div class="row">
-                    <InstructorDetails />
+                    <InstructorDetails @hideDetails="showDetails = false" />
                 </div>
             </div>
         </div>
