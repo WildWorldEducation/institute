@@ -255,32 +255,31 @@ export default {
                             style="color:#ff7f0e">class average</span></figcaption>
                 </div>
             </div>
-            <div class="col-lg-4 chart-col">
-                <TenantPercentageStudentsMasteredAtLeastOneSkillPieChart v-if="
-                    analyticsStore.percentageStudentsMasteredOneSkill.length > 0
-                " :data="analyticsStore.percentageStudentsMasteredOneSkill" class="mb-5" />
-                <p v-else class="mb-5">No data yet</p>
-                <figcaption class="">By subject</figcaption>
-                <button class="btn" @click="
-                    downloadData(
-                        analyticsStore.percentageStudentsMasteredOneSkill,
-                        'Percentage-students-completed-one-skill'
-                    )
-                    ">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                        <path
-                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
-                    </svg>
-                </button>
+            <div class="col-lg-4 chart-col position-relative">
+                <div id="engagement-chart-container">
+                    <button class="position-absolute download-btn btn" @click="
+                        downloadData(
+                            analyticsStore.percentageStudentsMasteredOneSkill,
+                            'Percentage-students-completed-one-skill'
+                        )
+                        ">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
+                            <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
+                        </svg>
+                    </button>
+                    <TenantPercentageStudentsMasteredAtLeastOneSkillPieChart v-if="
+                        analyticsStore.percentageStudentsMasteredOneSkill.length > 0
+                    " :data="analyticsStore.percentageStudentsMasteredOneSkill" class="mb-5" />
+                    <p v-else class="mb-5">No data yet</p>
+                    <figcaption class="">By subject</figcaption>
+                </div>
             </div>
         </div>
         <div class="row chart-row position-relative">
-            <div class="position-relative">
-                <TenantAvgInteractionTimePerSkillHorizontalBarChart v-if="analyticsStore.avgTimeOnSkills.length > 0"
-                    :data="analyticsStore.avgTimeOnSkills" colour="purple" class="" />
-                <p v-else>No data yet</p>
-                <button class="btn" @click="
+            <div id="time-per-sckill-chart-container" class="position-relative">
+                <button class="position-absolute download-btn btn" @click="
                     downloadData(
                         analyticsStore.avgTimeOnSkills,
                         'Avg-time-per-skill'
@@ -292,6 +291,10 @@ export default {
                             d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
                     </svg>
                 </button>
+                <TenantAvgInteractionTimePerSkillHorizontalBarChart v-if="analyticsStore.avgTimeOnSkills.length > 0"
+                    :data="analyticsStore.avgTimeOnSkills" colour="purple" class="" />
+                <p v-else>No data yet</p>
+                
             </div>
         </div>
     </div>
