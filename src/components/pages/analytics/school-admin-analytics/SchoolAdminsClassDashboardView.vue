@@ -47,7 +47,6 @@ export default {
         if (this.analyticsStore.rootSubjectsPassedAssessments.length == 0)
             await this.getComparisonData();
 
-        
         await this.getSchoolData();
     },
     methods: {
@@ -76,17 +75,13 @@ export default {
             this.analyticsStore.progress.class = [];
             this.analyticsStore.durationPerDay = [];
             // Clear existing charts
-            let parentDiv = document.getElementById(
-                'progress-chart-container'
-            );
+            let parentDiv = document.getElementById('progress-chart-container');
             let svgElement = parentDiv.querySelector('svg');
             if (svgElement) {
                 // Check if the SVG element exists
                 svgElement.remove();
             }
-            parentDiv = document.getElementById(
-                'time-chart-container'
-            );
+            parentDiv = document.getElementById('time-chart-container');
             svgElement = parentDiv.querySelector('svg');
             if (svgElement) {
                 // Check if the SVG element exists
@@ -132,7 +127,6 @@ export default {
                     );
                 }
             });
-
         },
         async getComparisonData() {
             try {
@@ -174,11 +168,7 @@ export default {
             });
         },
         async getClassTimeData() {
-            await this.analyticsStore.getClassTime(
-                this.selectedTeacher.id
-            );
-
-            console.log(this.analyticsStore.time.class);
+            await this.analyticsStore.getClassTime(this.selectedTeacher.id);
 
             this.$nextTick(() => {
                 if (this.$refs.timeChart) {
@@ -188,8 +178,7 @@ export default {
                     );
                 }
             });
-
-        },
+        }
     }
 };
 </script>
@@ -199,19 +188,27 @@ export default {
         <!-- Left column -->
         <div class="col-lg-1 col-md-2">
             <div class="d-flex bg-light rounded p-2">
-                <button :class="isSchoolSelected
-                        ? 'isCurrentlySelected'
-                        : 'side-buttons'
-                    " @click="selectElement('school')">
+                <button
+                    :class="
+                        isSchoolSelected
+                            ? 'isCurrentlySelected'
+                            : 'side-buttons'
+                    "
+                    @click="selectElement('school')"
+                >
                     school
                 </button>
             </div>
             <div v-for="teacher in teachers" :key="teacher.id">
                 <div class="d-flex bg-light rounded p-2">
-                    <button :class="teacher.id === selectedTeacher.id
-                            ? 'isCurrentlySelected'
-                            : 'side-buttons'
-                        " @click="selectElement(teacher)">
+                    <button
+                        :class="
+                            teacher.id === selectedTeacher.id
+                                ? 'isCurrentlySelected'
+                                : 'side-buttons'
+                        "
+                        @click="selectElement(teacher)"
+                    >
                         {{ teacher.username }}
                     </button>
                 </div>
@@ -240,38 +237,59 @@ export default {
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
                     <div class="col-md h-100">
-                        <RouterLink to="/reports/academics" class="">
+                        <RouterLink
+                            to="/reports/academics"
+                            class=""
+                            target="_blank"
+                        >
                             <h2 class="heading h5">Progress</h2>
                         </RouterLink>
                         <div id="progress-chart-container">
-                            <SchoolProgressChart ref="progressChart" v-if="
-                                analyticsStore.progress.tenant.length > 0 ||
-                                analyticsStore.progress.class.length > 0
-                            " />
+                            <SchoolProgressChart
+                                ref="progressChart"
+                                v-if="
+                                    analyticsStore.progress.tenant.length > 0 ||
+                                    analyticsStore.progress.class.length > 0
+                                "
+                            />
                             <p v-else>No data</p>
                         </div>
                     </div>
                     <div class="col-md">
                         <h2 class="heading h5">Subject comparison</h2>
-                        <SchoolComparisonChart v-if="
-                            analyticsStore.rootSubjectsPassedAssessments
-                                .length > 0
-                        " :colour="'#5f31dd'" ref="comparisonChart" />
+                        <SchoolComparisonChart
+                            v-if="
+                                analyticsStore.rootSubjectsPassedAssessments
+                                    .length > 0
+                            "
+                            :colour="'#5f31dd'"
+                            ref="comparisonChart"
+                        />
                     </div>
                 </div>
 
                 <div class="dash-row row mt-2 mb-2">
                     <div class="col-md position-relative">
-                        <RouterLink to="/reports/cost" class="me-2 position-absolute chart-heading">
+                        <RouterLink
+                            to="/reports/cost"
+                            class="me-2 position-absolute chart-heading"
+                            target="_blank"
+                        >
                             <h2 class="heading h5">Cost By Subject</h2>
                         </RouterLink>
                     </div>
                     <div class="col-md h-100">
-                        <RouterLink to="/reports/engagement">
-                            <h2 class="heading h5">Engagement</h2>
+                        <RouterLink to="/reports/engagement" target="_blank">
+                            <h2 class="heading h5">Weekly engagement</h2>
                         </RouterLink>
                         <div id="time-chart-container">
-                            <SchoolTimeChart v-if="analyticsStore.time.tenant.length > 0 || analyticsStore.time.class.length > 0" ref="timeChart" />
+                            <SchoolTimeChart
+                                v-if="
+                                    analyticsStore.time.tenant.length > 0 ||
+                                    analyticsStore.time.class.length > 0
+                                "
+                                ref="timeChart"
+                            />
                             <p v-else>No data</p>
                         </div>
                     </div>
