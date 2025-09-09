@@ -9,11 +9,20 @@ export default {
     },
     mounted() {
         const data = this.data;
-        console.log('data: ');
-        console.log(data);
+        const chartData = [
+            {
+                name: 'you',
+                values: data
+            },
+            {
+                name: 'school average',
+                values: this.averageDuration
+            }
+        ];
         const container = d3.select('#time-chart-container');
         console.log('averageDuration');
         console.log(this.averageDuration);
+
         // Declare the chart dimensions and margins.
         // Declare the chart dimensions and margins.
         const width = document.getElementById(
@@ -27,15 +36,32 @@ export default {
         const marginBottom = 40;
         const marginLeft = 40;
 
-        // Declare the x (horizontal position) scale.
+        const color = d3
+            .scaleOrdinal()
+            .domain(chartData.map((d) => d.name)) // Series names
+            .range(d3.schemeCategory10);
+
+        // X scale: use d3.scaleUtc (time axis)
         const x = d3.scaleUtc(
-            d3.extent(data, (d) => d.date),
+            [
+                d3.min(chartData, (series) =>
+                    d3.min(series.values, (d) => d.date)
+                ),
+                d3.max(chartData, (series) =>
+                    d3.max(series.values, (d) => d.date)
+                )
+            ],
             [marginLeft, width - marginRight]
         );
 
-        // Declare the y (vertical position) scale.
+        // Y scale: use max value across all series
         const y = d3.scaleLinear(
-            [0, d3.max(data, (d) => d.formattedQuantity)],
+            [
+                0,
+                d3.max(chartData, (series) =>
+                    d3.max(series.values, (d) => d.formattedQuantity)
+                )
+            ],
             [height - marginBottom, marginTop]
         );
 
@@ -94,11 +120,20 @@ export default {
             );
 
         // Append a path for the line.
-        svg.append('path')
+        // svg.append('path')
+        //     .attr('fill', 'none')
+        //     .attr('stroke', (d) => color(d.name))
+        //     .attr('stroke-width', 3)
+        //     .attr('d', line(data.values));
+
+        svg.append('g')
+            .selectAll('path')
+            .data(chartData)
+            .join('path')
             .attr('fill', 'none')
-            .attr('stroke', 'green')
-            .attr('stroke-width', 3)
-            .attr('d', line(data));
+            .attr('stroke', (d) => color(d.name)) // ✅ use color scale
+            .attr('stroke-width', 2)
+            .attr('d', (d) => line(d.values));
     }
 };
 </script>
