@@ -2,7 +2,7 @@
 import TenantNumSkillsPassedPerNumStudentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantNumSkillsPassedPerNumStudentsHorizontalBarChart.vue';
 import TenantPassedAssessmentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantPassedAssessmentsHorizontalBarChart.vue';
 import TenantAssessmentsAttemptedHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantAssessmentsAttemptedHorizontalBarChart.vue';
-import TenantFailedAssessmentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantFailedAssessmentsHorizontalBarChart.vue';
+
 import TenantPassedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
 import TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
 import SchoolComparisonChart from '../../../components/analytics/full-size/tenants/SchoolComparisonChart.vue';
@@ -19,8 +19,7 @@ export default {
     components: {        
         TenantNumSkillsPassedPerNumStudentsHorizontalBarChart,
         TenantPassedAssessmentsHorizontalBarChart,
-        TenantAssessmentsAttemptedHorizontalBarChart,
-        TenantFailedAssessmentsHorizontalBarChart,
+        TenantAssessmentsAttemptedHorizontalBarChart,        
         TenantPassedAssessmentsByRootSubjectHorizontalBarChart,
         TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart
     },
@@ -44,8 +43,7 @@ export default {
             await this.getNumSkillsPassedPerNumStudents();
         if (this.analyticsStore.passedAssessments.length == 0)
             await this.getPassedAssessments();
-        if (this.analyticsStore.failedAssessments.length == 0)
-            await this.getFailedAssessments();
+        
        
         if (this.analyticsStore.rootSubjectsPassedAssessments.length == 0)
             await this.getPassedAssessmentsBySubject();
@@ -164,23 +162,7 @@ export default {
                 this.analyticsStore.attemptedAssessments = [];
             }
         },
-        async getFailedAssessments() {
-            try {
-                const response = await fetch(
-                    `/student-analytics/failed-assessments/tenant/${this.tenantId}`
-                );
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                this.analyticsStore.failedAssessments = await response.json();
-            } catch (error) {
-                console.error(
-                    'Error fetching cohort mastered assessments:',
-                    error
-                );
-                this.analyticsStore.failedAssessments = [];
-            }
-        },
+      
    
         async getPassedAssessmentsBySubject() {
             try {

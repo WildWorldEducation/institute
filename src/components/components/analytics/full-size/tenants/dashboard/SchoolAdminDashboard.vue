@@ -261,7 +261,9 @@ export default {
                         </div>
                     </div>
                     <div class="col-md">
+                          <RouterLink to="/challenges-report" class="" target="_blank">
                         <h2 class="heading h5">Challenges</h2>
+                        </RouterLink>
                          <div id="failed-chart-container">
                              <TenantFailedAssessmentsByRootSubjectHorizontalBarChart v-if="
                                  analyticsStore.rootSubjectsFailedAssessments.length > 0
