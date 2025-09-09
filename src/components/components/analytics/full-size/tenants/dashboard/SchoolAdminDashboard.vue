@@ -6,6 +6,7 @@ import { useUsersStore } from '../../../../../../stores/UsersStore';
 import SchoolProgressChart from '../../../../../components/analytics/full-size/tenants/dashboard/SchoolProgressChart.vue';
 import SchoolTimeChart from '../../../../../components/analytics/full-size/tenants/dashboard/SchoolTimeChart.vue';
 import TenantFailedAssessmentsByRootSubjectHorizontalBarChart from '../../../../../components/analytics/full-size/tenants/TenantFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import SchoolCostChart from '../../../../../components/analytics/full-size/tenants/dashboard/SchoolCostChart.vue';
 
 export default {
     name: 'School-Admin-Class-Dashboard',
@@ -33,22 +34,21 @@ export default {
     components: {
         SchoolProgressChart,
         SchoolTimeChart,
-        TenantFailedAssessmentsByRootSubjectHorizontalBarChart
+        TenantFailedAssessmentsByRootSubjectHorizontalBarChart,
+        SchoolCostChart
     },
     async created() {
         // Get teachers
         if (this.teachers.length < 1) {
             await this.getTeachers(this.userDetailsStore.tenantId);
-        }
-
-        // Subject comparison
-        if (this.analyticsStore.rootSubjectsPassedAssessments.length == 0)
-            await this.getComparisonData();
+        }       
 
         await this.getSchoolData();
 
         if (this.analyticsStore.rootSubjectsFailedAssessments.length == 0)
             await this.getFailedAssessmentsBySubject();
+
+        await this.getSchoolCostData();
     },
     methods: {
         async getTeachers(tenantId) {
@@ -114,6 +114,18 @@ export default {
                 }
             });
         },
+        async getClassProgressData() {
+            await this.analyticsStore.getClassProgress(this.selectedTeacher.id);
+
+            this.$nextTick(() => {
+                if (this.$refs.progressChart) {
+                    // Access the ref here
+                    this.$refs.progressChart.createChart(
+                        this.analyticsStore.progress.class
+                    );
+                }
+            });
+        },
         // Time chart
         async getSchoolTimeData() {
             await this.analyticsStore.getSchoolTime(
@@ -125,45 +137,6 @@ export default {
                     // Access the ref here
                     this.$refs.timeChart.createChart(
                         this.analyticsStore.time.tenant
-                    );
-                }
-            });
-        },
-        async getComparisonData() {
-            try {
-                const response = await fetch(
-                    `/student-analytics/passed-assessments-by-subject/tenant/${this.userDetailsStore.tenantId}`
-                );
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                this.analyticsStore.rootSubjectsPassedAssessments =
-                    await response.json();
-
-                this.$nextTick(() => {
-                    if (this.$refs.comparisonChart) {
-                        // Access the ref here
-                        this.$refs.comparisonChart.createChart(
-                            this.analyticsStore.rootSubjectsPassedAssessments
-                        );
-                    }
-                });
-            } catch (error) {
-                console.error(
-                    'Error fetching cohort mastered assessments:',
-                    error
-                );
-                this.analyticsStore.rootSubjectsPassedAssessments = [];
-            }
-        },
-        async getClassProgressData() {
-            await this.analyticsStore.getClassProgress(this.selectedTeacher.id);
-
-            this.$nextTick(() => {
-                if (this.$refs.progressChart) {
-                    // Access the ref here
-                    this.$refs.progressChart.createChart(
-                        this.analyticsStore.progress.class
                     );
                 }
             });
@@ -180,6 +153,7 @@ export default {
                 }
             });
         },
+        // Challenges chart
         async getFailedAssessmentsBySubject() {
             try {
                 const response = await fetch(
@@ -190,7 +164,7 @@ export default {
                 }
                 this.analyticsStore.rootSubjectsFailedAssessments =
                     await response.json();
-               
+
             } catch (error) {
                 console.error(
                     'Error fetching cohort mastered assessments:',
@@ -199,7 +173,51 @@ export default {
                 this.analyticsStore.rootSubjectsFailedAssessments = [];
             }
         },
-    }
+        //Cost chart
+        async getSchoolCostData() {
+            await this.analyticsStore.getSchoolCost(
+                this.userDetailsStore.tenantId, 'weekly'
+            );
+
+            this.$nextTick(() => {
+                if (this.$refs.costChart) {
+                    // Access the ref here
+                    this.$refs.costChart.createChart(
+                        this.analyticsStore.cost.tenant
+                    );
+                }
+            });
+        },
+    },
+    // extra - remove
+    // async getComparisonData() {
+    //     try {
+    //         const response = await fetch(
+    //             `/student-analytics/passed-assessments-by-subject/tenant/${this.userDetailsStore.tenantId}`
+    //         );
+    //         if (!response.ok) {
+    //             throw new Error(`HTTP error! status: ${response.status}`);
+    //         }
+    //         this.analyticsStore.rootSubjectsPassedAssessments =
+    //             await response.json();
+
+    //         this.$nextTick(() => {
+    //             if (this.$refs.comparisonChart) {
+    //                 // Access the ref here
+    //                 this.$refs.comparisonChart.createChart(
+    //                     this.analyticsStore.rootSubjectsPassedAssessments
+    //                 );
+    //             }
+    //         });
+    //     } catch (error) {
+    //         console.error(
+    //             'Error fetching cohort mastered assessments:',
+    //             error
+    //         );
+    //         this.analyticsStore.rootSubjectsPassedAssessments = [];
+    //     }
+    // },
+
 };
 </script>
 
@@ -261,22 +279,29 @@ export default {
                         </div>
                     </div>
                     <div class="col-md">
-                          <RouterLink to="/challenges-report" class="" target="_blank">
-                        <h2 class="heading h5">Challenges</h2>
+                        <RouterLink to="/challenges-report" class="" target="_blank">
+                            <h2 class="heading h5">Challenges</h2>
                         </RouterLink>
-                         <div id="failed-chart-container">
-                             <TenantFailedAssessmentsByRootSubjectHorizontalBarChart v-if="
-                                 analyticsStore.rootSubjectsFailedAssessments.length > 0
-                             " :data="analyticsStore.rootSubjectsFailedAssessments" ref="failedAssessmentsChart" />
-                         </div>
+                        <div id="failed-chart-container">
+                            <TenantFailedAssessmentsByRootSubjectHorizontalBarChart v-if="
+                                analyticsStore.rootSubjectsFailedAssessments.length > 0
+                            " :data="analyticsStore.rootSubjectsFailedAssessments" ref="failedAssessmentsChart" />
+                        </div>
                     </div>
                 </div>
 
                 <div class="dash-row row mt-2 mb-2">
-                    <div class="col-md position-relative">
-                        <RouterLink to="/reports/cost" class="me-2 position-absolute chart-heading" target="_blank">
-                            <h2 class="heading h5">Cost By Subject</h2>
+                    <div class="col-md position-relative h-100">
+                        <RouterLink to="/reports/cost" class="" target="_blank">
+                            <h2 class="heading h5">Cost</h2>
                         </RouterLink>
+                        <div id="cost-chart-container">
+                            <SchoolCostChart ref="costChart" v-if="
+                                analyticsStore.cost.tenant.length > 0 ||
+                                analyticsStore.cost.class.length > 0
+                            " />
+                            <p v-else>No data</p>
+                        </div>
                     </div>
                     <div class="col-md h-100">
                         <RouterLink to="/engagement-report" target="_blank">
@@ -354,7 +379,8 @@ export default {
 
 #progress-chart-container,
 #time-chart-container,
-#failed-chart-container {
+#failed-chart-container,
+#cost-chart-container {
     height: calc(100% - 35px);
     width: 100%;
 }
