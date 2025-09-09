@@ -140,7 +140,7 @@ export default {
                     this.analyticsStore.durationPerDay = [];
                     for (let i = 0; i < data.length; i++) {
                         data[i].date = new Date(data[i].date);
-                        data[i].minutes = data[i].milliseconds / (1000 * 60);
+                        data[i].minutes = data[i].quantity / (1000 * 60);
                         this.analyticsStore.durationPerDay.push(data[i]);
                     }
                     this.analyticsStore.durationPerDay.sort(
@@ -152,6 +152,13 @@ export default {
                 });
         },
         async getPercentageStudentsMasteredOneSkill() {
+             // Clear existing charts
+            let parentDiv = document.getElementById('tenant-students-pie-chart-container');
+            let svgElement = parentDiv.querySelector('svg');
+            if (svgElement) {
+                // Check if the SVG element exists
+                svgElement.remove();
+            }
             this.analyticsStore.percentageStudentsMasteredOneSkill = [];
             try {
                 let url = `/student-analytics/percentage-students-mastered-one-skill/tenant/${this.dataMode}/${this.tenantId}`;
@@ -211,7 +218,7 @@ export default {
 <template>
     <div class="container-fluid chart-page">
         <span class="d-flex justify-content-between w-100">
-            <h1 class="heading">Engagement Report</h1>
+            <h1 class="heading h4">Engagement Report</h1>
             <span>
                 <!-- Filter Buttons -->
                 <div class="btn-group d-flex d-sm-inline-flex mt-2" role="group">
@@ -251,12 +258,12 @@ export default {
                     <TenantDurationPerDayLineChart v-if="analyticsStore.durationPerDay.length > 0"
                         :data="analyticsStore.durationPerDay" colour="#5f31dd" />
                     <div v-else>No data yet</div>
-                    <figcaption class="position-absolute"><span style="color: green">{{ studentName }}</span> vs <span
-                            style="color:#ff7f0e">class average</span></figcaption>
+
                 </div>
+                <figcaption class="">cumulative time on platform</figcaption>
             </div>
             <div class="col-lg-4 chart-col position-relative">
-                <div id="engagement-chart-container">
+                <div id="tenant-students-pie-chart-container">
                     <button class="position-absolute download-btn btn" @click="
                         downloadData(
                             analyticsStore.percentageStudentsMasteredOneSkill,
@@ -271,14 +278,14 @@ export default {
                     </button>
                     <TenantPercentageStudentsMasteredAtLeastOneSkillPieChart v-if="
                         analyticsStore.percentageStudentsMasteredOneSkill.length > 0
-                    " :data="analyticsStore.percentageStudentsMasteredOneSkill" class="mb-5" />
-                    <p v-else class="mb-5">No data yet</p>
-                    <figcaption class="">By subject</figcaption>
+                    " :data="analyticsStore.percentageStudentsMasteredOneSkill" />
+                    <p v-else>No data yet</p>
                 </div>
+                <figcaption class="">have mastered at least one skill</figcaption>
             </div>
         </div>
         <div class="row chart-row position-relative">
-            <div id="time-per-sckill-chart-container" class="position-relative">
+            <div id="time-per-skill-chart-container">
                 <button class="position-absolute download-btn btn" @click="
                     downloadData(
                         analyticsStore.avgTimeOnSkills,
@@ -294,13 +301,10 @@ export default {
                 <TenantAvgInteractionTimePerSkillHorizontalBarChart v-if="analyticsStore.avgTimeOnSkills.length > 0"
                     :data="analyticsStore.avgTimeOnSkills" colour="purple" class="" />
                 <p v-else>No data yet</p>
-                
             </div>
+              <figcaption class="">time per skill</figcaption>
         </div>
     </div>
-    <div class="container">
-
-
         <!-- Tutorial modal for initial introduction -->
         <div v-if="showTutorialTip1" class="modal">
             <div class="modal-content">
@@ -319,9 +323,6 @@ export default {
                 </div>
             </div>
         </div>
-
-
-    </div>
 </template>
 
 <style scoped>
@@ -331,7 +332,7 @@ export default {
 }
 
 .chart-row {
-    height: 50%;
+    height: calc(50% - 20px);
 }
 
 .chart-col {
@@ -348,7 +349,7 @@ export default {
     width: 100%;
 }
 
-#student-passed-subjects-chart-container {
+#tenant-students-pie-chart-container, #time-per-skill-chart-container {
     height: calc(100% - 35px);
     width: 100%;
 }

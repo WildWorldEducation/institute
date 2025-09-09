@@ -9,7 +9,6 @@ export default {
     },
     mounted() {
         const data = this.data;
-
         // Declare the chart dimensions and margins.
         const width = document.getElementById(
             'engagement-chart-container'
