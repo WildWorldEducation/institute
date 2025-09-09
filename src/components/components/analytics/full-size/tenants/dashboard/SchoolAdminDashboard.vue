@@ -189,35 +189,6 @@ export default {
             });
         },
     },
-    // extra - remove
-    // async getComparisonData() {
-    //     try {
-    //         const response = await fetch(
-    //             `/student-analytics/passed-assessments-by-subject/tenant/${this.userDetailsStore.tenantId}`
-    //         );
-    //         if (!response.ok) {
-    //             throw new Error(`HTTP error! status: ${response.status}`);
-    //         }
-    //         this.analyticsStore.rootSubjectsPassedAssessments =
-    //             await response.json();
-
-    //         this.$nextTick(() => {
-    //             if (this.$refs.comparisonChart) {
-    //                 // Access the ref here
-    //                 this.$refs.comparisonChart.createChart(
-    //                     this.analyticsStore.rootSubjectsPassedAssessments
-    //                 );
-    //             }
-    //         });
-    //     } catch (error) {
-    //         console.error(
-    //             'Error fetching cohort mastered assessments:',
-    //             error
-    //         );
-    //         this.analyticsStore.rootSubjectsPassedAssessments = [];
-    //     }
-    // },
-
 };
 </script>
 
@@ -292,7 +263,7 @@ export default {
 
                 <div class="dash-row row mt-2 mb-2">
                     <div class="col-md position-relative h-100">
-                        <RouterLink to="/reports/cost" class="" target="_blank">
+                        <RouterLink to="/cost-report" class="" target="_blank">
                             <h2 class="heading h5">Cost</h2>
                         </RouterLink>
                         <div id="cost-chart-container">
