@@ -11,11 +11,12 @@ export default {
     },
     mounted() {},
     methods: {
-        createChart(data) {
+        createChart(data) {            
+            console.log(data);
             // Work out which array to use for the axes
             if (data.class.length == 0) {
-                this.axisData = data.average;
-            } else if (data.school.length == 0) {
+                this.axisData = data.tenant;
+            } else if (data.tenant.length == 0) {
                 this.axisData = data.class;
             } else {
                 // find which array has the highest number
@@ -23,15 +24,15 @@ export default {
                     (max, obj) => Math.max(max, obj.quantity),
                     -Infinity
                 );
-                const highestSchoolValue = data.school.reduce(
+                const highestTenantValue = data.tenant.reduce(
                     (max, obj) => Math.max(max, obj.quantity),
                     -Infinity
                 );
 
-                if (highestClassValue >= highestSchoolValue) {
+                if (highestClassValue >= highestTenantValue) {
                     this.axisData = data.class;
                 } else {
-                    this.axisData = data.school;
+                    this.axisData = data.tenant;
                 }
             }
 
@@ -64,12 +65,7 @@ export default {
             const y = d3.scaleLinear(
                 [0, d3.max(this.axisData, (d) => d.quantity)],
                 [height - marginBottom, marginTop]
-            );
-
-            const color = d3
-                .scaleOrdinal()
-                .domain(series.map((s) => s.name))
-                .range(d3.schemeCategory10);
+            );        
 
             // Declare the line generator.
             const line = d3

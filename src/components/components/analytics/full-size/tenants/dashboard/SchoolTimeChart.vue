@@ -15,8 +15,7 @@ export default {
     },
     mounted() {},
     methods: {
-        createChart(data) {
-           
+        createChart(data) {           
             // Declare the chart dimensions and margins.
             const width = document.getElementById(
                 'time-chart-container'

@@ -20,11 +20,14 @@ export default {
         const marginRight = 0;
         const marginBottom = 10;
         const marginLeft = 200;
-        const width = 1000;
-        const height =
-            Math.ceil((this.data.length + 0.1) * barHeight) +
-            marginTop +
-            marginBottom;
+       // Declare the chart dimensions and margins.
+        const width = document.getElementById(
+            'time-per-skill-chart-container'
+        ).clientWidth;
+        const height = document.getElementById(
+            'time-per-skill-chart-container'
+        ).clientHeight;
+
 
         // Create the scales.
         const x = d3
@@ -43,7 +46,7 @@ export default {
 
         // Create the SVG container.
         const svg = d3
-            .select('#tenant-avg-interaction-time-per-skill-chart-container')
+            .select('#time-per-skill-chart-container')
             .append('svg')
             .attr('width', width)
             .attr('height', height)
@@ -99,12 +102,9 @@ export default {
 </script>
 
 <template>
-    <div id="tenant-avg-interaction-time-per-skill-chart-container"></div>
+    
 </template>
 
 <style scoped>
-#tenant-avg-interaction-time-per-skill-chart-container {
-    overflow-y: auto;
-    max-height: 500px;
-}
+
 </style>
