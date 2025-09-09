@@ -27,13 +27,20 @@ export default {
         selectAllStudents() {
             this.cohortsStore.selectedCohort = {};
             this.cohortsStore.isAllStudentsSelected = true;
+            if (window.innerWidth < 769) {
+                this.$emit('showDetails');
+            }
         },
         selectCohort(cohort) {
             this.cohortsStore.selectedCohort = cohort;
+
             this.cohortsStore.isAllStudentsSelected = false;
             // pas data to the sibling component, via the parent
             if (this.userDetailsStore.role == 'school_admin') {
                 this.$parent.updateCohortDetails(cohort);
+            }
+            if (window.innerWidth < 769) {
+                this.$emit('showDetails');
             }
         },
         restartTutorial() {
