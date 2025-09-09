@@ -140,7 +140,7 @@ export default {
                     this.analyticsStore.durationPerDay = [];
                     for (let i = 0; i < data.length; i++) {
                         data[i].date = new Date(data[i].date);
-                        data[i].minutes = data[i].milliseconds / (1000 * 60);
+                        data[i].minutes = data[i].quantity / (1000 * 60);
                         this.analyticsStore.durationPerDay.push(data[i]);
                     }
                     this.analyticsStore.durationPerDay.sort(
@@ -152,6 +152,13 @@ export default {
                 });
         },
         async getPercentageStudentsMasteredOneSkill() {
+             // Clear existing charts
+            let parentDiv = document.getElementById('tenant-students-pie-chart-container');
+            let svgElement = parentDiv.querySelector('svg');
+            if (svgElement) {
+                // Check if the SVG element exists
+                svgElement.remove();
+            }
             this.analyticsStore.percentageStudentsMasteredOneSkill = [];
             try {
                 let url = `/student-analytics/percentage-students-mastered-one-skill/tenant/${this.dataMode}/${this.tenantId}`;
@@ -209,63 +216,95 @@ export default {
 </script>
 
 <template>
-    <div class="container">
-        <span class="d-flex justify-content-between w-100 mb-2">
-            <h1 class="heading">Engagement Report</h1>
+    <div class="container-fluid chart-page">
+        <span class="d-flex justify-content-between w-100">
+            <h1 class="heading h4">Engagement Report</h1>
             <span>
                 <!-- Filter Buttons -->
-                <div
-                    class="btn-group d-flex d-sm-inline-flex mt-2"
-                    role="group"
-                >
-                    <input
-                        type="radio"
-                        class="btn-check"
-                        name="timeFilter1"
-                        id="total1"
-                        @click="toggleWeeklyCumulativeData"
-                        checked
-                    />
-                    <label
-                        class="btn btn-outline-dark btn-sm filter-btn"
-                        for="total1"
-                        >Total</label
-                    >
-                    <input
-                        type="radio"
-                        class="btn-check"
-                        name="timeFilter1"
-                        id="week1"
-                        @click="toggleWeeklyCumulativeData"
-                    />
-                    <label
-                        class="btn btn-outline-dark btn-sm filter-btn"
-                        for="week1"
-                        >This week</label
-                    >
+                <div class="btn-group d-flex d-sm-inline-flex mt-2" role="group">
+                    <input type="radio" class="btn-check" name="timeFilter1" id="total1"
+                        @click="toggleWeeklyCumulativeData" checked />
+                    <label class="btn btn-outline-dark btn-sm filter-btn" for="total1">Total</label>
+                    <input type="radio" class="btn-check" name="timeFilter1" id="week1"
+                        @click="toggleWeeklyCumulativeData" />
+                    <label class="btn btn-outline-dark btn-sm filter-btn" for="week1">This week</label>
                 </div>
                 <!-- Tutorial button -->
-                <button
-                    class="btn me-1"
-                    @click="restartTutorial"
-                    aria-label="info"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 192 512"
-                        width="20"
-                        height="23"
-                        class="primary-icon"
-                    >
+                <button class="btn me-1" @click="restartTutorial" aria-label="info">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512" width="20" height="23"
+                        class="primary-icon">
                         <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                         <path
-                            d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
-                        />
+                            d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z" />
                     </svg>
                 </button>
             </span>
         </span>
+        <div class="row chart-row">
+            <div class="col-lg-8 chart-col position-relative">
+                <div id="engagement-chart-container">
+                    <button class="position-absolute download-btn btn" @click="
+                        downloadData(
+                            analyticsStore.durationPerDay,
+                            'Time-per-day'
+                        )
+                        ">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
+                            <!-- Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
+                        </svg>
+                    </button>
+                    <TenantDurationPerDayLineChart v-if="analyticsStore.durationPerDay.length > 0"
+                        :data="analyticsStore.durationPerDay" colour="#5f31dd" />
+                    <div v-else>No data yet</div>
 
+                </div>
+                <figcaption class="">cumulative time on platform</figcaption>
+            </div>
+            <div class="col-lg-4 chart-col position-relative">
+                <div id="tenant-students-pie-chart-container">
+                    <button class="position-absolute download-btn btn" @click="
+                        downloadData(
+                            analyticsStore.percentageStudentsMasteredOneSkill,
+                            'Percentage-students-completed-one-skill'
+                        )
+                        ">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
+                            <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
+                        </svg>
+                    </button>
+                    <TenantPercentageStudentsMasteredAtLeastOneSkillPieChart v-if="
+                        analyticsStore.percentageStudentsMasteredOneSkill.length > 0
+                    " :data="analyticsStore.percentageStudentsMasteredOneSkill" />
+                    <p v-else>No data yet</p>
+                </div>
+                <figcaption class="">have mastered at least one skill</figcaption>
+            </div>
+        </div>
+        <div class="row chart-row position-relative">
+            <div id="time-per-skill-chart-container">
+                <button class="position-absolute download-btn btn" @click="
+                    downloadData(
+                        analyticsStore.avgTimeOnSkills,
+                        'Avg-time-per-skill'
+                    )
+                    ">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
+                        <!-- Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
+                    </svg>
+                </button>
+                <TenantAvgInteractionTimePerSkillHorizontalBarChart v-if="analyticsStore.avgTimeOnSkills.length > 0"
+                    :data="analyticsStore.avgTimeOnSkills" colour="purple" class="" />
+                <p v-else>No data yet</p>
+            </div>
+              <figcaption class="">time per skill</figcaption>
+        </div>
+    </div>
         <!-- Tutorial modal for initial introduction -->
         <div v-if="showTutorialTip1" class="modal">
             <div class="modal-content">
@@ -278,122 +317,55 @@ export default {
                     buttons at the top right.
                 </p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(1)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(1)">
                         close
                     </button>
                 </div>
             </div>
         </div>
-
-        <div class="chart">
-            <h2 class="h4 heading d-flex justify-content-between">
-                Time per day
-                <button
-                    class="btn"
-                    @click="
-                        downloadData(
-                            analyticsStore.durationPerDay,
-                            'Time-per-day'
-                        )
-                    "
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 384 512"
-                        width="18"
-                        height="18"
-                    >
-                        <!-- Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                        <path
-                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
-                        />
-                    </svg>
-                </button>
-            </h2>
-            <TenantDurationPerDayLineChart
-                v-if="analyticsStore.durationPerDay.length > 0"
-                :data="analyticsStore.durationPerDay"
-                colour="#5f31dd"
-                class="mb-5"
-            />
-            <div v-else style="height: 500px">No data yet</div>
-        </div>
-        <hr class="mt-5 mb-5" />
-        <div class="row">
-            <h2 class="h4 heading d-flex justify-content-between">
-                Average interaction time per skill
-                <button
-                    class="btn"
-                    @click="
-                        downloadData(
-                            analyticsStore.avgTimeOnSkills,
-                            'Avg-time-per-skill'
-                        )
-                    "
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 384 512"
-                        width="18"
-                        height="18"
-                    >
-                        <!-- Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                        <path
-                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
-                        />
-                    </svg>
-                </button>
-            </h2>
-            <TenantAvgInteractionTimePerSkillHorizontalBarChart
-                v-if="analyticsStore.avgTimeOnSkills.length > 0"
-                :data="analyticsStore.avgTimeOnSkills"
-                colour="purple"
-                class=""
-            />
-            <p v-else>No data yet</p>
-        </div>
-        <hr class="mt-5 mb-5" />
-        <div class="row">
-            <h2 class="h4 heading d-flex justify-content-between">
-                Students who completed at least one skill
-                <button
-                    class="btn"
-                    @click="
-                        downloadData(
-                            analyticsStore.percentageStudentsMasteredOneSkill,
-                            'Percentage-students-completed-one-skill'
-                        )
-                    "
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 384 512"
-                        width="18"
-                        height="18"
-                    >
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                        <path
-                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
-                        />
-                    </svg>
-                </button>
-            </h2>
-            <TenantPercentageStudentsMasteredAtLeastOneSkillPieChart
-                v-if="
-                    analyticsStore.percentageStudentsMasteredOneSkill.length > 0
-                "
-                :data="analyticsStore.percentageStudentsMasteredOneSkill"
-                class="mb-5"
-            />
-            <p v-else class="mb-5">No data yet</p>
-        </div>
-    </div>
 </template>
 
 <style scoped>
+.download-btn {
+    right: 10px;
+    top: 10px;
+}
+
+.chart-row {
+    height: calc(50% - 20px);
+}
+
+.chart-col {
+    height: 100%;
+}
+
+.chart-page {
+    height: calc(100vh - 88px);
+    overflow: auto;
+}
+
+#engagement-chart-container {
+    height: calc(100% - 35px);
+    width: 100%;
+}
+
+#tenant-students-pie-chart-container, #time-per-skill-chart-container {
+    height: calc(100% - 35px);
+    width: 100%;
+}
+
+.download-btn {
+    right: 10px;
+    top: 10px;
+}
+
+/* Styles for screens smaller than 600px (e.g., most mobile phones) */
+@media (max-width: 992px) {
+    .chart-col {
+        height: 50%;
+    }
+}
+
 /* Modals */
 .modal {
     display: block;
@@ -450,6 +422,7 @@ export default {
 
 /* Small devices (portrait phones) */
 @media (max-width: 480px) {
+
     /* Modal Content/Box */
     .modal-content {
         width: 90% !important;
@@ -457,6 +430,7 @@ export default {
         margin-top: 30%;
     }
 }
+
 /* Main Tab Styling */
 .tab-btn {
     background-color: #f8f9fa;
@@ -495,7 +469,7 @@ export default {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.btn-check:checked + .filter-btn {
+.btn-check:checked+.filter-btn {
     background-color: #495057;
     border-color: #495057;
     color: white;
@@ -504,6 +478,7 @@ export default {
 
 /* Touch Device Optimizations */
 @media (hover: none) and (pointer: coarse) {
+
     .tab-btn:hover,
     .filter-btn:hover {
         transform: none;
@@ -545,7 +520,8 @@ export default {
     border-style: solid; */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     width: fit-content;
-    margin-bottom: 0 !important; /* Remove any margin that might push content */
+    margin-bottom: 0 !important;
+    /* Remove any margin that might push content */
 }
 
 .narrow-info-panel {

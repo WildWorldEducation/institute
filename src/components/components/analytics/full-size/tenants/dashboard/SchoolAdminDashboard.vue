@@ -4,8 +4,8 @@ import { useAnalyticsStore } from '../../../../../../stores/AnalyticsStore';
 import { useUserDetailsStore } from '../../../../../../stores/UserDetailsStore';
 import { useUsersStore } from '../../../../../../stores/UsersStore';
 import SchoolProgressChart from '../../../../../components/analytics/full-size/tenants/dashboard/SchoolProgressChart.vue';
-import SchoolComparisonChart from '../../../../../components/analytics/full-size/tenants/dashboard/SchoolComparisonChart.vue';
 import SchoolTimeChart from '../../../../../components/analytics/full-size/tenants/dashboard/SchoolTimeChart.vue';
+import TenantFailedAssessmentsByRootSubjectHorizontalBarChart from '../../../../../components/analytics/full-size/tenants/TenantFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
 
 export default {
     name: 'School-Admin-Class-Dashboard',
@@ -32,8 +32,8 @@ export default {
     },
     components: {
         SchoolProgressChart,
-        SchoolComparisonChart,
-        SchoolTimeChart
+        SchoolTimeChart,
+        TenantFailedAssessmentsByRootSubjectHorizontalBarChart
     },
     async created() {
         // Get teachers
@@ -46,6 +46,9 @@ export default {
             await this.getComparisonData();
 
         await this.getSchoolData();
+
+        if (this.analyticsStore.rootSubjectsFailedAssessments.length == 0)
+            await this.getFailedAssessmentsBySubject();
     },
     methods: {
         async getTeachers(tenantId) {
@@ -176,7 +179,26 @@ export default {
                     );
                 }
             });
-        }
+        },
+        async getFailedAssessmentsBySubject() {
+            try {
+                const response = await fetch(
+                    `/student-analytics/failed-assessments-by-subject/tenant/${this.userDetailsStore.tenantId}`
+                );
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                this.analyticsStore.rootSubjectsFailedAssessments =
+                    await response.json();
+               
+            } catch (error) {
+                console.error(
+                    'Error fetching cohort mastered assessments:',
+                    error
+                );
+                this.analyticsStore.rootSubjectsFailedAssessments = [];
+            }
+        },
     }
 };
 </script>
@@ -186,27 +208,19 @@ export default {
         <!-- Left column -->
         <div class="col-lg-1 col-md-2">
             <div class="d-flex bg-light rounded p-2">
-                <button
-                    :class="
-                        isSchoolSelected
-                            ? 'isCurrentlySelected'
-                            : 'side-buttons'
-                    "
-                    @click="selectElement('school')"
-                >
+                <button :class="isSchoolSelected
+                    ? 'isCurrentlySelected'
+                    : 'side-buttons'
+                    " @click="selectElement('school')">
                     school
                 </button>
             </div>
             <div v-for="teacher in teachers" :key="teacher.id">
                 <div class="d-flex bg-light rounded p-2">
-                    <button
-                        :class="
-                            teacher.id === selectedTeacher.id
-                                ? 'isCurrentlySelected'
-                                : 'side-buttons'
-                        "
-                        @click="selectElement(teacher)"
-                    >
+                    <button :class="teacher.id === selectedTeacher.id
+                        ? 'isCurrentlySelected'
+                        : 'side-buttons'
+                        " @click="selectElement(teacher)">
                         {{ teacher.username }}
                     </button>
                 </div>
@@ -235,59 +249,44 @@ export default {
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
                     <div class="col-md h-100">
-                        <RouterLink
-                            to="/reports/academics"
-                            class=""
-                            target="_blank"
-                        >
+                        <RouterLink to="/progress-report" class="" target="_blank">
                             <h2 class="heading h5">Progress</h2>
                         </RouterLink>
                         <div id="progress-chart-container">
-                            <SchoolProgressChart
-                                ref="progressChart"
-                                v-if="
-                                    analyticsStore.progress.tenant.length > 0 ||
-                                    analyticsStore.progress.class.length > 0
-                                "
-                            />
+                            <SchoolProgressChart ref="progressChart" v-if="
+                                analyticsStore.progress.tenant.length > 0 ||
+                                analyticsStore.progress.class.length > 0
+                            " />
                             <p v-else>No data</p>
                         </div>
                     </div>
                     <div class="col-md">
-                        <h2 class="heading h5">Subject comparison</h2>
-                        <SchoolComparisonChart
-                            v-if="
-                                analyticsStore.rootSubjectsPassedAssessments
-                                    .length > 0
-                            "
-                            :colour="'#5f31dd'"
-                            ref="comparisonChart"
-                        />
+                          <RouterLink to="/challenges-report" class="" target="_blank">
+                        <h2 class="heading h5">Challenges</h2>
+                        </RouterLink>
+                         <div id="failed-chart-container">
+                             <TenantFailedAssessmentsByRootSubjectHorizontalBarChart v-if="
+                                 analyticsStore.rootSubjectsFailedAssessments.length > 0
+                             " :data="analyticsStore.rootSubjectsFailedAssessments" ref="failedAssessmentsChart" />
+                         </div>
                     </div>
                 </div>
 
                 <div class="dash-row row mt-2 mb-2">
                     <div class="col-md position-relative">
-                        <RouterLink
-                            to="/reports/cost"
-                            class="me-2 position-absolute chart-heading"
-                            target="_blank"
-                        >
+                        <RouterLink to="/reports/cost" class="me-2 position-absolute chart-heading" target="_blank">
                             <h2 class="heading h5">Cost By Subject</h2>
                         </RouterLink>
                     </div>
                     <div class="col-md h-100">
-                        <RouterLink to="/reports/engagement" target="_blank">
+                        <RouterLink to="/engagement-report" target="_blank">
                             <h2 class="heading h5">Weekly engagement</h2>
                         </RouterLink>
                         <div id="time-chart-container">
-                            <SchoolTimeChart
-                                v-if="
-                                    analyticsStore.time.tenant.length > 0 ||
-                                    analyticsStore.time.class.length > 0
-                                "
-                                ref="timeChart"
-                            />
+                            <SchoolTimeChart v-if="
+                                analyticsStore.time.tenant.length > 0 ||
+                                analyticsStore.time.class.length > 0
+                            " ref="timeChart" />
                             <p v-else>No data</p>
                         </div>
                     </div>
@@ -354,7 +353,8 @@ export default {
 }
 
 #progress-chart-container,
-#time-chart-container {
+#time-chart-container,
+#failed-chart-container {
     height: calc(100% - 35px);
     width: 100%;
 }

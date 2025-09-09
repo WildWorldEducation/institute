@@ -738,27 +738,40 @@ const router = createRouter({
             }
         },
         {
-            path: '/reports/academics',
-            name: 'school-admin-academics',
+            path: '/progress-report',
+            name: 'school-admin-progress-report',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/SchoolAdminAnalyticsAcademicReportView.vue'
+                    '../components/pages/analytics/school-admin-analytics/SchoolAdminProgressReportView.vue'
                 ),
             meta: {
-                title: 'School Admin Academics',
+                title: 'Progress Report',
                 requiresAuth: true,
                 roles: ['school_admin']
             }
         },
         {
-            path: '/reports/engagement',
-            name: 'school-admin-engagement',
+            path: '/challenges-report',
+            name: 'school-admin-challenges-report',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/SchoolAdminAnalyticsEngagementReportView.vue'
+                    '../components/pages/analytics/school-admin-analytics/SchoolAdminChallengesReportView.vue'
                 ),
             meta: {
-                title: 'School Admin Engagement',
+                title: 'Challenges Report',
+                requiresAuth: true,
+                roles: ['school_admin']
+            }
+        },
+        {
+            path: '/engagement-report',
+            name: 'school-admin-engagement-report',
+            component: () =>
+                import(
+                    '../components/pages/analytics/school-admin-analytics/SchoolAdminEngagementReportView.vue'
+                ),
+            meta: {
+                title: 'Engagement Report',
                 requiresAuth: true,
                 roles: ['school_admin']
             }
