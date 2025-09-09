@@ -777,14 +777,14 @@ const router = createRouter({
             }
         },
         {
-            path: '/reports/cost',
-            name: 'school-admin-cost',
+            path: '/cost-report',
+            name: 'school-admin-cost-report',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/SchoolAdminAnalyticsCostReportView.vue'
+                    '../components/pages/analytics/school-admin-analytics/SchoolAdminCostReportView.vue'
                 ),
             meta: {
-                title: 'School Admin Cost',
+                title: 'Cost Report',
                 requiresAuth: true,
                 roles: ['school_admin']
             }

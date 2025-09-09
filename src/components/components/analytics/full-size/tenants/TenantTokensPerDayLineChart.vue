@@ -6,16 +6,19 @@ export default {
     props: ['data', 'colour'],
     data() {
         return {
-            padding: 60
+           
         };
     },
     mounted() {
-        const data = this.data;
-        const container = d3.select('#tenant-tokens-per-day-chart-container');
+        const data = this.data;       
 
-        // Declare the chart dimensions and margins.
-        const width = 928;
-        const height = 500;
+  // Declare the chart dimensions and margins.
+        const width = document.getElementById(
+            'tokens-chart-container'
+        ).clientWidth;
+        const height = document.getElementById(
+            'tokens-chart-container'
+        ).clientHeight;
         const marginTop = 20;
         const marginRight = 30;
         const marginBottom = 30;
@@ -41,7 +44,7 @@ export default {
 
         // Create the SVG container.
         const svg = d3
-            .select('#tenant-tokens-per-day-chart-container')
+            .select('#tokens-chart-container')
             .append('svg')
             .attr('width', width)
             .attr('height', height)
@@ -90,7 +93,7 @@ export default {
 </script>
 
 <template>
-    <div id="tenant-tokens-per-day-chart-container"></div>
+    
 </template>
 
 <style scoped></style>
