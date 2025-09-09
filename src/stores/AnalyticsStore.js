@@ -34,6 +34,11 @@ export const useAnalyticsStore = defineStore('analytics', {
                 class: [],
                 tenant: []
             },
+            cost: {
+                student: [],
+                class: [],
+                tenant: []
+            },
             // Other
             studentDurationsPerDay: [],
             studentSkillDurations: [],
@@ -386,10 +391,25 @@ export const useAnalyticsStore = defineStore('analytics', {
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {
                         data[i].date = new Date(data[i].date);
-                         data[i].minutes = data[i].quantity / (1000 * 60);
+                        data[i].minutes = data[i].quantity / (1000 * 60);
                     }
                     data.sort((a, b) => a.date - b.date);
                     this.time.tenant = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
+        async getSchoolCost(tenantId, dataMode) {           
+            await fetch(`/student-analytics/tenant-tokens-per-day/${dataMode}/${tenantId}}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                        data[i].minutes = data[i].quantity / (1000 * 60);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.cost.tenant = data;
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
