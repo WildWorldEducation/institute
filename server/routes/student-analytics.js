@@ -2088,6 +2088,7 @@ router.get('/total-tokens-per-skill/tenant/:tenantId', (req, res, next) => {
 });
 
 router.get('/tenant-tokens-per-day/:dataMode/:tenantId', (req, res, next) => {
+    console.log(req.params);
     // Check if logged in.
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
@@ -2123,6 +2124,8 @@ router.get('/tenant-tokens-per-day/:dataMode/:tenantId', (req, res, next) => {
                         error: 'No skill activity'
                     });
                 }
+
+                console.log(results);
 
                 res.json(results);
             } catch (err) {

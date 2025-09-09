@@ -124,7 +124,7 @@ export default {
                     </div>
                 </div>
                 <div class="col-md">
-                    <h2 class="heading h5">Subject comparison</h2>
+                    <h2 class="heading h5">Challenges</h2>
                 </div>
             </div>
             <div class="dash-row row mt-2 mb-2">
