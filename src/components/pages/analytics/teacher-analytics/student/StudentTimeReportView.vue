@@ -29,7 +29,8 @@ export default {
             durationsPerDay: [],
             allSkillsDuration: 0,
             totalTimeOnPlatformDownloadData: [],
-            minutesPerSkillDownloadData: []
+            minutesPerSkillDownloadData: [],
+            averageDurationsPerDay: []
         };
     },
     async created() {
@@ -85,13 +86,16 @@ export default {
                 `/student-analytics/student-duration-per-day/${this.studentId}`
             )
                 .then((response) => response.json())
-                .then((data) => {
+                .then((resData) => {
+                    const data = resData.studentTime;
                     for (let i = 0; i < data.length; i++) {
                         data[i].formattedQuantity =
                             data[i].quantity / (1000 * 60);
                         data[i].date = new Date(data[i].date);
                     }
                     data.sort((a, b) => a.date - b.date);
+                    console.log('response data: ');
+                    console.log(data);
                     this.durationsPerDay = data;
                     this.totalTimeOnPlatformDownloadData =
                         this.durationsPerDay.map((e) => {
@@ -100,6 +104,14 @@ export default {
                                 minutes: e.formattedQuantity
                             };
                         });
+                    const averageData = resData.averageTime;
+                    for (let i = 0; i < averageData.length; i++) {
+                        averageData[i].formattedQuantity =
+                            averageData[i].quantity / (1000 * 60);
+                        averageData[i].date = new Date(averageData[i].date);
+                    }
+                    averageData.sort((a, b) => a.date - b.date);
+                    this.averageDurationsPerDay = averageData;
                 })
                 .catch((error) => {
                     console.error(
@@ -180,6 +192,8 @@ export default {
                     <StudentDurationPerDayLineChart
                         v-if="durationsPerDay.length > 0"
                         :data="durationsPerDay"
+                        :averageDuration="averageDurationsPerDay"
+                        colour="black"
                     />
                     <p v-else>There is no data to show yet.</p>
                 </div>

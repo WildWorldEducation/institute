@@ -647,8 +647,8 @@ const router = createRouter({
             }
         },
         {
-            path: '/student/:studentId/total-time',
-            name: 'student-time-report',
+            path: '/student/:studentId/engagement',
+            name: 'student-engagement-report',
             component: () =>
                 import(
                     '../components/pages/analytics/teacher-analytics/student/StudentTimeReportView.vue'

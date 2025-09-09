@@ -3,15 +3,17 @@ import * as d3 from 'd3';
 
 export default {
     name: 'StudentDurationPerDayLineChart',
-    props: ['data', 'colour'],
+    props: ['data', 'colour', 'averageDuration'],
     data() {
         return {};
     },
     mounted() {
         const data = this.data;
-
+        console.log('data: ');
+        console.log(data);
         const container = d3.select('#time-chart-container');
-
+        console.log('averageDuration');
+        console.log(this.averageDuration);
         // Declare the chart dimensions and margins.
         // Declare the chart dimensions and margins.
         const width = document.getElementById(
