@@ -354,11 +354,6 @@ export default {
     width: 100%;
 }
 
-.download-btn {
-    right: 10px;
-    top: 10px;
-}
-
 /* Styles for screens smaller than 600px (e.g., most mobile phones) */
 @media (max-width: 992px) {
     .chart-col {

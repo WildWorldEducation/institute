@@ -6,23 +6,23 @@ export default {
     props: ['data', 'colour'],
     data() {
         return {
-            padding: 60
+          
         };
     },
-    mounted() {
-        const container = d3.select('#tenant-tokens-per-skill-chart-container');
+    mounted() {       
 
-        // Specify the chart’s dimensions, based on a bar’s height.
-        const barHeight = 25;
+        // Specify the chart’s dimensions, based on a bar’s height.      
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
         const marginLeft = 200;
-        const width = 1000;
-        const height =
-            Math.ceil((this.data.length + 0.1) * barHeight) +
-            marginTop +
-            marginBottom;
+        // Declare the chart dimensions and margins.
+        const width = document.getElementById(
+            'tokens-per-skill-chart-container'
+        ).clientWidth;
+        const height = document.getElementById(
+            'tokens-per-skill-chart-container'
+        ).clientHeight;
 
         // Create the scales.
         const x = d3
@@ -41,7 +41,7 @@ export default {
 
         // Create the SVG container.
         const svg = d3
-            .select('#tenant-tokens-per-skill-chart-container')
+            .select('#tokens-per-skill-chart-container')
             .append('svg')
             .attr('width', width)
             .attr('height', height)
@@ -97,12 +97,9 @@ export default {
 </script>
 
 <template>
-    <div id="tenant-tokens-per-skill-chart-container"></div>
+    
 </template>
 
 <style scoped>
-#tenant-tokens-per-skill-chart-container {
-    overflow-y: auto;
-    max-height: 500px;
-}
+
 </style>
