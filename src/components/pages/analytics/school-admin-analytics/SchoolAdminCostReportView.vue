@@ -261,7 +261,7 @@ export default {
             </div>
         </div>
         <div class="row chart-row">
-            <div class="col chart-col position-relative">
+            <div class="col-md chart-col position-relative">
                 <div id="tokens-to-master-chart-container">
                     <button class="btn position-absolute download-btn" @click="
                         downloadData(
@@ -283,7 +283,7 @@ export default {
                 <figcaption class="">Average number of tokens spent to master a skill</figcaption>
             </div>
 
-            <div class="col chart-col position-relative">
+            <div class="col-md chart-col position-relative">
                 <div id="tokens-per-skill-chart-container">
                     <button class="btn position-absolute download-btn" @click="
                         downloadData(
