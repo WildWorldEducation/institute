@@ -220,6 +220,10 @@ export default {
 
 /* Styles for screens smaller than 600px (e.g., most mobile phones) */
 @media (max-width: 599px) {
+.dashboard {
+    overflow: auto;
+}
+
     .top-row {
         height: unset;
         text-align: left;
@@ -229,7 +233,10 @@ export default {
         height: unset;
     }
 
-    #progress-chart-container {
+    #progress-chart-container,
+    #time-chart-container,
+#cost-chart-container,
+#failed-chart-container {
         height: 200px;
     }
 
