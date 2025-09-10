@@ -1,6 +1,7 @@
 <script>
 import { useUsersStore } from '../../../../../stores/UsersStore';
 import { useTeacherAnalyticsStore } from '../../../../../stores/TeacherAnalyticsStore';
+import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
 import TimePerSkillHorizontalBarChart from '../../../../components/analytics/full-size/students/TimePerSkillHorizontalBarChart.vue';
 import StudentSkillActivityChart from '../../../../components/analytics/full-size/students/StudentSkillActivityChart.vue';
 import StudentDurationPerDayLineChart from '../../../../components/analytics/full-size/students/StudentDurationPerDayLineChart.vue';
@@ -10,9 +11,11 @@ export default {
     setup() {
         const usersStore = useUsersStore();
         const teacherAnalyticsStore = useTeacherAnalyticsStore();
+        const userDetailsStore = useUserDetailsStore();
         return {
             usersStore,
-            teacherAnalyticsStore
+            teacherAnalyticsStore,
+            userDetailsStore
         };
     },
     components: {
@@ -82,8 +85,13 @@ export default {
         //         });
         // },
         async getStudentDurationPerDay() {
+            let url = `/student-analytics/student-duration-per-day-class/${this.studentId}/${this.userDetailsStore.userId}`;
+
+            if (this.userDetailsStore.role === 'school_admin') {
+                url = `/student-analytics/student-duration-per-day/${this.studentId}/${this.userDetailsStore.userId}`;
+            }
             fetch(
-                `/student-analytics/student-duration-per-day/${this.studentId}`
+                `/student-analytics/student-duration-per-day-class/${this.studentId}/${this.userDetailsStore.userId}`
             )
                 .then((response) => response.json())
                 .then((resData) => {

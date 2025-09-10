@@ -291,7 +291,7 @@ router.get(
 );
 
 /* Get duration on platform per student per day */
-router.get('/student-duration-per-day/:studentId', async (req, res, next) => {
+router.get('/student-duration-per-day-class/:studentId/:instructorId', async (req, res, next) => {
     // Check if logged in.
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
@@ -313,13 +313,11 @@ router.get('/student-duration-per-day/:studentId', async (req, res, next) => {
         //     FROM user_duration_tokens_per_day
         //     GROUP BY date
         //     ORDER BY date ASC;`;
-        sqlQuery = `SELECT user_duration_tokens_per_day.date, AVG(duration) AS quantity
+        sqlQuery = `SELECT user_duration_tokens_per_day.date AS date, AVG(duration) AS quantity
                     FROM user_duration_tokens_per_day
-                    WHERE user_duration_tokens_per_day.user_id IN (SELECT cohorts_users.user_id 
-						  									  FROM cohorts_users  
-						  									  WHERE cohorts_users.cohort_id IN (SELECT cohorts_users.cohort_id
-															  						FROM cohorts_users
-																					WHERE cohorts_users.user_id = ${conn.escape(req.params.studentId)}))
+                    WHERE user_duration_tokens_per_day.user_id IN (SELECT instructor_students.student_id
+															  FROM instructor_students
+															  WHERE instructor_students.instructor_id  = ${conn.escape(req.params.instructorId)})
                     GROUP BY date`
         const averageResult = await query(sqlQuery);
         console.log(averageResult)
