@@ -10,9 +10,6 @@ export default {
     },  
     methods: {
         createChart(data) {
-
-            console.log('Creating teacher cost chart with data:', data);
-            // Declare the chart dimensions and margins.
              // Declare the chart dimensions and margins.
             const width = document.getElementById(
                 'cost-chart-container'

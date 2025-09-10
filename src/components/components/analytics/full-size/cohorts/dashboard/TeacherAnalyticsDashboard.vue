@@ -5,6 +5,8 @@ import { useUsersStore } from '../../../../../../stores/UsersStore';
 import TeacherProgressChart from './TeacherProgressChart.vue';
 import TeacherTimeChart from './TeacherTimeChart.vue';
 import TeacherCostChart from './TeacherCostChart.vue';
+import TenantFailedAssessmentsByRootSubjectHorizontalBarChart from '../../../../../components/analytics/full-size/tenants/TenantFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
+
 
 export default {
     name: 'Teacher-Analytics-Dashboard',
@@ -27,12 +29,15 @@ export default {
     components: {
         TeacherProgressChart,
         TeacherTimeChart,
-        TeacherCostChart
+        TeacherCostChart,
+        TenantFailedAssessmentsByRootSubjectHorizontalBarChart
     },
     async created() {
         await this.getProgressData();
         await this.getTimeData();
         await this.getCostData();
+
+        await this.getChallengesData();
     },
     methods: {
         // Progress chart
@@ -108,6 +113,9 @@ export default {
                 );
                 this.analyticsStore.rootSubjectsPassedAssessments = [];
             }
+        },
+        async getChallengesData() {
+            await this.analyticsStore.getTeacherClassFailedAssessmentsBySubject(this.userDetailsStore.userId);
         }
     }
 };
@@ -141,8 +149,14 @@ export default {
                         " />
                     </div>
                 </div>
-                <div class="col-md">
+                <div class="col-md h-100">
                     <h2 class="heading h5">Challenges</h2>
+
+                    <div id="failed-chart-container">
+                        <TenantFailedAssessmentsByRootSubjectHorizontalBarChart
+                            v-if="analyticsStore.cohortRootSubjectsFailedAssessments.length > 0"
+                            :data="analyticsStore.cohortRootSubjectsFailedAssessments" />
+                    </div>
                 </div>
             </div>
             <div class="dash-row row">
@@ -159,8 +173,8 @@ export default {
                 </div>
                 <div class="col-md position-relative h-100">
                     <RouterLink to="/reports/engagement" class="chart-heading">
-                            <h2 class="heading h5">Engagement</h2>
-                        </RouterLink>
+                        <h2 class="heading h5">Engagement</h2>
+                    </RouterLink>
                     <div id="time-chart-container">
                         <TeacherTimeChart ref="timeChart" v-if="
                             analyticsStore.time.tenant.length > 0 ||
@@ -191,7 +205,9 @@ export default {
 }
 
 #progress-chart-container,
-#time-chart-container, #cost-chart-container {
+#time-chart-container,
+#cost-chart-container,
+#failed-chart-container {
     height: calc(100% - 35px);
     width: 100%;
 }

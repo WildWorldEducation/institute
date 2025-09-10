@@ -7,7 +7,8 @@ export default {
     data() {
         return {};
     },
-    mounted() {           
+    mounted() {          
+         
         // Specify the chart’s dimensions, based on a bar’s height.        
         const marginTop = 0;
         const marginRight = 0;
