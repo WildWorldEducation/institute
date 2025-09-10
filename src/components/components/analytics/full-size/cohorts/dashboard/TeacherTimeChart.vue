@@ -11,8 +11,7 @@ export default {
     },
     mounted() {},
     methods: {
-        createChart(data) {            
-
+        createChart(data) {           
             // Work out which array to use for the axes
             if (data.class.length == 0) {
                 this.axisData = data.tenant;
@@ -34,7 +33,7 @@ export default {
                 } else {
                     this.axisData = data.tenant;
                 }
-            }
+            }         
 
             // Convert object into array of series
             const series = Object.entries(data).map(([name, values]) => ({
@@ -62,7 +61,7 @@ export default {
 
             // Declare the y (vertical position) scale.
             const y = d3.scaleLinear(
-                [0, d3.max(this.axisData, (d) => d.formattedQuantity)],
+                [0, d3.max(this.axisData, (d) => d.minutes)],
                 [height - marginBottom, marginTop]
             );            
 
@@ -89,28 +88,20 @@ export default {
             // Add the x-axis.
             svg.append('g')
                 .attr('transform', `translate(0,${height - marginBottom})`)
-                .call(d3.axisBottom(x).ticks(this.axisData.length).tickSizeOuter(0));
+                .call(d3.axisBottom(x).ticks(width / 100).tickSizeOuter(0));
 
-            // Add the y-axis, remove the domain line, add grid lines and a label.
+            // Add the y-axis, add grid lines and a label.
             svg.append('g')
                 .attr('transform', `translate(${marginLeft},0)`)
-                .call(d3.axisLeft(y).ticks(height / 40))
-                .call((g) => g.select('.domain').remove())
+                .call(d3.axisLeft(y).ticks(height / 80))               
                 .call((g) =>
                     g
                         .selectAll('.tick line')
                         .clone()
                         .attr('x2', width - marginLeft - marginRight)
-                        .attr('stroke-opacity', 0.2)
-                )
-                .call((g) =>
-                    g
-                        .append('text')
-                        .attr('x', -marginLeft)
-                        .attr('y', 10)
-                        .attr('fill', 'currentColor')
-                        .attr('text-anchor', 'start')
+                        .attr('stroke-opacity', 0.1)
                 );
+               
 
             // Draw the lines
             svg.selectAll('.line')
@@ -124,7 +115,8 @@ export default {
                 .attr('stroke-width', 3)
                 .attr('d', (d) => {
                     console.log(d);
-                    line(d.values);});
+                  return line(d.values);
+                });
         }
     }
 };

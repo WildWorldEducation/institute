@@ -127,17 +127,18 @@ export default {
                     <h2 class="heading h5">Challenges</h2>
                 </div>
             </div>
-            <div class="dash-row row mt-2 mb-2">
-                <div class="col-md position-relative">
+            <div class="dash-row row">
+                <div class="col-md position-relative h-100">
                     <RouterLink to="/reports/cost" class="me-2 position-absolute chart-heading">
                         <h2 class="heading h5">Cost By Subject</h2>
                     </RouterLink>
                 </div>
-                <div class="col-md position-relative">
-                    <div id="time-chart-container">
-                        <RouterLink to="/reports/engagement" class="position-absolute chart-heading">
+                <div class="col-md position-relative h-100">
+                    <RouterLink to="/reports/engagement" class="chart-heading">
                             <h2 class="heading h5">Engagement</h2>
                         </RouterLink>
+                    <div id="time-chart-container">
+                        
                         <TeacherTimeChart ref="timeChart" v-if="
                             analyticsStore.time.tenant.length > 0 ||
                             analyticsStore.time.class.length > 0

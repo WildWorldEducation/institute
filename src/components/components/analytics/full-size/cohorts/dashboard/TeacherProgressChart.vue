@@ -9,10 +9,10 @@ export default {
             axisData: []
         };
     },
-    mounted() {},
+    mounted() { },
     methods: {
-        createChart(data) {            
-            console.log(data);
+        createChart(data) {
+
             // Work out which array to use for the axes
             if (data.class.length == 0) {
                 this.axisData = data.tenant;
@@ -65,7 +65,7 @@ export default {
             const y = d3.scaleLinear(
                 [0, d3.max(this.axisData, (d) => d.quantity)],
                 [height - marginBottom, marginTop]
-            );        
+            );
 
             // Declare the line generator.
             const line = d3
@@ -97,7 +97,7 @@ export default {
                         .tickSizeOuter(0)
                 );
 
-            // Add the y-axis, remove the domain line, add grid lines and a label.
+            // Add the y-axis, add grid lines and a label.
             svg.append('g')
                 .attr('transform', `translate(${marginLeft},0)`)
                 .call(d3.axisLeft(y).ticks(height / 80))
@@ -119,7 +119,9 @@ export default {
                     else return '#ff7f0e'; // orange
                 })
                 .attr('stroke-width', 3)
-                .attr('d', (d) => line(d.values));
+                .attr('d', (d) => {                  
+                    return line(d.values);
+                });
         }
     }
 };
