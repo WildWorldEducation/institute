@@ -24,7 +24,6 @@ export default {
         console.log(this.averageDuration);
 
         // Declare the chart dimensions and margins.
-        // Declare the chart dimensions and margins.
         const width = document.getElementById(
             'time-chart-container'
         ).clientWidth;
@@ -134,6 +133,16 @@ export default {
             .attr('stroke', (d) => color(d.name)) // ✅ use color scale
             .attr('stroke-width', 2)
             .attr('d', (d) => line(d.values));
+
+        // Legend
+        svg.selectAll('.legend')
+            .data(chartData)
+            .enter()
+            .append('text')
+            .attr('x', width - marginRight - 80)
+            .attr('y', (d, i) => marginTop + i * 20)
+            .attr('fill', (d) => color(d.name))
+            .text((d) => d.name);
     }
 };
 </script>

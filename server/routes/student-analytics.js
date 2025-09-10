@@ -305,11 +305,24 @@ router.get('/student-duration-per-day/:studentId', async (req, res, next) => {
             ORDER BY date ASC;`;
 
         const studentResult = await query(sqlQuery);
-        sqlQuery = `SELECT date, AVG(duration) AS quantity
-            FROM user_duration_tokens_per_day
-            GROUP BY date
-            ORDER BY date ASC;`;
+        sqlQuery = `SELECT cohorts_users.cohort_id
+                    FROM cohorts_users
+                    WHERE cohorts_users.user_id = ${conn.escape(req.params.studentId)}`
+
+        // sqlQuery = `SELECT date, AVG(duration) AS quantity
+        //     FROM user_duration_tokens_per_day
+        //     GROUP BY date
+        //     ORDER BY date ASC;`;
+        sqlQuery = `SELECT user_duration_tokens_per_day.date, AVG(duration) AS quantity
+                    FROM user_duration_tokens_per_day
+                    WHERE user_duration_tokens_per_day.user_id IN (SELECT cohorts_users.user_id 
+						  									  FROM cohorts_users  
+						  									  WHERE cohorts_users.cohort_id IN (SELECT cohorts_users.cohort_id
+															  						FROM cohorts_users
+																					WHERE cohorts_users.user_id = ${conn.escape(req.params.studentId)}))
+                    GROUP BY date`
         const averageResult = await query(sqlQuery);
+        console.log(averageResult)
         res.json({
             studentTime: studentResult,
             averageTime: averageResult
