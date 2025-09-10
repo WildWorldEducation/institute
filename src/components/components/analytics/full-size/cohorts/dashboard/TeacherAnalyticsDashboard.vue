@@ -139,7 +139,7 @@ export default {
             <!-- This is where charts / dashboard cards go -->
             <div class="dash-row row">
                 <div class="col-md h-100">
-                    <RouterLink to="/reports/academics" class="">
+                    <RouterLink to="/progress-report" class="">
                         <h2 class="heading h5">Progress</h2>
                     </RouterLink>
                     <div id="progress-chart-container" class="position-relative">
@@ -172,7 +172,7 @@ export default {
                     </div>
                 </div>
                 <div class="col-md position-relative h-100">
-                    <RouterLink to="/reports/engagement" class="chart-heading">
+                    <RouterLink to="/engagement-report" class="chart-heading">
                         <h2 class="heading h5">Engagement</h2>
                     </RouterLink>
                     <div id="time-chart-container">

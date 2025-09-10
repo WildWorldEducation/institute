@@ -179,7 +179,7 @@ export default {
                     </router-link>
 
                     <!-- Whether all students or cohort selected -->
-                    <router-link
+                    <!-- <router-link
                         v-if="
                             !cohortsStore.isAllStudentsSelected &&
                             this.cohortsStore.cohorts.length > 0
@@ -197,7 +197,7 @@ export default {
                         target="_blank"
                     >
                         Time on platform
-                    </router-link>
+                    </router-link> -->
                 </div>
             </div>
             <!-- Right column -->

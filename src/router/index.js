@@ -673,19 +673,19 @@ const router = createRouter({
                 roles: ['instructor', 'partner']
             }
         },
-        {
-            path: '/cohort/:cohortId/total-time',
-            name: 'cohort-time-report',
-            component: () =>
-                import(
-                    '../components/pages/analytics/teacher-analytics/cohort/CohortTimeReportView.vue'
-                ),
-            meta: {
-                title: 'Cohort Time Report',
-                requiresAuth: true,
-                roles: ['instructor', 'partner']
-            }
-        },
+        // {
+        //     path: '/cohort/:cohortId/total-time',
+        //     name: 'cohort-time-report',
+        //     component: () =>
+        //         import(
+        //             '../components/pages/analytics/teacher-analytics/cohort/CohortTimeReportView.vue'
+        //         ),
+        //     meta: {
+        //         title: 'Cohort Time Report',
+        //         requiresAuth: true,
+        //         roles: ['instructor', 'partner']
+        //     }
+        // },
         {
             path: '/cohort/:cohortId/skill-activity',
             name: 'cohort-skill-activity',
@@ -739,15 +739,15 @@ const router = createRouter({
         },
         {
             path: '/progress-report',
-            name: 'school-admin-progress-report',
+            name: 'progress-report',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/SchoolAdminProgressReportView.vue'
+                    '../components/pages/analytics/ProgressReportView.vue'
                 ),
             meta: {
                 title: 'Progress Report',
                 requiresAuth: true,
-                roles: ['school_admin']
+                roles: ['school_admin', 'instructor', 'partner']
             }
         },
         {
@@ -765,15 +765,15 @@ const router = createRouter({
         },
         {
             path: '/engagement-report',
-            name: 'school-admin-engagement-report',
+            name: 'engagement-report',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/SchoolAdminEngagementReportView.vue'
+                    '../components/pages/analytics/EngagementReportView.vue'
                 ),
             meta: {
                 title: 'Engagement Report',
                 requiresAuth: true,
-                roles: ['school_admin']
+                roles: ['school_admin', 'instructor', 'partner']
             }
         },
         {

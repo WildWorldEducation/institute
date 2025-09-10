@@ -1,9 +1,9 @@
 <script>
-import TenantAvgInteractionTimePerSkillHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantAvgInteractionTimePerSkillHorizontalBarChart.vue';
-import TenantPercentageStudentsMasteredAtLeastOneSkillPieChart from '../../../components/analytics/full-size/tenants/TenantPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
-import TenantDurationPerDayLineChart from '../../../components/analytics/full-size/tenants/TenantDurationPerDayLineChart.vue';
-import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
-import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
+import TenantAvgInteractionTimePerSkillHorizontalBarChart from './TenantAvgInteractionTimePerSkillHorizontalBarChart.vue';
+import TenantPercentageStudentsMasteredAtLeastOneSkillPieChart from './TenantPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
+import TenantDurationPerDayLineChart from './TenantDurationPerDayLineChart.vue';
+import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
+import { useAnalyticsStore } from '../../../../../stores/AnalyticsStore';
 
 export default {
     setup() {
