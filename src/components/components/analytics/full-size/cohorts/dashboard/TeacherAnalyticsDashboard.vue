@@ -4,6 +4,7 @@ import { useUserDetailsStore } from '../../../../../../stores/UserDetailsStore';
 import { useUsersStore } from '../../../../../../stores/UsersStore';
 import TeacherProgressChart from './TeacherProgressChart.vue';
 import TeacherTimeChart from './TeacherTimeChart.vue';
+import TeacherCostChart from './TeacherCostChart.vue';
 
 export default {
     name: 'Teacher-Analytics-Dashboard',
@@ -25,11 +26,13 @@ export default {
     },
     components: {
         TeacherProgressChart,
-        TeacherTimeChart
+        TeacherTimeChart,
+        TeacherCostChart
     },
     async created() {
         await this.getProgressData();
         await this.getTimeData();
+        await this.getCostData();
     },
     methods: {
         // Progress chart
@@ -60,6 +63,21 @@ export default {
                     // Access the ref here
                     this.$refs.timeChart.createChart(
                         this.analyticsStore.time
+                    );
+                }
+            });
+        },
+        async getCostData() {
+            await this.analyticsStore.getClassCost(this.userDetailsStore.userId, 'weekly');
+            await this.analyticsStore.getSchoolCost(
+                this.userDetailsStore.tenantId, 'weekly'
+            );
+
+            this.$nextTick(() => {
+                if (this.$refs.costChart) {
+                    // Access the ref here
+                    this.$refs.costChart.createChart(
+                        this.analyticsStore.cost.class
                     );
                 }
             });
@@ -129,16 +147,21 @@ export default {
             </div>
             <div class="dash-row row">
                 <div class="col-md position-relative h-100">
-                    <RouterLink to="/reports/cost" class="me-2 position-absolute chart-heading">
-                        <h2 class="heading h5">Cost By Subject</h2>
+                    <RouterLink to="/reports/cost" class="chart-heading">
+                        <h2 class="heading h5">Cost</h2>
                     </RouterLink>
+                    <div id="cost-chart-container">
+                        <TeacherCostChart ref="costChart" v-if="
+                            analyticsStore.cost.tenant.length > 0 ||
+                            analyticsStore.cost.class.length > 0
+                        " />
+                    </div>
                 </div>
                 <div class="col-md position-relative h-100">
                     <RouterLink to="/reports/engagement" class="chart-heading">
                             <h2 class="heading h5">Engagement</h2>
                         </RouterLink>
                     <div id="time-chart-container">
-                        
                         <TeacherTimeChart ref="timeChart" v-if="
                             analyticsStore.time.tenant.length > 0 ||
                             analyticsStore.time.class.length > 0
@@ -168,7 +191,7 @@ export default {
 }
 
 #progress-chart-container,
-#time-chart-container {
+#time-chart-container, #cost-chart-container {
     height: calc(100% - 35px);
     width: 100%;
 }

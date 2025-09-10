@@ -1201,6 +1201,53 @@ router.get('/cohort-skill-activity-report/:cohortId', (req, res, next) => {
  * FOR ALL STUDENTS OF AN INSTRUCTOR -------------------------------------------------------
  */
 
+router.get('/all-students-tokens-per-day/:dataMode/:teacherId', (req, res, next) => {   
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery;
+        if (req.params.dataMode == 'total') {
+            sqlQuery = `
+            SELECT date, SUM(user_duration_tokens_per_day.tokens) AS quantity
+            FROM user_duration_tokens_per_day
+            JOIN users
+            ON users.id = user_duration_tokens_per_day.user_id
+            where tenant_id = ${conn.escape(req.params.teacherId)}
+            GROUP BY date;`;
+        } else {
+            sqlQuery = `
+            SELECT date, SUM(user_duration_tokens_per_day.tokens) AS quantity
+            FROM user_duration_tokens_per_day
+            JOIN instructor_students
+            ON instructor_students.student_id = user_duration_tokens_per_day.user_id
+            where instructor_id = ${conn.escape(req.params.teacherId)}
+            AND date >= NOW() - INTERVAL 1 WEEK
+            GROUP BY date;
+            `;
+        }
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                if (results.length === 0) {
+                    return res.status(404).json({
+                        error: 'No skill activity'
+                    });
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+
 router.get(
     '/all-students-duration-per-day/:dataMode/:teacherId',
     (req, res, next) => {
@@ -2087,8 +2134,7 @@ router.get('/total-tokens-per-skill/tenant/:tenantId', (req, res, next) => {
     }
 });
 
-router.get('/tenant-tokens-per-day/:dataMode/:tenantId', (req, res, next) => {
-    
+router.get('/tenant-tokens-per-day/:dataMode/:tenantId', (req, res, next) => {   
     // Check if logged in.
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');

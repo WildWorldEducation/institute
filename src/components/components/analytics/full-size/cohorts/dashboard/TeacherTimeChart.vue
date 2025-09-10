@@ -114,7 +114,6 @@ export default {
                 })
                 .attr('stroke-width', 3)
                 .attr('d', (d) => {
-                    console.log(d);
                   return line(d.values);
                 });
         }
