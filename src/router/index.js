@@ -699,19 +699,19 @@ const router = createRouter({
                 roles: ['instructor', 'partner']
             }
         },
-        {
-            path: '/cohort/:cohortId/progress-report',
-            name: 'cohort-progress-report',
-            component: () =>
-                import(
-                    '../components/pages/analytics/teacher-analytics/cohort/CohortProgressReportView.vue'
-                ),
-            meta: {
-                title: 'Cohort Progress Report',
-                requiresAuth: true,
-                roles: ['instructor', 'partner']
-            }
-        },
+        // {
+        //     path: '/cohort/:cohortId/progress-report',
+        //     name: 'cohort-progress-report',
+        //     component: () =>
+        //         import(
+        //             '../components/pages/analytics/teacher-analytics/cohort/CohortProgressReportView.vue'
+        //         ),
+        //     meta: {
+        //         title: 'Cohort Progress Report',
+        //         requiresAuth: true,
+        //         roles: ['instructor', 'partner']
+        //     }
+        // },
         // School Admin analytics
         {
             path: '/dashboard',

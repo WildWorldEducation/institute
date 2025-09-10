@@ -1,7 +1,7 @@
 <script>
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import SchoolAdminProgressReport from '../../components/analytics/full-size/tenants/SchoolAdminProgressReport.vue';
-import TeacherTimeReport from '../../components/analytics/full-size/cohorts/TeacherTimeReport.vue';
+import TeacherProgressReport from '../../components/analytics/full-size/cohorts/TeacherProgressReport.vue';
 export default {
     name: 'Dashboard',
     setup() {
@@ -14,16 +14,16 @@ export default {
         return {};
     },
     components: {
-        SchoolAdminEngagementReport,
-        TeacherTimeReport
+        SchoolAdminProgressReport,
+        TeacherProgressReport
     },
     async created() {}
 };
 </script>
 
 <template>
-    <SchoolAdminEngagementReport v-if="userDetailsStore.role == 'school_admin'" />
-    <TeacherTimeReport
+    <SchoolAdminProgressReport v-if="userDetailsStore.role == 'school_admin'" />
+    <TeacherProgressReport
         v-if="
             userDetailsStore.role == 'instructor' ||
             userDetailsStore.role == 'partner'

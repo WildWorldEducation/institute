@@ -1,13 +1,13 @@
 <script>
-import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
-import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
+import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
+import { useAnalyticsStore } from '../../../../../stores/AnalyticsStore';
 
-import TenantPassedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
-import TenantPassedAssessmentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantPassedAssessmentsHorizontalBarChart.vue';
+import TenantPassedAssessmentsByRootSubjectHorizontalBarChart from './TenantPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import TenantPassedAssessmentsHorizontalBarChart from './TenantPassedAssessmentsHorizontalBarChart.vue';
 //import TenantNumSkillsPassedPerNumStudentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantNumSkillsPassedPerNumStudentsHorizontalBarChart.vue';
 
-import TenantAssessmentsAttemptedHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantAssessmentsAttemptedHorizontalBarChart.vue';
-import TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import TenantAssessmentsAttemptedHorizontalBarChart from './TenantAssessmentsAttemptedHorizontalBarChart.vue';
+import TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart from './TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
 
 export default {
     setup() {
