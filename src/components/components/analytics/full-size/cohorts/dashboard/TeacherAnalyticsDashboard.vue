@@ -7,7 +7,6 @@ import TeacherTimeChart from './TeacherTimeChart.vue';
 import TeacherCostChart from './TeacherCostChart.vue';
 import TenantFailedAssessmentsByRootSubjectHorizontalBarChart from '../../../../../components/analytics/full-size/tenants/TenantFailedAssessmentsByRootSubjectHorizontalBarChart.vue';
 
-
 export default {
     name: 'Teacher-Analytics-Dashboard',
     setup() {
@@ -23,7 +22,7 @@ export default {
     data() {
         return {
             // Chart variables
-            progressChartMode: 'teacher', // school or teacher              
+            progressChartMode: 'teacher' // school or teacher
         };
     },
     components: {
@@ -53,12 +52,16 @@ export default {
             this.$nextTick(() => {
                 if (this.$refs.progressChart) {
                     // Access the ref here
-                    this.$refs.progressChart.createChart(this.analyticsStore.progress);
+                    this.$refs.progressChart.createChart(
+                        this.analyticsStore.progress
+                    );
                 }
             });
         },
         async getTimeData() {
-            await this.analyticsStore.getClassTime(this.userDetailsStore.userId);
+            await this.analyticsStore.getClassTime(
+                this.userDetailsStore.userId
+            );
             await this.analyticsStore.getSchoolTime(
                 this.userDetailsStore.tenantId
             );
@@ -66,16 +69,18 @@ export default {
             this.$nextTick(() => {
                 if (this.$refs.timeChart) {
                     // Access the ref here
-                    this.$refs.timeChart.createChart(
-                        this.analyticsStore.time
-                    );
+                    this.$refs.timeChart.createChart(this.analyticsStore.time);
                 }
             });
         },
         async getCostData() {
-            await this.analyticsStore.getClassCost(this.userDetailsStore.userId, 'weekly');
+            await this.analyticsStore.getClassCost(
+                this.userDetailsStore.userId,
+                'weekly'
+            );
             await this.analyticsStore.getSchoolCost(
-                this.userDetailsStore.tenantId, 'weekly'
+                this.userDetailsStore.tenantId,
+                'weekly'
             );
 
             this.$nextTick(() => {
@@ -115,7 +120,9 @@ export default {
             }
         },
         async getChallengesData() {
-            await this.analyticsStore.getTeacherClassFailedAssessmentsBySubject(this.userDetailsStore.userId);
+            await this.analyticsStore.getTeacherClassFailedAssessmentsBySubject(
+                this.userDetailsStore.userId
+            );
         }
     }
 };
@@ -139,14 +146,20 @@ export default {
             <!-- This is where charts / dashboard cards go -->
             <div class="dash-row row">
                 <div class="col-md h-100">
-                    <RouterLink to="/progress-report" class="">
+                    <RouterLink to="/progress-report" class="" target="_blank">
                         <h2 class="heading h5">Progress</h2>
                     </RouterLink>
-                    <div id="progress-chart-container" class="position-relative">
-                        <TeacherProgressChart ref="progressChart" v-if="
-                            analyticsStore.progress.tenant.length > 0 ||
-                            analyticsStore.progress.class.length > 0
-                        " />
+                    <div
+                        id="progress-chart-container"
+                        class="position-relative"
+                    >
+                        <TeacherProgressChart
+                            ref="progressChart"
+                            v-if="
+                                analyticsStore.progress.tenant.length > 0 ||
+                                analyticsStore.progress.class.length > 0
+                            "
+                        />
                     </div>
                 </div>
                 <div class="col-md h-100">
@@ -154,32 +167,53 @@ export default {
 
                     <div id="failed-chart-container">
                         <TenantFailedAssessmentsByRootSubjectHorizontalBarChart
-                            v-if="analyticsStore.cohortRootSubjectsFailedAssessments.length > 0"
-                            :data="analyticsStore.cohortRootSubjectsFailedAssessments" />
+                            v-if="
+                                analyticsStore
+                                    .cohortRootSubjectsFailedAssessments
+                                    .length > 0
+                            "
+                            :data="
+                                analyticsStore.cohortRootSubjectsFailedAssessments
+                            "
+                        />
                     </div>
                 </div>
             </div>
             <div class="dash-row row">
                 <div class="col-md position-relative h-100">
-                    <RouterLink to="/reports/cost" class="chart-heading">
+                    <RouterLink
+                        to="/reports/cost"
+                        class="chart-heading"
+                        target="_blank"
+                    >
                         <h2 class="heading h5">AI usage</h2>
                     </RouterLink>
                     <div id="cost-chart-container">
-                        <TeacherCostChart ref="costChart" v-if="
-                            analyticsStore.cost.tenant.length > 0 ||
-                            analyticsStore.cost.class.length > 0
-                        " />
+                        <TeacherCostChart
+                            ref="costChart"
+                            v-if="
+                                analyticsStore.cost.tenant.length > 0 ||
+                                analyticsStore.cost.class.length > 0
+                            "
+                        />
                     </div>
                 </div>
                 <div class="col-md position-relative h-100">
-                    <RouterLink to="/engagement-report" class="chart-heading">
+                    <RouterLink
+                        to="/engagement-report"
+                        class="chart-heading"
+                        target="_blank"
+                    >
                         <h2 class="heading h5">Engagement</h2>
                     </RouterLink>
                     <div id="time-chart-container">
-                        <TeacherTimeChart ref="timeChart" v-if="
-                            analyticsStore.time.tenant.length > 0 ||
-                            analyticsStore.time.class.length > 0
-                        " />
+                        <TeacherTimeChart
+                            ref="timeChart"
+                            v-if="
+                                analyticsStore.time.tenant.length > 0 ||
+                                analyticsStore.time.class.length > 0
+                            "
+                        />
                     </div>
                 </div>
             </div>
@@ -220,9 +254,9 @@ export default {
 
 /* Styles for screens smaller than 600px (e.g., most mobile phones) */
 @media (max-width: 599px) {
-.dashboard {
-    overflow: auto;
-}
+    .dashboard {
+        overflow: auto;
+    }
 
     .top-row {
         height: unset;
@@ -235,8 +269,8 @@ export default {
 
     #progress-chart-container,
     #time-chart-container,
-#cost-chart-container,
-#failed-chart-container {
+    #cost-chart-container,
+    #failed-chart-container {
         height: 200px;
     }
 

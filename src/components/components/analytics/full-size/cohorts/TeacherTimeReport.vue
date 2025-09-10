@@ -49,10 +49,9 @@ export default {
         //     await this.getCohortStudentTotalDurations();
         //     await this.getCohortDurationsPerSkill();
         // } else {
-            await this.getAllStudentsDurationPerDay();
-            await this.getAllStudentsStudentTotalDurations();
-            await this.getAllStudentsDurationsPerSkill();
-        
+        await this.getAllStudentsDurationPerDay();
+        await this.getAllStudentsStudentTotalDurations();
+        await this.getAllStudentsDurationsPerSkill();
     },
     methods: {
         // async getCohortDurationPerDay() {
@@ -235,60 +234,79 @@ export default {
 </script>
 
 <template>
-    <div class="container">
-        <span class="d-flex justify-content-between w-100">
-            <h1 class="heading">Time Report</h1>
-            <h2 class="secondary-heading h3">{{ cohortName }}</h2>
-        </span>
-        <div>
-            <h4 class="secondary-heading d-flex justify-content-between">
-                Total time on platform per day
+    <div class="container-fluid chart-page">
+        <h1 class="heading h4">Time Report</h1>
+        <div class="row chart-row position-relative">
+            <div id="time-chart-container">
                 <DownloadCSVBtn
                     :data="durationsPerDayDownloadData"
                     fileName="Total time on platform per day"
+                    class="download-btn position-absolute btn"
                 />
-            </h4>
-            <CohortDurationPerDayLineChart
-                :data="durationsPerDay"
-                v-if="durationsPerDay.length > 0"
-                class="mb-5"
-            />
-            <p v-else>No time recorded yet</p>
+                <CohortDurationPerDayLineChart
+                    :data="durationsPerDay"
+                    v-if="durationsPerDay.length > 0"
+                />
+                <p v-else>No time recorded yet</p>
+            </div>
         </div>
 
-        <div>
-            <h4 class="secondary-heading mt-4 d-flex justify-content-between">
-                Total time on platform, comparing students
+        <div class="row chart-row">
+            <div class="col-md chart-col position-relative">
                 <DownloadCSVBtn
                     :data="studentTotalDurationsDownloadData"
                     fileName="Total time on platform, comparing students"
                 />
-            </h4>
-            <CohortCompareDurationHorizontalChart
-                :data="studentTotalDurations"
-                :colour="'#5f31dd'"
-                v-if="studentTotalDurations.length > 0"
-                class="mb-5"
-            />
-            <p v-else>No time recorded yet</p>
-        </div>
+                <CohortCompareDurationHorizontalChart
+                    :data="studentTotalDurations"
+                    :colour="'#5f31dd'"
+                    v-if="studentTotalDurations.length > 0"
+                    class="mb-5"
+                />
+                <p v-else>No time recorded yet</p>
+                <figcaption class="">
+                    total time on platform, comparing students
+                </figcaption>
+            </div>
 
-        <div>
-            <h4 class="secondary-heading mt-4 d-flex justify-content-between">
-                Minutes per skill
+            <div class="col-md chart-col position-relative">
                 <DownloadCSVBtn
                     :data="studentDurationsPerSkillDownloadData"
                     fileName="Minutes per skill"
                 />
-            </h4>
-            <CohortDurationPerSkillHorizontalBarChart
-                :data="studentDurationsPerSkill"
-                class="mb-5"
-                :colour="'#5f31dd'"
-                v-if="studentDurationsPerSkill.length > 0"
-            />
+
+                <CohortDurationPerSkillHorizontalBarChart
+                    :data="studentDurationsPerSkill"
+                    class="mb-5"
+                    :colour="'#5f31dd'"
+                    v-if="studentDurationsPerSkill.length > 0"
+                />
+            </div>
         </div>
     </div>
 </template>
 
-<style></style>
+<style scoped>
+.download-btn {
+    right: 10px;
+    top: 10px;
+}
+
+.chart-row {
+    height: calc(50% - 20px);
+}
+
+.chart-col {
+    height: 100%;
+}
+
+.chart-page {
+    height: calc(100vh - 88px);
+    overflow: auto;
+}
+
+#time-chart-container {
+    height: calc(100% - 35px);
+    width: 100%;
+}
+</style>
