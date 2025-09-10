@@ -88,11 +88,9 @@ export default {
             let url = `/student-analytics/student-duration-per-day-class/${this.studentId}/${this.userDetailsStore.userId}`;
 
             if (this.userDetailsStore.role === 'school_admin') {
-                url = `/student-analytics/student-duration-per-day/${this.studentId}/${this.userDetailsStore.userId}`;
+                url = `/student-analytics/student-duration-per-day-tenant/${this.studentId}/${this.userDetailsStore.userId}`;
             }
-            fetch(
-                `/student-analytics/student-duration-per-day-class/${this.studentId}/${this.userDetailsStore.userId}`
-            )
+            fetch(url)
                 .then((response) => response.json())
                 .then((resData) => {
                     const data = resData.studentTime;
@@ -201,6 +199,8 @@ export default {
                         v-if="durationsPerDay.length > 0"
                         :data="durationsPerDay"
                         :averageDuration="averageDurationsPerDay"
+                        :userRole="userDetailsStore.role"
+                        :studentName="studentName"
                         colour="black"
                     />
                     <p v-else>There is no data to show yet.</p>

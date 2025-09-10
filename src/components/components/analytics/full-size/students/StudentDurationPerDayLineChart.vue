@@ -3,15 +3,24 @@ import * as d3 from 'd3';
 
 export default {
     name: 'StudentDurationPerDayLineChart',
-    props: ['data', 'colour', 'averageDuration'],
+    props: ['data', 'colour', 'averageDuration', 'userRole', 'studentName'],
     data() {
         return {};
     },
     mounted() {
         const data = this.data;
+        let averageLabel = '';
+
+        if (this.userRole == 'instructor' || this.userRole == 'partner') {
+            averageLabel = 'class average';
+        }
+
+        if (this.userRole == 'school_admin') {
+            averageLabel = 'school average';
+        }
         const chartData = [
             {
-                name: 'you',
+                name: this.studentName,
                 values: data
             },
             {

@@ -290,6 +290,43 @@ router.get(
     }
 );
 
+/* Get duration on platform per student per day, as well as the school average */
+router.get(
+    '/student-duration-per-day-tenant/:studentId/:tenantId',
+    async (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+
+            let sqlQuery = `
+            SELECT date, duration AS quantity
+            FROM user_duration_tokens_per_day            
+            WHERE user_id = ${conn.escape(
+                req.params.studentId
+            )}                           
+            ORDER BY date ASC;`;
+
+            const studentResult = await query(sqlQuery);
+            sqlQuery = `SELECT cohorts_users.cohort_id
+                    FROM cohorts_users
+                    WHERE cohorts_users.user_id = ${conn.escape(req.params.studentId)}`
+
+            // sqlQuery = `SELECT date, AVG(duration) AS quantity
+            //     FROM user_duration_tokens_per_day
+            //     GROUP BY date
+            //     ORDER BY date ASC;`;
+            sqlQuery = `SELECT user_duration_tokens_per_day.date AS date, AVG(duration) AS quantity
+                    FROM user_duration_tokens_per_day
+                    GROUP BY date`
+            const averageResult = await query(sqlQuery);
+            console.log(averageResult)
+            res.json({
+                studentTime: studentResult,
+                averageTime: averageResult
+            });
+        }
+    });
+
 /* Get duration on platform per student per day */
 router.get('/student-duration-per-day-class/:studentId/:instructorId', async (req, res, next) => {
     // Check if logged in.
