@@ -162,7 +162,7 @@ export default {
             <div class="dash-row row">
                 <div class="col-md position-relative h-100">
                     <RouterLink to="/reports/cost" class="chart-heading">
-                        <h2 class="heading h5">Cost</h2>
+                        <h2 class="heading h5">AI usage</h2>
                     </RouterLink>
                     <div id="cost-chart-container">
                         <TeacherCostChart ref="costChart" v-if="

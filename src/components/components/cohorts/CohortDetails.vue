@@ -113,9 +113,9 @@ export default {
             <!-- Cohort Progress -->
             <div class="col-12 col-md-8">
                 <div class="d-flex flex-column">
-                    <h2 class="secondary-heading h4">Check progress</h2>
+                    <!-- <h2 class="secondary-heading h4">Check progress</h2> -->
                     <!-- Whether all students or cohort selected -->
-                    <router-link
+                    <!-- <router-link
                         v-if="
                             !cohortsStore.isAllStudentsSelected &&
                             this.cohortsStore.cohorts.length > 0
@@ -133,7 +133,7 @@ export default {
                         target="_blank"
                     >
                         Progress
-                    </router-link>
+                    </router-link> -->
 
                     <h2 class="secondary-heading h4 mt-4">Check activity</h2>
                     <!-- Whether all students or cohort selected -->
