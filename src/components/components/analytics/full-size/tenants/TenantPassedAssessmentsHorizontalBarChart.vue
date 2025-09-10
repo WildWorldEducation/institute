@@ -6,13 +6,10 @@ export default {
     props: ['data', 'colour'],
     data() {
         return {
-            padding: 60
+            
         };
     },
-    mounted() {
-        const container = d3.select(
-            '#tenant-passed-assessments-chart-container'
-        );
+    mounted() {      
 
         // Specify the chart’s dimensions, based on a bar’s height.
         const barHeight = 25;
@@ -43,7 +40,7 @@ export default {
 
         // Create the SVG container.
         const svg = d3
-            .select('#tenant-passed-assessments-chart-container')
+            .select('#passed-skills-chart')
             .append('svg')
             .attr('width', width)
             .attr('height', height)
@@ -75,7 +72,7 @@ export default {
             .attr('y', (d) => y(d.name) + y.bandwidth() / 2)
             .attr('dy', '0.35em')
             .attr('dx', -4)
-            .text((d) => format(d.quantity))
+            .text((d) => d.quantity)
             .call((text) =>
                 text
                     .filter((d) => x(d.quantity) - x(0) < 20) // short bars
@@ -99,7 +96,7 @@ export default {
 </script>
 
 <template>
-    <div id="tenant-passed-assessments-chart-container"></div>
+    
 </template>
 
 <style scoped></style>

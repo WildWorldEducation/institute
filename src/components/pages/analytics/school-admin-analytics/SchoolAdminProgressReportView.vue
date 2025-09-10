@@ -1,14 +1,13 @@
 <script>
-import TenantNumSkillsPassedPerNumStudentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantNumSkillsPassedPerNumStudentsHorizontalBarChart.vue';
-import TenantPassedAssessmentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantPassedAssessmentsHorizontalBarChart.vue';
-import TenantAssessmentsAttemptedHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantAssessmentsAttemptedHorizontalBarChart.vue';
-
-import TenantPassedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
-import TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
-import SchoolComparisonChart from '../../../components/analytics/full-size/tenants/SchoolComparisonChart.vue';
-
 import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
+
+import TenantPassedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
+import TenantPassedAssessmentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantPassedAssessmentsHorizontalBarChart.vue';
+import TenantNumSkillsPassedPerNumStudentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantNumSkillsPassedPerNumStudentsHorizontalBarChart.vue';
+
+import TenantAssessmentsAttemptedHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantAssessmentsAttemptedHorizontalBarChart.vue';
+import TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
 
 export default {
     setup() {
@@ -231,7 +230,7 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid">
+    <div class="container-fluid chart-page">
         <span class="d-flex justify-content-between w-100">
             <h1 class="heading h4">Progress Report</h1>
             <!-- Tutorial button -->
@@ -264,107 +263,115 @@ export default {
             </div>
         </div>
 
-        <div class="row">
-            <div class="col">
+        <div class="row chart-row">
+            <div class="col-md chart-col position-relative">
                 <h2 class="heading h5">Passed</h2>
-                <button class="btn" @click="
-                    downloadData(
-                        analyticsStore.rootSubjectsPassedAssessments,
-                        'Subjects-passed'
-                    )
-                    ">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                        <path
-                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
-                    </svg>
-                </button>
-                <TenantPassedAssessmentsByRootSubjectHorizontalBarChart
-                    v-if="analyticsStore.rootSubjectsPassedAssessments.length > 0"
-                    :data="analyticsStore.rootSubjectsPassedAssessments" colour="darkgreen" class="" />
-                <p v-else>No data yet</p>
+                <div id="passed-subjects-chart">
+                    <button class="btn position-absolute download-btn" @click="
+                        downloadData(
+                            analyticsStore.rootSubjectsPassedAssessments,
+                            'Subjects-passed'
+                        )
+                        ">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
+                            <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
+                        </svg>
+                    </button>
+                    <TenantPassedAssessmentsByRootSubjectHorizontalBarChart
+                        v-if="analyticsStore.rootSubjectsPassedAssessments.length > 0"
+                        :data="analyticsStore.rootSubjectsPassedAssessments" colour="darkgreen" class="" />
+                    <p v-else>No data yet</p>
+                </div>
             </div>
-            <div class="col">
+            <div class="col-md chart-col position-relative">
                 <h2 class="heading h5">Attempted</h2>
-                <button class="btn" @click="
-                    downloadData(
-                        analyticsStore.rootSubjectsAttemptedAssessments,
-                        'Subjects-attempted'
-                    )
-                    ">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                        <path
-                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
-                    </svg>
-                </button>
+                <div id="attempted-subjects-chart">
+                    <button class="btn position-absolute download-btn" @click="
+                        downloadData(
+                            analyticsStore.rootSubjectsAttemptedAssessments,
+                            'Subjects-attempted'
+                        )
+                        ">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
+                            <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
+                        </svg>
+                    </button>
 
-                <TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart v-if="
-                    analyticsStore.rootSubjectsAttemptedAssessments.length > 0
-                " :data="analyticsStore.rootSubjectsAttemptedAssessments" colour="darkblue" class="" />
-                <p v-else>No data yet</p>
+                    <TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart v-if="
+                        analyticsStore.rootSubjectsAttemptedAssessments.length > 0
+                    " :data="analyticsStore.rootSubjectsAttemptedAssessments" colour="darkblue" class="" />
+                    <p v-else>No data yet</p>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col">
-                Number of students who have passed a specific assessment
-                <button class="btn" @click="
-                    downloadData(
-                        analyticsStore.passedAssessments,
-                        'Assessments-passed'
-                    )
-                    ">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                        <path
-                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
-                    </svg>
-                </button>
+        <div class="row chart-row">
+            <div class="col chart-col">
+                <div id="passed-skills-chart">
+                    <button class="btn" @click="
+                        downloadData(
+                            analyticsStore.passedAssessments,
+                            'Assessments-passed'
+                        )
+                        ">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
+                            <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
+                        </svg>
+                    </button>
 
-                <TenantPassedAssessmentsHorizontalBarChart v-if="analyticsStore.passedAssessments.length > 0"
-                    :data="analyticsStore.passedAssessments" colour="darkgreen" class="" />
-                <p v-else>No data yet</p>
+                    <TenantPassedAssessmentsHorizontalBarChart v-if="analyticsStore.passedAssessments.length > 0"
+                        :data="analyticsStore.passedAssessments" colour="darkgreen" class="" />
+                    <p v-else>No data yet</p>
+                </div>
             </div>
-            <div class="col">
-                Number of students who have attempted a specific
-                assessment
-                <button class="btn" @click="
-                    downloadData(
-                        analyticsStore.attemptedAssessments,
-                        'Assessments-attempted'
-                    )
-                    ">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                        <path
-                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
-                    </svg>
-                </button>
+            <div class="col chart-col">
+                <div id="attempted-skills-chart">
+                    <button class="btn" @click="
+                        downloadData(
+                            analyticsStore.attemptedAssessments,
+                            'Assessments-attempted'
+                        )
+                        ">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
+                            <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
+                        </svg>
+                    </button>
 
-                <TenantAssessmentsAttemptedHorizontalBarChart v-if="analyticsStore.attemptedAssessments.length > 0"
-                    :data="analyticsStore.attemptedAssessments" colour="#5f31dd" class="" />
-                <p v-else>No data yet</p>
+                    <TenantAssessmentsAttemptedHorizontalBarChart v-if="analyticsStore.attemptedAssessments.length > 0"
+                        :data="analyticsStore.attemptedAssessments" colour="#5f31dd" class="" />
+                    <p v-else>No data yet</p>
+                </div>
+
             </div>
         </div>
         <div class="row mb-4">
             <div class="col">
-                Number of students who have passed a specific number of skills
-                <button class="btn" @click="
-                    downloadData(
-                        analyticsStore.numSkillsPassedPerNumStudents,
-                        'Number-skills-passed-per-number-of-students'
-                    )">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
-                        <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                        <path
-                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
-                    </svg>
-                </button>
+                <div id="skills-passed-num-students-chart">
+                    <button class="btn" @click="
+                        downloadData(
+                            analyticsStore.numSkillsPassedPerNumStudents,
+                            'Number-skills-passed-per-number-of-students'
+                        )">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
+                            <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
+                            <path
+                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
+                        </svg>
+                    </button>
 
-                <TenantNumSkillsPassedPerNumStudentsHorizontalBarChart
-                    v-if="analyticsStore.numSkillsPassedPerNumStudents.length > 0"
-                    :data="analyticsStore.numSkillsPassedPerNumStudents" colour="darkgreen" class="" />
-                <p v-else>No data yet</p>
+                    <TenantNumSkillsPassedPerNumStudentsHorizontalBarChart
+                        v-if="analyticsStore.numSkillsPassedPerNumStudents.length > 0"
+                        :data="analyticsStore.numSkillsPassedPerNumStudents" colour="darkgreen" class="" />
+                    <p v-else>No data yet</p>
+                </div>
+                <figcaption class="">number of students who have passed a specific number of skills</figcaption>
             </div>
             <div class="col"></div>
         </div>
@@ -372,6 +379,29 @@ export default {
 </template>
 
 <style scoped>
+.chart-row {
+    height: calc(50% - 20px);
+}
+
+.chart-col {
+    height: 100%;
+}
+
+.chart-page {
+    height: calc(100vh - 88px);
+    overflow: auto;
+}
+
+#passed-subjects-chart, #attempted-subjects-chart, #passed-skills-chart, #attempted-skills-chart {
+    height: calc(100% - 35px);
+    width: 100%;
+}
+
+.download-btn {
+    right: 2px;
+    top: 2px;
+}
+
 /* Modals */
 .modal {
     display: block;
