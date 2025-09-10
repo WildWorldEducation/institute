@@ -16,47 +16,47 @@ export default {
     components: { CohortProgressLineChart, DownloadCSVBtn },
     data() {
         return {
-            cohortId: this.$route.params.cohortId,
-            cohortName: '',
+        
+         
             cohortProgress: [],
             cohortProgressDownloadData: []
         };
     },
     async created() {
-        if (this.cohortsStore.cohorts.length < 1) {
-            await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
-        }
-        const foundObject = this.cohortsStore.cohorts.find(
-            (cohort) => cohort.id == this.cohortId
-        );
-        if (foundObject) {
-            this.cohortName = foundObject.name;
-        }
-        if (this.cohortId != 'all-students') {
-            await this.getCohortProgress();
-        } else {
+        // if (this.cohortsStore.cohorts.length < 1) {
+        //     await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
+        // }
+        // const foundObject = this.cohortsStore.cohorts.find(
+        //     (cohort) => cohort.id == this.cohortId
+        // );
+        // if (foundObject) {
+        //     this.cohortName = foundObject.name;
+        // }
+        // if (this.cohortId != 'all-students') {
+        //     await this.getCohortProgress();
+        // } else {
             await this.getAllStudentsProgress();
-        }
+        
     },
     methods: {
-        async getCohortProgress() {
-            fetch(`/student-analytics/cohort-progress/${this.cohortId}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    for (let i = 0; i < data.length; i++) {
-                        data[i].date = new Date(data[i].date);
-                    }
-                    data.sort((a, b) => a.date - b.date);
-                    this.cohortProgress = data;
-                    this.cohortProgressDownloadData = data.map((item) => ({
-                        date: item.date,
-                        skillsMastered: item.quantity
-                    }));
-                })
-                .catch((error) => {
-                    console.error('Error fetching student progress:', error);
-                });
-        },
+        // async getCohortProgress() {
+        //     fetch(`/student-analytics/cohort-progress/${this.cohortId}`)
+        //         .then((response) => response.json())
+        //         .then((data) => {
+        //             for (let i = 0; i < data.length; i++) {
+        //                 data[i].date = new Date(data[i].date);
+        //             }
+        //             data.sort((a, b) => a.date - b.date);
+        //             this.cohortProgress = data;
+        //             this.cohortProgressDownloadData = data.map((item) => ({
+        //                 date: item.date,
+        //                 skillsMastered: item.quantity
+        //             }));
+        //         })
+        //         .catch((error) => {
+        //             console.error('Error fetching student progress:', error);
+        //         });
+        // },
         async getAllStudentsProgress() {
             fetch(
                 `/student-analytics/all-students-progress/${this.userDetailsStore.userId}`

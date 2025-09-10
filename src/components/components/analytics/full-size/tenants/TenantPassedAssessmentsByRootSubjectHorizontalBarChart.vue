@@ -7,22 +7,18 @@ export default {
     data() {
         return {};
     },
-    mounted() {
-        const container = d3.select(
-            '#tenant-passed-assessments-by-root-subject-chart-container'
-        );
-
-        // Specify the chart’s dimensions, based on a bar’s height.
-        const barHeight = 25;
+    mounted() {         
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
         const marginLeft = 200;
-        const width = 1000;
-        const height =
-            Math.ceil((this.data.length + 0.1) * barHeight) +
-            marginTop +
-            marginBottom;
+        // Declare the chart dimensions and margins.
+            const width = document.getElementById(
+                'passed-subjects-chart'
+            ).clientWidth;
+            const height = document.getElementById(
+                'passed-subjects-chart'
+            ).clientHeight;
 
         // Create the scales.
         const x = d3
@@ -35,34 +31,44 @@ export default {
             .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
             .padding(0.1);
-
-        // Create a value format.
-        const format = x.tickFormat(20);
-
+    
         // Create the SVG container.
         const svg = d3
             .select(
-                '#tenant-passed-assessments-by-root-subject-chart-container'
+                '#passed-subjects-chart'
             )
             .append('svg')
             .attr('width', width)
             .attr('height', height)
-            .attr('viewBox', [0, 0, width, height])
-            .attr(
-                'style',
-                'max-width: 100%; height: 100%; font: 14px sans-serif;'
-            );
+            .attr('viewBox', [
+                    0,
+                    0,
+                    +Math.min(width, height),
+                    +Math.min(width, height)
+                ])
+                .attr('preserveAspectRatio', 'xMinYMin');
 
         // Append a rect for each skill.
-        svg.append('g')
-            .attr('fill', this.colour)
+        svg.append('g')           
             .selectAll()
             .data(this.data)
             .join('rect')
             .attr('x', x(0))
             .attr('y', (d) => y(d.name))
             .attr('width', (d) => x(d.quantity) - x(0))
-            .attr('height', y.bandwidth());
+            .attr('height', y.bandwidth())
+            .attr('fill', function (d) {
+                if (d.name == 'Language') return 'DarkMagenta'; // turquoise
+                else if (d.name == 'Mathematics') return 'blue'; // blue
+                else if (d.name == 'Science & Invention')
+                    return 'purple'; // purple
+                else if (d.name == 'Computer Science')
+                    return 'deeppink'; // pink
+                else if (d.name == 'Dangerous Ideas') return 'brown'; // brown
+                else if (d.name == 'History') return 'cyan'; // cyan
+                else if (d.name == 'Life') return 'magenta'; // magenta
+                else return '#ff7f0e'; // orange
+            });;
 
         // Append a label for each name.
         svg.append('g')
@@ -75,7 +81,7 @@ export default {
             .attr('y', (d) => y(d.name) + y.bandwidth() / 2)
             .attr('dy', '0.35em')
             .attr('dx', -4)
-            .text((d) => format(d.quantity))
+            .text((d) => d.quantity)
             .call((text) =>
                 text
                     .filter((d) => x(d.quantity) - x(0) < 20) // short bars
@@ -99,7 +105,7 @@ export default {
 </script>
 
 <template>
-    <div id="tenant-passed-assessments-by-root-subject-chart-container"></div>
+    
 </template>
 
 <style scoped></style>
