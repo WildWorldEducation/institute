@@ -2,6 +2,8 @@
 import { useUsersStore } from '../../../../../stores/UsersStore';
 import { useTeacherAnalyticsStore } from '../../../../../stores/TeacherAnalyticsStore';
 import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
+import { useAnalyticsStore } from '../../../../../stores/AnalyticsStore';
+import StudentPassedAssessmentsByRootSubjectHorizontalBarChart from '../../../../components/analytics/full-size/students/StudentPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
 import TimePerSkillHorizontalBarChart from '../../../../components/analytics/full-size/students/TimePerSkillHorizontalBarChart.vue';
 import StudentSkillActivityChart from '../../../../components/analytics/full-size/students/StudentSkillActivityChart.vue';
 import StudentDurationPerDayLineChart from '../../../../components/analytics/full-size/students/StudentDurationPerDayLineChart.vue';
@@ -12,17 +14,20 @@ export default {
         const usersStore = useUsersStore();
         const teacherAnalyticsStore = useTeacherAnalyticsStore();
         const userDetailsStore = useUserDetailsStore();
+        const analyticsStore = useAnalyticsStore();
         return {
             usersStore,
             teacherAnalyticsStore,
-            userDetailsStore
+            userDetailsStore,
+            analyticsStore
         };
     },
     components: {
         TimePerSkillHorizontalBarChart,
         StudentDurationPerDayLineChart,
         StudentSkillActivityChart,
-        DownloadCSVBtn
+        DownloadCSVBtn,
+        StudentPassedAssessmentsByRootSubjectHorizontalBarChart
     },
     data() {
         return {
@@ -44,6 +49,16 @@ export default {
         if (foundObject) {
             this.studentName = foundObject.username;
         }
+
+        // Get total progress data
+        await this.analyticsStore.getStudentProgress(
+            this.studentId,
+            this.userDetailsStore.tenantId
+        );
+
+        await this.analyticsStore.getStudentPassedAssessmentsBySubject(
+            this.studentId
+        );
 
         await this.getStudentDurationPerDay();
         await this.getStudentActivity();
@@ -185,7 +200,7 @@ export default {
             <h2 class="tertiary-heading h4">{{ studentName }}</h2>
         </span>
 
-        <div class="row h-100">
+        <div class="row h-50">
             <div class="col-lg chart-col position-relative">
                 <div id="time-chart-container">
                     <DownloadCSVBtn
@@ -219,6 +234,30 @@ export default {
                 </div>
             </div>
         </div>
+        <div class="row h-50">
+            <div class="col-lg-6 col chart-col position-relative">
+                <div id="activity-chart-container">
+                    <span class="d-flex justify-content-between w-100">
+                        <h1 class="heading h4">Subject progress</h1>
+                        <h2 class="tertiary-heading h4">{{ studentName }}</h2>
+                    </span>
+                    <div id="student-passed-subjects-chart-container">
+                        <StudentPassedAssessmentsByRootSubjectHorizontalBarChart
+                            v-if="
+                                analyticsStore
+                                    .studentRootSubjectsPassedAssessments
+                                    .length > 0
+                            "
+                            :data="
+                                analyticsStore.studentRootSubjectsPassedAssessments
+                            "
+                        />
+
+                        <p v-else>No data yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -233,6 +272,7 @@ export default {
 }
 
 #activity-chart-container,
+#student-passed-subjects-chart-container,
 #time-chart-container {
     height: calc(100% - 35px);
     width: 100%;
