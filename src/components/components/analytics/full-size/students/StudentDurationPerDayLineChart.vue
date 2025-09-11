@@ -29,8 +29,6 @@ export default {
             }
         ];
         const container = d3.select('#time-chart-container');
-        console.log('averageDuration');
-        console.log(this.averageDuration);
 
         // Declare the chart dimensions and margins.
         const width = document.getElementById(

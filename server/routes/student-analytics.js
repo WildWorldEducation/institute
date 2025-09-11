@@ -319,7 +319,7 @@ router.get(
                     FROM user_duration_tokens_per_day
                     GROUP BY date`
             const averageResult = await query(sqlQuery);
-            console.log(averageResult)
+
             res.json({
                 studentTime: studentResult,
                 averageTime: averageResult
