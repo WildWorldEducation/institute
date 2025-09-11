@@ -41,12 +41,12 @@ export default {
             .append('svg')
             .attr('width', '100%')
             .attr('height', '100%')
-            .attr('viewBox', [0, 0, '100%', '100%'])
+            .attr('viewBox', [0, 0, width, height])
             .attr('preserveAspectRatio', 'xMinYMin');
 
         // Append a rect for each skill.
         svg.append('g')
-            .attr('fill', this.colour)
+            .attr('fill', 'darkred')
             .selectAll()
             .data(this.data)
             .join('rect')
@@ -66,7 +66,7 @@ export default {
             .attr('y', (d) => y(d.name) + y.bandwidth() / 2)
             .attr('dy', '0.35em')
             .attr('dx', -4)
-            .text((d) => format(d.quantity))
+            .text((d) => d.quantity)
             .call((text) =>
                 text
                     .filter((d) => x(d.quantity) - x(0) < 20) // short bars

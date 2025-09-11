@@ -1,8 +1,8 @@
 <script>
-import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
-import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
-import TenantFailedAssessmentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantFailedAssessmentsHorizontalBarChart.vue';
-import DownloadCSVBtn from '../../../components/downloadCSVBtn/downloadCSVBtn.vue';
+import { useAnalyticsStore } from '../../../../../stores/AnalyticsStore';
+import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
+import FailedAssessmentsHorizontalBarChart from '../../../../components/analytics/full-size/students/FailedAssessmentsHorizontalBarChart.vue';
+import DownloadCSVBtn from '../../../downloadCSVBtn/downloadCSVBtn.vue';
 
 export default {
     setup() {
@@ -14,34 +14,41 @@ export default {
         };
     },
     components: {
-        TenantFailedAssessmentsHorizontalBarChart,
+        FailedAssessmentsHorizontalBarChart,
         DownloadCSVBtn
     },
     data() {
         return {
-            studentId: this.$route.params.studentId,
+                failedAssessmentQuantities: [],
+            failedAssessmentQuantitiesDownloadData: []
         };
     },
     async created() {
-        if (this.analyticsStore.failedAssessments.length == 0)
-            await this.getFailedAssessments();
+        this.getAllStudentsFailedAssessments();
     },
     methods: {
-        async getFailedAssessments() {
+        async getAllStudentsFailedAssessments() {
             try {
                 const response = await fetch(
-                    `/student-analytics/failed-assessments/tenant/${this.userDetailsStore.tenantId}`
+                    `/student-analytics/failed-assessments/all-students/${this.userDetailsStore.userId}`
                 );
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                this.analyticsStore.failedAssessments = await response.json();
+
+                const data = await response.json();
+                this.failedAssessmentQuantities = Array.isArray(data)
+                    ? data
+                    : [];
+
+                   
             } catch (error) {
                 console.error(
-                    'Error fetching cohort mastered assessments:',
+                    'Error fetching all students failed assessments:',
                     error
                 );
-                this.analyticsStore.failedAssessments = [];
+                this.failedAssessmentQuantities = [];
             }
         },
     }
@@ -53,7 +60,7 @@ export default {
         <div class="row h-100">
             <div class="col-md position-relative">
                 <h3 class="secondary-heading h5">Assessments failed</h3>
-                <div id="failed-assessments-chart-container">               
+                <div id="fails-by-skill-chart-container">               
                         <button class="position-absolute download-btn btn" @click="
                             downloadData(
                                 analyticsStore.rootSubjectsFailedAssessments,
@@ -67,11 +74,9 @@ export default {
                             </svg>
                         </button>
           
-                    <TenantFailedAssessmentsHorizontalBarChart v-if="
-                        analyticsStore.failedAssessments
-                            .length > 0
-                    " :data="analyticsStore.failedAssessments
-                            " />
+                    <FailedAssessmentsHorizontalBarChart v-if="
+                        failedAssessmentQuantities.length > 0
+                    " :data="failedAssessmentQuantities" />
                     <p v-else>No data yet</p>
                 </div>
             </div>
@@ -90,7 +95,7 @@ export default {
     height: 50%;
 }
 
-#failed-assessments-chart-container {
+#fails-by-skill-chart-container {
     height: 80%;
 }
 
