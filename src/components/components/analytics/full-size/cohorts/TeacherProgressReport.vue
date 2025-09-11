@@ -23,14 +23,13 @@ export default {
     },
     data() {
         return {
-
             cohortProgress: [],
             cohortProgressDownloadData: [],
             masteredSkillQuantities: [],
 
             attemptedAssessmentQuantities: [],
             masteredSkillQuantitiesDownloadData: [],
-            attemptedAssessmentQuantitiesDownloadData: [],
+            attemptedAssessmentQuantitiesDownloadData: []
         };
     },
     async created() {
@@ -38,10 +37,8 @@ export default {
         this.getAllStudentsAttemptedAssessments();
 
         await this.getAllStudentsProgress();
-
     },
     methods: {
-
         async getAllStudentsProgress() {
             fetch(
                 `/student-analytics/all-students-progress/${this.userDetailsStore.userId}`
@@ -125,34 +122,97 @@ export default {
 </script>
 
 <template>
-    <div class="container">
-        <span class="d-flex justify-content-between w-100">
-            <h1 class="heading">Progress Report</h1>
-            <div class="d-flex align-items-center">
-                <h2 class="secondary-heading h3 mt-1">{{ cohortName }}</h2>
-                <DownloadCSVBtn :data="cohortProgressDownloadData" :fileName="`${cohortName ? cohortName : 'All Students'
-                    }-progress.csv`" />
+    <div class="container-fluid chart-page">
+        <h1 class="heading h4">Progress Report</h1>
+
+        <div class="row chart-row position-relative">
+            <div id="progress-chart-container">
+                <DownloadCSVBtn
+                    :data="cohortProgressDownloadData"
+                    :fileName="`${
+                        cohortName ? cohortName : 'All Students'
+                    }-progress.csv`"
+                    class="download-btn position-absolute btn"
+                />
+                <CohortProgressLineChart
+                    v-if="cohortProgress.length > 0"
+                    :data="cohortProgress"
+                    colour="#5f31dd"
+                />
+                <p v-else>There is no data to show yet.</p>
             </div>
-        </span>
-        <CohortProgressLineChart v-if="cohortProgress.length > 0" :data="cohortProgress" colour="#5f31dd" />
-        <p v-else>There is no data to show yet.</p>
+        </div>
 
-        <h4 class="secondary-heading d-flex justify-content-between mt-5 mb-2">
-            <span>Passed</span>
-            <DownloadCSVBtn :data="masteredSkillQuantitiesDownloadData"
-                :fileName="`${cohortName}-passed-assessments.csv`" />
-        </h4>
-        <CohortPassedAssessmentsHorizontalBarChart v-if="masteredSkillQuantities.length > 0"
-            :data="masteredSkillQuantities" colour="darkgreen" class="mb-4" />
+        <div class="row chart-row">
+            <div class="col-md chart-col position-relative position-relative">
+                <div id="progress-bar-chart-container">
+                    <DownloadCSVBtn
+                        :data="masteredSkillQuantitiesDownloadData"
+                        :fileName="`${cohortName}-passed-assessments.csv`"
+                        class="download-btn position-absolute btn"
+                    />
+                    <CohortPassedAssessmentsHorizontalBarChart
+                        v-if="masteredSkillQuantities.length > 0"
+                        :data="masteredSkillQuantities"
+                        colour="darkgreen"
+                    />
+                </div>
+                <figcaption>Passed</figcaption>
+            </div>
 
-        <h4 class="secondary-heading d-flex justify-content-between">
-            <span>Attempted</span>
-            <DownloadCSVBtn :data="attemptedAssessmentQuantitiesDownloadData"
-                :fileName="`${cohortName}-attempted-assessments.csv`" />
-        </h4>
-        <CohortAttemptedAssessmentsHorizontalChart v-if="attemptedAssessmentQuantities.length > 0"
-            :data="attemptedAssessmentQuantities" colour="darkblue" class="mb-4" />
+            <div class="col-md chart-col position-relative position-relative">
+                <div id="attempted-bar-chart-container">
+                    <DownloadCSVBtn
+                        :data="attemptedAssessmentQuantitiesDownloadData"
+                        :fileName="`${cohortName}-attempted-assessments.csv`"
+                        class="download-btn position-absolute btn"
+                    />
+                    <CohortAttemptedAssessmentsHorizontalChart
+                        v-if="attemptedAssessmentQuantities.length > 0"
+                        :data="attemptedAssessmentQuantities"
+                        colour="darkblue"
+                    />
+                </div>
+                <figcaption>Attempted</figcaption>
+            </div>
+        </div>
     </div>
 </template>
 
-<style></style>
+<style scoped>
+.download-btn {
+    right: 10px;
+    top: 10px;
+}
+
+.chart-row {
+    height: calc(50% - 10px);
+}
+
+.chart-col {
+    height: 100%;
+}
+
+/* Styles for screens smaller than 600px (e.g., most mobile phones) */
+@media (min-width: 600px) {
+    .chart-page {
+        height: calc(100vh - 88px);
+        overflow: hidden;
+    }
+}
+
+#progress-chart-container,
+#attempted-bar-chart-container,
+#progress-bar-chart-container {
+    height: calc(100% - 35px);
+    width: 100%;
+}
+
+@media (max-width: 600px) {
+    #progress-chart-container,
+    #attempted-bar-chart-container,
+    #progress-bar-chart-container {
+        height: 200px;
+    }
+}
+</style>
