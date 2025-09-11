@@ -163,7 +163,9 @@ export default {
                     </div>
                 </div>
                 <div class="col-md h-100">
+                    <RouterLink to="/challenges-report" class="" target="_blank">
                     <h2 class="heading h5">Challenges</h2>
+                    </RouterLink>
 
                     <div id="failed-chart-container">
                         <TenantFailedAssessmentsByRootSubjectHorizontalBarChart

@@ -660,19 +660,7 @@ const router = createRouter({
             }
         },
         // Analytics - cohorts
-        {
-            path: '/cohort/:cohortId/assessment-status',
-            name: 'cohort-assessment-status',
-            component: () =>
-                import(
-                    '../components/pages/analytics/teacher-analytics/cohort/CohortAssessmentStatusReportView.vue'
-                ),
-            meta: {
-                title: 'Cohort Assessment Status Report',
-                requiresAuth: true,
-                roles: ['instructor', 'partner']
-            }
-        },
+        
         // {
         //     path: '/cohort/:cohortId/total-time',
         //     name: 'cohort-time-report',
@@ -752,15 +740,15 @@ const router = createRouter({
         },
         {
             path: '/challenges-report',
-            name: 'school-admin-challenges-report',
+            name: 'challenges-report',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/SchoolAdminChallengesReportView.vue'
+                    '../components/pages/analytics/ChallengesReportView.vue'
                 ),
             meta: {
                 title: 'Challenges Report',
                 requiresAuth: true,
-                roles: ['school_admin']
+                roles: ['school_admin', 'instructor', 'partner']
             }
         },
         {
