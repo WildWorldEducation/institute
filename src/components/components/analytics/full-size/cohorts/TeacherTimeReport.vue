@@ -253,34 +253,35 @@ export default {
 
         <div class="row chart-row">
             <div class="col-md chart-col position-relative">
-                <DownloadCSVBtn
-                    :data="studentTotalDurationsDownloadData"
-                    fileName="Total time on platform, comparing students"
-                />
-                <CohortCompareDurationHorizontalChart
-                    :data="studentTotalDurations"
-                    :colour="'#5f31dd'"
-                    v-if="studentTotalDurations.length > 0"
-                    class="mb-5"
-                />
-                <p v-else>No time recorded yet</p>
-                <figcaption class="">
-                    total time on platform, comparing students
-                </figcaption>
+                <div id="student-time-chart-container">
+                    <DownloadCSVBtn
+                        :data="studentTotalDurationsDownloadData"
+                        fileName="Total time on platform, comparing students"
+                        class="download-btn position-absolute btn"
+                    />
+                    <CohortCompareDurationHorizontalChart
+                        :data="studentTotalDurations"
+                        :colour="'#5f31dd'"
+                        v-if="studentTotalDurations.length > 0"
+                    />
+                    <p v-else>No time recorded yet</p>
+                </div>
             </div>
 
             <div class="col-md chart-col position-relative">
-                <DownloadCSVBtn
-                    :data="studentDurationsPerSkillDownloadData"
-                    fileName="Minutes per skill"
-                />
+                <div id="skill-time-chart-container">
+                    <DownloadCSVBtn
+                        :data="studentDurationsPerSkillDownloadData"
+                        fileName="Minutes per skill"
+                        class="download-btn position-absolute btn"
+                    />
 
-                <CohortDurationPerSkillHorizontalBarChart
-                    :data="studentDurationsPerSkill"
-                    class="mb-5"
-                    :colour="'#5f31dd'"
-                    v-if="studentDurationsPerSkill.length > 0"
-                />
+                    <CohortDurationPerSkillHorizontalBarChart
+                        :data="studentDurationsPerSkill"
+                        :colour="'#5f31dd'"
+                        v-if="studentDurationsPerSkill.length > 0"
+                    />
+                </div>
             </div>
         </div>
     </div>
@@ -293,20 +294,33 @@ export default {
 }
 
 .chart-row {
-    height: calc(50% - 20px);
+    height: calc(50% - 10px);
 }
 
 .chart-col {
     height: 100%;
 }
 
-.chart-page {
-    height: calc(100vh - 88px);
-    overflow: auto;
+/* Styles for screens smaller than 600px (e.g., most mobile phones) */
+@media (min-width: 600px) {
+    .chart-page {
+        height: calc(100vh - 88px);
+        overflow: hidden;
+    }
 }
 
-#time-chart-container {
+#time-chart-container,
+#skill-time-chart-container,
+#student-time-chart-container {
     height: calc(100% - 35px);
     width: 100%;
+}
+
+@media (max-width: 600px) {
+    #time-chart-container,
+    #skill-time-chart-container,
+    #student-time-chart-container {
+        height: 200px;
+    }
 }
 </style>
