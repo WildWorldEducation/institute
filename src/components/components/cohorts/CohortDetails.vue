@@ -158,27 +158,6 @@ export default {
                     </router-link>
 
                     <!-- Whether all students or cohort selected -->
-                    <router-link
-                        v-if="
-                            !cohortsStore.isAllStudentsSelected &&
-                            this.cohortsStore.cohorts.length > 0
-                        "
-                        :to="`/cohort/${this.cohortsStore.selectedCohort.id}/assessment-status`"
-                        class="fit-content mt-2"
-                        target="_blank"
-                    >
-                        Assessment status
-                    </router-link>
-                    <router-link
-                        v-else
-                        :to="`/cohort/all-students/assessment-status`"
-                        class="fit-content mt-2"
-                        target="_blank"
-                    >
-                        Assessment status
-                    </router-link>
-
-                    <!-- Whether all students or cohort selected -->
                     <!-- <router-link
                         v-if="
                             !cohortsStore.isAllStudentsSelected &&
