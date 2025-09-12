@@ -8,8 +8,7 @@ export default {
         return {};
     },
     mounted() {    
-        // Specify the chart’s dimensions, based on a bar’s height.
-        const barHeight = 25;
+        // Specify the chart’s dimensions, based on a bar’s height.     
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
@@ -72,7 +71,7 @@ export default {
             .attr('y', (d) => y(d.name) + y.bandwidth() / 2)
             .attr('dy', '0.35em')
             .attr('dx', -4)
-            .text((d) => format(d.quantity))
+            .text((d) => d.quantity)
             .call((text) =>
                 text
                     .filter((d) => x(d.quantity) - x(0) < 20) // short bars
