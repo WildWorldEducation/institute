@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 
 export default {
     name: 'StudentDurationPerDayLineChart',
-    props: ['data', 'colour'],
+    props: ['data'],
     data() {
         return {};
     },
@@ -21,9 +21,9 @@ export default {
             'time-chart-container'
         ).clientHeight;
         const marginTop = 20;
-        const marginRight = 30;
-        const marginBottom = 40;
-        const marginLeft = 40;
+        const marginRight = 0;
+        const marginBottom = 30;
+        const marginLeft = 30;
 
         // Declare the x (horizontal position) scale.
         const x = d3.scaleUtc(
@@ -94,7 +94,7 @@ export default {
         // Append a path for the line.
         svg.append('path')
             .attr('fill', 'none')
-            .attr('stroke', 'green')
+            .attr('stroke', '#5f31dd')
             .attr('stroke-width', 3)
             .attr('d', line(data));
     }

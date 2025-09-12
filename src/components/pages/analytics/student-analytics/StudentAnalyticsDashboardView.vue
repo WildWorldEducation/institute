@@ -162,18 +162,10 @@ export default {
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
                     <div class="col-md-6 h-100 position-relative">
-                        <RouterLink to="/my-progress/skills" class=""
+                        <RouterLink to="/my-progress/skills" class="" target="_blank"
                             ><h2 class="heading h5">Progress over time</h2>
                         </RouterLink>
-                        <div id="progress-chart-container">
-                            <!-- <div class="position-absolute chart-heading">
-                                <span style="color: #5f31dd">
-                                    <strong>You</strong></span
-                                ><br />
-                                <span style="color: #ff7f0e"
-                                    ><strong>School average</strong></span
-                                >
-                            </div> -->
+                        <div id="progress-chart-container">                            
                             <StudentProgressChart
                                 ref="progressChart"
                                 v-if="
@@ -205,7 +197,7 @@ export default {
 
                 <div class="dash-row row">
                     <div class="col-md h-100 position-relative">
-                        <RouterLink to="/my-progress/time">
+                        <RouterLink to="/my-progress/time" target="_blank">
                             <h2 class="heading h5">Study time</h2>
                         </RouterLink>
                         <div id="time-chart-container">
@@ -232,7 +224,7 @@ export default {
                             <div class="col-md">
                                 <RouterLink
                                     to="/my-progress/super-challenging"
-                                    class="col"
+                                    class="col"  target="_blank"    
                                 >
                                     <h2 class="h5 heading">
                                         Super challenging skills
@@ -266,7 +258,7 @@ export default {
                                         <strong>Total time spent:</strong> 5:00
                                     </li>
                                     <li>
-                                        <RouterLink to="/my-progress/tokens"
+                                        <RouterLink to="/my-progress/tokens"  target="_blank"
                                             ><strong>Tokens used:</strong>
                                             10,000</RouterLink
                                         >
