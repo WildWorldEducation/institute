@@ -10,21 +10,18 @@ export default {
         };
     },
     mounted() {
-        const container = d3.select(
-            '#cohort-passed-assessments-chart-container'
-        );
-
         // Specify the chart’s dimensions, based on a bar’s height.
-        const barHeight = 25;
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
         const marginLeft = 200;
-        const width = 1000;
-        const height =
-            Math.ceil((this.data.length + 0.1) * barHeight) +
-            marginTop +
-            marginBottom;
+        // Declare the chart dimensions and margins.
+        const width = document.getElementById(
+            'progress-bar-chart-container'
+        ).clientWidth;
+        const height = document.getElementById(
+            'progress-bar-chart-container'
+        ).clientHeight;
 
         // Create the scales.
         const x = d3
@@ -43,7 +40,7 @@ export default {
 
         // Create the SVG container.
         const svg = d3
-            .select('#cohort-passed-assessments-chart-container')
+            .select('#progress-bar-chart-container')
             .append('svg')
             .attr('width', width)
             .attr('height', height)
@@ -75,7 +72,7 @@ export default {
             .attr('y', (d) => y(d.name) + y.bandwidth() / 2)
             .attr('dy', '0.35em')
             .attr('dx', -4)
-            .text((d) => format(d.quantity))
+            .text((d) => d.quantity)
             .call((text) =>
                 text
                     .filter((d) => x(d.quantity) - x(0) < 20) // short bars
@@ -98,8 +95,6 @@ export default {
 };
 </script>
 
-<template>
-    <div id="cohort-passed-assessments-chart-container"></div>
-</template>
+<template></template>
 
 <style scoped></style>

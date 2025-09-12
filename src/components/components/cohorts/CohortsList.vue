@@ -24,13 +24,6 @@ export default {
     },
 
     methods: {
-        selectAllStudents() {
-            this.cohortsStore.selectedCohort = {};
-            this.cohortsStore.isAllStudentsSelected = true;
-            if (window.innerWidth < 769) {
-                this.$emit('showDetails');
-            }
-        },
         selectCohort(cohort) {
             this.cohortsStore.selectedCohort = cohort;
 
@@ -105,21 +98,6 @@ export default {
 
 <template>
     <div class="container mt-1">
-        <button
-            v-if="
-                userDetailsStore.role == 'instructor' ||
-                userDetailsStore.role == 'partner'
-            "
-            @click="selectAllStudents()"
-            class="mb-1 cohort-buttons"
-            :class="
-                cohortsStore.isAllStudentsSelected
-                    ? 'isCurrentlySelected'
-                    : 'cohort-buttons'
-            "
-        >
-            All students
-        </button>
         <button
             v-if="
                 userDetailsStore.role == 'instructor' ||
