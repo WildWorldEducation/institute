@@ -157,7 +157,7 @@ export default {
 
                     <p v-else>No data yet</p>
                 </div>
-                <figcaption class="">By subject</figcaption>
+               
             </div>
         </div>
         <div class="row chart-row position-relative">

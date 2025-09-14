@@ -87,7 +87,7 @@ export default {
         </div>
         <div class="row">
             <!-- Insights column -->
-            <div class="col-12 col-md-5">
+            <div class="col-12 col-md-6">
                 <!-- Platform Admin -->
                 <div class="d-flex flex-column">
                     <!-- Show instructor -->
@@ -188,7 +188,7 @@ export default {
                 </div>
             </div>
             <!-- Actions column -->
-            <div class="col-12 col-md-7">
+            <div class="col-12 col-md-6">
                 <div v-if="
                     this.userDetailsStore.role == 'instructor' ||
                     this.userDetailsStore.role == 'partner' ||

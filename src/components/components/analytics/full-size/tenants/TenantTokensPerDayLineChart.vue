@@ -22,7 +22,7 @@ export default {
         const marginTop = 20;
         const marginRight = 30;
         const marginBottom = 30;
-        const marginLeft = 40;
+        const marginLeft = 50;
 
         // Declare the x (horizontal position) scale.
         const x = d3.scaleUtc(
@@ -85,8 +85,8 @@ export default {
         // Append a path for the line.
         svg.append('path')
             .attr('fill', 'none')
-            .attr('stroke', '#5f31dd')
-            .attr('stroke-width', 1.5)
+            .attr('stroke', 'teal')
+            .attr('stroke-width', 3)
             .attr('d', line(data));
     }
 };

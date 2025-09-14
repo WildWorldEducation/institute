@@ -60,7 +60,7 @@ export default {
                 .attr('height', (d) =>
                     d.quantity > 0 ? yScale.bandwidth() : 1
                 ) // Height from scale bandwidth
-                .attr('fill', 'green'); // Set bar color
+                .attr('fill', '#5f31dd'); // Set bar color
 
             // Create Y axis (left side, showing task names)
             g.append('g').attr('class', 'axis').call(d3.axisLeft(yScale)); // Create left-oriented axis with task labels

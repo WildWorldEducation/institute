@@ -3,16 +3,14 @@ import * as d3 from 'd3';
 
 export default {
     name: 'TenantAvgTokensToMasterSkillsHorizontalBarChart',
-    props: ['data', 'colour'],
+    props: ['data'],
     data() {
         return {
-            padding: 60
+            
         };
     },
     mounted() {
-        const container = d3.select(
-            '#tenant-avg-tokens-to-master-skills-chart-container'
-        );
+       
 
         // Specify the chart’s dimensions, based on a bar’s height.
         const barHeight = 25;
@@ -55,7 +53,7 @@ export default {
 
         // Append a rect for each skill.
         svg.append('g')
-            .attr('fill', this.colour)
+            .attr('fill', 'teal')
             .selectAll()
             .data(this.data)
             .join('rect')

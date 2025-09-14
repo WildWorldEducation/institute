@@ -15,8 +15,9 @@ export default {
     },
     methods: {
         selectTenant(tenant) {
+
             // Set local value first for immediate UI response
-            this.$parent.selectedItemId = tenant.id;
+            this.$parent.selectedTenant = tenant;
         }
     }
 };
@@ -25,20 +26,16 @@ export default {
 <template>
     <div class="container mt-1">
         <div v-for="tenant in $parent.tenants" :key="tenant.id">
-            <div class="d-flex bg-light rounded p-2">
-                <button
-                    :class="
-                        tenant.id === $parent.selectedTenant.id
-                            ? 'isSelected'
-                            : 'user-buttons'
-                    "
-                    @click="selectTenant(tenant)"
-                >
+            <div class="d-flex bg-white rounded p-2">
+                <button :class="tenant.id === $parent.selectedTenant.id
+                        ? 'isSelected'
+                        : 'user-buttons'
+                    " @click="selectTenant(tenant)">
                     {{ tenant.name }}
                 </button>
             </div>
 
-            <hr class="border border-1 opacity-1 w-100 d-block" />
+
         </div>
 
         <!-- Add Tenant Link -->
@@ -51,7 +48,7 @@ export default {
 <style scoped>
 .user-buttons {
     font-family: 'Poppins', sans-serif;
-    width: 283px;
+    width: 100%;
     height: 80px;
     border-radius: 8px;
     border: 1px solid var(--primary-color);
@@ -71,7 +68,7 @@ export default {
 /* The style when the user button is currently choose to show information */
 .isSelected {
     font-family: 'Poppins', sans-serif;
-    width: 283px;
+    width: 100%;
     height: 80px;
     border-radius: 8px;
     border: 1px solid var(--primary-color);

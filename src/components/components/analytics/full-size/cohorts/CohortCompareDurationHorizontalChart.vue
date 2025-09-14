@@ -49,7 +49,7 @@ export default {
 
         // Append a rect for each skill.
         svg.append('g')
-            .attr('fill', this.colour)
+            .attr('fill', 'purple')
             .selectAll()
             .data(this.data)
             .join('rect')

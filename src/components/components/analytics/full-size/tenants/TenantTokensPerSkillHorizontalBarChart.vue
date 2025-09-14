@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 
 export default {
     name: 'TenantTokensPerSkillHorizontalBarChart',
-    props: ['data', 'colour'],
+    props: ['data'],
     data() {
         return {
           
@@ -53,7 +53,7 @@ export default {
 
         // Append a rect for each skill.
         svg.append('g')
-            .attr('fill', this.colour)
+            .attr('fill', 'teal')
             .selectAll()
             .data(this.data)
             .join('rect')
