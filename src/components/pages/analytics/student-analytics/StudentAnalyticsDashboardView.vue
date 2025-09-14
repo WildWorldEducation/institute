@@ -178,7 +178,7 @@ export default {
 
                     <div class="col-md-6">
                         <div id="comparison-chart-container">
-                            <h2 class="heading h5 mt-1">Subject progress comparison</h2>
+                            <h2 class="heading h5 mt-1">Progress comparison</h2>
                             <StudentComparisonChart ref="comparisonChart" v-if="
                                 analyticsStore
                                     .studentRootSubjectsPassedAssessments
