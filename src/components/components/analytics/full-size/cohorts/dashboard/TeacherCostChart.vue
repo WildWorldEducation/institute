@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 
 export default {
     name: 'TenantTokensPerDayLineChart',
-    props: ['colour'],
+    props: [],
     data() {
         return {
         };
@@ -83,7 +83,7 @@ export default {
             // Append a path for the line.
             svg.append('path')
                 .attr('fill', 'none')
-                .attr('stroke', 'purple')
+                .attr('stroke', 'teal')
                 .attr('stroke-width', 3)
                 .attr('d', line(data));
         }
