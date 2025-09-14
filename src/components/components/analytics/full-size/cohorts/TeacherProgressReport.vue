@@ -137,7 +137,7 @@ export default {
                 <CohortProgressLineChart
                     v-if="cohortProgress.length > 0"
                     :data="cohortProgress"
-                    colour="#5f31dd"
+                   
                 />
                 <p v-else>There is no data to show yet.</p>
             </div>
