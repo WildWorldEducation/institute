@@ -48,10 +48,10 @@ export default {
             const height = document.getElementById(
                 'time-chart-container'
             ).clientHeight;
-            const marginTop = 0;
-            const marginRight = 20;
-            const marginBottom = 20;
-            const marginLeft = 20;
+            const marginTop = 5;
+            const marginRight = 0;
+            const marginBottom = 25;
+            const marginLeft = 25;
 
             // Declare the x (horizontal position) scale.
             const x = d3.scaleUtc(

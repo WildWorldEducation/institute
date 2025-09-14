@@ -162,36 +162,31 @@ export default {
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
                     <div class="col-md-6 h-100 position-relative">
-                        <RouterLink to="/my-progress/skills" class="" target="_blank"
-                            ><h2 class="heading h5">Progress over time</h2>
+                        <RouterLink to="/my-progress/skills" class="" target="_blank">
+                            <h2 class="heading h5">Progress over time</h2>
                         </RouterLink>
-                        <div id="progress-chart-container">                            
-                            <StudentProgressChart
-                                ref="progressChart"
-                                v-if="
-                                    progressData.student.length > 0 ||
-                                    progressData.average.length > 0
-                                "
-                            />
+                        <figcaption class=""><span style="color: green">You</span> vs
+                            <span style="color:#ff7f0e">school average</span></figcaption>
+                        <div id="progress-chart-container">
+                            <StudentProgressChart ref="progressChart" v-if="
+                                progressData.student.length > 0 ||
+                                progressData.average.length > 0
+                            " />
                         </div>
+                        
                     </div>
 
                     <div class="col-md-6">
                         <div id="comparison-chart-container">
-                            <h2 class="heading h5 mt-1">Subject comparison</h2>
-                            <StudentComparisonChart
-                                ref="comparisonChart"
-                                v-if="
-                                    analyticsStore
-                                        .studentRootSubjectsPassedAssessments
-                                        .length > 0
-                                "
-                                :data="
-                                    analyticsStore.studentRootSubjectsPassedAssessments
-                                "
-                                :colour="'#5f31dd'"
-                            />
+                            <h2 class="heading h5 mt-1">Subject progress comparison</h2>
+                            <StudentComparisonChart ref="comparisonChart" v-if="
+                                analyticsStore
+                                    .studentRootSubjectsPassedAssessments
+                                    .length > 0
+                            " :data="analyticsStore.studentRootSubjectsPassedAssessments
+                                    " :colour="'#5f31dd'" />
                         </div>
+
                     </div>
                 </div>
 
@@ -200,52 +195,33 @@ export default {
                         <RouterLink to="/my-progress/time" target="_blank">
                             <h2 class="heading h5">Study time</h2>
                         </RouterLink>
+                         <figcaption class=""><span style="color: blue">You</span> vs
+                            <span style="color:#ff7f0e">school average</span></figcaption>
                         <div id="time-chart-container">
-                            <!-- <div class="position-absolute chart-heading">
-                                <span style="color: #5f31dd">
-                                    <strong>You</strong></span
-                                ><br />
-                                <span style="color: #ff7f0e"
-                                    ><strong>School average</strong></span
-                                >
-                            </div> -->
-                            <StudentTimeChart
-                                ref="timeChart"
-                                v-if="
-                                    analyticsStore.time.student.length > 0 ||
-                                    analyticsStore.time.tenant.length > 0
-                                "
-                            />
+                        
+                            <StudentTimeChart ref="timeChart" v-if="
+                                analyticsStore.time.student.length > 0 ||
+                                analyticsStore.time.tenant.length > 0
+                            " />
                         </div>
                     </div>
 
                     <div class="col-md position-relative">
                         <div class="row">
                             <div class="col-md">
-                                <RouterLink
-                                    to="/my-progress/super-challenging"
-                                    class="col"  target="_blank"    
-                                >
+                                <RouterLink to="/my-progress/super-challenging" class="col" target="_blank">
                                     <h2 class="h5 heading">
-                                        Super challenging skills
+                                        Consider asking for help
                                     </h2>
                                 </RouterLink>
-                                <ul
-                                    v-if="
-                                        teacherAnalyticsStore
-                                            .studentMultipleFails.length > 0
-                                    "
-                                >
-                                    <li
-                                        class="failed-skills"
-                                        v-for="skill in teacherAnalyticsStore.studentMultipleFails"
-                                        :key="skill.id"
-                                    >
-                                        <RouterLink
-                                            :to="'/skills/' + skill.url"
-                                            target="_blank"
-                                            >{{ skill.name }}</RouterLink
-                                        >
+                                <ul v-if="
+                                    teacherAnalyticsStore
+                                        .studentMultipleFails.length > 0
+                                ">
+                                    <li class="failed-skills"
+                                        v-for="skill in teacherAnalyticsStore.studentMultipleFails" :key="skill.id">
+                                        <RouterLink :to="'/skills/' + skill.url" target="_blank">{{ skill.name }}
+                                        </RouterLink>
                                     </li>
                                 </ul>
                                 <p v-else>Nothing to worry about yet</p>
@@ -258,10 +234,8 @@ export default {
                                         <strong>Total time spent:</strong> 5:00
                                     </li>
                                     <li>
-                                        <RouterLink to="/my-progress/tokens"  target="_blank"
-                                            ><strong>Tokens used:</strong>
-                                            10,000</RouterLink
-                                        >
+                                        <RouterLink to="/my-progress/tokens" target="_blank"><strong>AI usage:</strong>
+                                            10,000</RouterLink>
                                     </li>
                                 </ul>
                             </div>
@@ -300,7 +274,7 @@ export default {
 
 #progress-chart-container,
 #time-chart-container {
-    height: calc(100% - 35px);
+    height: calc(100% - 56px);
     width: 100%;
 }
 
@@ -313,10 +287,12 @@ export default {
     .dash-row {
         height: unset;
     }
+
     #progress-chart-container,
     #time-chart-container {
         height: 200px;
     }
+
     .main {
         overflow-y: auto;
     }
@@ -334,7 +310,7 @@ export default {
 
 .dashboard {
     display: flex;
-    height: calc(100vh - 88px);
+    height: calc(100vh - 72px);
     overflow: hidden;
 }
 
