@@ -8,7 +8,7 @@ export default {
         return {};
     },
     mounted() {
-        const container = d3.select('#student-passed-subjects-chart-container');
+        
 
         // Specify the chart’s dimensions, based on a bar’s height.
         const marginTop = 0;
