@@ -255,6 +255,10 @@ export default {
                                             !isSkillsDropdownOpen
                                     "
                                     class="nav-link dropdown-toggle border-0 bg-transparent"
+                                    :class="{
+                                        active: isSkillsDropdownOpen,
+                                        inActive: !isSkillsDropdownOpen
+                                    }"
                                 ></button>
                             </div>
 
@@ -1164,6 +1168,17 @@ p {
 .dropdown-menu {
     --bs-dropdown-link-active-bg: var(--primary-color);
     --bs-dropdown-link-active-color: var(--primary-contrast-color);
+}
+
+/* Arrow Icon Animation */
+.active{
+    transition: transform 0.5s ease-in-out;
+    transform: rotate(-0deg);
+}
+
+.inActive{
+    transition: transform 0.5s ease-in-out;
+    transform: rotate(180deg);
 }
 
 /* Mobile-specific styles - make navbar fully interactive on small screens */
