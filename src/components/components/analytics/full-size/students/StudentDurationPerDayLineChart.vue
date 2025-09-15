@@ -38,9 +38,9 @@ export default {
             'time-chart-container'
         ).clientHeight;
         const marginTop = 20;
-        const marginRight = 30;
-        const marginBottom = 40;
-        const marginLeft = 40;
+        const marginRight = 0;
+        const marginBottom = 30;
+        const marginLeft = 30;
 
         const color = d3
             .scaleOrdinal()
@@ -149,7 +149,10 @@ export default {
             .attr('x', width - marginRight - 80)
             .attr('y', (d, i) => marginTop + i * 20)
             .attr('fill', (d) => color(d.name))
-            .text((d) => d.name);
+            .text((d) => d.name)
+            .attr('stroke', '#5f31dd')
+            .attr('stroke-width', 3)
+            .attr('d', line(data));
     }
 };
 </script>

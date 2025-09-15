@@ -8,28 +8,15 @@ export default {
         return {};
     },
     mounted() {
-        const container = d3.select(
-            '#tenant-percentage-students-mastered-one-skill-chart-container'
-        );
-
         let data = this.data;
 
-        // Specify the chart’s dimensions.
-        const width = 928;
-        const height = Math.min(width, 250);
-
-        // Create the color scale.
-        const color = d3
-            .scaleOrdinal()
-            .domain(data.map((d) => d.name))
-            .range(
-                d3
-                    .quantize(
-                        (t) => d3.interpolateSpectral(t * 0.8 + 0.1),
-                        data.length
-                    )
-                    .reverse()
-            );
+       // Declare the chart dimensions and margins.
+        const width = document.getElementById(
+            'tenant-students-pie-chart-container'
+        ).clientWidth;
+        const height = document.getElementById(
+            'tenant-students-pie-chart-container'
+        ).clientHeight;
 
         // Create the pie layout and arc generator.
         const pie = d3
@@ -55,7 +42,7 @@ export default {
         // Create the SVG container.
         const svg = d3
             .select(
-                '#tenant-percentage-students-mastered-one-skill-chart-container'
+                '#tenant-students-pie-chart-container'
             )
             .append('svg')
             .attr('width', width)
@@ -117,9 +104,7 @@ export default {
 </script>
 
 <template>
-    <div
-        id="tenant-percentage-students-mastered-one-skill-chart-container"
-    ></div>
+    
 </template>
 
 <style scoped></style>

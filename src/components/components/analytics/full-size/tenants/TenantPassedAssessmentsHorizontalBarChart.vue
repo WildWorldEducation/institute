@@ -6,13 +6,10 @@ export default {
     props: ['data', 'colour'],
     data() {
         return {
-            padding: 60
+            
         };
     },
-    mounted() {
-        const container = d3.select(
-            '#tenant-passed-assessments-chart-container'
-        );
+    mounted() {      
 
         // Specify the chart’s dimensions, based on a bar’s height.
         const barHeight = 25;
@@ -20,12 +17,13 @@ export default {
         const marginRight = 0;
         const marginBottom = 10;
         const marginLeft = 200;
-        const width = 1000;
-        const height =
-            Math.ceil((this.data.length + 0.1) * barHeight) +
-            marginTop +
-            marginBottom;
-
+          // Declare the chart dimensions and margins.
+        const width = document.getElementById(
+            'passed-skills-chart'
+        ).clientWidth;
+        const height = document.getElementById(
+            'passed-skills-chart'
+        ).clientHeight;
         // Create the scales.
         const x = d3
             .scaleLinear()
@@ -36,22 +34,21 @@ export default {
             .scaleBand()
             .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
-            .padding(0.1);
-
-        // Create a value format.
-        const format = x.tickFormat(20);
+            .padding(0.1);    
 
         // Create the SVG container.
         const svg = d3
-            .select('#tenant-passed-assessments-chart-container')
+            .select('#passed-skills-chart')
             .append('svg')
             .attr('width', width)
             .attr('height', height)
-            .attr('viewBox', [0, 0, width, height])
-            .attr(
-                'style',
-                'max-width: 100%; height: 100%; font: 14px sans-serif;'
-            );
+            .attr('viewBox', [
+                    0,
+                    0,
+                    +Math.min(width, height),
+                    +Math.min(width, height)
+                ])
+                .attr('preserveAspectRatio', 'xMinYMin');
 
         // Append a rect for each skill.
         svg.append('g')
@@ -75,7 +72,7 @@ export default {
             .attr('y', (d) => y(d.name) + y.bandwidth() / 2)
             .attr('dy', '0.35em')
             .attr('dx', -4)
-            .text((d) => format(d.quantity))
+            .text((d) => d.quantity)
             .call((text) =>
                 text
                     .filter((d) => x(d.quantity) - x(0) < 20) // short bars
@@ -99,7 +96,7 @@ export default {
 </script>
 
 <template>
-    <div id="tenant-passed-assessments-chart-container"></div>
+    
 </template>
 
 <style scoped></style>

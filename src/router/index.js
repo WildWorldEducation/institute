@@ -660,32 +660,20 @@ const router = createRouter({
             }
         },
         // Analytics - cohorts
-        {
-            path: '/cohort/:cohortId/assessment-status',
-            name: 'cohort-assessment-status',
-            component: () =>
-                import(
-                    '../components/pages/analytics/teacher-analytics/cohort/CohortAssessmentStatusReportView.vue'
-                ),
-            meta: {
-                title: 'Cohort Assessment Status Report',
-                requiresAuth: true,
-                roles: ['instructor', 'partner']
-            }
-        },
-        {
-            path: '/cohort/:cohortId/total-time',
-            name: 'cohort-time-report',
-            component: () =>
-                import(
-                    '../components/pages/analytics/teacher-analytics/cohort/CohortTimeReportView.vue'
-                ),
-            meta: {
-                title: 'Cohort Time Report',
-                requiresAuth: true,
-                roles: ['instructor', 'partner']
-            }
-        },
+        
+        // {
+        //     path: '/cohort/:cohortId/total-time',
+        //     name: 'cohort-time-report',
+        //     component: () =>
+        //         import(
+        //             '../components/pages/analytics/teacher-analytics/cohort/CohortTimeReportView.vue'
+        //         ),
+        //     meta: {
+        //         title: 'Cohort Time Report',
+        //         requiresAuth: true,
+        //         roles: ['instructor', 'partner']
+        //     }
+        // },
         {
             path: '/cohort/:cohortId/skill-activity',
             name: 'cohort-skill-activity',
@@ -699,19 +687,19 @@ const router = createRouter({
                 roles: ['instructor', 'partner']
             }
         },
-        {
-            path: '/cohort/:cohortId/progress-report',
-            name: 'cohort-progress-report',
-            component: () =>
-                import(
-                    '../components/pages/analytics/teacher-analytics/cohort/CohortProgressReportView.vue'
-                ),
-            meta: {
-                title: 'Cohort Progress Report',
-                requiresAuth: true,
-                roles: ['instructor', 'partner']
-            }
-        },
+        // {
+        //     path: '/cohort/:cohortId/progress-report',
+        //     name: 'cohort-progress-report',
+        //     component: () =>
+        //         import(
+        //             '../components/pages/analytics/teacher-analytics/cohort/CohortProgressReportView.vue'
+        //         ),
+        //     meta: {
+        //         title: 'Cohort Progress Report',
+        //         requiresAuth: true,
+        //         roles: ['instructor', 'partner']
+        //     }
+        // },
         // School Admin analytics
         {
             path: '/dashboard',
@@ -738,40 +726,53 @@ const router = createRouter({
             }
         },
         {
-            path: '/reports/academics',
-            name: 'school-admin-academics',
+            path: '/progress-report',
+            name: 'progress-report',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/SchoolAdminAnalyticsAcademicReportView.vue'
+                    '../components/pages/analytics/ProgressReportView.vue'
                 ),
             meta: {
-                title: 'School Admin Academics',
+                title: 'Progress Report',
                 requiresAuth: true,
-                roles: ['school_admin']
+                roles: ['school_admin', 'instructor', 'partner']
             }
         },
         {
-            path: '/reports/engagement',
-            name: 'school-admin-engagement',
+            path: '/challenges-report',
+            name: 'challenges-report',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/SchoolAdminAnalyticsEngagementReportView.vue'
+                    '../components/pages/analytics/ChallengesReportView.vue'
                 ),
             meta: {
-                title: 'School Admin Engagement',
+                title: 'Challenges Report',
                 requiresAuth: true,
-                roles: ['school_admin']
+                roles: ['school_admin', 'instructor', 'partner']
             }
         },
         {
-            path: '/reports/cost',
-            name: 'school-admin-cost',
+            path: '/engagement-report',
+            name: 'engagement-report',
             component: () =>
                 import(
-                    '../components/pages/analytics/school-admin-analytics/SchoolAdminAnalyticsCostReportView.vue'
+                    '../components/pages/analytics/EngagementReportView.vue'
                 ),
             meta: {
-                title: 'School Admin Cost',
+                title: 'Engagement Report',
+                requiresAuth: true,
+                roles: ['school_admin', 'instructor', 'partner']
+            }
+        },
+        {
+            path: '/cost-report',
+            name: 'school-admin-cost-report',
+            component: () =>
+                import(
+                    '../components/pages/analytics/school-admin-analytics/SchoolAdminCostReportView.vue'
+                ),
+            meta: {
+                title: 'Cost Report',
                 requiresAuth: true,
                 roles: ['school_admin']
             }

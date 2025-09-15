@@ -7,22 +7,20 @@ export default {
     data() {
         return {};
     },
-    mounted() {
-        const container = d3.select(
-            '#tenant-failed-assessments-chart-container'
-        );
-
-        // Specify the chart’s dimensions, based on a bar’s height.
-        const barHeight = 25;
+    mounted() {    
+        // Specify the chart’s dimensions, based on a bar’s height.     
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
         const marginLeft = 200;
-        const width = 1000;
-        const height =
-            Math.ceil((this.data.length + 0.1) * barHeight) +
-            marginTop +
-            marginBottom;
+             const data = this.data;
+        // Declare the chart dimensions and margins.
+        const width = document.getElementById(
+            'failed-assessments-chart-container'
+        ).clientWidth;
+        const height = document.getElementById(
+            'failed-assessments-chart-container'
+        ).clientHeight;
 
         // Create the scales.
         const x = d3
@@ -41,7 +39,7 @@ export default {
 
         // Create the SVG container.
         const svg = d3
-            .select('#tenant-failed-assessments-chart-container')
+            .select('#failed-assessments-chart-container')
             .append('svg')
             .attr('width', width)
             .attr('height', height)
@@ -53,7 +51,7 @@ export default {
 
         // Append a rect for each skill.
         svg.append('g')
-            .attr('fill', this.colour)
+            .attr('fill', 'darkred')
             .selectAll()
             .data(this.data)
             .join('rect')
@@ -73,7 +71,7 @@ export default {
             .attr('y', (d) => y(d.name) + y.bandwidth() / 2)
             .attr('dy', '0.35em')
             .attr('dx', -4)
-            .text((d) => format(d.quantity))
+            .text((d) => d.quantity)
             .call((text) =>
                 text
                     .filter((d) => x(d.quantity) - x(0) < 20) // short bars
@@ -95,8 +93,7 @@ export default {
 };
 </script>
 
-<template>
-    <div id="tenant-failed-assessments-chart-container"></div>
+<template>    
 </template>
 
 <style scoped></style>

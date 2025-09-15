@@ -1,6 +1,6 @@
 <script>
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
-import SchoolAdminAnalyticsDashboard from '../../components/analytics/full-size/tenants/dashboard/SchoolAdminAnalyticsDashboard.vue';
+import SchoolAdminDashboard from '../../components/analytics/full-size/tenants/dashboard/SchoolAdminDashboard.vue';
 import TeacherAnalyticsDashboard from '../../components/analytics/full-size/cohorts/dashboard/TeacherAnalyticsDashboard.vue';
 
 export default {
@@ -15,7 +15,7 @@ export default {
         return {};
     },
     components: {
-        SchoolAdminAnalyticsDashboard,
+        SchoolAdminDashboard,
         TeacherAnalyticsDashboard
     },
     async created() {}
@@ -23,9 +23,7 @@ export default {
 </script>
 
 <template>
-    <SchoolAdminAnalyticsDashboard
-        v-if="userDetailsStore.role == 'school_admin'"
-    />
+    <SchoolAdminDashboard v-if="userDetailsStore.role == 'school_admin'" />
     <TeacherAnalyticsDashboard
         v-if="
             userDetailsStore.role == 'instructor' ||

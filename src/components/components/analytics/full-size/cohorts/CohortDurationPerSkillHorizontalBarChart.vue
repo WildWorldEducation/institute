@@ -10,22 +10,16 @@ export default {
         };
     },
     mounted() {
-        const container = d3.select(
-            '#cohort-duration-per-skill-chart-container'
-        );
-        //console.log(this.data);
-
-        // Specify the chart’s dimensions, based on a bar’s height.
-        const barHeight = 25;
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
         const marginLeft = 200;
-        const width = 1000;
-        const height =
-            Math.ceil((this.data.length + 0.1) * barHeight) +
-            marginTop +
-            marginBottom;
+        const width = document.getElementById(
+            'student-time-chart-container'
+        ).clientWidth;
+        const height = document.getElementById(
+            'student-time-chart-container'
+        ).clientHeight;
 
         // Create the scales.
         const x = d3
@@ -56,7 +50,7 @@ export default {
 
         // Append a rect for each skill.
         svg.append('g')
-            .attr('fill', this.colour)
+            .attr('fill', 'purple')
             .selectAll()
             .data(this.data)
             .join('rect')

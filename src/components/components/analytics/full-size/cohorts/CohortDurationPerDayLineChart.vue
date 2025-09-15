@@ -9,15 +9,17 @@ export default {
     },
     mounted() {
         const data = this.data;
-        const container = d3.select('#cohort-duration-per-day-chart-container');
-
         // Declare the chart dimensions and margins.
-        const width = 928;
-        const height = 500;
-        const marginTop = 20;
-        const marginRight = 30;
-        const marginBottom = 30;
-        const marginLeft = 40;
+        const width = document.getElementById(
+            'time-chart-container'
+        ).clientWidth;
+        const height = document.getElementById(
+            'time-chart-container'
+        ).clientHeight;
+        const marginTop = 0;
+        const marginRight = 0;
+        const marginBottom = 20;
+        const marginLeft = 0;
 
         // Declare the x (horizontal position) scale.
         const x = d3.scaleUtc(
@@ -39,7 +41,7 @@ export default {
 
         // Create the SVG container.
         const svg = d3
-            .select('#cohort-duration-per-day-chart-container')
+            .select('#time-chart-container')
             .append('svg')
             .attr('width', width)
             .attr('height', height)
@@ -49,12 +51,7 @@ export default {
         // Add the x-axis.
         svg.append('g')
             .attr('transform', `translate(0,${height - marginBottom})`)
-            .call(
-                d3
-                    .axisBottom(x)
-                    .ticks(data.length)
-                    .tickSizeOuter(0)
-            );
+            .call(d3.axisBottom(x).ticks(data.length).tickSizeOuter(0));
 
         // Add the y-axis, remove the domain line, add grid lines and a label.
         svg.append('g')
@@ -80,15 +77,13 @@ export default {
         // Append a path for the line.
         svg.append('path')
             .attr('fill', 'none')
-            .attr('stroke', '#5f31dd')
-            .attr('stroke-width', 1.5)
+            .attr('stroke', 'purple')
+            .attr('stroke-width', 3)
             .attr('d', line(data));
     }
 };
 </script>
 
-<template>
-    <div id="cohort-duration-per-day-chart-container"></div>
-</template>
+<template></template>
 
 <style scoped></style>

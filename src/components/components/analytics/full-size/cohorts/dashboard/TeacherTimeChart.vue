@@ -11,39 +11,35 @@ export default {
     },
     mounted() {},
     methods: {
-        createChart(data) {
-            console.log(data);
-
+        createChart(data) {           
             // Work out which array to use for the axes
-            if (data.student.length == 0) {
+            if (data.class.length == 0) {
                 this.axisData = data.tenant;
             } else if (data.tenant.length == 0) {
-                this.axisData = data.student;
+                this.axisData = data.class;
             } else {
                 // find which array has the highest number
-                const highestStudentValue = data.student.reduce(
+                const highestClassValue = data.class.reduce(
                     (max, obj) => Math.max(max, obj.quantity),
                     -Infinity
                 );
-                const highestAverageValue = data.tenant.reduce(
+                const highestTenantValue = data.tenant.reduce(
                     (max, obj) => Math.max(max, obj.quantity),
                     -Infinity
                 );
 
-                if (highestStudentValue >= highestAverageValue) {
-                    this.axisData = data.student;
+                if (highestClassValue >= highestTenantValue) {
+                    this.axisData = data.class;
                 } else {
                     this.axisData = data.tenant;
                 }
-            }
+            }         
 
             // Convert object into array of series
             const series = Object.entries(data).map(([name, values]) => ({
                 name,
                 values
-            }));
-
-            const container = d3.select('#time-chart-container');
+            }));        
 
             // Declare the chart dimensions and margins.
             const width = document.getElementById(
@@ -65,20 +61,15 @@ export default {
 
             // Declare the y (vertical position) scale.
             const y = d3.scaleLinear(
-                [0, d3.max(this.axisData, (d) => d.formattedQuantity)],
+                [0, d3.max(this.axisData, (d) => d.minutes)],
                 [height - marginBottom, marginTop]
-            );
-
-            const color = d3
-                .scaleOrdinal()
-                .domain(series.map((s) => s.name))
-                .range(d3.schemeCategory10);
+            );            
 
             // Declare the line generator.
             const line = d3
                 .line()
                 .x((d) => x(d.date))
-                .y((d) => y(d.formattedQuantity));
+                .y((d) => y(d.minutes));
 
             // Create the SVG container.
             const svg = d3
@@ -97,28 +88,20 @@ export default {
             // Add the x-axis.
             svg.append('g')
                 .attr('transform', `translate(0,${height - marginBottom})`)
-                .call(d3.axisBottom(x).ticks(data.length).tickSizeOuter(0));
+                .call(d3.axisBottom(x).ticks(width / 100).tickSizeOuter(0));
 
-            // Add the y-axis, remove the domain line, add grid lines and a label.
+            // Add the y-axis, add grid lines and a label.
             svg.append('g')
                 .attr('transform', `translate(${marginLeft},0)`)
-                .call(d3.axisLeft(y).ticks(height / 40))
-                .call((g) => g.select('.domain').remove())
+                .call(d3.axisLeft(y).ticks(height / 80))               
                 .call((g) =>
                     g
                         .selectAll('.tick line')
                         .clone()
                         .attr('x2', width - marginLeft - marginRight)
-                        .attr('stroke-opacity', 0.2)
-                )
-                .call((g) =>
-                    g
-                        .append('text')
-                        .attr('x', -marginLeft)
-                        .attr('y', 10)
-                        .attr('fill', 'currentColor')
-                        .attr('text-anchor', 'start')
+                        .attr('stroke-opacity', 0.1)
                 );
+               
 
             // Draw the lines
             svg.selectAll('.line')
@@ -126,11 +109,13 @@ export default {
                 .join('path')
                 .attr('fill', 'none')
                 .attr('stroke', (d) => {
-                    if (d.name == 'student') return 'RoyalBlue';
+                    if (d.name == 'class') return 'RoyalBlue';
                     else return '#ff7f0e'; // orange
                 })
                 .attr('stroke-width', 3)
-                .attr('d', (d) => line(d.values));
+                .attr('d', (d) => {
+                  return line(d.values);
+                });
         }
     }
 };

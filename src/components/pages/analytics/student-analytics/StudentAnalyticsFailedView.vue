@@ -30,8 +30,7 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid chart-page">
-        <p>TODO: add failed by subject chart</p>
+    <div class="container-fluid chart-page">      
         <div class="row h-100">
             <h2 class="h4 heading">Failed multiple times</h2>
             <div id="fails-by-skill-chart-container">

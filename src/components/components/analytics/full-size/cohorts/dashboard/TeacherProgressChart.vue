@@ -9,13 +9,14 @@ export default {
             axisData: []
         };
     },
-    mounted() {},
+    mounted() { },
     methods: {
         createChart(data) {
+
             // Work out which array to use for the axes
             if (data.class.length == 0) {
-                this.axisData = data.average;
-            } else if (data.school.length == 0) {
+                this.axisData = data.tenant;
+            } else if (data.tenant.length == 0) {
                 this.axisData = data.class;
             } else {
                 // find which array has the highest number
@@ -23,15 +24,15 @@ export default {
                     (max, obj) => Math.max(max, obj.quantity),
                     -Infinity
                 );
-                const highestSchoolValue = data.school.reduce(
+                const highestTenantValue = data.tenant.reduce(
                     (max, obj) => Math.max(max, obj.quantity),
                     -Infinity
                 );
 
-                if (highestClassValue >= highestSchoolValue) {
+                if (highestClassValue >= highestTenantValue) {
                     this.axisData = data.class;
                 } else {
-                    this.axisData = data.school;
+                    this.axisData = data.tenant;
                 }
             }
 
@@ -66,11 +67,6 @@ export default {
                 [height - marginBottom, marginTop]
             );
 
-            const color = d3
-                .scaleOrdinal()
-                .domain(series.map((s) => s.name))
-                .range(d3.schemeCategory10);
-
             // Declare the line generator.
             const line = d3
                 .line()
@@ -101,7 +97,7 @@ export default {
                         .tickSizeOuter(0)
                 );
 
-            // Add the y-axis, remove the domain line, add grid lines and a label.
+            // Add the y-axis, add grid lines and a label.
             svg.append('g')
                 .attr('transform', `translate(${marginLeft},0)`)
                 .call(d3.axisLeft(y).ticks(height / 80))
@@ -123,7 +119,9 @@ export default {
                     else return '#ff7f0e'; // orange
                 })
                 .attr('stroke-width', 3)
-                .attr('d', (d) => line(d.values));
+                .attr('d', (d) => {                  
+                    return line(d.values);
+                });
         }
     }
 };

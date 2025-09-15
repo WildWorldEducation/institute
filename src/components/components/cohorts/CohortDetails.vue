@@ -100,7 +100,7 @@ export default {
         <div class="row" v-if="isMobileCheck < 576">
             <!-- Name and basic details -->
             <h1 class="secondary-heading h3">
-                {{ this.cohortsStore.selectedCohort.name }}
+                {{ this.cohortsStore.selectedCohort.name || 'All students' }}
             </h1>
         </div>
         <div
@@ -110,34 +110,8 @@ export default {
                 userDetailsStore.role == 'partner'
             "
         >
-            <!-- Cohort Progress -->
-            <div class="col-12 col-md-8">
-                <div class="d-flex flex-column">
-                    <h2 class="secondary-heading h4">Check progress</h2>
-                    <!-- Whether all students or cohort selected -->
-                    <router-link
-                        v-if="
-                            !cohortsStore.isAllStudentsSelected &&
-                            this.cohortsStore.cohorts.length > 0
-                        "
-                        :to="`/cohort/${cohortsStore.selectedCohort.id}/progress-report`"
-                        class="fit-content"
-                        target="_blank"
-                    >
-                        Progress
-                    </router-link>
-                    <router-link
-                        v-else
-                        :to="`/cohort/all-students/progress-report`"
-                        class="fit-content"
-                        target="_blank"
-                    >
-                        Progress
-                    </router-link>
-
-                    <h2 class="secondary-heading h4 mt-4">Check activity</h2>
-                    <!-- Whether all students or cohort selected -->
-                    <router-link
+            <!-- Whether all students or cohort selected -->
+            <!-- <router-link
                         v-if="
                             !cohortsStore.isAllStudentsSelected &&
                             this.cohortsStore.cohorts.length > 0
@@ -155,31 +129,10 @@ export default {
                         target="_blank"
                     >
                         Skill Activity
-                    </router-link>
+                    </router-link> -->
 
-                    <!-- Whether all students or cohort selected -->
-                    <router-link
-                        v-if="
-                            !cohortsStore.isAllStudentsSelected &&
-                            this.cohortsStore.cohorts.length > 0
-                        "
-                        :to="`/cohort/${this.cohortsStore.selectedCohort.id}/assessment-status`"
-                        class="fit-content mt-2"
-                        target="_blank"
-                    >
-                        Assessment status
-                    </router-link>
-                    <router-link
-                        v-else
-                        :to="`/cohort/all-students/assessment-status`"
-                        class="fit-content mt-2"
-                        target="_blank"
-                    >
-                        Assessment status
-                    </router-link>
-
-                    <!-- Whether all students or cohort selected -->
-                    <router-link
+            <!-- Whether all students or cohort selected -->
+            <!-- <router-link
                         v-if="
                             !cohortsStore.isAllStudentsSelected &&
                             this.cohortsStore.cohorts.length > 0
@@ -197,9 +150,8 @@ export default {
                         target="_blank"
                     >
                         Time on platform
-                    </router-link>
-                </div>
-            </div>
+                    </router-link> -->
+
             <!-- Right column -->
             <div
                 class="col-12 col-md-4"
@@ -213,28 +165,7 @@ export default {
                         :to="`/cohort/edit/${cohortsStore.selectedCohort.id}`"
                         class="btn primary-btn mt-1"
                     >
-                        Edit cohort&nbsp;
-                        <!-- Pencil icon -->
-                        <svg
-                            width="19"
-                            height="20"
-                            viewBox="0 0 19 20"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
-                                fill="white"
-                            />
-                            <path
-                                d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
-                                fill="white"
-                            />
-                            <path
-                                d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
-                                fill="white"
-                            />
-                        </svg>
+                        Edit cohort & filters
                     </router-link>
                     <!-- Delete Cohort -->
                     <button

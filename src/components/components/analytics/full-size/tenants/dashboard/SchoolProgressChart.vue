@@ -1,12 +1,18 @@
 <script>
+import { useAnalyticsStore } from '../../../../../../stores/AnalyticsStore';
 import * as d3 from 'd3';
 
 export default {
     name: 'SchoolProgressChart',
-    props: [],
+    setup() {
+        const analyticsStore = useAnalyticsStore();
+        return {
+            analyticsStore
+        };
+    },
     data() {
         return {
-            axisData: []
+            // axisData: []
         };
     },
     mounted() {},
@@ -37,15 +43,23 @@ export default {
             const marginBottom = 20;
             const marginLeft = 20;
 
+            // We use the data from the school set set the axes,
+            // even if we are displaying the class data.
             // Declare the x (horizontal position) scale.
             const x = d3.scaleUtc(
-                d3.extent(this.axisData, (d) => d.date),
+                d3.extent(this.analyticsStore.progress.tenant, (d) => d.date),
                 [marginLeft, width - marginRight]
             );
 
             // Declare the y (vertical position) scale.
             const y = d3.scaleLinear(
-                [0, d3.max(this.axisData, (d) => d.quantity)],
+                [
+                    0,
+                    d3.max(
+                        this.analyticsStore.progress.tenant,
+                        (d) => d.quantity
+                    )
+                ],
                 [height - marginBottom, marginTop]
             );
 
@@ -103,7 +117,7 @@ export default {
                 .attr('fill', 'none')
                 .attr('stroke', 'green')
                 .attr('stroke-width', 3)
-                .attr('d', line(progressData));
+                .attr('d', line(data));
         }
     }
 };

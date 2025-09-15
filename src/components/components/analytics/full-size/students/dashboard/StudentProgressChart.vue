@@ -41,21 +41,17 @@ export default {
                 values
             }));
 
-            const container = d3.select('#progress-chart-container');
-
             // Declare the chart dimensions and margins.
             const width = document.getElementById(
                 'progress-chart-container'
             ).clientWidth;
             const height = document.getElementById(
                 'progress-chart-container'
-            ).clientHeight;
-
-            console.log(height);
+            ).clientHeight;       
 
             const marginTop = 5;
-            const marginRight = 20;
-            const marginBottom = 20;
+            const marginRight = 0;
+            const marginBottom = 25;
             const marginLeft = 20;
 
             // Declare the x (horizontal position) scale.

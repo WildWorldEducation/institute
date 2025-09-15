@@ -26,10 +26,17 @@ export const useAnalyticsStore = defineStore('analytics', {
             // Dashboard
             progress: {
                 student: [],
+                class: [],
                 tenant: []
             },
             time: {
                 student: [],
+                class: [],
+                tenant: []
+            },
+            cost: {
+                student: [],
+                class: [],
                 tenant: []
             },
             // Other
@@ -264,12 +271,43 @@ export const useAnalyticsStore = defineStore('analytics', {
                         data[i].date = new Date(data[i].date);
                     }
                     data.sort((a, b) => a.date - b.date);
-                    this.classProgress = data;
+                    this.progress.class = data;
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
                 });
         },
+        async getClassTime(teacherId) {
+            await fetch(`/student-analytics/all-students-duration-per-day/weekly/${teacherId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                        data[i].minutes = data[i].quantity / (1000 * 60);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.time.class = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
+          async getClassCost(teacherId, dataMode) {           
+            await fetch(`/student-analytics/all-students-tokens-per-day/${dataMode}/${teacherId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                        data[i].minutes = data[i].quantity / (1000 * 60);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.cost.class = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
+      
         async getTeacherClassSkillActivityReport(instructorId) {
             try {
                 const response = await fetch(
@@ -358,6 +396,36 @@ export const useAnalyticsStore = defineStore('analytics', {
                     }
                     data.sort((a, b) => a.date - b.date);
                     this.progress.tenant = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
+        async getSchoolTime(tenantId) {
+            await fetch(`/student-analytics/tenant-duration-per-day/weekly/${tenantId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                        data[i].minutes = data[i].quantity / (1000 * 60);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.time.tenant = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching student progress:', error);
+                });
+        },
+        async getSchoolCost(tenantId, dataMode) {           
+            await fetch(`/student-analytics/tenant-tokens-per-day/${dataMode}/${tenantId}}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = new Date(data[i].date);
+                        data[i].minutes = data[i].quantity / (1000 * 60);
+                    }
+                    data.sort((a, b) => a.date - b.date);
+                    this.cost.tenant = data;
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);

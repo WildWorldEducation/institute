@@ -33,12 +33,12 @@ export default {
 <template>
     <div class="container">
         <div class="row">
-            <h2 class="h4 heading">Tokens per skill</h2>
+            <h2 class="h4 heading">AI usage per skill</h2>
             <StudentAvgTokensToMasterSkillsHorizontalBarChart
                 class=""
                 v-if="analyticsStore.studentTokensPerSkills.length > 0"
                 :data="analyticsStore.studentTokensPerSkills"
-                colour="darkgreen"
+              
             />
             <p v-else>No data yet</p>
         </div>

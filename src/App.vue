@@ -359,6 +359,16 @@ export default {
                                 class="dropdown-menu"
                                 :class="{ show: isStudentsDropdownOpen }"
                             >
+                                <!-- Cohorts -->
+                                <li>
+                                    <RouterLink
+                                        to="/cohorts"
+                                        class="dropdown-item close-on-click"
+                                        @click="isStudentsDropdownOpen = false"
+                                    >
+                                        Cohorts
+                                    </RouterLink>
+                                </li>
                                 <li>
                                     <RouterLink
                                         to="/student-assessments"
@@ -388,33 +398,25 @@ export default {
                                 Students
                             </RouterLink>
                         </li>
-                        <!-- Cohorts -->
                         <li
                             v-if="
-                                userDetailsStore.role == 'instructor' ||
-                                userDetailsStore.role == 'partner'
+                                (userDetailsStore.role == 'instructor' ||
+                                    userDetailsStore.role == 'partner' ||
+                                    userDetailsStore.role == 'school_admin') &&
+                                isMobileCheck < 576
                             "
                             class="nav-item"
                         >
+                            <!-- Navigation link to /cohorts -->
                             <RouterLink
                                 to="/cohorts"
-                                class="nav-link close-on-click"
+                                class="nav-link"
+                                @click="closeDropdown"
                             >
                                 Cohorts
                             </RouterLink>
                         </li>
-                        <!-- Tenant Cohorts -->
-                        <li
-                            v-if="userDetailsStore.role == 'school_admin'"
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                to="/classes"
-                                class="nav-link close-on-click"
-                            >
-                                Classes
-                            </RouterLink>
-                        </li>
+
                         <!-- Tenants -->
                         <li
                             v-if="userDetailsStore.role == 'platform_admin'"

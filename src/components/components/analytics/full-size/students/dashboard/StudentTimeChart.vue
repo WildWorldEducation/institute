@@ -11,9 +11,7 @@ export default {
     },
     mounted() {},
     methods: {
-        createChart(data) {
-            console.log(data);
-
+        createChart(data) {           
             // Work out which array to use for the axes
             if (data.student.length == 0) {
                 this.axisData = data.tenant;
@@ -41,9 +39,7 @@ export default {
             const series = Object.entries(data).map(([name, values]) => ({
                 name,
                 values
-            }));
-
-            const container = d3.select('#time-chart-container');
+            }));          
 
             // Declare the chart dimensions and margins.
             const width = document.getElementById(
@@ -52,10 +48,10 @@ export default {
             const height = document.getElementById(
                 'time-chart-container'
             ).clientHeight;
-            const marginTop = 0;
-            const marginRight = 20;
-            const marginBottom = 20;
-            const marginLeft = 20;
+            const marginTop = 5;
+            const marginRight = 0;
+            const marginBottom = 25;
+            const marginLeft = 25;
 
             // Declare the x (horizontal position) scale.
             const x = d3.scaleUtc(
