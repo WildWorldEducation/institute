@@ -221,6 +221,23 @@ export default {
                     <p v-else>There is no data to show yet.</p>
                 </div>
             </div>
+        </div>
+        <div class="row h-50">
+            <div class="col-lg chart-col position-relative">
+                <div id="student-passed-subjects-chart-container">
+                    <StudentPassedAssessmentsByRootSubjectHorizontalBarChart
+                        v-if="
+                            analyticsStore.studentRootSubjectsPassedAssessments
+                                .length > 0
+                        "
+                        :data="
+                            analyticsStore.studentRootSubjectsPassedAssessments
+                        "
+                    />
+
+                    <p v-else>No data yet</p>
+                </div>
+            </div>
             <div class="col-lg chart-col position-relative">
                 <div id="activity-chart-container">
                     <DownloadCSVBtn
@@ -231,30 +248,6 @@ export default {
                     />
                     <StudentSkillActivityChart ref="activityChart" />
                     <!-- <p v-else>No skills visited by this student.</p> -->
-                </div>
-            </div>
-        </div>
-        <div class="row h-50">
-            <div class="col-lg-6 col chart-col position-relative">
-                <div id="activity-chart-container">
-                    <span class="d-flex justify-content-between w-100">
-                        <h1 class="heading h4">Subject progress</h1>
-                        <h2 class="tertiary-heading h4">{{ studentName }}</h2>
-                    </span>
-                    <div id="student-passed-subjects-chart-container">
-                        <StudentPassedAssessmentsByRootSubjectHorizontalBarChart
-                            v-if="
-                                analyticsStore
-                                    .studentRootSubjectsPassedAssessments
-                                    .length > 0
-                            "
-                            :data="
-                                analyticsStore.studentRootSubjectsPassedAssessments
-                            "
-                        />
-
-                        <p v-else>No data yet</p>
-                    </div>
                 </div>
             </div>
         </div>
