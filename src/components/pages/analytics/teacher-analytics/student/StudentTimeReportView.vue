@@ -219,7 +219,7 @@ export default {
 }
 
 
-#activity-chart-container,
+#activity-chart-container,``
 #time-chart-container {
     height: calc(100% - 35px);
     width: 100%;
