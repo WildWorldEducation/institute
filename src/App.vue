@@ -157,6 +157,7 @@ export default {
             this.closeNavbarWithAnimation();
             console.log('click on router view');
             this.isSkillsDropdownOpen = false;
+            this.isStudentsDropdownOpen = false;
         }
     }
 };
@@ -275,33 +276,27 @@ export default {
                             </div>
 
                             <!-- Dropdown menu (conditionally shown) -->
-
-                            <div
-                                @focus="
-                                    console.log(
-                                        'focus event triggered ha ha ha'
-                                    )
-                                "
-                                v-if="isSkillsDropdownOpen"
-                            >
-                                <ul
-                                    class="dropdown-menu"
-                                    :class="{ show: isSkillsDropdownOpen }"
-                                    @blur="handleFocusSkillDropdown"
-                                >
-                                    <li>
-                                        <RouterLink
-                                            to="/skills"
-                                            class="dropdown-item close-on-click"
-                                            @click="
-                                                isSkillsDropdownOpen = false
-                                            "
-                                        >
-                                            Skills list
-                                        </RouterLink>
-                                    </li>
-                                </ul>
-                            </div>
+                            <Transition name="dropdownMenu">
+                                <div v-if="isSkillsDropdownOpen">
+                                    <ul
+                                        class="dropdown-menu"
+                                        :class="{ show: isSkillsDropdownOpen }"
+                                        @blur="handleFocusSkillDropdown"
+                                    >
+                                        <li>
+                                            <RouterLink
+                                                to="/skills"
+                                                class="dropdown-item close-on-click"
+                                                @click="
+                                                    isSkillsDropdownOpen = false
+                                                "
+                                            >
+                                                Skills list
+                                            </RouterLink>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </Transition>
                         </li>
                         <li
                             v-if="
@@ -380,34 +375,44 @@ export default {
                                         userDetailsStore.role == 'partner'
                                     "
                                     class="nav-link dropdown-toggle border-0 bg-transparent"
+                                    :class="{
+                                        active: isStudentsDropdownOpen,
+                                        inActive: !isStudentsDropdownOpen
+                                    }"
                                 ></button>
                             </div>
 
                             <!-- Dropdown menu (conditionally shown) -->
-                            <ul
-                                class="dropdown-menu"
-                                v-if="isStudentsDropdownOpen"
-                            >
-                                <!-- Cohorts -->
-                                <li>
-                                    <RouterLink
-                                        to="/cohorts"
-                                        class="dropdown-item close-on-click"
-                                        @click="isStudentsDropdownOpen = false"
-                                    >
-                                        Cohorts
-                                    </RouterLink>
-                                </li>
-                                <li>
-                                    <RouterLink
-                                        to="/student-assessments"
-                                        class="dropdown-item close-on-click"
-                                        @click="isStudentsDropdownOpen = false"
-                                    >
-                                        Mark Assessments
-                                    </RouterLink>
-                                </li>
-                            </ul>
+                            <Transition name="dropdownMenu">
+                                <ul
+                                    class="dropdown-menu"
+                                    v-if="isStudentsDropdownOpen"
+                                >
+                                    <!-- Cohorts -->
+                                    <li>
+                                        <RouterLink
+                                            to="/cohorts"
+                                            class="dropdown-item close-on-click"
+                                            @click="
+                                                isStudentsDropdownOpen = false
+                                            "
+                                        >
+                                            Cohorts
+                                        </RouterLink>
+                                    </li>
+                                    <li>
+                                        <RouterLink
+                                            to="/student-assessments"
+                                            class="dropdown-item close-on-click"
+                                            @click="
+                                                isStudentsDropdownOpen = false
+                                            "
+                                        >
+                                            Mark Assessments
+                                        </RouterLink>
+                                    </li>
+                                </ul>
+                            </Transition>
                         </li>
                         <li
                             v-else-if="
@@ -1169,6 +1174,20 @@ p {
     overflow: visible;
 }
 
+.dropdownMenu-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.dropdownMenu-leave-active {
+  transition: all 0.4s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.dropdownMenu-enter-from,
+.dropdownMenu-leave-to {
+  transform: translateY(20px);
+  opacity: 0;
+}
+
 /* Responsive pointer-events behavior - only for tablets and up */
 @media (min-width: 768px) {
   /* Ensure the navbar doesn't block clicks when fixed-top on larger screens */
@@ -1194,6 +1213,9 @@ p {
     --bs-dropdown-link-active-color: var(--primary-contrast-color);
 }
 
+.dropdown-menu {
+    width: 35px !important;
+}
 /* Arrow Icon Animation */
 .active{
     transition: transform 0.5s ease-in-out;
