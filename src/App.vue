@@ -145,6 +145,18 @@ export default {
         handleBeforeUnload(event) {
             console.log('Tab is closing or refreshing');
             this.$refs.appTimeTracker.saveDuration();
+        },
+        handleFocusSkillDropdown() {
+            console.log('focus event triggered');
+            this.isSkillsDropdownOpen = false;
+        },
+        closeDropdown() {
+            this.isSkillsDropdownOpen = false;
+        },
+        handleRouterClick() {
+            this.closeNavbarWithAnimation();
+            console.log('click on router view');
+            this.isSkillsDropdownOpen = false;
         }
     }
 };
@@ -263,20 +275,33 @@ export default {
                             </div>
 
                             <!-- Dropdown menu (conditionally shown) -->
-                            <ul
-                                class="dropdown-menu"
-                                :class="{ show: isSkillsDropdownOpen }"
+
+                            <div
+                                @focus="
+                                    console.log(
+                                        'focus event triggered ha ha ha'
+                                    )
+                                "
+                                v-if="isSkillsDropdownOpen"
                             >
-                                <li>
-                                    <RouterLink
-                                        to="/skills"
-                                        class="dropdown-item close-on-click"
-                                        @click="isSkillsDropdownOpen = false"
-                                    >
-                                        Skills list
-                                    </RouterLink>
-                                </li>
-                            </ul>
+                                <ul
+                                    class="dropdown-menu"
+                                    :class="{ show: isSkillsDropdownOpen }"
+                                    @blur="handleFocusSkillDropdown"
+                                >
+                                    <li>
+                                        <RouterLink
+                                            to="/skills"
+                                            class="dropdown-item close-on-click"
+                                            @click="
+                                                isSkillsDropdownOpen = false
+                                            "
+                                        >
+                                            Skills list
+                                        </RouterLink>
+                                    </li>
+                                </ul>
+                            </div>
                         </li>
                         <li
                             v-if="
@@ -361,7 +386,7 @@ export default {
                             <!-- Dropdown menu (conditionally shown) -->
                             <ul
                                 class="dropdown-menu"
-                                :class="{ show: isStudentsDropdownOpen }"
+                                v-if="isStudentsDropdownOpen"
                             >
                                 <!-- Cohorts -->
                                 <li>
@@ -689,7 +714,11 @@ export default {
             </div>
         </nav>
     </header>
-    <div id="router-view" class="router-view-padding">
+    <div
+        id="router-view"
+        class="router-view-padding"
+        @click="handleRouterClick()"
+    >
         <RouterView />
     </div>
     <!-- To track student time -->
@@ -704,17 +733,12 @@ Themes
 :root {
     --primary-color: #5f31dd;
     --primary-contrast-color: white;
-
     --secondary-color: #c6e76c;
     --secondary-contrast-color: black;
-
     --tertiary-color: #5f31dd;
-
     --skill-tree-background-color: white;
     --skill-tree-color: black;
-
     --stroke-width: 0px;
-
 }
 
 /* The Instructor theme */
