@@ -236,4 +236,17 @@ export default {
         height: 50%;
     }
 }
+
+@media (max-width: 576px) {
+.chart-page {
+    overflow: auto;
+    
+
+}
+
+.chart-col {
+    height: 200px;
+}
+}
+
 </style>
