@@ -12,7 +12,7 @@ export default {
         let averageLabel = '';
 
         if (this.userRole == 'instructor' || this.userRole == 'partner') {
-            averageLabel = 'class average';
+            averageLabel = 'school average';
         }
 
         if (this.userRole == 'school_admin') {
@@ -28,7 +28,7 @@ export default {
                 values: this.averageDuration
             }
         ];
-        const container = d3.select('#time-chart-container');
+    
 
         // Declare the chart dimensions and margins.
         const width = document.getElementById(
@@ -41,11 +41,6 @@ export default {
         const marginRight = 0;
         const marginBottom = 20;
         const marginLeft = 30;
-
-        const color = d3
-            .scaleOrdinal()
-            .domain(chartData.map((d) => d.name)) // Series names
-            .range(d3.schemeCategory10);
 
         // X scale: use d3.scaleUtc (time axis)
         const x = d3.scaleUtc(

@@ -157,7 +157,7 @@ export default {
         </span>
 
         <div class="chart-row row">
-            <div class="col-lg chart-col position-relative">
+            <div class="col-lg chart-col position-relative h-100">
                 <div id="time-chart-container">
                     <DownloadCSVBtn
                         :data="totalTimeOnPlatformDownloadData"
@@ -219,7 +219,7 @@ export default {
 }
 
 
-#activity-chart-container,``
+#activity-chart-container,
 #time-chart-container {
     height: calc(100% - 35px);
     width: 100%;
