@@ -129,7 +129,7 @@ router.get('/show/:tenantId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-            SELECT billing_mode, tokens
+            SELECT billing_mode, tokens, name
             FROM tenants
             WHERE id = ${conn.escape(req.params.tenantId)};`;
 
