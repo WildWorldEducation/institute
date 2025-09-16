@@ -39,7 +39,7 @@ export default {
         ).clientHeight;
         const marginTop = 20;
         const marginRight = 0;
-        const marginBottom = 30;
+        const marginBottom = 20;
         const marginLeft = 30;
 
         const color = d3
@@ -137,22 +137,15 @@ export default {
             .data(chartData)
             .join('path')
             .attr('fill', 'none')
-            .attr('stroke', (d) => color(d.name)) // ✅ use color scale
+            .attr('stroke', (d) => {
+               
+                    if (d.name == 'school average') return '#ff7f0e';
+                    else return 'purple';
+                }) 
             .attr('stroke-width', 2)
             .attr('d', (d) => line(d.values));
 
-        // Legend
-        svg.selectAll('.legend')
-            .data(chartData)
-            .enter()
-            .append('text')
-            .attr('x', width - marginRight - 80)
-            .attr('y', (d, i) => marginTop + i * 20)
-            .attr('fill', (d) => color(d.name))
-            .text((d) => d.name)
-            .attr('stroke', '#5f31dd')
-            .attr('stroke-width', 3)
-            .attr('d', line(data));
+      
     }
 };
 </script>

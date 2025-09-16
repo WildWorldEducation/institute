@@ -3,8 +3,7 @@ import { useUsersStore } from '../../../../../stores/UsersStore';
 import { useTeacherAnalyticsStore } from '../../../../../stores/TeacherAnalyticsStore';
 import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
 import { useAnalyticsStore } from '../../../../../stores/AnalyticsStore';
-import StudentPassedAssessmentsByRootSubjectHorizontalBarChart from '../../../../components/analytics/full-size/students/StudentPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
-import TimePerSkillHorizontalBarChart from '../../../../components/analytics/full-size/students/TimePerSkillHorizontalBarChart.vue';
+
 import StudentSkillActivityChart from '../../../../components/analytics/full-size/students/StudentSkillActivityChart.vue';
 import StudentDurationPerDayLineChart from '../../../../components/analytics/full-size/students/StudentDurationPerDayLineChart.vue';
 import DownloadCSVBtn from '../../../../components/downloadCSVBtn/downloadCSVBtn.vue';
@@ -23,11 +22,11 @@ export default {
         };
     },
     components: {
-        TimePerSkillHorizontalBarChart,
+        
         StudentDurationPerDayLineChart,
         StudentSkillActivityChart,
         DownloadCSVBtn,
-        StudentPassedAssessmentsByRootSubjectHorizontalBarChart
+        
     },
     data() {
         return {
@@ -42,6 +41,7 @@ export default {
         };
     },
     async created() {
+        // Get student name
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
         const foundObject = this.usersStore.users.find(
             (student) => student.id === this.studentId
@@ -50,55 +50,11 @@ export default {
             this.studentName = foundObject.username;
         }
 
-        // Get total progress data
-        await this.analyticsStore.getStudentProgress(
-            this.studentId,
-            this.userDetailsStore.tenantId
-        );
-
-        await this.analyticsStore.getStudentPassedAssessmentsBySubject(
-            this.studentId
-        );
-
         await this.getStudentDurationPerDay();
         await this.getStudentActivity();
     },
     methods: {
-        // async getSkillDuration() {
-        //     fetch(`/student-analytics/skill-durations/${this.studentId}`)
-        //         .then((response) => response.json())
-        //         .then((data) => {
-        //             this.skillDurations = data;
-        //             for (let i = 0; i < this.skillDurations.length; i++) {
-        //                 this.skillDurations[i].formattedQuantity =
-        //                     this.millisToMinutesAndSeconds(
-        //                         this.skillDurations[i].quantity
-        //                     );
-        //             }
-        //             console.log(this.skillDurations);
-        //             this.minutesPerSkillDownloadData = this.skillDurations.map(
-        //                 (e) => {
-        //                     return {
-        //                         skill: e.name,
-        //                         quantity: e.formattedQuantity
-        //                     };
-        //                 }
-        //             );
-        //         })
-        //         .catch((error) => {
-        //             console.error('Error fetching last visited skills:', error);
-        //         });
-        // },
-        // async getAllSkillsDuration() {
-        //     fetch(`/student-analytics/all-skills-duration/${this.studentId}`)
-        //         .then((response) => response.json())
-        //         .then((data) => {
-        //             this.allSkillsDuration = data.duration;
-        //         })
-        //         .catch((error) => {
-        //             console.error('Error fetching last visited skills:', error);
-        //         });
-        // },
+        
         async getStudentDurationPerDay() {
             let url = `/student-analytics/student-duration-per-day-class/${this.studentId}/${this.userDetailsStore.userId}`;
 
@@ -196,11 +152,11 @@ export default {
 <template>
     <div class="container-fluid chart-page">
         <span class="d-flex justify-content-between w-100">
-            <h1 class="heading h4">Time spent</h1>
+            <h1 class="heading h4">Engagement</h1>
             <h2 class="tertiary-heading h4">{{ studentName }}</h2>
         </span>
 
-        <div class="row h-50">
+        <div class="chart-row row">
             <div class="col-lg chart-col position-relative">
                 <div id="time-chart-container">
                     <DownloadCSVBtn
@@ -216,26 +172,20 @@ export default {
                         :averageDuration="averageDurationsPerDay"
                         :userRole="userDetailsStore.role"
                         :studentName="studentName"
-                        colour="black"
+                        
                     />
                     <p v-else>There is no data to show yet.</p>
                 </div>
+                 <figcaption class="position-absolute"><span style="color: purple">{{ studentName }}</span> vs <span
+                        style="color:#ff7f0e">class average</span></figcaption>
             </div>
         </div>
-        <div class="row h-50">
+        <div class="chart-row row">
             <div class="col-lg chart-col position-relative">
-                <div id="student-passed-subjects-chart-container">
-                    <StudentPassedAssessmentsByRootSubjectHorizontalBarChart
-                        v-if="
-                            analyticsStore.studentRootSubjectsPassedAssessments
-                                .length > 0
-                        "
-                        :data="
-                            analyticsStore.studentRootSubjectsPassedAssessments
-                        "
-                    />
+                <div id="">
+                    TODO: Add time per subject bar chart
 
-                    <p v-else>No data yet</p>
+                    
                 </div>
             </div>
             <div class="col-lg chart-col position-relative">
@@ -264,8 +214,12 @@ export default {
     overflow: hidden;
 }
 
+ .chart-row {
+    height: 50%;
+}
+
+
 #activity-chart-container,
-#student-passed-subjects-chart-container,
 #time-chart-container {
     height: calc(100% - 35px);
     width: 100%;
