@@ -302,6 +302,15 @@ const router = createRouter({
             }
         },
         {
+            path: '/tenants/:tenantId/edit',
+            name: 'edit-tenant',
+            component: () =>
+                import('../components/pages/tenants/EditTenantView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['platform_admin']
+            }},
+        {
             path: '/student-questions',
             name: 'student-questions',
             component: () =>
@@ -634,7 +643,7 @@ const router = createRouter({
             }
         },
         {
-            path: '/student/:studentId/progress-report',
+            path: '/student/:studentId/ report',
             name: 'student-progress-report',
             component: () =>
                 import(
