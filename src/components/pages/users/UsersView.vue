@@ -511,7 +511,20 @@ export default {
     >
         <span class="loader"></span>
     </div>
-    <div v-else id="user-container" class="container-fluid">
+    <div
+        v-else-if="
+            (userDetailsStore.role == 'school_admin' &&
+                usersStore.studentsPerTenant.length > 0) ||
+            ((userDetailsStore.role == 'instructor' ||
+                userDetailsStore.role === 'partner') &&
+                students.length > 0) ||
+            (userDetailsStore.role == 'platform_admin' &&
+                usersStore.users.length > 0) ||
+            (userDetailsStore.role == 'editor' && usersStore.editors.length > 0)
+        "
+        id="user-container"
+        class="container-fluid"
+    >
         <div class="row position-relative">
             <div class="col-lg-4 col-md-5">
                 <TenantStudentList
@@ -574,6 +587,9 @@ export default {
                 </div>
             </div>
         </div>
+    </div>
+    <div v-else class="container">
+        <p>There are no students yet.</p>
     </div>
 
     <!-- Instructor Introduction modal -->

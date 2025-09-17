@@ -19,9 +19,6 @@ export default {
     methods: {
         createChart(data) {
             // First, clear line(s)
-            //    d3.select('svg').remove();
-            console.log('progress data is: ');
-            console.log(data);
             let progressData = [];
             if (this.$parent.progressChartMode === 'school') {
                 this.axisData = data.school;
