@@ -15,7 +15,6 @@ export default {
     },
     methods: {
         selectTenant(tenant) {
-
             // Set local value first for immediate UI response
             this.$parent.selectedTenant = tenant;
         }
@@ -26,16 +25,18 @@ export default {
 <template>
     <div class="container mt-1">
         <div v-for="tenant in $parent.tenants" :key="tenant.id">
-            <div class="d-flex bg-white rounded p-2">
-                <button :class="tenant.id === $parent.selectedTenant.id
-                        ? 'isSelected'
-                        : 'user-buttons'
-                    " @click="selectTenant(tenant)">
+            <div class="d-flex bg-white rounded mb-2">
+                <button
+                    :class="
+                        tenant.id === $parent.selectedTenant.id
+                            ? 'isSelected'
+                            : 'user-buttons'
+                    "
+                    @click="selectTenant(tenant)"
+                >
                     {{ tenant.name }}
                 </button>
             </div>
-
-
         </div>
 
         <!-- Add Tenant Link -->
