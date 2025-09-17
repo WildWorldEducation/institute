@@ -1228,7 +1228,7 @@ p {
 }
 
 .dropdownDiv{
-    width: 120px !important;
+    width: 90px !important;
     border-radius: 8px;
     border: 1px solid #D2D2D2;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
