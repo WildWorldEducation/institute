@@ -819,6 +819,114 @@ router.post(
     }
 );
 
+/**
+ * School admin create new teacher
+ */
+router.post(
+    '/add-teacher',
+    isAuthenticated,
+    createUserPermission,
+    (req, res, next) => {
+        // Hash the password.
+        bcrypt.hash(
+            req.body.password,
+            saltRounds,
+            function (err, hashedPassword) {
+                if (err) {
+                    console.log(err);
+                }
+
+                let data = {
+                    username: req.body.username,
+                    email: req.body.email,
+                    role: req.body.role,
+                    password: hashedPassword,
+                    tenant_id: req.body.tenant_id
+                };
+
+                // Check if username or email address already exist.
+                let sqlQuery1 = `SELECT * 
+        FROM users 
+        WHERE username = ${conn.escape(req.body.username)}
+        AND NOT(email = ${conn.escape(req.body.email)});`;
+
+                conn.query(sqlQuery1, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+                        if (results.length > 0) {
+                            res.json({ account: 'username already taken' });
+                        } else {
+                            let sqlQuery2 = `SELECT * 
+                        FROM users 
+                        WHERE email = ${conn.escape(req.body.email)};`;
+
+                            conn.query(sqlQuery2, data, (err, results) => {
+                                try {
+                                    if (err) {
+                                        throw err;
+                                    } else {
+                                        if (results.length > 0) {
+                                            res.json({
+                                                account: 'email already taken'
+                                            });
+                                        } else {
+                                            // Remove the backslash from username.
+                                            // Using '?', so dont need to escape it.
+                                            data.username =
+                                                data.username.replace(
+                                                    /\\/g,
+                                                    ''
+                                                );
+                                            // Set the primary key.
+                                            data.id = uuidv7();
+                                            // If not, add to database.
+                                            let sqlQuery3 =
+                                                'INSERT INTO users SET ?';
+                                            conn.query(
+                                                sqlQuery3,
+                                                data,
+                                                async (err, results) => {
+                                                    try {
+                                                        if (err) {
+                                                            throw err;
+                                                        } else {
+                                                            let newUserId =
+                                                                data.id;
+
+                                                            // Unlock skills here
+                                                            unlockInitialSkills(
+                                                                newUserId
+                                                            );
+
+                                                            res.json({
+                                                                account:
+                                                                    'account created',
+                                                                id: newUserId
+                                                            });
+                                                        }
+                                                    } catch (err) {
+                                                        next(err);
+                                                    }
+                                                }
+                                            );
+                                        }
+                                    }
+                                } catch (err) {
+                                    next(err);
+                                }
+                            });
+                        }
+                    } catch (err) {
+                        next(err);
+                    }
+                });
+            }
+        );
+    }
+);
+
 // List all users.
 router.get('/list', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {

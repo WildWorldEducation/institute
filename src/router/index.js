@@ -271,10 +271,20 @@ const router = createRouter({
 
         // School admins only - classes from their school only
         {
-            path: '/classes',
-            name: 'classes',
+            path: '/teachers',
+            name: 'teachers',
             component: () =>
-                import('../components/pages/users/InstructorsView.vue'),
+                import('../components/pages/teachers/ListTeachersView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['school_admin']
+            }
+        },
+        {
+            path: '/teachers/add',
+            name: 'add-teacher',
+            component: () =>
+                import('../components/pages/teachers/AddTeacherView.vue'),
             meta: {
                 requiresAuth: true,
                 roles: ['school_admin']
@@ -309,7 +319,8 @@ const router = createRouter({
             meta: {
                 requiresAuth: true,
                 roles: ['platform_admin']
-            }},
+            }
+        },
         {
             path: '/student-questions',
             name: 'student-questions',
@@ -669,7 +680,7 @@ const router = createRouter({
             }
         },
         // Analytics - cohorts
-        
+
         // {
         //     path: '/cohort/:cohortId/total-time',
         //     name: 'cohort-time-report',
@@ -738,9 +749,7 @@ const router = createRouter({
             path: '/progress-report',
             name: 'progress-report',
             component: () =>
-                import(
-                    '../components/pages/analytics/ProgressReportView.vue'
-                ),
+                import('../components/pages/analytics/ProgressReportView.vue'),
             meta: {
                 title: 'Progress Report',
                 requiresAuth: true,

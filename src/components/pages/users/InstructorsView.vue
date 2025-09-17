@@ -2,7 +2,6 @@
 import InstructorsList from '../../components/instructors/InstructorsList.vue';
 import InstructorDetails from '../../components/instructors/InstructorDetails.vue';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
-import { useAnalyticsStore } from '../../../stores/AnalyticsStore.js';
 
 export default {
     setup() {
@@ -84,25 +83,6 @@ export default {
             this.showTutorialTip1 = false;
             this.isTutorialComplete = true;
             this.markTutorialComplete();
-        },
-        updateInstructorDetails(instructor) {
-            this.selectedInstructor = instructor;
-            this.$refs.InstructorDetails.getInstructorPercentageStudentsMasteredAtLeastOneSkill();
-            this.$refs.InstructorDetails.classProgress = [];
-            this.$refs.InstructorDetails.getTenantClassProgress();
-            this.$refs.InstructorDetails.getTenantClassDurationPerDay();
-            this.analyticsStore.getTeacherClassSkillActivityReport(
-                this.selectedInstructor.id
-            );
-            this.analyticsStore.getTeacherClassFailedAssessmentsBySubject(
-                this.selectedInstructor.id
-            );
-            this.analyticsStore.getTeacherClassPassedAssessmentsBySubject(
-                this.selectedInstructor.id
-            );
-            this.analyticsStore.getTeacherClassAttemptedAssessmentsBySubject(
-                this.selectedInstructor.id
-            );
         }
     }
 };
