@@ -1,14 +1,10 @@
 <script>
-import { useCohortsStore } from '../../../stores/CohortsStore.js';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 
 export default {
     setup() {
-        const cohortsStore = useCohortsStore();
         const userDetailsStore = useUserDetailsStore();
-
         return {
-            cohortsStore,
             userDetailsStore
         };
     },
@@ -19,15 +15,14 @@ export default {
         };
     },
     async created() {
-        await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
         // Check if user has visited before
         this.checkIfTutorialComplete();
     },
 
     methods: {
         selectInstructor(instructor) {
-            this.$parent.selectedInstructor = instructor;
-            this.$parent.updateInstructorDetails(instructor);
+            this.$parent.selectedTeacher = instructor;
+            this.$parent.updateTeacherDetails(instructor);
             if (window.innerWidth < 769) this.$emit('showDetails');
         },
         restartTutorial() {
@@ -92,20 +87,24 @@ export default {
 
 <template>
     <div class="container mt-1">
-        <div v-for="instructor in instructors" :key="instructor.id">
+        <div v-for="teacher in $parent.teachers" :key="teacher.id">
             <div class="d-flex bg-light rounded p-2">
                 <button
                     :class="
-                        instructor.id === $parent.selectedInstructor.id
+                        teacher.id === $parent.selectedTeacher.id
                             ? 'isCurrentlySelected'
                             : 'cohort-buttons'
                     "
-                    @click="selectInstructor(instructor)"
+                    @click="selectInstructor(teacher)"
                 >
-                    {{ instructor.username }}
+                    {{ teacher.username }}
                 </button>
             </div>
         </div>
+        <!-- Add Teacher Link -->
+        <RouterLink to="/teachers/add" class="d-block mb-2 btn primary-btn">
+            Add teacher
+        </RouterLink>
     </div>
 </template>
 

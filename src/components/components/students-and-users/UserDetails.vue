@@ -154,7 +154,7 @@ export default {
                         </li>
                         <li>
                             <!-- Time on Platform -->
-                            <p><router-link :to="`/student/${this.$parent.user.id}/total-time`" class="fit-content"
+                            <p><router-link :to="`/student/${this.$parent.user.id}/engagement`" class="fit-content"
                                     target="_blank">
                                     Engagement Report
                                 </router-link></p>

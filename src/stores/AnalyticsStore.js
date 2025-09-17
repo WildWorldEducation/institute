@@ -278,7 +278,9 @@ export const useAnalyticsStore = defineStore('analytics', {
                 });
         },
         async getClassTime(teacherId) {
-            await fetch(`/student-analytics/all-students-duration-per-day/weekly/${teacherId}`)
+            await fetch(
+                `/student-analytics/all-students-duration-per-day/weekly/${teacherId}`
+            )
                 .then((response) => response.json())
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {
@@ -292,8 +294,10 @@ export const useAnalyticsStore = defineStore('analytics', {
                     console.error('Error fetching student progress:', error);
                 });
         },
-          async getClassCost(teacherId, dataMode) {           
-            await fetch(`/student-analytics/all-students-tokens-per-day/${dataMode}/${teacherId}`)
+        async getClassCost(teacherId, dataMode) {
+            await fetch(
+                `/student-analytics/all-students-tokens-per-day/${dataMode}/${teacherId}`
+            )
                 .then((response) => response.json())
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {
@@ -307,7 +311,7 @@ export const useAnalyticsStore = defineStore('analytics', {
                     console.error('Error fetching student progress:', error);
                 });
         },
-      
+
         async getTeacherClassSkillActivityReport(instructorId) {
             try {
                 const response = await fetch(
@@ -402,7 +406,9 @@ export const useAnalyticsStore = defineStore('analytics', {
                 });
         },
         async getSchoolTime(tenantId) {
-            await fetch(`/student-analytics/tenant-duration-per-day/weekly/${tenantId}`)
+            await fetch(
+                `/student-analytics/tenant-duration-per-day/weekly/${tenantId}`
+            )
                 .then((response) => response.json())
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {
@@ -416,8 +422,10 @@ export const useAnalyticsStore = defineStore('analytics', {
                     console.error('Error fetching student progress:', error);
                 });
         },
-        async getSchoolCost(tenantId, dataMode) {           
-            await fetch(`/student-analytics/tenant-tokens-per-day/${dataMode}/${tenantId}}`)
+        async getSchoolCost(tenantId, dataMode) {
+            await fetch(
+                `/student-analytics/tenant-tokens-per-day/${dataMode}/${tenantId}}`
+            )
                 .then((response) => response.json())
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {

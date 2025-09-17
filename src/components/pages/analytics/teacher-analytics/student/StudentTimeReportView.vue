@@ -1,7 +1,9 @@
 <script>
 import { useUsersStore } from '../../../../../stores/UsersStore';
 import { useTeacherAnalyticsStore } from '../../../../../stores/TeacherAnalyticsStore';
-import TimePerSkillHorizontalBarChart from '../../../../components/analytics/full-size/students/TimePerSkillHorizontalBarChart.vue';
+import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
+import { useAnalyticsStore } from '../../../../../stores/AnalyticsStore';
+
 import StudentSkillActivityChart from '../../../../components/analytics/full-size/students/StudentSkillActivityChart.vue';
 import StudentDurationPerDayLineChart from '../../../../components/analytics/full-size/students/StudentDurationPerDayLineChart.vue';
 import DownloadCSVBtn from '../../../../components/downloadCSVBtn/downloadCSVBtn.vue';
@@ -10,16 +12,21 @@ export default {
     setup() {
         const usersStore = useUsersStore();
         const teacherAnalyticsStore = useTeacherAnalyticsStore();
+        const userDetailsStore = useUserDetailsStore();
+        const analyticsStore = useAnalyticsStore();
         return {
             usersStore,
-            teacherAnalyticsStore
+            teacherAnalyticsStore,
+            userDetailsStore,
+            analyticsStore
         };
     },
     components: {
-        TimePerSkillHorizontalBarChart,
+        
         StudentDurationPerDayLineChart,
         StudentSkillActivityChart,
-        DownloadCSVBtn
+        DownloadCSVBtn,
+        
     },
     data() {
         return {
@@ -29,10 +36,12 @@ export default {
             durationsPerDay: [],
             allSkillsDuration: 0,
             totalTimeOnPlatformDownloadData: [],
-            minutesPerSkillDownloadData: []
+            minutesPerSkillDownloadData: [],
+            averageDurationsPerDay: []
         };
     },
     async created() {
+        // Get student name
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
         const foundObject = this.usersStore.users.find(
             (student) => student.id === this.studentId
@@ -45,53 +54,25 @@ export default {
         await this.getStudentActivity();
     },
     methods: {
-        // async getSkillDuration() {
-        //     fetch(`/student-analytics/skill-durations/${this.studentId}`)
-        //         .then((response) => response.json())
-        //         .then((data) => {
-        //             this.skillDurations = data;
-        //             for (let i = 0; i < this.skillDurations.length; i++) {
-        //                 this.skillDurations[i].formattedQuantity =
-        //                     this.millisToMinutesAndSeconds(
-        //                         this.skillDurations[i].quantity
-        //                     );
-        //             }
-        //             console.log(this.skillDurations);
-        //             this.minutesPerSkillDownloadData = this.skillDurations.map(
-        //                 (e) => {
-        //                     return {
-        //                         skill: e.name,
-        //                         quantity: e.formattedQuantity
-        //                     };
-        //                 }
-        //             );
-        //         })
-        //         .catch((error) => {
-        //             console.error('Error fetching last visited skills:', error);
-        //         });
-        // },
-        // async getAllSkillsDuration() {
-        //     fetch(`/student-analytics/all-skills-duration/${this.studentId}`)
-        //         .then((response) => response.json())
-        //         .then((data) => {
-        //             this.allSkillsDuration = data.duration;
-        //         })
-        //         .catch((error) => {
-        //             console.error('Error fetching last visited skills:', error);
-        //         });
-        // },
+        
         async getStudentDurationPerDay() {
-            fetch(
-                `/student-analytics/student-duration-per-day/${this.studentId}`
-            )
+            let url = `/student-analytics/student-duration-per-day-class/${this.studentId}/${this.userDetailsStore.userId}`;
+
+            if (this.userDetailsStore.role === 'school_admin') {
+                url = `/student-analytics/student-duration-per-day-tenant/${this.studentId}/${this.userDetailsStore.userId}`;
+            }
+            fetch(url)
                 .then((response) => response.json())
-                .then((data) => {
+                .then((resData) => {
+                    const data = resData.studentTime;
                     for (let i = 0; i < data.length; i++) {
                         data[i].formattedQuantity =
                             data[i].quantity / (1000 * 60);
                         data[i].date = new Date(data[i].date);
                     }
                     data.sort((a, b) => a.date - b.date);
+                    console.log('response data: ');
+                    console.log(data);
                     this.durationsPerDay = data;
                     this.totalTimeOnPlatformDownloadData =
                         this.durationsPerDay.map((e) => {
@@ -100,6 +81,14 @@ export default {
                                 minutes: e.formattedQuantity
                             };
                         });
+                    const averageData = resData.averageTime;
+                    for (let i = 0; i < averageData.length; i++) {
+                        averageData[i].formattedQuantity =
+                            averageData[i].quantity / (1000 * 60);
+                        averageData[i].date = new Date(averageData[i].date);
+                    }
+                    averageData.sort((a, b) => a.date - b.date);
+                    this.averageDurationsPerDay = averageData;
                 })
                 .catch((error) => {
                     console.error(
@@ -163,12 +152,12 @@ export default {
 <template>
     <div class="container-fluid chart-page">
         <span class="d-flex justify-content-between w-100">
-            <h1 class="heading h4">Time spent</h1>
+            <h1 class="heading h4">Engagement</h1>
             <h2 class="tertiary-heading h4">{{ studentName }}</h2>
         </span>
 
-        <div class="row h-100">
-            <div class="col-lg chart-col position-relative">
+        <div class="chart-row row">
+            <div class="col-lg chart-col position-relative h-100">
                 <div id="time-chart-container">
                     <DownloadCSVBtn
                         :data="totalTimeOnPlatformDownloadData"
@@ -180,8 +169,23 @@ export default {
                     <StudentDurationPerDayLineChart
                         v-if="durationsPerDay.length > 0"
                         :data="durationsPerDay"
+                        :averageDuration="averageDurationsPerDay"
+                        :userRole="userDetailsStore.role"
+                        :studentName="studentName"
+                        
                     />
                     <p v-else>There is no data to show yet.</p>
+                </div>
+                 <figcaption class="position-absolute"><span style="color: purple">{{ studentName }}</span> vs <span
+                        style="color:#ff7f0e">class average</span></figcaption>
+            </div>
+        </div>
+        <div class="chart-row row">
+            <div class="col-lg chart-col position-relative">
+                <div id="">
+                    TODO: Add time per subject bar chart
+
+                    
                 </div>
             </div>
             <div class="col-lg chart-col position-relative">
@@ -210,6 +214,11 @@ export default {
     overflow: hidden;
 }
 
+ .chart-row {
+    height: 50%;
+}
+
+
 #activity-chart-container,
 #time-chart-container {
     height: calc(100% - 35px);
@@ -227,4 +236,17 @@ export default {
         height: 50%;
     }
 }
+
+@media (max-width: 576px) {
+.chart-page {
+    overflow: auto;
+    
+
+}
+
+.chart-col {
+    height: 200px;
+}
+}
+
 </style>

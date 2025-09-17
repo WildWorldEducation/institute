@@ -3,16 +3,33 @@ import * as d3 from 'd3';
 
 export default {
     name: 'StudentDurationPerDayLineChart',
-    props: ['data'],
+    props: ['data', 'colour', 'averageDuration', 'userRole', 'studentName'],
     data() {
         return {};
     },
     mounted() {
         const data = this.data;
+        let averageLabel = '';
 
-        const container = d3.select('#time-chart-container');
+        if (this.userRole == 'instructor' || this.userRole == 'partner') {
+            averageLabel = 'school average';
+        }
 
-        // Declare the chart dimensions and margins.
+        if (this.userRole == 'school_admin') {
+            averageLabel = 'school average';
+        }
+        const chartData = [
+            {
+                name: this.studentName,
+                values: data
+            },
+            {
+                name: 'school average',
+                values: this.averageDuration
+            }
+        ];
+    
+
         // Declare the chart dimensions and margins.
         const width = document.getElementById(
             'time-chart-container'
@@ -22,18 +39,30 @@ export default {
         ).clientHeight;
         const marginTop = 20;
         const marginRight = 0;
-        const marginBottom = 30;
+        const marginBottom = 20;
         const marginLeft = 30;
 
-        // Declare the x (horizontal position) scale.
+        // X scale: use d3.scaleUtc (time axis)
         const x = d3.scaleUtc(
-            d3.extent(data, (d) => d.date),
+            [
+                d3.min(chartData, (series) =>
+                    d3.min(series.values, (d) => d.date)
+                ),
+                d3.max(chartData, (series) =>
+                    d3.max(series.values, (d) => d.date)
+                )
+            ],
             [marginLeft, width - marginRight]
         );
 
-        // Declare the y (vertical position) scale.
+        // Y scale: use max value across all series
         const y = d3.scaleLinear(
-            [0, d3.max(data, (d) => d.formattedQuantity)],
+            [
+                0,
+                d3.max(chartData, (series) =>
+                    d3.max(series.values, (d) => d.formattedQuantity)
+                )
+            ],
             [height - marginBottom, marginTop]
         );
 
@@ -92,11 +121,26 @@ export default {
             );
 
         // Append a path for the line.
-        svg.append('path')
+        // svg.append('path')
+        //     .attr('fill', 'none')
+        //     .attr('stroke', (d) => color(d.name))
+        //     .attr('stroke-width', 3)
+        //     .attr('d', line(data.values));
+
+        svg.append('g')
+            .selectAll('path')
+            .data(chartData)
+            .join('path')
             .attr('fill', 'none')
-            .attr('stroke', '#5f31dd')
-            .attr('stroke-width', 3)
-            .attr('d', line(data));
+            .attr('stroke', (d) => {
+               
+                    if (d.name == 'school average') return '#ff7f0e';
+                    else return 'purple';
+                }) 
+            .attr('stroke-width', 2)
+            .attr('d', (d) => line(d.values));
+
+      
     }
 };
 </script>

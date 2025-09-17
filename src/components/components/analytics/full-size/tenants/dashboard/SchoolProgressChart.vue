@@ -18,6 +18,16 @@ export default {
     mounted() {},
     methods: {
         createChart(data) {
+            // First, clear line(s)
+            let progressData = [];
+            if (this.$parent.progressChartMode === 'school') {
+                this.axisData = data.school;
+                progressData = data.school;
+            } else {
+                this.axisData = data.teacher;
+                progressData = data.teacher;
+            }
+
             // Declare the chart dimensions and margins.
             const width = document.getElementById(
                 'progress-chart-container'

@@ -290,13 +290,15 @@ router.get(
     }
 );
 
-/* Get duration on platform per student per day */
-router.get('/student-duration-per-day/:studentId', (req, res, next) => {
-    // Check if logged in.
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
+/* Get duration on platform per student per day, as well as the school average */
+router.get(
+    '/student-duration-per-day-tenant/:studentId/:tenantId',
+    async (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
 
-        let sqlQuery = `
+            let sqlQuery = `
             SELECT date, duration AS quantity
             FROM user_duration_tokens_per_day            
             WHERE user_id = ${conn.escape(
@@ -304,19 +306,75 @@ router.get('/student-duration-per-day/:studentId', (req, res, next) => {
             )}                           
             ORDER BY date ASC;`;
 
-        conn.query(sqlQuery, (err, result) => {
-            try {
-                if (err) {
-                    throw err;
-                }
+            const studentResult = await query(sqlQuery);
+            sqlQuery = `SELECT cohorts_users.cohort_id
+                    FROM cohorts_users
+                    WHERE cohorts_users.user_id = ${conn.escape(
+                        req.params.studentId
+                    )}`;
 
-                res.json(result);
-            } catch (err) {
-                next(err);
-            }
-        });
+            // sqlQuery = `SELECT date, AVG(duration) AS quantity
+            //     FROM user_duration_tokens_per_day
+            //     GROUP BY date
+            //     ORDER BY date ASC;`;
+            sqlQuery = `SELECT user_duration_tokens_per_day.date AS date, AVG(duration) AS quantity
+                    FROM user_duration_tokens_per_day
+                    GROUP BY date`;
+            const averageResult = await query(sqlQuery);
+
+            res.json({
+                studentTime: studentResult,
+                averageTime: averageResult
+            });
+        }
     }
-});
+);
+
+/* Get duration on platform per student per day */
+router.get(
+    '/student-duration-per-day-class/:studentId/:instructorId',
+    async (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+
+            let sqlQuery = `
+            SELECT date, duration AS quantity
+            FROM user_duration_tokens_per_day            
+            WHERE user_id = ${conn.escape(
+                req.params.studentId
+            )}                           
+            ORDER BY date ASC;`;
+
+            const studentResult = await query(sqlQuery);
+            sqlQuery = `SELECT cohorts_users.cohort_id
+                    FROM cohorts_users
+                    WHERE cohorts_users.user_id = ${conn.escape(
+                        req.params.studentId
+                    )}`;
+
+            // sqlQuery = `SELECT date, AVG(duration) AS quantity
+            //     FROM user_duration_tokens_per_day
+            //     GROUP BY date
+            //     ORDER BY date ASC;`;
+            sqlQuery = `SELECT user_duration_tokens_per_day.date AS date, AVG(duration) AS quantity
+                    FROM user_duration_tokens_per_day
+                    WHERE user_duration_tokens_per_day.user_id IN (SELECT instructor_students.student_id
+															  FROM instructor_students
+															  WHERE instructor_students.instructor_id  = ${conn.escape(
+                                                                  req.params
+                                                                      .instructorId
+                                                              )})
+                    GROUP BY date`;
+            const averageResult = await query(sqlQuery);
+            console.log(averageResult);
+            res.json({
+                studentTime: studentResult,
+                averageTime: averageResult
+            });
+        }
+    }
+);
 
 // Think this route can be deleted, as replaced by below one, which show comparison and is up to date
 /* Get student progress (number of total skills mastered over time) */
@@ -1201,22 +1259,24 @@ router.get('/cohort-skill-activity-report/:cohortId', (req, res, next) => {
  * FOR ALL STUDENTS OF AN INSTRUCTOR -------------------------------------------------------
  */
 
-router.get('/all-students-tokens-per-day/:dataMode/:teacherId', (req, res, next) => {   
-    // Check if logged in.
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
+router.get(
+    '/all-students-tokens-per-day/:dataMode/:teacherId',
+    (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
 
-        let sqlQuery;
-        if (req.params.dataMode == 'total') {
-            sqlQuery = `
+            let sqlQuery;
+            if (req.params.dataMode == 'total') {
+                sqlQuery = `
             SELECT date, SUM(user_duration_tokens_per_day.tokens) AS quantity
             FROM user_duration_tokens_per_day
             JOIN users
             ON users.id = user_duration_tokens_per_day.user_id
             where tenant_id = ${conn.escape(req.params.teacherId)}
             GROUP BY date;`;
-        } else {
-            sqlQuery = `
+            } else {
+                sqlQuery = `
             SELECT date, SUM(user_duration_tokens_per_day.tokens) AS quantity
             FROM user_duration_tokens_per_day
             JOIN instructor_students
@@ -1225,28 +1285,28 @@ router.get('/all-students-tokens-per-day/:dataMode/:teacherId', (req, res, next)
             AND date >= NOW() - INTERVAL 1 WEEK
             GROUP BY date;
             `;
-        }
-
-        conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-
-                if (results.length === 0) {
-                    return res.status(404).json({
-                        error: 'No skill activity'
-                    });
-                }
-
-                res.json(results);
-            } catch (err) {
-                next(err);
             }
-        });
-    }
-});
 
+            conn.query(sqlQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    if (results.length === 0) {
+                        return res.status(404).json({
+                            error: 'No skill activity'
+                        });
+                    }
+
+                    res.json(results);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
 
 router.get(
     '/all-students-duration-per-day/:dataMode/:teacherId',
@@ -1973,11 +2033,11 @@ router.get('/school-progress/:tenantId', (req, res, next) => {
                     throw err;
                 }
 
-                if (firstInteractionResult.length === 0) {
-                    return res.status(404).json({
-                        error: 'No skill activity'
-                    });
-                }
+                // if (firstInteractionResult.length === 0) {
+                //     return res.status(404).json({
+                //         error: 'No skill activity'
+                //     });
+                // }
 
                 let sqlQuery = `
                     SELECT CAST(mastered_date AS DATE) AS date, SUM(COUNT(*)) OVER(ORDER BY date) AS quantity
@@ -1998,11 +2058,11 @@ router.get('/school-progress/:tenantId', (req, res, next) => {
                             throw err;
                         }
 
-                        if (results.length === 0) {
-                            return res.status(404).json({
-                                error: 'No skill activity'
-                            });
-                        }
+                        // if (results.length === 0) {
+                        //     return res.status(404).json({
+                        //         error: 'No skill activity'
+                        //     });
+                        // }
 
                         // Checking if beginning and end dates need to be added,
                         // in order to show the progress from when the school started, to today.
@@ -2134,7 +2194,7 @@ router.get('/total-tokens-per-skill/tenant/:tenantId', (req, res, next) => {
     }
 });
 
-router.get('/tenant-tokens-per-day/:dataMode/:tenantId', (req, res, next) => {   
+router.get('/tenant-tokens-per-day/:dataMode/:tenantId', (req, res, next) => {
     // Check if logged in.
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
@@ -2147,6 +2207,7 @@ router.get('/tenant-tokens-per-day/:dataMode/:tenantId', (req, res, next) => {
             JOIN users
             ON users.id = user_duration_tokens_per_day.user_id
             where tenant_id = ${conn.escape(req.params.tenantId)}
+            AND users.role = 'student'
             GROUP BY date;`;
         } else {
             sqlQuery = `
@@ -2155,23 +2216,48 @@ router.get('/tenant-tokens-per-day/:dataMode/:tenantId', (req, res, next) => {
             JOIN users
             ON users.id = user_duration_tokens_per_day.user_id
             where tenant_id = ${conn.escape(req.params.tenantId)}
+            AND users.role = 'student'
             AND date >= NOW() - INTERVAL 1 WEEK
             GROUP BY date;`;
         }
 
-        conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, result) => {
             try {
                 if (err) {
                     throw err;
                 }
 
-                if (results.length === 0) {
-                    return res.status(404).json({
-                        error: 'No skill activity'
-                    });
+                // add missing dates, giving them 0 as quantity.
+                if (req.params.dataMode != 'total') {
+                    // Fill missing dates with 0
+                    function fillMissingDates(data, days = 7) {
+                        const today = new Date();
+                        const dates = [];
+                        for (let i = days - 1; i >= 0; i--) {
+                            const date = new Date(today);
+                            date.setDate(today.getDate() - i);
+                            dates.push(date);
+                        }
+                        const dataMap = new Map();
+                        data.forEach((item) => {
+                            const dateStr = item.date
+                                .toISOString()
+                                .split('T')[0];
+                            dataMap.set(dateStr, item.quantity);
+                        });
+                        const filled = dates.map((date) => {
+                            const dateStr = date.toISOString().split('T')[0];
+                            return {
+                                date,
+                                quantity: dataMap.get(dateStr) || 0
+                            };
+                        });
+                        return filled;
+                    }
+                    result = fillMissingDates(result);
                 }
 
-                res.json(results);
+                res.json(result);
             } catch (err) {
                 next(err);
             }

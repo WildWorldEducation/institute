@@ -98,6 +98,7 @@ router.post('/add', (req, res, next) => {
     }
 });
 
+// List instructors for a tenant
 router.get('/instructors/:tenantId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
@@ -129,7 +130,7 @@ router.get('/show/:tenantId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-            SELECT billing_mode, tokens
+            SELECT billing_mode, tokens, name
             FROM tenants
             WHERE id = ${conn.escape(req.params.tenantId)};`;
 
@@ -148,13 +149,43 @@ router.get('/show/:tenantId', (req, res, next) => {
 });
 
 /**
- * Edit tenant details
+ * Edit tenant billing mode
  */
-router.put('/:tenantId/edit', isAuthenticated, async (req, res, next) => {
-    if (req.session.role == 'school_admin') {
-        let sqlQuery = `
+router.put(
+    '/:tenantId/edit-billing-mode',
+    isAuthenticated,
+    async (req, res, next) => {
+        if (req.session.role == 'school_admin') {
+            let sqlQuery = `
             UPDATE tenants
             SET billing_mode = ${conn.escape(req.body.billing_mode)}
+            WHERE id = ${conn.escape(req.params.tenantId)};`;
+
+            conn.query(sqlQuery, async (err) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    res.end();
+                } catch (err) {
+                    console.error(err);
+                    next(err);
+                }
+            });
+        } else {
+            res.redirect('/login');
+        }
+    }
+);
+
+/**
+ * Edit tenant name
+ */
+router.put('/:tenantId/edit', isAuthenticated, async (req, res, next) => {
+    if (req.session.role == 'platform_admin') {
+        let sqlQuery = `
+            UPDATE tenants
+            SET name = ${conn.escape(req.body.name)}
             WHERE id = ${conn.escape(req.params.tenantId)};`;
 
         conn.query(sqlQuery, async (err) => {

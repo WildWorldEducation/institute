@@ -23,7 +23,7 @@ export const useTenantStore = defineStore('tenant', {
         async toggleBillingMode(tenantId) {
             try {
                 if (this.billingMode == 'student') {
-                    this.billingMode = 'school';                   
+                    this.billingMode = 'school';
                 } else {
                     this.billingMode = 'student';
                 }
@@ -35,11 +35,27 @@ export const useTenantStore = defineStore('tenant', {
                         billing_mode: this.billingMode
                     })
                 };
-                await fetch(`/tenants/${tenantId}/edit`, reqOptions);
+                await fetch(
+                    `/tenants/${tenantId}/edit-billing-mode`,
+                    reqOptions
+                );
             } catch (error) {
                 console.error('Error updating instructor:', error);
             }
         },
-        updateTokens() {}
+        async editTenant(tenantId, tenant) {
+            try {
+                const reqOptions = {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: tenant.name
+                    })
+                };
+                await fetch(`/tenants/${tenantId}/edit`, reqOptions);
+            } catch (error) {
+                console.error('Error updating tenant:', error);
+            }
+        }
     }
 });

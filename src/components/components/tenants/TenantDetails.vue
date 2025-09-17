@@ -54,7 +54,7 @@ export default {
             <div class="col-12 col-md-5">
                 <div id="user-function-btns-row" class="d-flex flex-column">
                     <router-link
-                        :to="'/tenant/edit/' + this.$parent.selectedTenant.id"
+                        :to="'/tenants/' + this.$parent.selectedTenant.id + '/edit'"
                         class="btn primary-btn mb-2"
                     >
                         Edit&nbsp;

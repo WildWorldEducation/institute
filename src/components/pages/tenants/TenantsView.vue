@@ -29,7 +29,8 @@ export default {
         async getTenants() {
             const result = await fetch('/tenants/list');
             const data = await result.json();
-            this.tenants = data;            
+            this.tenants = data; 
+            this.selectedTenant = this.tenants[0]           
         },
         // Updated method to handle both initial setup and user selections
         async updateTenantDetails(selectedTenant) {
