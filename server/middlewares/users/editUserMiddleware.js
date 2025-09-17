@@ -4,7 +4,7 @@ const editUserPermission = (req, res, next) => {
     const userRole = req.session.role;
 
     // Platform admin can edit any
-    if (userRole === 'platform_admin') {
+    if (userRole === 'platform_admin' || userRole === 'school_admin') {
         return next();
     } else {
         // If the conditions are not met, forbid the action

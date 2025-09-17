@@ -1242,7 +1242,7 @@ router.delete('/:id', isAuthenticated, isPlatformAdmin, (req, res, next) => {
 });
 
 /**
- * Platform admin edit User
+ * Platform admin and school admin edit User
  */
 router.put(
     '/:id/edit',

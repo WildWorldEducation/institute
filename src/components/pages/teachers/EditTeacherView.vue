@@ -1,10 +1,10 @@
 <script>
-import { useTenantStore } from '../../../stores/TenantStore';
+import { useUsersStore } from '../../../stores/UsersStore';
 
 export default {
     setup() {
-        const tenantStore = useTenantStore();
-        return { tenantStore };
+        const usersStore = useUsersStore();
+        return { usersStore };
     },
     data() {
         return {
@@ -28,7 +28,7 @@ export default {
         },
         async ValidateForm() {
             if (this.teacher.username != '') {
-                await this.tenantStore.editTenant(this.teacherId, this.teacher);
+                await this.usersStore.editTeacher(this.teacher);
             }
             this.$router.push('/teachers');
         }
@@ -38,7 +38,7 @@ export default {
 
 <template>
     <div class="container p-1">
-        <router-link class="btn red-btn mb-1" to="/tenants">
+        <router-link class="btn red-btn mb-1" to="/teachers">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"
