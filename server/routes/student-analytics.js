@@ -2033,11 +2033,11 @@ router.get('/school-progress/:tenantId', (req, res, next) => {
                     throw err;
                 }
 
-                if (firstInteractionResult.length === 0) {
-                    return res.status(404).json({
-                        error: 'No skill activity'
-                    });
-                }
+                // if (firstInteractionResult.length === 0) {
+                //     return res.status(404).json({
+                //         error: 'No skill activity'
+                //     });
+                // }
 
                 let sqlQuery = `
                     SELECT CAST(mastered_date AS DATE) AS date, SUM(COUNT(*)) OVER(ORDER BY date) AS quantity
@@ -2058,11 +2058,11 @@ router.get('/school-progress/:tenantId', (req, res, next) => {
                             throw err;
                         }
 
-                        if (results.length === 0) {
-                            return res.status(404).json({
-                                error: 'No skill activity'
-                            });
-                        }
+                        // if (results.length === 0) {
+                        //     return res.status(404).json({
+                        //         error: 'No skill activity'
+                        //     });
+                        // }
 
                         // Checking if beginning and end dates need to be added,
                         // in order to show the progress from when the school started, to today.
@@ -2225,12 +2225,6 @@ router.get('/tenant-tokens-per-day/:dataMode/:tenantId', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
-                }
-
-                if (result.length === 0) {
-                    return res.status(404).json({
-                        error: 'No skill activity'
-                    });
                 }
 
                 // add missing dates, giving them 0 as quantity.

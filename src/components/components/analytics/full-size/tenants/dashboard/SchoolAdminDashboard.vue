@@ -49,7 +49,6 @@ export default {
             await this.getFailedAssessmentsBySubject();
 
         await this.getSchoolCostData();
-        console.log(this.analyticsStore.cost);
     },
     methods: {
         async getTeachers(tenantId) {
@@ -196,7 +195,7 @@ export default {
 <template>
     <div class="dashboard">
         <!-- Left column -->
-        <div class="col-lg-1 col-md-2">
+        <div v-if="teachers.length > 0" class="col-lg-1 col-md-2">
             <div class="d-flex bg-light rounded p-2">
                 <button
                     :class="
@@ -225,7 +224,14 @@ export default {
             </div>
         </div>
         <!-- Right column -->
-        <div class="col-lg-11 col-md-10 dashboard">
+        <div
+            :class="{
+                'col-lg-11': teachers.length > 0,
+                'col-md-10': teachers.length > 0,
+                'col-lg-12': teachers.length == 0
+            }"
+            class="dashboard"
+        >
             <div class="container-fluid">
                 <!-- Top row -->
                 <!-- <div class="row top-row text-start">
@@ -284,7 +290,7 @@ export default {
                                 "
                                 ref="failedAssessmentsChart"
                             />
-                            <p v-else>No data yet</p>
+                            <p v-else>No challenges yet</p>
                         </div>
                     </div>
                 </div>
