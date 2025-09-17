@@ -8,29 +8,29 @@ export default {
     },
     data() {
         return {
-            tenantId: this.$route.params.tenantId,
-            tenant: {}
+            teacherId: this.$route.params.teacherId,
+            teacher: {}
         };
     },
 
     async mounted() {
-        this.getTenant();
+        this.getTeacher();
     },
     methods: {
-        getTenant() {
-            fetch('/tenants/show/' + this.tenantId)
+        getTeacher() {
+            fetch('/users/show/' + this.teacherId)
                 .then(function (response) {
                     return response.json();
                 })
                 .then((data) => {
-                    this.tenant = data;
+                    this.teacher = data;
                 });
         },
         async ValidateForm() {
-            if (this.tenant.name != '') {
-                await this.tenantStore.editTenant(this.tenantId, this.tenant);
+            if (this.teacher.username != '') {
+                await this.tenantStore.editTenant(this.teacherId, this.teacher);
             }
-            this.$router.push('/tenants');
+            this.$router.push('/teachers');
         }
     }
 };
@@ -53,12 +53,12 @@ export default {
             &nbsp;Back to teachers
         </router-link>
         <div class="row">
-            <!-- Tenant details -->
+            <!-- Teacher details -->
             <div class="col-12 col-md-6 mb-2">
                 <div class="mb-3">
                     <h2 class="secondary-heading h4">Username</h2>
                     <input
-                        v-model="tenant.name"
+                        v-model="teacher.username"
                         type="text"
                         class="form-control"
                     />
@@ -66,7 +66,7 @@ export default {
                 <div class="mb-3">
                     <h2 class="secondary-heading h4">Email</h2>
                     <input
-                        v-model="tenant.email"
+                        v-model="teacher.email"
                         type="email"
                         class="form-control"
                     />
@@ -74,7 +74,7 @@ export default {
 
                 <div class="">
                     <button class="btn primary-btn" @click="ValidateForm()">
-                        Update tenant details
+                        Update teacher details
                     </button>
                 </div>
             </div>
