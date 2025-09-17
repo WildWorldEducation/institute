@@ -50,16 +50,24 @@ export default {
                     d="M134.1 296H436c6.6 0 12-5.4 12-12v-56c0-6.6-5.4-12-12-12H134.1v-46.1c0-21.4-25.9-32.1-41-17L7 239c-9.4 9.4-9.4 24.6 0 33.9l86.1 86.1c15.1 15.1 41 4.4 41-17V296z"
                 />
             </svg>
-            &nbsp;Back to tenants
+            &nbsp;Back to teachers
         </router-link>
         <div class="row">
             <!-- Tenant details -->
             <div class="col-12 col-md-6 mb-2">
                 <div class="mb-3">
-                    <h2 class="secondary-heading h4">Name</h2>
+                    <h2 class="secondary-heading h4">Username</h2>
                     <input
                         v-model="tenant.name"
                         type="text"
+                        class="form-control"
+                    />
+                </div>
+                <div class="mb-3">
+                    <h2 class="secondary-heading h4">Email</h2>
+                    <input
+                        v-model="tenant.email"
+                        type="email"
                         class="form-control"
                     />
                 </div>
