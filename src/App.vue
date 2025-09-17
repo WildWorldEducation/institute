@@ -279,14 +279,14 @@ export default {
                             <Transition name="dropdownMenu">
                                 <div v-if="isSkillsDropdownOpen">
                                     <ul
-                                        class="dropdown-menu"
+                                        class="dropdownDiv"
                                         :class="{ show: isSkillsDropdownOpen }"
                                         @blur="handleFocusSkillDropdown"
                                     >
-                                        <li>
+                                        <li class="dropdownLi">
                                             <RouterLink
                                                 to="/skills"
-                                                class="dropdown-item close-on-click"
+                                                class="dropdownItem close-on-click"
                                                 @click="
                                                     isSkillsDropdownOpen = false
                                                 "
@@ -1226,6 +1226,41 @@ p {
     transition: transform 0.5s ease-in-out;
     transform: rotate(180deg);
 }
+
+.dropdownDiv{
+    width: 120px !important;
+    border-radius: 8px;
+    border: 1px solid #D2D2D2;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px 0px;
+    background-color: white;
+    position: absolute;
+    top: 55%;
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdownItem {
+    text-decoration: none;
+    width: 100%;
+    background-color: var(--background-color);
+    color : black
+
+}
+.dropdownLi {
+    width: 100%;
+    padding: 3px 6px;
+}
+
+.dropdownLi:hover{
+    background-color: #E9ECEF;
+    text-decoration: none;
+}
+
+
+
+
 
 /* Mobile-specific styles - make navbar fully interactive on small screens */
 @media (max-width: 767.98px) {
