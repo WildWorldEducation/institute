@@ -416,7 +416,19 @@ export default {
                                 Cohorts
                             </RouterLink>
                         </li>
-
+                        <li
+                            v-if="userDetailsStore.role == 'school_admin'"
+                            class="nav-item"
+                        >
+                            <!-- Navigation link to /students -->
+                            <RouterLink
+                                to="/teachers"
+                                class="nav-link"
+                                @click="closeDropdown"
+                            >
+                                Teachers
+                            </RouterLink>
+                        </li>
                         <!-- Tenants -->
                         <li
                             v-if="userDetailsStore.role == 'platform_admin'"

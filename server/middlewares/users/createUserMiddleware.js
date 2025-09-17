@@ -8,6 +8,11 @@ const createUserPermission = (req, res, next) => {
     }
 
     // Instructor and Partner can only create student accounts
+    if (userRole === 'school_admin' && role === 'instructor') {
+        return next();
+    }
+
+    // Instructor and Partner can only create student accounts
     if (
         (userRole === 'instructor' || userRole === 'partner') &&
         role === 'student'
