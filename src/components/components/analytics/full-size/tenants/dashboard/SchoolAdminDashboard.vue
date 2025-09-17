@@ -364,6 +364,9 @@ export default {
     align-items: center;
     justify-content: center;
     text-decoration: none;
+    -ms-word-break: break-all;
+    word-break: break-all;
+    white-space: pre-wrap;
 }
 
 .dashboard {

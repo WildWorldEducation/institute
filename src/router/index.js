@@ -290,6 +290,16 @@ const router = createRouter({
                 roles: ['school_admin']
             }
         },
+        {
+            path: '/teachers/:teacherId/edit',
+            name: 'edit-teacher',
+            component: () =>
+                import('../components/pages/teachers/EditTeacherView.vue'),
+            meta: {
+                requiresAuth: true,
+                roles: ['school_admin']
+            }
+        },
         // Platform admin only
         {
             path: '/tenants',

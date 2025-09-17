@@ -107,6 +107,25 @@ export const useUsersStore = defineStore('users', {
                 .then(async (data) => {
                     this.partners = data;
                 });
+        }, 
+       async editTeacher(teacher) {
+            try {               
+                const reqOptions = {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: teacher.username,
+                        email: teacher.email,
+                        first_name: teacher.first_name,
+                        last_name: teacher.last_name,
+                        tenant_id: teacher.tenant_id,
+                        role: teacher.role
+                    })
+                };
+                await fetch(`/users/${teacher.id}/edit`, reqOptions);
+            } catch (error) {
+                console.error('Error updating teacher:', error);
+            }
         }
     }
 });

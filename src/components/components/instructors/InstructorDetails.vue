@@ -75,7 +75,7 @@ export default {
                 </svg>
             </button> -->
             <router-link
-                :to="'/tenants/' + this.$parent.selectedTeacher.id + '/edit'"
+                :to="'/teachers/' + this.$parent.selectedTeacher.id + '/edit'"
                 class="btn primary-btn mb-2"
             >
                 Edit&nbsp;
