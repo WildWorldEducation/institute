@@ -145,7 +145,7 @@ export default {
                         v-if="!isLoading && cohortsStore.cohorts.length > 0"
                     />
                     <div v-else>
-                        <h1 class="text-muted py-5">You have no cohorts</h1>
+                        <p>You have no cohorts yet</p>
                     </div>
                 </div>
             </div>
