@@ -47,22 +47,14 @@ export default {
 
 <template>
     <div class="container-fluid">
-        <div class="row position-relative">
+        <div class="row position-relative" v-if="teachers.length > 0">
             <div class="col-lg-4 col-md-5">
                 <InstructorsList ref="tenantsListRef" />
             </div>
             <!-- Tenant detail view for PC and Tablet View -->
             <div class="col-lg-8 col-md-7 d-none d-md-block">
                 <div class="row user-form-data-row">
-                    <InstructorDetails
-                        v-if="teachers.length > 0"
-                        :teacherId="selectedTeacher.id"
-                    />
-                    <div v-else>
-                        <h1 class="text-muted py-5">
-                            There are no teachers yet.
-                        </h1>
-                    </div>
+                    <InstructorDetails :teacherId="selectedTeacher.id" />
                 </div>
             </div>
             <!-- User detail view specific for phone -->
@@ -75,6 +67,9 @@ export default {
                     <InstructorDetails :tenantId="selectedTenant.id" />
                 </div>
             </div>
+        </div>
+        <div class="container" v-else>
+            <p>There are no teachers yet.</p>
         </div>
     </div>
 </template>
