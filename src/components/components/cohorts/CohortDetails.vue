@@ -154,7 +154,7 @@ export default {
 
             <!-- Right column -->
             <div
-                class="col-12 col-md-4"
+                class="col-12"
                 v-if="cohortsStore.isAllStudentsSelected == false"
             >
                 <h2 class="secondary-heading h4">Edit</h2>

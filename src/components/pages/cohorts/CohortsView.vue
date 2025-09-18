@@ -46,6 +46,35 @@ export default {
     methods: {
         updateCohortDetails() {
             this.$refs.CohortDetails.getInstructorPercentageStudentsMasteredAtLeastOneSkill();
+        },
+        restartTutorial() {
+            this.isTutorialComplete = false;
+            this.showTutorialTip1 = true;
+            this.showTutorialTip2 = false;
+            this.showTutorialTip3 = false;
+            this.showTutorialTip4 = false;
+        },
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+                this.showTutorialTip2 = true;
+            } else if (step == 2) {
+                this.showTutorialTip2 = false;
+                this.showTutorialTip3 = true;
+            } else if (step == 3) {
+                this.showTutorialTip3 = false;
+                this.showTutorialTip4 = true;
+            } else if (step == 4) {
+                this.showTutorialTip4 = false;
+                this.isTutorialComplete = true;
+            }
+        },
+        skipTutorial() {
+            this.showTutorialTip1 = false;
+            this.showTutorialTip2 = false;
+            this.showTutorialTip3 = false;
+            this.showTutorialTip4 = false;
+            this.isTutorialComplete = true;
         }
     }
 };
@@ -105,20 +134,7 @@ export default {
         <div class="row position-relative">
             <!-- Left column -->
             <div class="col-lg-4 col-md-5">
-                <CohortsList
-                    @showDetails="
-                        showDetails = true;
-                        console.log('showDetails is:', showDetails);
-                        console.log(
-                            'selectedCohort is:',
-                            cohortsStore.selectedCohort
-                        );
-                        console.log(
-                            'cohortsStore.cohortsPerTenant is:',
-                            cohortsStore.cohortsPerTenant
-                        );
-                    "
-                />
+                <CohortsList @showDetails="showDetails = true" />
             </div>
             <!-- Right column -->
             <!-- User detail view for PC and Tablet View -->
@@ -153,46 +169,6 @@ export default {
         </div>
     </div>
 
-    <!-- Instructor Introduction modal -->
-    <div v-if="showTutorialTip1 || showTutorialTip2" class="modal">
-        <div class="modal-content">
-            <div v-if="showTutorialTip1">
-                <p>This page shows a list of your students.</p>
-                <p>Click on the student's name to see their details.</p>
-                <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(1)"
-                    >
-                        next
-                    </button>
-                    <button class="btn red-btn" @click="skipTutorial">
-                        exit tutorial
-                    </button>
-                </div>
-            </div>
-            <div v-if="showTutorialTip2">
-                <p>Under the heading "Progress" you will find 3 buttons:</p>
-                <p>
-                    "Vertical Tree" will provide a look at the student's
-                    progress in the full tree view.
-                </p>
-                <p>
-                    "Collapsible Tree" takes you to a page similar to your own
-                    collapsible tree. Here you can see the student's progress
-                    and set goals for students.
-                </p>
-                <p>
-                    "Goals" will navigate to a page that displays all the
-                    students goals and the progress they have made towards them.
-                </p>
-
-                <button class="btn primary-btn" @click="progressTutorial(2)">
-                    close
-                </button>
-            </div>
-        </div>
-    </div>
     <!-- Instructor Tutorial modal -->
     <div
         v-if="
