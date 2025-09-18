@@ -51,6 +51,9 @@ export const useUserSkillsStore = defineStore('userSkills', {
                 '/student-analytics/mastered-skills/' + userId
             );
             this.masteredSkills = await result.json();
+            console.log('Fetched mastered skills:');
+            console.log(this.masteredSkills);
+
         }
     }
 });
