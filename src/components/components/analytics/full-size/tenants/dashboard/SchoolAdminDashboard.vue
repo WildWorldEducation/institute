@@ -115,7 +115,10 @@ export default {
             });
         },
         async getClassProgressData() {
-            await this.analyticsStore.getClassProgress(this.selectedTeacher.id);
+            await this.analyticsStore.getClassProgress(
+                this.userDetailsStore.tenantId,
+                this.selectedTeacher.id
+            );
 
             this.$nextTick(() => {
                 if (this.$refs.progressChart) {
@@ -350,6 +353,9 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+    -ms-word-break: break-all;
+    word-break: break-all;
+    white-space: pre-wrap;
 }
 
 .side-buttons {

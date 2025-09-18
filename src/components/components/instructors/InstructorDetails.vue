@@ -102,10 +102,10 @@ export default {
                 </svg>
             </router-link>
             <!-- Delete button -->
-            <button class="btn red-btn" @click="showModal = true">
-                Delete&nbsp;
+            <!-- <button class="btn red-btn" @click="showModal = true">
+                Delete&nbsp; -->
                 <!-- X icon -->
-                <svg
+                <!-- <svg
                     width="18"
                     height="18"
                     viewBox="0 0 20 20"
@@ -117,7 +117,7 @@ export default {
                         fill="white"
                     />
                 </svg>
-            </button>
+            </button> -->
         </div>
     </div>
 </template>
