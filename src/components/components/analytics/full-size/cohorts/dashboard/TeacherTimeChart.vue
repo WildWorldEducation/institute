@@ -112,7 +112,10 @@ export default {
                     if (d.name == 'class') return 'RoyalBlue';
                     else return '#ff7f0e'; // orange
                 })
-                .attr('stroke-width', 3)
+                .attr('stroke-width', (d) => {                   
+                    if (d.name == 'class') return 3;
+                    else return 2;
+                })
                 .attr('d', (d) => {
                   return line(d.values);
                 });

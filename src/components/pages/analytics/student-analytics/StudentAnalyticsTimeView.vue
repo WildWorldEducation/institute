@@ -52,7 +52,7 @@ export default {
                 :data="analyticsStore.studentSkillDurations"
                 colour="purple"
             />
-            <p v-else>No data yet</p>
+            <p v-else>You haven't spent any time on skills yet.</p>
         </div>
     </div>
 </template>

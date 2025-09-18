@@ -40,7 +40,7 @@ export default {
                     colour="darkred"
                 />
                 <p v-else>
-                    This student has not failed any assessments more than once
+                    You have not failed any assessments more than once
                     yet.
                 </p>
             </div>

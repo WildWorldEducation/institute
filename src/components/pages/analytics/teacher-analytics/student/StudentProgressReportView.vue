@@ -137,16 +137,20 @@ export default {
         </span>
         <div class="row chart-row">
             <div class="col-lg-8 chart-col position-relative">
-                <div id="progress-chart-container">
+                <div id="progress-chart-container" v-if="
+                        progressData.student.length > 0 ||  
+                        progressData.average.length > 0
+                    ">
                     <DownloadCSVBtn :data="progressData" :fileName="`Progress Report - ${studentName}`"
                         toolTip="Download progress data as CSV" class="position-absolute download-btn" />
-                    <StudentProgressChart ref="progressChart" v-if="
-                        progressData.student.length > 0 ||
-                        progressData.average.length > 0
-                    " :data="progressData" />
-                    <p v-else>There is no data to show yet.</p>
+                    <StudentProgressChart ref="progressChart"  :data="progressData" />
+                    
                 </div>
-                <figcaption class="position-absolute"><span style="color: green">{{ studentName }}</span> vs <span
+                <p v-else>There is no data to show yet.</p>
+                <figcaption v-if="
+                    progressData.student.length > 0 ||
+                    progressData.average.length > 0
+                " class="position-absolute"><span style="color: green">{{ studentName }}</span> vs <span
                         style="color:#ff7f0e">class average</span></figcaption>
             </div>
             <div class="col-lg-4 chart-col">
@@ -154,22 +158,17 @@ export default {
                     <StudentPassedAssessmentsByRootSubjectHorizontalBarChart
                         v-if="analyticsStore.studentRootSubjectsPassedAssessments.length > 0"
                         :data="analyticsStore.studentRootSubjectsPassedAssessments" />
-
-                    <p v-else>No data yet</p>
                 </div>
-               
+
             </div>
         </div>
         <div class="row chart-row position-relative">
-            <div class="position-relative">
+            <div class="position-relative" v-if="assessmentPasses.length > 0">
                 <DownloadCSVBtn :data="assessmentPassesDownloadData" :fileName="`Passed Assessments - ${studentName}`"
                     toolTip="Download passed assessments data as CSV" class="position-absolute download-btn" />
 
-                <PassedAssessmentsTimelineChart class="mb-5" v-if="assessmentPasses.length > 0"
-                    :data="assessmentPasses" />
-                <p v-else>
-                    This student has not completed any assessments yet.
-                </p>
+                <PassedAssessmentsTimelineChart class="mb-5" 
+                    :data="assessmentPasses" />               
             </div>
         </div>
     </div>
