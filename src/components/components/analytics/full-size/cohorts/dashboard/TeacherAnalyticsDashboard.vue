@@ -188,13 +188,13 @@ export default {
             </div>
             <div class="dash-row row">
                 <div class="col-md position-relative h-100">
-                    <RouterLink
+                    <!-- <RouterLink
                         to="/reports/cost"
                         class="chart-heading"
                         target="_blank"
-                    >
-                        <h2 class="heading h5">AI usage</h2>
-                    </RouterLink>
+                    > -->
+                    <h2 class="heading h5">AI usage</h2>
+                    <!-- </RouterLink> -->
                     <div id="cost-chart-container">
                         <TeacherCostChart
                             ref="costChart"
@@ -203,6 +203,7 @@ export default {
                                 analyticsStore.cost.class.length > 0
                             "
                         />
+                        <p v-else>No usage yet</p>
                     </div>
                 </div>
                 <div class="col-md position-relative h-100">

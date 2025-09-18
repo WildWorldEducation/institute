@@ -267,8 +267,12 @@ export default {
                             <SchoolProgressChart
                                 ref="progressChart"
                                 v-if="
-                                    analyticsStore.progress.tenant.length > 0 ||
-                                    analyticsStore.progress.class.length > 0
+                                    (progressChartMode == 'school' &&
+                                        analyticsStore.progress.tenant.length >
+                                            0) ||
+                                    (progressChartMode == 'class' &&
+                                        analyticsStore.progress.class.length >
+                                            0)
                                 "
                             />
                             <p v-else>No data yet</p>
