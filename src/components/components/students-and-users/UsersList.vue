@@ -110,7 +110,7 @@ export default {
             to="/users/add-student"
             class="d-block mb-4 btn primary-btn"
         >
-            Add Student
+            Add student
         </RouterLink>
 
         <!-- Editors -->

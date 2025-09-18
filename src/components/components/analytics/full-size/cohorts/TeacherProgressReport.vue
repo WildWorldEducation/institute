@@ -137,7 +137,6 @@ export default {
                 <CohortProgressLineChart
                     v-if="cohortProgress.length > 0"
                     :data="cohortProgress"
-                   
                 />
                 <p v-else>There is no data to show yet.</p>
             </div>
@@ -156,6 +155,7 @@ export default {
                         :data="masteredSkillQuantities"
                         colour="darkgreen"
                     />
+                    <p v-else>There is no data to show yet.</p>
                 </div>
                 <figcaption>Passed</figcaption>
             </div>
@@ -172,6 +172,7 @@ export default {
                         :data="attemptedAssessmentQuantities"
                         colour="darkblue"
                     />
+                    <p v-else>There is no data to show yet.</p>
                 </div>
                 <figcaption>Attempted</figcaption>
             </div>

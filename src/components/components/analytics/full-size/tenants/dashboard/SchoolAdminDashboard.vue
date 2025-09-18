@@ -267,8 +267,12 @@ export default {
                             <SchoolProgressChart
                                 ref="progressChart"
                                 v-if="
-                                    analyticsStore.progress.tenant.length > 0 ||
-                                    analyticsStore.progress.class.length > 0
+                                    (progressChartMode == 'school' &&
+                                        analyticsStore.progress.tenant.length >
+                                            0) ||
+                                    (progressChartMode == 'class' &&
+                                        analyticsStore.progress.class.length >
+                                            0)
                                 "
                             />
                             <p v-else>No data yet</p>
@@ -336,12 +340,6 @@ export default {
 </template>
 
 <style scoped>
-.dashboard {
-    display: flex;
-    height: calc(100vh - 88px);
-    overflow: hidden;
-}
-
 .isCurrentlySelected {
     font-family: 'Poppins', sans-serif;
     width: 100%;

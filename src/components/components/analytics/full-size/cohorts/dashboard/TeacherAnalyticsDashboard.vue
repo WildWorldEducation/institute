@@ -131,7 +131,7 @@ export default {
 <template>
     <div class="dashboard">
         <div class="container-fluid">
-            <div class="row top-row">
+            <!-- <div class="row top-row">
                 <div class="col-sm top-row-text">
                     <strong>Skills Mastered: </strong>
                     <span>10</span>
@@ -142,7 +142,7 @@ export default {
                 </div>
                 <div class="col-sm top-row-text"></div>
                 <div class="col-sm top-row-text"></div>
-            </div>
+            </div> -->
             <!-- This is where charts / dashboard cards go -->
             <div class="dash-row row">
                 <div class="col-md h-100">
@@ -161,10 +161,18 @@ export default {
                             "
                         />
                     </div>
+                    <figcaption>
+                        <span style="color: green">Your class</span> |
+                        <span style="color: #ff7f0e">the whole school</span>
+                    </figcaption>
                 </div>
                 <div class="col-md h-100">
-                    <RouterLink to="/challenges-report" class="" target="_blank">
-                    <h2 class="heading h5">Challenges</h2>
+                    <RouterLink
+                        to="/challenges-report"
+                        class=""
+                        target="_blank"
+                    >
+                        <h2 class="heading h5">Challenges</h2>
                     </RouterLink>
 
                     <div id="failed-chart-container">
@@ -178,18 +186,19 @@ export default {
                                 analyticsStore.cohortRootSubjectsFailedAssessments
                             "
                         />
+                        <p v-else>No challenges yet</p>
                     </div>
                 </div>
             </div>
             <div class="dash-row row">
                 <div class="col-md position-relative h-100">
-                    <RouterLink
+                    <!-- <RouterLink
                         to="/reports/cost"
                         class="chart-heading"
                         target="_blank"
-                    >
-                        <h2 class="heading h5">AI usage</h2>
-                    </RouterLink>
+                    > -->
+                    <h2 class="heading h5">AI usage</h2>
+                    <!-- </RouterLink> -->
                     <div id="cost-chart-container">
                         <TeacherCostChart
                             ref="costChart"
@@ -198,6 +207,7 @@ export default {
                                 analyticsStore.cost.class.length > 0
                             "
                         />
+                        <p v-else>No usage yet</p>
                     </div>
                 </div>
                 <div class="col-md position-relative h-100">
@@ -217,6 +227,10 @@ export default {
                             "
                         />
                     </div>
+                    <figcaption>
+                        <span style="color: green">Your class</span> |
+                        <span style="color: #ff7f0e">the whole school</span>
+                    </figcaption>
                 </div>
             </div>
         </div>
@@ -232,16 +246,15 @@ export default {
 }
 
 .dash-row {
-    height: 45%;
-}
-
-#comparison-chart-container {
-    height: 100%;
-    width: 100%;
+    height: 50%;
 }
 
 #progress-chart-container,
-#time-chart-container,
+#time-chart-container {
+    height: calc(100% - 55px);
+    width: 100%;
+}
+
 #cost-chart-container,
 #failed-chart-container {
     height: calc(100% - 35px);
@@ -250,7 +263,7 @@ export default {
 
 .dashboard {
     display: flex;
-    height: calc(100vh - 88px);
+    height: calc(100vh - 72px);
     overflow: hidden;
 }
 

@@ -63,6 +63,7 @@ export default {
         SearchUserBar
     },
     async created() {
+        console.log(this.userDetailsStore.role);
         this.checkIfTutorialComplete();
         // Load data
         if (
@@ -515,11 +516,9 @@ export default {
         v-else-if="
             (userDetailsStore.role == 'school_admin' &&
                 usersStore.studentsPerTenant.length > 0) ||
-            ((userDetailsStore.role == 'instructor' ||
-                userDetailsStore.role === 'partner') &&
-                students.length > 0) ||
-            (userDetailsStore.role == 'platform_admin' &&
-                usersStore.users.length > 0) ||
+            userDetailsStore.role == 'instructor' ||
+            userDetailsStore.role === 'partner' ||
+            userDetailsStore.role == 'platform_admin' ||
             (userDetailsStore.role == 'editor' && usersStore.editors.length > 0)
         "
         id="user-container"
@@ -531,7 +530,7 @@ export default {
                     v-if="userDetailsStore.role == 'school_admin'"
                     ref="usersListRef"
                 />
-                <UsersList ref="usersListRef" />
+                <UsersList v-else ref="usersListRef" />
             </div>
             <!-- User detail view for PC and Tablet View -->
             <div class="col-lg-8 col-md-7 d-none d-md-block">

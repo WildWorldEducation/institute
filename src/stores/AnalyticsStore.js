@@ -263,10 +263,8 @@ export const useAnalyticsStore = defineStore('analytics', {
             }
         },
         // Class
-        async getClassProgress(tenantId, teacherId) {
-            await fetch(
-                `/student-analytics/all-students-progress/${tenantId}/${teacherId}`
-            )
+        async getClassProgress(teacherId) {
+            await fetch(`/student-analytics/all-students-progress/${teacherId}`)
                 .then((response) => response.json())
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {

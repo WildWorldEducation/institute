@@ -166,6 +166,11 @@ export default {
                 this.loading = true;
                 return this.findUserWholeString(this.searchText);
             }
+        },
+        dynamicPlaceholder() {
+            return this.userDetailsStore.role == 'platform_admin'
+                ? 'Find user'
+                : 'Find student';
         }
     }
 };
@@ -199,7 +204,7 @@ export default {
                 id="skill-tree-search-text"
                 type="text"
                 class="skill-tree-input"
-                placeholder="Find Users"
+                :placeholder="dynamicPlaceholder"
                 v-model="searchText"
                 @keyup.enter="handleInputEnterPress"
                 @keyup.arrow-down="handleKeyDownPress"
