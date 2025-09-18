@@ -336,12 +336,6 @@ export default {
 </template>
 
 <style scoped>
-.dashboard {
-    display: flex;
-    height: calc(100vh - 88px);
-    overflow: hidden;
-}
-
 .isCurrentlySelected {
     font-family: 'Poppins', sans-serif;
     width: 100%;
