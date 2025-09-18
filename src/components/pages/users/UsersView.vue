@@ -484,7 +484,8 @@ export default {
             v-if="
                 userDetailsStore.role === 'editor' ||
                 userDetailsStore.role === 'instructor' ||
-                userDetailsStore.role === 'partner'
+                userDetailsStore.role === 'partner' ||
+                userDetailsStore.role === 'school_admin'
             "
             class="d-flex justify-content-end"
         >
@@ -595,7 +596,8 @@ export default {
     <div
         v-if="
             (userDetailsStore.role == 'instructor' ||
-                userDetailsStore.role === 'partner') &&
+                userDetailsStore.role === 'partner' ||
+                userDetailsStore.role === 'school_admin') &&
             (showTutorialTip1 || showTutorialTip2)
         "
         class="modal"
