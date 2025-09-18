@@ -70,6 +70,10 @@ export default {
         </div>
         <div class="container" v-else>
             <p>There are no teachers yet.</p>
+            <!-- Add Teacher Link -->
+            <RouterLink to="/teachers/add" class="d-block mb-2 btn primary-btn">
+                Add teacher
+            </RouterLink>
         </div>
     </div>
 </template>
