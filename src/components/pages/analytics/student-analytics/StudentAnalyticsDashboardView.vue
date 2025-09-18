@@ -73,16 +73,19 @@ export default {
             this.userDetailsStore.userId
         );
 
-        // Notifications
-        if (
-            this.analyticsStore.progress.student[
-                this.analyticsStore.progress.student.length - 1
-            ].quantity >
-            this.analyticsStore.progress.tenant[
-                this.analyticsStore.progress.tenant.length - 1
-            ].quantity
-        ) {
-            this.isAboveTheCurve = true;
+        if (this.analyticsStore.progress.student.length > 0 || this.analyticsStore.progress.tenant.length > 0) {
+
+            // Notifications
+            if (
+                this.analyticsStore.progress.student[
+                    this.analyticsStore.progress.student.length - 1
+                ].quantity >
+                this.analyticsStore.progress.tenant[
+                    this.analyticsStore.progress.tenant.length - 1
+                ].quantity
+            ) {
+                this.isAboveTheCurve = true;
+            }
         }
 
         await this.HandleProgressData();
@@ -165,15 +168,20 @@ export default {
                         <RouterLink to="/my-progress/skills" class="" target="_blank">
                             <h2 class="heading h5">Progress over time</h2>
                         </RouterLink>
-                        <figcaption class=""><span style="color: green">You</span> vs
-                            <span style="color:#ff7f0e">school average</span></figcaption>
+                        <figcaption v-if="
+                            progressData.student.length > 0 ||
+                            progressData.average.length > 0
+                        " class=""><span style="color: green">You</span> vs
+                            <span style="color:#ff7f0e">school average</span>
+                        </figcaption>
                         <div id="progress-chart-container">
                             <StudentProgressChart ref="progressChart" v-if="
                                 progressData.student.length > 0 ||
                                 progressData.average.length > 0
                             " />
+                            <p v-else>No progress yet</p>
                         </div>
-                        
+
                     </div>
 
                     <div class="col-md-6">
@@ -184,7 +192,8 @@ export default {
                                     .studentRootSubjectsPassedAssessments
                                     .length > 0
                             " :data="analyticsStore.studentRootSubjectsPassedAssessments
-                                    " :colour="'#5f31dd'" />
+                                " :colour="'#5f31dd'" />
+                            <p v-else>No progress yet</p>
                         </div>
 
                     </div>
@@ -195,14 +204,16 @@ export default {
                         <RouterLink to="/my-progress/time" target="_blank">
                             <h2 class="heading h5">Study time</h2>
                         </RouterLink>
-                         <figcaption class=""><span style="color: blue">You</span> vs
-                            <span style="color:#ff7f0e">school average</span></figcaption>
+                        <figcaption class=""><span style="color: blue">You</span> vs
+                            <span style="color:#ff7f0e">school average</span>
+                        </figcaption>
                         <div id="time-chart-container">
-                        
+
                             <StudentTimeChart ref="timeChart" v-if="
                                 analyticsStore.time.student.length > 0 ||
                                 analyticsStore.time.tenant.length > 0
                             " />
+                            <p v-else>No data available</p>
                         </div>
                     </div>
 

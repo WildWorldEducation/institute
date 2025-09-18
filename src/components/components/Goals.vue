@@ -50,9 +50,9 @@ export default {
 
 <template>
     <div>
-        <div v-if="goals.length === 0" class="empty-message">
+        <p v-if="goals.length === 0">
             You haven't set any goals yet.
-        </div>
+        </p>
         <div id="goal-list">
             <router-link
                 v-for="goal in goals"
@@ -108,11 +108,6 @@ export default {
 </template>
 
 <style scoped>
-.empty-message {
-    color: #667085;
-    padding: 15px;
-    text-align: center;
-}
 /* Tooltips */
 .hovering-info-panel {
     position: absolute;

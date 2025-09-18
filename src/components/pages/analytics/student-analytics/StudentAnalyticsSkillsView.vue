@@ -43,7 +43,7 @@ export default {
                 v-if="analyticsStore.studentAssessmentPasses.length > 0"
                 :data="analyticsStore.studentAssessmentPasses"
             />
-            <p v-else>This student has not completed any assessments yet.</p>
+            <p v-else>You have not completed any assessments yet.</p>
         </div>
         <!-- <hr class="mt-5 mb-5" /> -->
         <!-- <div class="row mb-5">
