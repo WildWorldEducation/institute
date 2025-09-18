@@ -3,6 +3,7 @@
 import { useSessionDetailsStore } from './stores/SessionDetailsStore.js';
 import { useUserDetailsStore } from './stores/UserDetailsStore.js';
 import { useTenantStore } from './stores/TenantStore.js';
+import { useSettingsStore } from './stores/SettingsStore.js';
 import router from './router';
 import AppTimeTracker from './components/components/analytics/AppTimeTracker.vue';
 
@@ -11,11 +12,13 @@ export default {
         const sessionDetailsStore = useSessionDetailsStore();
         const userDetailsStore = useUserDetailsStore();
         const tenantStore = useTenantStore();
+        const settingsStore = useSettingsStore();
 
         return {
             sessionDetailsStore,
             userDetailsStore,
-            tenantStore
+            tenantStore,
+            settingsStore
         };
     },
     data() {
@@ -369,7 +372,7 @@ export default {
                                         Cohorts
                                     </RouterLink>
                                 </li>
-                                <li>
+                                <li v-if="settingsStore.isManualEssayMarking">
                                     <RouterLink
                                         to="/student-assessments"
                                         class="dropdown-item close-on-click"
