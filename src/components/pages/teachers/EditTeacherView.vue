@@ -52,9 +52,10 @@ export default {
             </svg>
             &nbsp;Back to teachers
         </router-link>
-        <div class="row">
+        <div class="row mt-3">
             <!-- Teacher details -->
-            <div class="col-12 col-md-6 mb-2">
+            <div class="col-md-6 mb-2"></div>
+            <div class="col-md-6 mb-2">
                 <div class="mb-3">
                     <h2 class="secondary-heading h4">Username</h2>
                     <input
@@ -72,9 +73,9 @@ export default {
                     />
                 </div>
 
-                <div class="">
+                <div class="mt-2">
                     <button class="btn primary-btn" @click="ValidateForm()">
-                        Update teacher details
+                        Update
                     </button>
                 </div>
             </div>

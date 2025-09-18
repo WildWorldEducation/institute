@@ -31,8 +31,7 @@ export default {
 
 <template>
     <div id="user-information" class="container mt-1 bg-light p-2">
-        <div class="d-flex flex-column">         
-
+        <div class="d-flex flex-column align-items-end">
             <router-link
                 :to="'/teachers/' + this.$parent.selectedTeacher.id + '/edit'"
                 class="btn primary-btn mb-2"
@@ -93,7 +92,7 @@ export default {
 }
 
 #user-information {
-    border: 1px solid var(--primary-color);
+    /* border: 1px solid var(--primary-color); */
     border-radius: 12px;
 }
 
