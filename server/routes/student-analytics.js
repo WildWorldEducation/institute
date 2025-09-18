@@ -1607,20 +1607,16 @@ router.get(
 );
 
 /* Get all students of instructor progress (number of total skills mastered over time) */
-router.get('/all-students-progress/:userId', (req, res, next) => {
+router.get('/all-students-progress/:tenantId/:userId', (req, res, next) => {
     // Check if logged in.
     if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-
         // First, get the date the first student in the cohort student started on the platform
         let firstInteractionSQLQuery = `
             SELECT date
             FROM user_duration_tokens_per_day
-            JOIN instructor_students
-            ON instructor_students.student_id = user_duration_tokens_per_day.user_id
-            WHERE instructor_students.instructor_id = ${conn.escape(
-                req.params.userId
-            )}  
+            JOIN users
+            ON users.id = user_duration_tokens_per_day.user_id
+            WHERE tenant_id = ${conn.escape(req.params.tenantId)}  
             ORDER BY date ASC
             LIMIT 1;`;
 
@@ -1630,11 +1626,11 @@ router.get('/all-students-progress/:userId', (req, res, next) => {
                     throw err;
                 }
 
-                if (firstInteractionResult.length === 0) {
-                    return res.status(404).json({
-                        error: 'No skill activity'
-                    });
-                }
+                // if (firstInteractionResult.length === 0) {
+                //     return res.status(404).json({
+                //         error: 'No skill activity'
+                //     });
+                // }
 
                 let sqlQuery = `
                     SELECT CAST(mastered_date AS DATE) AS date, SUM(COUNT(*)) OVER(ORDER BY date) AS quantity
@@ -1657,11 +1653,11 @@ router.get('/all-students-progress/:userId', (req, res, next) => {
                             throw err;
                         }
 
-                        if (results.length === 0) {
-                            return res.status(404).json({
-                                error: 'No skill activity'
-                            });
-                        }
+                        // if (results.length === 0) {
+                        //     return res.status(404).json({
+                        //         error: 'No skill activity'
+                        //     });
+                        // }
 
                         let startFlag = false;
                         let endFlag = false;
@@ -1696,6 +1692,8 @@ router.get('/all-students-progress/:userId', (req, res, next) => {
                                 quantity: results[results.length - 1].quantity
                             });
                         }
+
+                        console.log(results);
 
                         res.json(results);
                     } catch (err) {
