@@ -140,7 +140,10 @@ export default {
             <!-- User detail view for PC and Tablet View -->
             <div class="col-lg-8 col-md-7 d-none d-md-block">
                 <div class="row user-form-data-row">
-                    <CohortDetails ref="CohortDetails" v-if="!isLoading" />
+                    <CohortDetails
+                        ref="CohortDetails"
+                        v-if="!isLoading && cohortsStore.cohorts.length > 0"
+                    />
                     <div v-else>
                         <h1 class="text-muted py-5">You have no cohorts</h1>
                     </div>
