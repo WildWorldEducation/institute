@@ -603,7 +603,6 @@ export default {
         <div class="modal-content">
             <div v-if="showTutorialTip1">
                 <p>This page shows a list of your students.</p>
-                <p>Click on the student's name to see their details.</p>
                 <div class="d-flex justify-content-between">
                     <button
                         class="btn primary-btn"
@@ -617,19 +616,14 @@ export default {
                 </div>
             </div>
             <div v-if="showTutorialTip2">
-                <p>Under the heading "Progress" you will find 3 buttons:</p>
                 <p>
-                    "Vertical Tree" will provide a look at the student's
-                    progress in the full tree view.
+                    Under the heading "Insights" you will find data reports
+                    about the student.
                 </p>
                 <p>
-                    "Collapsible Tree" takes you to a page similar to your own
-                    collapsible tree. Here you can see the student's progress
-                    and set goals for students.
-                </p>
-                <p>
-                    "Goals" will navigate to a page that displays all the
-                    students goals and the progress they have made towards them.
+                    Under the heading "Actions" you can change settings related
+                    to that student, as well as set assignments to complete
+                    certain skills with the "Goals" feature.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(2)">
