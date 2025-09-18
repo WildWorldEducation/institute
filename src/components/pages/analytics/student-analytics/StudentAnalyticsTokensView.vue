@@ -40,7 +40,7 @@ export default {
                 :data="analyticsStore.studentTokensPerSkills"
               
             />
-            <p v-else>No data yet</p>
+            <p v-else>You haven't used the AI yet</p>
         </div>
     </div>
 </template>
