@@ -131,7 +131,7 @@ export default {
 <template>
     <div class="dashboard">
         <div class="container-fluid">
-            <div class="row top-row">
+            <!-- <div class="row top-row">
                 <div class="col-sm top-row-text">
                     <strong>Skills Mastered: </strong>
                     <span>10</span>
@@ -142,7 +142,7 @@ export default {
                 </div>
                 <div class="col-sm top-row-text"></div>
                 <div class="col-sm top-row-text"></div>
-            </div>
+            </div> -->
             <!-- This is where charts / dashboard cards go -->
             <div class="dash-row row">
                 <div class="col-md h-100">
@@ -163,8 +163,12 @@ export default {
                     </div>
                 </div>
                 <div class="col-md h-100">
-                    <RouterLink to="/challenges-report" class="" target="_blank">
-                    <h2 class="heading h5">Challenges</h2>
+                    <RouterLink
+                        to="/challenges-report"
+                        class=""
+                        target="_blank"
+                    >
+                        <h2 class="heading h5">Challenges</h2>
                     </RouterLink>
 
                     <div id="failed-chart-container">
@@ -178,6 +182,7 @@ export default {
                                 analyticsStore.cohortRootSubjectsFailedAssessments
                             "
                         />
+                        <p v-else>No challenges yet</p>
                     </div>
                 </div>
             </div>
@@ -232,7 +237,7 @@ export default {
 }
 
 .dash-row {
-    height: 45%;
+    height: 50%;
 }
 
 #comparison-chart-container {
@@ -250,7 +255,7 @@ export default {
 
 .dashboard {
     display: flex;
-    height: calc(100vh - 88px);
+    height: calc(100vh - 72px);
     overflow: hidden;
 }
 

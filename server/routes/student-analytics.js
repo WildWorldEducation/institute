@@ -1293,11 +1293,11 @@ router.get(
                         throw err;
                     }
 
-                    if (results.length === 0) {
-                        return res.status(404).json({
-                            error: 'No skill activity'
-                        });
-                    }
+                    // if (results.length === 0) {
+                    //     return res.status(404).json({
+                    //         error: 'No skill activity'
+                    //     });
+                    // }
 
                     res.json(results);
                 } catch (err) {
