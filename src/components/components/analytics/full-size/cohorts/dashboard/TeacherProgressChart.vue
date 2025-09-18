@@ -9,10 +9,9 @@ export default {
             axisData: []
         };
     },
-    mounted() { },
+    mounted() {},
     methods: {
         createChart(data) {
-
             // Work out which array to use for the axes
             if (data.class.length == 0) {
                 this.axisData = data.tenant;
@@ -119,7 +118,7 @@ export default {
                     else return '#ff7f0e'; // orange
                 })
                 .attr('stroke-width', 3)
-                .attr('d', (d) => {                  
+                .attr('d', (d) => {
                     return line(d.values);
                 });
         }

@@ -161,6 +161,10 @@ export default {
                             "
                         />
                     </div>
+                    <figcaption>
+                        <span style="color: green">Your class</span> |
+                        <span style="color: #ff7f0e">the whole school</span>
+                    </figcaption>
                 </div>
                 <div class="col-md h-100">
                     <RouterLink
@@ -223,6 +227,10 @@ export default {
                             "
                         />
                     </div>
+                    <figcaption>
+                        <span style="color: green">Your class</span> |
+                        <span style="color: #ff7f0e">the whole school</span>
+                    </figcaption>
                 </div>
             </div>
         </div>
@@ -241,13 +249,12 @@ export default {
     height: 50%;
 }
 
-#comparison-chart-container {
-    height: 100%;
+#progress-chart-container,
+#time-chart-container {
+    height: calc(100% - 55px);
     width: 100%;
 }
 
-#progress-chart-container,
-#time-chart-container,
 #cost-chart-container,
 #failed-chart-container {
     height: calc(100% - 35px);

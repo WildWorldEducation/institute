@@ -664,7 +664,7 @@ const router = createRouter({
             }
         },
         {
-            path: '/student/:studentId/ report',
+            path: '/student/:studentId/progress-report',
             name: 'student-progress-report',
             component: () =>
                 import(
