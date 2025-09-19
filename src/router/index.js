@@ -331,6 +331,18 @@ const router = createRouter({
                 roles: ['platform_admin']
             }
         },
+        // Platform admin see tenant dashboard
+        {
+            path: '/tenants/:tenantId/dashboard',
+            name: 'tenant-dashboard',
+            component: () =>
+                import('../components/pages/analytics/DashboardView.vue'),
+            meta: {
+                title: 'Tenant dashboard',
+                requiresAuth: true,
+                roles: ['platform_admin']
+            }
+        },
         {
             path: '/student-questions',
             name: 'student-questions',

@@ -54,7 +54,21 @@ export default {
             <div class="col-12 col-md-5">
                 <div id="user-function-btns-row" class="d-flex flex-column">
                     <router-link
-                        :to="'/tenants/' + this.$parent.selectedTenant.id + '/edit'"
+                        :to="
+                            '/tenants/' +
+                            this.$parent.selectedTenant.id +
+                            '/dashboard'
+                        "
+                        class="btn primary-btn mb-2"
+                    >
+                        See school admin analytics
+                    </router-link>
+                    <router-link
+                        :to="
+                            '/tenants/' +
+                            this.$parent.selectedTenant.id +
+                            '/edit'
+                        "
                         class="btn primary-btn mb-2"
                     >
                         Edit&nbsp;
