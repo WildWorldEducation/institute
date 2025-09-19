@@ -9,6 +9,7 @@ export const useAnalyticsStore = defineStore('analytics', {
             durationPerDay: [],
             avgTimeOnSkills: [],
             percentageStudentsMasteredOneSkill: [],
+            allTimeOnSkills: [],
             // Academics
             tenantProgress: [],
             numSkillsPassedPerNumStudents: [],
@@ -119,6 +120,18 @@ export const useAnalyticsStore = defineStore('analytics', {
                         'Error fetching student duration per day:',
                         error
                     );
+                });
+        },
+        async getStudentAllTimeOnSkills(studentId) {
+            const url = `/student-analytics/all-skills-duration/${studentId}`;
+            fetch(url)
+                .then((response) => response.json())
+                .then((data) => {
+                    this.allTimeOnSkills = data;
+                    console.log('All time on skills data:', data);
+                })
+                .catch((error) => {
+                    console.error('Error fetching all time on skills:', error);
                 });
         },
         async getStudentDurationPerDay(studentId) {
