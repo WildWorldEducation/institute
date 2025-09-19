@@ -534,13 +534,13 @@ export default {
                         Center
                     </button>
                     <!-- Print Button -->
-                    <button
+                    <!-- <button
                         v-if="sessionDetailsStore.isLoggedIn"
                         class="btn primary-btn me-2"
                         @click="$refs.childComponent.printPDF()"
                     >
                         Print
-                    </button>
+                    </button> -->
                     <!-- Restart tutorial button -->
                     <button
                         v-if="sessionDetailsStore.isLoggedIn"
@@ -594,10 +594,11 @@ export default {
             >
                 <div class="explain-tool-tip triangle-top-right">
                     <div class="tool-tip-text">
-                        <p>
+                        <!-- <p>
                             Use the center button to center the skill tree,<br />
                             and the print button to print a PDF.
-                        </p>
+                        </p> -->
+                        <p>Use the center button to center the skill tree.</p>
                         <div class="d-flex justify-content-between">
                             <button
                                 class="btn primary-btn"

@@ -11,7 +11,7 @@ export default {
     },
     mounted() {},
     methods: {
-        createChart(data) {           
+        createChart(data) {
             // Work out which array to use for the axes
             if (data.student.length == 0) {
                 this.axisData = data.tenant;
@@ -39,7 +39,7 @@ export default {
             const series = Object.entries(data).map(([name, values]) => ({
                 name,
                 values
-            }));          
+            }));
 
             // Declare the chart dimensions and margins.
             const width = document.getElementById(
@@ -93,7 +93,7 @@ export default {
             // Add the x-axis.
             svg.append('g')
                 .attr('transform', `translate(0,${height - marginBottom})`)
-                .call(d3.axisBottom(x).ticks(data.length).tickSizeOuter(0));
+                .call(d3.axisBottom(x).ticks(7).tickSizeOuter(0));
 
             // Add the y-axis, remove the domain line, add grid lines and a label.
             svg.append('g')
@@ -125,7 +125,10 @@ export default {
                     if (d.name == 'student') return 'RoyalBlue';
                     else return '#ff7f0e'; // orange
                 })
-                .attr('stroke-width', 3)
+                .attr('stroke-width', (d) => {
+                    if (d.name == 'student') return 3;
+                    else return 2;
+                })
                 .attr('d', (d) => line(d.values));
         }
     }

@@ -277,10 +277,37 @@ router.get(
                 JOIN users
                 ON user_duration_tokens_per_day.user_id = users.id
                 WHERE tenant_id = ${conn.escape(req.params.tenantId)}   
+                AND role = 'student'
                 AND date >= NOW() - INTERVAL 1 WEEK    
                 GROUP BY date                
                 ORDER BY date ASC;`;
             let averageProgressResults = await query(averageProgressQuery);
+
+            // Fill missing dates with 0
+            function fillMissingDates(data, days = 7) {
+                const today = new Date();
+                const dates = [];
+                for (let i = days - 1; i >= 0; i--) {
+                    const date = new Date(today);
+                    date.setDate(today.getDate() - i);
+                    dates.push(date);
+                }
+                const dataMap = new Map();
+                data.forEach((item) => {
+                    const dateStr = item.date.toISOString().split('T')[0];
+                    dataMap.set(dateStr, item.quantity);
+                });
+                const filled = dates.map((date) => {
+                    const dateStr = date.toISOString().split('T')[0];
+                    return {
+                        date,
+                        quantity: dataMap.get(dateStr) || 0
+                    };
+                });
+                return filled;
+            }
+            studentResult = fillMissingDates(studentResult);
+            averageProgressResults = fillMissingDates(averageProgressResults);
 
             res.json({
                 studentTime: studentResult,

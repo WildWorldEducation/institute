@@ -62,6 +62,7 @@ router.get('/last-visited-skills', (req, res, next) => {
             ON skills.id = user_skills.skill_id
             WHERE user_id = ${conn.escape(req.session.userId)}
             AND skills.is_deleted = 0
+            AND last_visited_date IS NOT NULL
             ORDER BY last_visited_date DESC
             LIMIT 5;
         `;
