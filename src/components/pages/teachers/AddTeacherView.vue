@@ -221,7 +221,7 @@ export default {
                         <CheckPasswordComplexity :formData="user" />
                     </div>
                     <div class="d-flex justify-content-end gap-4">
-                        <router-link class="btn red-btn" to="/students">
+                        <router-link class="btn red-btn" to="/teachers">
                             Cancel
                         </router-link>
                         <button class="btn primary-btn" @click="ValidateForm()">
