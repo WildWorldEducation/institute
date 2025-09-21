@@ -325,29 +325,24 @@ router.get(
         if (req.session.userName) {
             res.setHeader('Content-Type', 'application/json');
 
-            let sqlQuery = `
+            // Get student time
+            let studentTimeSqlQuery = `
             SELECT date, duration AS quantity
             FROM user_duration_tokens_per_day            
-            WHERE user_id = ${conn.escape(
-                req.params.studentId
-            )}                           
+            WHERE user_id = ${conn.escape(req.params.studentId)}
             ORDER BY date ASC;`;
 
-            const studentResult = await query(sqlQuery);
-            sqlQuery = `SELECT cohorts_users.cohort_id
-                    FROM cohorts_users
-                    WHERE cohorts_users.user_id = ${conn.escape(
-                        req.params.studentId
-                    )}`;
+            const studentResult = await query(studentTimeSqlQuery);
 
-            // sqlQuery = `SELECT date, AVG(duration) AS quantity
-            //     FROM user_duration_tokens_per_day
-            //     GROUP BY date
-            //     ORDER BY date ASC;`;
-            sqlQuery = `SELECT user_duration_tokens_per_day.date AS date, AVG(duration) AS quantity
-                    FROM user_duration_tokens_per_day
-                    GROUP BY date`;
-            const averageResult = await query(sqlQuery);
+            // Get average time
+            let averageTimeSqlQuery = `SELECT user_duration_tokens_per_day.date AS date, AVG(duration) AS quantity
+                FROM user_duration_tokens_per_day
+                JOIN users
+                ON users.id = user_duration_tokens_per_day.user_id
+                WHERE users.tenant_id = ${conn.escape(req.params.tenantId)}
+                AND users.role = 'student'
+                GROUP BY date`;
+            const averageResult = await query(averageTimeSqlQuery);
 
             res.json({
                 studentTime: studentResult,
