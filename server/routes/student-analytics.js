@@ -217,7 +217,7 @@ router.get('/skill-activity-report/:studentId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT skills.name, SUM(duration) AS quantity
+            SELECT skills.name, SUM(duration) AS quantity, last_visited_date
             FROM user_skills             
             JOIN skills ON skills.id  = user_skills.skill_id
             WHERE user_id = ${conn.escape(req.params.studentId)}       
