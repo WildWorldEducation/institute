@@ -64,13 +64,12 @@ export const useAnalyticsStore = defineStore('analytics', {
             )
                 .then((response) => response.json())
                 .then((data) => {
-                    
                     if (!data.studentProgress && !data.tenantAvgProgress) {
                         data.studentProgress = [];
                         data.tenantAvgProgress = [];
-                        return
+                        return;
                     }
-                    
+
                     for (let i = 0; i < data.studentProgress.length; i++) {
                         data.studentProgress[i].date = new Date(
                             data.studentProgress[i].date

@@ -22,19 +22,15 @@ export default {
         };
     },
     components: {
-        
         StudentDurationPerDayLineChart,
         StudentSkillActivityChart,
-        DownloadCSVBtn,
-        
+        DownloadCSVBtn
     },
     data() {
         return {
             studentId: this.$route.params.studentId,
             studentName: null,
-            skillDurations: [],
             durationsPerDay: [],
-            allSkillsDuration: 0,
             totalTimeOnPlatformDownloadData: [],
             minutesPerSkillDownloadData: [],
             averageDurationsPerDay: []
@@ -54,16 +50,18 @@ export default {
         await this.getStudentActivity();
     },
     methods: {
-        
         async getStudentDurationPerDay() {
             let url = `/student-analytics/student-duration-per-day-class/${this.studentId}/${this.userDetailsStore.userId}`;
 
             if (this.userDetailsStore.role === 'school_admin') {
                 url = `/student-analytics/student-duration-per-day-tenant/${this.studentId}/${this.userDetailsStore.userId}`;
             }
+            console.log(this.studentId);
             fetch(url)
                 .then((response) => response.json())
                 .then((resData) => {
+                    console.log(resData);
+
                     const data = resData.studentTime;
                     for (let i = 0; i < data.length; i++) {
                         data[i].formattedQuantity =
@@ -71,8 +69,6 @@ export default {
                         data[i].date = new Date(data[i].date);
                     }
                     data.sort((a, b) => a.date - b.date);
-                    console.log('response data: ');
-                    console.log(data);
                     this.durationsPerDay = data;
                     this.totalTimeOnPlatformDownloadData =
                         this.durationsPerDay.map((e) => {
@@ -111,6 +107,11 @@ export default {
                 await this.teacherAnalyticsStore.getSkillActivityReport(
                     this.studentId
                 );
+            }
+
+            // if empty
+            if (this.teacherAnalyticsStore.skillActivities.error) {
+                return;
             }
             this.teacherAnalyticsStore.skillActivities =
                 this.teacherAnalyticsStore.skillActivities.map((skill) => {
@@ -172,21 +173,18 @@ export default {
                         :averageDuration="averageDurationsPerDay"
                         :userRole="userDetailsStore.role"
                         :studentName="studentName"
-                        
                     />
                     <p v-else>There is no data to show yet.</p>
                 </div>
-                 <figcaption class="position-absolute"><span style="color: purple">{{ studentName }}</span> vs <span
-                        style="color:#ff7f0e">class average</span></figcaption>
+                <figcaption class="position-absolute">
+                    <span style="color: purple">{{ studentName }}</span> vs
+                    <span style="color: #ff7f0e">class average</span>
+                </figcaption>
             </div>
         </div>
         <div class="chart-row row">
             <div class="col-lg chart-col position-relative">
-                <div id="">
-                    TODO: Add time per subject bar chart
-
-                    
-                </div>
+                <div id="">TODO: Add time per subject bar chart</div>
             </div>
             <div class="col-lg chart-col position-relative">
                 <div id="activity-chart-container">
@@ -214,10 +212,9 @@ export default {
     overflow: hidden;
 }
 
- .chart-row {
+.chart-row {
     height: 50%;
 }
-
 
 #activity-chart-container,
 #time-chart-container {
@@ -238,15 +235,12 @@ export default {
 }
 
 @media (max-width: 576px) {
-.chart-page {
-    overflow: auto;
-    
+    .chart-page {
+        overflow: auto;
+    }
 
+    .chart-col {
+        height: 200px;
+    }
 }
-
-.chart-col {
-    height: 200px;
-}
-}
-
 </style>

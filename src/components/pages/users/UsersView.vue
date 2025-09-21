@@ -424,7 +424,9 @@ export default {
             ) {
                 lastVisitedDates.push(
                     new Date(
-                        this.teacherAnalyticsStore.skillActivities[i].endDate
+                        this.teacherAnalyticsStore.skillActivities[
+                            i
+                        ].last_visited_date
                     )
                 );
             }
