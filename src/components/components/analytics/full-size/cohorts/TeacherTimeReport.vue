@@ -166,35 +166,6 @@ export default {
                     );
                 });
         },
-        // async getCohortDurationsPerSkill() {
-        //     fetch(
-        //         `/student-analytics/cohort-student-durations-per-skill/${this.cohortId}`
-        //     )
-        //         .then((response) => response.json())
-        //         .then((data) => {
-        //             for (let i = 0; i < data.length; i++) {
-        //                 data[i].formattedQuantity =
-        //                     this.millisToMinutesAndSeconds(data[i].quantity);
-        //             }
-        //             this.studentDurationsPerSkill = data;
-        //             this.studentDurationsPerSkillDownloadData = data.map(
-        //                 (d) => {
-        //                     return {
-        //                         skill: d.name,
-        //                         minutesSpent: this.millisToMinutesAndSeconds(
-        //                             d.quantity
-        //                         )
-        //                     };
-        //                 }
-        //             );
-        //         })
-        //         .catch((error) => {
-        //             console.error(
-        //                 'Error fetching student durations per skill:',
-        //                 error
-        //             );
-        //         });
-        // },
         async getAllStudentsDurationsPerSkill() {
             fetch(
                 `/student-analytics/all-students-student-durations-per-skill/${this.userDetailsStore.userId}`
