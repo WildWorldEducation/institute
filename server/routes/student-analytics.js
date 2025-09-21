@@ -2070,6 +2070,7 @@ router.get('/school-progress/:tenantId', (req, res, next) => {
             JOIN users
             ON users.id = user_duration_tokens_per_day.user_id
             WHERE tenant_id = ${conn.escape(req.params.tenantId)}  
+            AND users.role = 'student'
             ORDER BY date ASC
             LIMIT 1;`;
 
@@ -2095,6 +2096,7 @@ router.get('/school-progress/:tenantId', (req, res, next) => {
                     WHERE is_mastered = 1
                     AND tenant_id = ${conn.escape(req.params.tenantId)}        
                     AND type <> 'domain'      
+                    AND users.role = 'student'
                     GROUP BY date
                     ORDER BY date ASC;`;
 
