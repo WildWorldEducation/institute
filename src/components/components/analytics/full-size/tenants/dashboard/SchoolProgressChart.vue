@@ -38,7 +38,7 @@ export default {
             const marginTop = 5;
             const marginRight = 20;
             const marginBottom = 20;
-            const marginLeft = 20;
+            const marginLeft = 25;
 
             // We use the data from the school set set the axes,
             // even if we are displaying the class data.
