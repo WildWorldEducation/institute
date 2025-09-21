@@ -11,7 +11,7 @@ export default {
     },
     mounted() {},
     methods: {
-        createChart(data) {           
+        createChart(data) {
             // Work out which array to use for the axes
             if (data.class.length == 0) {
                 this.axisData = data.tenant;
@@ -33,13 +33,13 @@ export default {
                 } else {
                     this.axisData = data.tenant;
                 }
-            }         
+            }
 
             // Convert object into array of series
             const series = Object.entries(data).map(([name, values]) => ({
                 name,
                 values
-            }));        
+            }));
 
             // Declare the chart dimensions and margins.
             const width = document.getElementById(
@@ -51,7 +51,7 @@ export default {
             const marginTop = 0;
             const marginRight = 20;
             const marginBottom = 20;
-            const marginLeft = 20;
+            const marginLeft = 25;
 
             // Declare the x (horizontal position) scale.
             const x = d3.scaleUtc(
@@ -63,7 +63,7 @@ export default {
             const y = d3.scaleLinear(
                 [0, d3.max(this.axisData, (d) => d.minutes)],
                 [height - marginBottom, marginTop]
-            );            
+            );
 
             // Declare the line generator.
             const line = d3
@@ -88,12 +88,17 @@ export default {
             // Add the x-axis.
             svg.append('g')
                 .attr('transform', `translate(0,${height - marginBottom})`)
-                .call(d3.axisBottom(x).ticks(width / 100).tickSizeOuter(0));
+                .call(
+                    d3
+                        .axisBottom(x)
+                        .ticks(width / 100)
+                        .tickSizeOuter(0)
+                );
 
             // Add the y-axis, add grid lines and a label.
             svg.append('g')
                 .attr('transform', `translate(${marginLeft},0)`)
-                .call(d3.axisLeft(y).ticks(height / 80))               
+                .call(d3.axisLeft(y).ticks(height / 80))
                 .call((g) =>
                     g
                         .selectAll('.tick line')
@@ -101,7 +106,6 @@ export default {
                         .attr('x2', width - marginLeft - marginRight)
                         .attr('stroke-opacity', 0.1)
                 );
-               
 
             // Draw the lines
             svg.selectAll('.line')
@@ -112,12 +116,12 @@ export default {
                     if (d.name == 'class') return 'RoyalBlue';
                     else return '#ff7f0e'; // orange
                 })
-                .attr('stroke-width', (d) => {                   
+                .attr('stroke-width', (d) => {
                     if (d.name == 'class') return 3;
                     else return 2;
                 })
                 .attr('d', (d) => {
-                  return line(d.values);
+                    return line(d.values);
                 });
         }
     }
