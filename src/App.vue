@@ -67,23 +67,52 @@ export default {
     },
     methods: {
         initDropdown() {
-            // Single click listener that handles both toggle and outside clicks
+            // Single click listener that handles both dropdowns and outside clicks
             document.addEventListener('click', (e) => {
-                const dropdown = document.querySelector('.nav-item.dropdown');
-                const dropdownToggle =
-                    dropdown?.querySelector('.dropdown-toggle');
+                const skillsDropdownToggle = document.querySelector(
+                    '.dropdown-toggle[aria-label="Skill Tree dropdown"]'
+                );
+                const skillsDropdown = skillsDropdownToggle
+                    ? skillsDropdownToggle.closest('.nav-item')
+                    : null;
+                const studentsDropdown =
+                    document.querySelector('.nav-item.dropdown');
+                const studentsDropdownToggle =
+                    studentsDropdown?.querySelector('.dropdown-toggle');
 
-                if (!dropdown) return;
-
-                // If clicking the toggle button, toggle the dropdown
-                if (dropdownToggle && dropdownToggle.contains(e.target)) {
-                    this.isStudentsDropdownOpen = !this.isStudentsDropdownOpen;
+                // Handle Skill Tree dropdown toggle
+                if (
+                    skillsDropdownToggle &&
+                    skillsDropdownToggle.contains(e.target)
+                ) {
+                    this.isSkillsDropdownOpen = !this.isSkillsDropdownOpen;
+                    this.isStudentsDropdownOpen = false; // Close other dropdown
+                    return;
                 }
-                // If clicking outside the dropdown, close it
-                else if (!dropdown.contains(e.target)) {
+
+                // Handle Students dropdown toggle
+                if (
+                    studentsDropdownToggle &&
+                    studentsDropdownToggle.contains(e.target)
+                ) {
+                    this.isStudentsDropdownOpen = !this.isStudentsDropdownOpen;
+                    this.isSkillsDropdownOpen = false; // Close other dropdown
+                    return;
+                }
+
+                // Close both dropdowns if clicking outside
+                if (
+                    (!skillsDropdown || !skillsDropdown.contains(e.target)) &&
+                    (!studentsDropdown || !studentsDropdown.contains(e.target))
+                ) {
+                    this.isSkillsDropdownOpen = false;
                     this.isStudentsDropdownOpen = false;
                 }
             });
+        },
+        closeDropdown() {
+            this.isSkillsDropdownOpen = false;
+            this.isStudentsDropdownOpen = false;
         },
         closeNavbarOnClick() {
             const links = document.querySelectorAll('.close-on-click');
@@ -230,11 +259,12 @@ export default {
                         <!-- Skill tree -->
                         <li
                             v-if="
-                                userDetailsStore.role == 'student' ||
-                                userDetailsStore.role == 'instructor' ||
-                                userDetailsStore.role == 'partner' ||
-                                userDetailsStore.role == 'editor' ||
-                                userDetailsStore.role == 'school_admin'
+                                (userDetailsStore.role == 'student' ||
+                                    userDetailsStore.role == 'instructor' ||
+                                    userDetailsStore.role == 'partner' ||
+                                    userDetailsStore.role == 'editor' ||
+                                    userDetailsStore.role == 'school_admin') &&
+                                isMobileCheck >= 576
                             "
                             class="nav-item"
                         >
@@ -253,11 +283,8 @@ export default {
                                         userDetailsStore.role == 'instructor' ||
                                         userDetailsStore.role == 'partner'
                                     "
-                                    @click="
-                                        isSkillsDropdownOpen =
-                                            !isSkillsDropdownOpen
-                                    "
                                     class="nav-link dropdown-toggle border-0 bg-transparent"
+                                    aria-label="Skill Tree dropdown"
                                 ></button>
                             </div>
 
@@ -277,6 +304,31 @@ export default {
                                 </li>
                             </ul>
                         </li>
+                        <!-- Skill tree -->
+                        <li
+                            v-if="
+                                (userDetailsStore.role == 'student' ||
+                                    userDetailsStore.role == 'instructor' ||
+                                    userDetailsStore.role == 'partner' ||
+                                    userDetailsStore.role == 'editor' ||
+                                    userDetailsStore.role == 'school_admin') &&
+                                isMobileCheck < 576
+                            "
+                            class="nav-item"
+                        >
+                            <div class="d-flex align-items-center">
+                                <!-- Navigation link to /skll-tree -->
+                                <RouterLink to="/skill-tree" class="nav-link"
+                                    >Skill Tree</RouterLink
+                                >
+                            </div>
+                        </li>
+                        <li v-if="isMobileCheck < 576" class="nav-item">
+                            <RouterLink to="/skills" class="nav-link">
+                                Skills list
+                            </RouterLink>
+                        </li>
+                        <!-- Todo -->
                         <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
@@ -1179,6 +1231,11 @@ p {
 .dropdown-menu {
     --bs-dropdown-link-active-bg: var(--primary-color);
     --bs-dropdown-link-active-color: var(--primary-contrast-color);
+}
+
+.dropdown-item {
+    color: black !important;
+    text-decoration: none !important;
 }
 
 /* Mobile-specific styles - make navbar fully interactive on small screens */
