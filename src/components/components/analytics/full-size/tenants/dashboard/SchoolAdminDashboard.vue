@@ -115,10 +115,7 @@ export default {
             });
         },
         async getClassProgressData() {
-            await this.analyticsStore.getClassProgress(
-                this.userDetailsStore.tenantId,
-                this.selectedTeacher.id
-            );
+            await this.analyticsStore.getClassProgress(this.selectedTeacher.id);
 
             this.$nextTick(() => {
                 if (this.$refs.progressChart) {
@@ -270,7 +267,7 @@ export default {
                                     (progressChartMode == 'school' &&
                                         analyticsStore.progress.tenant.length >
                                             0) ||
-                                    (progressChartMode == 'class' &&
+                                    (progressChartMode == 'teacher' &&
                                         analyticsStore.progress.class.length >
                                             0)
                                 "
