@@ -34,53 +34,11 @@ export default {
         };
     },
     async created() {
-        // if (this.cohortsStore.cohorts.length < 1) {
-        //     await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
-        // }
-        // const foundObject = this.cohortsStore.cohorts.find(
-        //     (cohort) => cohort.id == this.cohortId
-        // );
-        // if (foundObject) {
-        //     this.cohortName = foundObject.name;
-        // }
-
-        // if (this.cohortId != 'all-students') {
-        //     await this.getCohortDurationPerDay();
-        //     await this.getCohortStudentTotalDurations();
-        //     await this.getCohortDurationsPerSkill();
-        // } else {
         await this.getAllStudentsDurationPerDay();
         await this.getAllStudentsStudentTotalDurations();
         await this.getAllStudentsDurationsPerSkill();
     },
     methods: {
-        // async getCohortDurationPerDay() {
-        //     fetch(`/student-analytics/cohort-duration-per-day/${this.cohortId}`)
-        //         .then((response) => response.json())
-        //         .then((data) => {
-        //             for (let i = 0; i < data.length; i++) {
-        //                 data[i].formattedQuantity =
-        //                     data[i].quantity / (1000 * 60);
-        //                 data[i].date = new Date(data[i].date);
-        //             }
-        //             data.sort((a, b) => a.date - b.date);
-        //             this.durationsPerDay = data;
-        //             this.durationsPerDayDownloadData = data.map((d) => {
-        //                 return {
-        //                     date: new Date(d.date).toLocaleDateString(),
-        //                     minutesSpent: this.millisToMinutesAndSeconds(
-        //                         d.quantity
-        //                     )
-        //                 };
-        //             });
-        //         })
-        //         .catch((error) => {
-        //             console.error(
-        //                 'Error fetching student duration per day:',
-        //                 error
-        //             );
-        //         });
-        // },
         async getAllStudentsDurationPerDay() {
             fetch(
                 `/student-analytics/all-students-duration-per-day/${this.userDetailsStore.userId}`
@@ -110,33 +68,6 @@ export default {
                     );
                 });
         },
-        // async getCohortStudentTotalDurations() {
-        //     fetch(`/student-analytics/cohort-total-durations/${this.cohortId}`)
-        //         .then((response) => response.json())
-        //         .then((data) => {
-        //             for (let i = 0; i < data.length; i++) {
-        //                 data[i].formattedQuantity =
-        //                     this.millisToMinutesAndSeconds(data[i].quantity);
-        //                 data[i].date = new Date(data[i].date);
-        //             }
-        //             data.sort((a, b) => a.date - b.date);
-        //             this.studentTotalDurations = data;
-        //             this.studentTotalDurationsDownloadData = data.map((d) => {
-        //                 return {
-        //                     studentName: d.name,
-        //                     minutesSpent: this.millisToMinutesAndSeconds(
-        //                         d.quantity
-        //                     )
-        //                 };
-        //             });
-        //         })
-        //         .catch((error) => {
-        //             console.error(
-        //                 'Error fetching student duration per day:',
-        //                 error
-        //             );
-        //         });
-        // },
         async getAllStudentsStudentTotalDurations() {
             fetch(
                 `/student-analytics/all-students-total-durations/${this.userDetailsStore.userId}`
@@ -237,6 +168,9 @@ export default {
                     />
                     <p v-else>No time recorded yet</p>
                 </div>
+                <figcaption class="text-muted">
+                    Total time spent on the platform, comparing students
+                </figcaption>
             </div>
 
             <div class="col-md chart-col position-relative">
@@ -253,6 +187,9 @@ export default {
                         v-if="studentDurationsPerSkill.length > 0"
                     />
                 </div>
+                <figcaption class="text-muted">
+                    Total time spent on each skill
+                </figcaption>
             </div>
         </div>
     </div>

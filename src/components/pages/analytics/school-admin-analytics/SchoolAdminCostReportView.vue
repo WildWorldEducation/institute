@@ -141,7 +141,7 @@ export default {
             let svgElement = parentDiv.querySelector('svg');
             if (svgElement) {
                 // Check if the SVG element exists
-                svgElement.remove();               
+                svgElement.remove();
             }
             this.analyticsStore.totalTokensPerDay = [];
             fetch(
@@ -181,12 +181,11 @@ export default {
             link.download = name + '.csv';
             link.click();
         },
-        async toggleWeeklyCumulativeData() {          
-            
+        async toggleWeeklyCumulativeData() {
             if (this.dataMode == 'total') this.dataMode = 'weekly';
             else this.dataMode = 'total';
 
-            await this.getTotalTokensPerDay();          
+            await this.getTotalTokensPerDay();
         }
     }
 };
@@ -198,21 +197,53 @@ export default {
             <h1 class="heading h4">Cost Report</h1>
             <span>
                 <!-- Filter Buttons -->
-                <div class="btn-group d-flex d-sm-inline-flex mt-2" role="group">
-                    <input type="radio" class="btn-check" name="timeFilter1" id="total1"
-                        @click="toggleWeeklyCumulativeData" checked />
-                    <label class="btn btn-outline-dark btn-sm filter-btn" for="total1">Total</label>
-                    <input type="radio" class="btn-check" name="timeFilter1" id="week1"
-                        @click="toggleWeeklyCumulativeData" />
-                    <label class="btn btn-outline-dark btn-sm filter-btn" for="week1">This week</label>
+                <div
+                    class="btn-group d-flex d-sm-inline-flex mt-2"
+                    role="group"
+                >
+                    <input
+                        type="radio"
+                        class="btn-check"
+                        name="timeFilter1"
+                        id="total1"
+                        @click="toggleWeeklyCumulativeData"
+                        checked
+                    />
+                    <label
+                        class="btn btn-outline-dark btn-sm filter-btn"
+                        for="total1"
+                        >Total</label
+                    >
+                    <input
+                        type="radio"
+                        class="btn-check"
+                        name="timeFilter1"
+                        id="week1"
+                        @click="toggleWeeklyCumulativeData"
+                    />
+                    <label
+                        class="btn btn-outline-dark btn-sm filter-btn"
+                        for="week1"
+                        >This week</label
+                    >
                 </div>
                 <!-- Tutorial button -->
-                <button class="btn me-1" @click="restartTutorial" aria-label="info">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512" width="20" height="23"
-                        class="primary-icon">
+                <button
+                    class="btn me-1"
+                    @click="restartTutorial"
+                    aria-label="info"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 192 512"
+                        width="20"
+                        height="23"
+                        class="primary-icon"
+                    >
                         <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                         <path
-                            d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z" />
+                            d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                        />
                     </svg>
                 </button>
             </span>
@@ -231,7 +262,10 @@ export default {
                     views using the filter buttons at the top right.
                 </p>
                 <div class="d-flex justify-content-between">
-                    <button class="btn primary-btn" @click="progressTutorial(1)">
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
                         close
                     </button>
                     <!-- <button class="btn red-btn" @click="skipTutorial">
@@ -243,65 +277,105 @@ export default {
 
         <div class="row chart-row position-relative">
             <div id="tokens-chart-container">
-                <button class="btn position-absolute download-btn" @click="
-                    downloadData(
-                        analyticsStore.totalTokensPerDay,
-                        'Tokens-per-day'
-                    )
-                    ">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
+                <button
+                    class="btn position-absolute download-btn"
+                    @click="
+                        downloadData(
+                            analyticsStore.totalTokensPerDay,
+                            'Tokens-per-day'
+                        )
+                    "
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 384 512"
+                        width="18"
+                        height="18"
+                    >
                         <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
                         <path
-                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
+                            d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                        />
                     </svg>
                 </button>
-                <TenantTokensPerDayLineChart v-if="analyticsStore.totalTokensPerDay.length > 0"
-                    :data="analyticsStore.totalTokensPerDay" colour="#5f31dd" />
+                <TenantTokensPerDayLineChart
+                    v-if="analyticsStore.totalTokensPerDay.length > 0"
+                    :data="analyticsStore.totalTokensPerDay"
+                    colour="#5f31dd"
+                />
                 <p v-else>No data yet</p>
             </div>
         </div>
         <div class="row chart-row">
             <div class="col-md chart-col position-relative">
                 <div id="tokens-to-master-chart-container">
-                    <button class="btn position-absolute download-btn" @click="
-                        downloadData(
-                            analyticsStore.avgTokensToMasterSkills,
-                            'Avg-tokens-to-master-skill'
-                        )
-                        ">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
+                    <button
+                        class="btn position-absolute download-btn"
+                        @click="
+                            downloadData(
+                                analyticsStore.avgTokensToMasterSkills,
+                                'Avg-tokens-to-master-skill'
+                            )
+                        "
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            width="18"
+                            height="18"
+                        >
                             <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
                             <path
-                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
+                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                            />
                         </svg>
                     </button>
                     <TenantAvgTokensToMasterSkillsHorizontalBarChart
                         v-if="analyticsStore.avgTokensToMasterSkills.length > 0"
-                        :data="analyticsStore.avgTokensToMasterSkills" colour="darkgreen" />
+                        :data="analyticsStore.avgTokensToMasterSkills"
+                        colour="darkgreen"
+                    />
                     <p v-else>No data yet</p>
                 </div>
-                <figcaption class="">Average number of tokens spent to master a skill</figcaption>
+                <figcaption class="text-muted">
+                    Average number of tokens spent to master a skill
+                </figcaption>
             </div>
 
             <div class="col-md chart-col position-relative">
                 <div id="tokens-per-skill-chart-container">
-                    <button class="btn position-absolute download-btn" @click="
-                        downloadData(
-                            analyticsStore.totalTokensPerSkill,
-                            'Tokens-per-skill'
-                        )
-                        ">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
+                    <button
+                        class="btn position-absolute download-btn"
+                        @click="
+                            downloadData(
+                                analyticsStore.totalTokensPerSkill,
+                                'Tokens-per-skill'
+                            )
+                        "
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            width="18"
+                            height="18"
+                        >
                             <!-- !Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
                             <path
-                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z" />
+                                d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM175 441c9.4 9.4 24.6 9.4 33.9 0l64-64c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-23 23 0-86.1c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 86.1-23-23c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64z"
+                            />
                         </svg>
                     </button>
-                    <TenantTokensPerSkillHorizontalBarChart v-if="analyticsStore.totalTokensPerSkill.length > 0"
-                        :data="analyticsStore.totalTokensPerSkill" colour="#5f31dd" class="mb-5" />
+                    <TenantTokensPerSkillHorizontalBarChart
+                        v-if="analyticsStore.totalTokensPerSkill.length > 0"
+                        :data="analyticsStore.totalTokensPerSkill"
+                        colour="#5f31dd"
+                        class="mb-5"
+                    />
                     <p v-else class="mb-5">No data yet</p>
                 </div>
-                <figcaption class="">Tokens spent per skill</figcaption>
+                <figcaption class="text-muted">
+                    Tokens spent per skill
+                </figcaption>
             </div>
         </div>
     </div>
@@ -332,7 +406,6 @@ export default {
     height: calc(100% - 35px);
     width: 100%;
 }
-
 
 /* Modals */
 .modal {
@@ -390,7 +463,6 @@ export default {
 
 /* Small devices (portrait phones) */
 @media (max-width: 480px) {
-
     /* Modal Content/Box */
     .modal-content {
         width: 90% !important;
@@ -437,7 +509,7 @@ export default {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.btn-check:checked+.filter-btn {
+.btn-check:checked + .filter-btn {
     background-color: #495057;
     border-color: #495057;
     color: white;
@@ -446,7 +518,6 @@ export default {
 
 /* Touch Device Optimizations */
 @media (hover: none) and (pointer: coarse) {
-
     .tab-btn:hover,
     .filter-btn:hover {
         transform: none;
