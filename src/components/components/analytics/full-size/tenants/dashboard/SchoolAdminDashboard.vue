@@ -254,12 +254,14 @@ export default {
                 <div class="dash-row row">
                     <div class="col-md h-100">
                         <RouterLink
+                            v-if="progressChartMode == 'school'"
                             to="/progress-report"
                             class=""
                             target="_blank"
                         >
                             <h2 class="heading h5">Progress</h2>
                         </RouterLink>
+                        <h2 v-else class="heading h5">Progress</h2>
                         <div id="progress-chart-container">
                             <SchoolProgressChart
                                 ref="progressChart"
@@ -277,12 +279,14 @@ export default {
                     </div>
                     <div class="col-md">
                         <RouterLink
+                            v-if="progressChartMode == 'school'"
                             to="/challenges-report"
                             class=""
                             target="_blank"
                         >
                             <h2 class="heading h5">Challenges</h2>
                         </RouterLink>
+                        <h2 v-else class="heading h5">Challenges</h2>
                         <div id="failed-chart-container">
                             <TenantFailedAssessmentsByRootSubjectHorizontalBarChart
                                 v-if="
@@ -301,9 +305,15 @@ export default {
 
                 <div class="dash-row row">
                     <div class="col-md position-relative h-100">
-                        <RouterLink to="/cost-report" class="" target="_blank">
+                        <RouterLink
+                            v-if="progressChartMode == 'school'"
+                            to="/cost-report"
+                            class=""
+                            target="_blank"
+                        >
                             <h2 class="heading h5">Cost</h2>
                         </RouterLink>
+                        <h2 v-else class="heading h5">Cost</h2>
                         <div id="cost-chart-container">
                             <SchoolCostChart
                                 ref="costChart"
@@ -316,9 +326,15 @@ export default {
                         </div>
                     </div>
                     <div class="col-md h-100">
-                        <RouterLink to="/engagement-report" target="_blank">
+                        <RouterLink
+                            v-if="progressChartMode == 'school'"
+                            to="/engagement-report"
+                            target="_blank"
+                        >
                             <h2 class="heading h5">Weekly engagement</h2>
                         </RouterLink>
+                        <h2 v-else class="heading h5">Weekly engagement</h2>
+
                         <div id="time-chart-container">
                             <SchoolTimeChart
                                 v-if="
