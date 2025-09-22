@@ -45,6 +45,7 @@ export default {
             />
             <p v-else>No data yet</p>
         </div> -->
+
         <div class="row">
             <h2 class="h4 heading">Time per skill</h2>
             <TimePerSkillHorizontalBarChart
@@ -54,6 +55,9 @@ export default {
             />
             <p v-else>You haven't spent any time on skills yet.</p>
         </div>
+        <p class="mt-5">
+            TODO: Add time per subject bar chart (above this chart)
+        </p>
     </div>
 </template>
 

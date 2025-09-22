@@ -1593,11 +1593,12 @@ router.get('/all-students-total-durations/:userId', (req, res, next) => {
 
         let sqlQuery = `
             SELECT username AS name, SUM(duration) AS quantity
-            FROM user_duration_tokens_per_day
-            JOIN instructor_students
-            ON user_duration_tokens_per_day.user_id = instructor_students.student_id
+            FROM instructor_students        
+            LEFT JOIN 
+            user_duration_tokens_per_day
+            ON user_duration_tokens_per_day.user_id = instructor_students.student_id                        
             JOIN users
-            ON users.id = user_duration_tokens_per_day.user_id
+            ON users.id = instructor_students.student_id
             WHERE instructor_students.instructor_id = ${conn.escape(
                 req.params.userId
             )}              

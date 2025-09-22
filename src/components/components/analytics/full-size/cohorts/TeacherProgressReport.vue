@@ -157,7 +157,7 @@ export default {
                     />
                     <p v-else>There is no data to show yet.</p>
                 </div>
-                <figcaption>Passed</figcaption>
+                <figcaption class="text-muted">Passed</figcaption>
             </div>
 
             <div class="col-md chart-col position-relative position-relative">
@@ -174,7 +174,7 @@ export default {
                     />
                     <p v-else>There is no data to show yet.</p>
                 </div>
-                <figcaption>Attempted</figcaption>
+                <figcaption class="text-muted">Attempted</figcaption>
             </div>
         </div>
     </div>

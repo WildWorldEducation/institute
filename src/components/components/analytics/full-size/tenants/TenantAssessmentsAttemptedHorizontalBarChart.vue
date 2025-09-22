@@ -5,12 +5,10 @@ export default {
     name: 'TenantAssessmentsAttemptedHorizontalBarChart',
     props: ['data', 'colour'],
     data() {
-        return {
-
-        };
+        return {};
     },
     mounted() {
-        // Specify the chart’s dimensions, based on a bar’s height.        
+        // Specify the chart’s dimensions, based on a bar’s height.
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
@@ -41,16 +39,16 @@ export default {
         // Create the SVG container.
         const svg = d3
             .select('#attempted-skills-chart')
-            .append('svg')          
+            .append('svg')
             .attr('width', width)
             .attr('height', height)
             .attr('viewBox', [
-                    0,
-                    0,
-                    +Math.min(width, height),
-                    +Math.min(width, height)
-                ])
-                .attr('preserveAspectRatio', 'xMinYMin');
+                0,
+                0,
+                +Math.min(width, height),
+                +Math.min(width, height)
+            ])
+            .attr('preserveAspectRatio', 'xMinYMin');
 
         // Append a rect for each skill.
         svg.append('g')
@@ -74,7 +72,7 @@ export default {
             .attr('y', (d) => y(d.name) + y.bandwidth() / 2)
             .attr('dy', '0.35em')
             .attr('dx', -4)
-            .text((d) => format(d.quantity))
+            .text((d) => d.quantity)
             .call((text) =>
                 text
                     .filter((d) => x(d.quantity) - x(0) < 20) // short bars
@@ -97,8 +95,6 @@ export default {
 };
 </script>
 
-<template>
-
-</template>
+<template></template>
 
 <style scoped></style>
