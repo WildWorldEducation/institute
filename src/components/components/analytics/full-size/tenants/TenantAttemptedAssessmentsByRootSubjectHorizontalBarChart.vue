@@ -5,13 +5,9 @@ export default {
     name: 'TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart',
     props: ['data', 'colour'],
     data() {
-        return {
-
-        };
+        return {};
     },
     mounted() {
-
-
         const marginTop = 0;
         const marginRight = 20;
         const marginBottom = 20;
@@ -41,9 +37,7 @@ export default {
 
         // Create the SVG container.
         const svg = d3
-            .select(
-                '#attempted-subjects-chart'
-            )
+            .select('#attempted-subjects-chart')
             .append('svg')
             .attr('width', width)
             .attr('height', height)
@@ -75,7 +69,7 @@ export default {
                 else if (d.name == 'History') return 'cyan'; // cyan
                 else if (d.name == 'Life') return 'magenta'; // magenta
                 else return '#ff7f0e'; // orange
-            });;
+            });
 
         // Append a label for each name.
         svg.append('g')
@@ -88,7 +82,7 @@ export default {
             .attr('y', (d) => y(d.name) + y.bandwidth() / 2)
             .attr('dy', '0.35em')
             .attr('dx', -4)
-            .text((d) => format(d.quantity))
+            .text((d) => d.quantity)
             .call((text) =>
                 text
                     .filter((d) => x(d.quantity) - x(0) < 20) // short bars
@@ -111,8 +105,6 @@ export default {
 };
 </script>
 
-<template>
-
-</template>
+<template></template>
 
 <style scoped></style>

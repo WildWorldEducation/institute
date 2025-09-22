@@ -5,19 +5,15 @@ export default {
     name: 'TenantPassedAssessmentsHorizontalBarChart',
     props: ['data', 'colour'],
     data() {
-        return {
-            
-        };
+        return {};
     },
-    mounted() {      
-
+    mounted() {
         // Specify the chart’s dimensions, based on a bar’s height.
-        const barHeight = 25;
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
         const marginLeft = 200;
-          // Declare the chart dimensions and margins.
+        // Declare the chart dimensions and margins.
         const width = document.getElementById(
             'passed-skills-chart'
         ).clientWidth;
@@ -34,7 +30,7 @@ export default {
             .scaleBand()
             .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
-            .padding(0.1);    
+            .padding(0.1);
 
         // Create the SVG container.
         const svg = d3
@@ -43,12 +39,12 @@ export default {
             .attr('width', width)
             .attr('height', height)
             .attr('viewBox', [
-                    0,
-                    0,
-                    +Math.min(width, height),
-                    +Math.min(width, height)
-                ])
-                .attr('preserveAspectRatio', 'xMinYMin');
+                0,
+                0,
+                +Math.min(width, height),
+                +Math.min(width, height)
+            ])
+            .attr('preserveAspectRatio', 'xMinYMin');
 
         // Append a rect for each skill.
         svg.append('g')
@@ -95,8 +91,6 @@ export default {
 };
 </script>
 
-<template>
-    
-</template>
+<template></template>
 
 <style scoped></style>
