@@ -44,9 +44,9 @@ export default {
             // Notifications
             isAboveTheCurve: false,
             // dynamic stats
-            totalSkillsPassed: 25,
-            totalTimeSpent: '5:00',
-            totalAIUsage: 10000
+            totalSkillsPassed: null,
+            totalTimeSpent: null,
+            totalAIUsage: null
         };
     },
     components: {
@@ -55,6 +55,8 @@ export default {
         StudentTimeChart
     },
     async created() {
+        console.log(this.userDetailsStore.userId);
+
         // Get total progress data
         await this.analyticsStore.getStudentProgress(
             this.userDetailsStore.userId,
