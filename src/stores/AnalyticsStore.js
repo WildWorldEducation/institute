@@ -475,7 +475,7 @@ export const useAnalyticsStore = defineStore('analytics', {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
-                console.log('Total subjects passed assessments data:', data);
+
                 this.studentTotalSubjectsPassedAssessments = data.total_mastered;
             } catch (error) {
                 console.error('Error fetching student total subjects passed assessments:', error);

@@ -389,7 +389,7 @@ router.get(
             )})
                     GROUP BY date`;
             const averageResult = await query(sqlQuery);
-            console.log(averageResult);
+
             res.json({
                 studentTime: studentResult,
                 averageTime: averageResult
@@ -3173,7 +3173,7 @@ router.get('/total-skill-mastered/:studentId', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                console.log('Total skills passed assessments data:', results[0]);
+
                 res.json(results[0]);
             } catch (err) {
                 next(err);
