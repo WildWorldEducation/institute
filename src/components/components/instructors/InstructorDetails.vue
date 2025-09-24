@@ -20,7 +20,8 @@ export default {
             percentageStudentsMasteredOneSkill: [],
             isLoaded: false,
             classProgress: [],
-            durationsPerDay: []
+            durationsPerDay: [],
+            showModal: false
         };
     },
     async created() {},
@@ -60,10 +61,10 @@ export default {
                 </svg>
             </router-link>
             <!-- Delete button -->
-            <!-- <button class="btn red-btn" @click="showModal = true">
-                Delete&nbsp; -->
-            <!-- X icon -->
-            <!-- <svg
+            <button class="btn red-btn" @click="showModal = true" title="">
+                Delete Account&nbsp;
+                <!-- X icon -->
+                <svg
                     width="18"
                     height="18"
                     viewBox="0 0 20 20"
@@ -75,7 +76,32 @@ export default {
                         fill="white"
                     />
                 </svg>
-            </button> -->
+            </button>
+            <!-- Delete Account Modal -->
+            <div v-if="showModal">
+                <div id="myModal" class="modal">
+                    <!-- Modal content -->
+                    <div class="modal-content">
+                        <p>Are you sure you want to delete this teacher?</p>
+                        <div style="display: flex; gap: 10px">
+                            <button
+                                type="button"
+                                class="btn btn-danger"
+                                @click=""
+                            >
+                                Yes
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-dark"
+                                @click="showModal = false"
+                            >
+                                No
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
