@@ -21,12 +21,29 @@ export default {
             isLoaded: false,
             classProgress: [],
             durationsPerDay: [],
-            showModal: false
+            showModal: false,
+            isWaiting: false
         };
     },
     async created() {},
     components: {},
-    methods: {}
+    methods: {
+        // delete teacher account
+        async deleteTeacher() {
+            this.isWaiting = true;
+            try {
+                await this.userDetailsStore.deleteTeacher(
+                    this.$parent.selectedTeacher.id
+                );
+                this.isWaiting = false;
+                this.showModal = false;
+                this.$router.push('/teachers');
+            } catch (error) {
+                console.error('Error deleting teacher:', error);
+                this.isWaiting = false;
+            }
+        }
+    }
 };
 </script>
 

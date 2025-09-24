@@ -159,6 +159,23 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 console.error('Error updating audio auto-play setting:', error);
                 return { success: false };
             }
+        },
+        async deleteTeacher(teacherId) {
+            if (this.role !== 'school_admin') {
+                throw new Error('Only school admins can delete teachers.');
+            }
+            const requestOptions = {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            const url = `/users/teacher/${teacherId}`;
+            try {
+                const response = await fetch(url, requestOptions);
+                return await response.json();
+            } catch (error) {
+                console.error('Error deleting teacher:', error);
+                return { success: false };
+            }
         }
     }
 });
