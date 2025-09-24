@@ -247,14 +247,10 @@ export default {
                         <RouterLink to="/my-progress/time" target="_blank">
                             <h2 class="heading h5">Study time</h2>
                         </RouterLink>
-                        <figure>
-                            <figcaption class="">
-                                <span style="color: blue">You</span> vs
-                                <span style="color: #ff7f0e"
-                                    >school average</span
-                                >
-                            </figcaption>
-                        </figure>
+                        <figcaption>
+                            <span style="color: blue">You</span> vs
+                            <span style="color: #ff7f0e">school average</span>
+                        </figcaption>
                         <div id="time-chart-container">
                             <StudentTimeChart
                                 ref="timeChart"
