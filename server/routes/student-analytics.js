@@ -389,7 +389,7 @@ router.get(
                                                               )})
                     GROUP BY date`;
             const averageResult = await query(sqlQuery);
-            console.log(averageResult);
+
             res.json({
                 studentTime: studentResult,
                 averageTime: averageResult
@@ -3129,6 +3129,73 @@ router.post('/record-time-on-app/:userId', (req, res, next) => {
                     throw err;
                 }
                 res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+router.get('/total-time-spent-on-app/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        let sqlQuery = `SELECT SUM(duration) AS total_time
+                        FROM user_duration_tokens_per_day
+                        WHERE user_id = ${conn.escape(req.params.studentId)}`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results[0]);
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+router.get('/total-skill-mastered/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        let sqlQuery = `SELECT COUNT(*) AS total_mastered
+                        FROM user_skills
+                        WHERE is_mastered = 1
+                        AND user_id = ${conn.escape(req.params.studentId)}`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results[0]);
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+router.get('/total-token-used/:studentId', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        let sqlQuery = `SELECT SUM(tokens) AS total_tokens
+                        FROM user_duration_tokens_per_day
+                        WHERE user_id = ${conn.escape(req.params.studentId)}`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results[0]);
             } catch (err) {
                 next(err);
             }

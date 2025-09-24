@@ -48,6 +48,9 @@ export const useAnalyticsStore = defineStore('analytics', {
             studentRootSubjectsFailedAssessments: [],
             studentRootSubjectsPassedAssessments: [],
             studentRootSubjectsAttemptedAssessments: [],
+            studentTotalTimeSpent: 0,
+            studentTotalSubjectsPassedAssessments: 0,
+            studentTotalTokensSpent: 0,
             // Class level
             classProgress: [],
             cohortSkillActivities: [],
@@ -85,8 +88,6 @@ export const useAnalyticsStore = defineStore('analytics', {
                     }
                     data.tenantAvgProgress.sort((a, b) => a.date - b.date);
                     this.progress.tenant = data.tenantAvgProgress;
-
-                    console.log(this.progress);
                 })
                 .catch((error) => {
                     console.error('Error fetching student progress:', error);
@@ -451,6 +452,71 @@ export const useAnalyticsStore = defineStore('analytics', {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);
             return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        },
+        millisecondsToHours(milliseconds, precision) {
+            const msPerHour = 60 * 60 * 1000;
+            const hours = milliseconds / msPerHour;
+            // Round to specified decimal places
+            return hours.toFixed(precision);
+        },
+        async getStudentTotalTimeSpent(studentId) {
+            try {
+                const response = await fetch(
+                    `/student-analytics/total-time-spent-on-app/${studentId}`
+                );
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                this.studentTotalTimeSpent = this.millisecondsToHours(
+                    data.total_time,
+                    2
+                );
+            } catch (error) {
+                console.error(
+                    'Error fetching student total time spent:',
+                    error
+                );
+                return null;
+            }
+        },
+        async getStudentTotalSubjectsPassedAssessments(studentId) {
+            try {
+                const response = await fetch(
+                    `/student-analytics/total-skill-mastered/${studentId}`
+                );
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                this.studentTotalSubjectsPassedAssessments =
+                    data.total_mastered;
+            } catch (error) {
+                console.error(
+                    'Error fetching student total subjects passed assessments:',
+                    error
+                );
+                this.studentTotalSubjectsPassedAssessments = 0;
+            }
+        },
+        async getStudentTotalTokensSpent(studentId) {
+            try {
+                const response = await fetch(
+                    `/student-analytics/total-token-used/${studentId}`
+                );
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                this.studentTotalTokensSpent = data.total_tokens;
+            } catch (error) {
+                console.error(
+                    'Error fetching student total tokens spent:',
+                    error
+                );
+                this.studentTotalTokensSpent = 0;
+            }
         }
     }
 });

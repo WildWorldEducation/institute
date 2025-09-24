@@ -42,7 +42,11 @@ export default {
                 average: []
             },
             // Notifications
-            isAboveTheCurve: false
+            isAboveTheCurve: false,
+            // dynamic stats
+            totalSkillsPassed: null,
+            totalTimeSpent: null,
+            totalAIUsage: null
         };
     },
     components: {
@@ -51,11 +55,28 @@ export default {
         StudentTimeChart
     },
     async created() {
+        console.log(this.userDetailsStore.userId);
+
         // Get total progress data
         await this.analyticsStore.getStudentProgress(
             this.userDetailsStore.userId,
             this.userDetailsStore.tenantId
         );
+
+        // Get Total Time Spent on Data
+        await this.analyticsStore.getStudentTotalTimeSpent(
+            this.userDetailsStore.userId
+        );
+        this.totalTimeSpent =
+            this.analyticsStore.studentTotalTimeSpent + ' hrs';
+
+        // Get total subjects passed assessments
+        await this.analyticsStore.getStudentTotalSubjectsPassedAssessments(
+            this.userDetailsStore.userId
+        );
+
+        this.totalSkillsPassed =
+            this.analyticsStore.studentTotalSubjectsPassedAssessments;
 
         // Get subject comparison data
         await this.analyticsStore.getStudentPassedAssessmentsBySubject(
@@ -68,13 +89,22 @@ export default {
             this.userDetailsStore.tenantId
         );
 
+        // Get total tokens spent
+        await this.analyticsStore.getStudentTotalTokensSpent(
+            this.userDetailsStore.userId
+        );
+        this.totalAIUsage =
+            this.analyticsStore.studentTotalTokensSpent + ' tokens';
+
         // Get data for "super challenging"
         await this.teacherAnalyticsStore.getStudentMultipleFails(
             this.userDetailsStore.userId
         );
 
-        if (this.analyticsStore.progress.student.length > 0 || this.analyticsStore.progress.tenant.length > 0) {
-
+        if (
+            this.analyticsStore.progress.student.length > 0 ||
+            this.analyticsStore.progress.tenant.length > 0
+        ) {
             // Notifications
             if (
                 this.analyticsStore.progress.student[
@@ -165,37 +195,52 @@ export default {
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
                     <div class="col-md-6 h-100 position-relative">
-                        <RouterLink to="/my-progress/skills" class="" target="_blank">
+                        <RouterLink
+                            to="/my-progress/skills"
+                            class=""
+                            target="_blank"
+                        >
                             <h2 class="heading h5">Progress over time</h2>
                         </RouterLink>
-                        <figcaption v-if="
-                            progressData.student.length > 0 ||
-                            progressData.average.length > 0
-                        " class=""><span style="color: green">You</span> vs
-                            <span style="color:#ff7f0e">school average</span>
-                        </figcaption>
-                        <div id="progress-chart-container">
-                            <StudentProgressChart ref="progressChart" v-if="
+                        <figcaption
+                            v-if="
                                 progressData.student.length > 0 ||
                                 progressData.average.length > 0
-                            " />
+                            "
+                            class=""
+                        >
+                            <span style="color: green">You</span> vs
+                            <span style="color: #ff7f0e">school average</span>
+                        </figcaption>
+                        <div id="progress-chart-container">
+                            <StudentProgressChart
+                                ref="progressChart"
+                                v-if="
+                                    progressData.student.length > 0 ||
+                                    progressData.average.length > 0
+                                "
+                            />
                             <p v-else>No progress yet</p>
                         </div>
-
                     </div>
 
                     <div class="col-md-6">
                         <div id="comparison-chart-container">
                             <h2 class="heading h5 mt-1">Progress comparison</h2>
-                            <StudentComparisonChart ref="comparisonChart" v-if="
-                                analyticsStore
-                                    .studentRootSubjectsPassedAssessments
-                                    .length > 0
-                            " :data="analyticsStore.studentRootSubjectsPassedAssessments
-                                " :colour="'#5f31dd'" />
+                            <StudentComparisonChart
+                                ref="comparisonChart"
+                                v-if="
+                                    analyticsStore
+                                        .studentRootSubjectsPassedAssessments
+                                        .length > 0
+                                "
+                                :data="
+                                    analyticsStore.studentRootSubjectsPassedAssessments
+                                "
+                                :colour="'#5f31dd'"
+                            />
                             <p v-else>No progress yet</p>
                         </div>
-
                     </div>
                 </div>
 
@@ -204,15 +249,18 @@ export default {
                         <RouterLink to="/my-progress/time" target="_blank">
                             <h2 class="heading h5">Study time</h2>
                         </RouterLink>
-                        <figcaption class=""><span style="color: blue">You</span> vs
-                            <span style="color:#ff7f0e">school average</span>
+                        <figcaption>
+                            <span style="color: blue">You</span> vs
+                            <span style="color: #ff7f0e">school average</span>
                         </figcaption>
                         <div id="time-chart-container">
-
-                            <StudentTimeChart ref="timeChart" v-if="
-                                analyticsStore.time.student.length > 0 ||
-                                analyticsStore.time.tenant.length > 0
-                            " />
+                            <StudentTimeChart
+                                ref="timeChart"
+                                v-if="
+                                    analyticsStore.time.student.length > 0 ||
+                                    analyticsStore.time.tenant.length > 0
+                                "
+                            />
                             <p v-else>No data available</p>
                         </div>
                     </div>
@@ -220,18 +268,30 @@ export default {
                     <div class="col-md position-relative">
                         <div class="row">
                             <div class="col-md">
-                                <RouterLink to="/my-progress/super-challenging" class="col" target="_blank">
+                                <RouterLink
+                                    to="/my-progress/super-challenging"
+                                    class="col"
+                                    target="_blank"
+                                >
                                     <h2 class="h5 heading">
                                         Consider asking for help
                                     </h2>
                                 </RouterLink>
-                                <ul v-if="
-                                    teacherAnalyticsStore
-                                        .studentMultipleFails.length > 0
-                                ">
-                                    <li class="failed-skills"
-                                        v-for="skill in teacherAnalyticsStore.studentMultipleFails" :key="skill.id">
-                                        <RouterLink :to="'/skills/' + skill.url" target="_blank">{{ skill.name }}
+                                <ul
+                                    v-if="
+                                        teacherAnalyticsStore
+                                            .studentMultipleFails.length > 0
+                                    "
+                                >
+                                    <li
+                                        class="failed-skills"
+                                        v-for="skill in teacherAnalyticsStore.studentMultipleFails"
+                                        :key="skill.id"
+                                    >
+                                        <RouterLink
+                                            :to="'/skills/' + skill.url"
+                                            target="_blank"
+                                            >{{ skill.name }}
                                         </RouterLink>
                                     </li>
                                 </ul>
@@ -240,13 +300,21 @@ export default {
                             <div class="col-md">
                                 <h2 class="h5 heading">Stats</h2>
                                 <ul>
-                                    <li><strong>Skills passed:</strong> 25</li>
                                     <li>
-                                        <strong>Total time spent:</strong> 5:00
+                                        <strong>Skills passed:</strong>
+                                        {{ totalSkillsPassed }}
                                     </li>
                                     <li>
-                                        <RouterLink to="/my-progress/tokens" target="_blank"><strong>AI usage:</strong>
-                                            10,000</RouterLink>
+                                        <strong>Total time spent:</strong>
+                                        {{ totalTimeSpent }}
+                                    </li>
+                                    <li>
+                                        <RouterLink
+                                            to="/my-progress/tokens"
+                                            target="_blank"
+                                            ><strong>AI usage:</strong>
+                                            {{ totalAIUsage }}</RouterLink
+                                        >
                                     </li>
                                 </ul>
                             </div>
