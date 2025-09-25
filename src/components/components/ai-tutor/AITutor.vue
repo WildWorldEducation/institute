@@ -208,7 +208,7 @@ export default {
                     this.chatHistory = this.assessingTutorChatHistory;
                     // Assessment (every 20 messages in this unbroken session)
                     this.numberOfConversationalQuizMessages++;
-                    console.log(this.settingStore.quizMaxQuestions);
+
                     if (
                         this.numberOfConversationalQuizMessages ==
                         this.settingStore.quizMaxQuestions * 2
