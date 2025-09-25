@@ -2,6 +2,7 @@
 import { useCohortsStore } from '../../../stores/CohortsStore.js';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import { useAnalyticsStore } from '../../../stores/AnalyticsStore.js';
+import LoadingSpinner from '../../components/share-components/LoadingSpinner.vue';
 
 export default {
     setup() {
@@ -26,7 +27,9 @@ export default {
         };
     },
     async created() {},
-    components: {},
+    components: {
+        LoadingSpinner
+    },
     methods: {
         // delete teacher account
         async deleteTeacher() {
@@ -37,9 +40,11 @@ export default {
                 );
                 this.isWaiting = false;
                 this.showModal = false;
-                this.$router.push('/teachers');
+
+                window.location.reload(true);
             } catch (error) {
                 console.error('Error deleting teacher:', error);
+                alert('Failed to delete teacher. Please try again.');
                 this.isWaiting = false;
             }
         }
@@ -100,16 +105,19 @@ export default {
                     <!-- Modal content -->
                     <div class="modal-content">
                         <p>Are you sure you want to delete this teacher?</p>
+                        <LoadingSpinner v-if="isWaiting" />
                         <div style="display: flex; gap: 10px">
                             <button
                                 type="button"
                                 class="btn btn-danger"
-                                @click=""
+                                :disabled="isWaiting"
+                                @click="deleteTeacher"
                             >
                                 Yes
                             </button>
                             <button
                                 type="button"
+                                :disabled="isWaiting"
                                 class="btn btn-dark"
                                 @click="showModal = false"
                             >

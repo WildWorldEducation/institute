@@ -8,6 +8,7 @@ export const useUsersStore = defineStore('users', {
         editors: [],
         studentsOfInstructor: [],
         studentsPerTenant: [],
+        instructorPerTenant: [],
         selectedUserId: null, // Add this to track selected user,
         partners: []
     }),
@@ -40,11 +41,11 @@ export const useUsersStore = defineStore('users', {
             const data = await result.json();
             this.instructors = data;
         },
-        async getInstructorsByTenant(tenantId) {           
+        async getInstructorsByTenant(tenantId) {
             const result = await fetch(
                 '/users/instructors/tenant/' + tenantId + '/list'
             );
-            const data = await result.json()      
+            const data = await result.json()
             this.instructors = data;
         },
         async getEditors() {
@@ -107,9 +108,9 @@ export const useUsersStore = defineStore('users', {
                 .then(async (data) => {
                     this.partners = data;
                 });
-        }, 
-       async editTeacher(teacher) {
-            try {               
+        },
+        async editTeacher(teacher) {
+            try {
                 const reqOptions = {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -126,6 +127,11 @@ export const useUsersStore = defineStore('users', {
             } catch (error) {
                 console.error('Error updating teacher:', error);
             }
+        },
+        async getTeacherPerTenant(tenantId) {
+            const result = await fetch('/tenants/instructors/' + tenantId);
+            const data = await result.json();
+            this.instructorPerTenant = data;
         }
     }
 });

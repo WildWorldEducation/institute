@@ -2623,8 +2623,10 @@ router.delete(
                 if (err) {
                     throw err;
                 }
-                res.end();
+                console.log(`Teacher with ID ${teacherId} deleted.`);
+                res.status(200).json({ message: 'Teacher deleted successfully.' });
             } catch (err) {
+                console.error('Error deleting teacher:', err);
                 next(err);
             }
         });
