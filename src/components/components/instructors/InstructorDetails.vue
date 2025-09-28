@@ -2,6 +2,7 @@
 import { useCohortsStore } from '../../../stores/CohortsStore.js';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import { useAnalyticsStore } from '../../../stores/AnalyticsStore.js';
+import LoadingSpinner from '../../components/share-components/LoadingSpinner.vue';
 
 export default {
     setup() {
@@ -20,12 +21,34 @@ export default {
             percentageStudentsMasteredOneSkill: [],
             isLoaded: false,
             classProgress: [],
-            durationsPerDay: []
+            durationsPerDay: [],
+            showModal: false,
+            isWaiting: false
         };
     },
     async created() {},
-    components: {},
-    methods: {}
+    components: {
+        LoadingSpinner
+    },
+    methods: {
+        // delete teacher account
+        async deleteTeacher() {
+            this.isWaiting = true;
+            try {
+                await this.userDetailsStore.deleteTeacher(
+                    this.$parent.selectedTeacher.id
+                );
+                this.isWaiting = false;
+                this.showModal = false;
+
+                window.location.reload(true);
+            } catch (error) {
+                console.error('Error deleting teacher:', error);
+                alert('Failed to delete teacher. Please try again.');
+                this.isWaiting = false;
+            }
+        }
+    }
 };
 </script>
 
@@ -60,10 +83,10 @@ export default {
                 </svg>
             </router-link>
             <!-- Delete button -->
-            <!-- <button class="btn red-btn" @click="showModal = true">
-                Delete&nbsp; -->
-            <!-- X icon -->
-            <!-- <svg
+            <button class="btn red-btn" @click="showModal = true" title="">
+                Delete Account&nbsp;
+                <!-- X icon -->
+                <svg
                     width="18"
                     height="18"
                     viewBox="0 0 20 20"
@@ -75,7 +98,35 @@ export default {
                         fill="white"
                     />
                 </svg>
-            </button> -->
+            </button>
+            <!-- Delete Account Modal -->
+            <div v-if="showModal">
+                <div id="myModal" class="modal">
+                    <!-- Modal content -->
+                    <div class="modal-content">
+                        <p>Are you sure you want to delete this teacher?</p>
+                        <LoadingSpinner v-if="isWaiting" />
+                        <div style="display: flex; gap: 10px">
+                            <button
+                                type="button"
+                                class="btn btn-danger"
+                                :disabled="isWaiting"
+                                @click="deleteTeacher"
+                            >
+                                Yes
+                            </button>
+                            <button
+                                type="button"
+                                :disabled="isWaiting"
+                                class="btn btn-dark"
+                                @click="showModal = false"
+                            >
+                                No
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>

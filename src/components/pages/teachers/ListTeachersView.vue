@@ -2,11 +2,13 @@
 import InstructorsList from '../../components/instructors/InstructorsList.vue';
 import InstructorDetails from '../../components/instructors/InstructorDetails.vue';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
+import { useUsersStore } from '../../../stores/UsersStore.js';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
-        return { userDetailsStore };
+        const usersStore = useUsersStore();
+        return { userDetailsStore, usersStore };
     },
     data() {
         return {
@@ -24,19 +26,21 @@ export default {
     },
     components: { InstructorsList, InstructorDetails },
     async created() {
+        console.log('Component created - fetching instructors');
         await this.getInstructorsPerTenant(this.userDetailsStore.tenantId);
     },
     methods: {
         async getInstructorsPerTenant(tenantId) {
-            const result = await fetch('/tenants/instructors/' + tenantId);
-            const data = await result.json();
-            this.teachers = data;
+            await this.usersStore.getTeacherPerTenant(tenantId);
+            this.teachers = this.usersStore.instructorPerTenant;
+            if (this.teachers.length > 0) {
+                this.updateTeacherDetails(this.teachers[0]);
+            }
             this.selectedTeacher = this.teachers[0];
         },
         // Updated method to handle both initial setup and user selections
         async updateTeacherDetails(selectedTeacher) {
             if (!selectedTeacher) return;
-
             // Update local state
             this.selectedTeacher.id = selectedTeacher.id;
             this.selectedTeacher.name = selectedTeacher.first_name;
