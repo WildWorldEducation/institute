@@ -79,7 +79,8 @@ export default {
         canAddStudents() {
             return (
                 this.userDetailsStore.role === 'instructor' ||
-                this.userDetailsStore.role === 'partner'
+                this.userDetailsStore.role === 'partner' ||
+                this.userDetailsStore.role === 'school_admin'
             );
         },
         userRoleText() {
