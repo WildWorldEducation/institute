@@ -9,6 +9,7 @@ import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { Cropper, Preview } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
 import 'vue-advanced-cropper/dist/theme.compact.css';
+import DropDown from './share-components/dropDown.vue';
 
 export default {
     setup() {
@@ -73,7 +74,8 @@ export default {
     components: {
         Cropper,
         Preview,
-        CheckPasswordComplexity
+        CheckPasswordComplexity,
+        DropDown
     },
     computed: {
         canAddStudents() {
@@ -461,6 +463,8 @@ export default {
                         </div>
                         <CheckPasswordComplexity :formData="user" />
                     </div>
+                    <!-- If user role is school admin we add choose instructor section  -->
+                    <DropDown />
                     <div class="d-flex justify-content-end gap-4">
                         <router-link class="btn red-btn" to="/students">
                             Cancel
