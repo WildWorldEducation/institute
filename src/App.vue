@@ -30,9 +30,9 @@ export default {
         };
     },
     async mounted() {
+        this.initDropdown();
         await this.userDetailsStore.getUserDetails();
         await this.tenantStore.getTenantDetails(this.userDetailsStore.tenantId);
-        this.initDropdown();
 
         // Instructor theme
         if (
