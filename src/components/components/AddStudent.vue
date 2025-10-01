@@ -6,6 +6,7 @@ import { useUsersStore } from '../../stores/UsersStore';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
+
 import { Cropper, Preview } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
 import 'vue-advanced-cropper/dist/theme.compact.css';
@@ -68,7 +69,11 @@ export default {
             lastZoomValue: 0,
             zoomValue: 0,
             // For the loading animation.
-            isLoading: false
+            isLoading: false,
+            // List of teacher that is in the same tenant as user
+            teacherList: [],
+            dropdownDataList: [],
+            chosenTeacher: null
         };
     },
     components: {
@@ -101,6 +106,7 @@ export default {
         // Load all skills.
         if (this.skillsStore.skillsList.length < 1)
             await this.skillsStore.getSkillsList();
+        this.getInstructorsPerTenant(this.userDetailsStore.tenantId);
     },
     methods: {
         async ValidateForm() {
@@ -114,6 +120,19 @@ export default {
             } else if (this.validate.passwordComplex) {
                 this.Submit();
             }
+        },
+        async getInstructorsPerTenant(tenantId) {
+            if (!this.usersStore.instructorPerTenant.length) {
+                await this.usersStore.getTeacherPerTenant(tenantId);
+            }
+            this.teachersList = this.usersStore.instructorPerTenant;
+            this.dropdownDataList = this.teachersList.map((e) => {
+                console.log(e);
+                return {
+                    label: e.username,
+                    key: e.id
+                };
+            });
         },
         async Submit() {
             try {
@@ -265,6 +284,9 @@ export default {
             if (visibleHeight < 3000) {
                 this.$refs.cropper.zoom(0.5);
             }
+        },
+        chooseTeacher(teacherId) {
+            this.chosenTeacher = teacherId;
         }
     }
 };
@@ -464,7 +486,15 @@ export default {
                         <CheckPasswordComplexity :formData="user" />
                     </div>
                     <!-- If user role is school admin we add choose instructor section  -->
-                    <DropDown />
+                    <div class="mb-3">
+                        <h2 class="secondary-heading h4">Teacher</h2>
+                        <DropDown
+                            dropDownLabel="Assign Teacher"
+                            :dataList="dropdownDataList"
+                            :handleChooseMenuItem="chooseTeacher"
+                        />
+                    </div>
+
                     <div class="d-flex justify-content-end gap-4">
                         <router-link class="btn red-btn" to="/students">
                             Cancel
