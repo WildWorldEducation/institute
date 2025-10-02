@@ -33,8 +33,6 @@ const {
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
-    // requestLearningObjectiveTutoring,
-    // generateLearningObjectiveQuestion,
     // To record user's token usage
     saveTokenUsage,
     getSkillDataByObjectiveId,
@@ -46,7 +44,6 @@ const {
 const { textToSpeech } = require('../utilities/textToSpeech');
 const { writeFile, speechToText } = require('../utilities/speechToText');
 const isAuthenticated = require('../middlewares/authMiddleware');
-const { findSkillByUrl } = require('../utilities/skill-relate-functions');
 
 // Include API key.
 const openai = new OpenAI({
@@ -202,8 +199,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                    messageNumber
-                )},                       
+                                        messageNumber
+                                    )},                       
                                     ${conn.escape(url)}
                                 )
                                 ON DUPLICATE KEY UPDATE                                 
@@ -376,8 +373,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                    messageNumber
-                )},                       
+                                        messageNumber
+                                    )},                       
                                     ${conn.escape(url)}
                                 )
                                 ON DUPLICATE KEY UPDATE                                 
@@ -629,8 +626,8 @@ router.post(
                                 VALUES (
                                     ${conn.escape(threadID)},
                                     ${conn.escape(
-                    messageNumber
-                )},                       
+                                        messageNumber
+                                    )},                       
                                     ${conn.escape(url)}
                                 )
                                 ON DUPLICATE KEY UPDATE                                 
@@ -728,7 +725,6 @@ router.post('/stt/convert', async (req, res, next) => {
         const monthlyTokenUsage = req.body.monthlyTokenUsage;
         const billingMode = req.body.billingMode;
         const tenantId = req.body.tenantId;
-
 
         // Convert Base64 to buffer
         let bufferObj = Buffer.from(

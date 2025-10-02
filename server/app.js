@@ -135,6 +135,15 @@ app.use('/tenants', tenants);
 const errorHandlingMiddleware = require('./middlewares/errorHandlingMiddleWare');
 app.use(errorHandlingMiddleware);
 
+// To log reasons for crashes
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection:', reason);
+});
+
 if (process.env.NODE_ENV === 'production') {
     app.use('/', express.static(distPath));
 } else {
