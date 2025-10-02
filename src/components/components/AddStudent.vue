@@ -136,7 +136,11 @@ export default {
         },
         async Submit() {
             try {
+                if (this.chosenTeacher) {
+                    this.instructorId = this.chosenTeacher;
+                }
                 this.isLoading = true;
+
                 const response = await fetch('/users/instructor-add-student', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -151,6 +155,8 @@ export default {
 
                 const data = await response.json();
                 this.isLoading = false;
+                console.log('ResData is: ');
+                console.log(data);
                 if (data.account === 'username already taken') {
                     alert(data.account);
                     return;
