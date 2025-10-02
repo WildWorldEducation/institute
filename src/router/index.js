@@ -373,7 +373,7 @@ const router = createRouter({
             path: '/users/add-student',
             name: 'add-student',
             component: () => import('../components/pages/AddStudentView.vue'),
-            meta: { requiresAuth: true, roles: ['instructor', 'partner'] }
+            meta: { requiresAuth: true, roles: ['instructor', 'partner', 'school_admin'] }
         },
         {
             path: '/users/edit/:id',

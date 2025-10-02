@@ -2633,4 +2633,9 @@ router.delete(
     }
 );
 
+// // get all teacher in a tenant
+// router.get('/teacher-in-tenant/:tenantId', isAuthenticated, (req, res, next) => {
+
+// })
+
 module.exports = router;

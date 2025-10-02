@@ -6,9 +6,11 @@ import { useUsersStore } from '../../stores/UsersStore';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
+
 import { Cropper, Preview } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
 import 'vue-advanced-cropper/dist/theme.compact.css';
+import DropDown from './share-components/dropDown.vue';
 
 export default {
     setup() {
@@ -67,19 +69,25 @@ export default {
             lastZoomValue: 0,
             zoomValue: 0,
             // For the loading animation.
-            isLoading: false
+            isLoading: false,
+            // List of teacher that is in the same tenant as user
+            teacherList: [],
+            dropdownDataList: [],
+            chosenTeacher: null
         };
     },
     components: {
         Cropper,
         Preview,
-        CheckPasswordComplexity
+        CheckPasswordComplexity,
+        DropDown
     },
     computed: {
         canAddStudents() {
             return (
                 this.userDetailsStore.role === 'instructor' ||
-                this.userDetailsStore.role === 'partner'
+                this.userDetailsStore.role === 'partner' ||
+                this.userDetailsStore.role === 'school_admin'
             );
         },
         userRoleText() {
@@ -98,6 +106,7 @@ export default {
         // Load all skills.
         if (this.skillsStore.skillsList.length < 1)
             await this.skillsStore.getSkillsList();
+        this.getInstructorsPerTenant(this.userDetailsStore.tenantId);
     },
     methods: {
         async ValidateForm() {
@@ -112,9 +121,26 @@ export default {
                 this.Submit();
             }
         },
+        async getInstructorsPerTenant(tenantId) {
+            if (!this.usersStore.instructorPerTenant.length) {
+                await this.usersStore.getTeacherPerTenant(tenantId);
+            }
+            this.teachersList = this.usersStore.instructorPerTenant;
+            this.dropdownDataList = this.teachersList.map((e) => {
+                console.log(e);
+                return {
+                    label: e.username,
+                    key: e.id
+                };
+            });
+        },
         async Submit() {
             try {
+                if (this.chosenTeacher) {
+                    this.instructorId = this.chosenTeacher;
+                }
                 this.isLoading = true;
+
                 const response = await fetch('/users/instructor-add-student', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -129,6 +155,8 @@ export default {
 
                 const data = await response.json();
                 this.isLoading = false;
+                console.log('ResData is: ');
+                console.log(data);
                 if (data.account === 'username already taken') {
                     alert(data.account);
                     return;
@@ -262,6 +290,9 @@ export default {
             if (visibleHeight < 3000) {
                 this.$refs.cropper.zoom(0.5);
             }
+        },
+        chooseTeacher(teacherId) {
+            this.chosenTeacher = teacherId;
         }
     }
 };
@@ -460,6 +491,16 @@ export default {
                         </div>
                         <CheckPasswordComplexity :formData="user" />
                     </div>
+                    <!-- If user role is school admin we add choose instructor section  -->
+                    <div class="mb-3">
+                        <h2 class="secondary-heading h4">Teacher</h2>
+                        <DropDown
+                            dropDownLabel="Assign Teacher"
+                            :dataList="dropdownDataList"
+                            :handleChooseMenuItem="chooseTeacher"
+                        />
+                    </div>
+
                     <div class="d-flex justify-content-end gap-4">
                         <router-link class="btn red-btn" to="/students">
                             Cancel
