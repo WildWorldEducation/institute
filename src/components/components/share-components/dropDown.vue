@@ -81,7 +81,7 @@ export default {
     position: absolute;
     top: 2px;
     width: 100%;
-    height: 300px;
+    /*height: 300px; */
     overflow-y: scroll;
     padding: 0.375rem 0.75rem;
     font-size: 1rem;

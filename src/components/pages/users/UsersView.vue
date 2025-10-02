@@ -63,7 +63,7 @@ export default {
         SearchUserBar
     },
     async created() {
-        console.log(this.userDetailsStore.role);
+        
         this.checkIfTutorialComplete();
         // Load data
         if (
@@ -85,7 +85,7 @@ export default {
                 await this.usersStore.getStudentsPerTenant(
                     this.userDetailsStore.tenantId
                 );
-            }
+            }   
         }
 
         if (this.userDetailsStore.role !== 'editor') {
