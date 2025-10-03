@@ -785,75 +785,19 @@ async function saveTokenUsage(
         const d = new Date();
         let month = monthName[d.getMonth()];
 
-        // if they have spent more than free token limit, deduct from their paid tokens
-        if (monthlyTokenUsage >= freeMonthlyTokenLimit) {
-            let deductTokensQueryString = ''
-            if (billingMode == 'student') {
-                /**
-                 * Deduct tokens from user
-                 */
-                deductTokensQueryString = `
-                UPDATE users 
-                SET tokens = tokens - ${conn.escape(tokenCount)} 
-                WHERE id = ${conn.escape(userId)};
-                `;
-            }
-            else {
-                /**
-                 * Deduct tokens from tenant/school
-                 */
-                deductTokensQueryString = `
-                UPDATE tenants 
-                SET tokens = tokens - ${conn.escape(tokenCount)} 
-                WHERE id = ${conn.escape(tenantId)};
-                `;
-            }
-            await query(deductTokensQueryString);
-        }
 
-        /**
-         * Record monthly Usage
-         */
-        let monthlyTokenUsageQueryString = `
-        INSERT INTO user_monthly_token_usage (user_id, year, month, token_count) 
-        VALUES(${conn.escape(userId)},
-        ${year}, '${month}', ${conn.escape(tokenCount)}) 
-        ON DUPLICATE KEY UPDATE token_count = token_count + ${conn.escape(
-            tokenCount
-        )};
-        `;
+        // Using a stored procedure to to reduce network calls from 4 to 1
+        await conn.query('CALL save_token_usage(?, ?, ?, ?, ?, ?, ?)', [
+            userId,
+            tokenCount,
+            skillId,
+            year,
+            month,
+            billingMode,
+            tenantId
+        ]);
 
-        await query(monthlyTokenUsageQueryString);
 
-        /**
-         * Record daily usage
-         */
-        let dailyTokenUsageQueryString = `
-            INSERT INTO user_duration_tokens_per_day (user_id, date, tokens) 
-            VALUES(${conn.escape(userId)}, CURDATE(), ${conn.escape(
-            tokenCount
-        )})                 
-            ON DUPLICATE KEY UPDATE tokens = tokens + ${conn.escape(
-            tokenCount
-        )};`;
-
-        await query(dailyTokenUsageQueryString);
-
-        /**
-         * Record usage per skill
-         */
-        // If the user has mastered the skill, do not update the token count
-        let skillTokenUsageQueryString = `
-        INSERT INTO user_skills (user_id, skill_id, token_count) 
-        VALUES(${conn.escape(userId)},
-        ${conn.escape(skillId)}, ${conn.escape(tokenCount)}) 
-        ON DUPLICATE KEY UPDATE 
-        token_count = 
-        IF(is_mastered = 0 OR is_mastered IS NULL, token_count + ${conn.escape(
-            tokenCount
-        )}, token_count);`;
-
-        await query(skillTokenUsageQueryString);
     } catch (error) {
         console.error('Error in saveTokenUsage:', error);
         throw error;
