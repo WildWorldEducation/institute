@@ -287,7 +287,6 @@ export default {
             }
         },
         async getInstructor() {
-            console.log('Getting instructor');
             // Get the instructor's user id.
             var instructorId;
 

@@ -109,7 +109,27 @@ router.put('/:userId/update-locked-skills', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                res.end();
+
+                if (req.body.isSkillsLocked == 1) {
+                    // make sure that the "Unlocked Skills Only" filter is turned off
+                    // if the instructor locks the student's skills
+                    // otherwise the student won't be able to see all skills
+                    let sqlQuery2 = `
+                        UPDATE users
+                        SET is_unlocked_skills_only_filter = 0
+                        WHERE id = '${req.params.userId}';
+                        `;
+
+                    conn.query(sqlQuery2, (err) => {
+                        if (err) {
+                            throw err;
+                        }
+                        res.end();
+                    });
+                }
+                else {
+                    res.end();
+                }
             } catch (err) {
                 next(err);
             }
