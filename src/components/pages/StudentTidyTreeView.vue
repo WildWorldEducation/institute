@@ -667,7 +667,7 @@ export default {
         class="unlocked-filter d-flex flex-column-reverse"
     >
         <button
-            class="btn primary-btn"
+            class="btn secondary-btn"
             @click="
                 toggleisUnlockedSkillsFilter();
                 $refs.childComponent.filter(

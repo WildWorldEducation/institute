@@ -786,7 +786,7 @@ Themes
     --primary-contrast-color: white;
 
     --secondary-color: purple;
-    --secondary-contrast-color: #040095;
+    --secondary-contrast-color: white;
 
     --tertiary-color: #040095;
 

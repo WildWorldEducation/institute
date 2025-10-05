@@ -1206,8 +1206,7 @@ export default {
     <!-- Filter for showing only unlocked skills in bottom left corner -->
     <div
         v-if="
-            sessionDetailsStore.isLoggedIn &&
-            userDetailsStore.isSkillsLocked == 1
+            sessionDetailsStore.isLoggedIn
         "
         class="unlocked-filter d-flex flex-column-reverse"
     >
@@ -1221,7 +1220,7 @@ export default {
             <span v-if="userDetailsStore.isUnlockedSkillsOnlyFilter"
                 >All skills</span
             >
-            <span v-else>Available skills only</span>
+            <span v-else>My progress</span>
         </button>
 
         <div
