@@ -584,44 +584,12 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
 
                                 // Only unlocked skills
                                 if (isUnlockedOnly == 1) {
-                                    // Go through all rows again, add children
+                                    // The logic to build the tree with only unlocked skills and their parents
+                                    // is complex and better handled after the main tree is structured.
+                                    // We will build the full tree first, then filter it.
                                     for (let j = 0; j < results.length; j++) {
                                         if (results[j].id == parentId) {
-                                            // Add accessible nodes
-                                            if (results[i].is_accessible == 1) {
-                                                results[j].children.push(
-                                                    results[i]
-                                                );
-                                            }
-                                            // For the case of super skills that are not accessible,
-                                            // but have accessible sub skills that should show
-                                            else {
-                                                for (
-                                                    let k = 0;
-                                                    k < results.length;
-                                                    k++
-                                                ) {
-                                                    if (
-                                                        results[k].parent ==
-                                                        results[i].id
-                                                    ) {
-                                                        if (
-                                                            results[k].type ==
-                                                                'sub' &&
-                                                            results[k]
-                                                                .is_accessible ==
-                                                                1
-                                                        ) {
-                                                            results[
-                                                                j
-                                                            ].children.push(
-                                                                results[i]
-                                                            );
-                                                            break;
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                            results[j].children.push(results[i]);
                                         }
                                     }
                                 }
@@ -649,6 +617,36 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                             ) {
                                 studentSkills.push(results[i]);
                             }
+                        }
+
+                        if (isUnlockedOnly == 1) {
+                            /**
+                             * Recursively filters a tree of skills.
+                             * A node is kept if it is accessible, or if any of its descendants are accessible.
+                             * @param {Array} nodes - The array of skill nodes to filter.
+                             * @returns {Array} The filtered array of skill nodes.
+                             */
+                            function filterAccessible(nodes) {
+                                return nodes.map(node => {
+                                    // If the node has children, recursively filter them first.
+                                    if (node.children && node.children.length > 0) {
+                                        node.children = filterAccessible(node.children);
+                                    }
+                        
+                                    // A node is considered to have an accessible descendant
+                                    // if its filtered children array is not empty.
+                                    const hasAccessibleDescendant = node.children && node.children.length > 0;
+                        
+                                    // Keep the node if it's accessible itself or has an accessible descendant.
+                                    if (node.is_accessible == 1 || hasAccessibleDescendant) {
+                                        return node;
+                                    }
+                        
+                                    return null;
+                                }).filter(node => node !== null); // Remove null entries from the array.
+                            }
+                        
+                            studentSkills = filterAccessible(studentSkills);
                         }
 
                         res.json(studentSkills);
@@ -1094,140 +1092,125 @@ router.get(
             ORDER BY skillorder, id;
             `;
 
-                    conn.query(sqlQuery, (err, results) => {
-                        try {
-                            if (err) {
-                                throw err;
-                            }
-
-                            // Give each object a 'children' element.
-                            for (var i = 0; i < results.length; i++) {
-                                results[i].children = [];
-                            }
-
-                            // Deal with skills that have multiple parents.
-                            // These skills have secret copies in the table.
-                            for (var i = 0; i < results.length; i++) {
-                                if (results[i].display_name != null) {
-                                    results[i].skill_name =
-                                        results[i].display_name;
-
-                                    for (var j = 0; j < results.length; j++) {
-                                        if (
-                                            results[i].is_copy_of_skill_id ==
-                                            results[j].id
-                                        ) {
-                                            results[i].is_accessible =
-                                                results[j].is_accessible;
-                                            results[i].is_mastered =
-                                                results[j].is_mastered;
-                                        }
-                                    }
-                                }
-                            }
-
-                            // Assign children to parent skills.
-                            for (var i = 0; i < results.length; i++) {
-                                // Check that not first level nodes.
-                                if (
-                                    results[i].parent != null &&
-                                    results[i].parent != 0
-                                ) {
-                                    var parentId = results[i].parent;
-
-                                    // Only unlocked skills
-                                    if (isUnlockedOnly == 1) {
-                                        // Go through all rows again, add children
-                                        for (
-                                            let j = 0;
-                                            j < results.length;
-                                            j++
-                                        ) {
-                                            if (results[j].id == parentId) {
-                                                // Add accessible nodes
-                                                if (
-                                                    results[i].is_accessible ==
-                                                    1
-                                                ) {
-                                                    results[j].children.push(
-                                                        results[i]
-                                                    );
-                                                }
-                                                // For the case of super skills that are not accessible,
-                                                // but have accessible sub skills that should show
-                                                else {
-                                                    for (
-                                                        let k = 0;
-                                                        k < results.length;
-                                                        k++
-                                                    ) {
-                                                        if (
-                                                            results[k].parent ==
-                                                            results[i].id
-                                                        ) {
-                                                            if (
-                                                                results[k]
-                                                                    .type ==
-                                                                    'sub' &&
-                                                                results[k]
-                                                                    .is_accessible ==
-                                                                    1
-                                                            ) {
-                                                                results[
-                                                                    j
-                                                                ].children.push(
-                                                                    results[i]
-                                                                );
-                                                                break;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    // Locked and unlocked skills
-                                    else {
-                                        // Go through all rows again, add children
-                                        for (
-                                            let j = 0;
-                                            j < results.length;
-                                            j++
-                                        ) {
-                                            if (results[j].id == parentId) {
-                                                results[j].children.push(
-                                                    results[i]
-                                                );
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            let studentSkills = [];
-                            for (var i = 0; i < results.length; i++) {
-                                if (
-                                    (results[i].parent == null ||
-                                        results[i].parent == 0) &&
-                                    // Filter by subject.
-                                    subjects.includes(results[i].skill_name)
-                                ) {
-                                    studentSkills.push(results[i]);
-                                }
-                            }
-
-                            res.json(studentSkills);
-                        } catch (err) {
-                            next(err);
+                conn.query(sqlQuery, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
                         }
-                    });
-                } catch (err) {
-                    next(err);
-                }
-            });
-        }
+
+                        // Give each object a 'children' element.
+                        for (var i = 0; i < results.length; i++) {
+                            results[i].children = [];
+                        }
+
+                        // Deal with skills that have multiple parents.
+                        // These skills have secret copies in the table.
+                        for (var i = 0; i < results.length; i++) {
+                            if (results[i].display_name != null) {
+                                results[i].skill_name =
+                                    results[i].display_name;
+
+                                for (var j = 0; j < results.length; j++) {
+                                    if (
+                                        results[i].is_copy_of_skill_id ==
+                                        results[j].id
+                                    ) {
+                                        results[i].is_accessible =
+                                            results[j].is_accessible;
+                                        results[i].is_mastered =
+                                            results[j].is_mastered;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Assign children to parent skills.
+                        for (var i = 0; i < results.length; i++) {
+                            // Check that not first level nodes.
+                            if (
+                                results[i].parent != null &&
+                                results[i].parent != 0
+                            ) {
+                                var parentId = results[i].parent;
+
+                                // Only unlocked skills
+                                if (isUnlockedOnly == 1) {
+                                    // The logic to build the tree with only unlocked skills and their parents
+                                    // is complex and better handled after the main tree is structured.
+                                    // We will build the full tree first, then filter it.
+                                    for (let j = 0; j < results.length; j++) {
+                                        if (results[j].id == parentId) {
+                                            results[j].children.push(results[i]);
+                                        }
+                                    }
+                                }
+                                // Locked and unlocked skills
+                                else {
+                                    // Go through all rows again, add children
+                                    for (let j = 0; j < results.length; j++) {
+                                        if (results[j].id == parentId) {
+                                            results[j].children.push(
+                                                results[i]
+                                            );
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        let studentSkills = [];
+                        for (var i = 0; i < results.length; i++) {
+                            if (
+                                (results[i].parent == null ||
+                                    results[i].parent == 0) &&
+                                // Filter by subject.
+                                subjects.includes(results[i].skill_name)
+                            ) {
+                                studentSkills.push(results[i]);
+                            }
+                        }
+
+                        if (isUnlockedOnly == 1) {
+                            /**
+                             * Recursively filters a tree of skills.
+                             * A node is kept if it is accessible, or if any of its descendants are accessible.
+                             * @param {Array} nodes - The array of skill nodes to filter.
+                             * @returns {Array} The filtered array of skill nodes.
+                             */
+                            function filterAccessible(nodes) {
+                                return nodes.map(node => {
+                                    // If the node has children, recursively filter them first.
+                                    if (node.children && node.children.length > 0) {
+                                        node.children = filterAccessible(node.children);
+                                    }
+                        
+                                    // A node is considered to have an accessible descendant
+                                    // if its filtered children array is not empty.
+                                    const hasAccessibleDescendant = node.children && node.children.length > 0;
+                        
+                                    // Keep the node if it's accessible itself or has an accessible descendant.
+                                    if (node.is_accessible == 1 || hasAccessibleDescendant) {
+                                        return node;
+                                    }
+                        
+                                    return null;
+                                }).filter(node => node !== null); // Remove null entries from the array.
+                            }
+                        
+                            studentSkills = filterAccessible(studentSkills);
+                        }
+
+                        res.json(studentSkills);
+                    } catch (err) {
+                        next(err);
+                    }
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
     }
-);
+});
 
 /**
  * Make skill accessible.

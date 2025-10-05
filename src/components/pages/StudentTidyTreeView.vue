@@ -664,11 +664,10 @@ export default {
 
     <!-- Filter for showing only unlocked skills in bottom left corner -->
     <div
-        v-if="userDetailsStore.isSkillsLocked == 1"
         class="unlocked-filter d-flex flex-column-reverse"
     >
         <button
-            class="btn primary-btn"
+            class="btn secondary-btn"
             @click="
                 toggleisUnlockedSkillsFilter();
                 $refs.childComponent.filter(
@@ -680,7 +679,7 @@ export default {
             "
         >
             <span v-if="isUnlockedSkillsOnlyFilter">All skills</span>
-            <span v-else>Available skills only</span>
+            <span v-else>Student progress</span>
         </button>
 
         <div
