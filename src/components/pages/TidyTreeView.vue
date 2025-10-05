@@ -1206,7 +1206,8 @@ export default {
     <!-- Filter for showing only unlocked skills in bottom left corner -->
     <div
         v-if="
-            sessionDetailsStore.isLoggedIn
+            sessionDetailsStore.isLoggedIn &&
+            userDetailsStore.role == 'student'
         "
         class="unlocked-filter d-flex flex-column-reverse"
     >
