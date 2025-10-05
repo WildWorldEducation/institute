@@ -1314,7 +1314,7 @@ export default {
 
 .btn:active,
 .btn:focus {
-    color: var(--primary-contrast-color);
+    /* color: var(--primary-contrast-color); */
     border: 1px solid black;
 }
 
