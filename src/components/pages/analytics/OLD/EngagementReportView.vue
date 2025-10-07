@@ -103,7 +103,7 @@ export default {
         async getAvgTimeOnSkills() {
             try {
                 const response = await fetch(
-                    `/student-analytics/avg-times-on-skills/tenant/${this.tenantId}`
+                    `/student-analytics/total-time-by-skill/tenant/${this.tenantId}`
                 );
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);

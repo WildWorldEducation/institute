@@ -1,5 +1,5 @@
 <script>
-import TenantAvgInteractionTimePerSkillHorizontalBarChart from './TenantAvgInteractionTimePerSkillHorizontalBarChart.vue';
+import TenantInteractionTimePerSkillHorizontalBarChart from './TenantAvgInteractionTimePerSkillHorizontalBarChart.vue';
 import TenantPercentageStudentsMasteredAtLeastOneSkillPieChart from './TenantPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
 import TenantDurationPerDayLineChart from './TenantDurationPerDayLineChart.vue';
 import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
@@ -12,7 +12,7 @@ export default {
         return { userDetailsStore, analyticsStore };
     },
     components: {
-        TenantAvgInteractionTimePerSkillHorizontalBarChart,
+        TenantInteractionTimePerSkillHorizontalBarChart,
         TenantPercentageStudentsMasteredAtLeastOneSkillPieChart,
         TenantDurationPerDayLineChart
     },
@@ -33,7 +33,7 @@ export default {
         await this.checkIfTutorialComplete();
         // Engagement -----------------------
         if (this.analyticsStore.avgTimeOnSkills.length == 0)
-            await this.getAvgTimeOnSkills();
+            await this.getTimeBySkill();
         if (this.analyticsStore.durationPerDay.length == 0)
             await this.getTenantDuration();
         if (this.analyticsStore.percentageStudentsMasteredOneSkill.length == 0)
@@ -77,10 +77,10 @@ export default {
         },
         
         // Engagement -----------------------
-        async getAvgTimeOnSkills() {
+        async getTimeBySkill() {
             try {
                 const response = await fetch(
-                    `/student-analytics/avg-times-on-skills/tenant/${this.tenantId}`
+                    `/student-analytics/total-time-by-skill/tenant/${this.tenantId}`
                 );
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -320,9 +320,9 @@ export default {
                     />
                     <p v-else>No data yet</p>
                 </div>
-                <figcaption class="text-muted">
+                <!-- <figcaption class="text-muted">
                     Students who have mastered at least one skill
-                </figcaption>
+                </figcaption> -->
             </div>
         </div>
         <div class="row chart-row position-relative">
@@ -332,7 +332,7 @@ export default {
                     @click="
                         downloadData(
                             analyticsStore.avgTimeOnSkills,
-                            'Avg-time-per-skill'
+                            'Time-per-skill'
                         )
                     "
                 >
@@ -348,7 +348,7 @@ export default {
                         />
                     </svg>
                 </button>
-                <TenantAvgInteractionTimePerSkillHorizontalBarChart
+                <TenantInteractionTimePerSkillHorizontalBarChart
                     v-if="analyticsStore.avgTimeOnSkills.length > 0"
                     :data="analyticsStore.avgTimeOnSkills"
                     colour="purple"
@@ -356,7 +356,7 @@ export default {
                 />
                 <p v-else>No data yet</p>
             </div>
-            <figcaption class="text-muted">time per skill</figcaption>
+            <!-- <figcaption class="text-muted">time per skill</figcaption> -->
         </div>
     </div>
     <!-- Tutorial modal for initial introduction -->
@@ -386,6 +386,7 @@ export default {
 
 .chart-row {
     height: calc(50% - 20px);
+    overflow: auto;
 }
 
 .chart-col {
@@ -397,14 +398,13 @@ export default {
     overflow: auto;
 }
 
-#engagement-chart-container {
+#engagement-chart-container, #tenant-students-pie-chart-container {
     height: calc(100% - 35px);
     width: 100%;
 }
 
-#tenant-students-pie-chart-container,
 #time-per-skill-chart-container {
-    height: calc(100% - 35px);
+    min-height: calc(100% - 35px);
     width: 100%;
 }
 

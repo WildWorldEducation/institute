@@ -68,7 +68,7 @@ export default {
                 else if (d.name == 'History') return 'cyan'; // cyan
                 else if (d.name == 'Life') return 'magenta'; // magenta
                 else return '#ff7f0e'; // orange
-            });;
+            });
 
         // Append a label for each name.
         svg.append('g')
