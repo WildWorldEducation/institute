@@ -2126,6 +2126,11 @@ router.get('/school-progress/:tenantId', (req, res, next) => {
                                 startFlag = true;
                             }
 
+                            // In case data was not captured.
+                            if (!results[i].date) {
+                                results[i].date = firstInteractionResult[0].date;
+                            }
+
                             if (
                                 today.toDateString() ==
                                 results[i].date.toDateString()
