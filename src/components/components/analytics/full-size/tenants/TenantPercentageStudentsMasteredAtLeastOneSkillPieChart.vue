@@ -10,7 +10,7 @@ export default {
     mounted() {
         let data = this.data;
 
-       // Declare the chart dimensions and margins.
+        // Declare the chart dimensions and margins.
         const width = document.getElementById(
             'tenant-students-pie-chart-container'
         ).clientWidth;
@@ -86,7 +86,13 @@ export default {
                     .attr('y', '-0.4em')
                     .attr('fill', 'white')
                     .attr('font-weight', 'bold')
-                    .text((d) => d.data.name)
+                    .text((d) => {
+                        if (d.data.name === 'Mastered one skill') {
+                            return 'Mastered ≥ 1 skill';
+                        } else {
+                            return 'Mastered 0 skills';
+                        }
+                    })
             )
             .call((text) =>
                 text
@@ -104,7 +110,7 @@ export default {
 </script>
 
 <template>
-    
+
 </template>
 
 <style scoped></style>

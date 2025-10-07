@@ -2126,6 +2126,11 @@ router.get('/school-progress/:tenantId', (req, res, next) => {
                                 startFlag = true;
                             }
 
+                            // In case data was not captured.
+                            if (!results[i].date) {
+                                results[i].date = firstInteractionResult[0].date;
+                            }
+
                             if (
                                 today.toDateString() ==
                                 results[i].date.toDateString()
@@ -2314,13 +2319,13 @@ router.get('/tenant-tokens-per-day/:dataMode/:tenantId', (req, res, next) => {
     }
 });
 
-router.get('/avg-times-on-skills/tenant/:tenantId', (req, res, next) => {
+router.get('/total-time-by-skill/tenant/:tenantId', (req, res, next) => {
     // Check if logged in.
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-            SELECT skills.name AS name, AVG(duration) AS milliseconds
+            SELECT skills.name AS name, SUM(duration) AS milliseconds
             FROM user_skills
             JOIN users 
             ON user_skills.user_id = users.id

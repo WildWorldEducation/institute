@@ -9,6 +9,7 @@ export default {
     },
     mounted() {
         // Specify the chart’s dimensions, based on a bar’s height.
+        const barHeight = 20;
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
@@ -17,9 +18,7 @@ export default {
         const width = document.getElementById(
             'attempted-skills-chart'
         ).clientWidth;
-        const height = document.getElementById(
-            'attempted-skills-chart'
-        ).clientHeight;
+        const height = barHeight * this.data.length + marginTop + marginBottom;
 
         // Create the scales.
         const x = d3
@@ -31,7 +30,7 @@ export default {
             .scaleBand()
             .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
-            .padding(0.1);
+            .padding(0.0);
 
         // Create a value format.
         const format = x.tickFormat(20);
