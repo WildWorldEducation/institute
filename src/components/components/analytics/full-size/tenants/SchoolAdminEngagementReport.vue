@@ -19,16 +19,12 @@ export default {
     data() {
         return {
             tenantId: this.userDetailsStore.tenantId,
-            // Engagement -----------------------
             durationPerDay: [],
             percentageStudentsMasteredOneSkill: [],
             isDataWeekly: false,
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false,
-            // showTutorialTip2: false,
-            // showTutorialTip3: false,
-            // showTutorialTip4: false,
             dataMode: 'total'
         };
     },
@@ -63,23 +59,11 @@ export default {
                 // this.showTutorialTip2 = true;
                 this.markTutorialComplete();
             }
-            // else if (step == 2) {
-            //     this.showTutorialTip2 = false;
-            //     this.showTutorialTip3 = true;
-            // } else if (step == 3) {
-            //     this.showTutorialTip3 = false;
-            //     this.showTutorialTip4 = true;
-            // } else if (step == 4) {
-            //     this.showTutorialTip4 = false;
-            //     this.markTutorialComplete();
-            // }
         },
         restartTutorial() {
             this.isTutorialComplete = false;
             this.showTutorialTip1 = true;
-            // this.showTutorialTip2 = false;
-            // this.showTutorialTip3 = false;
-            // this.showTutorialTip4 = false;
+            
         },
         markTutorialComplete() {
             let url =
@@ -91,14 +75,7 @@ export default {
             };
             fetch(url, requestOptions);
         },
-        // skipTutorial() {
-        //     this.showTutorialTip1 = false;
-        //     this.showTutorialTip2 = false;
-        //     this.showTutorialTip3 = false;
-        //     this.showTutorialTip4 = false;
-        //     this.isTutorialComplete = true;
-        //     this.markTutorialComplete();
-        // },
+        
         // Engagement -----------------------
         async getAvgTimeOnSkills() {
             try {
@@ -220,7 +197,7 @@ export default {
 <template>
     <div class="container-fluid chart-page">
         <span class="d-flex justify-content-between w-100">
-            <h1 class="heading h4">Engagement Report</h1>
+            <h1 class="heading h4">Scool-wide Engagement Report</h1>
             <span>
                 <!-- Filter Buttons -->
                 <div
@@ -306,7 +283,7 @@ export default {
                     <div v-else>No data yet</div>
                 </div>
                 <figcaption class="text-muted">
-                    cumulative time on platform
+                    Student time on the platform
                 </figcaption>
             </div>
             <div class="col-lg-4 chart-col position-relative">
@@ -344,7 +321,7 @@ export default {
                     <p v-else>No data yet</p>
                 </div>
                 <figcaption class="text-muted">
-                    have mastered at least one skill
+                    Students who have mastered at least one skill
                 </figcaption>
             </div>
         </div>
@@ -385,12 +362,11 @@ export default {
     <!-- Tutorial modal for initial introduction -->
     <div v-if="showTutorialTip1" class="modal">
         <div class="modal-content">
-            <p class="modal-text">
-                The School Admin Engagement Report provides comprehensive
-                analytics on student engagement and platform usage across your
-                school. You can download chart data as CSV files using the
+            <p>
+                This page provides
+                information on engagement and usage.</p><p>You can download chart data as CSV files using the
                 download buttons next to each chart, and toggle between
-                cumulative (total) and weekly data views using the filter
+                cumulative (total) and weekly data using the filter
                 buttons at the top right.
             </p>
             <div class="d-flex justify-content-between">
