@@ -26,9 +26,6 @@ export default {
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false,
-            // showTutorialTip2: false,
-            // showTutorialTip3: false,
-            // showTutorialTip4: false,
             dataMode: 'total'
         };
     },
@@ -61,7 +58,6 @@ export default {
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
-                // this.showTutorialTip2 = true;
                 this.markTutorialComplete();
             }
         },
@@ -257,7 +253,7 @@ export default {
                     <p v-else>No data yet</p>
                 </div>
             </div>
-            <div class="col-md chart-col position-relative">
+            <div class="col-md chart-col position-relative overflow-auto">
                 <div id="passed-skills-chart">
                     <button
                         class="btn position-absolute download-btn"
@@ -329,7 +325,7 @@ export default {
                     <p v-else>No data yet</p>
                 </div>
             </div>
-            <div class="col-md chart-col position-relative">
+            <div class="col-md chart-col position-relative overflow-auto">
                 <div id="attempted-skills-chart">
                     <button
                         class="btn position-absolute download-btn"
@@ -392,6 +388,7 @@ export default {
         height: 200px;
     }
 }
+
 
 #passed-subjects-chart,
 #attempted-subjects-chart,

@@ -21,7 +21,7 @@ export default {
         const width = document.getElementById(
             'time-per-skill-chart-container'
         ).clientWidth;
-        const height = this.data.length * barHeight - 100;
+        const height = this.data.length * barHeight + marginTop + marginBottom;
 
         // Create the scales.
         const x = d3
@@ -33,7 +33,7 @@ export default {
             .scaleBand()
             .domain(d3.sort(this.data, (d) => -d.milliseconds).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
-            .padding(0.1);
+            .padding(0.0);
 
         // Create the SVG container.
         const svg = d3

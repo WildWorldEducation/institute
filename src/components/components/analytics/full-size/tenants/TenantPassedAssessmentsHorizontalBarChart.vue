@@ -9,6 +9,7 @@ export default {
     },
     mounted() {
         // Specify the chart’s dimensions, based on a bar’s height.
+        const barHeight = 20;
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
@@ -17,9 +18,7 @@ export default {
         const width = document.getElementById(
             'passed-skills-chart'
         ).clientWidth;
-        const height = document.getElementById(
-            'passed-skills-chart'
-        ).clientHeight;
+        const height = this.data.length * barHeight + marginTop + marginBottom;
         // Create the scales.
         const x = d3
             .scaleLinear()
@@ -30,7 +29,7 @@ export default {
             .scaleBand()
             .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
-            .padding(0.1);
+            .padding(0.0);
 
         // Create the SVG container.
         const svg = d3
