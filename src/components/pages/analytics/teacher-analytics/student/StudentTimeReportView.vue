@@ -56,11 +56,9 @@ export default {
             if (this.userDetailsStore.role === 'school_admin') {
                 url = `/student-analytics/student-duration-per-day-tenant/${this.studentId}/${this.userDetailsStore.userId}`;
             }
-            console.log(this.studentId);
             fetch(url)
                 .then((response) => response.json())
                 .then((resData) => {
-                    console.log(resData);
 
                     const data = resData.studentTime;
                     for (let i = 0; i < data.length; i++) {
