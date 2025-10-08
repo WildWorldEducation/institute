@@ -198,6 +198,7 @@ export default {
             this.showMobileTutorialTip6 = false;
             this.showMobileTutorialTip7 = false;
             this.isTutorialComplete = true;
+            this.markTutorialComplete();
         },
         markTutorialComplete() {
             let url =

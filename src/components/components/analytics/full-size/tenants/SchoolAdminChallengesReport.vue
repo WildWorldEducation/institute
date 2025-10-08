@@ -52,7 +52,7 @@ export default {
     <div class="container chart-page">
         <div class="row h-100">
             <div class="col-md position-relative">
-                <h3 class="secondary-heading h5">School-wide assessments failed</h3>
+                <h3 class="heading h4">School-wide assessments failed</h3>
                 <div id="failed-assessments-chart-container">    
                 <DownloadCSVBtn
                     :data="analyticsStore.failedAssessments"

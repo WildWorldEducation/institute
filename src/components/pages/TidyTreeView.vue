@@ -132,7 +132,6 @@ export default {
                     }
                 });
         },
-
         closeIntroSearchModal() {
             this.introSearchModal = false;
         },
