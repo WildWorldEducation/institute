@@ -343,7 +343,6 @@ export default {
                 this.context.strokeStyle = '#228C22'; // Green
             } else {
                 this.context.lineWidth = 2;
-                // Determine colour of links based on user's theme
                 this.context.strokeStyle = '#D3D3D3'; // Default to light gray
             }
 
