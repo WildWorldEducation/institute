@@ -288,7 +288,7 @@ export default {
         },
         async getInstructor() {
             // Get the instructor's user id.
-            var instructorId;
+            let instructorId = null;
 
             for (
                 let i = 0;
@@ -571,6 +571,7 @@ export default {
                     <UserDetails
                         v-else-if="userDetailsStore.role == 'school_admin'"
                         :userId="user.id"
+                        :instructor="instructor"
                     />
                     <UserDetails
                         v-else-if="

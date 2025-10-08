@@ -3,6 +3,8 @@
 Middleware.
 --------------------------------------------
 --------------------------------------------*/
+//Middlewares
+const isAuthenticated = require('../middlewares/authMiddleware');
 const express = require('express');
 // Router.
 const router = express.Router();
@@ -109,6 +111,8 @@ router.put('/:userId/update-locked-skills', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
+                res.status = 200;
+                res.json({ message: 'success' })
                 res.end();
             } catch (err) {
                 next(err);
@@ -116,6 +120,30 @@ router.put('/:userId/update-locked-skills', (req, res, next) => {
         });
     }
 });
+// Assign new teacher for a student
+router.put(
+    '/change-teacher/:teacherId/:userId',
+    isAuthenticated,
+    (req, res, next) => {
+        try {
+            let sql = `UPDATE instructor_students
+                           SET instructor_id = ${conn.escape(req.params.teacherId)}
+                           WHERE student_id = ${conn.escape(req.params.userId)}`;
 
+            conn.query(sql, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    res.json(results);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
+);
 // Export the router for app to use.
 module.exports = router;
