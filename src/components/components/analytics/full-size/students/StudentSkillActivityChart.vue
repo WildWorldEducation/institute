@@ -11,20 +11,21 @@ export default {
             }
 
             // Declare the chart dimensions and margins.
+            const barHeight = 20;
             const width = document.getElementById(
                 'activity-chart-container'
             ).clientWidth;
-            const height = document.getElementById(
-                'activity-chart-container'
-            ).clientHeight;
+            const height = barHeight * data.length + 50;
 
-            const margin = { top: 20, right: 0, bottom: 60, left: 200 };
+            const margin = { top: 20, right: 0, bottom: 20, left: 200 };
 
             const svg = d3
                 .select('#activity-chart-container')
                 .append('svg')
                 .attr('width', '100%')
-                .attr('height', '100%');
+                .attr('height', '100%')
+                .attr('viewBox', [0, 0, width, height])
+            .attr('preserveAspectRatio', 'xMinYMin');
 
             // Create main group for the chart
             const g = svg

@@ -252,12 +252,12 @@ export default {
 
                 // If mastered, make a solid shape.
                 if (node.data.is_mastered == 1) {
-                    ctx1.fillStyle = skillColor;
+                    ctx1.fillStyle = '#228C22';
                     ctx1.fill();
-                    const outlineColor = this.hexBorderColor(node.data.level);
-                    ctx1.lineWidth = 2;
-                    ctx1.strokeStyle = outlineColor;
-                    ctx1.stroke();
+                    //const outlineColor = this.hexBorderColor(node.data.level);
+                    //ctx1.lineWidth = 0;
+                    //ctx1.strokeStyle = outlineColor;
+                    //ctx1.stroke();
                 }
                 // If not, just an outline.
                 else {
@@ -339,16 +339,12 @@ export default {
 
             // If skill is mastered.
             if (link.target.data.is_mastered == 1) {
-                this.context.lineWidth = 2;
-                this.context.strokeStyle = '#8d6ce7';
+                this.context.lineWidth = 3;
+                this.context.strokeStyle = '#228C22'; // Green
             } else {
                 this.context.lineWidth = 2;
                 // Determine colour of links based on user's theme
-                if (this.userDetailsStore.theme == 'original')
-                    this.context.strokeStyle = '#000';
-                else if (this.userDetailsStore.theme == 'instructor') {
-                    this.context.strokeStyle = '#000';
-                } else this.context.strokeStyle = '#000';
+                this.context.strokeStyle = '#D3D3D3'; // Default to light gray
             }
 
             if (
