@@ -1211,7 +1211,11 @@ export default {
         class="unlocked-filter d-flex flex-column-reverse"
     >
         <button
-            class="btn primary-btn"
+            class="btn"
+            :class="{
+                'student-progress-btn': userDetailsStore.isUnlockedSkillsOnlyFilter,
+                'all-skills-btn': !userDetailsStore.isUnlockedSkillsOnlyFilter
+            }"
             @click="
                 toggleisUnlockedSkillsFilter();
                 $refs.childComponent.filter();
@@ -2017,6 +2021,16 @@ export default {
 </template>
 
 <style scoped>
+.student-progress-btn {
+   background-color: #D3D3D3;
+    color: black!important;
+}
+
+.all-skills-btn {    
+     background-color: #228C22;
+    color: white;
+}
+
 /* Intro search model */ /* Modal Content/Box */
 .close-btn {
     z-index: 1000;

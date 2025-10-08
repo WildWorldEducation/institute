@@ -668,7 +668,11 @@ export default {
         class="unlocked-filter d-flex flex-column-reverse"
     >
         <button
-            class="btn secondary-btn"
+            class="btn"
+            :class="{
+                'student-progress-btn': isUnlockedSkillsOnlyFilter,
+                'all-skills-btn': !isUnlockedSkillsOnlyFilter
+            }"
             @click="
                 toggleisUnlockedSkillsFilter();
                 $refs.childComponent.filter(
@@ -1077,6 +1081,16 @@ export default {
 </template>
 
 <style scoped>
+.student-progress-btn {
+   background-color: #D3D3D3;
+    color: black;
+}
+
+.all-skills-btn {    
+     background-color: #228C22;
+    color: white;
+}
+
 .mobile-legend {
     display: none;
 }
