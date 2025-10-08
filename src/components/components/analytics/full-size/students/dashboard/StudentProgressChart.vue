@@ -52,7 +52,7 @@ export default {
             const marginTop = 5;
             const marginRight = 0;
             const marginBottom = 25;
-            const marginLeft = 20;
+            const marginLeft = 25;
 
             // Declare the x (horizontal position) scale.
             const x = d3.scaleUtc(
@@ -65,11 +65,6 @@ export default {
                 [0, d3.max(this.axisData, (d) => d.quantity)],
                 [height - marginBottom, marginTop]
             );
-
-            const color = d3
-                .scaleOrdinal()
-                .domain(series.map((s) => s.name))
-                .range(d3.schemeCategory10);
 
             // Declare the line generator.
             const line = d3
@@ -122,7 +117,10 @@ export default {
                     if (d.name == 'student') return 'green'; // green
                     else return '#ff7f0e'; // orange
                 })
-                .attr('stroke-width', 3)
+                .attr('stroke-width', (d) => {
+                    if (d.name == 'student') return 3;
+                    else return 1.5; 
+                })
                 .attr('d', (d) => line(d.values));
         }
     }
