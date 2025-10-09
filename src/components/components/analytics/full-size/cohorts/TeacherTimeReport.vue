@@ -154,7 +154,7 @@ export default {
         </div>
 
         <div class="row chart-row">
-            <div class="col-md chart-col position-relative">
+            <div class="col-md chart-col position-relative overflow-auto">
                 <div id="student-time-chart-container">
                     <DownloadCSVBtn
                         :data="studentTotalDurationsDownloadData"
@@ -173,7 +173,7 @@ export default {
                 </figcaption>
             </div>
 
-            <div class="col-md chart-col position-relative">
+            <div class="col-md chart-col position-relative overflow-auto">
                 <div id="skill-time-chart-container">
                     <DownloadCSVBtn
                         :data="studentDurationsPerSkillDownloadData"
