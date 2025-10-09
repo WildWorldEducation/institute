@@ -311,6 +311,9 @@ export default {
                     this.instructor = this.usersStore.users[i].username;
                 }
             }
+            if (!instructorId) {
+                this.instructor = null;
+            }
         },
         async getStudents() {
             this.students = [];

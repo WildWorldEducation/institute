@@ -2,6 +2,7 @@
 // Import the stores.
 import { useUsersStore } from '../../../stores/UsersStore';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import { useInstructorStudentsStore } from '../../../stores/InstructorStudentsStore';
 import TooltipBtn from './../share-components/TooltipBtn.vue';
 
 import StudentNotifications from './../analytics/full-size/students/StudentNotifications.vue';
@@ -17,12 +18,13 @@ export default {
     setup() {
         const usersStore = useUsersStore();
         const userDetailsStore = useUserDetailsStore();
-
+        const instructorStudentStore = useInstructorStudentsStore();
         // Run the GET request.
         if (usersStore.users.length < 1) usersStore.getUsers();
         return {
             usersStore,
-            userDetailsStore
+            userDetailsStore,
+            instructorStudentStore
         };
     },
     data() {
@@ -77,8 +79,7 @@ export default {
         },
         async handleAssignTeacher(teacherId) {
             const studentId = this.$parent.user.id;
-            console.log('HA HA Instructor is: ');
-            console.log(this.$parent.instructor);
+
             if (this.$parent.instructor) {
                 const requestOptions = {
                     method: 'PUT',
@@ -113,6 +114,8 @@ export default {
                     alert('assign teacher fails');
                 }
             }
+            // also update instructor student list
+            await this.instructorStudentStore.getInstructorStudentsList();
         }
     }
 };
@@ -239,19 +242,21 @@ export default {
                     <!-- Show instructor -->
                     <div
                         v-if="userDetailsStore.role == 'school_admin'"
-                        class="mb-3"
+                        class="mb-3 row"
                     >
                         <h3 class="secondary-heading h5">Teacher</h3>
                         <!-- Reassign this student to another teacher -->
-                        <DropDown
-                            :dropDownLabel="
-                                this.$parent.instructor
-                                    ? this.$parent.instructor
-                                    : 'Assign a teacher'
-                            "
-                            :dataList="dropdownDataList"
-                            :handleChooseMenuItem="handleAssignTeacher"
-                        />
+                        <div class="col-12 col-lg-5">
+                            <DropDown
+                                :dropDownLabel="
+                                    this.$parent.instructor
+                                        ? this.$parent.instructor
+                                        : 'Assign a teacher'
+                                "
+                                :dataList="dropdownDataList"
+                                :handleChooseMenuItem="handleAssignTeacher"
+                            />
+                        </div>
                     </div>
                     <ul>
                         <!-- Skill Tree -->

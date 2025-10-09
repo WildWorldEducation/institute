@@ -5,10 +5,22 @@ export default {
     data() {
         return {
             showDropDown: false,
-            chooseItem: null
+            chooseItem: null,
+            menuLabel: null
         };
     },
-
+    created() {
+        this.menuLabel = this.dropDownLabel;
+    },
+    watch: {
+        dropDownLabel: {
+            handler(newVal, oldVal) {
+                if (newVal !== oldVal) {
+                    this.menuLabel = newVal;
+                }
+            }
+        }
+    },
     methods: {}
 };
 </script>
@@ -19,7 +31,7 @@ export default {
             class="dropdown-base d-flex justify-content-between align-items-center"
             @click="showDropDown = !showDropDown"
         >
-            {{ dropDownLabel }}
+            {{ menuLabel }}
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="15"
