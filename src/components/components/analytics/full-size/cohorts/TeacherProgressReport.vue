@@ -143,7 +143,7 @@ export default {
         </div>
 
         <div class="row chart-row">
-            <div class="col-md chart-col position-relative position-relative">
+            <div class="col-md chart-col position-relative position-relative overflow-auto">
                 <div id="progress-bar-chart-container">
                     <DownloadCSVBtn
                         :data="masteredSkillQuantitiesDownloadData"
@@ -160,7 +160,7 @@ export default {
                 <figcaption class="text-muted">Passed</figcaption>
             </div>
 
-            <div class="col-md chart-col position-relative position-relative">
+            <div class="col-md chart-col position-relative position-relative overflow-auto">
                 <div id="attempted-bar-chart-container">
                     <DownloadCSVBtn
                         :data="attemptedAssessmentQuantitiesDownloadData"

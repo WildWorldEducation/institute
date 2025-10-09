@@ -6,10 +6,10 @@ export default {
     props: ['data', 'colour'],
     data() {
         return {
-            padding: 60
         };
     },
     mounted() {
+        const barHeight = 20;
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
@@ -17,9 +17,7 @@ export default {
         const width = document.getElementById(
             'student-time-chart-container'
         ).clientWidth;
-        const height = document.getElementById(
-            'student-time-chart-container'
-        ).clientHeight;
+        const height = barHeight * this.data.length + marginTop + marginBottom;
 
         // Create the scales.
         const x = d3
@@ -33,20 +31,19 @@ export default {
             .rangeRound([marginTop, height - marginBottom])
             .padding(0.1);
 
-        // Create a value format.
-        const format = x.tickFormat(20);
-
         // Create the SVG container.
         const svg = d3
             .select('#cohort-duration-per-skill-chart-container')
             .append('svg')
             .attr('width', width)
             .attr('height', height)
-            .attr('viewBox', [0, 0, width, height])
-            .attr(
-                'style',
-                'max-width: 100%; height: 100%; font: 14px sans-serif;'
-            );
+            .attr('viewBox', [
+                0,
+                0,
+                +Math.min(width, height),
+                +Math.min(width, height)
+            ])
+            .attr('preserveAspectRatio', 'xMinYMin');
 
         // Append a rect for each skill.
         svg.append('g')

@@ -78,7 +78,7 @@ export default {
                 </div>
             </div>
 
-            <div class="col-md position-relative">
+            <div class="col-md position-relative overflow-auto">
                 <h3 class="secondary-heading h5">By skill</h3>
                 <div id="fails-by-skill-chart-container">
                     <DownloadCSVBtn
