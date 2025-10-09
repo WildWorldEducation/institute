@@ -9,6 +9,7 @@ export default {
     },
     mounted() {
         // Specify the chart’s dimensions, based on a bar’s height.
+        const barHeight = 20;
         const marginTop = 0;
         const marginRight = 50;
         const marginBottom = 0;
@@ -16,9 +17,7 @@ export default {
         const width = document.getElementById(
             'fails-by-skill-chart-container'
         ).clientWidth;
-        const height = document.getElementById(
-            'fails-by-skill-chart-container'
-        ).clientHeight;
+        const height = barHeight * this.data.length + marginTop + marginBottom;
 
         // Create the scales.
         const x = d3
@@ -30,10 +29,7 @@ export default {
             .scaleBand()
             .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
-            .padding(0.2);
-
-        // Create a value format.
-        const format = x.tickFormat(20);
+            .padding(0.1);
 
         // Create the SVG container.
         const svg = d3
