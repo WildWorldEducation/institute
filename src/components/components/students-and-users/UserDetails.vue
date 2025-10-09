@@ -77,7 +77,9 @@ export default {
         },
         async handleAssignTeacher(teacherId) {
             const studentId = this.$parent.user.id;
-            if (!this.$parent.instructor) {
+            console.log('HA HA Instructor is: ');
+            console.log(this.$parent.instructor);
+            if (this.$parent.instructor) {
                 const requestOptions = {
                     method: 'PUT',
                     headers: {
@@ -99,12 +101,17 @@ export default {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        instructor_id: this.instructorId,
-                        student_id: this.newUserId
+                        instructor_id: teacherId,
+                        student_id: studentId
                     })
                 };
                 var url = '/users/add/instructor';
                 const res = await fetch(url, requestOptions);
+                if (res.status === 200) {
+                    alert('assign teacher successfully');
+                } else {
+                    alert('assign teacher fails');
+                }
             }
         }
     }
@@ -238,7 +245,9 @@ export default {
                         <!-- Reassign this student to another teacher -->
                         <DropDown
                             :dropDownLabel="
-                                instructor ? instructor : 'Assign a teacher'
+                                this.$parent.instructor
+                                    ? this.$parent.instructor
+                                    : 'Assign a teacher'
                             "
                             :dataList="dropdownDataList"
                             :handleChooseMenuItem="handleAssignTeacher"

@@ -10,6 +10,11 @@ const addInstructorPermission = (req, res, next) => {
         return next();
     }
 
+    // School admin can add instructor to student
+    if (userRole === 'school_admin') {
+        return next();
+    }
+
     // Instructor can only add themselves to student
     else if (userRole === 'instructor' && instructor_id === userId) {
         return next();

@@ -5,8 +5,7 @@ export default {
     data() {
         return {
             showDropDown: false,
-            chooseItem: null,
-            menuLabel: null
+            chooseItem: null
         };
     },
 
@@ -20,7 +19,7 @@ export default {
             class="dropdown-base d-flex justify-content-between align-items-center"
             @click="showDropDown = !showDropDown"
         >
-            {{ menuLabel }}
+            {{ dropDownLabel }}
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="15"

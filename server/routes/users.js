@@ -805,11 +805,16 @@ router.post(
             student_id: req.body.student_id
         };
         let sqlQuery = 'INSERT INTO instructor_students SET ?';
+        console.log(sqlQuery)
         conn.query(sqlQuery, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 } else {
+                    console.log('HA HA ')
+                    console.log(results)
+                    res.status = 200;
+                    res.json({ message: 'success' })
                     res.end();
                 }
             } catch (err) {
