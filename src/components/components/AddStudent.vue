@@ -154,8 +154,7 @@ export default {
 
                 const data = await response.json();
                 this.isLoading = false;
-                console.log('ResData is: ');
-                console.log(data);
+            
                 if (data.account === 'username already taken') {
                     alert(data.account);
                     return;
@@ -188,6 +187,9 @@ export default {
                 }
 
                 await this.usersStore.getUsers();
+                await this.usersStore.getStudentsPerTenant(
+                    this.userDetailsStore.tenantId
+                );
                 this.isLoading = false;
                 alert('account created');
                 this.$router.push({ name: 'students' });
@@ -494,7 +496,7 @@ export default {
                     <div class="mb-3">
                         <h2 class="secondary-heading h4">Teacher</h2>
                         <DropDown
-                            dropDownLabel="Assign Teacher"
+                           
                             :dataList="dropdownDataList"
                             :handleChooseMenuItem="chooseTeacher"
                         />

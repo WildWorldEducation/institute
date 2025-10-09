@@ -1,5 +1,5 @@
 <script>
-import TenantAvgInteractionTimePerSkillHorizontalBarChart from './TenantAvgInteractionTimePerSkillHorizontalBarChart.vue';
+import TenantInteractionTimePerSkillHorizontalBarChart from './TenantAvgInteractionTimePerSkillHorizontalBarChart.vue';
 import TenantPercentageStudentsMasteredAtLeastOneSkillPieChart from './TenantPercentageStudentsMasteredAtLeastOneSkillPieChart.vue';
 import TenantDurationPerDayLineChart from './TenantDurationPerDayLineChart.vue';
 import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
@@ -12,23 +12,19 @@ export default {
         return { userDetailsStore, analyticsStore };
     },
     components: {
-        TenantAvgInteractionTimePerSkillHorizontalBarChart,
+        TenantInteractionTimePerSkillHorizontalBarChart,
         TenantPercentageStudentsMasteredAtLeastOneSkillPieChart,
         TenantDurationPerDayLineChart
     },
     data() {
         return {
             tenantId: this.userDetailsStore.tenantId,
-            // Engagement -----------------------
             durationPerDay: [],
             percentageStudentsMasteredOneSkill: [],
             isDataWeekly: false,
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false,
-            // showTutorialTip2: false,
-            // showTutorialTip3: false,
-            // showTutorialTip4: false,
             dataMode: 'total'
         };
     },
@@ -37,7 +33,7 @@ export default {
         await this.checkIfTutorialComplete();
         // Engagement -----------------------
         if (this.analyticsStore.avgTimeOnSkills.length == 0)
-            await this.getAvgTimeOnSkills();
+            await this.getTimeBySkill();
         if (this.analyticsStore.durationPerDay.length == 0)
             await this.getTenantDuration();
         if (this.analyticsStore.percentageStudentsMasteredOneSkill.length == 0)
@@ -63,23 +59,11 @@ export default {
                 // this.showTutorialTip2 = true;
                 this.markTutorialComplete();
             }
-            // else if (step == 2) {
-            //     this.showTutorialTip2 = false;
-            //     this.showTutorialTip3 = true;
-            // } else if (step == 3) {
-            //     this.showTutorialTip3 = false;
-            //     this.showTutorialTip4 = true;
-            // } else if (step == 4) {
-            //     this.showTutorialTip4 = false;
-            //     this.markTutorialComplete();
-            // }
         },
         restartTutorial() {
             this.isTutorialComplete = false;
             this.showTutorialTip1 = true;
-            // this.showTutorialTip2 = false;
-            // this.showTutorialTip3 = false;
-            // this.showTutorialTip4 = false;
+            
         },
         markTutorialComplete() {
             let url =
@@ -91,19 +75,12 @@ export default {
             };
             fetch(url, requestOptions);
         },
-        // skipTutorial() {
-        //     this.showTutorialTip1 = false;
-        //     this.showTutorialTip2 = false;
-        //     this.showTutorialTip3 = false;
-        //     this.showTutorialTip4 = false;
-        //     this.isTutorialComplete = true;
-        //     this.markTutorialComplete();
-        // },
+        
         // Engagement -----------------------
-        async getAvgTimeOnSkills() {
+        async getTimeBySkill() {
             try {
                 const response = await fetch(
-                    `/student-analytics/avg-times-on-skills/tenant/${this.tenantId}`
+                    `/student-analytics/total-time-by-skill/tenant/${this.tenantId}`
                 );
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -220,7 +197,7 @@ export default {
 <template>
     <div class="container-fluid chart-page">
         <span class="d-flex justify-content-between w-100">
-            <h1 class="heading h4">Engagement Report</h1>
+            <h1 class="heading h4">Scool-wide Engagement Report</h1>
             <span>
                 <!-- Filter Buttons -->
                 <div
@@ -306,7 +283,7 @@ export default {
                     <div v-else>No data yet</div>
                 </div>
                 <figcaption class="text-muted">
-                    cumulative time on platform
+                    Student time on the platform
                 </figcaption>
             </div>
             <div class="col-lg-4 chart-col position-relative">
@@ -343,9 +320,9 @@ export default {
                     />
                     <p v-else>No data yet</p>
                 </div>
-                <figcaption class="text-muted">
-                    have mastered at least one skill
-                </figcaption>
+                <!-- <figcaption class="text-muted">
+                    Students who have mastered at least one skill
+                </figcaption> -->
             </div>
         </div>
         <div class="row chart-row position-relative">
@@ -355,7 +332,7 @@ export default {
                     @click="
                         downloadData(
                             analyticsStore.avgTimeOnSkills,
-                            'Avg-time-per-skill'
+                            'Time-per-skill'
                         )
                     "
                 >
@@ -371,7 +348,7 @@ export default {
                         />
                     </svg>
                 </button>
-                <TenantAvgInteractionTimePerSkillHorizontalBarChart
+                <TenantInteractionTimePerSkillHorizontalBarChart
                     v-if="analyticsStore.avgTimeOnSkills.length > 0"
                     :data="analyticsStore.avgTimeOnSkills"
                     colour="purple"
@@ -379,18 +356,17 @@ export default {
                 />
                 <p v-else>No data yet</p>
             </div>
-            <figcaption class="text-muted">time per skill</figcaption>
+            <!-- <figcaption class="text-muted">time per skill</figcaption> -->
         </div>
     </div>
     <!-- Tutorial modal for initial introduction -->
     <div v-if="showTutorialTip1" class="modal">
         <div class="modal-content">
-            <p class="modal-text">
-                The School Admin Engagement Report provides comprehensive
-                analytics on student engagement and platform usage across your
-                school. You can download chart data as CSV files using the
+            <p>
+                This page provides
+                information on engagement and usage.</p><p>You can download chart data as CSV files using the
                 download buttons next to each chart, and toggle between
-                cumulative (total) and weekly data views using the filter
+                cumulative (total) and weekly data using the filter
                 buttons at the top right.
             </p>
             <div class="d-flex justify-content-between">
@@ -410,6 +386,7 @@ export default {
 
 .chart-row {
     height: calc(50% - 20px);
+    overflow: auto;
 }
 
 .chart-col {
@@ -421,14 +398,13 @@ export default {
     overflow: auto;
 }
 
-#engagement-chart-container {
+#engagement-chart-container, #tenant-students-pie-chart-container {
     height: calc(100% - 35px);
     width: 100%;
 }
 
-#tenant-students-pie-chart-container,
 #time-per-skill-chart-container {
-    height: calc(100% - 35px);
+    min-height: calc(100% - 35px);
     width: 100%;
 }
 

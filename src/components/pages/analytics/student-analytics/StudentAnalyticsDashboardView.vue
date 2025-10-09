@@ -55,8 +55,6 @@ export default {
         StudentTimeChart
     },
     async created() {
-        console.log(this.userDetailsStore.userId);
-
         // Get total progress data
         await this.analyticsStore.getStudentProgress(
             this.userDetailsStore.userId,
@@ -180,9 +178,9 @@ export default {
                 }
             });
         },
-        toggleSidebar() {
-            this.showSidebar = !this.showSidebar;
-        }
+        // toggleSidebar() {
+        //     this.showSidebar = !this.showSidebar;
+        // }
     }
 };
 </script>

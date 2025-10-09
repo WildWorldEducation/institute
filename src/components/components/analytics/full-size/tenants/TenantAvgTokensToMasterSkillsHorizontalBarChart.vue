@@ -6,22 +6,19 @@ export default {
     props: ['data', 'colour'],
     data() {
         return {
-            
         };
     },
-    mounted() {        
+    mounted() {
         // Specify the chart’s dimensions, based on a bar’s height.
-     
+        const barHeight = 20;
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
         const marginLeft = 200;
-         const width = document.getElementById(
+        const width = document.getElementById(
             'tokens-per-skill-chart-container'
         ).clientWidth;
-        const height = document.getElementById(
-            'tokens-per-skill-chart-container'
-        ).clientHeight;
+        const height = barHeight * this.data.length + marginTop + marginBottom;
 
         // Create the scales.
         const x = d3
@@ -33,7 +30,7 @@ export default {
             .scaleBand()
             .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
-            .padding(0.1);
+            .padding(0.0);
 
         // Create a value format.
         const format = x.tickFormat(20);
@@ -44,11 +41,11 @@ export default {
             .append('svg')
             .attr('width', width)
             .attr('height', height)
-            .attr('viewBox', [0, 0, width, height])
-            .attr(
-                'style',
-                'max-width: 100%; height: 100%; font: 14px sans-serif;'
-            );
+            .attr('viewBox', [0, 0,
+                +Math.min(width, height),
+                +Math.min(width, height)
+            ])
+             .attr('preserveAspectRatio', 'xMinYMin');
 
         // Append a rect for each skill.
         svg.append('g')
@@ -96,9 +93,7 @@ export default {
 </script>
 
 <template>
-    
+
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

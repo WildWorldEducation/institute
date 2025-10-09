@@ -59,7 +59,7 @@ export default {
     <div class="container chart-page">
         <div class="row h-100">
             <div class="col-md position-relative">
-                <h3 class="secondary-heading h5">Assessments failed</h3>
+                <h3 class="heading h4">Assessments failed</h3>
                 <div id="fails-by-skill-chart-container">               
                         <button class="position-absolute download-btn btn" @click="
                             downloadData(
@@ -77,7 +77,7 @@ export default {
                     <FailedAssessmentsHorizontalBarChart v-if="
                         failedAssessmentQuantities.length > 0
                     " :data="failedAssessmentQuantities" />
-                    <p v-else>No data yet</p>
+                    <p v-else>Students have not failed any assessments more than once yet</p>
                 </div>
             </div>
 

@@ -198,6 +198,7 @@ export default {
             this.showMobileTutorialTip6 = false;
             this.showMobileTutorialTip7 = false;
             this.isTutorialComplete = true;
+            this.markTutorialComplete();
         },
         markTutorialComplete() {
             let url =
@@ -664,11 +665,14 @@ export default {
 
     <!-- Filter for showing only unlocked skills in bottom left corner -->
     <div
-        v-if="userDetailsStore.isSkillsLocked == 1"
         class="unlocked-filter d-flex flex-column-reverse"
     >
         <button
-            class="btn primary-btn"
+            class="btn"
+            :class="{
+                'student-progress-btn': isUnlockedSkillsOnlyFilter,
+                'all-skills-btn': !isUnlockedSkillsOnlyFilter
+            }"
             @click="
                 toggleisUnlockedSkillsFilter();
                 $refs.childComponent.filter(
@@ -680,7 +684,7 @@ export default {
             "
         >
             <span v-if="isUnlockedSkillsOnlyFilter">All skills</span>
-            <span v-else>Available skills only</span>
+            <span v-else>Student progress</span>
         </button>
 
         <div
@@ -1077,6 +1081,16 @@ export default {
 </template>
 
 <style scoped>
+.student-progress-btn {
+   background-color: #D3D3D3;
+    color: black;
+}
+
+.all-skills-btn {    
+     background-color: #228C22;
+    color: white;
+}
+
 .mobile-legend {
     display: none;
 }
@@ -1315,7 +1329,7 @@ export default {
 
 .btn:active,
 .btn:focus {
-    color: var(--primary-contrast-color);
+    /* color: var(--primary-contrast-color); */
     border: 1px solid black;
 }
 

@@ -23,9 +23,6 @@ export default {
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false,
-            // showTutorialTip2: false,
-            // showTutorialTip3: false,
-            // showTutorialTip4: false,
             dataMode: 'total'
         };
     },
@@ -54,26 +51,12 @@ export default {
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
-                // this.showTutorialTip2 = true;
                 this.markTutorialComplete();
             }
-            // else if (step == 2) {
-            //     this.showTutorialTip2 = false;
-            //     this.showTutorialTip3 = true;
-            // } else if (step == 3) {
-            //     this.showTutorialTip3 = false;
-            //     this.showTutorialTip4 = true;
-            // } else if (step == 4) {
-            //     this.showTutorialTip4 = false;
-            //     this.markTutorialComplete();
-            // }
         },
         restartTutorial() {
             this.isTutorialComplete = false;
             this.showTutorialTip1 = true;
-            // this.showTutorialTip2 = false;
-            // this.showTutorialTip3 = false;
-            // this.showTutorialTip4 = false;
         },
         markTutorialComplete() {
             let url =
@@ -85,14 +68,6 @@ export default {
             };
             fetch(url, requestOptions);
         },
-        // skipTutorial() {
-        //     this.showTutorialTip1 = false;
-        //     this.showTutorialTip2 = false;
-        //     this.showTutorialTip3 = false;
-        //     this.showTutorialTip4 = false;
-        //     this.isTutorialComplete = true;
-        //     this.markTutorialComplete();
-        // },
         async getAvgTokensToMasterSkills() {
             try {
                 const response = await fetch(
@@ -252,11 +227,14 @@ export default {
         <!-- Tutorial modal for initial introduction -->
         <div v-if="showTutorialTip1" class="modal">
             <div class="modal-content">
-                <p class="modal-text">
-                    The Cost Report provides comprehensive analytics on AI token
-                    usage and associated costs across your school. Track daily
+                <p>
+                    This page shows information on AI token
+                    usage across your school.</p>
+                    <p>Track daily
                     token consumption, average tokens required to master each
-                    skill, and total tokens spent per skill. All chart data can
+                    skill, and total tokens spent per skill.</p>
+                    
+                    <p>All chart data can
                     be downloaded as CSV files using the download buttons, and
                     you can toggle between total (cumulative) and weekly data
                     views using the filter buttons at the top right.
@@ -307,7 +285,11 @@ export default {
             </div>
         </div>
         <div class="row chart-row">
-            <div class="col-md chart-col position-relative">
+            
+            <div class="col-md chart-col position-relative overflow-auto">
+                 <figcaption class="text-muted">
+                    Average number of tokens spent to master a skill
+                </figcaption>
                 <div id="tokens-to-master-chart-container">
                     <button
                         class="btn position-absolute download-btn"
@@ -337,12 +319,13 @@ export default {
                     />
                     <p v-else>No data yet</p>
                 </div>
-                <figcaption class="text-muted">
-                    Average number of tokens spent to master a skill
-                </figcaption>
             </div>
 
-            <div class="col-md chart-col position-relative">
+             
+            <div class="col-md chart-col position-relative overflow-auto">
+                <figcaption class="text-muted">
+                    Tokens spent per skill
+                </figcaption>
                 <div id="tokens-per-skill-chart-container">
                     <button
                         class="btn position-absolute download-btn"
@@ -373,9 +356,6 @@ export default {
                     />
                     <p v-else class="mb-5">No data yet</p>
                 </div>
-                <figcaption class="text-muted">
-                    Tokens spent per skill
-                </figcaption>
             </div>
         </div>
     </div>

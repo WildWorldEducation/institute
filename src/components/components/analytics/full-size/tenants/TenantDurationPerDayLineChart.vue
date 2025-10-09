@@ -20,7 +20,7 @@ export default {
         const marginTop = 5;
         const marginRight = 20;
         const marginBottom = 20;
-        const marginLeft = 20;
+        const marginLeft = 25;
 
         // Declare the x (horizontal position) scale.
         const x = d3.scaleUtc(

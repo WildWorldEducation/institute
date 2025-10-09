@@ -308,6 +308,9 @@ export default {
             for (let i = 0; i < this.usersStore.users.length; i++) {
                 if (this.usersStore.users[i].id == instructorId) {
                     this.instructor = this.usersStore.users[i].username;
+                    return;
+                } else {
+                    this.instructor = 'No instructor assigned';
                 }
             }
             if (!instructorId) {

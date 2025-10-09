@@ -132,7 +132,6 @@ export default {
                     }
                 });
         },
-
         closeIntroSearchModal() {
             this.introSearchModal = false;
         },
@@ -1207,12 +1206,16 @@ export default {
     <div
         v-if="
             sessionDetailsStore.isLoggedIn &&
-            userDetailsStore.isSkillsLocked == 1
+            userDetailsStore.role == 'student'
         "
         class="unlocked-filter d-flex flex-column-reverse"
     >
         <button
-            class="btn primary-btn"
+            class="btn"
+            :class="{
+                'student-progress-btn': userDetailsStore.isUnlockedSkillsOnlyFilter,
+                'all-skills-btn': !userDetailsStore.isUnlockedSkillsOnlyFilter
+            }"
             @click="
                 toggleisUnlockedSkillsFilter();
                 $refs.childComponent.filter();
@@ -1221,7 +1224,7 @@ export default {
             <span v-if="userDetailsStore.isUnlockedSkillsOnlyFilter"
                 >All skills</span
             >
-            <span v-else>Available skills only</span>
+            <span v-else>My progress</span>
         </button>
 
         <div
@@ -2018,6 +2021,16 @@ export default {
 </template>
 
 <style scoped>
+.student-progress-btn {
+   background-color: #D3D3D3;
+    color: black!important;
+}
+
+.all-skills-btn {    
+     background-color: #228C22;
+    color: white;
+}
+
 /* Intro search model */ /* Modal Content/Box */
 .close-btn {
     z-index: 1000;

@@ -54,14 +54,14 @@ export default {
             let url = `/student-analytics/student-duration-per-day-class/${this.studentId}/${this.userDetailsStore.userId}`;
 
             if (this.userDetailsStore.role === 'school_admin') {
-                url = `/student-analytics/student-duration-per-day-tenant/${this.studentId}/${this.userDetailsStore.userId}`;
+                url = `/student-analytics/student-duration-per-day-tenant/${this.studentId}/${this.userDetailsStore.tenantId}`;
             }
-            console.log(this.studentId);
+            console.log(url)
+
             fetch(url)
                 .then((response) => response.json())
                 .then((resData) => {
-                    console.log(resData);
-
+                    console.log(resData)
                     const data = resData.studentTime;
                     for (let i = 0; i < data.length; i++) {
                         data[i].formattedQuantity =
@@ -186,7 +186,7 @@ export default {
             <div class="col-lg chart-col position-relative">
                 <div id="">TODO: Add time per subject bar chart</div>
             </div>
-            <div class="col-lg chart-col position-relative">
+            <div class="col-lg chart-col position-relative overflow-auto">
                 <div id="activity-chart-container">
                     <DownloadCSVBtn
                         :data="minutesPerSkillDownloadData"

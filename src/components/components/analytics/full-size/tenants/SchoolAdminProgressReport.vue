@@ -4,8 +4,6 @@ import { useAnalyticsStore } from '../../../../../stores/AnalyticsStore';
 
 import TenantPassedAssessmentsByRootSubjectHorizontalBarChart from './TenantPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
 import TenantPassedAssessmentsHorizontalBarChart from './TenantPassedAssessmentsHorizontalBarChart.vue';
-//import TenantNumSkillsPassedPerNumStudentsHorizontalBarChart from '../../../components/analytics/full-size/tenants/TenantNumSkillsPassedPerNumStudentsHorizontalBarChart.vue';
-
 import TenantAssessmentsAttemptedHorizontalBarChart from './TenantAssessmentsAttemptedHorizontalBarChart.vue';
 import TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart from './TenantAttemptedAssessmentsByRootSubjectHorizontalBarChart.vue';
 
@@ -28,9 +26,6 @@ export default {
             // Tutorial tooltips
             isTutorialComplete: false,
             showTutorialTip1: false,
-            // showTutorialTip2: false,
-            // showTutorialTip3: false,
-            // showTutorialTip4: false,
             dataMode: 'total'
         };
     },
@@ -63,26 +58,12 @@ export default {
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
-                // this.showTutorialTip2 = true;
                 this.markTutorialComplete();
             }
-            // else if (step == 2) {
-            //     this.showTutorialTip2 = false;
-            //     this.showTutorialTip3 = true;
-            // } else if (step == 3) {
-            //     this.showTutorialTip3 = false;
-            //     this.showTutorialTip4 = true;
-            // } else if (step == 4) {
-            //     this.showTutorialTip4 = false;
-            //     this.markTutorialComplete();
-            // }
         },
         restartTutorial() {
             this.isTutorialComplete = false;
             this.showTutorialTip1 = true;
-            // this.showTutorialTip2 = false;
-            // this.showTutorialTip3 = false;
-            // this.showTutorialTip4 = false;
         },
         markTutorialComplete() {
             let url =
@@ -94,33 +75,6 @@ export default {
             };
             fetch(url, requestOptions);
         },
-        // skipTutorial() {
-        //     this.showTutorialTip1 = false;
-        //     this.showTutorialTip2 = false;
-        //     this.showTutorialTip3 = false;
-        //     this.showTutorialTip4 = false;
-        //     this.isTutorialComplete = true;
-        //     this.markTutorialComplete();
-        // },
-
-        // async getNumSkillsPassedPerNumStudents() {
-        //     try {
-        //         const response = await fetch(
-        //             `/student-analytics/num-skills-passed-per-num-students/${this.tenantId}`
-        //         );
-        //         if (!response.ok) {
-        //             throw new Error(`HTTP error! status: ${response.status}`);
-        //         }
-        //         this.analyticsStore.numSkillsPassedPerNumStudents =
-        //             await response.json();
-        //     } catch (error) {
-        //         console.error(
-        //             'Error fetching cohort mastered assessments:',
-        //             error
-        //         );
-        //         this.analyticsStore.numSkillsPassedPerNumStudents = [];
-        //     }
-        // },
         async getPassedAssessments() {
             try {
                 const response = await fetch(
@@ -227,7 +181,7 @@ export default {
 <template>
     <div class="container-fluid chart-page">
         <span class="d-flex justify-content-between w-100">
-            <h1 class="heading h4">Progress Report</h1>
+            <h1 class="heading h4">School-wide Progress Report</h1>
             <!-- Tutorial button -->
             <button class="btn me-1" @click="restartTutorial" aria-label="info">
                 <svg
@@ -299,7 +253,7 @@ export default {
                     <p v-else>No data yet</p>
                 </div>
             </div>
-            <div class="col-md chart-col position-relative">
+            <div class="col-md chart-col position-relative overflow-auto">
                 <div id="passed-skills-chart">
                     <button
                         class="btn position-absolute download-btn"
@@ -371,7 +325,7 @@ export default {
                     <p v-else>No data yet</p>
                 </div>
             </div>
-            <div class="col-md chart-col position-relative">
+            <div class="col-md chart-col position-relative overflow-auto">
                 <div id="attempted-skills-chart">
                     <button
                         class="btn position-absolute download-btn"
@@ -434,6 +388,7 @@ export default {
         height: 200px;
     }
 }
+
 
 #passed-subjects-chart,
 #attempted-subjects-chart,
