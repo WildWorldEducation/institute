@@ -63,7 +63,6 @@ export default {
         SearchUserBar
     },
     async created() {
-        console.log(this.userDetailsStore.role);
         this.checkIfTutorialComplete();
         // Load data
         if (

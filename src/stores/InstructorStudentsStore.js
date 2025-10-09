@@ -12,7 +12,7 @@ export const useInstructorStudentsStore = defineStore("instructorStudents", {
             const data = await result.json();
 
             this.instructorStudentsList = data;
-            console.log('hao')
+
             return this.$state;
         },
         // async deleteInstructorStudentsRecords() {
