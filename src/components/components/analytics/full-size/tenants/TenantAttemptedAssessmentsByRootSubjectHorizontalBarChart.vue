@@ -8,6 +8,7 @@ export default {
         return {};
     },
     mounted() {
+        const barHeight = 30;
         const marginTop = 0;
         const marginRight = 20;
         const marginBottom = 20;
@@ -16,9 +17,7 @@ export default {
         const width = document.getElementById(
             'attempted-subjects-chart'
         ).clientWidth;
-        const height = document.getElementById(
-            'attempted-subjects-chart'
-        ).clientHeight;
+        const height = barHeight * this.data.length + marginTop + marginBottom;
 
         // Create the scales.
         const x = d3
@@ -31,9 +30,6 @@ export default {
             .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
             .padding(0.1);
-
-        // Create a value format.
-        const format = x.tickFormat(20);
 
         // Create the SVG container.
         const svg = d3

@@ -9,7 +9,7 @@ export default {
     },
     mounted() {
         // Specify the chart’s dimensions, based on a bar’s height.
-        const barHeight = 20;
+        const barHeight = 30;
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
@@ -30,7 +30,7 @@ export default {
             .scaleBand()
             .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
-            .padding(0.0);
+            .padding(0.1);
 
         // Create a value format.
         const format = x.tickFormat(20);

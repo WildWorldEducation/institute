@@ -51,7 +51,7 @@ export default {
 <template>
     <div class="container chart-page">
         <div class="row h-100">
-            <div class="col-md position-relative">
+            <div class="col-md position-relative overflow-auto">
                 <h3 class="heading h4">School-wide assessments failed</h3>
                 <div id="failed-assessments-chart-container">    
                 <DownloadCSVBtn

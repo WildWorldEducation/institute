@@ -1,7 +1,6 @@
 <script>
 import { useUserDetailsStore } from '../../../../../stores/UserDetailsStore';
 import { useAnalyticsStore } from '../../../../../stores/AnalyticsStore';
-
 import TenantPassedAssessmentsByRootSubjectHorizontalBarChart from './TenantPassedAssessmentsByRootSubjectHorizontalBarChart.vue';
 import TenantPassedAssessmentsHorizontalBarChart from './TenantPassedAssessmentsHorizontalBarChart.vue';
 import TenantAssessmentsAttemptedHorizontalBarChart from './TenantAssessmentsAttemptedHorizontalBarChart.vue';

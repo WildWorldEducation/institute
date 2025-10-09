@@ -7,19 +7,18 @@ export default {
     data() {
         return {};
     },
-    mounted() {          
+    mounted() {
         // Specify the chart’s dimensions, based on a bar’s height.        
+        const barHeight = 30;
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
         const marginLeft = 200;
-          // Declare the chart dimensions and margins.
-            const width = document.getElementById(
-                'failed-chart-container'
-            ).clientWidth;
-            const height = document.getElementById(
-                'failed-chart-container'
-            ).clientHeight;
+        // Declare the chart dimensions and margins.
+        const width = document.getElementById(
+            'failed-chart-container'
+        ).clientWidth;
+        const height = barHeight * this.data.length + marginTop + marginBottom;
 
         // Create the scales.
         const x = d3
@@ -41,11 +40,13 @@ export default {
             .append('svg')
             .attr('width', width)
             .attr('height', height)
-            .attr('viewBox', [0, 0, width, height])
-            .attr(
-                'style',
-                'max-width: 100%; height: 100%;'
-            );
+            .attr('viewBox', [
+                0,
+                0,
+                +Math.min(width, height),
+                +Math.min(width, height)
+            ])
+            .attr('preserveAspectRatio', 'xMinYMin');
 
         // Append a rect for each skill.
         svg.append('g')
@@ -55,7 +56,7 @@ export default {
             .attr('x', x(0))
             .attr('y', (d) => y(d.name))
             .attr('width', (d) => x(d.quantity) - x(0))
-            .attr('height', y.bandwidth()) .attr('fill', function (d) {
+            .attr('height', y.bandwidth()).attr('fill', function (d) {
                 if (d.name == 'Language') return 'DarkMagenta'; // turquoise
                 else if (d.name == 'Mathematics') return 'blue'; // blue
                 else if (d.name == 'Science & Invention')
@@ -89,7 +90,7 @@ export default {
             );
 
         // Create the axes.
-        svg.append('g')        
+        svg.append('g')
             .attr('transform', `translate(0,${marginTop})`)
             .call(d3.axisTop(x).ticks(0))
             .call((g) => g.select('.domain').remove());
@@ -101,7 +102,7 @@ export default {
 };
 </script>
 
-<template>    
+<template>
 </template>
 
 <style scoped></style>
