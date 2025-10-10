@@ -4,6 +4,7 @@ import { useAnalyticsStore } from '../../../../stores/AnalyticsStore';
 import { useUserSkillsStore } from '../../../../stores/UserSkillsStore';
 import StudentDurationPerDayLineChart from '../../../components/analytics/full-size/students/StudentDurationPerDayLineChart.vue';
 import TimePerSkillHorizontalBarChart from '../../../components/analytics/full-size/students/TimePerSkillHorizontalBarChart.vue';
+import TimePerSubjectHorizontalBarChart from '../../../components/analytics/full-size/students/TimePerSubjectHorizontalBarChart.vue';
 
 export default {
     setup() {
@@ -19,7 +20,8 @@ export default {
     },
     components: {
         StudentDurationPerDayLineChart,
-        TimePerSkillHorizontalBarChart
+        TimePerSkillHorizontalBarChart,
+        TimePerSubjectHorizontalBarChart
     },
     data() {
         return {
@@ -46,6 +48,14 @@ export default {
             <p v-else>No data yet</p>
         </div> -->
 
+        <div class="row">
+            <h2 class="h4 heading">Time per subject</h2>
+            <TimePerSubjectHorizontalBarChart
+                v-if="analyticsStore.studentSkillDurations.length > 0"
+                :data="analyticsStore.studentSkillDurations"
+                colour="purple"
+            />
+        </div>
         <div class="row">
             <h2 class="h4 heading">Time per skill</h2>
             <TimePerSkillHorizontalBarChart
