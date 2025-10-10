@@ -7,18 +7,17 @@ export default {
     data() {
         return {};
     },
-    mounted() {         
+    mounted() {
+        const barHeight = 30;
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
         const marginLeft = 200;
         // Declare the chart dimensions and margins.
-            const width = document.getElementById(
-                'passed-subjects-chart'
-            ).clientWidth;
-            const height = document.getElementById(
-                'passed-subjects-chart'
-            ).clientHeight;
+        const width = document.getElementById(
+            'passed-subjects-chart'
+        ).clientWidth;
+        const height = this.data.length * barHeight + marginTop + marginBottom;
 
         // Create the scales.
         const x = d3
@@ -31,7 +30,7 @@ export default {
             .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
             .padding(0.1);
-    
+
         // Create the SVG container.
         const svg = d3
             .select(
@@ -41,15 +40,15 @@ export default {
             .attr('width', width)
             .attr('height', height)
             .attr('viewBox', [
-                    0,
-                    0,
-                    +Math.min(width, height),
-                    +Math.min(width, height)
-                ])
-                .attr('preserveAspectRatio', 'xMinYMin');
+                0,
+                0,
+                +Math.min(width, height),
+                +Math.min(width, height)
+            ])
+            .attr('preserveAspectRatio', 'xMinYMin');
 
         // Append a rect for each skill.
-        svg.append('g')           
+        svg.append('g')
             .selectAll()
             .data(this.data)
             .join('rect')
@@ -105,7 +104,7 @@ export default {
 </script>
 
 <template>
-    
+
 </template>
 
 <style scoped></style>
