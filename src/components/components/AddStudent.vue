@@ -106,7 +106,7 @@ export default {
         // Load all skills.
         if (this.skillsStore.skillsList.length < 1)
             await this.skillsStore.getSkillsList();
-        this.getInstructorsPerTenant(this.userDetailsStore.tenantId);
+        await this.getInstructorsPerTenant(this.userDetailsStore.tenantId);
     },
     methods: {
         async ValidateForm() {
@@ -127,7 +127,6 @@ export default {
             }
             this.teachersList = this.usersStore.instructorPerTenant;
             this.dropdownDataList = this.teachersList.map((e) => {
-                console.log(e);
                 return {
                     label: e.username,
                     key: e.id

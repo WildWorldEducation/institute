@@ -63,7 +63,6 @@ export default {
         SearchUserBar
     },
     async created() {
-        
         this.checkIfTutorialComplete();
         // Load data
         if (
@@ -85,7 +84,7 @@ export default {
                 await this.usersStore.getStudentsPerTenant(
                     this.userDetailsStore.tenantId
                 );
-            }   
+            }
         }
 
         if (this.userDetailsStore.role !== 'editor') {
@@ -288,7 +287,7 @@ export default {
         },
         async getInstructor() {
             // Get the instructor's user id.
-            var instructorId;
+            let instructorId = null;
 
             for (
                 let i = 0;
@@ -309,11 +308,13 @@ export default {
             for (let i = 0; i < this.usersStore.users.length; i++) {
                 if (this.usersStore.users[i].id == instructorId) {
                     this.instructor = this.usersStore.users[i].username;
-                    return
-                }
-                else {
+                    return;
+                } else {
                     this.instructor = 'No instructor assigned';
                 }
+            }
+            if (!instructorId) {
+                this.instructor = null;
             }
         },
         async getStudents() {
@@ -575,6 +576,7 @@ export default {
                     <UserDetails
                         v-else-if="userDetailsStore.role == 'school_admin'"
                         :userId="user.id"
+                        :instructor="instructor"
                     />
                     <UserDetails
                         v-else-if="

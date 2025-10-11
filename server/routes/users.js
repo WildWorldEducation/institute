@@ -368,7 +368,7 @@ router.post('/new-instructor/add', async (req, res, next) => {
                                     req.body.referrer_username != '' &&
                                     req.body.referrer_username != null
                                 ) {
-                                    console.log(req.body.referrer_username);
+
                                     const getReferrerSQLIDQuery = `SELECT id
                                         FROM users
                                         WHERE username = ${conn.escape(
@@ -805,11 +805,15 @@ router.post(
             student_id: req.body.student_id
         };
         let sqlQuery = 'INSERT INTO instructor_students SET ?';
+
         conn.query(sqlQuery, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 } else {
+
+                    res.status = 200;
+                    res.json({ message: 'success' })
                     res.end();
                 }
             } catch (err) {
@@ -2637,5 +2641,7 @@ router.delete(
 // router.get('/teacher-in-tenant/:tenantId', isAuthenticated, (req, res, next) => {
 
 // })
+
+
 
 module.exports = router;

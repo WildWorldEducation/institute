@@ -12,6 +12,15 @@ export default {
     created() {
         this.menuLabel = this.dropDownLabel;
     },
+    watch: {
+        dropDownLabel: {
+            handler(newVal, oldVal) {
+                if (newVal !== oldVal) {
+                    this.menuLabel = newVal;
+                }
+            }
+        }
+    },
     methods: {}
 };
 </script>
@@ -81,7 +90,7 @@ export default {
     position: absolute;
     top: 2px;
     width: 100%;
-    /*height: 300px; */
+    max-height: 300px;
     overflow-y: scroll;
     padding: 0.375rem 0.75rem;
     font-size: 1rem;
