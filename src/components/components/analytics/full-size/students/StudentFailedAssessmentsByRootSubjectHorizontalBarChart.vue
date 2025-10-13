@@ -9,8 +9,7 @@ export default {
     },
     mounted() {
         // Specify the chart’s dimensions, based on a bar’s height.
-                const barHeight = 20;
-
+        const barHeight = 20;
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 0;
@@ -18,7 +17,7 @@ export default {
         const width = document.getElementById(
             'fails-by-subject-chart-container'
         ).clientWidth;
-               const height = barHeight * this.data.length + marginTop + marginBottom;
+        const height = barHeight * this.data.length + marginTop + marginBottom;
 
 
         // Create the scales.
@@ -39,7 +38,7 @@ export default {
             .append('svg')
             .attr('width', '100%')
             .attr('height', '100%')
-           .attr('viewBox', [0, 0, width, height])
+            .attr('viewBox', [0, 0, width, height])
             .attr('preserveAspectRatio', 'xMinYMin');
 
 
