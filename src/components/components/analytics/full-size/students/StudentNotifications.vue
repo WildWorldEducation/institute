@@ -27,7 +27,7 @@ export default {
         This student is struggling with one or more assessments.
     </RouterLink>
     <RouterLink v-if="teacherAnalyticsStore.isLowActivity" class="alert alert-danger notification" role="alert"
-        target="_blank" :to="'/student/' + $parent.userId + '/total-time'">
+        target="_blank" :to="'/student/' + $parent.userId + '/engagement'">
         This student has not visited any skills for 3 days of more.
     </RouterLink>
 </template>

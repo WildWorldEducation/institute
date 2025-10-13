@@ -8,9 +8,9 @@ export default {
         return {};
     },
     mounted() {
-        
 
         // Specify the chart’s dimensions, based on a bar’s height.
+        const barHeight = 30;
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 20;
@@ -18,9 +18,8 @@ export default {
         const width = document.getElementById(
             'student-passed-subjects-chart-container'
         ).clientWidth;
-        const height = document.getElementById(
-            'student-passed-subjects-chart-container'
-        ).clientHeight;
+        const height = barHeight * this.data.length + marginTop + marginBottom;
+
 
         // Create the scales.
         const x = d3
@@ -34,17 +33,13 @@ export default {
             .rangeRound([marginTop, height - marginBottom])
             .padding(0.1);
 
-        // Create a value format.
-        const format = x.tickFormat(20);
-
         // Create the SVG container.
         const svg = d3
             .select('#student-passed-subjects-chart-container')
             .append('svg')
             .attr('width', '100%')
-            .attr('height', '100%')
-            .attr('viewBox', [0, 0, '100%', '100%'])
-            .attr('preserveAspectRatio', 'xMinYMin');
+            .attr('viewBox', [0, 0, width, height]);
+        
 
         // Append a rect for each skill.
         svg.append('g')
