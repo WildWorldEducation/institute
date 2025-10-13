@@ -60,13 +60,14 @@ export default {
     },
     methods: {
         getTimeSpentOnSkillDownloadData() {
-            this.timeSpentOnSubjectDownloadData =
-                this.analyticsStore.subjectTimeSpent.map((item) => {
+            this.timeSpentOnSubjectDownloadData = this.analyticsStore.time.map(
+                (item) => {
                     return {
                         subject: item.name,
                         timeSpent: item.formattedQuantity
                     };
-                });
+                }
+            );
         },
         async getStudentDurationPerDay() {
             let url = `/student-analytics/student-duration-per-day-class/${this.studentId}/${this.userDetailsStore.userId}`;
@@ -206,6 +207,7 @@ export default {
                     toolTip="Download Time spent on subject data as CSV"
                     class="position-absolute download-btn"
                 />
+
                 <TimePerSubjectHorizontalBarChart
                     v-if="analyticsStore.subjectTimeSpent.length > 0"
                     :data="analyticsStore.subjectTimeSpent"
