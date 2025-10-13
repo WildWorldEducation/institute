@@ -28,7 +28,8 @@ export default {
             isAboveTheCurve: false,
             teachers: [],
             selectedTeacher: {},
-            isSchoolSelected: true
+            isSchoolSelected: true,
+            isMobileCheck: window.innerWidth
         };
     },
     components: {
@@ -195,43 +196,32 @@ export default {
 <template>
     <div class="dashboard">
         <!-- Left column -->
-        <div v-if="teachers.length > 0" class="col-lg-1 col-md-2">
+        <div v-if="teachers.length > 0 && isMobileCheck >= 768" class="col-lg-1 col-md-2">
             <div class="d-flex bg-light rounded p-2">
-                <button
-                    :class="
-                        isSchoolSelected
-                            ? 'isCurrentlySelected'
-                            : 'side-buttons'
-                    "
-                    @click="selectElement('school')"
-                >
+                <button :class="isSchoolSelected
+                        ? 'isCurrentlySelected'
+                        : 'side-buttons'
+                    " @click="selectElement('school')">
                     school
                 </button>
             </div>
             <div v-for="teacher in teachers" :key="teacher.id">
                 <div class="d-flex bg-light rounded p-2">
-                    <button
-                        :class="
-                            teacher.id === selectedTeacher.id
-                                ? 'isCurrentlySelected'
-                                : 'side-buttons'
-                        "
-                        @click="selectElement(teacher)"
-                    >
+                    <button :class="teacher.id === selectedTeacher.id
+                            ? 'isCurrentlySelected'
+                            : 'side-buttons'
+                        " @click="selectElement(teacher)">
                         {{ teacher.username }}
                     </button>
                 </div>
             </div>
         </div>
         <!-- Right column -->
-        <div
-            :class="{
-                'col-lg-11': teachers.length > 0,
-                'col-md-10': teachers.length > 0,
-                'col-lg-12': teachers.length == 0
-            }"
-            class="dashboard"
-        >
+        <div :class="{
+            'col-lg-11': teachers.length > 0,
+            'col-md-10': teachers.length > 0,
+            'col-lg-12': teachers.length == 0
+        }" class="dashboard">
             <div class="container-fluid">
                 <!-- Top row -->
                 <!-- <div class="row top-row text-start">
@@ -253,51 +243,34 @@ export default {
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
                     <div class="col-md h-100">
-                        <RouterLink
-                            v-if="progressChartMode == 'school'"
-                            to="/progress-report"
-                            class=""
-                            target="_blank"
-                        >
+                        <RouterLink v-if="progressChartMode == 'school'" to="/progress-report" class="" target="_blank">
                             <h2 class="heading h5">Progress</h2>
                         </RouterLink>
                         <h2 v-else class="heading h5">Progress</h2>
                         <div id="progress-chart-container">
-                            <SchoolProgressChart
-                                ref="progressChart"
-                                v-if="
-                                    (progressChartMode == 'school' &&
-                                        analyticsStore.progress.tenant.length >
-                                            0) ||
-                                    (progressChartMode == 'teacher' &&
-                                        analyticsStore.progress.class.length >
-                                            0)
-                                "
-                            />
+                            <SchoolProgressChart ref="progressChart" v-if="
+                                (progressChartMode == 'school' &&
+                                    analyticsStore.progress.tenant.length >
+                                    0) ||
+                                (progressChartMode == 'teacher' &&
+                                    analyticsStore.progress.class.length >
+                                    0)
+                            " />
                             <p v-else>No data yet</p>
                         </div>
                     </div>
                     <div class="col-md">
-                        <RouterLink
-                            v-if="progressChartMode == 'school'"
-                            to="/challenges-report"
-                            class=""
-                            target="_blank"
-                        >
+                        <RouterLink v-if="progressChartMode == 'school'" to="/challenges-report" class=""
+                            target="_blank">
                             <h2 class="heading h5">Challenges</h2>
                         </RouterLink>
                         <h2 v-else class="heading h5">Challenges</h2>
                         <div id="failed-chart-container">
-                            <TenantFailedAssessmentsByRootSubjectHorizontalBarChart
-                                v-if="
-                                    analyticsStore.rootSubjectsFailedAssessments
-                                        .length > 0
-                                "
-                                :data="
-                                    analyticsStore.rootSubjectsFailedAssessments
-                                "
-                                ref="failedAssessmentsChart"
-                            />
+                            <TenantFailedAssessmentsByRootSubjectHorizontalBarChart v-if="
+                                analyticsStore.rootSubjectsFailedAssessments
+                                    .length > 0
+                            " :data="analyticsStore.rootSubjectsFailedAssessments
+                                    " ref="failedAssessmentsChart" />
                             <p v-else>No challenges yet</p>
                         </div>
                     </div>
@@ -305,44 +278,29 @@ export default {
 
                 <div class="dash-row row">
                     <div class="col-md position-relative h-100">
-                        <RouterLink
-                            v-if="progressChartMode == 'school'"
-                            to="/cost-report"
-                            class=""
-                            target="_blank"
-                        >
+                        <RouterLink v-if="progressChartMode == 'school'" to="/cost-report" class="" target="_blank">
                             <h2 class="heading h5">Cost</h2>
                         </RouterLink>
                         <h2 v-else class="heading h5">Cost</h2>
                         <div id="cost-chart-container">
-                            <SchoolCostChart
-                                ref="costChart"
-                                v-if="
-                                    analyticsStore.cost.tenant.length > 0 ||
-                                    analyticsStore.cost.class.length > 0
-                                "
-                            />
+                            <SchoolCostChart ref="costChart" v-if="
+                                analyticsStore.cost.tenant.length > 0 ||
+                                analyticsStore.cost.class.length > 0
+                            " />
                             <p v-else>No data yet</p>
                         </div>
                     </div>
                     <div class="col-md h-100">
-                        <RouterLink
-                            v-if="progressChartMode == 'school'"
-                            to="/engagement-report"
-                            target="_blank"
-                        >
+                        <RouterLink v-if="progressChartMode == 'school'" to="/engagement-report" target="_blank">
                             <h2 class="heading h5">Weekly engagement</h2>
                         </RouterLink>
                         <h2 v-else class="heading h5">Weekly engagement</h2>
 
                         <div id="time-chart-container">
-                            <SchoolTimeChart
-                                v-if="
-                                    analyticsStore.time.tenant.length > 0 ||
-                                    analyticsStore.time.class.length > 0
-                                "
-                                ref="timeChart"
-                            />
+                            <SchoolTimeChart v-if="
+                                analyticsStore.time.tenant.length > 0 ||
+                                analyticsStore.time.class.length > 0
+                            " ref="timeChart" />
                             <p v-else>No data</p>
                         </div>
                     </div>
