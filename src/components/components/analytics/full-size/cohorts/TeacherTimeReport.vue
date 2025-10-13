@@ -168,9 +168,7 @@ export default {
                     />
                     <p v-else>No time recorded yet</p>
                 </div>
-                <figcaption class="text-muted">
-                    Total time spent on the platform, comparing students
-                </figcaption>
+           
             </div>
 
             <div class="col-md chart-col position-relative overflow-auto">
@@ -187,9 +185,7 @@ export default {
                         v-if="studentDurationsPerSkill.length > 0"
                     />
                 </div>
-                <figcaption class="text-muted">
-                    Total time spent on each skill
-                </figcaption>
+            
             </div>
         </div>
     </div>

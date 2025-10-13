@@ -8,10 +8,7 @@ export default {
         return {};
     },
     mounted() {
-        const container = d3.select(
-            '#cohort-failed-assessments-by-root-subject-chart-container'
-        );
-      
+     
         // Specify the chart’s dimensions, based on a bar’s height.
         const barHeight = 25;
         const marginTop = 0;
