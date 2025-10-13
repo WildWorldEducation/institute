@@ -31,6 +31,7 @@ export default {
     async created() {
         await this.analyticsStore.getStudentDurationPerDay(this.studentId);
         await this.analyticsStore.getStudentSkillDurations(this.studentId);
+        await this.analyticsStore.getStudentSubjectTimeSpent(this.studentId);
     },
     methods: {}
 };

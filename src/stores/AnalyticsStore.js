@@ -517,6 +517,19 @@ export const useAnalyticsStore = defineStore('analytics', {
                 );
                 this.studentTotalTokensSpent = 0;
             }
+        },
+        async getStudentSubjectTimeSpent(studentId) {
+            try {
+                const response = await fetch(`/student-analytics/total-time-spent-by-subject/student/${studentId}`)
+                const data = await response.json();
+
+
+            } catch (error) {
+                console.error(
+                    'Error fetching student total tokens spent:',
+                    error
+                );
+            }
         }
     }
 });
