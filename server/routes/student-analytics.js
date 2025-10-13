@@ -3281,8 +3281,7 @@ router.get(
                             duration: value
                         })
                     );
-                    console.log('Result is: ')
-                    console.log(result)
+
                     res.json(result);
                 } catch (err) {
                     next(err);

@@ -52,8 +52,8 @@ export default {
         <div class="row">
             <h2 class="h4 heading">Time per subject</h2>
             <TimePerSubjectHorizontalBarChart
-                v-if="analyticsStore.studentSkillDurations.length > 0"
-                :data="analyticsStore.studentSkillDurations"
+                v-if="analyticsStore.subjectTimeSpent.length > 0"
+                :data="analyticsStore.subjectTimeSpent"
                 colour="purple"
             />
         </div>

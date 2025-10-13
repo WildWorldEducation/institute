@@ -24,7 +24,8 @@ export default {
             Math.ceil((this.data.length + 0.1) * barHeight) +
             marginTop +
             marginBottom;
-
+        console.log('DATA IS: ');
+        console.log(this.data);
         // Create the scales.
         const x = d3
             .scaleLinear()

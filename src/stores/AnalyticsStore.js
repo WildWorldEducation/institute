@@ -56,7 +56,9 @@ export const useAnalyticsStore = defineStore('analytics', {
             cohortSkillActivities: [],
             cohortRootSubjectsFailedAssessments: [],
             cohortRootSubjectsPassedAssessments: [],
-            cohortRootSubjectsAttemptedAssessments: []
+            cohortRootSubjectsAttemptedAssessments: [],
+            // subject data
+            subjectTimeSpent: []
         };
     },
     actions: {
@@ -522,7 +524,16 @@ export const useAnalyticsStore = defineStore('analytics', {
             try {
                 const response = await fetch(`/student-analytics/total-time-spent-by-subject/student/${studentId}`)
                 const data = await response.json();
+                // format response data so the graph can display it
 
+                this.subjectTimeSpent = data.map((item) => {
+                    const formattedQuantity = this.millisToMinutesAndSeconds(item.duration)
+                    return {
+                        formattedQuantity: formattedQuantity,
+                        quantity: item.duration,
+                        name: item.name
+                    }
+                })
 
             } catch (error) {
                 console.error(
