@@ -71,15 +71,7 @@ export default {
             //     .attr('class', 'axis')
             //     .attr('transform', `translate(0,${height})`) // Move to bottom of chart
             //     .call(d3.axisBottom(xScale)); // Create bottom-oriented axis with duration values
-
-            // Add X axis label
-            g.append('text')
-                .attr('class', 'axis-label')
-                .style('font-size', '16px')
-                .attr('transform', `translate(${width / 2},${height + 35})`) // Center below x-axis
-                .style('text-anchor', 'middle')
-                .text('Duration (minutes)');
-
+                
             // Add value labels on bars
             g.selectAll('.bar-label')
                 .data(data)
