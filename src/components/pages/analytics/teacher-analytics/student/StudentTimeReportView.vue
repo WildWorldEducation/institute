@@ -35,7 +35,8 @@ export default {
             durationsPerDay: [],
             totalTimeOnPlatformDownloadData: [],
             minutesPerSkillDownloadData: [],
-            averageDurationsPerDay: []
+            averageDurationsPerDay: [],
+            timeSpentOnSubjectDownloadData: []
         };
     },
     async created() {
@@ -55,20 +56,28 @@ export default {
                 this.studentId
             );
         }
+        this.getTimeSpentOnSkillDownloadData();
     },
     methods: {
+        getTimeSpentOnSkillDownloadData() {
+            this.timeSpentOnSubjectDownloadData =
+                this.analyticsStore.subjectTimeSpent.map((item) => {
+                    return {
+                        subject: item.name,
+                        timeSpent: item.formattedQuantity
+                    };
+                });
+        },
         async getStudentDurationPerDay() {
             let url = `/student-analytics/student-duration-per-day-class/${this.studentId}/${this.userDetailsStore.userId}`;
 
             if (this.userDetailsStore.role === 'school_admin') {
                 url = `/student-analytics/student-duration-per-day-tenant/${this.studentId}/${this.userDetailsStore.tenantId}`;
             }
-            console.log(url);
 
             fetch(url)
                 .then((response) => response.json())
                 .then((resData) => {
-                    console.log(resData);
                     const data = resData.studentTime;
                     for (let i = 0; i < data.length; i++) {
                         data[i].formattedQuantity =
@@ -191,6 +200,12 @@ export default {
         </div>
         <div class="chart-row row">
             <div class="col-lg chart-col position-relative">
+                <DownloadCSVBtn
+                    :data="timeSpentOnSubjectDownloadData"
+                    :fileName="`Time spent on subject - ${studentName}`"
+                    toolTip="Download Time spent on subject data as CSV"
+                    class="position-absolute download-btn"
+                />
                 <TimePerSubjectHorizontalBarChart
                     v-if="analyticsStore.subjectTimeSpent.length > 0"
                     :data="analyticsStore.subjectTimeSpent"
