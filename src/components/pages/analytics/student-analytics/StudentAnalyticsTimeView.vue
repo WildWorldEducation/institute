@@ -66,9 +66,6 @@ export default {
             />
             <p v-else>You haven't spent any time on skills yet.</p>
         </div>
-        <p class="mt-5">
-            TODO: Add time per subject bar chart (above this chart)
-        </p>
     </div>
 </template>
 
