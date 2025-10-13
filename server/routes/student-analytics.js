@@ -17,6 +17,7 @@ const {
     getSkillListRootParent
 } = require('../utilities/skill-relate-functions');
 const { fail } = require('assert');
+const { duration } = require('moment/moment');
 
 /*------------------------------------------
 --------------------------------------------
@@ -3230,24 +3231,16 @@ router.get(
             const skills = await query(allSkillsQuery);
 
             let sqlQuery = `
-                SELECT skills.name as name, count(*) as quantity, parent
-                FROM user_skills
-                JOIN users
-                ON users.id = user_skills.user_id
-                JOIN skills
-                ON skills.id = user_skills.skill_id
-                WHERE users.id = ${conn.escape(req.params.studentId)}
-                AND is_mastered = 1
-                AND type <> 'domain'
-                GROUP BY name;`;
+                SELECT skills.id, skills.name,skills.parent, SUM(user_skills.duration) AS duration
+                FROM user_skills JOIN skills ON skills.id = user_skills.skill_id
+                WHERE user_skills.user_id = ${conn.escape(req.params.studentId)} 
+                GROUP BY skills.name`;
 
-            conn.query(sqlQuery, async (err, passedAssessmentSkills) => {
+            conn.query(sqlQuery, async (err, skillsDuration) => {
                 try {
                     if (err) {
                         throw err;
                     }
-                    console.log('Lobster')
-                    console.log(passedAssessmentSkills)
 
                     // Recursive function
                     async function getRootSubject(originalSkill, parentSkill) {
@@ -3266,17 +3259,17 @@ router.get(
                         }
                     }
 
-                    for (let i = 0; i < passedAssessmentSkills.length; i++) {
+                    for (let i = 0; i < skillsDuration.length; i++) {
                         await getRootSubject(
-                            passedAssessmentSkills[i],
-                            passedAssessmentSkills[i]
+                            skillsDuration[i],
+                            skillsDuration[i]
                         );
                     }
 
-                    const totalsMap = passedAssessmentSkills.reduce(
+                    const totalsMap = skillsDuration.reduce(
                         (acc, item) => {
                             const subject = item.rootSubject;
-                            acc[subject] = (acc[subject] || 0) + item.quantity;
+                            acc[subject] = (acc[subject] || 0) + item.duration;
                             return acc;
                         },
                         {}
@@ -3285,10 +3278,11 @@ router.get(
                     const result = Object.entries(totalsMap).map(
                         ([key, value]) => ({
                             name: key,
-                            quantity: value
+                            duration: value
                         })
                     );
-
+                    console.log('Result is: ')
+                    console.log(result)
                     res.json(result);
                 } catch (err) {
                     next(err);
