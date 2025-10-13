@@ -609,7 +609,7 @@ export default {
             <!-- User detail view specific for phone -->
             <div
                 v-if="showDetails"
-                class="col-md-7 d-block d-md-none"
+                class="col-md-7 d-block d-md-none overflow-auto"
                 id="user-detail-section"
             >
                 <div class="row">
