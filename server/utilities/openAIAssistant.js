@@ -353,14 +353,19 @@ async function createAssessingAssistant(
             - FORBIDDEN PHRASES: "uploaded", "document", "file", "material", "based on the", "according to"
             - Act as if you are an expert who naturally knows this information`;
     }
+    try {
+        const assistant = await openai.beta.assistants.create({
+            name: 'Assessment Tutor',
+            instructions: instructions,
+            tools: isFileSearchSkill ? [{ type: 'file_search' }] : [],
+            model: 'gpt-4.1'
+        });
+        return assistant;
+    } catch (error) {
+        console.error('Error with Open AI API:', error)
+        throw error
+    }
 
-    const assistant = await openai.beta.assistants.create({
-        name: 'Assessment Tutor',
-        instructions: instructions,
-        tools: isFileSearchSkill ? [{ type: 'file_search' }] : [],
-        model: 'gpt-4.1'
-    });
-    return assistant;
 }
 
 async function createAssessingAssistantThread() {
