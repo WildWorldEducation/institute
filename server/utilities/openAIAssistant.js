@@ -353,14 +353,19 @@ async function createAssessingAssistant(
             - FORBIDDEN PHRASES: "uploaded", "document", "file", "material", "based on the", "according to"
             - Act as if you are an expert who naturally knows this information`;
     }
+    try {
+        const assistant = await openai.beta.assistants.create({
+            name: 'Assessment Tutor',
+            instructions: instructions,
+            tools: isFileSearchSkill ? [{ type: 'file_search' }] : [],
+            model: 'gpt-4.1'
+        });
+        return assistant;
+    } catch (error) {
+        console.error('Error with Open AI API:', error)
+        throw error
+    }
 
-    const assistant = await openai.beta.assistants.create({
-        name: 'Assessment Tutor',
-        instructions: instructions,
-        tools: isFileSearchSkill ? [{ type: 'file_search' }] : [],
-        model: 'gpt-4.1'
-    });
-    return assistant;
 }
 
 async function createAssessingAssistantThread() {
@@ -506,32 +511,38 @@ async function createLearningObjectiveAssistantAndThread(
     level,
     isFileSearchSkill
 ) {
-    const assistant = await createLearningObjectiveAssistant(
-        level,
-        learningObjective,
-        isFileSearchSkill
-    );
+    try {
+        const assistant = await createLearningObjectiveAssistant(
+            level,
+            learningObjective,
+            isFileSearchSkill
+        );
 
-    // only update the assistant with file search if it is in the list
-    if (isFileSearchSkill) {
-        try {
-            // Give it access to certain documents
-            await openai.beta.assistants.update(assistant.id, {
-                tool_resources: {
-                    file_search: {
-                        vector_store_ids: [process.env.VECTOR_STORE_ID]
+        // only update the assistant with file search if it is in the list
+        if (isFileSearchSkill) {
+            try {
+                // Give it access to certain documents
+                await openai.beta.assistants.update(assistant.id, {
+                    tool_resources: {
+                        file_search: {
+                            vector_store_ids: [process.env.VECTOR_STORE_ID]
+                        }
                     }
-                }
-            });
-        } catch (error) {
-            console.error('Error with Open AI API:', error);
-            throw error;
+                });
+            } catch (error) {
+                console.error('Error with Open AI API:', error);
+                throw error;
+            }
         }
+
+        const thread = await createLearningObjectiveAssistantThread();
+        const result = { assistant: assistant, thread: thread };
+        return result;
+    } catch (error) {
+        console.error(error)
+        throw error
     }
 
-    const thread = await createLearningObjectiveAssistantThread();
-    const result = { assistant: assistant, thread: thread };
-    return result;
 }
 
 async function createLearningObjectiveAssistant(
