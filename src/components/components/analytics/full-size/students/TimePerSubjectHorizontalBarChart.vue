@@ -36,10 +36,10 @@ export default {
         const svg = d3
             .select('#subject-activity-chart-container')
             .append('svg')
-                .attr('width', '100%')
-                .attr('height', '100%')
-                .attr('viewBox', [0, 0, width, height])
-                .attr('preserveAspectRatio', 'xMinYMin');
+            .attr('width', '100%')
+            .attr('height', '100%')
+            .attr('viewBox', [0, 0, width, height])
+            .attr('preserveAspectRatio', 'xMinYMin');
 
         // Append a rect for each skill.
         svg.append('g')

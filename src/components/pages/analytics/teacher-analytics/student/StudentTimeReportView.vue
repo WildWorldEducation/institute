@@ -149,7 +149,6 @@ export default {
                     );
                 }
             });
-
             this.downloadData = this.teacherAnalyticsStore.skillActivities.map(
                 (skill) => {
                     return {
