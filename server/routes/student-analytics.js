@@ -16,8 +16,6 @@ const query = util.promisify(conn.query).bind(conn);
 const {
     getSkillListRootParent
 } = require('../utilities/skill-relate-functions');
-const { fail } = require('assert');
-const { duration } = require('moment/moment');
 
 /*------------------------------------------
 --------------------------------------------

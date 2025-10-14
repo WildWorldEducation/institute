@@ -6,13 +6,9 @@ export default {
     props: ['data', 'colour'],
     data() {
         return {
-            padding: 60
         };
     },
     mounted() {
-        const container = d3.select('#time-per-skill-chart-container');
-        //console.log(this.data);
-
         // Specify the chart’s dimensions, based on a bar’s height.
         const barHeight = 25;
         const marginTop = 0;
@@ -24,8 +20,7 @@ export default {
             Math.ceil((this.data.length + 0.1) * barHeight) +
             marginTop +
             marginBottom;
-        console.log('DATA IS: ');
-        console.log(this.data);
+        
         // Create the scales.
         const x = d3
             .scaleLinear()
@@ -37,9 +32,6 @@ export default {
             .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
             .padding(0.1);
-
-        // Create a value format.
-        const format = x.tickFormat(20);
 
         // Create the SVG container.
         const svg = d3
@@ -55,14 +47,25 @@ export default {
 
         // Append a rect for each skill.
         svg.append('g')
-            .attr('fill', this.colour)
             .selectAll()
             .data(this.data)
             .join('rect')
             .attr('x', x(0))
             .attr('y', (d) => y(d.name))
             .attr('width', (d) => x(d.quantity) - x(0))
-            .attr('height', y.bandwidth());
+            .attr('height', y.bandwidth())
+            .attr('fill', function (d) {
+                if (d.name == 'Language') return 'DarkMagenta'; // turquoise
+                else if (d.name == 'Mathematics') return 'blue'; // blue
+                else if (d.name == 'Science & Invention')
+                    return 'purple'; // purple
+                else if (d.name == 'Computer Science')
+                    return 'deeppink'; // pink
+                else if (d.name == 'Dangerous Ideas') return 'brown'; // brown
+                else if (d.name == 'History') return 'cyan'; // cyan
+                else if (d.name == 'Life') return 'magenta'; // magenta
+                else return '#ff7f0e'; // orange
+            });;
 
         // Append a label for each name.
         svg.append('g')
