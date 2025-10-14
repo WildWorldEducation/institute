@@ -229,6 +229,7 @@ app.get('/google-student-signup-attempt', async (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         let deviceType = req.query.deviceType;
         let referrerUsername = req.query.referrerUsername;
+     
         // Check if user already exists.
         let sqlQuery1 = `SELECT * 
         FROM users 
@@ -297,15 +298,18 @@ app.get('/google-student-signup-attempt', async (req, res, next) => {
                                 throw err;
                             } else {
                                 // Record user that referred this user
+                                // check if referrerUsername is not empty, null, or 'null' (stringified null from frontend) )
                                 if (
                                     referrerUsername != '' &&
-                                    referrerUsername != null
+                                    referrerUsername != null 
+                                    &&
+                                    referrerUsername != 'null'
                                 ) {
                                     const getReferrerSQLIDQuery = `SELECT id
                                         FROM users
                                         WHERE username = ${conn.escape(
-                                            referrerUsername
-                                        )};`;
+                                        referrerUsername
+                                    )};`;
 
                                     const res = await query(
                                         getReferrerSQLIDQuery
