@@ -16,7 +16,6 @@ const query = util.promisify(conn.query).bind(conn);
 const {
     getSkillListRootParent
 } = require('../utilities/skill-relate-functions');
-const { fail } = require('assert');
 
 /*------------------------------------------
 --------------------------------------------
@@ -3213,6 +3212,82 @@ router.get('/total-token-used/:studentId', (req, res, next) => {
         res.redirect('/login');
     }
 });
+
+/* Get number of assessments passed, by root subject */
+router.get(
+    '/total-time-spent-by-subject/student/:studentId',
+    async (req, res, next) => {
+        // Check if logged in.
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+
+            // Create referral record
+            const allSkillsQuery = `
+                SELECT *
+                FROM skills;
+                                        `;
+            const skills = await query(allSkillsQuery);
+
+            let sqlQuery = `
+                SELECT skills.id, skills.name,skills.parent, SUM(user_skills.duration) AS duration
+                FROM user_skills JOIN skills ON skills.id = user_skills.skill_id
+                WHERE user_skills.user_id = ${conn.escape(req.params.studentId)} 
+                GROUP BY skills.name`;
+
+            conn.query(sqlQuery, async (err, skillsDuration) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    // Recursive function
+                    async function getRootSubject(originalSkill, parentSkill) {
+                        // Check if this is a root subject skill
+                        if (parentSkill.parent == 0) {
+                            originalSkill.rootSubject = parentSkill.name;
+                        } else {
+                            for (let i = 0; i < skills.length; i++) {
+                                if (skills[i].id == parentSkill.parent) {
+                                    await getRootSubject(
+                                        originalSkill,
+                                        skills[i]
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    for (let i = 0; i < skillsDuration.length; i++) {
+                        await getRootSubject(
+                            skillsDuration[i],
+                            skillsDuration[i]
+                        );
+                    }
+
+                    const totalsMap = skillsDuration.reduce(
+                        (acc, item) => {
+                            const subject = item.rootSubject;
+                            acc[subject] = (acc[subject] || 0) + item.duration;
+                            return acc;
+                        },
+                        {}
+                    );
+
+                    const result = Object.entries(totalsMap).map(
+                        ([key, value]) => ({
+                            name: key,
+                            duration: value
+                        })
+                    );
+
+                    res.json(result);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
 
 // Export the router for app to use.
 module.exports = router;

@@ -6,6 +6,7 @@ import { useAnalyticsStore } from '../../../../../stores/AnalyticsStore';
 
 import StudentSkillActivityChart from '../../../../components/analytics/full-size/students/StudentSkillActivityChart.vue';
 import StudentDurationPerDayLineChart from '../../../../components/analytics/full-size/students/StudentDurationPerDayLineChart.vue';
+import TimePerSubjectHorizontalBarChart from '../../../../components/analytics/full-size/students/TimePerSubjectHorizontalBarChart.vue';
 import DownloadCSVBtn from '../../../../components/downloadCSVBtn/downloadCSVBtn.vue';
 
 export default {
@@ -24,6 +25,7 @@ export default {
     components: {
         StudentDurationPerDayLineChart,
         StudentSkillActivityChart,
+        TimePerSubjectHorizontalBarChart,
         DownloadCSVBtn
     },
     data() {
@@ -33,7 +35,8 @@ export default {
             durationsPerDay: [],
             totalTimeOnPlatformDownloadData: [],
             minutesPerSkillDownloadData: [],
-            averageDurationsPerDay: []
+            averageDurationsPerDay: [],
+            timeSpentOnSubjectDownloadData: []
         };
     },
     async created() {
@@ -48,20 +51,34 @@ export default {
 
         await this.getStudentDurationPerDay();
         await this.getStudentActivity();
+        if (this.analyticsStore.subjectTimeSpent.length === 0) {
+            await this.analyticsStore.getStudentSubjectTimeSpent(
+                this.studentId
+            );
+        }
+        this.getTimeSpentOnSkillDownloadData();
     },
     methods: {
+        getTimeSpentOnSkillDownloadData() {
+            this.timeSpentOnSubjectDownloadData = this.analyticsStore.time.map(
+                (item) => {
+                    return {
+                        subject: item.name,
+                        timeSpent: item.formattedQuantity
+                    };
+                }
+            );
+        },
         async getStudentDurationPerDay() {
             let url = `/student-analytics/student-duration-per-day-class/${this.studentId}/${this.userDetailsStore.userId}`;
 
             if (this.userDetailsStore.role === 'school_admin') {
                 url = `/student-analytics/student-duration-per-day-tenant/${this.studentId}/${this.userDetailsStore.tenantId}`;
             }
-            console.log(url)
 
             fetch(url)
                 .then((response) => response.json())
                 .then((resData) => {
-                    console.log(resData)
                     const data = resData.studentTime;
                     for (let i = 0; i < data.length; i++) {
                         data[i].formattedQuantity =
@@ -184,7 +201,18 @@ export default {
         </div>
         <div class="chart-row row">
             <div class="col-lg chart-col position-relative">
-                <div id="">TODO: Add time per subject bar chart</div>
+                <DownloadCSVBtn
+                    :data="timeSpentOnSubjectDownloadData"
+                    :fileName="`Time spent on subject - ${studentName}`"
+                    toolTip="Download Time spent on subject data as CSV"
+                    class="position-absolute download-btn"
+                />
+
+                <TimePerSubjectHorizontalBarChart
+                    v-if="analyticsStore.subjectTimeSpent.length > 0"
+                    :data="analyticsStore.subjectTimeSpent"
+                    colour="purple"
+                />
             </div>
             <div class="col-lg chart-col position-relative overflow-auto">
                 <div id="activity-chart-container">
