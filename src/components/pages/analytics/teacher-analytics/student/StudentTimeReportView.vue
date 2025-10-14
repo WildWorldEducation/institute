@@ -58,11 +58,10 @@ export default {
         }
         this.getTimeSpentOnSkillDownloadData();
 
-        console.log(this.analyticsStore.subjectTimeSpent)
     },
     methods: {
         getTimeSpentOnSkillDownloadData() {
-            this.timeSpentOnSubjectDownloadData = this.analyticsStore.time.map(
+            this.timeSpentOnSubjectDownloadData = this.analyticsStore.subjectTimeSpent.map(
                 (item) => {
                     return {
                         subject: item.name,
