@@ -11,13 +11,12 @@ export default {
             }
 
             // Declare the chart dimensions and margins.
-            const barHeight = 20;
+            const barHeight = 25;
             const width = document.getElementById(
                 'activity-chart-container'
             ).clientWidth;
-            const height = barHeight * data.length + 50;
-
-            const margin = { top: 20, right: 0, bottom: 20, left: 200 };
+            const height = barHeight * data.length;
+            const margin = { top: 0, right: 0, bottom: 20, left: 200 };
 
             const svg = d3
                 .select('#activity-chart-container')
@@ -25,7 +24,7 @@ export default {
                 .attr('width', '100%')
                 .attr('height', '100%')
                 .attr('viewBox', [0, 0, width, height])
-            .attr('preserveAspectRatio', 'xMinYMin');
+                .attr('preserveAspectRatio', 'xMinYMin');
 
             // Create main group for the chart
             const g = svg
@@ -38,7 +37,7 @@ export default {
                 .scaleBand()
                 .domain(data.map((d) => d.name)) // Map task names to scale domain
                 .range([0, height - 35]) // Set output range
-                .padding(0.2); // Add padding between bars
+                .padding(0.1); // Add padding between bars
 
             // X scale for time duration (linear scale)
             const xScale = d3
@@ -71,7 +70,7 @@ export default {
             //     .attr('class', 'axis')
             //     .attr('transform', `translate(0,${height})`) // Move to bottom of chart
             //     .call(d3.axisBottom(xScale)); // Create bottom-oriented axis with duration values
-                
+
             // Add value labels on bars
             g.selectAll('.bar-label')
                 .data(data)

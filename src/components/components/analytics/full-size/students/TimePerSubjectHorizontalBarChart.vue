@@ -15,12 +15,11 @@ export default {
         const marginRight = 0;
         const marginBottom = 10;
         const marginLeft = 200;
-        const width = 1000;
-        const height =
-            Math.ceil((this.data.length + 0.1) * barHeight) +
-            marginTop +
-            marginBottom;
-        
+        const width = document.getElementById(
+            'subject-activity-chart-container'
+        ).clientWidth;
+        const height = barHeight * this.data.length;
+
         // Create the scales.
         const x = d3
             .scaleLinear()
@@ -35,15 +34,12 @@ export default {
 
         // Create the SVG container.
         const svg = d3
-            .select('#time-per-skill-chart-container')
+            .select('#subject-activity-chart-container')
             .append('svg')
-            .attr('width', width)
-            .attr('height', height)
-            .attr('viewBox', [0, 0, width, height])
-            .attr(
-                'style',
-                'max-width: 100%; height: 100%; font: 14px sans-serif;'
-            );
+                .attr('width', '100%')
+                .attr('height', '100%')
+                .attr('viewBox', [0, 0, width, height])
+                .attr('preserveAspectRatio', 'xMinYMin');
 
         // Append a rect for each skill.
         svg.append('g')
@@ -102,7 +98,6 @@ export default {
 </script>
 
 <template>
-    <div id="time-per-skill-chart-container"></div>
 </template>
 
 <style scoped></style>
