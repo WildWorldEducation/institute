@@ -57,10 +57,11 @@ export default {
             );
         }
         this.getTimeSpentOnSkillDownloadData();
+
     },
     methods: {
         getTimeSpentOnSkillDownloadData() {
-            this.timeSpentOnSubjectDownloadData = this.analyticsStore.time.map(
+            this.timeSpentOnSubjectDownloadData = this.analyticsStore.subjectTimeSpent.map(
                 (item) => {
                     return {
                         subject: item.name,
@@ -148,7 +149,6 @@ export default {
                     );
                 }
             });
-
             this.downloadData = this.teacherAnalyticsStore.skillActivities.map(
                 (skill) => {
                     return {
@@ -177,20 +177,13 @@ export default {
         <div class="chart-row row">
             <div class="col-lg chart-col position-relative h-100">
                 <div id="time-chart-container">
-                    <DownloadCSVBtn
-                        :data="totalTimeOnPlatformDownloadData"
+                    <DownloadCSVBtn :data="totalTimeOnPlatformDownloadData"
                         :fileName="`Total time on platform - ${studentName}`"
-                        toolTip="Download total time on platform data as CSV"
-                        class="position-absolute download-btn"
-                    />
+                        toolTip="Download total time on platform data as CSV" class="position-absolute download-btn" />
 
-                    <StudentDurationPerDayLineChart
-                        v-if="durationsPerDay.length > 0"
-                        :data="durationsPerDay"
-                        :averageDuration="averageDurationsPerDay"
-                        :userRole="userDetailsStore.role"
-                        :studentName="studentName"
-                    />
+                    <StudentDurationPerDayLineChart v-if="durationsPerDay.length > 0" :data="durationsPerDay"
+                        :averageDuration="averageDurationsPerDay" :userRole="userDetailsStore.role"
+                        :studentName="studentName" />
                     <p v-else>There is no data to show yet.</p>
                 </div>
                 <figcaption class="position-absolute">
@@ -201,27 +194,19 @@ export default {
         </div>
         <div class="chart-row row">
             <div class="col-lg chart-col position-relative">
-                <DownloadCSVBtn
-                    :data="timeSpentOnSubjectDownloadData"
-                    :fileName="`Time spent on subject - ${studentName}`"
-                    toolTip="Download Time spent on subject data as CSV"
-                    class="position-absolute download-btn"
-                />
+                <div id="subject-activity-chart-container">
+                    <DownloadCSVBtn :data="timeSpentOnSubjectDownloadData"
+                        :fileName="`Time spent on subject - ${studentName}`"
+                        toolTip="Download Time spent on subject data as CSV" class="position-absolute download-btn" />
 
-                <TimePerSubjectHorizontalBarChart
-                    v-if="analyticsStore.subjectTimeSpent.length > 0"
-                    :data="analyticsStore.subjectTimeSpent"
-                    colour="purple"
-                />
+                    <TimePerSubjectHorizontalBarChart v-if="analyticsStore.subjectTimeSpent.length > 0"
+                        :data="analyticsStore.subjectTimeSpent" colour="purple" />
+                </div>
             </div>
             <div class="col-lg chart-col position-relative overflow-auto">
                 <div id="activity-chart-container">
-                    <DownloadCSVBtn
-                        :data="minutesPerSkillDownloadData"
-                        :fileName="`Minutes per skill - ${studentName}`"
-                        toolTip="Download minutes per skill data as CSV"
-                        class="position-absolute download-btn"
-                    />
+                    <DownloadCSVBtn :data="minutesPerSkillDownloadData" :fileName="`Minutes per skill - ${studentName}`"
+                        toolTip="Download minutes per skill data as CSV" class="position-absolute download-btn" />
                     <StudentSkillActivityChart ref="activityChart" />
                     <!-- <p v-else>No skills visited by this student.</p> -->
                 </div>
@@ -244,6 +229,7 @@ export default {
     height: 50%;
 }
 
+#subject-activity-chart-container,
 #activity-chart-container,
 #time-chart-container {
     height: calc(100% - 35px);
