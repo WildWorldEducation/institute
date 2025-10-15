@@ -278,9 +278,16 @@ export default {
                 ctx1.fillStyle = 'rgba(220, 220, 220, 0.6)';
                 ctx1.fill();
 
-                // Lighter border
-                ctx1.lineWidth = 1.5;
-                ctx1.strokeStyle = '#a0a0a0';
+                if (node.data.is_mastered == 1) {
+                    const outlineColor = '#228C22'; // Green
+                    ctx1.lineWidth = 2;
+                    ctx1.strokeStyle = outlineColor;
+                }
+                else {
+                    ctx1.lineWidth = 1.5;
+                    ctx1.strokeStyle = '#a0a0a0'; // Lighter border
+                }
+
                 ctx1.setLineDash([3, 2]); // Dotted line to indicate "container"
                 ctx1.stroke();
             }
@@ -716,23 +723,14 @@ export default {
 
 <template>
     <!-- Loading animation -->
-    <div
-        v-if="isLoading == true"
-        class="loading-animation d-flex justify-content-center align-items-center py-4"
-    >
+    <div v-if="isLoading == true" class="loading-animation d-flex justify-content-center align-items-center py-4">
         <span class="loader"></span>
     </div>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
     <div v-show="isLoading == false" id="wrapper">
         <!-- <SkillPanel :skill="skill" /> -->
         <SkillPanel :skill="skill" :showSkillPanel="showSkillPanel" />
-        <canvas
-            id="canvas"
-            width="1500"
-            height="1500"
-            ref="canvas"
-            tabindex="1"
-        ></canvas>
+        <canvas id="canvas" width="1500" height="1500" ref="canvas" tabindex="1"></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
         <ZoomControl ref="ZoomControl" />
@@ -770,10 +768,12 @@ canvas {
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }
 }
+
 /* End of loading animation */
 
 /* ___________ Button Style ___________ */
@@ -785,7 +785,8 @@ canvas {
 }
 
 .slidecontainer {
-    width: 100%; /* Width of the outside container */
+    width: 100%;
+    /* Width of the outside container */
 }
 
 .slider {
@@ -815,9 +816,11 @@ canvas {
     border-radius: 50%;
     cursor: pointer;
 }
+
 /* Mouse-over effects */
 .slider:hover {
-    opacity: 1; /* Fully shown on mouse-over */
+    opacity: 1;
+    /* Fully shown on mouse-over */
 }
 
 #wrapper {
@@ -925,6 +928,7 @@ input[type='button'] {
         flex-direction: column;
     }
 }
+
 /* Loading animation */
 .loading-animation {
     min-height: 100%;

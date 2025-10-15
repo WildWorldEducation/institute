@@ -11,78 +11,78 @@ export default {
             }
 
             // Declare the chart dimensions and margins.
-            const barHeight = 20;
+            const barHeight = 25;
+            const marginTop = 0;
+            const marginRight = 0;
+            const marginBottom = 10;
+            const marginLeft = 200;
             const width = document.getElementById(
                 'activity-chart-container'
             ).clientWidth;
-            const height = barHeight * data.length + 50;
+            const height = barHeight * data.length;
 
-            const margin = { top: 20, right: 0, bottom: 20, left: 200 };
+            // Create the scales.
+            const x = d3
+                .scaleLinear()
+                .domain([0, d3.max(data, (d) => d.quantity)])
+                .range([marginLeft, width - marginRight]);
 
+            const y = d3
+                .scaleBand()
+                .domain(d3.sort(data, (d) => -d.quantity).map((d) => d.name))
+                .rangeRound([marginTop, height - marginBottom])
+                .padding(0.1);
+
+            // Create the SVG container.
             const svg = d3
                 .select('#activity-chart-container')
                 .append('svg')
                 .attr('width', '100%')
                 .attr('height', '100%')
                 .attr('viewBox', [0, 0, width, height])
-            .attr('preserveAspectRatio', 'xMinYMin');
+                .attr('preserveAspectRatio', 'xMinYMin');
 
-            // Create main group for the chart
-            const g = svg
-                .append('g')
-                .attr('transform', `translate(${margin.left},${margin.top})`);
+           // Append a rect for each skill.
+        svg.append('g')
+            .attr('fill', function (d) { return "#5f31dd"; }.bind(this))
+            .selectAll()
+            .data(data)
+            .join('rect')
+            .attr('x', x(0))
+            .attr('y', (d) => y(d.name))
+            .attr('width', (d) => x(d.quantity) - x(0))
+            .attr('height', y.bandwidth())
+           
 
-            // Create scales
-            // Y scale for task names (ordinal scale)
-            const yScale = d3
-                .scaleBand()
-                .domain(data.map((d) => d.name)) // Map task names to scale domain
-                .range([0, height - 35]) // Set output range
-                .padding(0.2); // Add padding between bars
+        // Append a label for each name.
+        svg.append('g')
+            .attr('fill', 'white')
+            .attr('text-anchor', 'end')
+            .selectAll()
+            .data(data)
+            .join('text')
+            .attr('x', (d) => x(d.quantity))
+            .attr('y', (d) => y(d.name) + y.bandwidth() / 2)
+            .attr('dy', '0.35em')
+            .attr('dx', -4)
+            .text((d) => d.formattedQuantity)
+            .call((text) =>
+                text
+                    .filter((d) => x(d.quantity) - x(0) < 40) // short bars
+                    .attr('dx', +4)
+                    .attr('fill', 'black')
+                    .attr('text-anchor', 'start')
+            );
 
-            // X scale for time duration (linear scale)
-            const xScale = d3
-                .scaleLinear()
-                .domain([0, d3.max(data, (d) => d.quantity)]) // Domain from 0 to max duration
-                .range([0, width]);
+        // Create the axes.
+        svg.append('g')
+            .attr('transform', `translate(0,${marginTop})`)
+            .call(d3.axisTop(x).ticks(0))
+            .call((g) => g.select('.domain').remove());
 
-            // Draw the chart using D3.js
-            // Create bars
-            g.selectAll('.bar')
-                .data(data) // Bind data to selection
-                .enter()
-                .append('rect') // Create rect elements for each data point
-                .attr('class', 'bar')
-                .attr('x', 0) // Start bars at x=0 (left edge)
-                .attr('y', (d) => yScale(d.name))
-                .attr('width', (d) =>
-                    d.quantity > 0 ? xScale(d.quantity / 2) : xScale(1)
-                ) // Width based on duration value
-                .attr('height', (d) =>
-                    d.quantity > 0 ? yScale.bandwidth() : 1
-                ) // Height from scale bandwidth
-                .attr('fill', '#5f31dd'); // Set bar color
-
-            // Create Y axis (left side, showing task names)
-            g.append('g').attr('class', 'axis').call(d3.axisLeft(yScale)); // Create left-oriented axis with task labels
-
-            // Create X axis (bottom, showing time duration)
-            // g.append('g')
-            //     .attr('class', 'axis')
-            //     .attr('transform', `translate(0,${height})`) // Move to bottom of chart
-            //     .call(d3.axisBottom(xScale)); // Create bottom-oriented axis with duration values
-                
-            // Add value labels on bars
-            g.selectAll('.bar-label')
-                .data(data)
-                .enter()
-                .append('text')
-                .attr('class', 'bar-label')
-                .attr('x', (d) => xScale(d.quantity / 2) + 5) // Position slightly right of bar end
-                .attr('y', (d) => yScale(d.name) + yScale.bandwidth() / 2) // Center vertically on bar
-                .attr('dy', '0.35em') // Fine-tune vertical alignment
-                .style('font-size', '14px')
-                .text((d) => d.formattedQuantity); // Display duration value
+        svg.append('g')
+            .attr('transform', `translate(${marginLeft},0)`)
+            .call(d3.axisLeft(y).tickSizeOuter(0));
         }
     }
 };
