@@ -322,7 +322,7 @@ export default {
         async getUserSkills() {
             const res = await fetch(
                 '/user-skills/filtered-unnested-list/' +
-                    this.userDetailsStore.userId
+                this.userDetailsStore.userId
             );
             const data = await res.json();
             this.userSkills = data;
@@ -447,9 +447,9 @@ export default {
         async getNextSkillsInBranch() {
             const result = await fetch(
                 '/user-skills/get-next-accessible-in-branch/' +
-                    this.userDetailsStore.userId +
-                    '/' +
-                    this.skillId
+                this.userDetailsStore.userId +
+                '/' +
+                this.skillId
             );
             this.nextSkillsInBranch = await result.json();
         },
@@ -600,9 +600,9 @@ export default {
                 ) {
                     if (
                         this.userSkillsStore.filteredUnnestedList[i].type ==
-                            'sub' &&
+                        'sub' &&
                         this.userSkillsStore.filteredUnnestedList[i].parent ==
-                            skill.id &&
+                        skill.id &&
                         this.userSkillsStore.filteredUnnestedList[i]
                             .is_mastered != 1
                     ) {
@@ -667,7 +667,7 @@ export default {
         async checkIfTutorialComplete() {
             const result = await fetch(
                 '/users/check-tutorial-progress/skill/' +
-                    this.userDetailsStore.userId
+                this.userDetailsStore.userId
             );
             const data = await result.json();
             if (data == 0) {
@@ -889,195 +889,124 @@ export default {
 
 <template>
     <div class="container">
-        <div
-            id="skill-info-container"
-            :class="{ domain: skill.type == 'domain' }"
-        >
+        <div id="skill-info-container" :class="{ domain: skill.type == 'domain' }">
             <!-- Name and description -->
             <div>
                 <div class="d-flex justify-content-between top-row">
-                    <h1
-                        class="heading"
-                        :class="{ 'text-center': isMobileCheck < 576 }"
-                    >
+                    <h1 class="heading" :class="{ 'text-center': isMobileCheck < 576 }">
                         {{ calculatedSkillName }}
                     </h1>
                 </div>
 
                 <!-- A line divide -->
-                <hr
-                    class="border border-2 opacity-100 hr mb-2"
-                    v-if="isMobileCheck > 576"
-                />
+                <hr class="border border-2 opacity-100 hr mb-2" v-if="isMobileCheck > 576" />
             </div>
             <!-- Buttons -->
-            <div
-                class="row"
-                :class="{
-                    'mb-0':
-                        !sessionDetailsStore.isLoggedIn && isMobileCheck < 576,
-                    'mb-2':
-                        sessionDetailsStore.isLoggedIn || isMobileCheck >= 576
-                }"
-            >
-                <div
-                    class="col d-flex justify-content-between"
-                    :class="{ 'flex-column': isMobileCheck < 576 }"
-                >
+            <div class="row" :class="{
+                'mb-0':
+                    !sessionDetailsStore.isLoggedIn && isMobileCheck < 576,
+                'mb-2':
+                    sessionDetailsStore.isLoggedIn || isMobileCheck >= 576
+            }">
+                <div class="col d-flex justify-content-between" :class="{ 'flex-column': isMobileCheck < 576 }">
                     <!-- Left side buttons -->
                     <!-- Tutor and Test buttons -->
-                    <div
-                        class="d-flex gap-1 w-100"
-                        :class="{
-                            'justify-content-between': isMobileCheck < 576
-                        }"
-                    >
+                    <div class="d-flex gap-1 w-100" :class="{
+                        'justify-content-between': isMobileCheck < 576
+                    }">
                         <!-- Socratic Tutor -->
                         <!-- If not logged in, go to Login page -->
-                        <button
-                            v-if="
-                                !sessionDetailsStore.isLoggedIn &&
-                                skill.type != 'domain'
-                            "
-                            @click="showGuestTooltip"
-                            class="btn socratic-btn"
-                        >
+                        <button v-if="
+                            !sessionDetailsStore.isLoggedIn &&
+                            skill.type != 'domain'
+                        " @click="showGuestTooltip" class="btn socratic-btn">
                             Socratic Tutor
                         </button>
-                        <button
-                            v-else-if="
-                                userDetailsStore.role == 'student' &&
-                                isAITokenLimitReached == false &&
-                                skill.type != 'domain'
-                            "
-                            @click="scrollToAITutor(true)"
-                            class="btn socratic-btn"
-                        >
+                        <button v-else-if="
+                            userDetailsStore.role == 'student' &&
+                            isAITokenLimitReached == false &&
+                            skill.type != 'domain'
+                        " @click="scrollToAITutor(true)" class="btn socratic-btn">
                             Socratic Tutor
                         </button>
-                        <button
-                            @click="scrollToAITutor(false)"
-                            v-else-if="
-                                userDetailsStore.role == 'student' &&
-                                skill.type != 'domain'
-                            "
-                            class="btn socratic-btn"
-                        >
+                        <button @click="scrollToAITutor(false)" v-else-if="
+                            userDetailsStore.role == 'student' &&
+                            skill.type != 'domain'
+                        " class="btn socratic-btn">
                             Socratic Tutor
                         </button>
 
                         <!-- Take assessment btn-->
                         <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
-                        <router-link
-                            v-if="
-                                userDetailsStore.isSkillsLocked == 1 &&
-                                userDetailsStore.role == 'student' &&
-                                !isUnlocked &&
-                                !isMastered &&
-                                showAncestorLink &&
-                                (skill.type != 'super' ||
-                                    areAllSubskillsMastered)
-                            "
-                            :to="'/skills/' + ancestor"
-                            class="btn assessment-btn me-1"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
-                                width="20"
-                                fill="white"
-                            >
+                        <router-link v-if="
+                            userDetailsStore.isSkillsLocked == 1 &&
+                            userDetailsStore.role == 'student' &&
+                            !isUnlocked &&
+                            !isMastered &&
+                            showAncestorLink &&
+                            (skill.type != 'super' ||
+                                areAllSubskillsMastered)
+                        " :to="'/skills/' + ancestor" class="btn assessment-btn me-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="20" fill="white">
                                 <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                 <path
-                                    d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"
-                                />
+                                    d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z" />
                             </svg>
                             &nbsp; Go to Nearest Unlocked Skill
                         </router-link>
                         <!-- Assessment -->
-                        <button
-                            v-else-if="
-                                userDetailsStore.role == 'student' &&
-                                !isMastered &&
-                                skill.type != 'domain' &&
-                                (skill.type !== 'super' ||
-                                    areAllSubskillsMastered)
-                            "
-                            class="btn me-1 assessment-btn"
-                            @click="scrollToAITutor(false)"
-                        >
+                        <button v-else-if="
+                            userDetailsStore.role == 'student' &&
+                            !isMastered &&
+                            skill.type != 'domain' &&
+                            (skill.type !== 'super' ||
+                                areAllSubskillsMastered)
+                        " class="btn me-1 assessment-btn" @click="scrollToAITutor(false)">
                             Take the Test
                         </button>
-                        <button
-                            v-else-if="
-                                userDetailsStore.role == 'student' &&
-                                !isMastered &&
-                                skill.type === 'super' &&
-                                !areAllSubskillsMastered
-                            "
-                            class="btn me-1 assessment-btn"
-                            style="opacity: 0.7"
-                            @click="showUnmasteredSubskillsModal"
-                            title="Click to see which subskills need to be mastered"
-                        >
+                        <button v-else-if="
+                            userDetailsStore.role == 'student' &&
+                            !isMastered &&
+                            skill.type === 'super' &&
+                            !areAllSubskillsMastered
+                        " class="btn me-1 assessment-btn" style="opacity: 0.7" @click="showUnmasteredSubskillsModal"
+                            title="Click to see which subskills need to be mastered">
                             Master Subskills First
                         </button>
-                        <button
-                            v-else-if="
-                                userDetailsStore.role == 'student' &&
-                                skill.type == 'domain'
-                            "
-                            @click="MakeMastered()"
-                            class="btn me-1 assessment-btn"
-                        >
+                        <button v-else-if="
+                            userDetailsStore.role == 'student' &&
+                            skill.type == 'domain'
+                        " @click="MakeMastered()" class="btn me-1 assessment-btn">
                             Mark complete and go to next skill
                         </button>
                         <!-- If not logged in, go to Login page -->
-                        <button
-                            v-else-if="!sessionDetailsStore.isLoggedIn"
-                            @click="showGuestTooltip"
-                            class="btn me-1 assessment-btn"
-                        >
-                            <span v-if="skill.type != 'domain'"
-                                >Take the Test</span
-                            >
-                            <span v-else
-                                >Mark complete and go to next skill</span
-                            >
+                        <button v-else-if="!sessionDetailsStore.isLoggedIn" @click="showGuestTooltip"
+                            class="btn me-1 assessment-btn">
+                            <span v-if="skill.type != 'domain'">Take the Test</span>
+                            <span v-else>Mark complete and go to next skill</span>
                         </button>
                         <!-- Unmastered Subskills Modal -->
-                        <div
-                            v-if="showUnmasteredModal"
-                            class="modal"
-                            @click.self="showUnmasteredModal = false"
-                        >
+                        <div v-if="showUnmasteredModal" class="modal" @click.self="showUnmasteredModal = false">
                             <div class="modal-content">
                                 <h1 class="heading h5">
                                     Complete these cluster skills first:
                                 </h1>
                                 <div v-for="subskill in unmasteredSubskills">
-                                    <router-link
-                                        :class="{
-                                            'grade-school':
-                                                skill.level == 'grade_school',
-                                            'middle-school':
-                                                skill.level == 'middle_school',
-                                            'high-school':
-                                                skill.level == 'high_school',
-                                            college: skill.level == 'college',
-                                            phd: skill.level == 'phd'
-                                        }"
-                                        class="skill-link btn mb-1 text-start"
-                                        :to="`/skills/${subskill.url}`"
-                                        @click="showUnmasteredModal = false"
-                                    >
+                                    <router-link :class="{
+                                        'grade-school':
+                                            skill.level == 'grade_school',
+                                        'middle-school':
+                                            skill.level == 'middle_school',
+                                        'high-school':
+                                            skill.level == 'high_school',
+                                        college: skill.level == 'college',
+                                        phd: skill.level == 'phd'
+                                    }" class="skill-link btn mb-1 text-start" :to="`/skills/${subskill.url}`"
+                                        @click="showUnmasteredModal = false">
                                         {{ subskill.name }}
                                     </router-link>
                                 </div>
-                                <button
-                                    class="btn primary-btn ms-auto me-0"
-                                    @click="showUnmasteredModal = false"
-                                >
+                                <button class="btn primary-btn ms-auto me-0" @click="showUnmasteredModal = false">
                                     Close
                                 </button>
                             </div>
@@ -1085,109 +1014,63 @@ export default {
                     </div>
 
                     <!-- Right hand buttons -->
-                    <div
-                        class="d-flex"
-                        :class="{
-                            'justify-content-between': isMobileCheck < 576,
-                            'mt-2': isMobileCheck < 576
-                        }"
-                    >
+                    <div class="d-flex" :class="{
+                        'justify-content-between': isMobileCheck < 576,
+                        'mt-2': isMobileCheck < 576
+                    }">
                         <span class="d-flex">
                             <!-- Edit skill btn-->
-                            <router-link
-                                v-if="sessionDetailsStore.isLoggedIn"
-                                :to="'/skills/edit/' + skillUrl"
-                                class="edit-btn btn primary-btn me-1"
-                            >
+                            <router-link v-if="sessionDetailsStore.isLoggedIn" :to="'/skills/edit/' + skillUrl"
+                                class="edit-btn btn primary-btn me-1">
                                 <!-- Pencil icon -->
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 512 512"
-                                    width="20"
-                                    height="20"
-                                    fill="white"
-                                >
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20"
+                                    fill="white">
                                     <path
-                                        d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z"
-                                    />
+                                        d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z" />
                                 </svg>
                             </router-link>
                             <!-- Show version history -->
-                            <router-link
-                                v-if="
-                                    userDetailsStore.role == 'platform_admin' ||
-                                    userDetailsStore.role == 'editor'
-                                "
-                                :to="'/skills/history/' + this.skillUrl"
-                                class="btn primary-btn me-1"
-                                ><span v-if="isMobileCheck > 576"
-                                    >History&nbsp;</span
-                                >
+                            <router-link v-if="
+                                userDetailsStore.role == 'platform_admin' ||
+                                userDetailsStore.role == 'editor'
+                            " :to="'/skills/history/' + this.skillUrl" class="btn primary-btn me-1"><span
+                                    v-if="isMobileCheck > 576">History&nbsp;</span>
                                 <!-- History icon -->
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 512 512"
-                                    width="18"
-                                    height="20"
-                                    fill="white"
-                                >
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="20"
+                                    fill="white">
                                     <path
-                                        d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9L0 168c0 13.3 10.7 24 24 24l110.1 0c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65 0-94.1c0-13.3-10.7-24-24-24z"
-                                    />
+                                        d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9L0 168c0 13.3 10.7 24 24 24l110.1 0c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65 0-94.1c0-13.3-10.7-24-24-24z" />
                                 </svg>
                             </router-link>
                             <!-- Create goal button -->
-                            <button
-                                v-if="
-                                    skill.type != 'domain' &&
-                                    sessionDetailsStore.isLoggedIn &&
-                                    isMastered == false &&
-                                    isUnlocked == false &&
-                                    isGoal == false &&
-                                    userDetailsStore.role == 'student'
-                                "
-                                class="btn primary-btn"
-                                @click="openModal(skill)"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 512 512"
-                                    fill="white"
-                                    width="20"
-                                    height="20"
-                                >
+                            <button v-if="
+                                skill.type != 'domain' &&
+                                sessionDetailsStore.isLoggedIn &&
+                                isMastered == false &&
+                                isUnlocked == false &&
+                                isGoal == false &&
+                                userDetailsStore.role == 'student'
+                            " class="btn primary-btn me-1" @click="openModal(skill)">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="white" width="20"
+                                    height="20">
                                     <path
-                                        d="M448 256A192 192 0 1 0 64 256a192 192 0 1 0 384 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm0-224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zM224 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
-                                    />
+                                        d="M448 256A192 192 0 1 0 64 256a192 192 0 1 0 384 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm0-224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zM224 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" />
                                 </svg>
                             </button>
                         </span>
                         <!-- Modal -->
-                        <div
-                            v-if="toggleModal"
-                            @click.self="closeModal"
-                            class="modal"
-                        >
+                        <div v-if="toggleModal" @click.self="closeModal" class="modal">
                             <div class="modal-content">
                                 <p>
                                     Are you sure you want to create a goal for
                                     <span style="color: var(--primary-color)">
-                                        {{ calculatedSkillName }} </span
-                                    >?
+                                        {{ calculatedSkillName }} </span>?
                                 </p>
-                                <div
-                                    class="modal-btns d-flex justify-content-between mt-3"
-                                >
-                                    <button
-                                        class="btn red-btn"
-                                        @click="closeModal"
-                                    >
+                                <div class="modal-btns d-flex justify-content-between mt-3">
+                                    <button class="btn red-btn" @click="closeModal">
                                         No
                                     </button>
-                                    <button
-                                        class="btn primary-btn"
-                                        @click="confirmCreateGoal"
-                                    >
+                                    <button class="btn primary-btn" @click="confirmCreateGoal">
                                         Yes
                                     </button>
                                 </div>
@@ -1195,79 +1078,42 @@ export default {
                         </div>
                         <span class="d-flex">
                             <!-- Sharable URL -->
-                            <button
-                                v-if="
-                                    sessionDetailsStore.isLoggedIn ||
-                                    isMobileCheck >= 576
-                                "
-                                @click="copyShareableURLToClipBoard"
-                                class="btn me-1"
-                                aria-label="share"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 448 512"
-                                    width="20"
-                                    heigth="20"
-                                >
-                                    <path
-                                        class="primary-icon"
-                                        d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"
-                                    />
+                            <button v-if="
+                                sessionDetailsStore.isLoggedIn ||
+                                isMobileCheck >= 576
+                            " @click="copyShareableURLToClipBoard" class="btn me-1" aria-label="share">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="20" heigth="20">
+                                    <path class="primary-icon"
+                                        d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z" />
                                 </svg>
                             </button>
                             <!-- Flag button -->
-                            <button
-                                v-if="sessionDetailsStore.isLoggedIn"
-                                @click="showFlaggingModal = true"
-                                class="btn"
-                                b-tooltip.hover
-                                title="Report this skill to the admin if it has errors"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 448 512"
-                                    class="flag-icon"
-                                >
-                                    <path
-                                        class="primary-icon"
-                                        d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
-                                    />
+                            <button v-if="sessionDetailsStore.isLoggedIn" @click="showFlaggingModal = true"
+                                class="btn me-1" b-tooltip.hover
+                                title="Report this skill to the admin if it has errors">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="flag-icon">
+                                    <path class="primary-icon"
+                                        d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z" />
                                 </svg>
                             </button>
                             <!-- Tutorial button -->
-                            <button
-                                v-if="sessionDetailsStore.isLoggedIn"
-                                class="btn me-1"
-                                @click="restartTutorial"
-                                aria-label="info"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 192 512"
-                                    width="20"
-                                    height="23"
-                                    class="primary-icon"
-                                >
+                            <button v-if="sessionDetailsStore.isLoggedIn" class="btn me-1" @click="restartTutorial"
+                                aria-label="info">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512" width="20" height="23"
+                                    class="primary-icon">
                                     <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                     <path
-                                        d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
-                                    />
+                                        d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z" />
                                 </svg>
                             </button>
                         </span>
                     </div>
                 </div>
                 <!-- Student tooltip -->
-                <div
-                    v-if="
-                        userDetailsStore.role == 'student' && showTutorialTip2
-                    "
-                    class="tool-tip-base"
-                >
-                    <div
-                        class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel"
-                    >
+                <div v-if="
+                    userDetailsStore.role == 'student' && showTutorialTip2
+                " class="tool-tip-base">
+                    <div class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel">
                         <div class="tool-tip-text">
                             <div class="tool-tip-text">
                                 <p>
@@ -1280,16 +1126,10 @@ export default {
                                     to the nearest unlocked skill.
                                 </p>
                                 <div class="d-flex justify-content-between">
-                                    <button
-                                        class="btn primary-btn"
-                                        @click="progressTutorial(2)"
-                                    >
+                                    <button class="btn primary-btn" @click="progressTutorial(2)">
                                         next
                                     </button>
-                                    <button
-                                        class="btn red-btn"
-                                        @click="skipTutorial"
-                                    >
+                                    <button class="btn red-btn" @click="skipTutorial">
                                         exit tutorial
                                     </button>
                                 </div>
@@ -1298,21 +1138,14 @@ export default {
                     </div>
                 </div>
                 <!-- Student tooltips -->
-                <div
-                    v-if="
-                        userDetailsStore.role == 'student' && showTutorialTip3
-                    "
-                    class="tool-tip-base d-flex justify-content-start"
-                    :class="{
-                        'justify-content-end': isMobileCheck > 576
-                    }"
-                >
-                    <div
-                        class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel"
-                        :class="{
-                            'triangle-top-middle': isMobileCheck > 576
-                        }"
-                    >
+                <div v-if="
+                    userDetailsStore.role == 'student' && showTutorialTip3
+                " class="tool-tip-base d-flex justify-content-start" :class="{
+                    'justify-content-end': isMobileCheck > 576
+                }">
+                    <div class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel" :class="{
+                        'triangle-top-middle': isMobileCheck > 576
+                    }">
                         <div class="tool-tip-text">
                             <p>
                                 Suggesting edits to this page or its test can
@@ -1323,31 +1156,20 @@ export default {
                                 bookmark this skill by marking it as a goal.
                             </p>
                             <div class="d-flex justify-content-between">
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(3)"
-                                >
+                                <button class="btn primary-btn" @click="progressTutorial(3)">
                                     next
                                 </button>
-                                <button
-                                    class="btn red-btn"
-                                    @click="skipTutorial"
-                                >
+                                <button class="btn red-btn" @click="skipTutorial">
                                     exit tutorial
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div
-                    v-if="
-                        userDetailsStore.role == 'student' && showTutorialTip4
-                    "
-                    class="tool-tip-base d-flex justify-content-end"
-                >
-                    <div
-                        class="explain-tool-tip triangle-top-right hovering-info-panel narrow-info-panel"
-                    >
+                <div v-if="
+                    userDetailsStore.role == 'student' && showTutorialTip4
+                " class="tool-tip-base d-flex justify-content-end">
+                    <div class="explain-tool-tip triangle-top-right hovering-info-panel narrow-info-panel">
                         <div class="tool-tip-text">
                             <p>
                                 Here you can share a link to this skill with a
@@ -1355,16 +1177,10 @@ export default {
                                 incorrect.
                             </p>
                             <div class="d-flex justify-content-between">
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(4)"
-                                >
+                                <button class="btn primary-btn" @click="progressTutorial(4)">
                                     next
                                 </button>
-                                <button
-                                    class="btn red-btn"
-                                    @click="skipTutorial"
-                                >
+                                <button class="btn red-btn" @click="skipTutorial">
                                     exit tutorial
                                 </button>
                             </div>
@@ -1372,16 +1188,11 @@ export default {
                     </div>
                 </div>
                 <!-- Editor tooltips -->
-                <div
-                    v-if="userDetailsStore.role == 'editor' && showTutorialTip2"
-                    class="tool-tip-base d-flex justify-content-start"
-                    :class="{
+                <div v-if="userDetailsStore.role == 'editor' && showTutorialTip2"
+                    class="tool-tip-base d-flex justify-content-start" :class="{
                         'justify-content-end': isMobileCheck > 576
-                    }"
-                >
-                    <div
-                        class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel"
-                    >
+                    }">
+                    <div class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel">
                         <div class="tool-tip-text">
                             <p>
                                 The "Edit" button allows you to edit this skill
@@ -1389,29 +1200,19 @@ export default {
                                 shows all previous versions and changes.
                             </p>
                             <div class="d-flex justify-content-between">
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(2)"
-                                >
+                                <button class="btn primary-btn" @click="progressTutorial(2)">
                                     next
                                 </button>
-                                <button
-                                    class="btn red-btn"
-                                    @click="skipTutorial"
-                                >
+                                <button class="btn red-btn" @click="skipTutorial">
                                     exit tutorial
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div
-                    v-if="userDetailsStore.role == 'editor' && showTutorialTip3"
-                    class="tool-tip-base d-flex justify-content-end"
-                >
-                    <div
-                        class="explain-tool-tip triangle-top-right narrow-info-panel hovering-info-panel"
-                    >
+                <div v-if="userDetailsStore.role == 'editor' && showTutorialTip3"
+                    class="tool-tip-base d-flex justify-content-end">
+                    <div class="explain-tool-tip triangle-top-right narrow-info-panel hovering-info-panel">
                         <div class="tool-tip-text">
                             <p>
                                 Here you can share a link to this skill with a
@@ -1419,16 +1220,10 @@ export default {
                                 incorrect.
                             </p>
                             <div class="d-flex justify-content-between">
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(3)"
-                                >
+                                <button class="btn primary-btn" @click="progressTutorial(3)">
                                     next
                                 </button>
-                                <button
-                                    class="btn red-btn"
-                                    @click="skipTutorial"
-                                >
+                                <button class="btn red-btn" @click="skipTutorial">
                                     exit tutorial
                                 </button>
                             </div>
@@ -1436,53 +1231,35 @@ export default {
                     </div>
                 </div>
                 <!-- Instructor tooltips -->
-                <div
-                    v-if="
-                        userDetailsStore.role == 'instructor' &&
-                        showTutorialTip2
-                    "
-                    class="tool-tip-base d-flex justify-content-start"
-                    :class="{
-                        'justify-content-end': isMobileCheck > 576
-                    }"
-                >
-                    <div
-                        class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel"
-                        :class="{
-                            'triangle-top-middle': isMobileCheck > 576
-                        }"
-                    >
+                <div v-if="
+                    userDetailsStore.role == 'instructor' &&
+                    showTutorialTip2
+                " class="tool-tip-base d-flex justify-content-start" :class="{
+                    'justify-content-end': isMobileCheck > 576
+                }">
+                    <div class="explain-tool-tip triangle-top-left hovering-info-panel narrow-info-panel" :class="{
+                        'triangle-top-middle': isMobileCheck > 576
+                    }">
                         <div class="tool-tip-text">
                             <p>
                                 Here you can suggest an edit to this skill page.
                             </p>
                             <div class="d-flex justify-content-between">
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(2)"
-                                >
+                                <button class="btn primary-btn" @click="progressTutorial(2)">
                                     next
                                 </button>
-                                <button
-                                    class="btn red-btn"
-                                    @click="skipTutorial"
-                                >
+                                <button class="btn red-btn" @click="skipTutorial">
                                     exit tutorial
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div
-                    v-if="
-                        userDetailsStore.role == 'instructor' &&
-                        showTutorialTip3
-                    "
-                    class="tool-tip-base d-flex justify-content-end"
-                >
-                    <div
-                        class="explain-tool-tip triangle-top-right narrow-info-panel hovering-info-panel"
-                    >
+                <div v-if="
+                    userDetailsStore.role == 'instructor' &&
+                    showTutorialTip3
+                " class="tool-tip-base d-flex justify-content-end">
+                    <div class="explain-tool-tip triangle-top-right narrow-info-panel hovering-info-panel">
                         <div class="tool-tip-text">
                             <p>
                                 Here you can share a link to this skill with a
@@ -1490,16 +1267,10 @@ export default {
                                 incorrect.
                             </p>
                             <div class="d-flex justify-content-between">
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(3)"
-                                >
+                                <button class="btn primary-btn" @click="progressTutorial(3)">
                                     next
                                 </button>
-                                <button
-                                    class="btn red-btn"
-                                    @click="skipTutorial"
-                                >
+                                <button class="btn red-btn" @click="skipTutorial">
                                     exit tutorial
                                 </button>
                             </div>
@@ -1508,10 +1279,7 @@ export default {
                 </div>
 
                 <!-- A line divide -->
-                <hr
-                    class="border border-1 opacity-100 hr mt-2 mb-0"
-                    v-if="isMobileCheck > 576"
-                />
+                <hr class="border border-1 opacity-100 hr mt-2 mb-0" v-if="isMobileCheck > 576" />
             </div>
             <!-- Content -->
             <div class="row">
@@ -1519,10 +1287,7 @@ export default {
                     <!-- Introduction -->
                     <div class="">
                         <h2 class="h4 secondary-heading">Introduction</h2>
-                        <div
-                            class="bg-white rounded p-2"
-                            style="min-height: 60px"
-                        >
+                        <div class="bg-white rounded p-2" style="min-height: 60px">
                             <p>{{ skill.intro_sentence }}</p>
                         </div>
                     </div>
@@ -1532,11 +1297,8 @@ export default {
                         <h2 class="h4 secondary-heading">
                             Requirements for Mastery
                         </h2>
-                        <div
-                            class="bg-white rounded p-2 mastery-requirements-section"
-                            v-html="skill.mastery_requirements"
-                            style="min-height: 100px"
-                        ></div>
+                        <div class="bg-white rounded p-2 mastery-requirements-section"
+                            v-html="skill.mastery_requirements" style="min-height: 100px"></div>
                     </div>
                 </div>
                 <!-- Infobox -->
@@ -1544,110 +1306,57 @@ export default {
                     <div class="info-box p-2 mb-4">
                         <!-- AWS S3 hosted feature image -->
                         <!-- Using random number otherwise url doesnt change (cache)-->
-                        <a
-                            :href="skill.image_url"
-                            :aria-label="
-                                'full size image representing ' +
-                                calculatedSkillName
-                            "
-                        >
-                            <img
-                                :src="thumbnailURL"
-                                @error="imageUrlAlternative"
-                                class="rounded img-fluid"
-                                :alt="
-                                    'image representing ' + calculatedSkillName
-                                "
-                                width="294.4"
-                                height="294.4"
-                                loading="lazy"
-                                fetchpriority="high"
-                                style="aspect-ratio: 1/1; object-fit: cover"
-                            />
+                        <a :href="skill.image_url" :aria-label="'full size image representing ' +
+                            calculatedSkillName
+                            ">
+                            <img :src="thumbnailURL" @error="imageUrlAlternative" class="rounded img-fluid" :alt="'image representing ' + calculatedSkillName
+                                " width="294.4" height="294.4" loading="lazy" fetchpriority="high"
+                                style="aspect-ratio: 1/1; object-fit: cover" />
                         </a>
                         <!-- Sharable URL -->
-                        <button
-                            v-if="
-                                !sessionDetailsStore.isLoggedIn &&
-                                isMobileCheck < 576
-                            "
-                            @click="copyShareableURLToClipBoard"
-                            class="btn"
-                            aria-label="share"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
-                                width="20"
-                                heigth="20"
-                            >
-                                <path
-                                    class="primary-icon"
-                                    d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"
-                                />
+                        <button v-if="
+                            !sessionDetailsStore.isLoggedIn &&
+                            isMobileCheck < 576
+                        " @click="copyShareableURLToClipBoard" class="btn" aria-label="share">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="20" heigth="20">
+                                <path class="primary-icon"
+                                    d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z" />
                             </svg>
                         </button>
                         <!-- Grade level -->
-                        <div
-                            :class="{
-                                'mt-0':
-                                    !sessionDetailsStore.isLoggedIn &&
-                                    isMobileCheck < 576,
-                                'mt-2':
-                                    sessionDetailsStore.isLoggedIn ||
-                                    isMobileCheck >= 576
-                            }"
-                        >
+                        <div :class="{
+                            'mt-0':
+                                !sessionDetailsStore.isLoggedIn &&
+                                isMobileCheck < 576,
+                            'mt-2':
+                                sessionDetailsStore.isLoggedIn ||
+                                isMobileCheck >= 576
+                        }">
                             <h2 class="h4 secondary-heading">Level</h2>
-                            <span v-if="skill.level == 'grade_school'"
-                                >Grade School</span
-                            >
-                            <span v-else-if="skill.level == 'middle_school'"
-                                >Middle School</span
-                            >
-                            <span v-else-if="skill.level == 'high_school'"
-                                >High School</span
-                            >
-                            <span v-else-if="skill.level == 'college'"
-                                >College</span
-                            >
+                            <span v-if="skill.level == 'grade_school'">Grade School</span>
+                            <span v-else-if="skill.level == 'middle_school'">Middle School</span>
+                            <span v-else-if="skill.level == 'high_school'">High School</span>
+                            <span v-else-if="skill.level == 'college'">College</span>
                             <span v-else-if="skill.level == 'phd'">PHD</span>
                         </div>
                         <div class="mt-2">
                             <h2 class="h4 secondary-heading">Author</h2>
                             <!-- Author Icon -->
-                            <div
-                                v-if="skill.is_human_edited"
-                                b-tooltip.hover
-                                title="This page was written or edited by a human"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 320 512"
-                                    height="22"
-                                >
+                            <div v-if="skill.is_human_edited" b-tooltip.hover
+                                title="This page was written or edited by a human">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" height="22">
                                     <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                     <path
                                         d="M112 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm40 304l0 128c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-223.1L59.4 304.5c-9.1 15.1-28.8 20-43.9 10.9s-20-28.8-10.9-43.9l58.3-97c17.4-28.9 48.6-46.6 82.3-46.6l29.7 0c33.7 0 64.9 17.7 82.3 46.6l58.3 97c9.1 15.1 4.2 34.8-10.9 43.9s-34.8 4.2-43.9-10.9L232 256.9 232 480c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-128-16 0z"
-                                        fill="black"
-                                    />
+                                        fill="black" />
                                 </svg>
                             </div>
-                            <div
-                                v-else
-                                b-tooltip.hover
-                                title="This page was written by an AI"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 640 512"
-                                    height="22"
-                                >
+                            <div v-else b-tooltip.hover title="This page was written by an AI">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" height="22">
                                     <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                     <path
                                         d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
-                                        fill="black"
-                                    />
+                                        fill="black" />
                                 </svg>
                             </div>
                         </div>
@@ -1655,21 +1364,12 @@ export default {
                 </div>
             </div>
             <!-- Learning Objectives -->
-            <div
-                v-if="skill.type != 'domain' && showLearningObjectives"
-                class="mt-4"
-                ref="learningObjectivesSection"
-            >
+            <div v-if="skill.type != 'domain' && showLearningObjectives" class="mt-4" ref="learningObjectivesSection">
                 <h2 class="h4 secondary-heading">Learning Objectives</h2>
-                <div
-                    v-if="
-                        userDetailsStore.role == 'student' && showTutorialTip6
-                    "
-                    class="tool-tip-base d-flex justify-content-start"
-                >
-                    <div
-                        class="explain-tool-tip hovering-info-panel triangle-top-left"
-                    >
+                <div v-if="
+                    userDetailsStore.role == 'student' && showTutorialTip6
+                " class="tool-tip-base d-flex justify-content-start">
+                    <div class="explain-tool-tip hovering-info-panel triangle-top-left">
                         <div class="tool-tip-text">
                             <p>
                                 Learning Objectives outline the specific skills
@@ -1679,16 +1379,10 @@ export default {
                                 focused on that objective.
                             </p>
                             <div class="d-flex justify-content-between">
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(6)"
-                                >
+                                <button class="btn primary-btn" @click="progressTutorial(6)">
                                     next
                                 </button>
-                                <button
-                                    class="btn red-btn"
-                                    @click="skipTutorial"
-                                >
+                                <button class="btn red-btn" @click="skipTutorial">
                                     exit tutorial
                                 </button>
                             </div>
@@ -1696,22 +1390,12 @@ export default {
                     </div>
                 </div>
                 <div class="bg-white rounded p-2">
-                    <div
-                        v-for="learningObjective in skill.learningObjectives"
-                        class="d-flex mb-3 justify-content-between"
-                        :class="{ 'mb-4': learningObjective.showAI }"
-                    >
+                    <div v-for="learningObjective in skill.learningObjectives"
+                        class="d-flex mb-3 justify-content-between" :class="{ 'mb-4': learningObjective.showAI }">
                         <div>
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="6"
-                                height="6"
-                            >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="6" height="6">
                                 <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
-                                <path
-                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z"
-                                />
+                                <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z" />
                             </svg>
                         </div>
                         <div class="ms-2 w-100">
@@ -1720,52 +1404,28 @@ export default {
                             </p>
                             <div v-if="learningObjective.showAI">
                                 <!-- AI tutor for this learning objective -->
-                                <LearningObjectiveAITutor
-                                    :learningObjective="
-                                        learningObjective.objective
-                                    "
-                                    :learningObjectiveId="learningObjective.id"
-                                    :skillName="calculatedSkillName"
-                                    :skillId="skill.id"
-                                    :skillUrl="skill.url"
-                                    :skillLevel="skill.level"
-                                />
+                                <LearningObjectiveAITutor :learningObjective="learningObjective.objective
+                                    " :learningObjectiveId="learningObjective.id" :skillName="calculatedSkillName"
+                                    :skillId="skill.id" :skillUrl="skill.url" :skillLevel="skill.level" />
                             </div>
                         </div>
-                        <button
-                            v-if="
-                                sessionDetailsStore.isLoggedIn &&
-                                userDetailsStore.role == 'student'
-                            "
-                            class="btn plus-btn"
-                            @click="
-                                learningObjective.showAI =
-                                    !learningObjective.showAI
-                            "
-                        >
-                            <svg
-                                v-if="!learningObjective.showAI"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
-                                width="18"
-                                height="18"
-                            >
+                        <button v-if="
+                            sessionDetailsStore.isLoggedIn &&
+                            userDetailsStore.role == 'student'
+                        " class="btn plus-btn" @click="
+                            learningObjective.showAI =
+                            !learningObjective.showAI
+                            ">
+                            <svg v-if="!learningObjective.showAI" xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512" width="18" height="18">
                                 <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
                                 <path
-                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
-                                />
+                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z" />
                             </svg>
-                            <svg
-                                v-else
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
-                                width="18"
-                                height="18"
-                            >
+                            <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="18" height="18">
                                 <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc. -->
                                 <path
-                                    d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                                />
+                                    d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
                             </svg>
                         </button>
                     </div>
@@ -1782,17 +1442,9 @@ export default {
                 <!-- Filters -->
                 <div class="row mt-3">
                     <div class="h1-title">Filter</div>
-                    <label
-                        v-for="tag in tagsStore.tagsList"
-                        class="control control-checkbox"
-                    >
+                    <label v-for="tag in tagsStore.tagsList" class="control control-checkbox">
                         <span class="my-auto mx-2 me-4"> {{ tag.name }}</span>
-                        <input
-                            type="checkbox"
-                            :value="tag.id"
-                            v-model="filters"
-                            disabled
-                        />
+                        <input type="checkbox" :value="tag.id" v-model="filters" disabled />
                         <div class="control_indicator"></div>
                     </label>
                 </div>
@@ -1801,35 +1453,23 @@ export default {
         <!-- AI Tutor -->
         <div class="row mt-3 mb-3 position-relative" ref="aiTutorSection">
             <!-- Only show AI tutor for Student -->
-            <AITutor
-                ref="aiTutor"
-                v-if="
-                    isSkillLoaded &&
-                    (userDetailsStore.role === 'student' ||
-                        !sessionDetailsStore.isLoggedIn) &&
-                    skill.type !== 'domain'
-                "
-                :skill="skill"
-                :showTutorialTip7="showTutorialTip7"
-                :showTutorialTip8="showTutorialTip8"
-                :showTutorialTip9="showTutorialTip9"
-                :areAllSubskillsMastered="areAllSubskillsMastered"
-                @skipTutorial="skipTutorial"
-                @progressTutorial="progressTutorial"
-                @skillMastered="handleSkillMastered"
-            />
+            <AITutor ref="aiTutor" v-if="
+                isSkillLoaded &&
+                (userDetailsStore.role === 'student' ||
+                    !sessionDetailsStore.isLoggedIn) &&
+                skill.type !== 'domain'
+            " :skill="skill" :showTutorialTip7="showTutorialTip7" :showTutorialTip8="showTutorialTip8"
+                :showTutorialTip9="showTutorialTip9" :areAllSubskillsMastered="areAllSubskillsMastered"
+                @skipTutorial="skipTutorial" @progressTutorial="progressTutorial"
+                @skillMastered="handleSkillMastered" />
 
-            <div
-                v-else-if="
-                    isSkillLoaded &&
-                    userDetailsStore.role === 'student' &&
-                    skill.type !== 'domain'
-                "
-            >
-                <em
-                    >You have reached your monthly AI token limit. Please
-                    recharge your tokens to use more.</em
-                >
+            <div v-else-if="
+                isSkillLoaded &&
+                userDetailsStore.role === 'student' &&
+                skill.type !== 'domain'
+            ">
+                <em>You have reached your monthly AI token limit. Please
+                    recharge your tokens to use more.</em>
             </div>
             <!-- Skill Mastered Modal -->
             <div v-if="showMasteryModal" class="modal">
@@ -1838,32 +1478,22 @@ export default {
                         <h2 class="heading">Congratulations!</h2>
                         <p class="mb-3">
                             You have mastered the skill
-                            <strong>{{ calculatedSkillName }}</strong
-                            >!
+                            <strong>{{ calculatedSkillName }}</strong>!
                         </p>
 
                         <!-- Trophy icon -->
                         <div class="trophy-icon mb-3">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 576 512"
-                                width="80"
-                                height="80"
-                                fill="#FFD700"
-                            >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="80" height="80"
+                                fill="#FFD700">
                                 <!-- Font Awesome Trophy Icon -->
                                 <path
-                                    d="M400 0H176c-26.5 0-48.1 21.8-47.1 48.2c.2 5.3 .4 10.6 .7 15.8H24C10.7 64 0 74.7 0 88c0 92.6 33.5 157 78.5 200.7c44.3 43.1 98.3 64.8 138.1 75.8c23.4 6.5 39.4 26 39.4 45.6c0 20.9-17 37.9-37.9 37.9H192c-17.7 0-32 14.3-32 32s14.3 32 32 32H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H357.9C337 448 320 431 320 410.1c0-19.6 15.9-39.2 39.4-45.6c39.9-11 93.9-32.7 138.2-75.8C542.5 245 576 180.6 576 88c0-13.3-10.7-24-24-24H446.4c.3-5.2 .5-10.4 .7-15.8C448.1 21.8 426.5 0 400 0zM48.9 112h84.4c9.1 90.1 29.2 150.3 51.9 190.6c-24.9-11-50.8-26.5-73.2-48.3c-32-31.1-58-76-63-142.3zM464.1 254.3c-22.4 21.8-48.3 37.3-73.2 48.3c22.7-40.3 42.8-100.5 51.9-190.6h84.4c-5.1 66.3-31.1 111.2-63 142.3z"
-                                />
+                                    d="M400 0H176c-26.5 0-48.1 21.8-47.1 48.2c.2 5.3 .4 10.6 .7 15.8H24C10.7 64 0 74.7 0 88c0 92.6 33.5 157 78.5 200.7c44.3 43.1 98.3 64.8 138.1 75.8c23.4 6.5 39.4 26 39.4 45.6c0 20.9-17 37.9-37.9 37.9H192c-17.7 0-32 14.3-32 32s14.3 32 32 32H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H357.9C337 448 320 431 320 410.1c0-19.6 15.9-39.2 39.4-45.6c39.9-11 93.9-32.7 138.2-75.8C542.5 245 576 180.6 576 88c0-13.3-10.7-24-24-24H446.4c.3-5.2 .5-10.4 .7-15.8C448.1 21.8 426.5 0 400 0zM48.9 112h84.4c9.1 90.1 29.2 150.3 51.9 190.6c-24.9-11-50.8-26.5-73.2-48.3c-32-31.1-58-76-63-142.3zM464.1 254.3c-22.4 21.8-48.3 37.3-73.2 48.3c22.7-40.3 42.8-100.5 51.9-190.6h84.4c-5.1 66.3-31.1 111.2-63 142.3z" />
                             </svg>
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-center">
-                        <button
-                            class="btn primary-btn"
-                            @click="showMasteryModal = false"
-                        >
+                        <button class="btn primary-btn" @click="showMasteryModal = false">
                             Continue
                         </button>
                     </div>
@@ -1874,47 +1504,27 @@ export default {
         <!-- Posts -->
         <div v-if="skill.type != 'domain'">
             <div class="row mt-3 mb-3">
-                <Forum
-                    v-if="isSkillLoaded"
-                    :skillId="skill.id"
-                    :showTutorialTip10="showTutorialTip10"
-                    :userRole="userDetailsStore.role"
-                    @skipTutorial="skipTutorial"
-                    @progressTutorial="progressTutorial"
-                />
+                <Forum v-if="isSkillLoaded" :skillId="skill.id" :showTutorialTip10="showTutorialTip10"
+                    :userRole="userDetailsStore.role" @skipTutorial="skipTutorial"
+                    @progressTutorial="progressTutorial" />
             </div>
         </div>
         <p>&nbsp;</p>
     </div>
-    <div
-        v-if="showConfirmModal"
-        @click="showConfirmModal = false"
-        class="modal"
-    >
+    <div v-if="showConfirmModal" @click="showConfirmModal = false" class="modal">
         <!-- Confirm Modal -->
         <div class="modal-content asking-modal">
             <p>URL copied to clipboard</p>
 
             <!-- Buttons row -->
             <div class="d-flex justify-content-end gap-2">
-                <button
-                    type="button"
-                    class="btn primary-btn modal-btn"
-                    @click="showConfirmModal = false"
-                >
+                <button type="button" class="btn primary-btn modal-btn" @click="showConfirmModal = false">
                     <span class="d-none d-md-block"> OK </span>
                     <!-- X icon Only show when in Phone View -->
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        width="18"
-                        height="18"
-                        fill="white"
-                        class="d-md-none"
-                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18" fill="white"
+                        class="d-md-none">
                         <path
-                            d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
-                        />
+                            d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z" />
                     </svg>
                 </button>
             </div>
@@ -1929,61 +1539,37 @@ export default {
             </h1>
             <p>The next skills in this branch are:</p>
             <div v-for="nextSkill in nextSkillsInBranch">
-                <router-link
-                    :class="{
-                        'grade-school': nextSkill.level == 'grade_school',
-                        'middle-school': nextSkill.level == 'middle_school',
-                        'high-school': nextSkill.level == 'high_school',
-                        college: nextSkill.level == 'college',
-                        phd: nextSkill.level == 'phd'
-                    }"
-                    class="skill-link btn mb-1"
-                    :to="`/skills/${nextSkill.url}`"
-                    target="_blank"
-                >
+                <router-link :class="{
+                    'grade-school': nextSkill.level == 'grade_school',
+                    'middle-school': nextSkill.level == 'middle_school',
+                    'high-school': nextSkill.level == 'high_school',
+                    college: nextSkill.level == 'college',
+                    phd: nextSkill.level == 'phd'
+                }" class="skill-link btn mb-1" :to="`/skills/${nextSkill.url}`" target="_blank">
                     {{ nextSkill.name }}
                 </router-link>
             </div>
-            <button
-                class="btn primary-btn ms-auto me-0"
-                @click="showCategoryCompletedModal = false"
-            >
+            <button class="btn primary-btn ms-auto me-0" @click="showCategoryCompletedModal = false">
                 Close
             </button>
         </div>
     </div>
 
     <!-- flag modals component -->
-    <FlagModals
-        v-if="showFlaggingModal"
-        :userId="userDetailsStore.userId"
-        contentType="skill"
-        :contentId="skillId"
-    />
+    <FlagModals v-if="showFlaggingModal" :userId="userDetailsStore.userId" contentType="skill" :contentId="skillId" />
 
     <!-- Guest Login Tooltip -->
-    <div
-        v-if="showGuestLoginTooltip"
-        class="modal"
-        @click="showGuestLoginTooltip = false"
-    >
+    <div v-if="showGuestLoginTooltip" class="modal" @click="showGuestLoginTooltip = false">
         <div class="modal-content" @click.stop>
             <p>
                 Please login to access this feature and track your learning
                 progress.
             </p>
             <div class="d-flex justify-content-between">
-                <router-link
-                    class="btn primary-btn"
-                    to="/login"
-                    @click="showGuestLoginTooltip = false"
-                >
+                <router-link class="btn primary-btn" to="/login" @click="showGuestLoginTooltip = false">
                     Login
                 </router-link>
-                <button
-                    class="btn red-btn"
-                    @click="showGuestLoginTooltip = false"
-                >
+                <button class="btn red-btn" @click="showGuestLoginTooltip = false">
                     Close
                 </button>
             </div>
@@ -1991,13 +1577,10 @@ export default {
     </div>
     <!-- Tooltip modals -->
     <!-- Student -->
-    <div
-        v-if="
-            userDetailsStore.role == 'student' &&
-            (showTutorialTip1 || showTutorialTip5 || showTutorialTip11)
-        "
-        class="modal"
-    >
+    <div v-if="
+        userDetailsStore.role == 'student' &&
+        (showTutorialTip1 || showTutorialTip5 || showTutorialTip11)
+    " class="modal">
         <div class="modal-content">
             <div v-if="showTutorialTip1">
                 <p>
@@ -2006,10 +1589,7 @@ export default {
                     mastery.
                 </p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(1)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(1)">
                         next
                     </button>
                     <button class="btn red-btn" @click="skipTutorial">
@@ -2024,10 +1604,7 @@ export default {
                     skill.
                 </p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(5)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(5)">
                         next
                     </button>
                     <button class="btn red-btn" @click="skipTutorial">
@@ -2051,13 +1628,10 @@ export default {
     </div>
 
     <!-- Editor -->
-    <div
-        v-if="
-            userDetailsStore.role == 'editor' &&
-            (showTutorialTip1 || showTutorialTip4 || showTutorialTip5)
-        "
-        class="modal"
-    >
+    <div v-if="
+        userDetailsStore.role == 'editor' &&
+        (showTutorialTip1 || showTutorialTip4 || showTutorialTip5)
+    " class="modal">
         <div class="modal-content">
             <div v-if="showTutorialTip1">
                 <p>
@@ -2066,10 +1640,7 @@ export default {
                     mastery.
                 </p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(1)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(1)">
                         next
                     </button>
                     <button class="btn red-btn" @click="skipTutorial">
@@ -2083,10 +1654,7 @@ export default {
                     student needs to learn to master the skill.
                 </p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(4)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(4)">
                         next
                     </button>
                     <button class="btn red-btn" @click="skipTutorial">
@@ -2108,13 +1676,10 @@ export default {
     </div>
 
     <!-- Instructor -->
-    <div
-        v-if="
-            userDetailsStore.role == 'instructor' &&
-            (showTutorialTip1 || showTutorialTip4 || showTutorialTip5)
-        "
-        class="modal"
-    >
+    <div v-if="
+        userDetailsStore.role == 'instructor' &&
+        (showTutorialTip1 || showTutorialTip4 || showTutorialTip5)
+    " class="modal">
         <div class="modal-content">
             <div v-if="showTutorialTip1">
                 <p>
@@ -2122,10 +1687,7 @@ export default {
                     to try to master, this skill.
                 </p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(1)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(1)">
                         next
                     </button>
                     <button class="btn red-btn" @click="skipTutorial">
@@ -2139,10 +1701,7 @@ export default {
                     student needs to learn to master the skill.
                 </p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(4)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(4)">
                         next
                     </button>
                     <button class="btn red-btn" @click="skipTutorial">
@@ -2157,10 +1716,7 @@ export default {
                     to learn about this topic.
                 </p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(5)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(5)">
                         close
                     </button>
                 </div>
@@ -2398,6 +1954,7 @@ p {
 
 /* Small devices (portrait phones) */
 @media (max-width: 480px) {
+
     /* Modal Content/Box */
     .modal-content {
         width: 90% !important;
