@@ -56,12 +56,12 @@ export default {
             if (this.userDetailsStore.role === 'school_admin') {
                 url = `/student-analytics/student-duration-per-day-tenant/${this.studentId}/${this.userDetailsStore.tenantId}`;
             }
-            console.log(url)
+            console.log(url);
 
             fetch(url)
                 .then((response) => response.json())
                 .then((resData) => {
-                    console.log(resData)
+                    console.log(resData);
                     const data = resData.studentTime;
                     for (let i = 0; i < data.length; i++) {
                         data[i].formattedQuantity =
@@ -152,13 +152,13 @@ export default {
 
 <template>
     <div class="container-fluid chart-page">
-        <span class="d-flex justify-content-between w-100">
+        <span class="d-flex justify-content-between w-100 ps-3 pe-4 pt-2">
             <h1 class="heading h4">Engagement</h1>
             <h2 class="tertiary-heading h4">{{ studentName }}</h2>
         </span>
 
-        <div class="chart-row row">
-            <div class="col-lg chart-col position-relative h-100">
+        <div class="chart-row row p-4">
+            <div class="col-lg chart-col position-relative h-100 chart-card">
                 <div id="time-chart-container">
                     <DownloadCSVBtn
                         :data="totalTimeOnPlatformDownloadData"
@@ -182,11 +182,13 @@ export default {
                 </figcaption>
             </div>
         </div>
-        <div class="chart-row row">
-            <div class="col-lg chart-col position-relative">
+        <div class="chart-row row p-4">
+            <div class="col-lg chart-col position-relative chart-card me-3">
                 <div id="">TODO: Add time per subject bar chart</div>
             </div>
-            <div class="col-lg chart-col position-relative overflow-auto">
+            <div
+                class="col-lg chart-col position-relative overflow-auto chart-card ms-3"
+            >
                 <div id="activity-chart-container">
                     <DownloadCSVBtn
                         :data="minutesPerSkillDownloadData"
@@ -203,17 +205,29 @@ export default {
 </template>
 
 <style scoped>
+.chart-card {
+    /* background-color: rgba(138, 150, 150, 0.745);
+    border: 1px solid rgba(190, 201, 208, 0.453); */
+    border-radius: 5px;
+    padding: 10px 20px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12),
+        0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    background-color: white;
+}
+
 .chart-col {
     height: 100%;
 }
 
 .chart-page {
-    height: calc(100vh - 88px);
+    height: calc(100vh - 78px);
     overflow: hidden;
+    background-color: #eeeeee;
 }
 
 .chart-row {
-    height: 50%;
+    height: 48%;
+    padding: 5px;
 }
 
 #activity-chart-container,
