@@ -1566,8 +1566,15 @@ export default {
                 // Use a semi-translucent fill for domain nodes
                 ctx1.fillStyle = 'rgba(220, 220, 220, 0.6)';
                 ctx1.fill();
-                ctx1.lineWidth = 1.5;
-                ctx1.strokeStyle = '#a0a0a0'; // Lighter border color
+                if (node.data.is_mastered == 1) {
+                    const outlineColor = '#228C22'; // Green
+                    ctx1.lineWidth = 2;
+                    ctx1.strokeStyle = outlineColor;
+                }
+                else {
+                    ctx1.lineWidth = 1.5;
+                    ctx1.strokeStyle = '#a0a0a0'; // Lighter border
+                }
                 ctx1.stroke();
                 return;
             }
@@ -1633,8 +1640,15 @@ export default {
             if (node.data.type == 'domain') {
                 ctx1.fillStyle = 'rgba(230, 230, 230, 0.7)'; // Light semi-translucent fill
                 ctx1.fill();
-                ctx1.lineWidth = 1.5;
-                ctx1.strokeStyle = '#b0b0b0'; // Lighter border
+                if (node.data.is_mastered == 1) {
+                    const outlineColor = '#228C22'; // Green
+                    ctx1.lineWidth = 2;
+                    ctx1.strokeStyle = outlineColor;
+                }
+                else {
+                    ctx1.lineWidth = 1.5;
+                    ctx1.strokeStyle = '#b0b0b0'; // Lighter border
+                }
                 ctx1.setLineDash([3, 2]); // Dotted line to visually indicate "container"
                 ctx1.stroke();
                 return;
@@ -1981,27 +1995,14 @@ export default {
 
 <template>
     <!-- Loading animation -->
-    <div
-        v-if="isLoading == true"
-        class="d-flex align-items-center justify-content-center loading-animation py-4"
-    >
+    <div v-if="isLoading == true" class="d-flex align-items-center justify-content-center loading-animation py-4">
         <span class="loader"></span>
     </div>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
     <div ref="wrapper" v-show="isLoading == false" id="wrapper">
         <SkillPanel :skill="skill" :showSkillPanel="showSkillPanel" />
-        <div
-            v-if="showAnimation"
-            :style="{ top: `${yPos}px`, left: `${xPos}px` }"
-            class="click-animation"
-        ></div>
-        <canvas
-            id="canvas"
-            width="1500"
-            height="1500"
-            ref="canvas"
-            tabindex="1"
-        ></canvas>
+        <div v-if="showAnimation" :style="{ top: `${yPos}px`, left: `${xPos}px` }" class="click-animation"></div>
+        <canvas id="canvas" width="1500" height="1500" ref="canvas" tabindex="1"></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
         <ZoomControl ref="ZoomControl" />
@@ -2037,16 +2038,19 @@ export default {
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }
 }
+
 /* End of loading animation */
 
 /* ___________ Button Style ___________ */
 
 .slidecontainer {
-    width: 100%; /* Width of the outside container */
+    width: 100%;
+    /* Width of the outside container */
 }
 
 .slider {
@@ -2076,9 +2080,11 @@ export default {
     border-radius: 50%;
     cursor: pointer;
 }
+
 /* Mouse-over effects */
 .slider:hover {
-    opacity: 1; /* Fully shown on mouse-over */
+    opacity: 1;
+    /* Fully shown on mouse-over */
 }
 
 #wrapper {
@@ -2133,17 +2139,21 @@ input[type='button'] {
     display: flex;
     flex-direction: row;
 }
+
 canvas {
     cursor: pointer;
     background-color: var(--skill-tree-background-color);
 }
+
 .click-animation {
     position: absolute;
     width: 20px;
     height: 20px;
-    background-color: var(--primary-color); /* Color of the animation */
+    background-color: var(--primary-color);
+    /* Color of the animation */
     border-radius: 50%;
-    transform: translate(-50%, -50%); /* Center the circle on click */
+    transform: translate(-50%, -50%);
+    /* Center the circle on click */
     animation: clickEffect 0.7s infinite ease-out;
 }
 
@@ -2152,15 +2162,18 @@ canvas {
         transform: translate(-50%, -50%) scale(1);
         opacity: 1;
     }
+
     100% {
         transform: translate(-50%, -50%) scale(3);
         opacity: 0;
     }
 }
+
 @media (max-width: 820px) {
     .flex-container {
         flex-direction: column;
     }
+
     #wrapper {
         /* height: calc(100% - 130px); */
         height: calc(100%);
