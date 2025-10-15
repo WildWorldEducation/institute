@@ -81,7 +81,7 @@ export default {
         async checkIfTutorialComplete() {
             const result = await fetch(
                 '/users/check-tutorial-progress/collapsible-tree/' +
-                    this.userDetailsStore.userId
+                this.userDetailsStore.userId
             );
             const data = await result.json();
             if (data == 0) {
@@ -94,7 +94,7 @@ export default {
         async checkIfInstructorModeTutorialComplete() {
             const result = await fetch(
                 '/users/check-tutorial-progress/student-collapsible-tree/' +
-                    this.userDetailsStore.userId
+                this.userDetailsStore.userId
             );
             const data = await result.json();
             if (data == 0) {
@@ -302,40 +302,22 @@ export default {
                 </div>
                 <div class="search-mobile-row me-1">
                     <!-- Search feature -->
-                    <SkillTreeSearchBar
-                        :findNode="findNode"
-                        :clearResults="clearResults"
-                    />
+                    <SkillTreeSearchBar :findNode="findNode" :clearResults="clearResults" />
                 </div>
                 <!-- Add skill button -->
-                <router-link class="btn primary-btn me-1" to="/skills/add"
-                    >New skill&nbsp;
+                <router-link v-if="!instructorMode" class="btn primary-btn me-1" to="/skills/add">New skill&nbsp;
                     <!-- Plus sign -->
-                    <svg
-                        width="18"
-                        height="18"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M6.34811 20.0423L6.34811 13.6494L-0.0358702 13.6583C-0.320945 13.6579 -0.594203 13.5444 -0.795782 13.3428C-0.997361 13.1412 -1.11082 12.868 -1.11132 12.5829L-1.11729 7.41477C-1.1168 7.1297 -1.00334 6.85644 -0.801757 6.65486C-0.600179 6.45328 -0.326921 6.33982 -0.0418461 6.33933L6.3481 6.34231L6.3481 -0.0506238C6.34659 -0.193451 6.3736 -0.335145 6.42756 -0.467396C6.48152 -0.599646 6.56134 -0.719794 6.66234 -0.820794C6.76334 -0.921794 6.88349 -1.00161 7.01574 -1.05557C7.14799 -1.10953 7.28969 -1.13655 7.43251 -1.13503L12.5827 -1.12308C12.8678 -1.12259 13.141 -1.00913 13.3426 -0.807549C13.5442 -0.60597 13.6577 -0.332713 13.6582 -0.047637L13.6552 6.34231L20.0481 6.34231C20.3325 6.34248 20.6052 6.45552 20.8063 6.65661C21.0074 6.8577 21.1204 7.13039 21.1206 7.41477L21.1325 12.565C21.1324 12.8494 21.0193 13.122 20.8182 13.3231C20.6171 13.5242 20.3444 13.6373 20.0601 13.6374L13.6552 13.6494L13.6641 20.0334C13.6636 20.3184 13.5502 20.5917 13.3486 20.7933C13.147 20.9948 12.8738 21.1083 12.5887 21.1088L7.43252 21.1267C7.28969 21.1282 7.148 21.1012 7.01575 21.0473C6.88349 20.9933 6.76335 20.9135 6.66235 20.8125C6.56135 20.7115 6.48153 20.5913 6.42757 20.4591C6.37361 20.3268 6.34659 20.1851 6.34811 20.0423Z"
-                            fill="white"
-                        />
+                            fill="white" />
                     </svg>
                 </router-link>
                 <button class="btn primary-btn" @click="restartTutorial">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 192 512"
-                        width="20"
-                        height="20"
-                        fill="white"
-                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512" width="20" height="20" fill="white">
                         <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                         <path
-                            d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
-                        />
+                            d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z" />
                     </svg>
                 </button>
             </div>
@@ -347,90 +329,51 @@ export default {
                         <h1 class="heading h4">Student: {{ studentName }}</h1>
                     </div>
                     <!-- Search Feature -->
-                    <SkillTreeSearchBar
-                        class="me-1"
-                        :findNode="findNode"
-                        :clearResults="clearResults"
-                    />
-                    <div
-                        id="skill-btn-search-bar-container"
-                        class="d-flex justify-content-end"
-                    >
+                    <SkillTreeSearchBar class="me-1" :findNode="findNode" :clearResults="clearResults" />
+                    <div id="skill-btn-search-bar-container" class="d-flex justify-content-end">
                         <!-- Skill filters button -->
-                        <div
-                            v-if="userDetailsStore.role == 'platform_admin'"
-                            class="d-flex gap-2"
-                        >
-                            <router-link class="btn primary-btn" to="/tags"
-                                >Skill Filters</router-link
-                            >
+                        <div v-if="userDetailsStore.role == 'platform_admin'" class="d-flex gap-2">
+                            <router-link class="btn primary-btn" to="/tags">Skill Filters</router-link>
                         </div>
 
                         <div>
                             <!-- Add skill button -->
-                            <router-link
-                                class="btn primary-btn me-1"
-                                to="/skills/add"
-                            >
+                            <router-link v-if="!instructorMode" class="btn primary-btn me-1" to="/skills/add">
                                 Suggest new skill&nbsp;
                                 <!-- Plus sign -->
-                                <svg
-                                    width="18"
-                                    height="18"
-                                    viewBox="0 0 20 20"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
+                                <svg width="18" height="18" viewBox="0 0 20 20" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
                                     <path
                                         d="M6.34811 20.0423L6.34811 13.6494L-0.0358702 13.6583C-0.320945 13.6579 -0.594203 13.5444 -0.795782 13.3428C-0.997361 13.1412 -1.11082 12.868 -1.11132 12.5829L-1.11729 7.41477C-1.1168 7.1297 -1.00334 6.85644 -0.801757 6.65486C-0.600179 6.45328 -0.326921 6.33982 -0.0418461 6.33933L6.3481 6.34231L6.3481 -0.0506238C6.34659 -0.193451 6.3736 -0.335145 6.42756 -0.467396C6.48152 -0.599646 6.56134 -0.719794 6.66234 -0.820794C6.76334 -0.921794 6.88349 -1.00161 7.01574 -1.05557C7.14799 -1.10953 7.28969 -1.13655 7.43251 -1.13503L12.5827 -1.12308C12.8678 -1.12259 13.141 -1.00913 13.3426 -0.807549C13.5442 -0.60597 13.6577 -0.332713 13.6582 -0.047637L13.6552 6.34231L20.0481 6.34231C20.3325 6.34248 20.6052 6.45552 20.8063 6.65661C21.0074 6.8577 21.1204 7.13039 21.1206 7.41477L21.1325 12.565C21.1324 12.8494 21.0193 13.122 20.8182 13.3231C20.6171 13.5242 20.3444 13.6373 20.0601 13.6374L13.6552 13.6494L13.6641 20.0334C13.6636 20.3184 13.5502 20.5917 13.3486 20.7933C13.147 20.9948 12.8738 21.1083 12.5887 21.1088L7.43252 21.1267C7.28969 21.1282 7.148 21.1012 7.01575 21.0473C6.88349 20.9933 6.76335 20.9135 6.66235 20.8125C6.56135 20.7115 6.48153 20.5913 6.42757 20.4591C6.37361 20.3268 6.34659 20.1851 6.34811 20.0423Z"
-                                        fill="white"
-                                    />
+                                        fill="white" />
                                 </svg>
                             </router-link>
-                            <button
-                                class="btn primary-btn"
-                                @click="restartTutorial"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 192 512"
-                                    width="20"
-                                    height="20"
-                                    fill="white"
-                                >
+                            <button class="btn primary-btn" @click="restartTutorial">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512" width="20" height="20"
+                                    fill="white">
                                     <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                     <path
-                                        d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
-                                    />
+                                        d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z" />
                                 </svg>
                             </button>
                         </div>
                     </div>
                 </div>
                 <!-- Student Tooltips -->
-                <div
-                    v-if="
-                        userDetailsStore.role == 'student' &&
-                        (showTutorialTip1_1 ||
-                            showTutorialTip2 ||
-                            showTutorialTip3 ||
-                            showTutorialTip4 ||
-                            showTutorialTip5)
-                    "
-                    class="info-panel me-4 mt-1"
-                >
-                    <div
-                        v-if="showTutorialTip1_1"
-                        class="info-text mt-1 rounded p-2"
-                    >
+                <div v-if="
+                    userDetailsStore.role == 'student' &&
+                    (showTutorialTip1_1 ||
+                        showTutorialTip2 ||
+                        showTutorialTip3 ||
+                        showTutorialTip4 ||
+                        showTutorialTip5)
+                " class="info-panel me-4 mt-1">
+                    <div v-if="showTutorialTip1_1" class="info-text mt-1 rounded p-2">
                         <p>
                             Greyed out nodes are locked until you pass the tests
                             of the skills that precede them.
                         </p>
-                        <button
-                            class="btn primary-btn"
-                            @click="progressTutorial(1_1)"
-                        >
+                        <button class="btn primary-btn" @click="progressTutorial(1_1)">
                             next
                         </button>
                     </div>
@@ -445,16 +388,10 @@ export default {
                                     Every mastered skill has a happy face icon.
                                 </p>
                                 <div class="d-flex justify-content-between">
-                                    <button
-                                        class="btn primary-btn"
-                                        @click="progressTutorial(2)"
-                                    >
+                                    <button class="btn primary-btn" @click="progressTutorial(2)">
                                         next
                                     </button>
-                                    <button
-                                        class="btn red-btn"
-                                        @click="skipTutorial"
-                                    >
+                                    <button class="btn red-btn" @click="skipTutorial">
                                         exit tutorial
                                     </button>
                                 </div>
@@ -472,16 +409,10 @@ export default {
                                     of that larger skill.
                                 </p>
                                 <div class="d-flex justify-content-between">
-                                    <button
-                                        class="btn primary-btn"
-                                        @click="progressTutorial(3)"
-                                    >
+                                    <button class="btn primary-btn" @click="progressTutorial(3)">
                                         next
                                     </button>
-                                    <button
-                                        class="btn red-btn"
-                                        @click="skipTutorial"
-                                    >
+                                    <button class="btn red-btn" @click="skipTutorial">
                                         exit tutorial
                                     </button>
                                 </div>
@@ -502,16 +433,10 @@ export default {
                                     before making your suggestion.
                                 </p>
                                 <div class="d-flex justify-content-between">
-                                    <button
-                                        class="btn primary-btn"
-                                        @click="progressTutorial(4)"
-                                    >
+                                    <button class="btn primary-btn" @click="progressTutorial(4)">
                                         next
                                     </button>
-                                    <button
-                                        class="btn red-btn"
-                                        @click="skipTutorial"
-                                    >
+                                    <button class="btn red-btn" @click="skipTutorial">
                                         exit tutorial
                                     </button>
                                 </div>
@@ -525,10 +450,7 @@ export default {
                                     Click on a skill node to go to the page for
                                     that skill.
                                 </p>
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(5)"
-                                >
+                                <button class="btn primary-btn" @click="progressTutorial(5)">
                                     close
                                 </button>
                             </div>
@@ -536,17 +458,14 @@ export default {
                     </div>
                 </div>
                 <!-- Instructor Tooltips -->
-                <div
-                    v-if="
-                        (userDetailsStore.role == 'instructor' ||
-                            this.userDetailsStore.role == 'partner') &&
-                        (showTutorialTip2 ||
-                            showTutorialTip3 ||
-                            showTutorialTip4 ||
-                            showTutorialTip5)
-                    "
-                    class="info-panel me-4 mt-1"
-                >
+                <div v-if="
+                    (userDetailsStore.role == 'instructor' ||
+                        this.userDetailsStore.role == 'partner') &&
+                    (showTutorialTip2 ||
+                        showTutorialTip3 ||
+                        showTutorialTip4 ||
+                        showTutorialTip5)
+                " class="info-panel me-4 mt-1">
                     <div v-if="showTutorialTip2" class="tool-tip-base">
                         <div class="explain-tool-tip triangle-top-right">
                             <div class="tool-tip-text">
@@ -555,16 +474,10 @@ export default {
                                     skill.
                                 </p>
                                 <div class="d-flex justify-content-between">
-                                    <button
-                                        class="btn primary-btn"
-                                        @click="progressTutorial(2)"
-                                    >
+                                    <button class="btn primary-btn" @click="progressTutorial(2)">
                                         next
                                     </button>
-                                    <button
-                                        class="btn red-btn"
-                                        @click="skipTutorial"
-                                    >
+                                    <button class="btn red-btn" @click="skipTutorial">
                                         exit tutorial
                                     </button>
                                 </div>
@@ -582,16 +495,10 @@ export default {
                                     of that larger skill.
                                 </p>
                                 <div class="d-flex justify-content-between">
-                                    <button
-                                        class="btn primary-btn"
-                                        @click="progressTutorial(3)"
-                                    >
+                                    <button class="btn primary-btn" @click="progressTutorial(3)">
                                         next
                                     </button>
-                                    <button
-                                        class="btn red-btn"
-                                        @click="skipTutorial"
-                                    >
+                                    <button class="btn red-btn" @click="skipTutorial">
                                         exit tutorial
                                     </button>
                                 </div>
@@ -612,16 +519,10 @@ export default {
                                     before making your suggestion.
                                 </p>
                                 <div class="d-flex justify-content-between">
-                                    <button
-                                        class="btn primary-btn"
-                                        @click="progressTutorial(4)"
-                                    >
+                                    <button class="btn primary-btn" @click="progressTutorial(4)">
                                         next
                                     </button>
-                                    <button
-                                        class="btn red-btn"
-                                        @click="skipTutorial"
-                                    >
+                                    <button class="btn red-btn" @click="skipTutorial">
                                         exit tutorial
                                     </button>
                                 </div>
@@ -636,10 +537,7 @@ export default {
                                     masters a skill (by passing a quiz) the next
                                     skill will be unlocked.
                                 </p>
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(5)"
-                                >
+                                <button class="btn primary-btn" @click="progressTutorial(5)">
                                     close
                                 </button>
                             </div>
@@ -647,15 +545,12 @@ export default {
                     </div>
                 </div>
                 <!-- Editor Tooltips -->
-                <div
-                    v-if="
-                        userDetailsStore.role == 'editor' &&
-                        (showTutorialTip2 ||
-                            showTutorialTip3 ||
-                            showTutorialTip4)
-                    "
-                    class="info-panel me-4 mt-1"
-                >
+                <div v-if="
+                    userDetailsStore.role == 'editor' &&
+                    (showTutorialTip2 ||
+                        showTutorialTip3 ||
+                        showTutorialTip4)
+                " class="info-panel me-4 mt-1">
                     <div v-if="showTutorialTip2" class="tool-tip-base">
                         <div class="explain-tool-tip triangle-top-right">
                             <div class="tool-tip-text">
@@ -664,16 +559,10 @@ export default {
                                     top.
                                 </p>
                                 <div class="d-flex justify-content-between">
-                                    <button
-                                        class="btn primary-btn"
-                                        @click="progressTutorial(2)"
-                                    >
+                                    <button class="btn primary-btn" @click="progressTutorial(2)">
                                         next
                                     </button>
-                                    <button
-                                        class="btn red-btn"
-                                        @click="skipTutorial"
-                                    >
+                                    <button class="btn red-btn" @click="skipTutorial">
                                         exit tutorial
                                     </button>
                                 </div>
@@ -694,16 +583,10 @@ export default {
                                     before making your suggestion.
                                 </p>
                                 <div class="d-flex justify-content-between">
-                                    <button
-                                        class="btn primary-btn"
-                                        @click="progressTutorial(3)"
-                                    >
+                                    <button class="btn primary-btn" @click="progressTutorial(3)">
                                         next
                                     </button>
-                                    <button
-                                        class="btn red-btn"
-                                        @click="skipTutorial"
-                                    >
+                                    <button class="btn red-btn" @click="skipTutorial">
                                         exit tutorial
                                     </button>
                                 </div>
@@ -718,10 +601,7 @@ export default {
                                     This indicates that the skill contains
                                     mini-skills.
                                 </p>
-                                <button
-                                    class="btn primary-btn"
-                                    @click="progressTutorial(4)"
-                                >
+                                <button class="btn primary-btn" @click="progressTutorial(4)">
                                     close
                                 </button>
                             </div>
@@ -736,17 +616,14 @@ export default {
 
     <!-- Tutorials -->
     <!-- Student Introduction modal -->
-    <div
-        v-if="
-            userDetailsStore.role == 'student' &&
-            (showTutorialTip1 ||
-                showMobileTutorialTip2 ||
-                showMobileTutorialTip3 ||
-                showMobileTutorialTip4 ||
-                showMobileTutorialTip5)
-        "
-        class="modal"
-    >
+    <div v-if="
+        userDetailsStore.role == 'student' &&
+        (showTutorialTip1 ||
+            showMobileTutorialTip2 ||
+            showMobileTutorialTip3 ||
+            showMobileTutorialTip4 ||
+            showMobileTutorialTip5)
+    " class="modal">
         <div class="modal-content">
             <div v-if="showTutorialTip1">
                 <p>
@@ -757,10 +634,7 @@ export default {
                     descendant skills.
                 </p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(1)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(1)">
                         next
                     </button>
                     <button class="btn red-btn" @click="skipTutorial">
@@ -785,10 +659,7 @@ export default {
                 </p>
                 <p>Every mastered skill has a happy face icon.</p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(2)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(2)">
                         next
                     </button>
                     <button class="btn red-btn" @click="skipTutorial">
@@ -804,10 +675,7 @@ export default {
                     mastery of that larger skill.
                 </p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(3)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(3)">
                         next
                     </button>
                     <button class="btn red-btn" @click="skipTutorial">
@@ -826,10 +694,7 @@ export default {
                     suggestion.
                 </p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(4)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(4)">
                         next
                     </button>
                     <button class="btn red-btn" @click="skipTutorial">
@@ -848,18 +713,15 @@ export default {
     </div>
 
     <!-- Instructor Introduction modal -->
-    <div
-        v-if="
-            (userDetailsStore.role == 'instructor' ||
-                this.userDetailsStore.role == 'partner') &&
-            (showTutorialTip1 ||
-                showMobileTutorialTip2 ||
-                showMobileTutorialTip3 ||
-                showMobileTutorialTip4 ||
-                showMobileTutorialTip5)
-        "
-        class="modal"
-    >
+    <div v-if="
+        (userDetailsStore.role == 'instructor' ||
+            this.userDetailsStore.role == 'partner') &&
+        (showTutorialTip1 ||
+            showMobileTutorialTip2 ||
+            showMobileTutorialTip3 ||
+            showMobileTutorialTip4 ||
+            showMobileTutorialTip5)
+    " class="modal">
         <div class="modal-content bg-light">
             <div v-if="showTutorialTip1">
                 <p>
@@ -870,10 +732,7 @@ export default {
                     descendant skills.
                 </p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(1)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(1)">
                         next
                     </button>
                     <button class="btn red-btn" @click="skipTutorial">
@@ -884,10 +743,7 @@ export default {
             <div v-if="showMobileTutorialTip2">
                 <p>One can search for a specific skill at the top.</p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(2)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(2)">
                         next
                     </button>
                     <button class="btn red-btn" @click="skipTutorial">
@@ -903,10 +759,7 @@ export default {
                     mastery of that larger skill.
                 </p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(3)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(3)">
                         next
                     </button>
                     <button class="btn red-btn" @click="skipTutorial">
@@ -925,10 +778,7 @@ export default {
                     suggestion.
                 </p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(4)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(4)">
                         next
                     </button>
                     <button class="btn red-btn" @click="skipTutorial">
@@ -949,10 +799,7 @@ export default {
     </div>
 
     <!-- Instructor Introduction modal for Students Expandable Tree-->
-    <div
-        v-if="showInstructorModeTutorialTip1 || showInstructorModeTutorialTip2"
-        class="modal"
-    >
+    <div v-if="showInstructorModeTutorialTip1 || showInstructorModeTutorialTip2" class="modal">
         <div class="modal-content bg-light">
             <div v-if="showInstructorModeTutorialTip1">
                 <p>This is a look at your student's expandable Skill Tree.</p>
@@ -969,18 +816,11 @@ export default {
                 <p>
                     To assign a goal for your student, click on the
 
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        class="primary-icon"
-                        width="20"
-                        heigth="20"
-                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="primary-icon" width="20"
+                        heigth="20">
                         <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                        <path
-                            style="fill: 'primary-icon'"
-                            d="M448 256A192 192 0 1 0 64 256a192 192 0 1 0 384 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm0-224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zM224 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
-                        />
+                        <path style="fill: 'primary-icon'"
+                            d="M448 256A192 192 0 1 0 64 256a192 192 0 1 0 384 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm0-224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zM224 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" />
                     </svg>
                     icon on the relevant skill node.
                 </p>
@@ -993,16 +833,13 @@ export default {
     </div>
 
     <!-- Editor Introduction modal -->
-    <div
-        v-if="
-            userDetailsStore.role == 'editor' &&
-            (showTutorialTip1 ||
-                showMobileTutorialTip2 ||
-                showMobileTutorialTip3 ||
-                showMobileTutorialTip4)
-        "
-        class="modal"
-    >
+    <div v-if="
+        userDetailsStore.role == 'editor' &&
+        (showTutorialTip1 ||
+            showMobileTutorialTip2 ||
+            showMobileTutorialTip3 ||
+            showMobileTutorialTip4)
+    " class="modal">
         <div class="modal-content bg-light">
             <div v-if="showTutorialTip1">
                 <p>
@@ -1013,10 +850,7 @@ export default {
                     descendant skills.
                 </p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(1)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(1)">
                         next
                     </button>
                     <button class="btn red-btn" @click="skipTutorial">
@@ -1027,10 +861,7 @@ export default {
             <div v-if="showMobileTutorialTip2">
                 <p>One can search for a specific skill at the top.</p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(2)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(2)">
                         next
                     </button>
                     <button class="btn red-btn" @click="skipTutorial">
@@ -1049,10 +880,7 @@ export default {
                     suggestion.
                 </p>
                 <div class="d-flex justify-content-between">
-                    <button
-                        class="btn primary-btn"
-                        @click="progressTutorial(3)"
-                    >
+                    <button class="btn primary-btn" @click="progressTutorial(3)">
                         next
                     </button>
                     <button class="btn red-btn" @click="skipTutorial">
@@ -1193,6 +1021,7 @@ export default {
     height: auto;
     width: 100%;
 }
+
 .search-bar-container {
     flex-grow: 1;
     max-width: 80%;
@@ -1213,6 +1042,7 @@ export default {
     margin: 2px;
     border-radius: 50%;
 }
+
 .custom-grade-buttons .primary-btn {
     width: 100% !important;
     max-width: unset !important;
@@ -1235,6 +1065,7 @@ export default {
     #tablet-and-up-legend {
         display: none;
     }
+
     .search-bar-container {
         flex-grow: 0;
     }
@@ -1277,6 +1108,7 @@ export default {
         margin-left: auto;
         margin-right: auto;
     }
+
     .search-bar-container {
         padding-right: 20px;
     }
@@ -1402,6 +1234,7 @@ export default {
 
 /* Small devices (portrait phones) */
 @media (max-width: 480px) {
+
     /* Modal Content/Box */
     .modal-content {
         width: 90%;
