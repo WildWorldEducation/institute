@@ -231,8 +231,9 @@ export default {
 .chart-page {
     height: calc(100vh - 72px);
     overflow: hidden;
-    background-color: #e8e4f5;
-    border-top: 1px solid #5f31dd
+    /* background-color: #e8e4f5; */
+    background-color: hsl(from var(--primary-color) h s l / 0.15);
+    border-top: 1px solid var(--primary-color);
 }
 
 .chart-row {
