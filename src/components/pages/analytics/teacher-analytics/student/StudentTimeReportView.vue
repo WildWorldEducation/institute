@@ -169,26 +169,19 @@ export default {
     <div class="container-fluid chart-page">
         <span class="d-flex justify-content-between w-100 ps-3 pe-4 pt-2">
             <h1 class="heading h4">Engagement</h1>
-            <h2 class="tertiary-heading h4">{{ studentName }}</h2>
+            <h2 class="secondary-heading h4">{{ studentName }}</h2>
         </span>
 
-        <div class="chart-row row p-4">
+        <div class="chart-row row">
             <div class="col-lg chart-col position-relative h-100 chart-card">
                 <div id="time-chart-container">
-                    <DownloadCSVBtn
-                        :data="totalTimeOnPlatformDownloadData"
+                    <DownloadCSVBtn :data="totalTimeOnPlatformDownloadData"
                         :fileName="`Total time on platform - ${studentName}`"
-                        toolTip="Download total time on platform data as CSV"
-                        class="position-absolute download-btn"
-                    />
+                        toolTip="Download total time on platform data as CSV" class="position-absolute download-btn" />
 
-                    <StudentDurationPerDayLineChart
-                        v-if="durationsPerDay.length > 0"
-                        :data="durationsPerDay"
-                        :averageDuration="averageDurationsPerDay"
-                        :userRole="userDetailsStore.role"
-                        :studentName="studentName"
-                    />
+                    <StudentDurationPerDayLineChart v-if="durationsPerDay.length > 0" :data="durationsPerDay"
+                        :averageDuration="averageDurationsPerDay" :userRole="userDetailsStore.role"
+                        :studentName="studentName" />
                     <p v-else>There is no data to show yet.</p>
                 </div>
                 <figcaption class="position-absolute">
@@ -198,32 +191,20 @@ export default {
             </div>
         </div>
         <div class="chart-row row">
-            <div class="col-lg chart-col position-relative">
+            <div class="col-lg chart-col position-relative chart-card">
                 <div id="subject-activity-chart-container">
-                    <DownloadCSVBtn
-                        :data="timeSpentOnSubjectDownloadData"
+                    <DownloadCSVBtn :data="timeSpentOnSubjectDownloadData"
                         :fileName="`Time spent on subject - ${studentName}`"
-                        toolTip="Download Time spent on subject data as CSV"
-                        class="position-absolute download-btn"
-                    />
+                        toolTip="Download Time spent on subject data as CSV" class="position-absolute download-btn" />
 
-                    <TimePerSubjectHorizontalBarChart
-                        v-if="analyticsStore.subjectTimeSpent.length > 0"
-                        :data="analyticsStore.subjectTimeSpent"
-                        colour="purple"
-                    />
+                    <TimePerSubjectHorizontalBarChart v-if="analyticsStore.subjectTimeSpent.length > 0"
+                        :data="analyticsStore.subjectTimeSpent" colour="purple" />
                 </div>
             </div>
-            <div
-                class="col-lg chart-col position-relative overflow-auto chart-card ms-3"
-            >
+            <div class="col-lg chart-col position-relative overflow-auto chart-card">
                 <div id="activity-chart-container">
-                    <DownloadCSVBtn
-                        :data="minutesPerSkillDownloadData"
-                        :fileName="`Minutes per skill - ${studentName}`"
-                        toolTip="Download minutes per skill data as CSV"
-                        class="position-absolute download-btn"
-                    />
+                    <DownloadCSVBtn :data="minutesPerSkillDownloadData" :fileName="`Minutes per skill - ${studentName}`"
+                        toolTip="Download minutes per skill data as CSV" class="position-absolute download-btn" />
                     <StudentSkillActivityChart ref="activityChart" />
                     <!-- <p v-else>No skills visited by this student.</p> -->
                 </div>
@@ -237,7 +218,7 @@ export default {
     /* background-color: rgba(138, 150, 150, 0.745);
     border: 1px solid rgba(190, 201, 208, 0.453); */
     border-radius: 5px;
-    padding: 10px 20px;
+    padding: 10px 10px;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12),
         0 3px 1px -2px rgba(0, 0, 0, 0.2);
     background-color: white;
@@ -248,13 +229,14 @@ export default {
 }
 
 .chart-page {
-    height: calc(100vh - 78px);
+    height: calc(100vh - 72px);
     overflow: hidden;
-    background-color: #eeeeee;
+    background-color: #e8e4f5;
+    border-top: 1px solid #5f31dd
 }
 
 .chart-row {
-    height: 48%;
+    height: 46%;
     padding: 5px;
 }
 
@@ -270,20 +252,24 @@ export default {
     top: 10px;
 }
 
+/* Styles for screens larger than 992px */
+@media (min-width: 992px) {
+    .chart-col {
+        margin: 5px;
+    }
+}
+
 /* Styles for screens smaller than 600px (e.g., most mobile phones) */
 @media (max-width: 992px) {
     .chart-col {
-        height: 50%;
+        height: 48%;
     }
 }
 
 @media (max-width: 576px) {
     .chart-page {
         overflow: auto;
-    }
-
-    .chart-col {
-        height: 200px;
+        height: calc(100vh - 50px);
     }
 }
 </style>
