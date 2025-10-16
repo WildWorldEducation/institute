@@ -169,10 +169,10 @@ export default {
     <div class="container-fluid chart-page">
         <span class="d-flex justify-content-between w-100 ps-3 pe-4 pt-2">
             <h1 class="heading h4">Engagement</h1>
-            <h2 class="tertiary-heading h4">{{ studentName }}</h2>
+            <h2 class="secondary-heading h4">{{ studentName }}</h2>
         </span>
 
-        <div class="chart-row row p-4">
+        <div class="chart-row row">
             <div class="col-lg chart-col position-relative h-100 chart-card">
                 <div id="time-chart-container">
                     <DownloadCSVBtn
@@ -197,8 +197,8 @@ export default {
                 </figcaption>
             </div>
         </div>
-        <div class="chart-row row p-4">
-            <div class="col-lg chart-col position-relative chart-card me-3">
+        <div class="chart-row row">
+            <div class="col-lg chart-col position-relative chart-card">
                 <div id="subject-activity-chart-container">
                     <DownloadCSVBtn
                         :data="timeSpentOnSubjectDownloadData"
@@ -215,7 +215,7 @@ export default {
                 </div>
             </div>
             <div
-                class="col-lg chart-col position-relative overflow-auto chart-card ms-3"
+                class="col-lg chart-col position-relative overflow-auto chart-card"
             >
                 <div id="activity-chart-container">
                     <DownloadCSVBtn
@@ -237,7 +237,7 @@ export default {
     /* background-color: rgba(138, 150, 150, 0.745);
     border: 1px solid rgba(190, 201, 208, 0.453); */
     border-radius: 5px;
-    padding: 10px 20px;
+    padding: 10px 10px;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12),
         0 3px 1px -2px rgba(0, 0, 0, 0.2);
     background-color: white;
@@ -248,13 +248,15 @@ export default {
 }
 
 .chart-page {
-    height: calc(100vh - 78px);
+    height: calc(100vh - 72px);
     overflow: hidden;
-    background-color: #eeeeee;
+    /* background-color: #e8e4f5; */
+    background-color: hsl(from var(--primary-color) h s l / 0.15);
+    border-top: 1px solid var(--primary-color);
 }
 
 .chart-row {
-    height: 48%;
+    height: 46%;
     padding: 5px;
 }
 
@@ -270,20 +272,24 @@ export default {
     top: 10px;
 }
 
+/* Styles for screens larger than 992px */
+@media (min-width: 992px) {
+    .chart-col {
+        margin: 5px;
+    }
+}
+
 /* Styles for screens smaller than 600px (e.g., most mobile phones) */
 @media (max-width: 992px) {
     .chart-col {
-        height: 50%;
+        height: 48%;
     }
 }
 
 @media (max-width: 576px) {
     .chart-page {
         overflow: auto;
-    }
-
-    .chart-col {
-        height: 200px;
+        height: calc(100vh - 50px);
     }
 }
 </style>
