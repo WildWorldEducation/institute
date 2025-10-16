@@ -197,8 +197,8 @@ export default {
                 </figcaption>
             </div>
         </div>
-        <div class="chart-row row">
-            <div class="col-lg chart-col position-relative">
+        <div class="chart-row row p-4">
+            <div class="col-lg chart-col position-relative chart-card me-3">
                 <div id="subject-activity-chart-container">
                     <DownloadCSVBtn
                         :data="timeSpentOnSubjectDownloadData"
