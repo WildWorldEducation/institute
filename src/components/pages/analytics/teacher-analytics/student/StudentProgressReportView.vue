@@ -131,20 +131,20 @@ export default {
     <div class="container-fluid chart-page">
         <span class="d-flex justify-content-between w-100">
             <h1 class="heading h4">Assessments passed</h1>
-            <h2 class="tertiary-heading h4 d-flex justify-content-end align-items-center">
+            <h2 class="secondary-heading h4 d-flex justify-content-end align-items-center">
                 {{ studentName }}
             </h2>
         </span>
         <div class="row chart-row">
             <div class="col-lg-8 chart-col position-relative">
                 <div id="progress-chart-container" v-if="
-                        progressData.student.length > 0 ||  
-                        progressData.average.length > 0
-                    ">
+                    progressData.student.length > 0 ||
+                    progressData.average.length > 0
+                ">
                     <DownloadCSVBtn :data="progressData" :fileName="`Progress Report - ${studentName}`"
                         toolTip="Download progress data as CSV" class="position-absolute download-btn" />
-                    <StudentProgressChart ref="progressChart"  :data="progressData" />
-                    
+                    <StudentProgressChart ref="progressChart" :data="progressData" />
+
                 </div>
                 <p v-else>There is no data to show yet.</p>
                 <figcaption v-if="
@@ -167,8 +167,7 @@ export default {
                 <DownloadCSVBtn :data="assessmentPassesDownloadData" :fileName="`Passed Assessments - ${studentName}`"
                     toolTip="Download passed assessments data as CSV" class="position-absolute download-btn" />
 
-                <PassedAssessmentsTimelineChart class="mb-5" 
-                    :data="assessmentPasses" />               
+                <PassedAssessmentsTimelineChart class="mb-5" :data="assessmentPasses" />
             </div>
         </div>
     </div>
