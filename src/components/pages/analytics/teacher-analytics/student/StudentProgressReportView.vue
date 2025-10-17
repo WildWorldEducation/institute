@@ -131,44 +131,78 @@ export default {
     <div class="container-fluid chart-page">
         <span class="d-flex justify-content-between w-100">
             <h1 class="heading h4">Assessments passed</h1>
-            <h2 class="tertiary-heading h4 d-flex justify-content-end align-items-center">
+            <h2
+                class="tertiary-heading h4 d-flex justify-content-end align-items-center"
+            >
                 {{ studentName }}
             </h2>
         </span>
         <div class="row chart-row">
-            <div class="col-lg-8 chart-col position-relative">
-                <div id="progress-chart-container" v-if="
-                        progressData.student.length > 0 ||  
+            <div class="col-lg-8 position-relative">
+                <div
+                    id="progress-chart-container"
+                    v-if="
+                        progressData.student.length > 0 ||
                         progressData.average.length > 0
-                    ">
-                    <DownloadCSVBtn :data="progressData" :fileName="`Progress Report - ${studentName}`"
-                        toolTip="Download progress data as CSV" class="position-absolute download-btn" />
-                    <StudentProgressChart ref="progressChart"  :data="progressData" />
-                    
+                    "
+                    class="chart-card"
+                >
+                    <DownloadCSVBtn
+                        :data="progressData"
+                        :fileName="`Progress Report - ${studentName}`"
+                        toolTip="Download progress data as CSV"
+                        class="position-absolute download-btn"
+                    />
+                    <StudentProgressChart
+                        ref="progressChart"
+                        :data="progressData"
+                    />
                 </div>
                 <p v-else>There is no data to show yet.</p>
-                <figcaption v-if="
-                    progressData.student.length > 0 ||
-                    progressData.average.length > 0
-                " class="position-absolute"><span style="color: green">{{ studentName }}</span> vs <span
-                        style="color:#ff7f0e">class average</span></figcaption>
+                <figcaption
+                    v-if="
+                        progressData.student.length > 0 ||
+                        progressData.average.length > 0
+                    "
+                    class="position-absolute"
+                >
+                    <span style="color: green">{{ studentName }}</span> vs
+                    <span style="color: #ff7f0e">class average</span>
+                </figcaption>
             </div>
-            <div class="col-lg-4 chart-col">
-                <div id="student-passed-subjects-chart-container">
+            <div class="col-lg-4">
+                <div
+                    id="student-passed-subjects-chart-container"
+                    class="chart-card"
+                >
                     <StudentPassedAssessmentsByRootSubjectHorizontalBarChart
-                        v-if="analyticsStore.studentRootSubjectsPassedAssessments.length > 0"
-                        :data="analyticsStore.studentRootSubjectsPassedAssessments" />
+                        v-if="
+                            analyticsStore.studentRootSubjectsPassedAssessments
+                                .length > 0
+                        "
+                        :data="
+                            analyticsStore.studentRootSubjectsPassedAssessments
+                        "
+                    />
                 </div>
-
             </div>
         </div>
         <div class="row chart-row position-relative">
-            <div class="position-relative" v-if="assessmentPasses.length > 0">
-                <DownloadCSVBtn :data="assessmentPassesDownloadData" :fileName="`Passed Assessments - ${studentName}`"
-                    toolTip="Download passed assessments data as CSV" class="position-absolute download-btn" />
+            <div
+                class="position-relative chart-card time-line-chart"
+                v-if="assessmentPasses.length > 0"
+            >
+                <DownloadCSVBtn
+                    :data="assessmentPassesDownloadData"
+                    :fileName="`Passed Assessments - ${studentName}`"
+                    toolTip="Download passed assessments data as CSV"
+                    class="position-absolute download-btn"
+                />
 
-                <PassedAssessmentsTimelineChart class="mb-5" 
-                    :data="assessmentPasses" />               
+                <PassedAssessmentsTimelineChart
+                    class="mb-5"
+                    :data="assessmentPasses"
+                />
             </div>
         </div>
     </div>
@@ -186,11 +220,34 @@ export default {
 
 .chart-col {
     height: 100%;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .chart-page {
-    height: calc(100vh - 88px);
-    overflow: auto;
+    height: calc(100vh - 72px);
+    overflow: hidden;
+    /* background-color: #e8e4f5; */
+    background-color: hsl(from var(--primary-color) h s l / 0.15);
+    border-top: 1px solid var(--primary-color);
+}
+
+.chart-card {
+    /* background-color: rgba(138, 150, 150, 0.745);
+    border: 1px solid rgba(190, 201, 208, 0.453); */
+    border-radius: 5px;
+    padding: 10px 10px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12),
+        0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    background-color: white;
+}
+
+.time-line-chart {
+    /* Temp Fix Needed implement better ways in the future */
+    height: 90%;
+    width: 99%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #progress-chart-container {
