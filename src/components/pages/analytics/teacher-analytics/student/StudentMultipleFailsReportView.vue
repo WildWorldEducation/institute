@@ -58,7 +58,7 @@ export default {
     <div class="container chart-page">
         <span class="d-flex justify-content-between w-100">
             <h1 class="heading h4">Multiple fails</h1>
-            <h2 class="tertiary-heading h4">{{ studentName }}</h2>
+            <h2 class="secondary-heading h4">{{ studentName }}</h2>
         </span>
         <div class="row mb-5">
             <h3 class="secondary-heading h5">By subject</h3>
@@ -67,7 +67,7 @@ export default {
                     analyticsStore.studentRootSubjectsFailedAssessments
                         .length > 0
                 " :data="analyticsStore.studentRootSubjectsFailedAssessments
-                            " />
+                    " />
                 <p v-else>This student has not failed any assessments more than
                     once yet.</p>
             </div>

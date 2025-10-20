@@ -171,7 +171,7 @@ export default {
     <div class="container-fluid chart-page">
         <span class="d-flex justify-content-between w-100">
             <h1 class="heading h4">Engagement</h1>
-            <h2 class="tertiary-heading h4">{{ studentName }}</h2>
+            <h2 class="secondary-heading h4">{{ studentName }}</h2>
         </span>
 
         <div class="chart-row row">
