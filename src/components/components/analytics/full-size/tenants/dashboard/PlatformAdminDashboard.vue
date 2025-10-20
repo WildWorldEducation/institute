@@ -249,82 +249,95 @@ export default {
 
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
-                    <div class="col-md h-100">
-                        <RouterLink
-                            to="/progress-report"
-                            class=""
-                            target="_blank"
-                        >
-                            <h2 class="heading h5">Progress</h2>
-                        </RouterLink>
-                        <div id="progress-chart-container">
-                            <SchoolProgressChart
-                                ref="progressChart"
-                                v-if="
-                                    (progressChartMode == 'school' &&
-                                        analyticsStore.progress.tenant.length >
-                                            0) ||
-                                    (progressChartMode == 'class' &&
-                                        analyticsStore.progress.class.length >
-                                            0)
-                                "
-                            />
-                            <p v-else>No data yet</p>
+                    <div class="col-md h-100 p-2">
+                        <div class="chart-card h-100">
+                            <RouterLink
+                                to="/progress-report"
+                                class=""
+                                target="_blank"
+                            >
+                                <h2 class="heading h5">Progress</h2>
+                            </RouterLink>
+                            <div id="progress-chart-container">
+                                <SchoolProgressChart
+                                    ref="progressChart"
+                                    v-if="
+                                        (progressChartMode == 'school' &&
+                                            analyticsStore.progress.tenant
+                                                .length > 0) ||
+                                        (progressChartMode == 'class' &&
+                                            analyticsStore.progress.class
+                                                .length > 0)
+                                    "
+                                />
+                                <p v-else>No data yet</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md">
-                        <RouterLink
-                            to="/challenges-report"
-                            class=""
-                            target="_blank"
-                        >
-                            <h2 class="heading h5">Challenges</h2>
-                        </RouterLink>
-                        <div id="failed-chart-container">
-                            <TenantFailedAssessmentsByRootSubjectHorizontalBarChart
-                                v-if="
-                                    analyticsStore.rootSubjectsFailedAssessments
-                                        .length > 0
-                                "
-                                :data="
-                                    analyticsStore.rootSubjectsFailedAssessments
-                                "
-                                ref="failedAssessmentsChart"
-                            />
-                            <p v-else>No challenges yet</p>
+                    <div class="col-md h-100 p-2">
+                        <div class="chart-card h-100">
+                            <RouterLink
+                                to="/challenges-report"
+                                class=""
+                                target="_blank"
+                            >
+                                <h2 class="heading h5">Challenges</h2>
+                            </RouterLink>
+                            <div id="failed-chart-container">
+                                <TenantFailedAssessmentsByRootSubjectHorizontalBarChart
+                                    v-if="
+                                        analyticsStore
+                                            .rootSubjectsFailedAssessments
+                                            .length > 0
+                                    "
+                                    :data="
+                                        analyticsStore.rootSubjectsFailedAssessments
+                                    "
+                                    ref="failedAssessmentsChart"
+                                />
+                                <p v-else>No challenges yet</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="dash-row row">
-                    <div class="col-md position-relative h-100">
-                        <RouterLink to="/cost-report" class="" target="_blank">
-                            <h2 class="heading h5">Cost</h2>
-                        </RouterLink>
-                        <div id="cost-chart-container">
-                            <SchoolCostChart
-                                ref="costChart"
-                                v-if="
-                                    analyticsStore.cost.tenant.length > 0 ||
-                                    analyticsStore.cost.class.length > 0
-                                "
-                            />
-                            <p v-else>No data yet</p>
+                    <div class="col-md position-relative h-100 p-2">
+                        <div class="chart-card h-100">
+                            <RouterLink
+                                to="/cost-report"
+                                class=""
+                                target="_blank"
+                            >
+                                <h2 class="heading h5">Cost</h2>
+                            </RouterLink>
+                            <div id="cost-chart-container">
+                                <SchoolCostChart
+                                    ref="costChart"
+                                    v-if="
+                                        analyticsStore.cost.tenant.length > 0 ||
+                                        analyticsStore.cost.class.length > 0
+                                    "
+                                />
+                                <p v-else>No data yet</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md h-100">
-                        <RouterLink to="/engagement-report" target="_blank">
-                            <h2 class="heading h5">Weekly engagement</h2>
-                        </RouterLink>
-                        <div id="time-chart-container">
-                            <SchoolTimeChart
-                                v-if="
-                                    analyticsStore.time.tenant.length > 0 ||
-                                    analyticsStore.time.class.length > 0
-                                "
-                                ref="timeChart"
-                            />
-                            <p v-else>No data</p>
+                    <div class="col-md h-100 p-2">
+                        <div class="chart-card h-100">
+                            <RouterLink to="/engagement-report" target="_blank">
+                                <h2 class="heading h5">Weekly engagement</h2>
+                            </RouterLink>
+                            <div id="time-chart-container">
+                                <SchoolTimeChart
+                                    v-if="
+                                        analyticsStore.time.tenant.length > 0 ||
+                                        analyticsStore.time.class.length > 0
+                                    "
+                                    ref="timeChart"
+                                />
+                                <p v-else>No data</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -371,6 +384,23 @@ export default {
     display: flex;
     height: calc(100vh - 72px);
     overflow: hidden;
+    /* background-color: #e8e4f5; */
+    background-color: hsl(from var(--primary-color) h s l / 0.15);
+    border-top: 1px solid var(--primary-color);
+}
+
+.chart-card {
+    /* background-color: rgba(138, 150, 150, 0.745);
+    border: 1px solid rgba(190, 201, 208, 0.453); */
+    border-radius: 5px;
+    padding: 10px 10px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12),
+        0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    background-color: white;
+}
+
+.chart-col {
+    height: 100%;
 }
 
 .top-row {
