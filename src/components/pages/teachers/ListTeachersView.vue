@@ -20,13 +20,13 @@ export default {
                 name: null
             },
             teachers: [],
+            studentsOfInstructor: [],
             // Flag to show user details when in phone view
             showDetails: false
         };
     },
     components: { InstructorsList, InstructorDetails },
     async created() {
-        console.log('Component created - fetching instructors');
         await this.getInstructorsPerTenant(this.userDetailsStore.tenantId);
     },
     methods: {
@@ -44,6 +44,13 @@ export default {
             // Update local state
             this.selectedTeacher.id = selectedTeacher.id;
             this.selectedTeacher.name = selectedTeacher.first_name;
+            // get list of students for the selected teacher
+            await this.usersStore.getStudentsOfUser(selectedTeacher.id);
+            console.log(
+                'Fetched students for instructor:',
+                this.usersStore.studentsOfInstructor
+            );
+            this.studentsOfInstructor = this.usersStore.studentsOfInstructor;
         }
     }
 };
@@ -58,7 +65,10 @@ export default {
             <!-- Tenant detail view for PC and Tablet View -->
             <div class="col-lg-8 col-md-7 d-none d-md-block">
                 <div class="row user-form-data-row">
-                    <InstructorDetails :teacherId="selectedTeacher.id" />
+                    <InstructorDetails
+                        :teacherId="selectedTeacher.id"
+                        :studentOfInstructor="studentsOfInstructor"
+                    />
                 </div>
             </div>
             <!-- User detail view specific for phone -->
