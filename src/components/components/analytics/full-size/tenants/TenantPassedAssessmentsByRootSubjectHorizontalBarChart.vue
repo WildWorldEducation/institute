@@ -10,7 +10,7 @@ export default {
     mounted() {
         const barHeight = 30;
         const marginTop = 0;
-        const marginRight = 0;
+        const marginRight = 30;
         const marginBottom = 10;
         const marginLeft = 200;
         // Declare the chart dimensions and margins.
