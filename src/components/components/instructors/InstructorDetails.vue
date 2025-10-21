@@ -76,7 +76,7 @@ export default {
             <div class="col-2 pt-3">
                 <DropDown
                     :dataList="datalist"
-                    dropDownLabel="Instructor`s Student"
+                    dropDownLabel="Instructor's Student: "
                 />
             </div>
             <div class="col">
