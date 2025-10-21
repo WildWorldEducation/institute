@@ -215,8 +215,6 @@ export default {
 
 <style scoped>
 .chart-card {
-    /* background-color: rgba(138, 150, 150, 0.745);
-    border: 1px solid rgba(190, 201, 208, 0.453); */
     border-radius: 5px;
     padding: 10px 10px;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12),
