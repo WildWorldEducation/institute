@@ -175,20 +175,13 @@ export default {
         <div class="chart-row row">
             <div class="col-lg chart-col position-relative h-100 chart-card">
                 <div id="time-chart-container">
-                    <DownloadCSVBtn
-                        :data="totalTimeOnPlatformDownloadData"
+                    <DownloadCSVBtn :data="totalTimeOnPlatformDownloadData"
                         :fileName="`Total time on platform - ${studentName}`"
-                        toolTip="Download total time on platform data as CSV"
-                        class="position-absolute download-btn"
-                    />
+                        toolTip="Download total time on platform data as CSV" class="position-absolute download-btn" />
 
-                    <StudentDurationPerDayLineChart
-                        v-if="durationsPerDay.length > 0"
-                        :data="durationsPerDay"
-                        :averageDuration="averageDurationsPerDay"
-                        :userRole="userDetailsStore.role"
-                        :studentName="studentName"
-                    />
+                    <StudentDurationPerDayLineChart v-if="durationsPerDay.length > 0" :data="durationsPerDay"
+                        :averageDuration="averageDurationsPerDay" :userRole="userDetailsStore.role"
+                        :studentName="studentName" />
                     <p v-else>There is no data to show yet.</p>
                 </div>
                 <figcaption class="position-absolute">
@@ -200,30 +193,18 @@ export default {
         <div class="chart-row row">
             <div class="col-lg chart-col position-relative chart-card">
                 <div id="subject-activity-chart-container">
-                    <DownloadCSVBtn
-                        :data="timeSpentOnSubjectDownloadData"
+                    <DownloadCSVBtn :data="timeSpentOnSubjectDownloadData"
                         :fileName="`Time spent on subject - ${studentName}`"
-                        toolTip="Download Time spent on subject data as CSV"
-                        class="position-absolute download-btn"
-                    />
+                        toolTip="Download Time spent on subject data as CSV" class="position-absolute download-btn" />
 
-                    <TimePerSubjectHorizontalBarChart
-                        v-if="analyticsStore.subjectTimeSpent.length > 0"
-                        :data="analyticsStore.subjectTimeSpent"
-                        colour="purple"
-                    />
+                    <TimePerSubjectHorizontalBarChart v-if="analyticsStore.subjectTimeSpent.length > 0"
+                        :data="analyticsStore.subjectTimeSpent" colour="purple" />
                 </div>
             </div>
-            <div
-                class="col-lg chart-col position-relative overflow-auto chart-card"
-            >
+            <div class="col-lg chart-col position-relative overflow-auto chart-card">
                 <div id="activity-chart-container">
-                    <DownloadCSVBtn
-                        :data="minutesPerSkillDownloadData"
-                        :fileName="`Minutes per skill - ${studentName}`"
-                        toolTip="Download minutes per skill data as CSV"
-                        class="position-absolute download-btn"
-                    />
+                    <DownloadCSVBtn :data="minutesPerSkillDownloadData" :fileName="`Minutes per skill - ${studentName}`"
+                        toolTip="Download minutes per skill data as CSV" class="position-absolute download-btn" />
                     <StudentSkillActivityChart ref="activityChart" />
                     <!-- <p v-else>No skills visited by this student.</p> -->
                 </div>
@@ -250,7 +231,6 @@ export default {
 .chart-page {
     height: calc(100vh - 72px);
     overflow: hidden;
-    /* background-color: #e8e4f5; */
     background-color: hsl(from var(--primary-color) h s l / 0.15);
     border-top: 1px solid var(--primary-color);
 }

@@ -56,7 +56,7 @@ export default {
 
 <template>
     <div class="container-fluid chart-page">
-        <span class="d-flex justify-content-between w-100">
+        <span class="d-flex justify-content-between w-100 ps-3 pe-4 pt-2">
             <h1 class="heading h4">Multiple fails</h1>
             <h2 class="secondary-heading h4">{{ studentName }}</h2>
         </span>
