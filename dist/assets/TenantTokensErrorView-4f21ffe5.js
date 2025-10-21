@@ -1,1 +1,0 @@
-import{_ as r,o,c as a,a as n}from"./main-c8c8d3f4.js";const s={name:"Error"},t={class:"container"};function c(l,e,d,i,p,_){return o(),a("div",t,e[0]||(e[0]=[n("h1",{class:"heading"},"Payment Error",-1),n("p",null,"Payment cancelled.",-1)]))}const f=r(s,[["render",c]]);export{f as default};
