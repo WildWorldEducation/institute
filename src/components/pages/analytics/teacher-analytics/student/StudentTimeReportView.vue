@@ -57,18 +57,16 @@ export default {
             );
         }
         this.getTimeSpentOnSkillDownloadData();
-
     },
     methods: {
         getTimeSpentOnSkillDownloadData() {
-            this.timeSpentOnSubjectDownloadData = this.analyticsStore.subjectTimeSpent.map(
-                (item) => {
+            this.timeSpentOnSubjectDownloadData =
+                this.analyticsStore.subjectTimeSpent.map((item) => {
                     return {
                         subject: item.name,
                         timeSpent: item.formattedQuantity
                     };
-                }
-            );
+                });
         },
         async getStudentDurationPerDay() {
             let url = `/student-analytics/student-duration-per-day-class/${this.studentId}/${this.userDetailsStore.userId}`;
@@ -169,13 +167,13 @@ export default {
 
 <template>
     <div class="container-fluid chart-page">
-        <span class="d-flex justify-content-between w-100">
+        <span class="d-flex justify-content-between w-100 ps-3 pe-4 pt-2">
             <h1 class="heading h4">Engagement</h1>
             <h2 class="secondary-heading h4">{{ studentName }}</h2>
         </span>
 
         <div class="chart-row row">
-            <div class="col-lg chart-col position-relative h-100">
+            <div class="col-lg chart-col position-relative h-100 chart-card">
                 <div id="time-chart-container">
                     <DownloadCSVBtn :data="totalTimeOnPlatformDownloadData"
                         :fileName="`Total time on platform - ${studentName}`"
@@ -193,7 +191,7 @@ export default {
             </div>
         </div>
         <div class="chart-row row">
-            <div class="col-lg chart-col position-relative">
+            <div class="col-lg chart-col position-relative chart-card">
                 <div id="subject-activity-chart-container">
                     <DownloadCSVBtn :data="timeSpentOnSubjectDownloadData"
                         :fileName="`Time spent on subject - ${studentName}`"
@@ -203,7 +201,7 @@ export default {
                         :data="analyticsStore.subjectTimeSpent" colour="purple" />
                 </div>
             </div>
-            <div class="col-lg chart-col position-relative overflow-auto">
+            <div class="col-lg chart-col position-relative overflow-auto chart-card">
                 <div id="activity-chart-container">
                     <DownloadCSVBtn :data="minutesPerSkillDownloadData" :fileName="`Minutes per skill - ${studentName}`"
                         toolTip="Download minutes per skill data as CSV" class="position-absolute download-btn" />
@@ -216,17 +214,30 @@ export default {
 </template>
 
 <style scoped>
+.chart-card {
+    /* background-color: rgba(138, 150, 150, 0.745);
+    border: 1px solid rgba(190, 201, 208, 0.453); */
+    border-radius: 5px;
+    padding: 10px 10px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12),
+        0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    background-color: white;
+}
+
 .chart-col {
     height: 100%;
 }
 
 .chart-page {
-    height: calc(100vh - 88px);
+    height: calc(100vh - 72px);
     overflow: hidden;
+    background-color: hsl(from var(--primary-color) h s l / 0.15);
+    border-top: 1px solid var(--primary-color);
 }
 
 .chart-row {
-    height: 50%;
+    height: 46%;
+    padding: 5px;
 }
 
 #subject-activity-chart-container,
@@ -241,20 +252,24 @@ export default {
     top: 10px;
 }
 
+/* Styles for screens larger than 992px */
+@media (min-width: 992px) {
+    .chart-col {
+        margin: 5px;
+    }
+}
+
 /* Styles for screens smaller than 600px (e.g., most mobile phones) */
 @media (max-width: 992px) {
     .chart-col {
-        height: 50%;
+        height: 48%;
     }
 }
 
 @media (max-width: 576px) {
     .chart-page {
         overflow: auto;
-    }
-
-    .chart-col {
-        height: 200px;
+        height: calc(100vh - 50px);
     }
 }
 </style>

@@ -10,7 +10,7 @@ export default {
     },
     mounted() {
         // Specify the chart’s dimensions, based on a bar’s height.
-        const barHeight = 25;
+        const barHeight = 45;
         const marginTop = 0;
         const marginRight = 0;
         const marginBottom = 10;
@@ -30,7 +30,7 @@ export default {
             .scaleBand()
             .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
-            .padding(0.1);
+            .padding(0.2);
 
         // Create the SVG container.
         const svg = d3

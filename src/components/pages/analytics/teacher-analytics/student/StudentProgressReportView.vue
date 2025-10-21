@@ -129,14 +129,14 @@ export default {
 
 <template>
     <div class="container-fluid chart-page">
-        <span class="d-flex justify-content-between w-100">
+        <span class="d-flex justify-content-between w-100 ps-3 pe-4 pt-2">
             <h1 class="heading h4">Assessments passed</h1>
             <h2 class="secondary-heading h4 d-flex justify-content-end align-items-center">
                 {{ studentName }}
             </h2>
         </span>
         <div class="row chart-row">
-            <div class="col-lg-8 chart-col position-relative">
+            <div class="col-lg-8 chart-col position-relative chart-card">
                 <div id="progress-chart-container" v-if="
                     progressData.student.length > 0 ||
                     progressData.average.length > 0
@@ -154,33 +154,48 @@ export default {
                         style="color:#ff7f0e">class average</span></figcaption>
             </div>
             <div class="col-lg-4 chart-col">
-                <div id="student-passed-subjects-chart-container">
-                    <StudentPassedAssessmentsByRootSubjectHorizontalBarChart
-                        v-if="analyticsStore.studentRootSubjectsPassedAssessments.length > 0"
-                        :data="analyticsStore.studentRootSubjectsPassedAssessments" />
+                <div class="chart-card">
+                    <div id="student-passed-subjects-chart-container">
+                        <StudentPassedAssessmentsByRootSubjectHorizontalBarChart class="chart-card"
+                            v-if="analyticsStore.studentRootSubjectsPassedAssessments.length > 0"
+                            :data="analyticsStore.studentRootSubjectsPassedAssessments" />
+                    </div>
                 </div>
 
             </div>
         </div>
-        <div class="row chart-row position-relative">
-            <div class="position-relative" v-if="assessmentPasses.length > 0">
-                <DownloadCSVBtn :data="assessmentPassesDownloadData" :fileName="`Passed Assessments - ${studentName}`"
-                    toolTip="Download passed assessments data as CSV" class="position-absolute download-btn" />
+        <div class="row chart-row">
+            <div class="col-lg chart-col position-relative h-100 chart-card">
 
-                <PassedAssessmentsTimelineChart class="mb-5" :data="assessmentPasses" />
+                <div class="position-relative" v-if="assessmentPasses.length > 0">
+                    <DownloadCSVBtn :data="assessmentPassesDownloadData"
+                        :fileName="`Passed Assessments - ${studentName}`"
+                        toolTip="Download passed assessments data as CSV" class="position-absolute download-btn" />
+
+                    <PassedAssessmentsTimelineChart class="mb-5" :data="assessmentPasses" />
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+.chart-card {
+    border-radius: 5px;
+    padding: 10px 10px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12),
+        0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    background-color: white;
+}
+
 .download-btn {
     right: 10px;
     top: 10px;
 }
 
 .chart-row {
-    height: 50%;
+    height: 46%;
+    padding: 5px;
 }
 
 .chart-col {
@@ -188,8 +203,10 @@ export default {
 }
 
 .chart-page {
-    height: calc(100vh - 88px);
+    height: calc(100vh - 72px);
     overflow: auto;
+    background-color: hsl(from var(--primary-color) h s l / 0.15);
+    border-top: 1px solid var(--primary-color);
 }
 
 #progress-chart-container {
@@ -211,6 +228,28 @@ export default {
 @media (max-width: 992px) {
     .chart-col {
         height: 50%;
+    }
+}
+
+
+/* Styles for screens larger than 992px */
+@media (min-width: 992px) {
+    .chart-col {
+        height: 100%;
+    }
+}
+
+/* Styles for screens smaller than 600px (e.g., most mobile phones) */
+@media (max-width: 992px) {
+    .chart-col {
+        height: 48%;
+    }
+}
+
+@media (max-width: 576px) {
+    .chart-page {
+        overflow: auto;
+        height: calc(100vh - 50px);
     }
 }
 </style>
