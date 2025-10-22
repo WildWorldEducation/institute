@@ -11,14 +11,14 @@ export default {
         // Specify the chart’s dimensions, based on a bar’s height.
         const barHeight = 20;
         const marginTop = 0;
-        const marginRight = 0;
+        const marginRight = 30;
         const marginBottom = 10;
         const marginLeft = 200;
         // Declare the chart dimensions and margins.
         const width = document.getElementById(
             'attempted-bar-chart-container'
         ).clientWidth;
-       const height = barHeight * this.data.length + marginTop + marginBottom;
+        const height = barHeight * this.data.length + marginTop + marginBottom;
 
         // Create the scales.
         const x = d3
@@ -38,7 +38,7 @@ export default {
             .append('svg')
             .attr('width', width)
             .attr('height', height)
-               .attr('viewBox', [
+            .attr('viewBox', [
                 0,
                 0,
                 +Math.min(width, height),
