@@ -20,13 +20,13 @@ export default {
                 name: null
             },
             teachers: [],
+            studentsOfInstructor: [],
             // Flag to show user details when in phone view
             showDetails: false
         };
     },
     components: { InstructorsList, InstructorDetails },
     async created() {
-        console.log('Component created - fetching instructors');
         await this.getInstructorsPerTenant(this.userDetailsStore.tenantId);
     },
     methods: {
@@ -44,6 +44,10 @@ export default {
             // Update local state
             this.selectedTeacher.id = selectedTeacher.id;
             this.selectedTeacher.name = selectedTeacher.first_name;
+            // get list of students for the selected teacher
+            await this.usersStore.getStudentsOfUser(selectedTeacher.id);
+
+            this.studentsOfInstructor = this.usersStore.studentsOfInstructor;
         }
     }
 };
@@ -58,15 +62,11 @@ export default {
             <!-- Tenant detail view for PC and Tablet View -->
             <div class="col-lg-8 col-md-7 d-none d-md-block">
                 <div class="row user-form-data-row">
-                    <InstructorDetails :teacherId="selectedTeacher.id" />
+                    <InstructorDetails :teacherId="selectedTeacher.id" :studentOfInstructor="studentsOfInstructor" />
                 </div>
             </div>
             <!-- User detail view specific for phone -->
-            <div
-                v-if="showDetails"
-                class="col-md-7 d-block d-md-none"
-                id="user-detail-section"
-            >
+            <div v-if="showDetails" class="col-md-7 d-block d-md-none" id="user-detail-section">
                 <div class="row">
                     <InstructorDetails :tenantId="selectedTenant.id" />
                 </div>
@@ -138,6 +138,7 @@ export default {
 
 /* Small devices (portrait phones) */
 @media (max-width: 480px) {
+
     /* Modal Content/Box */
     .modal-content {
         width: 90%;
