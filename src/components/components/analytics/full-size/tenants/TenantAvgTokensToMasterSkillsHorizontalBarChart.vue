@@ -12,7 +12,7 @@ export default {
         // Specify the chart’s dimensions, based on a bar’s height.
         const barHeight = 20;
         const marginTop = 0;
-        const marginRight = 0;
+        const marginRight = 30;
         const marginBottom = 10;
         const marginLeft = 200;
         const width = document.getElementById(
@@ -45,7 +45,7 @@ export default {
                 +Math.min(width, height),
                 +Math.min(width, height)
             ])
-             .attr('preserveAspectRatio', 'xMinYMin');
+            .attr('preserveAspectRatio', 'xMinYMin');
 
         // Append a rect for each skill.
         svg.append('g')
