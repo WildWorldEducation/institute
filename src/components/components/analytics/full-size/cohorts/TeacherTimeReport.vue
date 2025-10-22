@@ -139,76 +139,80 @@ export default {
     <div class="container-fluid chart-page">
         <h1 class="heading h4">Time Report</h1>
         <div class="row chart-row position-relative">
-            <div id="time-chart-container">
-                <DownloadCSVBtn
-                    :data="durationsPerDayDownloadData"
-                    fileName="Total time on platform per day"
-                    class="download-btn position-absolute btn"
-                />
-                <CohortDurationPerDayLineChart
-                    :data="durationsPerDay"
-                    v-if="durationsPerDay.length > 0"
-                />
-                <p v-else>No time recorded yet</p>
+            <div class="col">
+                <div id="time-chart-container" class="chart-card">
+                    <DownloadCSVBtn :data="durationsPerDayDownloadData" fileName="Total time on platform per day"
+                        class="download-btn position-absolute btn" />
+                    <CohortDurationPerDayLineChart :data="durationsPerDay" v-if="durationsPerDay.length > 0" />
+                    <p v-else>No time recorded yet</p>
+                </div>
             </div>
         </div>
 
         <div class="row chart-row">
             <div class="col-md chart-col position-relative overflow-auto">
-                <div id="student-time-chart-container">
-                    <DownloadCSVBtn
-                        :data="studentTotalDurationsDownloadData"
+                <h2 class="secondary-heading h5">Students</h2>
+
+                <div id="student-time-chart-container" class="chart-card">
+                    <DownloadCSVBtn :data="studentTotalDurationsDownloadData"
                         fileName="Total time on platform, comparing students"
-                        class="download-btn position-absolute btn"
-                    />
-                    <CohortCompareDurationHorizontalChart
-                        :data="studentTotalDurations"
-                        :colour="'#5f31dd'"
-                        v-if="studentTotalDurations.length > 0"
-                    />
+                        class="download-btn position-absolute btn" />
+                    <CohortCompareDurationHorizontalChart :data="studentTotalDurations" :colour="'#5f31dd'"
+                        v-if="studentTotalDurations.length > 0" />
                     <p v-else>No time recorded yet</p>
                 </div>
-           
+
             </div>
 
             <div class="col-md chart-col position-relative overflow-auto">
-                <div id="skill-time-chart-container">
-                    <DownloadCSVBtn
-                        :data="studentDurationsPerSkillDownloadData"
-                        fileName="Minutes per skill"
-                        class="download-btn position-absolute btn"
-                    />
+                <h2 class="secondary-heading h5">Skills</h2>
 
-                    <CohortDurationPerSkillHorizontalBarChart
-                        :data="studentDurationsPerSkill"
-                        :colour="'#5f31dd'"
-                        v-if="studentDurationsPerSkill.length > 0"
-                    />
+                <div id="skill-time-chart-container" class="chart-card">
+                    <DownloadCSVBtn :data="studentDurationsPerSkillDownloadData" fileName="Minutes per skill"
+                        class="download-btn position-absolute btn" />
+
+                    <CohortDurationPerSkillHorizontalBarChart :data="studentDurationsPerSkill" :colour="'#5f31dd'"
+                        v-if="studentDurationsPerSkill.length > 0" />
                 </div>
-            
+
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+.chart-page {
+    background-color: hsl(from var(--primary-color) h s l / 0.15);
+    border-top: 1px solid var(--primary-color);
+}
+
+.chart-card {
+    border-radius: 5px;
+    padding: 10px 10px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12),
+        0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    background-color: white;
+}
+
 .download-btn {
     right: 10px;
     top: 10px;
 }
 
-.chart-row {
-    height: calc(50% - 10px);
-}
+.chart-row {}
 
 .chart-col {
     height: 100%;
 }
 
+#time-chart-container {
+    min-height: 300px;
+}
+
 /* Styles for screens smaller than 600px (e.g., most mobile phones) */
 @media (min-width: 600px) {
     .chart-page {
-        height: calc(100vh - 88px);
+        height: calc(100vh - 72px);
         overflow: hidden;
     }
 }
@@ -220,11 +224,10 @@ export default {
     width: 100%;
 }
 
-@media (max-width: 600px) {
-    #time-chart-container,
-    #skill-time-chart-container,
-    #student-time-chart-container {
-        height: 200px;
+@media (max-width: 599px) {
+    .chart-page {
+        height: calc(100vh - 50px);
+        overflow: auto;
     }
 }
 </style>
