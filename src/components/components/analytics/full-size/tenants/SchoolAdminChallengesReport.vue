@@ -49,23 +49,19 @@ export default {
 </script>
 
 <template>
-    <div class="container chart-page">
+    <div class="container-fluid chart-page">
         <div class="row h-100">
             <div class="col-md position-relative overflow-auto">
                 <h3 class="heading h4">School-wide assessments failed</h3>
-                <div id="failed-assessments-chart-container">    
-                <DownloadCSVBtn
-                    :data="analyticsStore.failedAssessments"
-                    fileName="Assessments-failed"
-                    toolTip="Download CSV"
-                    class="download-btn position-absolute"
-                />
-           
+                <div id="failed-assessments-chart-container" class="chart-card">
+                    <DownloadCSVBtn :data="analyticsStore.failedAssessments" fileName="Assessments-failed"
+                        toolTip="Download CSV" class="download-btn position-absolute" />
+
                     <TenantFailedAssessmentsHorizontalBarChart v-if="
                         analyticsStore.failedAssessments
                             .length > 0
                     " :data="analyticsStore.failedAssessments
-                            " />
+                        " />
                     <p v-else>No data yet</p>
                 </div>
             </div>
@@ -76,17 +72,32 @@ export default {
 
 <style scoped>
 .chart-page {
-    height: calc(100vh - 88px);
+    height: calc(100vh - 72px);
     overflow: hidden;
+    background-color: hsl(from var(--primary-color) h s l / 0.15);
+    border-top: 1px solid var(--primary-color);
+}
+
+@media (max-width: 599px) {
+    .chart-page {
+        height: calc(100vh - 50px);
+        overflow: hidden;
+    }
+}
+
+.chart-card {
+    border-radius: 5px;
+    padding: 10px 10px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12),
+        0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    background-color: white;
 }
 
 .chart-row {
     height: 50%;
 }
 
-#failed-assessments-chart-container {
-    height: 80%;
-}
+#failed-assessments-chart-container {}
 
 .download-btn {
     right: 10px;

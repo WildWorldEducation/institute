@@ -7,14 +7,14 @@ export default {
     data() {
         return {};
     },
-    mounted() {    
+    mounted() {
         // Specify the chart’s dimensions, based on a bar’s height.
         const barHeight = 30;
         const marginTop = 0;
-        const marginRight = 0;
+        const marginRight = 30;
         const marginBottom = 10;
         const marginLeft = 200;
-             const data = this.data;
+        const data = this.data;
         // Declare the chart dimensions and margins.
         const width = document.getElementById(
             'failed-assessments-chart-container'
@@ -91,7 +91,7 @@ export default {
 };
 </script>
 
-<template>    
+<template>
 </template>
 
 <style scoped></style>
