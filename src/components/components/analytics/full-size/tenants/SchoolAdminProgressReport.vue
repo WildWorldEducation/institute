@@ -207,7 +207,7 @@ export default {
         </div>
 
         <div class="row chart-row">
-            <h2 class="heading h5">Passed Assessments</h2>
+            <h2 class="secondary-heading h5">Passed Assessments</h2>
             <div class="col-md chart-col position-relative">
                 <div id="passed-subjects-chart" class="chart-card">
                     <button class="btn position-absolute download-btn" @click="
@@ -251,7 +251,7 @@ export default {
             </div>
         </div>
         <div class="row chart-row">
-            <h2 class="heading h5">Attempted Assessments</h2>
+            <h2 class="secondary-heading h5">Attempted Assessments</h2>
             <div class="col-md chart-col position-relative">
                 <div id="attempted-subjects-chart" class="chart-card">
                     <button class="btn position-absolute download-btn" @click="
@@ -316,9 +316,7 @@ export default {
 
 /* Specific phone view css */
 @media (min-width: 600px) {
-    .chart-row {
-        height: calc(50% - 20px);
-    }
+    .chart-row {}
 
     .chart-col {
         height: 100%;
