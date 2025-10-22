@@ -18,7 +18,7 @@ export default {
         ).clientHeight;
         const marginTop = 10;
         const marginRight = 20;
-        const marginBottom = 20;
+        const marginBottom = 40;
         const marginLeft = 25;
 
         // Declare the x (horizontal position) scale.

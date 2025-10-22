@@ -19,7 +19,7 @@ export default {
 
         const marginTop = 5;
         const marginRight = 20;
-        const marginBottom = 20;
+        const marginBottom = 30;
         const marginLeft = 25;
 
         // Declare the x (horizontal position) scale.
