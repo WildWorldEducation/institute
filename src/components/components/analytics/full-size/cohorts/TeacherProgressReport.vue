@@ -138,7 +138,7 @@ export default {
 
         <div class="row chart-row">
             <div class="col-md chart-col position-relative position-relative overflow-auto">
-                <h2 class="heading h5">Passed Assessments</h2>
+                <h2 class="secondary-heading h5">Passed Assessments</h2>
 
                 <div id="progress-bar-chart-container" class="chart-card">
                     <DownloadCSVBtn :data="masteredSkillQuantitiesDownloadData"
@@ -150,7 +150,7 @@ export default {
             </div>
 
             <div class="col-md chart-col position-relative position-relative overflow-auto">
-                <h2 class="heading h5">Attempted Assessments</h2>
+                <h2 class="secondary-heading h5">Attempted Assessments</h2>
 
                 <div id="attempted-bar-chart-container" class="chart-card">
                     <DownloadCSVBtn :data="attemptedAssessmentQuantitiesDownloadData"
@@ -183,8 +183,6 @@ export default {
     right: 10px;
     top: 10px;
 }
-
-
 
 .chart-col {
     height: 100%;
