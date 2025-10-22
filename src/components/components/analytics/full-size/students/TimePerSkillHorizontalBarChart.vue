@@ -6,13 +6,10 @@ export default {
     props: ['data', 'colour'],
     data() {
         return {
-            padding: 60
+
         };
     },
     mounted() {
-        const container = d3.select('#time-per-skill-chart-container');
-        //console.log(this.data);
-
         // Specify the chart’s dimensions, based on a bar’s height.
         const barHeight = 25;
         const marginTop = 0;
@@ -20,10 +17,7 @@ export default {
         const marginBottom = 10;
         const marginLeft = 200;
         const width = 1000;
-        const height =
-            Math.ceil((this.data.length + 0.1) * barHeight) +
-            marginTop +
-            marginBottom;
+        const height = barHeight * this.data.length;
 
         // Create the scales.
         const x = d3
@@ -36,9 +30,6 @@ export default {
             .domain(d3.sort(this.data, (d) => -d.quantity).map((d) => d.name))
             .rangeRound([marginTop, height - marginBottom])
             .padding(0.1);
-
-        // Create a value format.
-        const format = x.tickFormat(20);
 
         // Create the SVG container.
         const svg = d3
