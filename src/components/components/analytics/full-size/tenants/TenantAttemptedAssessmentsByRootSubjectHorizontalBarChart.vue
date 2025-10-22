@@ -11,7 +11,7 @@ export default {
         const barHeight = 30;
         const marginTop = 0;
         const marginRight = 20;
-        const marginBottom = 20;
+        const marginBottom = 30;
         const marginLeft = 200;
         // Declare the chart dimensions and margins.
         const width = document.getElementById(

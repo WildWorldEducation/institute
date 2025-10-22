@@ -192,58 +192,42 @@ export default {
             <div class="content container-fluid">
                 <!-- This is where charts / dashboard cards go -->
                 <div class="dash-row row">
-                    <div class="col-md-6 h-100 position-relative">
-                        <RouterLink
-                            to="/my-progress/skills"
-                            class=""
-                            target="_blank"
-                        >
+                    <div class="col-md-6 h-100 position-relative chart-card">
+                        <RouterLink to="/my-progress/skills" class="" target="_blank">
                             <h2 class="heading h5">Progress over time</h2>
                         </RouterLink>
-                        <figcaption
-                            v-if="
-                                progressData.student.length > 0 ||
-                                progressData.average.length > 0
-                            "
-                            class=""
-                        >
+                        <figcaption v-if="
+                            progressData.student.length > 0 ||
+                            progressData.average.length > 0
+                        " class="">
                             <span style="color: green">You</span> vs
                             <span style="color: #ff7f0e">school average</span>
                         </figcaption>
                         <div id="progress-chart-container">
-                            <StudentProgressChart
-                                ref="progressChart"
-                                v-if="
-                                    progressData.student.length > 0 ||
-                                    progressData.average.length > 0
-                                "
-                            />
+                            <StudentProgressChart ref="progressChart" v-if="
+                                progressData.student.length > 0 ||
+                                progressData.average.length > 0
+                            " />
                             <p v-else>No progress yet</p>
                         </div>
                     </div>
 
                     <div class="col-md-6">
-                        <div id="comparison-chart-container">
+                        <div id="comparison-chart-container" class="chart-card">
                             <h2 class="heading h5 mt-1">Progress comparison</h2>
-                            <StudentComparisonChart
-                                ref="comparisonChart"
-                                v-if="
-                                    analyticsStore
-                                        .studentRootSubjectsPassedAssessments
-                                        .length > 0
-                                "
-                                :data="
-                                    analyticsStore.studentRootSubjectsPassedAssessments
-                                "
-                                :colour="'#5f31dd'"
-                            />
+                            <StudentComparisonChart ref="comparisonChart" v-if="
+                                analyticsStore
+                                    .studentRootSubjectsPassedAssessments
+                                    .length > 0
+                            " :data="analyticsStore.studentRootSubjectsPassedAssessments
+                                " :colour="'#5f31dd'" />
                             <p v-else>No progress yet</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="dash-row row">
-                    <div class="col-md h-100 position-relative">
+                    <div class="col-md h-100 position-relative chart-card">
                         <RouterLink to="/my-progress/time" target="_blank">
                             <h2 class="heading h5">Study time</h2>
                         </RouterLink>
@@ -252,13 +236,10 @@ export default {
                             <span style="color: #ff7f0e">school average</span>
                         </figcaption>
                         <div id="time-chart-container">
-                            <StudentTimeChart
-                                ref="timeChart"
-                                v-if="
-                                    analyticsStore.time.student.length > 0 ||
-                                    analyticsStore.time.tenant.length > 0
-                                "
-                            />
+                            <StudentTimeChart ref="timeChart" v-if="
+                                analyticsStore.time.student.length > 0 ||
+                                analyticsStore.time.tenant.length > 0
+                            " />
                             <p v-else>No data available</p>
                         </div>
                     </div>
@@ -266,55 +247,45 @@ export default {
                     <div class="col-md position-relative">
                         <div class="row">
                             <div class="col-md">
-                                <RouterLink
-                                    to="/my-progress/super-challenging"
-                                    class="col"
-                                    target="_blank"
-                                >
-                                    <h2 class="h5 heading">
-                                        Consider asking for help
-                                    </h2>
-                                </RouterLink>
-                                <ul
-                                    v-if="
+                                <div class="chart-card">
+
+                                    <RouterLink to="/my-progress/super-challenging" class="col" target="_blank">
+                                        <h2 class="h5 heading">
+                                            Consider asking for help
+                                        </h2>
+                                    </RouterLink>
+                                    <ul v-if="
                                         teacherAnalyticsStore
                                             .studentMultipleFails.length > 0
-                                    "
-                                >
-                                    <li
-                                        class="failed-skills"
-                                        v-for="skill in teacherAnalyticsStore.studentMultipleFails"
-                                        :key="skill.id"
-                                    >
-                                        <RouterLink
-                                            :to="'/skills/' + skill.url"
-                                            target="_blank"
-                                            >{{ skill.name }}
-                                        </RouterLink>
-                                    </li>
-                                </ul>
-                                <p v-else>Nothing to worry about yet</p>
+                                    ">
+                                        <li class="failed-skills"
+                                            v-for="skill in teacherAnalyticsStore.studentMultipleFails" :key="skill.id">
+                                            <RouterLink :to="'/skills/' + skill.url" target="_blank">{{ skill.name }}
+                                            </RouterLink>
+                                        </li>
+                                    </ul>
+                                    <p v-else>Nothing to worry about yet</p>
+                                </div>
                             </div>
                             <div class="col-md">
-                                <h2 class="h5 heading">Stats</h2>
-                                <ul>
-                                    <li>
-                                        <strong>Skills passed:</strong>
-                                        {{ totalSkillsPassed }}
-                                    </li>
-                                    <li>
-                                        <strong>Total time spent:</strong>
-                                        {{ totalTimeSpent }}
-                                    </li>
-                                    <li>
-                                        <RouterLink
-                                            to="/my-progress/tokens"
-                                            target="_blank"
-                                            ><strong>AI usage:</strong>
-                                            {{ totalAIUsage }}</RouterLink
-                                        >
-                                    </li>
-                                </ul>
+                                <div class="chart-card">
+                                    <h2 class="h5 heading">Stats</h2>
+                                    <ul>
+                                        <li>
+                                            <strong>Skills passed:</strong>
+                                            {{ totalSkillsPassed }}
+                                        </li>
+                                        <li>
+                                            <strong>Total time spent:</strong>
+                                            {{ totalTimeSpent }}
+                                        </li>
+                                        <li>
+                                            <RouterLink to="/my-progress/tokens" target="_blank"><strong>AI
+                                                    usage:</strong>
+                                                {{ totalAIUsage }}</RouterLink>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                         <!-- <div
@@ -333,7 +304,17 @@ export default {
         </div>
     </div>
 </template>
+
 <style scoped>
+.chart-card {
+    border-radius: 5px;
+    padding: 10px 10px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12),
+        0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    background-color: white;
+
+}
+
 .failed-skills a {
     color: darkred;
     text-decoration: none;
@@ -357,6 +338,7 @@ export default {
 
 .dash-row {
     height: 50%;
+    padding: 5px;
 }
 
 /* Styles for screens smaller than 600px (e.g., most mobile phones) */
@@ -378,6 +360,10 @@ export default {
     .row {
         margin-bottom: 1rem;
     }
+
+    .dashboard {
+        height: 100%;
+    }
 }
 
 .chart-container {
@@ -389,6 +375,8 @@ export default {
     display: flex;
     height: calc(100vh - 72px);
     overflow: hidden;
+    background-color: hsl(from var(--primary-color) h s l / 0.15);
+    border-top: 1px solid var(--primary-color);
 }
 
 /* Sidebar */
