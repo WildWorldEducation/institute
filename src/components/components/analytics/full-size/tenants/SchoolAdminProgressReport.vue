@@ -325,16 +325,6 @@ export default {
     }
 }
 
-@media (max-width: 599px) {
-    .chart-row {
-        height: 400px;
-    }
-
-    .chart-col {
-        height: 200px;
-    }
-}
-
 
 #passed-subjects-chart,
 #attempted-subjects-chart,
@@ -344,6 +334,21 @@ export default {
     width: 100%;
 }
 
+
+@media (max-width: 599px) {
+    .chart-page {
+        height: calc(100vh - 50px);
+        overflow: hidden;
+    }
+
+    #passed-subjects-chart,
+    #attempted-subjects-chart,
+    #passed-skills-chart,
+    #attempted-skills-chart {
+        min-height: 50px;
+    }
+
+}
 
 .download-btn {
     right: 2px;
