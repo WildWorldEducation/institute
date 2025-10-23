@@ -210,7 +210,7 @@ export default {
 @media (max-width: 600px) {
     .chart-page {
         height: calc(100vh - 50px);
-        overflow: hidden;
+        overflow: auto;
     }
 
     #progress-chart-container {
