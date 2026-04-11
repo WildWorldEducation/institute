@@ -91,21 +91,26 @@ const createSocket = (server) => {
                 Please keep all messages below 1000 characters.`;
                 }
 
-                await createRunStream(
-                    messageData.threadId,
-                    messageData.assistantId,
-                    messageData.message,
-                    isEmptyMessage,
-                    socket,
-                    instructions,
-                    'aiTutor',
-                    messageData.userId,
-                    messageData.skillId,
-                    messageData.freeMonthlyTokenLimit,
-                    messageData.monthlyTokenUsage,
-                    messageData.billingMode,
-                    messageData.tenantId
-                );
+                try {
+                    await createRunStream(
+                        messageData.threadId,
+                        messageData.assistantId,
+                        messageData.message,
+                        isEmptyMessage,
+                        socket,
+                        instructions,
+                        'aiTutor',
+                        messageData.userId,
+                        messageData.skillId,
+                        messageData.freeMonthlyTokenLimit,
+                        messageData.monthlyTokenUsage,
+                        messageData.billingMode,
+                        messageData.tenantId
+                    );
+                } catch (err) {
+                    console.error('new-message handler error:', err);
+                    socket.emit('server-error', { msg: err.message });
+                }
             });
 
             // user send test me message event
@@ -169,21 +174,26 @@ const createSocket = (server) => {
                     Please keep all messages below 1000 characters.`;
                 }
 
-                await createRunStream(
-                    messageData.threadId,
-                    messageData.assistantId,
-                    messageData.message,
-                    isEmptyMessage,
-                    socket,
-                    instructions,
-                    'aiTutor',
-                    messageData.userId,
-                    messageData.skillId,
-                    messageData.freeMonthlyTokenLimit,
-                    messageData.monthlyTokenUsage,
-                    messageData.billingMode,
-                    messageData.tenantId
-                );
+                try {
+                    await createRunStream(
+                        messageData.threadId,
+                        messageData.assistantId,
+                        messageData.message,
+                        isEmptyMessage,
+                        socket,
+                        instructions,
+                        'aiTutor',
+                        messageData.userId,
+                        messageData.skillId,
+                        messageData.freeMonthlyTokenLimit,
+                        messageData.monthlyTokenUsage,
+                        messageData.billingMode,
+                        messageData.tenantId
+                    );
+                } catch (err) {
+                    console.error('ask-question handler error:', err);
+                    socket.emit('server-error', { msg: err.message });
+                }
             });
 
             // learning objective message
@@ -219,21 +229,26 @@ const createSocket = (server) => {
                     Make sure to have $ delimiters before any science and math strings that can convert to Latex
                     `);
 
-                await createRunStream(
-                    messageData.threadId,
-                    messageData.assistantId,
-                    messageData.message,
-                    isEmptyMessage,
-                    socket,
-                    assistantInstruction,
-                    'learningObjective',
-                    messageData.userId,
-                    messageData.skillId,
-                    messageData.freeMonthlyTokenLimit,
-                    messageData.monthlyTokenUsage,
-                    messageData.billingMode,
-                    messageData.tenantId
-                );
+                try {
+                    await createRunStream(
+                        messageData.threadId,
+                        messageData.assistantId,
+                        messageData.message,
+                        isEmptyMessage,
+                        socket,
+                        assistantInstruction,
+                        'learningObjective',
+                        messageData.userId,
+                        messageData.skillId,
+                        messageData.freeMonthlyTokenLimit,
+                        messageData.monthlyTokenUsage,
+                        messageData.billingMode,
+                        messageData.tenantId
+                    );
+                } catch (err) {
+                    console.error('new-learning-objective-message handler error:', err);
+                    socket.emit('server-error', { msg: err.message });
+                }
             });
 
             socket.on('error', (error) => {
