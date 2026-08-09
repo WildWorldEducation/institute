@@ -5,10 +5,12 @@ const util = require('util');
 // convert callback
 const query = util.promisify(conn.query).bind(conn);
 
-// Shared OpenAI client (uses the RFab key when set) and model config.
-const { openai, models } = require('../config/aiConfig');
+// Shared OpenAI client (kept for TTS/STT/embeddings) + Grok client (tutors) + models.
+const { openai, grok, models } = require('../config/aiConfig');
 // RFab usage-event tracking (tracking-only; never sends user content).
 const { emitUsageEvent } = require('./rfabUsageTracker');
+// Grok tutor engine — chat-completions + streaming + local history persistence.
+const grokTutor = require('./grokTutor');
 
 // For uploading files to vector store, for file search feature
 const fs = require('fs');
@@ -16,16 +18,34 @@ const fs = require('fs');
 /**
  * Shared function
  *
- * Get chat history from any tutor
+ * Get chat history from any tutor. Reads from the local ai_tutor_messages store
+ * (Grok is stateless) and returns the OpenAI-Assistants-compatible shape the
+ * routes/frontend expect: newest-first, content[].text.value.
  * @param {string} threadId
  * @return {object} message List
  */
 async function getMessagesList(threadId) {
     try {
-        const messages = await openai.beta.threads.messages.list(threadId);
-        return messages;
+        const rows = await query(
+            `SELECT id, role, content, created_at FROM ai_tutor_messages
+             WHERE thread_id = ? ORDER BY id DESC`,
+            [threadId]
+        );
+        return {
+            data: rows.map((r) => ({
+                id: String(r.id),
+                role: r.role,
+                created_at: r.created_at
+                    ? Math.floor(new Date(r.created_at).getTime() / 1000)
+                    : undefined,
+                content: [
+                    { type: 'text', text: { value: r.content, annotations: [] } }
+                ]
+            }))
+        };
     } catch (error) {
-        throw error;
+        console.error('[openAIAssistant] getMessagesList failed:', error.message);
+        return { data: [] };
     }
 }
 
@@ -69,32 +89,11 @@ async function createSocraticAssistantAndThread(
     learningObjectives,
     isFileSearchSkill
 ) {
-    const assistant = await createSocraticAssistant(
-        topic,
-        level,
-        learningObjectives,
-        isFileSearchSkill
-    );
-
-    if (isFileSearchSkill) {
-        try {
-            // Give it access to certain documents if this skill need file search feature
-            await openai.beta.assistants.update(assistant.id, {
-                tool_resources: {
-                    file_search: {
-                        vector_store_ids: [process.env.VECTOR_STORE_ID]
-                    }
-                }
-            });
-        } catch (error) {
-            console.error('Error with Open AI API:', error);
-            throw error;
-        }
-    }
-
-    const thread = await createSocraticAssistantThread();
-    const result = { assistant: assistant, thread: thread };
-    return result;
+    // Grok is stateless — no remote assistant/thread. Generate local ids; the
+    // system prompt is supplied per-turn (socketConfig) and conversation history
+    // is persisted in ai_tutor_messages. Live web search replaces the old
+    // vector-store file-search for document-backed skills.
+    return { assistant: { id: grokTutor.newId() }, thread: { id: grokTutor.newId() } };
 }
 
 async function createSocraticAssistant(
@@ -203,76 +202,27 @@ async function socraticTutorMessage(
     billingMode,
     tenantId
 ) {
-    // Add a Message to the Thread
     try {
-        const message = await openai.beta.threads.messages.create(threadId, {
-            role: 'user',
-            content: messageData.message
+        const systemInstruction =
+            'Please tutor about the subject: ' + messageData.skillName +
+            ', comprising the following learning objectives: ' + messageData.learningObjectives +
+            '. Tutor the user as if they are at a ' + messageData.skillLevel + ' level and age.' +
+            ' Use the Socratic method. After the student answers, evaluate correctness, give clear' +
+            ' feedback, and ask ONE follow-up question. Ask ONLY ONE QUESTION per message. Speak' +
+            ' naturally; do not reference learning objectives, materials, or backend data. Use $' +
+            ' delimiters for math/science that converts to LaTeX. Keep messages below 1000 characters.';
+        const { text, usage } = await grokTutor.completeTutorTurn({
+            threadId,
+            userMessage: messageData.message,
+            systemInstruction
         });
-
-        let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-            assistant_id: assistantId,
-            instructions: `Please tutor about the subject: ${messageData.skillName},
-        comprising the following learning objectives: ${messageData.learningObjectives}.
-        Tutor the user as if they are at a ${messageData.skillLevel} level and age.
-        Use the Socratic method of teaching.
-
-        IMPORTANT TEACHING GUIDELINES:
-        1. After the student answers a question, you MUST:
-           a) Evaluate the correctness of their answer
-           b) Provide clear feedback explaining why the answer is correct or incorrect
-           c) If the answer is incorrect, provide a detailed explanation
-           d) Ask a follow-up question to help the student understand better
-
-        2. When giving feedback:
-           - Be constructive and encouraging
-           - Explain the reasoning behind correct and incorrect parts of the answer
-           - Use language appropriate for a ${messageData.skillLevel} level student
-
-        3. If the answer shows partial understanding, guide the student towards a more complete understanding
-
-        4. CRITICAL: ALWAYS ASK ONLY ONE QUESTION PER MESSAGE
-           - Never ask multiple questions in a single message
-           - Make your question clear, specific, and focused
-           - Wait for the student to respond before asking another question
-
-        5. CRITICAL DOCUMENT USAGE RULES - FOLLOW STRICTLY:
-           - NEVER mention "uploaded files", "documents", "materials", "files", or "uploaded" in any context
-           - NEVER reference document uploads, file searches, or external sources
-           - Present ALL information as your natural knowledge of the subject
-           - Use reference materials seamlessly without any acknowledgment of their existence
-           - FORBIDDEN PHRASES: "uploaded", "document", "file", "material", "based on the", "according to"
-           - Act as if you are an expert who naturally knows this information
-
-        Make sure to have $ delimiters before any science and math strings that can convert to Latex
-        Please keep all messages below 1000 characters, and succinct.`
-        });
-
-        if (run.status === 'completed') {
-            const messages = await openai.beta.threads.messages.list(threadId);
-            const latestMessage = messages.data[0];
-
-            // Save the user's token usage
-            // These tokens are priced at $150 per million
-            let outputTokens = run.usage.completion_tokens;
-            // Work out tts equivalent usage
-            // 0.4 is hardcoded at the moment, based on pricing and choice of models
-            let ttsTokens = outputTokens * 0.4;
-            let tokenCount = run.usage.total_tokens + ttsTokens;
-            saveTokenUsage(
-                messageData.userId,
-                messageData.skillId,
-                tokenCount,
-                freeMonthlyTokenLimit,
-                monthlyTokenUsage,
-                billingMode,
-                tenantId
-            );
-
-            return latestMessage;
-        } else {
-            console.log(run.status);
+        if (usage && usage.total_tokens) {
+            const ttsTokens = (usage.completion_tokens || 0) * 0.4;
+            const tokenCount = usage.total_tokens + ttsTokens;
+            saveTokenUsage(messageData.userId, messageData.skillId, tokenCount, freeMonthlyTokenLimit, monthlyTokenUsage, billingMode, tenantId);
+            emitUsageEvent({ userId: messageData.userId, eventType: 'ai_tutor_message', metadata: { skillId: messageData.skillId, tenantId, billingMode, feature: 'stt_tutor', model: models.grokTutor, tokenCount, promptTokens: usage.prompt_tokens, completionTokens: usage.completion_tokens } });
         }
+        return { role: 'assistant', content: [{ type: 'text', text: { value: text, annotations: [] } }] };
     } catch (error) {
         console.error('Error in socraticTutorMessage:', error);
         throw error;
@@ -288,32 +238,8 @@ async function createAssessingAssistantAndThread(
     learningObjectives,
     isFileSearchSkill
 ) {
-    const assistant = await createAssessingAssistant(
-        topic,
-        level,
-        learningObjectives,
-        isFileSearchSkill
-    );
-
-    // Give it access to certain documents
-    if (isFileSearchSkill) {
-        try {
-            await openai.beta.assistants.update(assistant.id, {
-                tool_resources: {
-                    file_search: {
-                        vector_store_ids: [process.env.VECTOR_STORE_ID]
-                    }
-                }
-            });
-        } catch (error) {
-            console.error('Error with Open AI API:', error);
-            throw error;
-        }
-    }
-
-    const thread = await createAssessingAssistantThread();
-    const result = { assistant: assistant, thread: thread };
-    return result;
+    // Grok is stateless — local ids only (see createSocraticAssistantAndThread).
+    return { assistant: { id: grokTutor.newId() }, thread: { id: grokTutor.newId() } };
 }
 
 async function createAssessingAssistant(
@@ -424,76 +350,25 @@ async function assessingTutorMessage(
     tenantId
 ) {
     try {
-        // Add a Message to the Thread
-        const message = await openai.beta.threads.messages.create(threadId, {
-            role: 'user',
-            content: messageData.message
+        const systemInstruction =
+            'The user is at a ' + messageData.skillLevel + ' level and age. Review the chat history' +
+            ' and these learning objectives: ' + messageData.learningObjectives + '. Ask questions to' +
+            ' assess understanding, one learning objective at a time, looping when you reach the end.' +
+            ' Ask ONLY ONE QUESTION per message. After each answer, say what was correct/incorrect and' +
+            ' why. Speak naturally; do not reference learning objectives, materials, or backend data.' +
+            ' Use $ delimiters for math/science that converts to LaTeX. Keep messages below 1000 characters.';
+        const { text, usage } = await grokTutor.completeTutorTurn({
+            threadId,
+            userMessage: messageData.message,
+            systemInstruction
         });
-
-        let run = await openai.beta.threads.runs.createAndPoll(threadId, {
-            assistant_id: assistantId,
-            instructions: `The user is at a ${messageData.skillLevel} level and age.
-        Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
-
-        ASSESSMENT AND FEEDBACK GUIDELINES:
-        1. After the student answers a question, you MUST:
-           a) Carefully evaluate the correctness of their answer
-           b) Provide clear, constructive feedback explaining:
-              - What parts of the answer are correct
-              - What parts of the answer are incorrect
-              - Why those parts are correct or incorrect
-           c) Give a detailed explanation that helps the student understand           
-
-        2. Assessment Strategy:
-           - Ask questions about each learning objective, one after the other
-           - When you get to the end of the array, start again
-           - ALWAYS ASK ONLY ONE QUESTION PER MESSAGE
-           - Never combine multiple questions in a single message
-           - Make your question clear, specific, and focused
-           - Prioritize asking questions on learning objectives that the student does not seem to know well
-
-        3. Feedback Principles:
-           - Be specific about what is correct or incorrect
-           - Use language appropriate for a ${messageData.skillLevel} level student
-           - Aim to guide the student towards a more comprehensive understanding
-
-        4. CRITICAL DOCUMENT USAGE RULES - FOLLOW STRICTLY:
-           - NEVER mention "uploaded files", "documents", "materials", "files", or "uploaded" in any context
-           - NEVER reference document uploads, file searches, or external sources
-           - Present ALL information as your natural knowledge of the subject
-           - Use reference materials seamlessly without any acknowledgment of their existence
-           - FORBIDDEN PHRASES: "uploaded", "document", "file", "material", "based on the", "according to"
-           - Act as if you are an expert who naturally knows this information
-
-        Make sure to have $ delimiters before any science and math strings that can convert to Latex.
-        Please keep all messages below 1000 characters, and succinct.`
-        });
-
-        if (run.status === 'completed') {
-            const messages = await openai.beta.threads.messages.list(threadId);
-            const latestMessage = messages.data[0];
-
-            // Save the user's token usage
-            // These tokens are priced at $150 per million
-            let outputTokens = run.usage.completion_tokens;
-            // Work out tts equivalent usage
-            // 0.4 is hardcoded at the moment, based on pricing and choice of models
-            let ttsTokens = outputTokens * 0.4;
-            let tokenCount = run.usage.total_tokens + ttsTokens;
-            saveTokenUsage(
-                messageData.userId,
-                messageData.skillId,
-                tokenCount,
-                freeMonthlyTokenLimit,
-                monthlyTokenUsage,
-                billingMode,
-                tenantId
-            );
-
-            return latestMessage;
-        } else {
-            console.log(run.status);
+        if (usage && usage.total_tokens) {
+            const ttsTokens = (usage.completion_tokens || 0) * 0.4;
+            const tokenCount = usage.total_tokens + ttsTokens;
+            saveTokenUsage(messageData.userId, messageData.skillId, tokenCount, freeMonthlyTokenLimit, monthlyTokenUsage, billingMode, tenantId);
+            emitUsageEvent({ userId: messageData.userId, eventType: 'ai_tutor_message', metadata: { skillId: messageData.skillId, tenantId, billingMode, feature: 'stt_tutor', model: models.grokTutor, tokenCount, promptTokens: usage.prompt_tokens, completionTokens: usage.completion_tokens } });
         }
+        return { role: 'assistant', content: [{ type: 'text', text: { value: text, annotations: [] } }] };
     } catch (error) {
         console.error('Error in assessingTutorMessage:', error);
         throw error;
@@ -509,38 +384,8 @@ async function createLearningObjectiveAssistantAndThread(
     level,
     isFileSearchSkill
 ) {
-    try {
-        const assistant = await createLearningObjectiveAssistant(
-            level,
-            learningObjective,
-            isFileSearchSkill
-        );
-
-        // only update the assistant with file search if it is in the list
-        if (isFileSearchSkill) {
-            try {
-                // Give it access to certain documents
-                await openai.beta.assistants.update(assistant.id, {
-                    tool_resources: {
-                        file_search: {
-                            vector_store_ids: [process.env.VECTOR_STORE_ID]
-                        }
-                    }
-                });
-            } catch (error) {
-                console.error('Error with Open AI API:', error);
-                throw error;
-            }
-        }
-
-        const thread = await createLearningObjectiveAssistantThread();
-        const result = { assistant: assistant, thread: thread };
-        return result;
-    } catch (error) {
-        console.error(error)
-        throw error
-    }
-
+    // Grok is stateless - local ids only (see createSocraticAssistantAndThread).
+    return { assistant: { id: grokTutor.newId() }, thread: { id: grokTutor.newId() } };
 }
 
 async function createLearningObjectiveAssistant(
@@ -661,115 +506,52 @@ async function createRunStream(
     tenantId
 ) {
     try {
-        if (!isEmptyMessage) {
-            try {
-                await openai.beta.threads.messages.create(threadId, {
-                    role: 'user',
-                    content: userMessage
-                });
-            } catch (error) {
-                console.error('Error creating message:', error);
-                throw error;
-            }
-        }
-        try {
-            let runStream;
-            try {
-                // ── Stage 1: create the stream; any failure here is a promise rejection
-                runStream = openai.beta.threads.runs.stream(threadId, {
-                    assistant_id: assistantId,
-                    instructions: assistantInstruction
-                });
-            } catch (err) {
-                console.error('Could not start OpenAI run stream:', err);
-                socket.emit('server-error', { msg: err.message });
-                return; // nothing more to do
-            }
+        // Grok streaming turn (replaces the OpenAI Assistants run). grokTutor
+        // persists user + assistant messages to ai_tutor_messages, replays history
+        // each turn, and emits the SAME socket events the frontend expects:
+        // 'stream-message' (delta, streamType, snapshot, threadId) and 'run-end'.
+        const { usage } = await grokTutor.streamTutorTurn({
+            threadId,
+            userMessage,
+            isEmptyMessage,
+            socket,
+            systemInstruction: assistantInstruction,
+            streamType
+        });
 
-            /* ── Stage 2: the stream exists, so listen for runtime events */
-            runStream
-                .on('error', (err) => {
-                    console.error('Stream error:', err);
-                    // maybe notify user, close response, etc.
-                })
-                .on('textDelta', (textDelta, snapshot) => {
-                    socket.emit(
-                        'stream-message',
-                        textDelta,
-                        streamType,
-                        snapshot,
-                        threadId
-                    );
-                })
-                .on('runStepDone', (runStep) => {
-                    socket.emit('run-end');
-                    // Save the amount of tokens the user is using
-                    // These tokens are priced at $150 per million
-                    let outputTokens = runStep.usage.completion_tokens;
-                    // Work out tts equivalent usage
-                    // 0.4 is hardcoded at the moment, based on pricing and choice of models
-                    let ttsTokens = outputTokens * 0.4;
-                    if (runStep.usage.total_tokens) {
-                        let tokenCount = runStep.usage.total_tokens + ttsTokens;
-                        saveTokenUsage(
-                            userId,
-                            skillId,
-                            tokenCount,
-                            freeMonthlyTokenLimit,
-                            monthlyTokenUsage,
-                            billingMode,
-                            tenantId
-                        );
-                        // Mirror usage to RFab tracking (allow-listed metadata only).
-                        emitUsageEvent({
-                            userId,
-                            eventType: 'ai_tutor_message',
-                            metadata: {
-                                skillId,
-                                tenantId,
-                                billingMode,
-                                streamType,
-                                model: models.tutor,
-                                tokenCount,
-                                promptTokens: runStep.usage.prompt_tokens,
-                                completionTokens: runStep.usage.completion_tokens
-                            }
-                        });
-                    }
-                })
-                .on('toolCallCreated', (event) =>
-                    console.log('assistant ' + event.type)
-                )
-                .on('toolCallDelta', (toolCallDelta, snapshot) => {
-                    if (toolCallDelta.type === 'code_interpreter') {
-                        if (toolCallDelta.code_interpreter.input) {
-                            process.stdout.write(
-                                toolCallDelta.code_interpreter.input
-                            );
-                        }
-                        if (toolCallDelta.code_interpreter.outputs) {
-                            process.stdout.write('\noutput >\n');
-                            toolCallDelta.code_interpreter.outputs.forEach(
-                                (output) => {
-                                    if (output.type === 'logs') {
-                                        process.stdout.write(
-                                            `\n${output.logs}\n`
-                                        );
-                                    }
-                                }
-                            );
-                        }
-                    }
-                });
-
-            return runStream;
-        } catch (error) {
-            console.error('Error creating message:', error);
-            throw error;
+        if (usage && usage.total_tokens) {
+            // 0.4 = TTS-equivalent uplift retained from the prior pricing model.
+            const outputTokens = usage.completion_tokens || 0;
+            const ttsTokens = outputTokens * 0.4;
+            const tokenCount = usage.total_tokens + ttsTokens;
+            saveTokenUsage(
+                userId,
+                skillId,
+                tokenCount,
+                freeMonthlyTokenLimit,
+                monthlyTokenUsage,
+                billingMode,
+                tenantId
+            );
+            emitUsageEvent({
+                userId,
+                eventType: 'ai_tutor_message',
+                metadata: {
+                    skillId,
+                    tenantId,
+                    billingMode,
+                    streamType,
+                    model: models.grokTutor,
+                    tokenCount,
+                    promptTokens: usage.prompt_tokens,
+                    completionTokens: usage.completion_tokens
+                }
+            });
         }
+        return null;
     } catch (error) {
         console.error('Error in createRunStream:', error);
-        socket.emit('error', error);
+        socket.emit('server-error', { msg: error.message });
         return null;
     }
 }
