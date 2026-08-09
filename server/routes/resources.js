@@ -11,8 +11,30 @@ router.use(express.json({ limit: '25mb' }));
 router.use(express.urlencoded({ limit: '25mb', extended: true }));
 router.use(bodyParser.json());
 const isAuthenticated = require('../middlewares/authMiddleware');
+// Server-side AI spend gating (billing context from the session, never the client).
+const spendGate = require('../services/spendGate');
 // DB
 const conn = require('../config/db');
+
+/**
+ * Pre-check for the OpenAI-backed route below: derive the billing context
+ * from the session user and stop out-of-balance calls.
+ */
+async function aiSpendPrecheck(req, res, next) {
+    try {
+        const billingCtx = await spendGate.getBillingContext(
+            req.session.userId
+        );
+        const gate = await spendGate.precheck(billingCtx);
+        if (!gate.allowed) {
+            return res.status(402).json({ error: 'INSUFFICIENT_TOKENS' });
+        }
+        req.billingCtx = billingCtx;
+        next();
+    } catch (err) {
+        next(err);
+    }
+}
 
 /*------------------------------------------
 --------------------------------------------
@@ -317,7 +339,7 @@ let skills;
 let skillsLength;
 let numSourcesRequired;
 let numSourcesForSkillRemaining;
-router.post('/generate-sources', (req, res, next) => {
+router.post('/generate-sources', isAuthenticated, aiSpendPrecheck, (req, res, next) => {
     if (req.session.userName) {
         // The user posting the source.
         userId = req.session.userId;

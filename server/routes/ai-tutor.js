@@ -33,8 +33,6 @@ const {
     createLearningObjectiveAssistantAndThread,
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
-    // To record user's token usage
-    saveTokenUsage,
     getSkillDataByObjectiveId,
     checkIfSkillNeedFileSearch,
     uploadAndPollVectorStores,
@@ -44,6 +42,9 @@ const {
 const { textToSpeech } = require('../utilities/textToSpeech');
 const { writeFile, speechToText } = require('../utilities/speechToText');
 const isAuthenticated = require('../middlewares/authMiddleware');
+// Server-side billing context + usage recording (client-supplied
+// userId/limits/billingMode are ignored).
+const spendGate = require('../services/spendGate');
 
 // Include API key.
 const openai = new OpenAI({
@@ -405,10 +406,13 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
     try {
         const userId = req.session.userId;
         const skillId = req.body.skillId;
-        const freeMonthlyTokenLimit = req.body.freeMonthlyTokenLimit;
-        const monthlyTokenUsage = req.body.monthlyTokenUsage;
-        const billingMode = req.body.billingMode;
-        const tenantId = req.body.tenantId;
+
+        // Billing context comes from the session/DB, not the request body.
+        const billingCtx = await spendGate.getBillingContext(userId);
+        const gate = await spendGate.precheck(billingCtx);
+        if (!gate.allowed) {
+            return res.status(402).json({ error: 'INSUFFICIENT_TOKENS' });
+        }
 
         let transcriptForAssessment = JSON.stringify(
             req.body.transcriptForAssessment
@@ -441,16 +445,14 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
         });
 
         // Save the user's token usage
-        let tokenCount = completion.usage.total_tokens;
-        saveTokenUsage(
-            userId,
-            skillId,
-            tokenCount,
-            freeMonthlyTokenLimit,
-            monthlyTokenUsage,
-            billingMode,
-            tenantId
-        );
+        spendGate.recordUsage(billingCtx, {
+            totalTokens: completion.usage.total_tokens,
+            promptTokens: completion.usage.prompt_tokens,
+            responseTokens: completion.usage.completion_tokens,
+            model: 'gpt-4.1',
+            skillId: skillId,
+            description: 'AI tutor auto-assessment'
+        });
 
         let responseJSON = completion.choices[0].message.content;
         // Convert string to object.       ;
@@ -710,7 +712,7 @@ router.post(
 /**
  * STT (Speech to Text) for tutors
  */
-router.post('/stt/convert', async (req, res, next) => {
+router.post('/stt/convert', isAuthenticated, async (req, res, next) => {
     try {
         // prepare variables
         const userId = req.session.userId;
@@ -721,10 +723,13 @@ router.post('/stt/convert', async (req, res, next) => {
         const learningObjectives = req.body.learningObjectives;
         const audioData = req.body.audioData;
         const tutorType = req.body.tutorType;
-        const freeMonthlyTokenLimit = req.body.freeMonthlyTokenLimit;
-        const monthlyTokenUsage = req.body.monthlyTokenUsage;
-        const billingMode = req.body.billingMode;
-        const tenantId = req.body.tenantId;
+
+        // Billing context comes from the session/DB, not the request body.
+        const billingCtx = await spendGate.getBillingContext(userId);
+        const gate = await spendGate.precheck(billingCtx);
+        if (!gate.allowed) {
+            return res.status(402).json({ error: 'INSUFFICIENT_TOKENS' });
+        }
 
         // Convert Base64 to buffer
         let bufferObj = Buffer.from(
@@ -765,10 +770,7 @@ router.post('/stt/convert', async (req, res, next) => {
                 skillLevel,
                 learningObjectives,
                 message,
-                freeMonthlyTokenLimit,
-                monthlyTokenUsage,
-                billingMode,
-                tenantId
+                billingCtx
             );
         else if (tutorType == 'assessing')
             await sendSpeechToAssessingAI(
@@ -779,9 +781,7 @@ router.post('/stt/convert', async (req, res, next) => {
                 skillLevel,
                 learningObjectives,
                 message,
-                freeMonthlyTokenLimit,
-                monthlyTokenUsage,
-                tenantId
+                billingCtx
             );
 
         //console.log('res.end()');
@@ -794,7 +794,7 @@ router.post('/stt/convert', async (req, res, next) => {
 });
 
 // crete new vector store (NEED TO CHANGE FROM GET TO POST LATER)
-router.get('/new-vector-store', async (req, res, next) => {
+router.get('/new-vector-store', isAuthenticated, async (req, res, next) => {
     const vectorStore = await uploadAndPollVectorStores();
     res.json(vectorStore);
 });
@@ -807,10 +807,7 @@ async function sendSpeechToSocraticAI(
     skillLevel,
     learningObjectives,
     message,
-    freeMonthlyTokenLimit,
-    monthlyTokenUsage,
-    billingMode,
-    tenantId
+    billingCtx
 ) {
     try {
         //console.log('get thread');
@@ -830,10 +827,7 @@ async function sendSpeechToSocraticAI(
             assistantData[0].thread_id,
             assistantData[0].assistant_id,
             messageData,
-            freeMonthlyTokenLimit,
-            monthlyTokenUsage,
-            billingMode,
-            tenantId
+            billingCtx
         );
     } catch (error) {
         console.error(error);
@@ -849,10 +843,7 @@ async function sendSpeechToAssessingAI(
     skillLevel,
     learningObjectives,
     message,
-    freeMonthlyTokenLimit,
-    monthlyTokenUsage,
-    billingMode,
-    tenantId
+    billingCtx
 ) {
     try {
         const assistantData = await getAssessingTutorThread(userId, skillUrl);
@@ -869,10 +860,7 @@ async function sendSpeechToAssessingAI(
             assistantData[0].thread_id,
             assistantData[0].assistant_id,
             messageData,
-            freeMonthlyTokenLimit,
-            monthlyTokenUsage,
-            billingMode,
-            tenantId
+            billingCtx
         );
     } catch (error) {
         console.error(error);

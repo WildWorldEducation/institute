@@ -1,14 +1,36 @@
 const { Server } = require('socket.io');
 const { createRunStream } = require('../utilities/openAIAssistant');
 const { checkIfSkillNeedFileSearch } = require('../utilities/openAIAssistant');
+const { sessionMiddleware } = require('./session');
+const spendGate = require('../services/spendGate');
 
 let io = null;
+
+/**
+ * The authenticated user id from the socket's shared express session, or
+ * null. Identity ALWAYS comes from here - the payload's userId and billing
+ * fields are ignored (they were client-forgeable).
+ */
+function sessionUserId(socket) {
+    const session = socket.request && socket.request.session;
+    return session && session.userId ? session.userId : null;
+}
 
 const createSocket = (server) => {
     io = new Server(server);
 
+    // Share the express-session middleware so socket connections carry the
+    // same cookie session as HTTP requests (RFAB_INSTITUTE_BRIDGE.md sec. 6).
+    io.engine.use(sessionMiddleware);
+
     io.on('connection', (socket) => {
         try {
+            // Reject unauthenticated sockets outright.
+            if (!sessionUserId(socket)) {
+                socket.emit('server-error', { msg: 'Unauthorized' });
+                socket.disconnect(true);
+                return;
+            }
             // user send normal message event
             socket.on('new-message', async (messageData, callback) => {
                 // This has to do with when the user presses "send" with no message.
@@ -92,6 +114,22 @@ const createSocket = (server) => {
                 }
 
                 try {
+                    // Identity + billing derive from the session; the
+                    // payload's userId/limit/billing fields are ignored.
+                    const userId = sessionUserId(socket);
+                    if (!userId) {
+                        socket.emit('server-error', { msg: 'Unauthorized' });
+                        return;
+                    }
+                    const billingCtx =
+                        await spendGate.getBillingContext(userId);
+                    const gate = await spendGate.precheck(billingCtx);
+                    if (!gate.allowed) {
+                        socket.emit('server-error', {
+                            msg: 'You have reached your monthly AI token limit. Please recharge your tokens to use more.'
+                        });
+                        return;
+                    }
                     await createRunStream(
                         messageData.threadId,
                         messageData.assistantId,
@@ -100,12 +138,9 @@ const createSocket = (server) => {
                         socket,
                         instructions,
                         'aiTutor',
-                        messageData.userId,
+                        userId,
                         messageData.skillId,
-                        messageData.freeMonthlyTokenLimit,
-                        messageData.monthlyTokenUsage,
-                        messageData.billingMode,
-                        messageData.tenantId
+                        billingCtx
                     );
                 } catch (err) {
                     console.error('new-message handler error:', err);
@@ -175,6 +210,22 @@ const createSocket = (server) => {
                 }
 
                 try {
+                    // Identity + billing derive from the session; the
+                    // payload's userId/limit/billing fields are ignored.
+                    const userId = sessionUserId(socket);
+                    if (!userId) {
+                        socket.emit('server-error', { msg: 'Unauthorized' });
+                        return;
+                    }
+                    const billingCtx =
+                        await spendGate.getBillingContext(userId);
+                    const gate = await spendGate.precheck(billingCtx);
+                    if (!gate.allowed) {
+                        socket.emit('server-error', {
+                            msg: 'You have reached your monthly AI token limit. Please recharge your tokens to use more.'
+                        });
+                        return;
+                    }
                     await createRunStream(
                         messageData.threadId,
                         messageData.assistantId,
@@ -183,12 +234,9 @@ const createSocket = (server) => {
                         socket,
                         instructions,
                         'aiTutor',
-                        messageData.userId,
+                        userId,
                         messageData.skillId,
-                        messageData.freeMonthlyTokenLimit,
-                        messageData.monthlyTokenUsage,
-                        messageData.billingMode,
-                        messageData.tenantId
+                        billingCtx
                     );
                 } catch (err) {
                     console.error('ask-question handler error:', err);
@@ -230,6 +278,22 @@ const createSocket = (server) => {
                     `);
 
                 try {
+                    // Identity + billing derive from the session; the
+                    // payload's userId/limit/billing fields are ignored.
+                    const userId = sessionUserId(socket);
+                    if (!userId) {
+                        socket.emit('server-error', { msg: 'Unauthorized' });
+                        return;
+                    }
+                    const billingCtx =
+                        await spendGate.getBillingContext(userId);
+                    const gate = await spendGate.precheck(billingCtx);
+                    if (!gate.allowed) {
+                        socket.emit('server-error', {
+                            msg: 'You have reached your monthly AI token limit. Please recharge your tokens to use more.'
+                        });
+                        return;
+                    }
                     await createRunStream(
                         messageData.threadId,
                         messageData.assistantId,
@@ -238,12 +302,9 @@ const createSocket = (server) => {
                         socket,
                         assistantInstruction,
                         'learningObjective',
-                        messageData.userId,
+                        userId,
                         messageData.skillId,
-                        messageData.freeMonthlyTokenLimit,
-                        messageData.monthlyTokenUsage,
-                        messageData.billingMode,
-                        messageData.tenantId
+                        billingCtx
                     );
                 } catch (err) {
                     console.error('new-learning-objective-message handler error:', err);

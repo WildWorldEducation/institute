@@ -8,8 +8,32 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 const { recordUserAction } = require('../utilities/record-user-action');
+const isAuthenticated = require('../middlewares/authMiddleware');
+// Server-side AI spend gating (billing context from the session, never the client).
+const spendGate = require('../services/spendGate');
 // DB
 const conn = require('../config/db');
+
+/**
+ * Shared pre-check for the OpenAI-backed routes below: derive the billing
+ * context from the session user and stop out-of-balance calls.
+ * Attaches the context as req.billingCtx.
+ */
+async function aiSpendPrecheck(req, res, next) {
+    try {
+        const billingCtx = await spendGate.getBillingContext(
+            req.session.userId
+        );
+        const gate = await spendGate.precheck(billingCtx);
+        if (!gate.allowed) {
+            return res.status(402).json({ error: 'INSUFFICIENT_TOKENS' });
+        }
+        req.billingCtx = billingCtx;
+        next();
+    } catch (err) {
+        next(err);
+    }
+}
 
 /*------------------------------------------
 --------------------------------------------
@@ -1629,7 +1653,7 @@ router.delete('/student-mc-questions/:id', (req, res, next) => {
 let mcQuestions = [];
 let skills = [];
 
-router.get('/check-questions', (req, res, next) => {
+router.get('/check-questions', isAuthenticated, aiSpendPrecheck, (req, res, next) => {
     if (req.session.userName) {
         // The user posting the source.
         userId = req.session.userId;
@@ -1707,7 +1731,7 @@ const openai = new OpenAI({
 /**
  * AI Mark essay questions.
  */
-router.post('/mark-essay-question', async (req, res, next) => {
+router.post('/mark-essay-question', isAuthenticated, aiSpendPrecheck, async (req, res, next) => {
     if (req.session.userName) {
         // Error handling to prevent OpenAI from crashing the app
         try {
@@ -1781,7 +1805,7 @@ async function aiMarkEssayQuestionAnswer(question, answer, level) {
 /**
  * AI Mark image questions.
  */
-router.post('/mark-image-question', async (req, res, next) => {
+router.post('/mark-image-question', isAuthenticated, aiSpendPrecheck, async (req, res, next) => {
     if (req.session.userName) {
         // Error handling to prevent OpenAI from crashing the app
         let result;

@@ -42,6 +42,9 @@ const editSelfPermission = require('../middlewares/users/editSelfMiddleware');
 require('dotenv').config();
 const { saveUserAvatarToAWS } = require('../utilities/save-image-to-aws');
 const { sql } = require('googleapis/build/src/apis/sql');
+// RFab bridge: mapped users' token balance lives in the RFab wallet.
+const rfabBridge = require('../services/rfabBridge');
+const { getMapping } = require('../services/identityBridge');
 const userAvatarImagesBucketName = process.env.S3_USER_AVATAR_IMAGE_BUCKET_NAME;
 const bucketRegion = process.env.S3_BUCKET_REGION;
 
@@ -246,9 +249,13 @@ router.post('/new-user/add', async (req, res, next) => {
 });
 
 /*
- * Instructor Self Sign Up
+ * Instructor account creation.
+ * Privileged-role grant: platform-admin only (RFAB_INSTITUTE_BRIDGE.md
+ * section 7) - this endpoint previously let anyone self-create an
+ * instructor account. Instructor signup via Google goes through the
+ * allowlisted accountType on /google-student-signup-attempt.
  */
-router.post('/new-instructor/add', async (req, res, next) => {
+router.post('/new-instructor/add', isAuthenticated, isPlatformAdmin, async (req, res, next) => {
     try {
         // Providing default avatar.
         // Providing it here, as MEDIUMTEXT type in DB not accepting default values.
@@ -431,9 +438,12 @@ router.post('/new-instructor/add', async (req, res, next) => {
 });
 
 /*
- * Editor Self Sign Up
+ * Editor account creation.
+ * Privileged-role grant: platform-admin only (RFAB_INSTITUTE_BRIDGE.md
+ * section 7) - this endpoint previously let anyone self-create an editor
+ * account (editors can modify site content).
  */
-router.post('/new-editor/add', (req, res, next) => {
+router.post('/new-editor/add', isAuthenticated, isPlatformAdmin, (req, res, next) => {
     // Providing default avatar.
     // Providing it here, as MEDIUMTEXT type in DB not accepting default values.
     if (typeof req.body.avatar == 'undefined' || !req.body.avatar) {
@@ -1124,6 +1134,29 @@ router.get('/show/:id', (req, res, next) => {
                     results[0].subjectFilters.push('Life');
                 if (results[0].is_dangerous_ideas_filter == 1)
                     results[0].subjectFilters.push('Dangerous Ideas');
+
+                // Bridge-mapped users hold their balance in the RFab wallet;
+                // serve that instead of the (zeroed-at-migration) local
+                // column. Best-effort: on any bridge problem the local value
+                // is served unchanged.
+                if (rfabBridge.bridgeEnabled()) {
+                    try {
+                        const mapping = await getMapping(req.params.id);
+                        if (mapping) {
+                            const wallet = await rfabBridge.getBalance(
+                                mapping.rfab_user_id
+                            );
+                            if (wallet.ok) {
+                                results[0].tokens = wallet.balance;
+                            }
+                        }
+                    } catch (bridgeErr) {
+                        console.error(
+                            'RFab balance read failed:',
+                            bridgeErr.message
+                        );
+                    }
+                }
 
                 if (results[0].role == 'student') {
                     // Get current year

@@ -41,7 +41,30 @@ const conn = require('../config/db');
 const isAuthenticated = require('../middlewares/authMiddleware');
 const isPlatformAdmin = require('../middlewares/platformAdminMiddleware');
 const checkRoleHierarchy = require('../middlewares/roleMiddleware');
+const rateLimit = require('../middlewares/rateLimitMiddleware');
 const { recordUserAction } = require('../utilities/record-user-action');
+// Server-side AI spend gating (billing context from the session, never the client).
+const spendGate = require('../services/spendGate');
+
+/**
+ * Pre-check for the OpenAI-backed routes below: derive the billing context
+ * from the session user and stop out-of-balance calls.
+ */
+async function aiSpendPrecheck(req, res, next) {
+    try {
+        const billingCtx = await spendGate.getBillingContext(
+            req.session.userId
+        );
+        const gate = await spendGate.precheck(billingCtx);
+        if (!gate.allowed) {
+            return res.status(402).json({ error: 'INSUFFICIENT_TOKENS' });
+        }
+        req.billingCtx = billingCtx;
+        next();
+    } catch (err) {
+        next(err);
+    }
+}
 
 // Helper Function
 const {
@@ -1889,7 +1912,7 @@ const openai = new OpenAI({
 
 // Semantic search route, using the vector table
 // For the search bars in the skill tree and collapsible tree.
-router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
+router.post('/find-with-context', isAuthenticated, aiSpendPrecheck, async (req, res, next) => {
     try {
         const response = await openai.embeddings.create({
             model: 'text-embedding-3-small',
@@ -1951,6 +1974,7 @@ router.get('/url-list', async (req, res) => {
 router.post(
     '/get-recommended-skills',
     isAuthenticated,
+    aiSpendPrecheck,
     async (req, res, next) => {
         try {
             let userId = req.body.userId;
@@ -2030,8 +2054,12 @@ router.post(
     }
 );
 
-// Route for guest users
-router.post('/guest-user/get-recommended-skills', async (req, res, next) => {
+// Route for guest users - anonymous BY DESIGN, so it gets a per-IP rate
+// limit instead of auth (it burns OpenAI tokens on our key).
+router.post(
+    '/guest-user/get-recommended-skills',
+    rateLimit({ windowMs: 60 * 1000, max: 5 }),
+    async (req, res, next) => {
     try {
         let query = req.body.query;
 

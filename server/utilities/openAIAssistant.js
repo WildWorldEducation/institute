@@ -12,6 +12,10 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
+// Server-side spend recording (billing context is derived from the session
+// by the callers - client-supplied limits/billing fields are ignored).
+const spendGate = require('../services/spendGate');
+
 // For uploading files to vector store, for file search feature
 const fs = require('fs');
 
@@ -200,10 +204,7 @@ async function socraticTutorMessage(
     threadId,
     assistantId,
     messageData,
-    freeMonthlyTokenLimit,
-    monthlyTokenUsage,
-    billingMode,
-    tenantId
+    billingCtx
 ) {
     // Add a Message to the Thread
     try {
@@ -261,15 +262,14 @@ async function socraticTutorMessage(
             // 0.4 is hardcoded at the moment, based on pricing and choice of models
             let ttsTokens = outputTokens * 0.4;
             let tokenCount = run.usage.total_tokens + ttsTokens;
-            saveTokenUsage(
-                messageData.userId,
-                messageData.skillId,
-                tokenCount,
-                freeMonthlyTokenLimit,
-                monthlyTokenUsage,
-                billingMode,
-                tenantId
-            );
+            spendGate.recordUsage(billingCtx, {
+                totalTokens: tokenCount,
+                promptTokens: run.usage.prompt_tokens,
+                responseTokens: run.usage.completion_tokens,
+                model: 'gpt-4.1',
+                skillId: messageData.skillId,
+                description: 'AI tutor (socratic, speech)'
+            });
 
             return latestMessage;
         } else {
@@ -420,10 +420,7 @@ async function assessingTutorMessage(
     threadId,
     assistantId,
     messageData,
-    freeMonthlyTokenLimit,
-    monthlyTokenUsage,
-    billingMode,
-    tenantId
+    billingCtx
 ) {
     try {
         // Add a Message to the Thread
@@ -482,15 +479,14 @@ async function assessingTutorMessage(
             // 0.4 is hardcoded at the moment, based on pricing and choice of models
             let ttsTokens = outputTokens * 0.4;
             let tokenCount = run.usage.total_tokens + ttsTokens;
-            saveTokenUsage(
-                messageData.userId,
-                messageData.skillId,
-                tokenCount,
-                freeMonthlyTokenLimit,
-                monthlyTokenUsage,
-                billingMode,
-                tenantId
-            );
+            spendGate.recordUsage(billingCtx, {
+                totalTokens: tokenCount,
+                promptTokens: run.usage.prompt_tokens,
+                responseTokens: run.usage.completion_tokens,
+                model: 'gpt-4.1',
+                skillId: messageData.skillId,
+                description: 'AI tutor (assessing, speech)'
+            });
 
             return latestMessage;
         } else {
@@ -657,10 +653,7 @@ async function createRunStream(
     streamType,
     userId,
     skillId,
-    freeMonthlyTokenLimit,
-    monthlyTokenUsage,
-    billingMode,
-    tenantId
+    billingCtx
 ) {
     try {
         if (!isEmptyMessage) {
@@ -713,15 +706,14 @@ async function createRunStream(
                     let ttsTokens = outputTokens * 0.4;
                     if (runStep.usage.total_tokens) {
                         let tokenCount = runStep.usage.total_tokens + ttsTokens;
-                        saveTokenUsage(
-                            userId,
-                            skillId,
-                            tokenCount,
-                            freeMonthlyTokenLimit,
-                            monthlyTokenUsage,
-                            billingMode,
-                            tenantId
-                        );
+                        spendGate.recordUsage(billingCtx, {
+                            totalTokens: tokenCount,
+                            promptTokens: runStep.usage.prompt_tokens,
+                            responseTokens: runStep.usage.completion_tokens,
+                            model: 'gpt-4.1',
+                            skillId: skillId,
+                            description: `AI tutor stream (${streamType})`
+                        });
                     }
                 })
                 .on('toolCallCreated', (event) =>
@@ -761,59 +753,9 @@ async function createRunStream(
     }
 }
 
-/**
- * Save token usage per user
- * @param {string} userId
- * @param {int} tokenCount
- */
-async function saveTokenUsage(
-    userId,
-    skillId,
-    tokenCount,
-    freeMonthlyTokenLimit,
-    monthlyTokenUsage,
-    billingMode,
-    tenantId
-) {
-    try {
-        // Get current year
-        let year = new Date().getFullYear();
-        // Get current month
-        const monthName = [
-            'January',
-            'February',
-            'March',
-            'April',
-            'May',
-            'June',
-            'July',
-            'August',
-            'September',
-            'October',
-            'November',
-            'December'
-        ];
-        const d = new Date();
-        let month = monthName[d.getMonth()];
-
-
-        // Using a stored procedure to to reduce network calls from 4 to 1
-        await conn.query('CALL save_token_usage(?, ?, ?, ?, ?, ?, ?)', [
-            userId,
-            tokenCount,
-            skillId,
-            year,
-            month,
-            billingMode,
-            tenantId
-        ]);
-
-
-    } catch (error) {
-        console.error('Error in saveTokenUsage:', error);
-        throw error;
-    }
-}
+// NOTE: token-usage recording moved to services/spendGate.js (recordUsage /
+// legacySaveTokenUsage) - the billing context is derived server-side from the
+// session, never from client-supplied fields.
 
 // Get skill data based on thread id
 async function getSkillDataByObjectiveId(objectiveId) {
@@ -906,8 +848,6 @@ module.exports = {
     getLearningObjectiveThread,
     saveLearningObjectiveThread,
     createRunStream,
-    // To record user's token usage
-    saveTokenUsage,
     getSkillDataByObjectiveId,
     checkIfSkillNeedFileSearch,
     uploadAndPollVectorStores,
