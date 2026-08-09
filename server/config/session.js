@@ -7,14 +7,13 @@
  *
  * - Secret comes from env SESSION_SECRET (the app refuses to boot in
  *   production without it).
- * - Sessions are persisted in MariaDB via express-mysql-session (reuses the
- *   app's existing connection pool; the `sessions` table is auto-created),
- *   replacing the leaky in-memory store.
+ * - Sessions are persisted in MariaDB via express-mysql-session (the
+ *   `sessions` table is auto-created), replacing the default in-memory store
+ *   that leaked and lost every session on restart.
  */
 require('dotenv').config();
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
-const conn = require('./db');
 
 const oneDay = 1000 * 60 * 60 * 24;
 
@@ -31,9 +30,17 @@ if (!secret) {
     secret = 'dev-only-insecure-session-secret';
 }
 
-// Reuse the existing mysql pool; express-mysql-session creates the `sessions`
-// table on first run.
-const store = new MySQLStore({ createDatabaseTable: true }, conn);
+// express-mysql-session v3 drives its own mysql2 pool (mysql2 is already a
+// dependency); handing it the app's legacy `mysql`-driver pool would break
+// its promise-based API. It creates the `sessions` table on first run.
+const store = new MySQLStore({
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT) || 3306,
+    user: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+    createDatabaseTable: true
+});
 
 const sessionMiddleware = session({
     secret,
