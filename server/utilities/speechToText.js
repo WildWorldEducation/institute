@@ -1,10 +1,7 @@
 const fs = require('fs');
 const fsPromises = require('fs/promises');
 // Import OpenAI package.
-const { OpenAI } = require('openai');
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
+const { openai, models } = require('../config/aiConfig');
 
 // Write the file to server's disk
 async function writeFile(filePath, bufferObj) {
@@ -19,7 +16,7 @@ async function speechToText(filePath) {
     try {
         const transcription = await openai.audio.transcriptions.create({
             file: fs.createReadStream(filePath),
-            model: 'whisper-1'
+            model: models.stt
         });
 
         // delete file

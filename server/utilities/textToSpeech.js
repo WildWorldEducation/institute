@@ -20,10 +20,7 @@ const s3 = new S3Client({
 });
 
 // Import OpenAI package.
-const { OpenAI } = require('openai');
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
+const { openai, models } = require('../config/aiConfig');
 
 async function textToSpeech(latestMessage, threadID, messageNumber, tutorType) {
     // Different voice for normal and assessing tutors, to differentiate them
@@ -32,7 +29,7 @@ async function textToSpeech(latestMessage, threadID, messageNumber, tutorType) {
 
     const mp3 = await openai.audio.speech.create({
         // Faster option
-        model: 'tts-1',
+        model: models.tts,
         // Choice of voice
         voice: voice,
         input: latestMessage

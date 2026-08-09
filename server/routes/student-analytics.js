@@ -16,6 +16,41 @@ const query = util.promisify(conn.query).bind(conn);
 const {
     getSkillListRootParent
 } = require('../utilities/skill-relate-functions');
+// Middlewares
+const isAuthenticated = require('../middlewares/authMiddleware');
+
+// Every analytics route requires an authenticated session.
+router.use(isAuthenticated);
+
+/*------------------------------------------
+--------------------------------------------
+Authorization guards
+--------------------------------------------
+--------------------------------------------*/
+
+// Roles allowed to view student learning records for oversight.
+// NOTE (follow-up): instructor access is role-gated here rather than checked
+// against the instructor_students mapping for the specific student. A tighter
+// per-student instructor check would be more precise.
+const STUDENT_VIEW_ROLES = ['platform_admin', 'school_admin', 'instructor'];
+
+/**
+ * Guard for route params that identify a student. Allows the request only if
+ * the acting user is the student themselves, or holds a student-view role.
+ */
+function guardStudentParam(req, res, next, value) {
+    const isSelf = String(req.session.userId) === String(value);
+    if (isSelf || STUDENT_VIEW_ROLES.includes(req.session.role)) {
+        return next();
+    }
+    return res.status(403).json({ message: 'Forbidden' });
+}
+
+// :studentId always identifies a student. :userId identifies a student on the
+// record-* mutation routes (and the acting instructor themselves on the
+// all-students aggregate routes, which the self-check also permits).
+router.param('studentId', guardStudentParam);
+router.param('userId', guardStudentParam);
 
 /*------------------------------------------
 --------------------------------------------

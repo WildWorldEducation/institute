@@ -1,12 +1,6 @@
 // Using ChatGPT.
 // Import OpenAI package.
-const { OpenAI } = require('openai');
-// Include API key.
-// To access the .env file.
-require('dotenv').config();
-const openai = new OpenAI({
-    apiKey: process.env.VECTOR_OPEN_API_KEY
-});
+const { openai, models } = require('../config/aiConfig');
 
 // Database connection
 const conn = require('../config/db');
@@ -16,7 +10,7 @@ const conn = require('../config/db');
 
 const getVectorData = async (skillData) => {
     const response = await openai.embeddings.create({
-        model: 'text-embedding-3-small',
+        model: models.embedding,
         input: skillData.name,
         dimensions: 720
     });

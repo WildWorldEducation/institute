@@ -248,7 +248,7 @@ router.post('/new-user/add', async (req, res, next) => {
 /*
  * Instructor Self Sign Up
  */
-router.post('/new-instructor/add', async (req, res, next) => {
+router.post('/new-instructor/add', isAuthenticated, checkRoleHierarchy('platform_admin'), async (req, res, next) => {
     try {
         // Providing default avatar.
         // Providing it here, as MEDIUMTEXT type in DB not accepting default values.
@@ -433,7 +433,7 @@ router.post('/new-instructor/add', async (req, res, next) => {
 /*
  * Editor Self Sign Up
  */
-router.post('/new-editor/add', (req, res, next) => {
+router.post('/new-editor/add', isAuthenticated, checkRoleHierarchy('platform_admin'), (req, res, next) => {
     // Providing default avatar.
     // Providing it here, as MEDIUMTEXT type in DB not accepting default values.
     if (typeof req.body.avatar == 'undefined' || !req.body.avatar) {
@@ -1088,8 +1088,22 @@ router.get(
 );
 
 // Get one specific user.
-router.get('/show/:id', (req, res, next) => {
+router.get('/show/:id', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {
+        // IDOR guard: only the account owner or a staff member
+        // (instructor/editor/school_admin/platform_admin) may view this record.
+        const staffRoles = [
+            'instructor',
+            'editor',
+            'school_admin',
+            'platform_admin'
+        ];
+        const isSelf =
+            String(req.session.userId) === String(req.params.id);
+        const isStaff = staffRoles.includes(req.session.role);
+        if (!isSelf && !isStaff) {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
         res.setHeader('Content-Type', 'application/json');
         // Note: avatar has query param to deal with image caching by browser,
         // in case image is changed.
@@ -1286,12 +1300,40 @@ router.put(
                 req.body.avatar;
             }
 
-            let sqlQuery = `UPDATE users 
-            SET first_name = ${conn.escape(req.body.firstname)}, 
-            last_name = ${conn.escape(req.body.lastname)}, 
-            username = ${conn.escape(req.body.username)}, 
-            email = ${conn.escape(req.body.email)},        
-            role = ${conn.escape(req.body.role)},
+            // Role mass-assignment guard: only a platform_admin may change the
+            // role. Any other caller (including a user editing themselves) has
+            // the role field stripped so they cannot escalate privileges.
+            const roleHierarchy = {
+                partner: 1,
+                student: 1,
+                instructor: 2,
+                editor: 3,
+                school_admin: 3,
+                platform_admin: 4
+            };
+            let allowRoleChange = false;
+            if (
+                typeof req.body.role !== 'undefined' &&
+                req.body.role !== null &&
+                req.body.role !== ''
+            ) {
+                const callerLevel = roleHierarchy[req.session.role] || 0;
+                const requestedLevel = roleHierarchy[req.body.role] || 0;
+                // Only platform_admin may set roles, and never above their own.
+                if (
+                    req.session.role === 'platform_admin' &&
+                    requestedLevel <= callerLevel
+                ) {
+                    allowRoleChange = true;
+                }
+            }
+
+            let sqlQuery = `UPDATE users
+            SET first_name = ${conn.escape(req.body.firstname)},
+            last_name = ${conn.escape(req.body.lastname)},
+            username = ${conn.escape(req.body.username)},
+            email = ${conn.escape(req.body.email)},
+            ${allowRoleChange ? `role = ${conn.escape(req.body.role)},` : ''}
             tenant_id = ${conn.escape(req.body.tenant_id)}
             WHERE id = ${conn.escape(req.params.id)};`;
 

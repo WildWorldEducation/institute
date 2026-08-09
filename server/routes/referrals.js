@@ -8,6 +8,7 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 router.use(bodyParser.json());
+const isAuthenticated = require('../middlewares/authMiddleware');
 // DB
 const conn = require('../config/db');
 const util = require('util');
@@ -68,16 +69,26 @@ router.get('/:partner/list', (req, res, next) => {
  *
  * @return response:
  */
-router.get('/get-receipts/:userId', async (req, res, next) => {
-    let queryString = `
-            SELECT id, url, date, amount, is_partner_compensated
-            FROM user_receipts            
-            WHERE user_id = ${conn.escape(req.params.userId)};
-            `;
+router.get('/get-receipts/:userId', isAuthenticated, async (req, res, next) => {
+    // Ownership: only the receipt owner or a platform admin may read.
+    if (
+        req.session.userId !== req.params.userId &&
+        req.session.role !== 'platform_admin'
+    ) {
+        return res.status(403).json({ message: 'Forbidden' });
+    }
 
-    let result = await query(queryString);
-
-    res.json(result);
+    try {
+        const result = await query(
+            `SELECT id, url, date, amount, is_partner_compensated
+             FROM user_receipts
+             WHERE user_id = ?;`,
+            [req.params.userId]
+        );
+        res.json(result);
+    } catch (err) {
+        next(err);
+    }
 });
 
 /**

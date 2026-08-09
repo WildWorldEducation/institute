@@ -28,39 +28,62 @@ const server = http.createServer(app);
 const { createSocket } = require('./config/socketConfig');
 createSocket(server);
 
-// Allow things to work.
+// Behind a proxy/load balancer in production so secure cookies work.
+app.set('trust proxy', 1);
+
+// CORS. Restrict to an allow-list when ALLOWED_ORIGINS is set; otherwise
+// reflect the request origin (permissive) but always allow credentials so
+// cookie sessions work. Tighten ALLOWED_ORIGINS in production.
 var cors = require('cors');
-app.use(cors());
-// Login with Google.
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+app.use(
+    cors({
+        origin: allowedOrigins.length ? allowedOrigins : true,
+        credentials: true
+    })
+);
+
+// Login with Google (signature verification uses google-auth-library below).
 var jwt = require('jsonwebtoken');
-// Limit effects max image size that can be uploaded.
-app.use(bodyParser.json({ limit: '100mb' }));
+const { OAuth2Client } = require('google-auth-library');
+const googleClientId = process.env.GOOGLE_CLIENT_ID || process.env.GMAIL_CLIENT_ID;
+const googleAuthClient = new OAuth2Client(googleClientId);
+
+// Verify a Google Sign-In credential (JWT). Returns the verified payload or
+// throws — replaces the old jwt.decode() which trusted unsigned tokens.
+async function verifyGoogleCredential(credential) {
+    const ticket = await googleAuthClient.verifyIdToken({
+        idToken: credential,
+        // Only enforce audience when we know our client id.
+        ...(googleClientId ? { audience: googleClientId } : {})
+    });
+    return ticket.getPayload();
+}
+
+// Stripe webhook needs the raw body for signature verification, so parse it as
+// a raw Buffer BEFORE the JSON parsers below (which would otherwise consume it).
+app.use('/tokens/webhook', express.raw({ type: 'application/json' }));
+
+// Body parsing. Limit caps the max base64 image size that can be uploaded;
+// per-upload decoded-size validation happens in the S3 utilities.
+const BODY_LIMIT = process.env.BODY_LIMIT || '15mb';
+app.use(bodyParser.json({ limit: BODY_LIMIT }));
 app.use(
     bodyParser.urlencoded({
-        limit: '100mb',
+        limit: BODY_LIMIT,
         extended: true,
         parameterLimit: 50000
     })
 );
-app.use(express.json({ limit: '100mb' }));
-app.use(express.urlencoded({ limit: '100mb', extended: true }));
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
-const sessions = require('express-session');
-// parsing the incoming data
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-// For Vue Router.
-//var history = require('connect-history-api-fallback');
-const oneDay = 1000 * 60 * 60 * 24;
-app.use(
-    sessions({
-        secret: 'thisismysecrctekeyfhrgfgrfrty84fwir767',
-        saveUninitialized: true,
-        cookie: { maxAge: oneDay },
-        resave: false
-    })
-);
+
+// Sessions (shared with Socket.IO — see config/socketConfig.js).
+const { sessionMiddleware } = require('./config/session');
+app.use(sessionMiddleware);
 
 // For primary key for users table, for Google signup.
 const { v7: uuidv7 } = require('uuid');
@@ -135,13 +158,17 @@ app.use('/tenants', tenants);
 const errorHandlingMiddleware = require('./middlewares/errorHandlingMiddleWare');
 app.use(errorHandlingMiddleware);
 
-// To log reasons for crashes
+// Log the crash reason, then exit so the process supervisor (pm2/systemd)
+// restarts a clean process. Swallowing these leaves the app running in an
+// undefined, possibly corrupted state. Requires a supervisor with autorestart.
 process.on('uncaughtException', (err) => {
     console.error('Uncaught Exception:', err);
+    process.exit(1);
 });
 
-process.on('unhandledRejection', (reason, promise) => {
+process.on('unhandledRejection', (reason) => {
     console.error('Unhandled Rejection:', reason);
+    process.exit(1);
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -154,19 +181,29 @@ const { saveUserAvatarToAWS } = require('./utilities/save-image-to-aws');
  * Login
  */
 
-// Log in with Google.
-let googleUserDetails;
-let googleLoginResult;
-app.post('/google-login-attempt', (req, res) => {
-    let device = req.query.device;
-    googleUserDetails = jwt.decode(req.body.credential);
-    res.redirect('/google-login-attempt?device=' + device);
+// Log in with Google. The verified Google payload is stored per-user in the
+// session (never in a module-level global) between the POST and the GET.
+app.post('/google-login-attempt', async (req, res, next) => {
+    try {
+        let device = req.query.device;
+        req.session.googleUserDetails = await verifyGoogleCredential(
+            req.body.credential
+        );
+        res.redirect('/google-login-attempt?device=' + device);
+    } catch (err) {
+        console.error('Google credential verification failed:', err.message);
+        return res.status(401).json({ account: 'invalid-google-token' });
+    }
 });
 
-app.get('/google-login-attempt', (req, res) => {
+app.get('/google-login-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
+    const googleUserDetails = req.session.googleUserDetails;
+    if (!googleUserDetails) {
+        return res.status(401).json({ account: 'invalid-google-token' });
+    }
     // Get user id based on Google email, if it exists.
-    let sqlQuery = `SELECT * FROM users 
+    let sqlQuery = `SELECT * FROM users
         WHERE email = ${conn.escape(googleUserDetails.email)}
         AND is_deleted = 0;`;
     conn.query(sqlQuery, (err, results) => {
@@ -206,27 +243,39 @@ app.get('/google-login-attempt', (req, res) => {
 
 app.get('/google-login-result', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
-    res.json({ account: googleLoginResult });
+    res.json({ account: req.session.googleLoginResult || '' });
 
-    // Reset the variable.
-    googleLoginResult = '';
+    // Reset for next time.
+    req.session.googleLoginResult = '';
 });
 
 // Sign up with Google.
-app.post('/google-student-signup-attempt', (req, res) => {
-    googleUserDetails = jwt.decode(req.body.credential);
-    googleUserDetails.role = req.query.accountType;
-    const deviceType = req.query.deviceType;
-    const referrerUsername = req.query.referrerUsername;
-    res.redirect(
-        `/google-student-signup-attempt?deviceType=${deviceType}&referrerUsername=${referrerUsername}`
-    );
+app.post('/google-student-signup-attempt', async (req, res) => {
+    try {
+        const payload = await verifyGoogleCredential(req.body.credential);
+        // Students may self-select 'student'; never allow the client to grant a
+        // privileged role here. Only 'student' is accepted for this endpoint.
+        payload.role = 'student';
+        req.session.googleUserDetails = payload;
+        const deviceType = req.query.deviceType;
+        const referrerUsername = req.query.referrerUsername;
+        res.redirect(
+            `/google-student-signup-attempt?deviceType=${deviceType}&referrerUsername=${referrerUsername}`
+        );
+    } catch (err) {
+        console.error('Google credential verification failed:', err.message);
+        return res.status(401).json({ account: 'invalid-google-token' });
+    }
 });
 
 const { unlockInitialSkills } = require('./utilities/unlock-initial-skills');
 app.get('/google-student-signup-attempt', async (req, res, next) => {
     try {
         res.setHeader('Content-Type', 'application/json');
+        const googleUserDetails = req.session.googleUserDetails;
+        if (!googleUserDetails) {
+            return res.status(401).json({ account: 'invalid-google-token' });
+        }
         let deviceType = req.query.deviceType;
         let referrerUsername = req.query.referrerUsername;
      
@@ -264,7 +313,7 @@ app.get('/google-student-signup-attempt', async (req, res, next) => {
                     req.session.userId = results[0].id;
                     req.session.userName = results[0].username;
                     req.session.role = results[0].role;
-                    googleLoginResult = 'new account';
+                    req.session.googleLoginResult = 'new account';
                     if (req.session.role == 'student')
                         if (deviceType == 'mobile') res.redirect('/search');
                         else res.redirect('/skill-tree');
@@ -344,7 +393,7 @@ app.get('/google-student-signup-attempt', async (req, res, next) => {
 
                                 // Unlock skills here
                                 unlockInitialSkills(newStudentId);
-                                googleLoginResult = 'new account';
+                                req.session.googleLoginResult = 'new account';
                                 if (req.session.role == 'student')
                                     if (deviceType == 'mobile')
                                         res.redirect('/search');
@@ -370,16 +419,27 @@ app.get('/google-student-signup-attempt', async (req, res, next) => {
     }
 });
 
-app.post('/google-editor-signup-attempt', (req, res) => {
-    googleUserDetails = jwt.decode(req.body.credential);
-    res.redirect('/google-editor-signup-attempt');
+app.post('/google-editor-signup-attempt', async (req, res) => {
+    try {
+        req.session.googleUserDetails = await verifyGoogleCredential(
+            req.body.credential
+        );
+        res.redirect('/google-editor-signup-attempt');
+    } catch (err) {
+        console.error('Google credential verification failed:', err.message);
+        return res.status(401).json({ account: 'invalid-google-token' });
+    }
 });
 
 app.get('/google-editor-signup-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
+    const googleUserDetails = req.session.googleUserDetails;
+    if (!googleUserDetails) {
+        return res.status(401).json({ account: 'invalid-google-token' });
+    }
     // Check if user already exists.
-    let sqlQuery1 = `SELECT * 
-    FROM users 
+    let sqlQuery1 = `SELECT *
+    FROM users
     WHERE email = ${conn.escape(googleUserDetails.email)};`;
     conn.query(sqlQuery1, (err, results) => {
         try {

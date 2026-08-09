@@ -1,14 +1,35 @@
 const { Server } = require('socket.io');
 const { createRunStream } = require('../utilities/openAIAssistant');
 const { checkIfSkillNeedFileSearch } = require('../utilities/openAIAssistant');
+const { sessionMiddleware } = require('./session');
+const { allowAICall } = require('../utilities/tokenBalance');
 
 let io = null;
+
+// Resolve the authenticated user id from the socket's session. Returns null if
+// the socket is not authenticated (no valid session cookie).
+function authedUserId(socket) {
+    return socket.request.session && socket.request.session.userId
+        ? socket.request.session.userId
+        : null;
+}
 
 const createSocket = (server) => {
     io = new Server(server);
 
+    // Share the Express session with Socket.IO so connections are authenticated
+    // by the same cookie session. Without this, anyone could stream paid model
+    // output anonymously.
+    io.engine.use(sessionMiddleware);
+
     io.on('connection', (socket) => {
         try {
+            // Reject unauthenticated sockets outright.
+            if (!authedUserId(socket)) {
+                socket.emit('server-error', { msg: 'Unauthorized' });
+                socket.disconnect(true);
+                return;
+            }
             // user send normal message event
             socket.on('new-message', async (messageData, callback) => {
                 // This has to do with when the user presses "send" with no message.
@@ -91,6 +112,18 @@ const createSocket = (server) => {
                 Please keep all messages below 1000 characters.`;
                 }
 
+                const balanceOk = await allowAICall({
+                    userId: authedUserId(socket),
+                    tenantId: messageData.tenantId,
+                    billingMode: messageData.billingMode
+                });
+                if (!balanceOk) {
+                    socket.emit('server-error', {
+                        msg: 'Token limit reached. Please top up to continue.'
+                    });
+                    return;
+                }
+
                 try {
                     await createRunStream(
                         messageData.threadId,
@@ -100,7 +133,7 @@ const createSocket = (server) => {
                         socket,
                         instructions,
                         'aiTutor',
-                        messageData.userId,
+                        authedUserId(socket),
                         messageData.skillId,
                         messageData.freeMonthlyTokenLimit,
                         messageData.monthlyTokenUsage,
@@ -174,6 +207,18 @@ const createSocket = (server) => {
                     Please keep all messages below 1000 characters.`;
                 }
 
+                const balanceOk = await allowAICall({
+                    userId: authedUserId(socket),
+                    tenantId: messageData.tenantId,
+                    billingMode: messageData.billingMode
+                });
+                if (!balanceOk) {
+                    socket.emit('server-error', {
+                        msg: 'Token limit reached. Please top up to continue.'
+                    });
+                    return;
+                }
+
                 try {
                     await createRunStream(
                         messageData.threadId,
@@ -183,7 +228,7 @@ const createSocket = (server) => {
                         socket,
                         instructions,
                         'aiTutor',
-                        messageData.userId,
+                        authedUserId(socket),
                         messageData.skillId,
                         messageData.freeMonthlyTokenLimit,
                         messageData.monthlyTokenUsage,
@@ -229,6 +274,18 @@ const createSocket = (server) => {
                     Make sure to have $ delimiters before any science and math strings that can convert to Latex
                     `);
 
+                const balanceOk = await allowAICall({
+                    userId: authedUserId(socket),
+                    tenantId: messageData.tenantId,
+                    billingMode: messageData.billingMode
+                });
+                if (!balanceOk) {
+                    socket.emit('server-error', {
+                        msg: 'Token limit reached. Please top up to continue.'
+                    });
+                    return;
+                }
+
                 try {
                     await createRunStream(
                         messageData.threadId,
@@ -238,7 +295,7 @@ const createSocket = (server) => {
                         socket,
                         assistantInstruction,
                         'learningObjective',
-                        messageData.userId,
+                        authedUserId(socket),
                         messageData.skillId,
                         messageData.freeMonthlyTokenLimit,
                         messageData.monthlyTokenUsage,

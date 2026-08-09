@@ -10,6 +10,10 @@ router.use(bodyParser.json());
 const { recordUserAction } = require('../utilities/record-user-action');
 // DB
 const conn = require('../config/db');
+// Auth + shared AI client / usage tracking.
+const isAuthenticated = require('../middlewares/authMiddleware');
+const { openai, models } = require('../config/aiConfig');
+const { emitUsageEvent } = require('../utilities/rfabUsageTracker');
 
 /*------------------------------------------
 --------------------------------------------
@@ -1538,7 +1542,7 @@ router.get('/student-mc-questions/:id', (req, res, next) => {
         let sqlQuery = `
         SELECT *
         FROM student_mc_questions
-        WHERE id = ${req.params.id};
+        WHERE id = ${conn.escape(req.params.id)};
         `;
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -1694,20 +1698,14 @@ router.get('/check-questions', (req, res, next) => {
     }
 });
 
-// Using ChatGPT.
-// Import OpenAI package.
-const { OpenAI } = require('openai');
-// Include API key.
-// To access the .env file.
+// Using ChatGPT via the shared OpenAI client + model registry (imported at top;
+// billed to the shared RFab key). To access the .env file.
 require('dotenv').config();
-const openai = new OpenAI({
-    apiKey: process.env.CHAT_GPT_API_KEY
-});
 
 /**
  * AI Mark essay questions.
  */
-router.post('/mark-essay-question', async (req, res, next) => {
+router.post('/mark-essay-question', isAuthenticated, async (req, res, next) => {
     if (req.session.userName) {
         // Error handling to prevent OpenAI from crashing the app
         try {
@@ -1721,6 +1719,16 @@ router.post('/mark-essay-question', async (req, res, next) => {
                 answer,
                 level
             );
+
+            // Cross-product usage tracking (allow-listed metadata only).
+            emitUsageEvent({
+                userId: req.session.userId,
+                eventType: 'assessment_marking',
+                metadata: {
+                    feature: 'assessment_marking',
+                    model: models.marking
+                }
+            });
 
             let result = {
                 isCorrect: teacherReview.is_correct,
@@ -1762,7 +1770,7 @@ async function aiMarkEssayQuestionAnswer(question, answer, level) {
                     content: prompt + ` Please respond with a JSON object.`
                 }
             ],
-            model: 'gpt-4o-mini',
+            model: models.marking,
             response_format: { type: 'json_object' }
         });
         let responseJSON = completion.choices[0].message.content;
@@ -1781,7 +1789,7 @@ async function aiMarkEssayQuestionAnswer(question, answer, level) {
 /**
  * AI Mark image questions.
  */
-router.post('/mark-image-question', async (req, res, next) => {
+router.post('/mark-image-question', isAuthenticated, async (req, res, next) => {
     if (req.session.userName) {
         // Error handling to prevent OpenAI from crashing the app
         let result;
@@ -1796,6 +1804,16 @@ router.post('/mark-image-question', async (req, res, next) => {
                 answer,
                 level
             );
+
+            // Cross-product usage tracking (allow-listed metadata only).
+            emitUsageEvent({
+                userId: req.session.userId,
+                eventType: 'assessment_marking',
+                metadata: {
+                    feature: 'assessment_marking',
+                    model: models.marking
+                }
+            });
 
             result = {
                 isCorrect: teacherReview.is_correct,
@@ -1842,7 +1860,7 @@ async function aiMarkImageQuestionAnswer(question, answer, level) {
         }
 
         const completion = await openai.chat.completions.create({
-            model: 'gpt-4o-mini',
+            model: models.marking,
             messages: [
                 {
                     role: 'system',

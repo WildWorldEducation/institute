@@ -14,8 +14,6 @@ const util = require('util');
 // convert callback
 const query = util.promisify(conn.query).bind(conn);
 const fs = require('fs');
-// Import OpenAI package.
-const { OpenAI } = require('openai');
 const {
     // Shared
     getMessagesList,
@@ -44,11 +42,13 @@ const {
 const { textToSpeech } = require('../utilities/textToSpeech');
 const { writeFile, speechToText } = require('../utilities/speechToText');
 const isAuthenticated = require('../middlewares/authMiddleware');
-
-// Include API key.
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
+const rateLimit = require('../middlewares/rateLimitMiddleware');
+// Shared OpenAI client + model registry (billed to the shared RFab key).
+const { openai, models } = require('../config/aiConfig');
+// Server-side token-balance gate (authoritative, not client-supplied).
+const { allowAICall } = require('../utilities/tokenBalance');
+// Cross-product usage tracking (fire-and-forget, allow-listed metadata only).
+const { emitUsageEvent } = require('../utilities/rfabUsageTracker');
 
 // Socratic tutor ---------------------
 /**
@@ -425,11 +425,19 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
                     which consists of the following learning objectives: ${req.body.learningObjectives}.
                     
                     Please return only the percentage of correct answers, and nothing else.
-                    Please return a single JSON object containing the result, named "result".                                        
+                    Please return a single JSON object containing the result, named "result".
                     `;
 
+        // Authoritative server-side balance gate before any paid model call.
+        const allowed = await allowAICall({ userId, tenantId, billingMode });
+        if (!allowed) {
+            return res
+                .status(402)
+                .json({ message: 'Token limit reached.' });
+        }
+
         const completion = await openai.chat.completions.create({
-            model: 'gpt-4.1',
+            model: models.grading,
             response_format: { type: 'json_object' },
             messages: [
                 { role: 'system', content: 'You are a helpful assistant.' },
@@ -451,6 +459,20 @@ router.post('/assessing/assess', isAuthenticated, async (req, res, next) => {
             billingMode,
             tenantId
         );
+
+        // Cross-product usage tracking (allow-listed metadata only).
+        emitUsageEvent({
+            userId,
+            eventType: 'ai_tutor_message',
+            metadata: {
+                feature: 'mastery_grading',
+                model: models.grading,
+                skillId,
+                billingMode,
+                tenantId,
+                tokenCount
+            }
+        });
 
         let responseJSON = completion.choices[0].message.content;
         // Convert string to object.       ;
@@ -710,91 +732,150 @@ router.post(
 /**
  * STT (Speech to Text) for tutors
  */
-router.post('/stt/convert', async (req, res, next) => {
-    try {
-        // prepare variables
-        const userId = req.session.userId;
-        const skillUrl = req.body.skillUrl;
-        const skillName = req.body.skillName;
-        const skillId = req.body.skillId;
-        const skillLevel = req.body.skillLevel;
-        const learningObjectives = req.body.learningObjectives;
-        const audioData = req.body.audioData;
-        const tutorType = req.body.tutorType;
-        const freeMonthlyTokenLimit = req.body.freeMonthlyTokenLimit;
-        const monthlyTokenUsage = req.body.monthlyTokenUsage;
-        const billingMode = req.body.billingMode;
-        const tenantId = req.body.tenantId;
+// Cap on decoded audio payload written to disk (Whisper's own limit is 25 MB).
+const MAX_STT_AUDIO_BYTES = 25 * 1024 * 1024;
 
-        // Convert Base64 to buffer
-        let bufferObj = Buffer.from(
-            audioData.replace('data:audio/webm; codecs=opus;base64,', ''),
-            'base64'
-        );
-        // Generate unique filename
-        function makeName(length) {
-            let result = '';
-            const characters =
-                'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            const charactersLength = characters.length;
-            let counter = 0;
-            while (counter < length) {
-                result += characters.charAt(
-                    Math.floor(Math.random() * charactersLength)
-                );
-                counter += 1;
+router.post(
+    '/stt/convert',
+    isAuthenticated,
+    rateLimit({ windowMs: 60000, max: 10, keyPrefix: 'stt' }),
+    async (req, res, next) => {
+        // Declared out here so the finally block can always clean up.
+        let filePath;
+        try {
+            // prepare variables
+            const userId = req.session.userId;
+            const skillUrl = req.body.skillUrl;
+            const skillName = req.body.skillName;
+            const skillId = req.body.skillId;
+            const skillLevel = req.body.skillLevel;
+            const learningObjectives = req.body.learningObjectives;
+            const audioData = req.body.audioData;
+            const tutorType = req.body.tutorType;
+            const freeMonthlyTokenLimit = req.body.freeMonthlyTokenLimit;
+            const monthlyTokenUsage = req.body.monthlyTokenUsage;
+            const billingMode = req.body.billingMode;
+            const tenantId = req.body.tenantId;
+
+            // Authoritative server-side balance gate before any paid model call.
+            const allowed = await allowAICall({
+                userId,
+                tenantId,
+                billingMode
+            });
+            if (!allowed) {
+                return res
+                    .status(402)
+                    .json({ message: 'Token limit reached.' });
             }
-            return result;
+
+            // Convert Base64 to buffer
+            let bufferObj = Buffer.from(
+                audioData.replace('data:audio/webm; codecs=opus;base64,', ''),
+                'base64'
+            );
+
+            // Reject oversized uploads before touching disk.
+            if (bufferObj.length > MAX_STT_AUDIO_BYTES) {
+                return res
+                    .status(413)
+                    .json({ message: 'Audio file too large.' });
+            }
+            // Generate unique filename
+            function makeName(length) {
+                let result = '';
+                const characters =
+                    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                const charactersLength = characters.length;
+                let counter = 0;
+                while (counter < length) {
+                    result += characters.charAt(
+                        Math.floor(Math.random() * charactersLength)
+                    );
+                    counter += 1;
+                }
+                return result;
+            }
+            let uniqueName = makeName(10);
+            filePath =
+                './public/audio/tempSpeechRecordings/' + uniqueName + '.webm';
+
+            await writeFile(filePath, bufferObj);
+
+            let messageObject = await speechToText(filePath);
+            let message = messageObject.text;
+            //console.log(message);
+
+            if (tutorType == 'socratic')
+                await sendSpeechToSocraticAI(
+                    userId,
+                    skillId,
+                    skillUrl,
+                    skillName,
+                    skillLevel,
+                    learningObjectives,
+                    message,
+                    freeMonthlyTokenLimit,
+                    monthlyTokenUsage,
+                    billingMode,
+                    tenantId
+                );
+            else if (tutorType == 'assessing')
+                await sendSpeechToAssessingAI(
+                    userId,
+                    skillId,
+                    skillUrl,
+                    skillName,
+                    skillLevel,
+                    learningObjectives,
+                    message,
+                    freeMonthlyTokenLimit,
+                    monthlyTokenUsage,
+                    tenantId
+                );
+
+            // Cross-product usage tracking (allow-listed metadata only —
+            // NEVER the transcript itself).
+            emitUsageEvent({
+                userId,
+                eventType: 'stt',
+                metadata: {
+                    feature: 'speech_to_text',
+                    model: models.stt,
+                    tutorType,
+                    skillId,
+                    skillUrl,
+                    billingMode,
+                    tenantId
+                }
+            });
+
+            //console.log('res.end()');
+
+            res.end();
+        } catch (error) {
+            console.error(error);
+            next(error);
+        } finally {
+            // Always remove the attacker-controlled temp file if it survived
+            // (speechToText unlinks on its own paths, but guard against any
+            // early throw between write and transcription).
+            try {
+                if (filePath && fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                }
+            } catch (cleanupErr) {
+                console.error(
+                    'Error removing temp STT audio file:',
+                    cleanupErr
+                );
+            }
         }
-        let uniqueName = makeName(10);
-        let filePath =
-            './public/audio/tempSpeechRecordings/' + uniqueName + '.webm';
-
-        await writeFile(filePath, bufferObj);
-
-        let messageObject = await speechToText(filePath);
-        let message = messageObject.text;
-        //console.log(message);
-
-        if (tutorType == 'socratic')
-            await sendSpeechToSocraticAI(
-                userId,
-                skillId,
-                skillUrl,
-                skillName,
-                skillLevel,
-                learningObjectives,
-                message,
-                freeMonthlyTokenLimit,
-                monthlyTokenUsage,
-                billingMode,
-                tenantId
-            );
-        else if (tutorType == 'assessing')
-            await sendSpeechToAssessingAI(
-                userId,
-                skillId,
-                skillUrl,
-                skillName,
-                skillLevel,
-                learningObjectives,
-                message,
-                freeMonthlyTokenLimit,
-                monthlyTokenUsage,
-                tenantId
-            );
-
-        //console.log('res.end()');
-
-        res.end();
-    } catch (error) {
-        console.error(error);
-        next(error);
     }
-});
+);
 
 // crete new vector store (NEED TO CHANGE FROM GET TO POST LATER)
-router.get('/new-vector-store', async (req, res, next) => {
+router.get('/new-vector-store', isAuthenticated, async (req, res, next) => {
     const vectorStore = await uploadAndPollVectorStores();
     res.json(vectorStore);
 });

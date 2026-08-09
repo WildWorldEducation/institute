@@ -80,11 +80,11 @@ router.get('/list', (req, res, next) => {
 router.get('/show/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT * 
+        let sqlQuery = `SELECT *
             FROM new_skills_awaiting_approval
-            WHERE id = ${req.params.id};`;
+            WHERE id = ?;`;
 
-        conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, [req.params.id], (err, results) => {
             try {
                 if (err) {
                     throw err;

@@ -5,12 +5,10 @@ const util = require('util');
 // convert callback
 const query = util.promisify(conn.query).bind(conn);
 
-// Import OpenAI package.
-const { OpenAI } = require('openai');
-// Include API key.
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
+// Shared OpenAI client (uses the RFab key when set) and model config.
+const { openai, models } = require('../config/aiConfig');
+// RFab usage-event tracking (tracking-only; never sends user content).
+const { emitUsageEvent } = require('./rfabUsageTracker');
 
 // For uploading files to vector store, for file search feature
 const fs = require('fs');
@@ -139,7 +137,7 @@ async function createSocraticAssistant(
             name: 'Socratic Tutor',
             instructions: instructions,
             tools: isFileSearchSkill ? [{ type: 'file_search' }] : [],
-            model: 'gpt-4.1'
+            model: models.tutor
         });
         return assistant;
     } catch (error) {
@@ -358,7 +356,7 @@ async function createAssessingAssistant(
             name: 'Assessment Tutor',
             instructions: instructions,
             tools: isFileSearchSkill ? [{ type: 'file_search' }] : [],
-            model: 'gpt-4.1'
+            model: models.tutor
         });
         return assistant;
     } catch (error) {
@@ -585,7 +583,7 @@ async function createLearningObjectiveAssistant(
             name: 'Learning Objective Tutor',
             instructions: instructions,
             tools: isFileSearchSkill ? [{ type: 'file_search' }] : [],
-            model: 'gpt-4.1'
+            model: models.tutor
         });
         return assistant;
     } catch (error) {
@@ -722,6 +720,21 @@ async function createRunStream(
                             billingMode,
                             tenantId
                         );
+                        // Mirror usage to RFab tracking (allow-listed metadata only).
+                        emitUsageEvent({
+                            userId,
+                            eventType: 'ai_tutor_message',
+                            metadata: {
+                                skillId,
+                                tenantId,
+                                billingMode,
+                                streamType,
+                                model: models.tutor,
+                                tokenCount,
+                                promptTokens: runStep.usage.prompt_tokens,
+                                completionTokens: runStep.usage.completion_tokens
+                            }
+                        });
                     }
                 })
                 .on('toolCallCreated', (event) =>

@@ -1873,8 +1873,10 @@ router.get('/name-list-old', (req, res, next) => {
 });
 
 // Advanced / Semantic Search Feature.
-// Import OpenAI package.
-const { OpenAI } = require('openai');
+// Shared OpenAI client + model config.
+const { openai, models } = require('../config/aiConfig');
+const rateLimit = require('../middlewares/rateLimitMiddleware');
+const { emitUsageEvent } = require('../utilities/rfabUsageTracker');
 const { path } = require('pdfkit');
 const {
     findInaccessiblePath,
@@ -1882,17 +1884,13 @@ const {
 } = require('../utilities/skill-relate-functions');
 // To access the .env file.
 require('dotenv').config();
-// Include API key.
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
 
 // Semantic search route, using the vector table
 // For the search bars in the skill tree and collapsible tree.
 router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
     try {
         const response = await openai.embeddings.create({
-            model: 'text-embedding-3-small',
+            model: models.embedding,
             input: req.body.input,
             dimensions: 720
         });
@@ -1975,7 +1973,7 @@ router.post(
                         content: prompt + ` Please respond with a JSON object.`
                     }
                 ],
-                model: 'gpt-4o',
+                model: models.recommend,
                 response_format: { type: 'json_object' }
             });
             let responseJSON = subject.choices[0].message.content;
@@ -1987,7 +1985,7 @@ router.post(
             let subjectObject = JSON.parse(responseJSON);
 
             const response = await openai.embeddings.create({
-                model: 'text-embedding-3-small',
+                model: models.embedding,
                 input: subjectObject.subjectResponse,
                 dimensions: 720
             });
@@ -2031,7 +2029,10 @@ router.post(
 );
 
 // Route for guest users
-router.post('/guest-user/get-recommended-skills', async (req, res, next) => {
+router.post(
+    '/guest-user/get-recommended-skills',
+    rateLimit({ windowMs: 60000, max: 5, keyPrefix: 'guest-recommend' }),
+    async (req, res, next) => {
     try {
         let query = req.body.query;
 
@@ -2053,7 +2054,7 @@ router.post('/guest-user/get-recommended-skills', async (req, res, next) => {
                     content: prompt + ` Please respond with a JSON object.`
                 }
             ],
-            model: 'gpt-4o',
+            model: models.recommend,
             response_format: { type: 'json_object' }
         });
         let responseJSON = subject.choices[0].message.content;
@@ -2065,12 +2066,19 @@ router.post('/guest-user/get-recommended-skills', async (req, res, next) => {
         let subjectObject = JSON.parse(responseJSON);
 
         const response = await openai.embeddings.create({
-            model: 'text-embedding-3-small',
+            model: models.embedding,
             input: subjectObject.subjectResponse,
             dimensions: 720
         });
 
         const inputVector = response.data[0].embedding;
+
+        // Track guest usage of the paid recommendation pipeline (no user content).
+        emitUsageEvent({
+            userId: null,
+            eventType: 'guest_recommend',
+            metadata: { feature: 'guest_recommend', model: models.recommend }
+        });
 
         let sqlQuery = `SELECT skills.id, skills.name, skills.url, skills.level, skills.parent,
         CONCAT('https://${skillIconBucketName}.s3.amazonaws.com/', skills.url) AS icon_url

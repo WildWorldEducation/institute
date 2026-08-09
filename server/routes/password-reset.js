@@ -530,7 +530,9 @@ router.post('/forgot-password', (req, res, next) => {
                         }
                     });
                 } else {
-                    res.status(404).json({ status: 'not found' });
+                    // Unknown email: return the SAME generic success response
+                    // so callers cannot enumerate which emails have accounts.
+                    genericSuccess();
                 }
             }
         } catch (err) {
@@ -545,10 +547,10 @@ router.post('/forgot-password', (req, res, next) => {
  */
 router.get('/reset-password/:token', (req, res, next) => {
     const { token } = req.params;
-    // Check if the token exists and is still valid
-    let usersSqlQuery = `SELECT * 
-    FROM users 
-    WHERE reset_password_token = ${conn.escape(token)}
+    // Check if the token exists and is still valid. Compare against the stored hash.
+    let usersSqlQuery = `SELECT *
+    FROM users
+    WHERE reset_password_token = ${conn.escape(hashToken(token))}
     AND is_deleted = 0;`;
 
     conn.query(usersSqlQuery, (err, results) => {
@@ -562,12 +564,10 @@ router.get('/reset-password/:token', (req, res, next) => {
                 let oneHour = 60 * 60 * 1000;
                 // Check if it is less than one hour old.
                 if (new Date() - dateTime < oneHour) {
+                    // Do not leak PII (email / real name) in the lookup response;
+                    // return only what the reset form needs.
                     res.status(200).json({
-                        status: 'valid',
-                        username: results[0].username,
-                        firstName: results[0].first_name,
-                        lastName: results[0].last_name,
-                        email: results[0].email
+                        status: 'valid'
                     });
                 } else {
                     res.status(404).json({ status: 'expired' });
@@ -584,13 +584,15 @@ router.get('/reset-password/:token', (req, res, next) => {
 /*
  * When user submits the new password form.
  */
-router.post('/reset-password', (req, res, next) => {
+router.post('/reset-password', rateLimit({ windowMs: 15 * 60 * 1000, max: 5, keyPrefix: 'pwreset' }), (req, res, next) => {
     const { token, password } = req.body;
 
-    // Check if the token exists and is still valid
-    let usersSqlQuery = `SELECT * 
-    FROM users 
-    WHERE reset_password_token = ${conn.escape(token)}
+    const hashedToken = hashToken(token);
+
+    // Check if the token exists and is still valid. Compare against the stored hash.
+    let usersSqlQuery = `SELECT id, reset_password_token_datetime
+    FROM users
+    WHERE reset_password_token = ${conn.escape(hashedToken)}
     AND is_deleted = 0;`;
     conn.query(usersSqlQuery, (err, results) => {
         try {
@@ -599,19 +601,31 @@ router.post('/reset-password', (req, res, next) => {
             }
 
             if (results.length > 0) {
+                // Enforce the 1-hour token expiry on submit (not just on the GET).
+                const dateTime = results[0].reset_password_token_datetime;
+                const oneHour = 60 * 60 * 1000;
+                if (!dateTime || new Date() - dateTime >= oneHour) {
+                    return res
+                        .status(404)
+                        .json({ status: 'Invalid or expired token' });
+                }
+
                 // Hash the password.
                 bcrypt.hash(
                     password,
                     saltRounds,
                     function (err, hashedPassword) {
                         if (err) {
-                            console.log(err);
+                            return next(err);
                         }
 
-                        // Find the user with the given token and update their password
+                        // Update the password AND clear the token in one statement so
+                        // the token is single-use (cannot be replayed).
                         let updatePasswordSqlQuery = `UPDATE users
-                        SET password = ${conn.escape(hashedPassword)}
-                        WHERE reset_password_token = ${conn.escape(token)};`;
+                        SET password = ${conn.escape(hashedPassword)},
+                        reset_password_token = '',
+                        reset_password_token_datetime = NULL
+                        WHERE reset_password_token = ${conn.escape(hashedToken)};`;
 
                         conn.query(updatePasswordSqlQuery, (err) => {
                             try {
@@ -619,26 +633,8 @@ router.post('/reset-password', (req, res, next) => {
                                     throw err;
                                 }
 
-                                // Remove the reset token after the password is updated
-                                let removeTokenSqlQuery = `UPDATE users
-                                SET reset_password_token = '', 
-                                reset_password_token_datetime = NULL
-                                WHERE reset_password_token = ${conn.escape(
-                                    token
-                                )};`;
-
-                                conn.query(removeTokenSqlQuery, (err) => {
-                                    try {
-                                        if (err) {
-                                            throw err;
-                                        }
-
-                                        res.status(200).json({
-                                            status: 'Password updated successfully'
-                                        });
-                                    } catch (err) {
-                                        next(err);
-                                    }
+                                res.status(200).json({
+                                    status: 'Password updated successfully'
                                 });
                             } catch (err) {
                                 next(err);

@@ -3,9 +3,11 @@ function checkRoleHierarchy(requiredRole) {
         if (req.session && req.session.role) {
             const userRole = req.session.role;
             const roleHierarchy = {
+                partner: 1,
                 student: 1,
                 instructor: 2,
                 editor: 3,
+                school_admin: 3,
                 platform_admin: 4
             };
 

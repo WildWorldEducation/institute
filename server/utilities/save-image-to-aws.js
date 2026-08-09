@@ -1,11 +1,74 @@
 // S3 needs access to the .env variables
+//
+// NOTE ON PRIVATE BUCKETS / READ URLS:
+// These upload functions still produce objects served via public bucket URLs.
+// If/when the buckets are flipped to private, every caller that reads an image
+// must switch from the public URL to the `getSignedReadUrl` helper exported
+// below. That helper depends on `@aws-sdk/s3-request-presigner`, which is NOT
+// currently a dependency (only `@aws-sdk/client-s3` is installed). Install it
+// first (`npm install @aws-sdk/s3-request-presigner`) before relying on signed
+// reads. This module intentionally loads even when the package is absent.
 const {
     S3Client,
     PutObjectCommand,
     CopyObjectCommand,
+    GetObjectCommand,
     waitUntilObjectExists
 } = require('@aws-sdk/client-s3');
 require('dotenv').config();
+
+// Guarded require so the module still loads when the presigner package is not
+// installed. getSignedReadUrl throws a clear error if it is used without it.
+let presigner;
+try {
+    presigner = require('@aws-sdk/s3-request-presigner');
+} catch {
+    presigner = null;
+}
+
+// Only JPEG and PNG data URIs are accepted.
+const ALLOWED_IMAGE_MIME_REGEX = /^data:(image\/(jpeg|png));base64,/;
+
+// Maximum decoded image size in bytes (default 5 MB).
+const MAX_IMAGE_BYTES = Number(process.env.S3_MAX_IMAGE_BYTES) || 5 * 1024 * 1024;
+
+/**
+ * Validate a base64 image data URI: enforce allowed MIME type (jpeg/png) and
+ * the decoded-size cap. Returns the matched contentType.
+ *
+ * @param {string} dataUri - the incoming `data:image/...;base64,...` string
+ * @return {string} the detected content type (e.g. 'image/jpeg')
+ */
+const validateImageDataUri = (dataUri) => {
+    const match =
+        typeof dataUri === 'string' && dataUri.match(ALLOWED_IMAGE_MIME_REGEX);
+    if (!match) {
+        throw new Error(
+            'Invalid Base64 image format or unsupported image type (only JPEG and PNG are allowed)'
+        );
+    }
+
+    enforceImageSize(dataUri);
+
+    return match[1]; // e.g. 'image/jpeg' or 'image/png'
+};
+
+/**
+ * Enforce the decoded-size cap on a base64 data URI (or raw base64 string)
+ * BEFORE any decode/sharp/PutObject work is done.
+ *
+ * @param {string} dataUri - base64 data URI or raw base64 payload
+ */
+const enforceImageSize = (dataUri) => {
+    const base64 = String(dataUri).replace(/^data:image\/\w+;base64,/, '');
+    const decodedBytes = Math.ceil((base64.length * 3) / 4);
+    if (decodedBytes > MAX_IMAGE_BYTES) {
+        throw new Error(
+            `Image exceeds maximum allowed size of ${MAX_IMAGE_BYTES} bytes (decoded ~${decodedBytes} bytes)`
+        );
+    }
+};
+
 const skillInfoboxImagesBucketName =
     process.env.S3_SKILL_INFOBOX_IMAGE_BUCKET_NAME;
 const userAvatarImageThumbnailsBucketName =
@@ -38,6 +101,9 @@ const saveImageToAWS = async (image, skillUrl, editUUID) => {
     if (!image) {
         return null;
     }
+    // Validate MIME type (jpeg/png only) and enforce size cap before decoding.
+    validateImageDataUri(image);
+
     // Get file from Base64 encoding (client sends as base64)
     let fileData = Buffer.from(
         image.replace(/^data:image\/\w+;base64,/, ''),
@@ -98,6 +164,9 @@ const saveIconToAWS = async (icon, skillUrl, editUUID) => {
     if (!icon) {
         return null;
     }
+    // Validate MIME type (jpeg/png only) and enforce size cap before decoding.
+    validateImageDataUri(icon);
+
     // Get file from Base64 encoding (client sends as base64)
     let fileData = Buffer.from(
         icon.replace(/^data:image\/\w+;base64,/, ''),
@@ -173,6 +242,9 @@ const saveBase64ImageToBucket = async (base64Image, imageName, bucket) => {
         );
     }
 
+    // Enforce the decoded-size cap before decoding / uploading.
+    enforceImageSize(base64Image);
+
     const contentType = match[1]; // e.g., 'image/jpeg' or 'image/png'
     const fileData = Buffer.from(
         base64Image.replace(/^data:image\/\w+;base64,/, ''),
@@ -182,7 +254,6 @@ const saveBase64ImageToBucket = async (base64Image, imageName, bucket) => {
     if (!imageName) throw new Error('Image name is required');
     if (!bucket) throw new Error('Bucket name is required');
 
-    console.log(fileData);
     const imageData = {
         Key: imageName,
         Body: fileData,
@@ -216,6 +287,9 @@ const saveUserAvatarToAWS = async (userId, base64Image) => {
             'Invalid Base64 image format or unsupported image type (only JPEG and PNG are allowed)'
         );
     }
+
+    // Enforce the decoded-size cap before decoding / uploading.
+    enforceImageSize(base64Image);
 
     const contentType = match[1]; // 'image/jpeg' or 'image/png'
     const fileData = Buffer.from(
@@ -280,6 +354,30 @@ const updateImage = async (sendImageData) => {
     await s3.send(command);
 };
 
+/**
+ * Generate a presigned URL for READING (GET) an object. Use this to migrate
+ * callers off public bucket URLs when the buckets are flipped to private.
+ *
+ * Requires the `@aws-sdk/s3-request-presigner` package to be installed.
+ *
+ * @param {string} bucket - the S3 bucket name
+ * @param {string} key - the object key within the bucket
+ * @param {number} [expiresIn=3600] - URL lifetime in seconds
+ * @return {Promise<string>} a time-limited signed GET URL
+ */
+const getSignedReadUrl = async (bucket, key, expiresIn = 3600) => {
+    if (!presigner) {
+        throw new Error(
+            'Signed read URLs require the "@aws-sdk/s3-request-presigner" package. Install it first: npm install @aws-sdk/s3-request-presigner'
+        );
+    }
+    if (!bucket) throw new Error('Bucket name is required');
+    if (!key) throw new Error('Object key is required');
+
+    const command = new GetObjectCommand({ Bucket: bucket, Key: key });
+    return presigner.getSignedUrl(s3, command, { expiresIn });
+};
+
 module.exports = {
     saveImageToAWS,
     updateSkillIcon,
@@ -287,5 +385,6 @@ module.exports = {
     saveUserAvatarToAWS,
     saveIconToAWS,
     scaleIcon,
-    updateImage
+    updateImage,
+    getSignedReadUrl
 };
