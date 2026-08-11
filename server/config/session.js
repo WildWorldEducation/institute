@@ -37,7 +37,13 @@ const sessionMiddleware = session({
         maxAge: oneDay,
         httpOnly: true,
         sameSite: 'lax',
-        secure: isProd
+        // The app runs plain HTTP behind CloudFront (TLS terminates at the CDN),
+        // so the origin never sees a "secure" connection. With secure:true,
+        // Express refused to SET the session cookie, which broke login (the
+        // session didn't survive the Google POST -> redirect -> GET). Viewers
+        // are always HTTPS via CloudFront; httpOnly + sameSite still protect it.
+        // Override with COOKIE_SECURE=true if X-Forwarded-Proto is ever wired up.
+        secure: process.env.COOKIE_SECURE === 'true'
     }
 });
 
