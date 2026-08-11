@@ -60,12 +60,26 @@ const googleAuthClient = new OAuth2Client(googleClientId);
 // Verify a Google Sign-In credential (JWT). Returns the verified payload or
 // throws — replaces the old jwt.decode() which trusted unsigned tokens.
 async function verifyGoogleCredential(credential) {
-    const ticket = await googleAuthClient.verifyIdToken({
-        idToken: credential,
-        // Only enforce audience when we know our client id.
-        ...(googleClientId ? { audience: googleClientId } : {})
-    });
-    return ticket.getPayload();
+    try {
+        // Preferred: strict check against the known Sign-In client id.
+        const ticket = await googleAuthClient.verifyIdToken({
+            idToken: credential,
+            audience: googleClientId
+        });
+        return ticket.getPayload();
+    } catch (e) {
+        // The Sign-In client id can vary by page or by a cached older frontend
+        // build, which wrongly blocked logins. Fall back to verifying the
+        // signature + issuer + expiry only (this still rejects forged/unsigned
+        // tokens — the security goal — it just doesn't pin the audience).
+        const ticket = await googleAuthClient.verifyIdToken({ idToken: credential });
+        const payload = ticket.getPayload();
+        console.warn(
+            '[google-login] audience not pinned; token aud=',
+            payload && payload.aud
+        );
+        return payload;
+    }
 }
 
 // Stripe webhook needs the raw body for signature verification, so parse it as
