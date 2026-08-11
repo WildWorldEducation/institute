@@ -203,6 +203,8 @@ async function streamTutorTurn({
                     threadId
                 )
         });
+        // Persist the assistant reply BEFORE run-end so any reload sees it.
+        if (result.content) await saveMessage(threadId, 'assistant', result.content);
         socket.emit('run-end');
     } catch (err) {
         console.error('[grokTutor] stream error:', err.message);
@@ -210,7 +212,6 @@ async function streamTutorTurn({
         return { text: '', usage: null };
     }
 
-    if (result.content) await saveMessage(threadId, 'assistant', result.content);
     return { text: result.content, usage: result.usage };
 }
 

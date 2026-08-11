@@ -26,23 +26,21 @@ const fs = require('fs');
  */
 async function getMessagesList(threadId) {
     try {
-        const rows = await query(
-            `SELECT id, role, content, created_at FROM ai_tutor_messages
-             WHERE thread_id = ? ORDER BY id DESC`,
-            [threadId]
-        );
-        return {
-            data: rows.map((r) => ({
-                id: String(r.id),
-                role: r.role,
-                created_at: r.created_at
-                    ? Math.floor(new Date(r.created_at).getTime() / 1000)
-                    : undefined,
+        // grokTutor.loadHistory returns the conversation oldest-first from the DB
+        // table if it exists, otherwise from in-memory history. Reverse to
+        // newest-first to match the OpenAI messages.list shape the routes expect.
+        const history = await grokTutor.loadHistory(threadId); // [{ role, content }]
+        const data = history
+            .slice()
+            .reverse()
+            .map((m, i) => ({
+                id: String(i),
+                role: m.role,
                 content: [
-                    { type: 'text', text: { value: r.content, annotations: [] } }
+                    { type: 'text', text: { value: m.content, annotations: [] } }
                 ]
-            }))
-        };
+            }));
+        return { data };
     } catch (error) {
         console.error('[openAIAssistant] getMessagesList failed:', error.message);
         return { data: [] };
