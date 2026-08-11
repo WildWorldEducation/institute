@@ -127,25 +127,34 @@ router.get('/instructors/:tenantId', (req, res, next) => {
  * Show tenant details
  */
 router.get('/show/:tenantId', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `
+    res.setHeader('Content-Type', 'application/json');
+    // Guests, or a user with no tenant (id arrives as the string "null"), have
+    // no tenant to show. Respond instead of leaving the request hanging — the
+    // old code had no else, so getTenantDetails hung on the skill tree for
+    // logged-out visitors and threw a "Failed to fetch" console error.
+    if (
+        !req.session.userName ||
+        !req.params.tenantId ||
+        req.params.tenantId === 'null'
+    ) {
+        return res.json(null);
+    }
+    let sqlQuery = `
             SELECT billing_mode, tokens, name
             FROM tenants
             WHERE id = ${conn.escape(req.params.tenantId)};`;
 
-        conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-
-                res.json(results[0]);
-            } catch (err) {
-                next(err);
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
             }
-        });
-    }
+
+            res.json(results[0] || null);
+        } catch (err) {
+            next(err);
+        }
+    });
 });
 
 /**

@@ -1707,6 +1707,13 @@ router.get('/name-list', (req, res, next) => {
                     `;
                 }
 
+                // No recognized role (e.g. logged-out request) -> nothing to
+                // list. Return empty instead of running an empty SQL string,
+                // which threw ER_EMPTY_QUERY (500).
+                if (!sqlQuery) {
+                    return res.json([]);
+                }
+
                 conn.query(sqlQuery, (err, results) => {
                     try {
                         if (err) {
