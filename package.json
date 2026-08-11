@@ -4,10 +4,10 @@
   "description": "",
   "main": "server/app.js",
   "scripts": {
-    "start": "NODE_ENV=production node server/app.js",
+    "start": "NODE_ENV=production node scripts/start.js",
     "start:pm2": "pm2 start ecosystem.config.js --env production",
     "dev:frontend": "vite",
-    "dev:backend": "nodemon server/app.js",
+    "dev:backend": "nodemon scripts/start.js",
     "dev": "concurrently 'npm:dev:frontend' 'npm:dev:backend'",
     "build": "vite build",
     "preview": "vite preview"
@@ -16,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.668.0",
+    "@aws-sdk/client-ssm": "^3.1107.0",
     "@aws-sdk/s3-request-presigner": "^3.668.0",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",

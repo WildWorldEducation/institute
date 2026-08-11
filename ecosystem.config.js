@@ -13,7 +13,7 @@ module.exports = {
     apps: [
         {
             name: 'institute',
-            script: 'server/app.js',
+            script: 'scripts/start.js',
             instances: 1,
             autorestart: true,
             max_restarts: 20,

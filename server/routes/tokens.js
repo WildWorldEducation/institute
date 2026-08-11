@@ -17,7 +17,9 @@ const isAuthenticated = require('../middlewares/authMiddleware');
 const rateLimit = require('../middlewares/rateLimitMiddleware');
 
 const Stripe = require('stripe');
-const stripe = Stripe(process.env.STRIPE_API_KEY);
+// Placeholder when unset so the app still boots in environments without Stripe
+// configured; real checkout/webhook calls fail-closed without a valid key.
+const stripe = Stripe(process.env.STRIPE_API_KEY || 'sk_test_unset_placeholder');
 
 // DB
 const conn = require('../config/db');

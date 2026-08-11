@@ -15,6 +15,8 @@ const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
 // DB
 const conn = require('../config/db');
+// Rate limiter for reset endpoints.
+const rateLimit = require('../middlewares/rateLimitMiddleware');
 
 // For password encryption.
 const bcrypt = require('bcrypt');
