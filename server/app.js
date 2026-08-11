@@ -60,31 +60,14 @@ const googleAuthClient = new OAuth2Client(googleClientId);
 // Verify a Google Sign-In credential (JWT). Returns the verified payload or
 // throws — replaces the old jwt.decode() which trusted unsigned tokens.
 async function verifyGoogleCredential(credential) {
-    // DEBUG: decode the token claims UNVERIFIED, just to see what arrived.
-    try {
-        const raw = String(credential || '');
-        const part = raw.split('.')[1] || '';
-        const claims = JSON.parse(Buffer.from(part, 'base64url').toString('utf8'));
-        console.log(
-            '[google-login] incoming: present=%s len=%s aud=%s iss=%s email=%s exp=%s now=%s',
-            !!credential, raw.length, claims.aud, claims.iss, claims.email,
-            claims.exp, Math.floor(Date.now() / 1000)
-        );
-    } catch (e) {
-        console.error(
-            '[google-login] could not decode credential (present=%s len=%s): %s',
-            !!credential, credential ? String(credential).length : 0, e.message
-        );
-    }
     // Verify signature + issuer + expiry (rejects forged/unsigned tokens).
-    // Audience is intentionally NOT pinned — it varies by page/cached build.
+    // Audience intentionally not pinned — it varies by page / cached frontend
+    // build, and pinning it wrongly blocked all logins.
     try {
         const ticket = await googleAuthClient.verifyIdToken({ idToken: credential });
-        const payload = ticket.getPayload();
-        console.log('[google-login] VERIFIED ok: email=%s aud=%s', payload && payload.email, payload && payload.aud);
-        return payload;
+        return ticket.getPayload();
     } catch (err) {
-        console.error('[google-login] VERIFY FAILED:', (err && err.stack) || err);
+        console.error('[google-login] verify failed:', err && err.message);
         throw err;
     }
 }

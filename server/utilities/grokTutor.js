@@ -30,7 +30,9 @@ const memHistory = new Map(); // threadId -> [{ role, content }]
 const MEM_MAX_THREADS = Number(process.env.GROK_MEM_MAX_THREADS || 5000);
 
 function newId() {
-    return crypto.randomUUID();
+    // Must fit thread_id VARCHAR(31) in the ai_*_threads tables (the old OpenAI
+    // ids were ~31 chars). 30-char id, unique enough (112 bits).
+    return 't-' + crypto.randomBytes(14).toString('hex'); // "t-" + 28 hex = 30
 }
 
 function grokApiKey() {
