@@ -191,8 +191,17 @@ async function streamTutorTurn({
     try {
         result = await callGrokResponses({
             input,
+            // Frontend reads args[0].value / args[2].value (OpenAI delta shape),
+            // so wrap the strings in { value } — emitting raw strings showed
+            // "undefined" in the UI.
             onDelta: (delta, snapshot) =>
-                socket.emit('stream-message', delta, streamType, snapshot, threadId)
+                socket.emit(
+                    'stream-message',
+                    { value: delta },
+                    streamType,
+                    { value: snapshot },
+                    threadId
+                )
         });
         socket.emit('run-end');
     } catch (err) {
