@@ -49,7 +49,12 @@ app.use(
 // Login with Google (signature verification uses google-auth-library below).
 var jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
-const googleClientId = process.env.GOOGLE_CLIENT_ID || process.env.GMAIL_CLIENT_ID;
+// The Google Sign-In client id the frontend uses (Login.vue data-client_id).
+// NOT GMAIL_CLIENT_ID — that's the separate Gmail-sending OAuth client, and
+// using it here made every real login fail the audience check.
+const googleClientId =
+    process.env.GOOGLE_CLIENT_ID ||
+    '13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com';
 const googleAuthClient = new OAuth2Client(googleClientId);
 
 // Verify a Google Sign-In credential (JWT). Returns the verified payload or
