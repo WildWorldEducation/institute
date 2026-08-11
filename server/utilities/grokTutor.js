@@ -1,41 +1,49 @@
 /*
  * Grok tutor engine (xAI) — replaces the OpenAI Assistants API for tutoring.
  *
- * WHY: the tutors used OpenAI's Assistants API (server-side threads + vector
- * store file-search). Grok cannot run through that API, so the engine moves to
- * chat-completions. xAI's API is OpenAI-compatible, so we reuse the OpenAI SDK
- * pointed at the xAI base URL (see config/aiConfig.js `grok`). Model + key are
- * single-sourced from RFab's param store (GROK_API_KEY / GROK_MODEL).
+ * Uses xAI's RESPONSES API (POST /v1/responses), NOT chat-completions: on xAI
+ * only the Responses API supports live web search (the `web_search` tool), as
+ * RFab's routes/basedAI.js documents. Streaming is SSE; we parse the same event
+ * types RFab does (`response.output_text.delta`, `response.done`).
  *
- * Grok is STATELESS, so conversation history is persisted here in the
- * `ai_tutor_messages` table (see migrations/2026-08-09-grok-tutor-messages.sql)
- * and replayed on each turn. The public tutor functions in openAIAssistant.js
- * delegate their model calls to this module.
+ * Grok is STATELESS, so conversation history is persisted in `ai_tutor_messages`
+ * (migrations/2026-08-09-grok-tutor-messages.sql) and replayed each turn.
  *
- * NOT runtime-tested in this checkout (no node_modules / GROK_API_KEY / DB here)
- * — needs a live smoke test. Live web search uses the xAI `web_search` tool;
- * if the SDK rejects that tool type, set GROK_WEB_SEARCH=false as a stopgap.
+ * Model + key come from RFab's param store (GROK_API_KEY / GROK_MODEL), loaded
+ * into the environment the same way RFab loads them (SSM -> env).
  */
 const crypto = require('crypto');
 const conn = require('../config/db');
 const util = require('util');
 const query = util.promisify(conn.query).bind(conn);
-const { grok, models } = require('../config/aiConfig');
+const { models } = require('../config/aiConfig');
 
+const BASE_URL = process.env.GROK_BASE_URL || 'https://api.x.ai/v1';
 const MAX_HISTORY_TURNS = Number(process.env.GROK_MAX_HISTORY_TURNS || 20);
+const MAX_OUTPUT_TOKENS = Number(process.env.GROK_MAX_OUTPUT_TOKENS || 4096);
 
 function newId() {
     return crypto.randomUUID();
 }
 
-function webSearchTools() {
+function grokApiKey() {
+    return process.env.GROK_API_KEY || process.env.RFAB_GROK_API_KEY;
+}
+
+function searchTools() {
+    // Responses-API web-search tool (RFab-proven). Toggle via GROK_WEB_SEARCH.
     return models.grokWebSearch ? [{ type: 'web_search' }] : undefined;
 }
 
-/**
- * Load prior turns for a thread (oldest-first), capped to the most recent N.
- * Returns [{ role, content }] suitable for the chat-completions messages array.
- */
+function normalizeUsage(u) {
+    if (!u) return null;
+    const prompt = u.input_tokens ?? u.prompt_tokens ?? 0;
+    const completion = u.output_tokens ?? u.completion_tokens ?? 0;
+    const total = u.total_tokens ?? prompt + completion;
+    return { prompt_tokens: prompt, completion_tokens: completion, total_tokens: total };
+}
+
+/** Load prior turns (oldest-first), capped to the most recent N. */
 async function loadHistory(threadId) {
     if (!threadId) return [];
     try {
@@ -44,10 +52,10 @@ async function loadHistory(threadId) {
              WHERE thread_id = ? ORDER BY id ASC`,
             [threadId]
         );
-        const trimmed = rows.slice(-MAX_HISTORY_TURNS * 2);
-        return trimmed.map((r) => ({ role: r.role, content: r.content }));
+        return rows
+            .slice(-MAX_HISTORY_TURNS * 2)
+            .map((r) => ({ role: r.role, content: r.content }));
     } catch (err) {
-        // Table missing / DB error — degrade to no history rather than crash.
         console.error('[grokTutor] loadHistory failed:', err.message);
         return [];
     }
@@ -65,24 +73,85 @@ async function saveMessage(threadId, role, content) {
     }
 }
 
-/**
- * Assemble the messages array: system instructions + prior history + new turn.
- */
-async function buildMessages(threadId, systemInstruction, userMessage, isEmptyMessage) {
-    const messages = [];
-    if (systemInstruction) messages.push({ role: 'system', content: systemInstruction });
-    messages.push(...(await loadHistory(threadId)));
-    if (!isEmptyMessage && userMessage) {
-        messages.push({ role: 'user', content: userMessage });
-    }
-    return messages;
+/** Build the Responses-API `input` array: system + history + optional new turn. */
+async function buildInput(threadId, systemInstruction, userMessage, includeUser) {
+    const input = [];
+    if (systemInstruction) input.push({ role: 'system', content: systemInstruction });
+    input.push(...(await loadHistory(threadId)));
+    if (includeUser && userMessage) input.push({ role: 'user', content: userMessage });
+    return input;
 }
 
 /**
- * Streaming tutor turn. Emits the SAME socket events the OpenAI path did so the
- * frontend contract is unchanged: 'stream-message' (delta, streamType, snapshot,
- * threadId), 'run-end', and 'server-error' on failure.
- * Returns { text, usage }.
+ * Core call to xAI Responses API with SSE streaming. Invokes onDelta(delta,
+ * snapshot) for each text delta. Returns { content, usage }.
+ */
+async function callGrokResponses({ input, onDelta }) {
+    const key = grokApiKey();
+    if (!key) throw new Error('GROK_API_KEY not configured');
+
+    const body = {
+        model: models.grokTutor,
+        max_output_tokens: MAX_OUTPUT_TOKENS,
+        stream: true,
+        input
+    };
+    const tools = searchTools();
+    if (tools) body.tools = tools;
+
+    const resp = await fetch(`${BASE_URL}/responses`, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${key}`,
+            'Content-Type': 'application/json',
+            Accept: 'text/event-stream'
+        },
+        body: JSON.stringify(body)
+    });
+
+    if (!resp.ok || !resp.body) {
+        const errText = await resp.text().catch(() => '');
+        throw new Error(`Grok ${resp.status}: ${errText.slice(0, 400)}`);
+    }
+
+    let content = '';
+    let usage = null;
+    let buffer = '';
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+        for (const line of lines) {
+            const s = line.trim();
+            if (!s || s.startsWith(':') || !s.startsWith('data:')) continue;
+            const data = s.slice(5).trim();
+            if (data === '[DONE]') continue;
+            let parsed;
+            try { parsed = JSON.parse(data); } catch { continue; }
+            if (parsed.type === 'response.output_text.delta' && parsed.delta) {
+                content += parsed.delta;
+                if (onDelta) onDelta(parsed.delta, content);
+            } else if (
+                (parsed.type === 'response.done' || parsed.type === 'response.completed') &&
+                parsed.response &&
+                parsed.response.usage
+            ) {
+                usage = parsed.response.usage;
+            }
+        }
+    }
+    return { content, usage: normalizeUsage(usage) };
+}
+
+/**
+ * Streaming tutor turn. Emits the SAME socket events the OpenAI path did:
+ * 'stream-message' (delta, streamType, snapshot, threadId), 'run-end', and
+ * 'server-error' on failure. Returns { text, usage }.
  */
 async function streamTutorTurn({
     threadId,
@@ -92,71 +161,36 @@ async function streamTutorTurn({
     systemInstruction,
     streamType
 }) {
-    if (!isEmptyMessage && userMessage) {
-        await saveMessage(threadId, 'user', userMessage);
-    }
+    // Load PRIOR history, then append the current message directly — so the
+    // live turn is never lost even if the DB write fails.
+    const input = await buildInput(threadId, systemInstruction, userMessage, !isEmptyMessage);
+    if (!isEmptyMessage && userMessage) await saveMessage(threadId, 'user', userMessage);
 
-    const messages = await buildMessages(
-        threadId,
-        systemInstruction,
-        userMessage,
-        // history already includes the just-saved user message, so don't add it twice
-        true
-    );
-
-    let accumulated = '';
-    let usage = null;
-
-    const requestConfig = {
-        model: models.grokTutor,
-        messages,
-        stream: true,
-        stream_options: { include_usage: true }
-    };
-    const tools = webSearchTools();
-    if (tools) requestConfig.tools = tools;
-
+    let result;
     try {
-        const stream = await grok.chat.completions.create(requestConfig);
-        for await (const chunk of stream) {
-            const delta = chunk.choices?.[0]?.delta?.content || '';
-            if (delta) {
-                accumulated += delta;
-                socket.emit('stream-message', delta, streamType, accumulated, threadId);
-            }
-            if (chunk.usage) usage = chunk.usage;
-        }
+        result = await callGrokResponses({
+            input,
+            onDelta: (delta, snapshot) =>
+                socket.emit('stream-message', delta, streamType, snapshot, threadId)
+        });
         socket.emit('run-end');
     } catch (err) {
         console.error('[grokTutor] stream error:', err.message);
         socket.emit('server-error', { msg: err.message });
-        return { text: accumulated, usage: null };
+        return { text: '', usage: null };
     }
 
-    if (accumulated) await saveMessage(threadId, 'assistant', accumulated);
-    return { text: accumulated, usage };
+    if (result.content) await saveMessage(threadId, 'assistant', result.content);
+    return { text: result.content, usage: result.usage };
 }
 
-/**
- * Non-streaming tutor turn (used by the speech-to-text path). Returns
- * { text, usage } and persists both sides of the exchange.
- */
+/** Non-streaming tutor turn (speech-to-text path). Returns { text, usage }. */
 async function completeTutorTurn({ threadId, userMessage, systemInstruction }) {
+    const input = await buildInput(threadId, systemInstruction, userMessage, !!userMessage);
     if (userMessage) await saveMessage(threadId, 'user', userMessage);
-
-    const messages = await buildMessages(threadId, systemInstruction, userMessage, true);
-
-    const requestConfig = {
-        model: models.grokTutor,
-        messages
-    };
-    const tools = webSearchTools();
-    if (tools) requestConfig.tools = tools;
-
-    const completion = await grok.chat.completions.create(requestConfig);
-    const text = completion.choices?.[0]?.message?.content || '';
-    if (text) await saveMessage(threadId, 'assistant', text);
-    return { text, usage: completion.usage || null };
+    const { content, usage } = await callGrokResponses({ input });
+    if (content) await saveMessage(threadId, 'assistant', content);
+    return { text: content, usage };
 }
 
 module.exports = {

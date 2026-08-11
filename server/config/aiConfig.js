@@ -18,7 +18,9 @@ const { OpenAI } = require('openai');
 // Prefer the shared RFab key; fall back to the institute's own key.
 const apiKey = process.env.RFAB_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
 
-const openai = new OpenAI({ apiKey });
+// Fallback placeholder so the SDK doesn't throw at construction when a key is
+// absent (e.g. Grok-only setups). A real call with a missing key still 401s.
+const openai = new OpenAI({ apiKey: apiKey || 'unset-openai-key' });
 
 // Grok (xAI) client — xAI's API is OpenAI-compatible, so we reuse the OpenAI
 // SDK pointed at the xAI base URL. Institute reads the SAME key RFab uses
@@ -29,7 +31,7 @@ const openai = new OpenAI({ apiKey });
 // which xAI does not provide.
 const grokApiKey = process.env.GROK_API_KEY || process.env.RFAB_GROK_API_KEY;
 const grok = new OpenAI({
-    apiKey: grokApiKey,
+    apiKey: grokApiKey || 'unset-grok-key',
     baseURL: process.env.GROK_BASE_URL || 'https://api.x.ai/v1'
 });
 
