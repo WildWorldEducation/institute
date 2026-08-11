@@ -22,6 +22,13 @@ const BASE_URL = process.env.GROK_BASE_URL || 'https://api.x.ai/v1';
 const MAX_HISTORY_TURNS = Number(process.env.GROK_MAX_HISTORY_TURNS || 20);
 const MAX_OUTPUT_TOKENS = Number(process.env.GROK_MAX_OUTPUT_TOKENS || 4096);
 
+// In-memory conversation history so the tutor remembers within a session even
+// when the ai_tutor_messages table isn't available (e.g. the app's DB user
+// lacks CREATE). The DB is used as durable storage when the table exists;
+// memory is the always-on fallback. Lost on restart, which is fine for a tutor.
+const memHistory = new Map(); // threadId -> [{ role, content }]
+const MEM_MAX_THREADS = Number(process.env.GROK_MEM_MAX_THREADS || 5000);
+
 function newId() {
     return crypto.randomUUID();
 }
@@ -46,30 +53,42 @@ function normalizeUsage(u) {
 /** Load prior turns (oldest-first), capped to the most recent N. */
 async function loadHistory(threadId) {
     if (!threadId) return [];
+    // Prefer durable DB history when the table exists; otherwise use memory.
     try {
         const rows = await query(
             `SELECT role, content FROM ai_tutor_messages
              WHERE thread_id = ? ORDER BY id ASC`,
             [threadId]
         );
-        return rows
-            .slice(-MAX_HISTORY_TURNS * 2)
-            .map((r) => ({ role: r.role, content: r.content }));
+        if (rows.length) {
+            return rows
+                .slice(-MAX_HISTORY_TURNS * 2)
+                .map((r) => ({ role: r.role, content: r.content }));
+        }
     } catch (err) {
-        console.error('[grokTutor] loadHistory failed:', err.message);
-        return [];
+        // Table missing / DB error — fall back to in-memory history below.
     }
+    return (memHistory.get(threadId) || []).slice(-MAX_HISTORY_TURNS * 2);
 }
 
 async function saveMessage(threadId, role, content) {
     if (!threadId || !content) return;
+    // Always keep an in-memory copy (works even if the DB table is absent).
+    const arr = memHistory.get(threadId) || [];
+    arr.push({ role, content: String(content) });
+    if (arr.length > MAX_HISTORY_TURNS * 4) arr.splice(0, arr.length - MAX_HISTORY_TURNS * 4);
+    memHistory.set(threadId, arr);
+    if (memHistory.size > MEM_MAX_THREADS) {
+        memHistory.delete(memHistory.keys().next().value); // drop oldest thread
+    }
+    // Best-effort durable write (no-op if the table isn't there).
     try {
         await query(
             `INSERT INTO ai_tutor_messages (thread_id, role, content) VALUES (?, ?, ?)`,
             [threadId, role, String(content)]
         );
     } catch (err) {
-        console.error('[grokTutor] saveMessage failed:', err.message);
+        // ignore — memory already holds it
     }
 }
 
