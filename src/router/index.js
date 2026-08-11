@@ -66,16 +66,16 @@ const router = createRouter({
         {
             path: '/student-signup',
             name: 'student-signup',
-            component: () =>
-                import('../components/pages/SignUpStudentAccountView.vue'),
+            // Unified auth screen (opens the Create-account / Student panel).
+            component: () => import('../components/pages/LoginView.vue'),
             meta: { title: 'Register' }
         },
         {
             path: '/instructor-signup',
             name: 'instructor-signup',
-            component: () =>
-                import('../components/pages/SignUpInstructorAccountView.vue'),
-            meta: { title: 'Instructor sign up' }
+            // Unified auth screen (opens the Create-account / Teacher panel).
+            component: () => import('../components/pages/LoginView.vue'),
+            meta: { title: 'Teacher sign up' }
         },
         {
             path: '/editor-signup',

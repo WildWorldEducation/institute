@@ -67,13 +67,26 @@ router.post('/new-user/add', async (req, res, next) => {
                     return next(err);
                 }
 
+                // Allowlisted self-signup role: student or instructor only.
+                // editor/admin/partner are never self-grantable here; the
+                // privileged /new-instructor/add path stays admin-gated.
+                // Backs the Student/Teacher toggle on the login screen.
+                const accountType =
+                    req.body.account_type === 'instructor'
+                        ? 'instructor'
+                        : 'student';
+
                 let data = {
                     username: req.body.username,
                     email: req.body.email,
                     password: hashedPassword,
-                    role: 'student',
-                    grade_filter: req.body.grade_filter
+                    role: accountType
                 };
+                if (accountType === 'instructor') {
+                    data.theme = 'instructor';
+                } else if (req.body.grade_filter) {
+                    data.grade_filter = req.body.grade_filter;
+                }
 
                 // OPTIMIZATION 1: Combine username and email check into one query
                 let checkQuery = `
@@ -123,12 +136,12 @@ router.post('/new-user/add', async (req, res, next) => {
                                         req.session.userId = emailUser.id;
                                         req.session.userName =
                                             req.body.username;
-                                        req.session.role = 'student';
+                                        req.session.role = accountType;
 
                                         // OPTIMIZATION 2: Send the response immediately, run unlockInitialSkills afterward
                                         res.json({
                                             account: 'authorized',
-                                            role: 'student'
+                                            role: accountType
                                         });
 
                                         // Run this after sending the response
@@ -211,12 +224,12 @@ router.post('/new-user/add', async (req, res, next) => {
                                 // Set up session
                                 req.session.userId = data.id;
                                 req.session.userName = data.username;
-                                req.session.role = 'student';
+                                req.session.role = accountType;
 
                                 // OPTIMIZATION 3: Send the response before doing AWS upload and skill unlocking
                                 res.json({
                                     account: 'authorized',
-                                    role: 'student'
+                                    role: accountType
                                 });
 
                                 // Run these operations after sending the response
