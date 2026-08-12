@@ -19,6 +19,20 @@ const {
 // Middlewares
 const isAuthenticated = require('../middlewares/authMiddleware');
 
+// Guests have nothing to record — quietly no-op the activity-tracking writes so
+// they don't 401 (console noise on the guest skill tree). Registered BEFORE the
+// blanket auth below; authenticated requests fall through to it. The sensitive
+// READ endpoints remain fully auth-protected.
+router.post(
+    ['/record-time-on-app/:userId', '/record-duration/:userId/:skillId'],
+    (req, res, next) => {
+        if (!req.session || !req.session.userId || req.params.userId === 'null') {
+            return res.sendStatus(204);
+        }
+        next();
+    }
+);
+
 // Every analytics route requires an authenticated session.
 router.use(isAuthenticated);
 
