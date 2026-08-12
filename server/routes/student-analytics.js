@@ -23,10 +23,12 @@ const isAuthenticated = require('../middlewares/authMiddleware');
 // they don't 401 (console noise on the guest skill tree). Registered BEFORE the
 // blanket auth below; authenticated requests fall through to it. The sensitive
 // READ endpoints remain fully auth-protected.
+// Wildcard paths (no :userId param) so the router.param('userId') guard doesn't
+// preempt this and 403 the guest before we can no-op it.
 router.post(
-    ['/record-time-on-app/:userId', '/record-duration/:userId/:skillId'],
+    ['/record-time-on-app/*', '/record-duration/*'],
     (req, res, next) => {
-        if (!req.session || !req.session.userId || req.params.userId === 'null') {
+        if (!req.session || !req.session.userId) {
             return res.sendStatus(204);
         }
         next();
