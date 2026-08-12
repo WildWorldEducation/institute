@@ -189,6 +189,8 @@ export default {
             class="navbar navbar-expand-sm nav-bar pt-0 pb-0"
             :class="{
                 'fixed-top':
+                    $route.name == 'home' ||
+                    $route.name == 'student-signup' ||
                     $route.name == 'skill-tree' ||
                     $route.name == 'pathways' ||
                     $route.name == 'radial-tree' ||

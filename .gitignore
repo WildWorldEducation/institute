@@ -45,5 +45,9 @@ coverage
 # Benchmarking
 benchmarks/graphs
 
+# Raw AI-generation cache for landing art (re-runs read from here; outputs
+# in public/images/landing/ are the committed artifacts)
+scripts/_landing_raw/
+
 # ignore additional files using core.excludesFile
 # https://git-scm.com/docs/gitignore

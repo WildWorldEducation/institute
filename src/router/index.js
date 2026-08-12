@@ -11,12 +11,11 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
+            // Public landing page. Logged-in users are bounced past it to
+            // their tree in the beforeEach guard below.
             path: '/',
-            redirect: () => {
-                return window.innerWidth < 576
-                    ? { name: 'search' }
-                    : { name: 'skill-tree' };
-            }
+            name: 'home',
+            component: () => import('../components/pages/LandingView.vue')
         },
         {
             path: '/skill-tree',
@@ -934,6 +933,14 @@ router.beforeEach(async (to, from, next) => {
     const isLoggedIn = sessionDetailsStore.isLoggedIn;
     const userRole = userDetailsStore.role;
 
+    // Logged-in users skip the landing page and go straight to their map.
+    if (to.name === 'home' && isLoggedIn) {
+        next(
+            window.innerWidth < 576 ? { name: 'search' } : { name: 'skill-tree' }
+        );
+        return;
+    }
+
     // Implement theme on login.
     if (
         from.name == 'login' ||
@@ -998,6 +1005,7 @@ router.beforeEach(async (to, from, next) => {
     // Check if initial data has been loaded and user is not logged in, redirect to login
     if (
         !sessionDetailsStore.isLoggedIn &&
+        to.name !== 'home' &&
         to.name !== 'login' &&
         to.name !== 'student-signup' &&
         to.name !== 'editor-signup' &&

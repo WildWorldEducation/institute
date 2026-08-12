@@ -28,10 +28,12 @@ export default {
             passwordVisible: false,
             // For Google sign up absolute API url.
             isProduction: import.meta.env.PROD,
-            showVideoModal: true,
-            showModalVideo: true,
+            // The intro video is opt-in (a button opens it), never a popup.
+            showVideoModal: false,
             isMobileCheck: window.innerWidth,
-            referrer: ''
+            referrer: '',
+            reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)')
+                .matches
         };
     },
     async created() {
@@ -46,9 +48,6 @@ export default {
         script.onload = this.initializeGoogleSignIn;
         document.head.appendChild(script);
 
-        if (window.innerWidth < 800) {
-            this.showModalVideo = false;
-        }
         document.addEventListener('keydown', this.handleKeyPress);
     },
     unmounted() {
@@ -115,9 +114,6 @@ export default {
                     }
                 });
         },
-        toggleModal() {
-            this.showVideoModal = false;
-        },
         initializeGoogleSignIn() {
             const clientId =
                 '13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com'; // Replace with your actual client ID
@@ -168,19 +164,12 @@ export default {
 
             form.submit();
         },
-        selectRole(role) {
-            if (role == 'student') {
-                this.newUser.accountType = 'student';
-                this.showVideoModal = false;
-            } else if (role == 'instructor') {
-                // Redirect to the instructor signup page instead of just changing the account type
-                this.$router.push('/instructor-signup');
-            }
-        },
         // New method to handle Enter key press
         handleKeyPress(event) {
-            if (event.key === 'Enter') {
+            if (event.key === 'Enter' && !this.showVideoModal) {
                 this.ValidateForm();
+            } else if (event.key === 'Escape') {
+                this.showVideoModal = false;
             }
         },
         clearError(field) {
@@ -194,23 +183,57 @@ export default {
 
 <template>
     <div class="signup-page">
+        <!-- Observatory backdrop — the signup page's own "first step" scene -->
+        <video
+            v-if="!reducedMotion && isMobileCheck >= 800"
+            class="bg-media"
+            autoplay
+            muted
+            loop
+            playsinline
+            poster="/images/landing/signup-hero.webp"
+            aria-hidden="true"
+        >
+            <source
+                src="/images/landing/signup-hero-loop.mp4"
+                type="video/mp4"
+            />
+        </video>
+        <img
+            v-else
+            class="bg-media"
+            src="/images/landing/signup-hero.webp"
+            alt=""
+            aria-hidden="true"
+        />
+        <div class="bg-scrim" aria-hidden="true"></div>
+
+        <div class="signup-header">
+            <p class="signup-kicker">Parrhesia &middot; The Collins Institute</p>
+            <h1 class="signup-title">
+                Begin your <span class="signup-title-glow">climb</span>
+            </h1>
+        </div>
+
+        <!-- Opt-in intro video (never a popup) -->
+        <button class="watch-intro-btn" @click="showVideoModal = true">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 384 512"
+                width="12"
+                height="12"
+                fill="currentColor"
+                aria-hidden="true"
+            >
+                <path
+                    d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"
+                />
+            </svg>
+            Watch the 2-minute intro
+        </button>
+
         <!-- The form -->
         <div class="form-signin mt-3">
-            <!-- The video -->
-            <div
-                v-if="!showVideoModal"
-                class="embed-responsive embed-responsive-16by9"
-            >
-                <iframe
-                    class="intro-video"
-                    src="https://www.youtube.com/embed/VRQ47XRBApg?si=CfPv1r0gKRuFpGMM"
-                    title="YouTube video player"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerpolicy="strict-origin-when-cross-origin"
-                    allowfullscreen
-                ></iframe>
-            </div>
             <div>
                 <div class="mb-3 text-start">
                     <!-- <label class="form-label">Username</label> -->
@@ -346,24 +369,35 @@ export default {
                     Have an account?
                     <a href="/login" class="links">Sign in</a>
                 </div>
+                <div class="mt-1 signup text-center">
+                    Teaching a class?
+                    <RouterLink to="/instructor-signup" class="links">
+                        Instructor sign-up
+                    </RouterLink>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Video Modal -->
+    <!-- Opt-in intro video modal -->
     <div v-if="showVideoModal">
-        <div id="myModal" class="modal">
+        <div id="myModal" class="modal" @click.self="showVideoModal = false">
             <!-- Modal content -->
             <div class="modal-content">
-                <!-- The video -->
+                <button
+                    class="modal-close"
+                    aria-label="Close video"
+                    @click="showVideoModal = false"
+                >
+                    &times;
+                </button>
                 <div
-                    v-if="showModalVideo"
                     id="modal-iframe"
                     class="embed-responsive embed-responsive-16by9"
                 >
                     <iframe
                         class="intro-video"
-                        src="https://www.youtube.com/embed/VRQ47XRBApg?si=CfPv1r0gKRuFpGMM"
+                        src="https://www.youtube.com/embed/VRQ47XRBApg?si=CfPv1r0gKRuFpGMM&autoplay=1"
                         title="YouTube video player"
                         frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -371,131 +405,182 @@ export default {
                         allowfullscreen
                     ></iframe>
                 </div>
-                <button
-                    class="btn primary-btn mx-auto mt-2 border border-dark"
-                    @click="selectRole('student')"
-                >
-                    I'm a student
-                </button>
-                <button
-                    class="btn primary-btn mx-auto mt-2 border border-dark"
-                    @click="selectRole('instructor')"
-                >
-                    I'm an instructor
-                </button>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-img {
-    margin: auto;
-    max-height: 200px;
-    max-width: 100%;
-}
-
-/* The Warning Modal */
-.modal {
-    display: block;
-    /* Hidden by default */
-    position: fixed;
-    /* Stay in place */
-    z-index: 1;
-    /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%;
-    /* Full width */
-    height: 100%;
-    /* Full height */
-    overflow: hidden;
-    /* Enable scroll if needed */
-    background-color: rgb(0, 0, 0);
-    /* Fallback color */
-    background-color: rgba(0, 0, 0, 0.4);
-    /* Black w/ opacity */
-}
-
-/* Modal Content/Box */
-.modal-content {
-    background-color: #fefefe;
-    /* margin: 5% auto;
-     5% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 600px;
-    height: fit-content;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 20%;
-    margin: auto;
-    font-size: 18px;
-    /* Could be more or less, depending on screen size */
-}
-
-.intro-video {
-    display: block;
-    border-radius: 5%;
-    aspect-ratio: 16 / 9;
-    margin: auto;
-}
-
-/* Small devices (portrait phones) */
-@media (max-width: 800px) {
-    .intro-video {
-        width: 100%;
-    }
-
-    /* Modal Content/Box */
-    .modal-content {
-        /* margin: 40% auto;
-         40% from the top and centered */
-        width: 90%;
-    }
-}
-
-/* Bigger devices */
-
-#modal-iframe .intro-video {
-    width: 560px;
-}
-
+/* ============ Observatory theme (matches LandingView) ============ */
 .signup-page {
-    height: 100%;
-    padding: 10px;
-    background-repeat: no-repeat;
+    --ci-space: #0d1030;
+    --ci-space-2: #191650;
+    --ci-purple: #5f31dd;
+    --ci-purple-soft: #7c5cf0;
+    --ci-cyan: #45d8e2;
+    --ci-gold: #ffc857;
+
+    position: relative;
+    isolation: isolate;
+    min-height: 100%;
     width: 100%;
+    padding: 10px;
     font-family: 'Inter', sans-serif;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
 }
 
-.welcome-message {
-    color: var(--primary-color);
+/* Backdrop — same assets as the landing hero */
+.bg-media {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: -2;
+}
+
+.bg-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+        180deg,
+        rgba(13, 16, 48, 0.6) 0%,
+        rgba(13, 16, 48, 0.35) 45%,
+        rgba(13, 16, 48, 0.75) 100%
+    );
+}
+
+/* Header */
+.signup-header {
+    text-align: center;
+    padding-top: 84px; /* clears the fixed navbar */
+    margin-bottom: 4px;
+}
+
+.signup-kicker {
+    color: var(--ci-cyan);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    margin-bottom: 8px;
+}
+
+.signup-title {
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin-bottom: 0;
+    text-shadow: 0 4px 30px rgba(13, 16, 48, 0.8);
+}
+
+.signup-title-glow {
+    background: linear-gradient(90deg, var(--ci-cyan), var(--ci-gold));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Opt-in intro video button */
+.watch-intro-btn {
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 7px 18px;
+    border-radius: 999px;
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(4px);
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease;
+}
+
+.watch-intro-btn:hover,
+.watch-intro-btn:focus {
+    border-color: var(--ci-cyan);
+    background: rgba(69, 216, 226, 0.15);
+}
+
+/* The form card */
+.form-signin {
+    background-color: white;
+    width: 360px;
+    max-width: 100%;
+    padding: 22px 18px;
+    margin: 0 auto;
+    border-radius: 22px;
+    box-shadow: 0 18px 60px rgba(13, 16, 48, 0.45);
+}
+
+.form-signin button {
+    width: 100%;
+    background: linear-gradient(
+        135deg,
+        var(--ci-purple),
+        var(--ci-purple-soft)
+    );
+    color: white;
+    border: none;
+    border-radius: 999px;
+    padding: 9px 0;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
     font-size: 16px;
+    line-height: 24px;
+    box-shadow: 0 6px 20px rgba(95, 49, 221, 0.35);
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
-.password-extras {
-    font-size: 14px;
-    justify-content: space-between;
+.form-signin button:hover,
+.form-signin button:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 9px 26px rgba(95, 49, 221, 0.5);
+    color: white;
+}
+
+.form-signin .form-control,
+.form-signin .form-select {
+    border-radius: 12px;
+    padding: 10px 14px;
+    border: 1px solid rgba(95, 49, 221, 0.25);
+}
+
+.form-signin .form-control:focus,
+.form-signin .form-select:focus {
+    border-color: var(--ci-purple);
+    box-shadow: 0 0 0 3px rgba(95, 49, 221, 0.15);
+}
+
+.form-validate {
+    font-size: 0.75rem;
+    color: red;
+    font-weight: 300;
 }
 
 .signup {
     font-size: 14px;
-    color: var(--primary-color);
-}
-
-h1 {
-    color: var(--primary-color);
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
+    color: var(--ci-purple);
 }
 
 .links {
-    color: var(--primary-color);
+    color: var(--ci-purple);
+    font-weight: 600;
 }
 
 .password-div {
@@ -513,106 +598,151 @@ h1 {
 .eye-icon:hover {
     cursor: pointer;
 }
-/* Mobile */
-@media (max-width: 480px) {
-    .signup-page {
-        background-image: url('/images/app-logo.jpg');
-        background-size: contain;
-        background-position: center bottom;
+
+/* ============ Entrances (one-shot; end state = rest state) ============ */
+@media (prefers-reduced-motion: no-preference) {
+    .signup-header {
+        animation: rise-in 0.5s ease-out backwards;
+    }
+
+    .watch-intro-btn {
+        animation: rise-in 0.5s ease-out 0.12s backwards;
+    }
+
+    .form-signin {
+        animation: card-rise 0.55s ease-out 0.2s backwards;
+    }
+
+    /* Fields stagger in after the card lands */
+    .form-signin > div > * {
+        animation: rise-in 0.4s ease-out backwards;
+    }
+
+    .form-signin > div > *:nth-child(1) {
+        animation-delay: 0.4s;
+    }
+    .form-signin > div > *:nth-child(2) {
+        animation-delay: 0.47s;
+    }
+    .form-signin > div > *:nth-child(3) {
+        animation-delay: 0.54s;
+    }
+    .form-signin > div > *:nth-child(4) {
+        animation-delay: 0.61s;
+    }
+    .form-signin > div > *:nth-child(5) {
+        animation-delay: 0.68s;
+    }
+    .form-signin > div > *:nth-child(6) {
+        animation-delay: 0.75s;
+    }
+    .form-signin > div > *:nth-child(7) {
+        animation-delay: 0.82s;
+    }
+    .form-signin > div > *:nth-child(8) {
+        animation-delay: 0.89s;
     }
 }
 
-/* Tablets */
-@media (min-width: 481px) and (max-width: 1024px) {
-    .signup-page {
-        background-image: url('/images/app-logo.jpg');
-        background-size: contain;
-        background-position: center bottom;
+@keyframes rise-in {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
     }
 }
 
-/* Desktops/laptops */
-@media (min-width: 1025px) {
-    .signup-page {
-        background-image: url('/images/background-landscape.jpg');
-        background-size: cover;
-        background-position: center bottom;
+@keyframes card-rise {
+    from {
+        opacity: 0;
+        transform: translateY(26px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: none;
     }
 }
 
-.form-signin {
-    background-color: white;
-    width: 100%;
-    width: 360px;
-    padding: 15px;
-    margin: 0 auto;
-    /* border: 1px solid black; */
-    border-radius: 25px;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-}
-
-.form-signin button {
-    width: 100%;
-    background-color: var(--primary-color);
-    color: white;
-    border: 1px solid var(--secondary-color);
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-}
-
-.form-validate {
-    font-size: 0.75rem;
-    color: red;
-    font-weight: 300;
-}
-
-.toggle {
-    border: #7f56d9 solid 1px;
-    width: 100%;
-    height: 40px;
-    border-radius: 10px;
-    margin-bottom: 16px;
-    position: relative;
-    cursor: pointer;
+/* ============ Opt-in video modal ============ */
+.modal {
+    display: block;
+    position: fixed;
+    z-index: 1050;
+    inset: 0;
     overflow: hidden;
+    background-color: rgba(13, 16, 48, 0.78);
+    backdrop-filter: blur(6px);
 }
-.toggle .cursor {
-    height: 100%;
-    width: 50%;
-    background-color: #7f56d9;
+
+.modal-content {
+    background: rgba(25, 22, 80, 0.92);
+    border: 1px solid rgba(69, 216, 226, 0.3);
+    border-radius: 20px;
+    padding: 34px 20px 20px;
+    width: 640px;
+    max-width: 92vw;
+    height: fit-content;
     position: absolute;
-    top: 0px;
-    transition: all ease 300ms;
+    inset: 0 0 20% 0;
+    margin: auto;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
 }
-.toggle.left .cursor {
-    left: 0px;
-}
-.toggle.right .cursor {
-    left: 50%;
-}
-.toggle .labels {
-    display: flex;
+
+.modal-close {
     position: absolute;
+    top: 6px;
+    right: 14px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.7rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    color: white;
+}
+
+.intro-video {
+    display: block;
+    border-radius: 12px;
+    aspect-ratio: 16 / 9;
+    margin: auto;
     width: 100%;
-    height: 100%;
-    left: 0px;
-    top: 0px;
 }
-.label-left,
-.label-right {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 50%;
-    color: #000000;
+
+@media (prefers-reduced-motion: no-preference) {
+    .modal {
+        animation: modal-fade 0.25s ease-out;
+    }
+
+    .modal-content {
+        animation: card-rise 0.3s ease-out;
+    }
 }
-.toggle.left .label-left {
-    color: #ffffff;
+
+@keyframes modal-fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
-.toggle.right .label-right {
-    color: #ffffff;
+
+/* Small devices */
+@media (max-width: 800px) {
+    .signup-header {
+        padding-top: 76px;
+    }
+
+    /* Keep the learner + gold first stone in frame on narrow crops */
+    .bg-media {
+        object-position: 12% center;
+    }
 }
 </style>
