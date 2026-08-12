@@ -132,12 +132,15 @@ router.get('/show/:tenantId', (req, res, next) => {
     // no tenant to show. Respond instead of leaving the request hanging — the
     // old code had no else, so getTenantDetails hung on the skill tree for
     // logged-out visitors and threw a "Failed to fetch" console error.
+    // Return an object (not null) — the frontend reads .tokens off the result,
+    // so null would throw "Cannot read properties of null (reading 'tokens')".
+    const emptyTenant = { billing_mode: null, tokens: null, name: null };
     if (
         !req.session.userName ||
         !req.params.tenantId ||
         req.params.tenantId === 'null'
     ) {
-        return res.json(null);
+        return res.json(emptyTenant);
     }
     let sqlQuery = `
             SELECT billing_mode, tokens, name
@@ -150,7 +153,7 @@ router.get('/show/:tenantId', (req, res, next) => {
                 throw err;
             }
 
-            res.json(results[0] || null);
+            res.json(results[0] || emptyTenant);
         } catch (err) {
             next(err);
         }
