@@ -102,6 +102,24 @@ const sniff = (page, tag) => {
     check(lessonText.includes('Mortification') && lessonText.includes('Introduction'),
         'lesson page renders real content');
 
+    // Sidebar emblem: skills without S3 artwork get an ANIMATED fallback
+    // variant (ping-pong loop), deterministic per skill.
+    const emblem = await lesson.evaluate(() => {
+        const v = document.querySelector(
+            '#skill-info-container video[src*="skill-fallbacks"]'
+        );
+        if (!v) return null;
+        return {
+            src: (v.currentSrc || v.src || '').split('/').pop(),
+            playing: !v.paused && v.currentTime > 0,
+            w: v.videoWidth
+        };
+    });
+    check(
+        emblem && emblem.playing && emblem.w > 0,
+        `sidebar shows animated fallback emblem (${JSON.stringify(emblem)})`
+    );
+
     // 4b. Socratic Tutor: the REAL flow against the harness's tutor stub,
     // which mimics prod timing (fast messages-list, then the model "thinks"
     // ~7s over socket.io before streaming). No artificial stalls: the mascot

@@ -101,7 +101,10 @@ export default {
             thumbnailCDN: import.meta.env
                 .VITE_CLOUDFRONT_SKILL_INFOBOX_IMAGE_THUMBNAILS_CDN_NAME,
             thumbnail: '',
-            thumbnailURL: ''
+            thumbnailURL: '',
+            // Set when the skill has no S3 thumbnail: name of the animated
+            // observatory emblem variant shown instead.
+            thumbFallbackVariant: null
         };
     },
     computed: {
@@ -145,6 +148,7 @@ export default {
             document.title = this.calculatedSkillName + ' - Parrhesia';
 
             // Set the thumbnail URL early to start loading
+            this.thumbFallbackVariant = null;
             this.thumbnailURL = this.thumbnailCDN + '/' + this.skillUrl;
 
             // Create promises array
@@ -275,6 +279,7 @@ export default {
             const parts =
                 this.showSkillStore.skill.image_thumbnail_url.split('/');
 
+            this.thumbFallbackVariant = null;
             this.thumbnailURL =
                 this.thumbnailCDN + '/' + parts[parts.length - 1];
 
@@ -577,7 +582,23 @@ export default {
             this.showConfirmModal = true;
         },
         imageUrlAlternative(event) {
-            event.target.src = '/images/skill-thumb-fallback.jpg';
+            // No thumbnail on S3: switch to an animated observatory emblem,
+            // chosen deterministically per skill so each lesson keeps a
+            // stable identity (~half of skills have no artwork).
+            const variants = [
+                'galaxy-book',
+                'astrolabe',
+                'orrery',
+                'star-globe',
+                'telescope',
+                'scroll'
+            ];
+            const key = this.skillUrl || '';
+            let h = 0;
+            for (let i = 0; i < key.length; i++) {
+                h = (h * 31 + key.charCodeAt(i)) >>> 0;
+            }
+            this.thumbFallbackVariant = variants[h % variants.length];
         },
         openModal(skill) {
             this.selectedSkill = skill;
@@ -1331,7 +1352,16 @@ export default {
                         <a :href="skill.image_url" :aria-label="'full size image representing ' +
                             calculatedSkillName
                             ">
-                            <img :src="thumbnailURL" @error="imageUrlAlternative" class="rounded img-fluid" :alt="'image representing ' + calculatedSkillName
+                            <!-- Animated observatory emblem when the skill
+                                 has no artwork of its own -->
+                            <video v-if="thumbFallbackVariant"
+                                :src="`/images/skill-fallbacks/${thumbFallbackVariant}-loop.mp4`"
+                                :poster="`/images/skill-fallbacks/${thumbFallbackVariant}.jpg`"
+                                class="rounded img-fluid" autoplay muted loop playsinline
+                                width="294.4" height="294.4"
+                                :aria-label="'animated emblem representing ' + calculatedSkillName"
+                                style="aspect-ratio: 1/1; object-fit: cover"></video>
+                            <img v-else :src="thumbnailURL" @error="imageUrlAlternative" class="rounded img-fluid" :alt="'image representing ' + calculatedSkillName
                                 " width="294.4" height="294.4" loading="lazy" fetchpriority="high"
                                 style="aspect-ratio: 1/1; object-fit: cover" />
                         </a>

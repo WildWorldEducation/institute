@@ -161,6 +161,61 @@ const JOBS = {
             'beside her. Focused, encouraging smile. Centered composition, square frame. ' +
             STYLE,
     },
+    // ------------------------------------------------------------------
+    // Skill-thumbnail fallback VARIANTS: ~half of skills have no artwork, so
+    // lessons rotate through these animated emblems (picked per-skill by
+    // hash). Loops via _gen_observatory_loops.js → public/images/skill-fallbacks/.
+    // ------------------------------------------------------------------
+    'fallback-astrolabe': {
+        width: 1024,
+        height: 1024,
+        out: { file: 'skill-fallbacks/astrolabe.jpg', width: 512, format: 'jpeg' },
+        prompt:
+            'An ornate brass astrolabe floating in deep indigo space, its nested rings ' +
+            'inscribed with tiny constellation marks, a warm golden star glowing at its heart, ' +
+            'motes of light drifting around it. Centered, calm, wondrous — an emblem of ' +
+            'knowledge. ' + STYLE,
+    },
+    'fallback-orrery': {
+        width: 1024,
+        height: 1024,
+        out: { file: 'skill-fallbacks/orrery.jpg', width: 512, format: 'jpeg' },
+        prompt:
+            'A beautiful brass orrery floating in deep indigo space: tiny glowing planets of ' +
+            'cyan, violet and gold on delicate arms around a radiant miniature sun, trailing ' +
+            'green vines curling around its base. Centered, calm, wondrous — an emblem of ' +
+            'knowledge. ' + STYLE,
+    },
+    'fallback-star-globe': {
+        width: 1024,
+        height: 1024,
+        out: { file: 'skill-fallbacks/star-globe.jpg', width: 512, format: 'jpeg' },
+        prompt:
+            'A crystal celestial globe on a brass stand floating in deep indigo space, whole ' +
+            'constellations glittering INSIDE the glass sphere like trapped fireflies, soft ' +
+            'gold light spilling from within. Centered, calm, wondrous — an emblem of ' +
+            'knowledge. ' + STYLE,
+    },
+    'fallback-telescope': {
+        width: 1024,
+        height: 1024,
+        out: { file: 'skill-fallbacks/telescope.jpg', width: 512, format: 'jpeg' },
+        prompt:
+            'A grand brass telescope in a solarpunk observatory alcove, pointed through an open ' +
+            'dome at a swirling cyan-and-violet nebula, lush green plants trailing over the ' +
+            'railing, warm lantern light. Centered, calm, wondrous — an emblem of discovery. ' +
+            STYLE,
+    },
+    'fallback-scroll': {
+        width: 1024,
+        height: 1024,
+        out: { file: 'skill-fallbacks/scroll.jpg', width: 512, format: 'jpeg' },
+        prompt:
+            'An unfurled star-chart scroll floating in deep indigo space, a quill of pure ' +
+            'golden light drawing a new constellation onto it, the freshly drawn star-lines ' +
+            'glowing cyan and gold, tiny motes rising from the ink. Centered, calm, wondrous — ' +
+            'an emblem of learning. ' + STYLE,
+    },
     'skill-thumb-fallback': {
         width: 1024,
         height: 1024,

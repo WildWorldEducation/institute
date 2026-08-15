@@ -40,6 +40,65 @@ const JOBS = {
             'rise from the open book, the pages glow with a gentle breathing pulse. ' +
             'Slow, calm, ambient motion. The final frame looks identical to the first frame.'
     },
+    // Skill-thumbnail fallback variants (lesson sidebar emblems).
+    'fallback-galaxy-book': {
+        raw: 'ui-skill-thumb-fallback.png',
+        outFile: 'skill-fallbacks/galaxy-book-loop.mp4',
+        outWidth: 480,
+        seconds: 4,
+        motion:
+            'The miniature spiral galaxy above the open book rotates very slowly, its stars ' +
+            'twinkling at different moments; the pages glow with a gentle breathing pulse; ' +
+            'motes of golden light rise. ' + AMBIENT
+    },
+    'fallback-astrolabe': {
+        raw: 'ui-fallback-astrolabe.png',
+        outFile: 'skill-fallbacks/astrolabe-loop.mp4',
+        outWidth: 480,
+        seconds: 4,
+        motion:
+            'The astrolabe rings rotate very slowly at different speeds, the golden star at ' +
+            'its heart pulses gently, motes of light drift upward, background stars twinkle. ' +
+            AMBIENT
+    },
+    'fallback-orrery': {
+        raw: 'ui-fallback-orrery.png',
+        outFile: 'skill-fallbacks/orrery-loop.mp4',
+        outWidth: 480,
+        seconds: 4,
+        motion:
+            'The tiny planets glide slowly along their brass arms around the glowing sun, the ' +
+            'vine leaves stir faintly, background stars twinkle. ' + AMBIENT
+    },
+    'fallback-star-globe': {
+        raw: 'ui-fallback-star-globe.png',
+        outFile: 'skill-fallbacks/star-globe-loop.mp4',
+        outWidth: 480,
+        seconds: 4,
+        motion:
+            'The constellations inside the crystal globe drift and shimmer like fireflies, the ' +
+            'inner gold light breathes softly, background stars twinkle. ' + AMBIENT
+    },
+    'fallback-telescope': {
+        raw: 'ui-fallback-telescope.png',
+        outFile: 'skill-fallbacks/telescope-loop.mp4',
+        outWidth: 480,
+        seconds: 4,
+        motion:
+            'The nebula seen through the dome swirls very slowly, its cyan and violet clouds ' +
+            'shifting, the plants sway faintly in a light breeze, the lantern light flickers ' +
+            'warmly. ' + AMBIENT
+    },
+    'fallback-scroll': {
+        raw: 'ui-fallback-scroll.png',
+        outFile: 'skill-fallbacks/scroll-loop.mp4',
+        outWidth: 480,
+        seconds: 4,
+        motion:
+            'The quill of light slowly traces along the star-chart, the freshly drawn ' +
+            'constellation lines shimmer cyan and gold, tiny motes rise from the ink, the ' +
+            'scroll edge sways faintly. ' + AMBIENT
+    },
     'mascot-tutor': {
         raw: 'ui-mascot-tutor.png',
         outFile: 'loading/mascot-tutor-loop.mp4',
