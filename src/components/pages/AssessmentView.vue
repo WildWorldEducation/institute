@@ -64,7 +64,7 @@ export default {
     },
     methods: {
         imageUrlAlternative(event) {
-            event.target.src = '/images/skill-avatar/recurso.png';
+            event.target.src = '/images/skill-thumb-fallback.jpg';
         }
     }
 };

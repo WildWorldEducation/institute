@@ -35,7 +35,7 @@ export default {
 </script>
 
 <template>
-    <div class="position-relative d-flex">
+    <div class="position-relative d-flex skill-page">
         <div class="container">
             <ShowSkill ref="childComponent" />
         </div>
@@ -44,4 +44,17 @@ export default {
     <SkillTimeTracker v-if="showSkillStore.skill" ref="skillTimeTracker" />
 </template>
 
-<style scoped></style>
+<style scoped>
+/* Observatory backdrop for the lesson page */
+.skill-page {
+    min-height: 100vh;
+    background: linear-gradient(
+        180deg,
+        #0a0c26 0%,
+        var(--obs-space) 55%,
+        #1a1550 100%
+    );
+    color: var(--obs-ink);
+    padding-top: 0.5rem;
+}
+</style>

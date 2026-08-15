@@ -5,6 +5,7 @@ import { useSkillTreeStore } from '../../../stores/SkillTreeStore.js';
 import { useSettingsStore } from '../../../stores/SettingsStore.js';
 import { useTenantStore } from '../../../stores/TenantStore.js';
 import TutorLoadingSymbol from './tutorLoadingSymbol.vue';
+import MascotLoop from '../share-components/MascotLoop.vue';
 import TooltipBtn from './../share-components/TooltipBtn.vue';
 import SpeechRecorder from './SpeechRecorder.vue';
 import { socket, socketState } from '../../../socket.js';
@@ -37,6 +38,7 @@ export default {
     emits: ['progressTutorial', 'skipTutorial', 'skillMastered'],
     components: {
         TutorLoadingSymbol,
+        MascotLoop,
         TooltipBtn,
         SpeechRecorder,
         PlayingAudioAnimation
@@ -45,6 +47,7 @@ export default {
         return {
             message: '',
             socraticTutorChatHistory: [],
+            storyTutorChatHistory: [],
             assessingTutorChatHistory: [],
             transcriptForAssessment: [],
             chatHistory: [],
@@ -140,11 +143,7 @@ export default {
                 this.tutorType = type;
                 await this.getChatHistory();
 
-                if (type == 'socratic')
-                    this.chatHistory = this.socraticTutorChatHistory;
-                else if (type == 'assessing') {
-                    this.chatHistory = this.assessingTutorChatHistory;
-                }
+                this.chatHistory = this.historyForType(type);
 
                 if (!this.$parent.isAITokenLimitReached) {
                     this.mode = 'modal';
@@ -162,14 +161,15 @@ export default {
         async hideTutorModal(type) {
             this.tutorType = type;
             await this.getChatHistory();
-            if (type == 'socratic')
-                this.chatHistory = this.socraticTutorChatHistory;
-            else if (type == 'assessing') {
-                this.chatHistory = this.assessingTutorChatHistory;
-            }
+            this.chatHistory = this.historyForType(type);
             // reset chat input height
             this.modalTextAreaHeight = '60px';
             this.mode = 'docked';
+        },
+        historyForType(type) {
+            if (type === 'assessing') return this.assessingTutorChatHistory;
+            if (type === 'story') return this.storyTutorChatHistory;
+            return this.socraticTutorChatHistory;
         },
         // For both tutors
         async getChatHistory() {
@@ -186,12 +186,7 @@ export default {
                     })
                 };
 
-                let url = '';
-                if (this.tutorType == 'socratic') {
-                    url = `/ai-tutor/socratic/messages-list`;
-                } else if (this.tutorType == 'assessing') {
-                    url = `/ai-tutor/assessing/messages-list`;
-                }
+                const url = `/ai-tutor/${this.tutorType}/messages-list`;
 
                 const response = await fetch(url, requestOptions);
                 const resData = await response.json();
@@ -203,6 +198,9 @@ export default {
                 if (this.tutorType == 'socratic') {
                     this.socraticTutorChatHistory = resData.messages;
                     this.chatHistory = this.socraticTutorChatHistory;
+                } else if (this.tutorType == 'story') {
+                    this.storyTutorChatHistory = resData.messages;
+                    this.chatHistory = this.storyTutorChatHistory;
                 } else if (this.tutorType == 'assessing') {
                     this.assessingTutorChatHistory = resData.messages;
                     this.chatHistory = this.assessingTutorChatHistory;
@@ -220,7 +218,7 @@ export default {
 
                 if (this.chatHistory.length > 0) {
                     this.assistantData.threadId = this.chatHistory[0].thread_id;
-                    if (this.tutorType == 'socratic')
+                    if (this.tutorType !== 'assessing')
                         this.isNewSocraticChat = false;
                     else if (this.tutorType == 'assessing')
                         this.isNewAssessingChat = false;
@@ -278,10 +276,7 @@ export default {
                 })
             };
 
-            let url = '';
-            if (this.tutorType == 'socratic')
-                url = `/ai-tutor/socratic/generate-tts`;
-            else url = `/ai-tutor/assessing/generate-tts`;
+            const url = `/ai-tutor/${this.ttsType}/generate-tts`;
 
             const response = await fetch(url, requestOptions);
             const responseData = await response.json();
@@ -592,10 +587,12 @@ export default {
                 this.$parent.showGuestTooltip();
             } else {
                 this.isLoading = true;
-                this.loadingMessage = `Loading ${type === 'socratic'
-                        ? 'Socratic Tutor'
-                        : 'Conversational Test'
-                    }...`;
+                const tutorNames = {
+                    socratic: 'Socratic Tutor',
+                    story: 'Story Tutor',
+                    assessing: 'Conversational Test'
+                };
+                this.loadingMessage = `Loading ${tutorNames[type] || 'Tutor'}...`;
 
                 this.hasTutorButtonBeenClicked = true;
                 this.showTutorModal(type);
@@ -797,6 +794,12 @@ export default {
         }
     },
     computed: {
+        // TTS bucket mapping only: story reuses the socratic TTS route (clips
+        // are keyed by thread id, and story has its own thread). Messages and
+        // history are fully per-mode.
+        ttsType() {
+            return this.tutorType === 'assessing' ? 'assessing' : 'socratic';
+        },
         sortedChatHistory() {
             // Always return an array, even if chatHistory is not available
             if (!this.chatHistory || !Array.isArray(this.chatHistory)) {
@@ -983,8 +986,8 @@ export default {
                 <div class="row mb-2 mb-md-3 g-2">
                     <!-- Socratic Tutor -->
                     <div class="col-12 col-md-6">
-                        <button class="btn socratic-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap" :class="{
-                            'text-decoration-underline':
+                        <button class="btn obs-cta obs-cta--socratic ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap" :class="{
+                            'obs-cta-active':
                                 mode !== 'hide' && tutorType === 'socratic',
                             disabled:
                                 hasTutorButtonBeenClicked ||
@@ -1023,8 +1026,8 @@ export default {
                     </div>
                     <!-- Conversational Test -->
                     <div class="col-12 col-md-6" v-if="!$parent.isMastered">
-                        <button class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap" :class="{
-                            'text-decoration-underline':
+                        <button class="btn obs-cta obs-cta--conversational ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap" :class="{
+                            'obs-cta-active':
                                 tutorType === 'assessing',
                             disabled:
                                 (skill.type === 'super' &&
@@ -1070,15 +1073,27 @@ export default {
                         </div>
                     </div>
                 </div>
-                <!-- Link to test page -->
+                <!-- Second row: Story Tutor + MC test -->
                 <div class="row g-2">
-                    <div class="col-12 col-md-6 offset-md-6" v-if="
+                    <!-- Story Tutor: same engine as Socratic, narrative prompt -->
+                    <div class="col-12 col-md-6">
+                        <button class="btn obs-cta obs-cta--story ms-1 fs-2 w-100 py-2 fw-bold h-100 text-nowrap" :class="{
+                            'obs-cta-active':
+                                mode !== 'hide' && tutorType === 'story',
+                            disabled:
+                                hasTutorButtonBeenClicked ||
+                                $parent.isAITokenLimitReached
+                        }" @click="handleTutorClick('story')">
+                            Story Tutor
+                        </button>
+                    </div>
+                    <div class="col-12 col-md-6" v-if="
                         !$parent.isMastered &&
                         skill.type != 'domain' &&
                         skill.id
                     ">
                         <!-- MC Test -->
-                        <button class="btn assessing-btn ms-1 fs-2 w-100 py-2 fw-bold h-100 d-block text-nowrap" :class="{
+                        <button class="btn obs-cta obs-cta--choice ms-1 fs-2 w-100 py-2 fw-bold h-100 d-block text-nowrap" :class="{
                             disabled:
                                 skill.type === 'super' &&
                                 !areAllSubskillsMastered
@@ -1097,11 +1112,16 @@ export default {
                     </div>
                 </div>
             </div>
-            <!-- Unified loading overlay for all loading states -->
+            <!-- Unified loading overlay for all loading states: the mascot
+                 studies/grades while the student waits. -->
             <div v-if="isLoading" class="loading-overlay">
                 <div class="loading-container">
-                    <span class="assessment-loader"></span>
-                    <div class="loading-text mt-3">{{ loadingMessage }}</div>
+                    <MascotLoop
+                        :slug="loadingMessage.includes('Multiple-Choice')
+                            ? 'mascot-test'
+                            : 'mascot-tutor'"
+                        :message="loadingMessage"
+                    />
                 </div>
             </div>
 
@@ -1139,7 +1159,7 @@ export default {
 
                 <!-- Send button -->
                 <button class="btn send-btn" :class="{
-                    'socratic-btn': tutorType === 'socratic',
+                    'socratic-btn': tutorType !== 'assessing',
                     'assessing-btn': tutorType === 'assessing'
                 }" @click="sendMessage()" :disabled="isRecording">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="white">
@@ -1149,14 +1169,9 @@ export default {
             </div>
         </div>
 
-        <!-- Tutor loading animation (docked mode) -->
+        <!-- Tutor loading animation (docked mode): compact mascot clip -->
         <div v-if="mode === 'docked' && waitForAIresponse" class="ai-tutor-processing mt-1">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" width="18" height="18" fill="black">
-                <path
-                    d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z" />
-            </svg>
-            Thinking
-            <TutorLoadingSymbol />
+            <MascotLoop slug="mascot-tutor" size="84px" message="Thinking…" />
         </div>
         <div v-if="
             showChat &&
@@ -1172,7 +1187,7 @@ export default {
             <div v-if="showChat && mode != 'hide'" class="d-flex flex-column mx-auto" :class="{
                 'docked-chat-history': mode === 'docked',
                 'modal-chat-history': mode === 'modal',
-                'socratic-chat': tutorType === 'socratic',
+                'socratic-chat': tutorType !== 'assessing',
                 'assessing-chat': tutorType === 'assessing'
             }" ref="messageInputDiv">
                 <!-- Currently streaming message (docked mode) -->
@@ -1249,10 +1264,21 @@ export default {
                     mode == 'modal'
                 " class="d-flex my-3 tutor-conversation streamed-message" :class="{
                         'mt-auto':
-                            (isNewSocraticChat && tutorType == 'socratic') ||
+                            (isNewSocraticChat && tutorType !== 'assessing') ||
                             (isNewAssessingChat && tutorType == 'assessing')
                     }" v-html="applyMarkDownFormatting(stateOfSocket.streamingMessage)
                         "></div>
+
+                <!-- Waiting on the AI: mascot thinking bubble at the end of
+                     the thread (until streaming takes over) -->
+                <div v-if="waitForAIresponse && !stateOfSocket.isStreaming"
+                    class="d-flex my-3 justify-content-center w-100">
+                    <MascotLoop
+                        :slug="tutorType === 'assessing' ? 'mascot-test' : 'mascot-tutor'"
+                        size="150px"
+                        :message="tutorType === 'assessing' ? 'Reviewing your answer…' : 'Consulting the star charts…'"
+                    />
+                </div>
             </div>
             <!-- User input (modal mode) -->
             <div class="modal-input" v-if="mode === 'modal' && !$parent.isAITokenLimitReached">
@@ -1279,7 +1305,7 @@ export default {
 
 <style scoped>
 .message-divider {
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid var(--obs-line, rgba(124, 92, 240, 0.35));
     padding-top: 25px;
     padding-bottom: 20px;
 }
@@ -1297,7 +1323,9 @@ export default {
     transform: translate(-50%, -50%);
     width: 90%;
     height: 90%;
-    background-color: white !important;
+    background: var(--obs-card-solid, #14173a) !important;
+    color: var(--obs-ink, #e8e6ff);
+    border: 1px solid var(--obs-line-strong, rgba(124, 92, 240, 0.6));
     border-radius: 15px;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
         rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
@@ -1321,7 +1349,7 @@ export default {
 }
 
 .last-message {
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--obs-line, rgba(124, 92, 240, 0.35));
     padding-bottom: 20px;
 }
 
@@ -1332,8 +1360,10 @@ export default {
     width: fit-content;
     max-width: 300px;
     margin-bottom: 0 !important;
-    background-color: white;
-    border-radius: 4px;
+    background: var(--obs-card-solid, #14173a);
+    color: var(--obs-ink, #e8e6ff);
+    border: 1px solid var(--obs-line, rgba(124, 92, 240, 0.35));
+    border-radius: 8px;
     padding: 10px;
     pointer-events: auto;
 }
@@ -1392,7 +1422,7 @@ export default {
     align-items: center;
     gap: 5px;
     border-radius: 25px;
-    border: 1px solid #acacac;
+    border: 1px solid var(--obs-line-strong, rgba(124, 92, 240, 0.6));
     padding: 5px 10px;
     margin-bottom: 10px;
 }
@@ -1509,7 +1539,9 @@ export default {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.8);
+    /* Deep-space dim, not a white wash. */
+    background-color: rgba(10, 12, 38, 0.82);
+    backdrop-filter: blur(3px);
     z-index: 9999;
     display: flex;
     justify-content: center;
@@ -1524,7 +1556,7 @@ export default {
 
 .loading-text {
     font-size: 1.2rem;
-    color: var(--primary-color);
+    color: var(--obs-ink, #e8e6ff);
 }
 
 /* Loading animation */
@@ -1689,5 +1721,53 @@ export default {
         width: 44px;
         height: 44px;
     }
+}
+
+/* Painted image CTAs — the label is baked into the generated art; the button
+   text is kept in the DOM for screen readers but rendered transparent. */
+.obs-cta {
+    aspect-ratio: 5 / 1;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid rgba(124, 92, 240, 0.45);
+    border-radius: 12px;
+    color: transparent !important;
+    text-decoration: none !important;
+    box-shadow: 0 4px 18px rgba(5, 6, 20, 0.55);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.obs-cta:hover,
+.obs-cta:focus {
+    color: transparent !important;
+    box-shadow: 0 0 20px rgba(255, 200, 87, 0.45);
+    transform: translateY(-1px);
+}
+
+/* Active tutor mode gets a gold ring instead of the old text underline. */
+.obs-cta-active {
+    outline: 2px solid var(--obs-gold, #ffc857);
+    box-shadow: 0 0 18px rgba(255, 200, 87, 0.55);
+}
+
+.obs-cta.disabled,
+.obs-cta:disabled {
+    filter: grayscale(0.6) brightness(0.55);
+}
+
+.obs-cta--socratic {
+    background-image: url('/images/buttons/btn-socratic-tutor.jpg');
+}
+
+.obs-cta--conversational {
+    background-image: url('/images/buttons/btn-conversational-test.jpg');
+}
+
+.obs-cta--story {
+    background-image: url('/images/buttons/btn-story-tutor.jpg');
+}
+
+.obs-cta--choice {
+    background-image: url('/images/buttons/btn-multiple-choice-test.jpg');
 }
 </style>

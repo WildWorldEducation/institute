@@ -275,7 +275,7 @@ export default {
     font-family: 'Poppins', sans-serif;
     font-size: 1rem;
     font-weight: lighter;
-    color: #778094;
+    color: var(--obs-ink-dim, #a9a4d9);
 }
 
 .user-name-div {
@@ -298,7 +298,8 @@ export default {
 }
 
 .source {
-    background-color: #f2edffcc;
+    background: var(--obs-card, rgba(18, 21, 54, 0.92));
+    border: 1px solid var(--obs-line, rgba(124, 92, 240, 0.35));
 }
 
 .post-user-row {
@@ -310,8 +311,9 @@ export default {
 
 .forum-post {
     padding: 10px;
-    border-radius: 5px;
-    background-color: white;
+    border-radius: 8px;
+    background: var(--obs-card-solid, #14173a);
+    color: var(--obs-ink, #e8e6ff);
 }
 /* Mobile */
 @media (max-width: 480px) {

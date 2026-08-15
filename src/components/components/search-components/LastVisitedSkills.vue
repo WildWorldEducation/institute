@@ -40,6 +40,13 @@ export default {
 </template>
 
 <style scoped>
+/* Section heading over the dark observatory backdrop */
+.secondary-heading {
+    color: var(--obs-ink) !important;
+    border-left: 3px solid var(--obs-gold);
+    padding-left: 0.5rem;
+}
+
 .icons {
     /*  mix-blend-mode: multiply; */
     height: 30px;
@@ -79,7 +86,7 @@ export default {
 }
 
 .skill-link:hover {
-    border: 1px solid black;
+    border: 1px solid var(--obs-gold);
 }
 
 /* Level colors */

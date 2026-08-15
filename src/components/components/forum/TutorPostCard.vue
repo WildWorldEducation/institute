@@ -441,19 +441,19 @@ export default {
 }
 
 .tutor:last-child {
-    border-bottom: 2px solid #aea3ce;
+    border-bottom: 2px solid var(--obs-line-strong, rgba(124, 92, 240, 0.6));
 }
 
 .tutor:first-child {
-    border-top: 2px solid #aea3ce;
+    border-top: 2px solid var(--obs-line-strong, rgba(124, 92, 240, 0.6));
 }
 
 .tutor:nth-child(odd) {
-    background-color: #ede6ff;
+    background: rgba(124, 92, 240, 0.12);
 }
 
 .tutor:nth-child(even) {
-    background-color: #f8f6ff;
+    background: rgba(124, 92, 240, 0.05);
 }
 
 .tutor-avatar-div {
@@ -462,7 +462,7 @@ export default {
 .cover-letter-word {
     font-size: 16px;
     font-weight: 600;
-    color: rgb(54, 54, 54) !important;
+    color: var(--obs-ink, #e8e6ff) !important;
 }
 
 .tutor-post-content {
@@ -476,11 +476,11 @@ export default {
 
 .user-email {
     font-size: 14px;
-    color: #888;
+    color: var(--obs-ink-dim, #a9a4d9);
 }
 
 .tutor-user-name {
-    color: var(--secondary-heading-colour);
+    color: var(--obs-ink, #e8e6ff);
     font-size: 16px;
     font-weight: 600;
 }
@@ -493,7 +493,7 @@ export default {
 
 .tutor-post {
     flex-direction: column;
-    color: #242323;
+    color: var(--obs-ink-dim, #a9a4d9);
     font-family: sans-serif;
 }
 
@@ -570,9 +570,11 @@ export default {
 
 /* Modal Content/Box */
 .contact-modal-content {
-    background-color: #fefefe;
+    background: var(--obs-card-solid, #14173a);
+    color: var(--obs-ink, #e8e6ff);
     padding: 20px;
-    border: 1px solid #888;
+    border: 1px solid var(--obs-line-strong, rgba(124, 92, 240, 0.6));
+    border-radius: 12px;
     width: 600px !important;
     font-size: 18px;
     /* Could be more or less, depending on screen size */

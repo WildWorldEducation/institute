@@ -14,8 +14,12 @@ export const socketState = reactive({
 });
 
 // "undefined" means the URL will be computed from the `window.location` object ( This is pretty brilliant as we do not have )
+// In dev the socket port is overridable (VITE_SOCKET_URL) so harnesses can
+// stub the tutor backend without colliding with other local servers on 3000.
 const URL =
-    process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:3000';
+    process.env.NODE_ENV === 'production'
+        ? undefined
+        : import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000';
 
 export const socket = io(URL);
 

@@ -111,6 +111,24 @@ export default {
                 .split('_')
                 .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                 .join(' ');
+        },
+        // Nebula tint for the page hero, keyed to the skill's level so each
+        // academic tier has its own sky.
+        levelGlowColor() {
+            switch (this.skill && this.skill.level) {
+                case 'grade_school':
+                    return 'rgba(64, 224, 208, 0.16)';
+                case 'middle_school':
+                    return 'rgba(80, 200, 120, 0.15)';
+                case 'high_school':
+                    return 'rgba(255, 215, 0, 0.13)';
+                case 'college':
+                    return 'rgba(255, 165, 0, 0.14)';
+                case 'phd':
+                    return 'rgba(255, 80, 80, 0.15)';
+                default:
+                    return 'rgba(124, 92, 240, 0.2)';
+            }
         }
     },
     components: {
@@ -559,7 +577,7 @@ export default {
             this.showConfirmModal = true;
         },
         imageUrlAlternative(event) {
-            event.target.src = '/images/skill-avatar/recurso.png';
+            event.target.src = '/images/skill-thumb-fallback.jpg';
         },
         openModal(skill) {
             this.selectedSkill = skill;
@@ -889,9 +907,13 @@ export default {
 
 <template>
     <div class="container">
-        <div id="skill-info-container" :class="{ domain: skill.type == 'domain' }">
+        <div
+            id="skill-info-container"
+            :class="{ domain: skill.type == 'domain' }"
+            :style="{ '--skill-glow': levelGlowColor }"
+        >
             <!-- Name and description -->
-            <div>
+            <div class="obs-rise">
                 <div class="d-flex justify-content-between top-row">
                     <h1 class="heading" :class="{ 'text-center': isMobileCheck < 576 }">
                         {{ calculatedSkillName }}
@@ -902,7 +924,7 @@ export default {
                 <hr class="border border-2 opacity-100 hr mb-2" v-if="isMobileCheck > 576" />
             </div>
             <!-- Buttons -->
-            <div class="row" :class="{
+            <div class="row obs-rise obs-rise-1" :class="{
                 'mb-0':
                     !sessionDetailsStore.isLoggedIn && isMobileCheck < 576,
                 'mb-2':
@@ -1282,12 +1304,12 @@ export default {
                 <hr class="border border-1 opacity-100 hr mt-2 mb-0" v-if="isMobileCheck > 576" />
             </div>
             <!-- Content -->
-            <div class="row">
+            <div class="row obs-rise obs-rise-2">
                 <div class="col-md-8 order-2 order-md-1">
                     <!-- Introduction -->
                     <div class="">
                         <h2 class="h4 secondary-heading">Introduction</h2>
-                        <div class="bg-white rounded p-2" style="min-height: 60px">
+                        <div class="obs-surface rounded p-2" style="min-height: 60px">
                             <p>{{ skill.intro_sentence }}</p>
                         </div>
                     </div>
@@ -1297,7 +1319,7 @@ export default {
                         <h2 class="h4 secondary-heading">
                             Requirements for Mastery
                         </h2>
-                        <div class="bg-white rounded p-2 mastery-requirements-section"
+                        <div class="obs-surface rounded p-2 mastery-requirements-section"
                             v-html="skill.mastery_requirements" style="min-height: 100px"></div>
                     </div>
                 </div>
@@ -1344,7 +1366,8 @@ export default {
                             <!-- Author Icon -->
                             <div v-if="skill.is_human_edited" b-tooltip.hover
                                 title="This page was written or edited by a human">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" height="22">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" height="22"
+                                    class="author-icon">
                                     <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                     <path
                                         d="M112 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm40 304l0 128c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-223.1L59.4 304.5c-9.1 15.1-28.8 20-43.9 10.9s-20-28.8-10.9-43.9l58.3-97c17.4-28.9 48.6-46.6 82.3-46.6l29.7 0c33.7 0 64.9 17.7 82.3 46.6l58.3 97c9.1 15.1 4.2 34.8-10.9 43.9s-34.8 4.2-43.9-10.9L232 256.9 232 480c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-128-16 0z"
@@ -1352,7 +1375,8 @@ export default {
                                 </svg>
                             </div>
                             <div v-else b-tooltip.hover title="This page was written by an AI">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" height="22">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" height="22"
+                                    class="author-icon">
                                     <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                     <path
                                         d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
@@ -1364,7 +1388,8 @@ export default {
                 </div>
             </div>
             <!-- Learning Objectives -->
-            <div v-if="skill.type != 'domain' && showLearningObjectives" class="mt-4" ref="learningObjectivesSection">
+            <div v-if="skill.type != 'domain' && showLearningObjectives" class="mt-4 obs-rise obs-rise-3"
+                ref="learningObjectivesSection">
                 <h2 class="h4 secondary-heading">Learning Objectives</h2>
                 <div v-if="
                     userDetailsStore.role == 'student' && showTutorialTip6
@@ -1389,7 +1414,7 @@ export default {
                         </div>
                     </div>
                 </div>
-                <div class="bg-white rounded p-2">
+                <div class="obs-surface rounded p-2">
                     <div v-for="learningObjective in skill.learningObjectives"
                         class="d-flex mb-3 justify-content-between" :class="{ 'mb-4': learningObjective.showAI }">
                         <div>
@@ -1767,17 +1792,75 @@ export default {
 }
 
 p {
-    color: black !important;
+    color: var(--obs-ink) !important;
 }
 
 .plus-btn {
     height: 44px;
 }
 
+.plus-btn svg {
+    fill: var(--obs-cyan);
+}
+
+/* Dark glass content surface (replaces the old bg-white cards) */
+.obs-surface {
+    background-color: var(--obs-card-solid);
+    border: 1px solid var(--obs-line);
+    color: var(--obs-ink);
+}
+
 /* Mastery Reqruirements Section */
 ::v-deep(.mastery-requirements-section p) {
     font-family: 'Poppins' !important;
-    color: black !important;
+    color: var(--obs-ink) !important;
+}
+
+/* Keep AI/editor-authored rich text readable on dark glass */
+::v-deep(.mastery-requirements-section) {
+    color: var(--obs-ink);
+}
+
+::v-deep(.mastery-requirements-section a) {
+    color: var(--obs-cyan);
+}
+
+::v-deep(.mastery-requirements-section li),
+::v-deep(.mastery-requirements-section span),
+::v-deep(.mastery-requirements-section strong) {
+    color: var(--obs-ink);
+}
+
+/* Page + section headings on the observatory backdrop (the globals carry
+   !important, so these must too). */
+.heading {
+    color: var(--obs-ink) !important;
+}
+
+.secondary-heading {
+    color: var(--obs-gold) !important;
+}
+
+/* Toolbar/utility icons that were primary-purple on white */
+path.primary-icon {
+    fill: var(--obs-cyan);
+}
+
+.author-icon path {
+    fill: var(--obs-ink-dim);
+}
+
+/* Learning-objective bullet dots */
+.obs-surface svg path {
+    fill: var(--obs-gold);
+}
+
+/* Tutorial tooltips: dark glass so the ink text stays readable */
+.explain-tool-tip {
+    background-color: var(--obs-card-solid);
+    color: var(--obs-ink);
+    border: 1px solid var(--obs-line-strong);
+    border-radius: 10px;
 }
 
 /* Tooltips */
@@ -1804,7 +1887,7 @@ p {
 .assessment-btn {
     height: auto;
     max-height: 48px;
-    border: 3px solid var(--secondary-contrast-color);
+    border: 1px solid rgba(255, 120, 140, 0.45);
     font-weight: 500;
     font-size: 16px;
     line-height: 24px;
@@ -1813,16 +1896,22 @@ p {
     max-width: fit-content;
     text-wrap: nowrap;
     border-style: solid;
-    background-color: #7f1e1e;
-    color: white;
+    background: linear-gradient(180deg, #6b1f2f, #481523);
+    color: #ffe9ec;
     /* Matching the text color used by both buttons */
     justify-content: center;
+    transition: box-shadow 0.2s ease;
+}
+
+.assessment-btn:hover {
+    color: #fff;
+    box-shadow: 0 0 14px rgba(255, 120, 140, 0.35);
 }
 
 .socratic-btn {
     height: auto;
     max-height: 48px;
-    border: 3px solid var(--secondary-contrast-color);
+    border: 1px solid var(--obs-line-strong);
     font-weight: 500;
     font-size: 16px;
     line-height: 24px;
@@ -1831,14 +1920,22 @@ p {
     max-width: fit-content;
     text-wrap: nowrap;
     border-style: solid;
-    background-color: #31315f;
-    color: white;
+    background: linear-gradient(180deg, #2a2f6b, #1d2150);
+    color: var(--obs-ink);
+    transition: box-shadow 0.2s ease;
+}
+
+.socratic-btn:hover {
+    color: #fff;
+    border-color: var(--obs-gold);
+    box-shadow: 0 0 14px rgba(255, 200, 87, 0.3);
 }
 
 .info-box {
-    border: 1px solid #a2a9b1;
-    color: black;
-    background-color: white;
+    border: 1px solid var(--obs-line);
+    color: var(--obs-ink);
+    background: var(--obs-card-solid);
+    border-radius: 14px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1848,23 +1945,38 @@ p {
 
 .skill-description {
     font-family: 'Poppins', sans-serif;
-    color: #888;
+    color: var(--obs-ink-dim);
 }
 
 .hr {
-    border-color: var(--dark-color) !important;
+    border-color: var(--obs-line-strong) !important;
     margin-top: 0px;
 }
 
 #skill-info-container {
-    background-color: #f2edffcc;
+    /* Level-tinted nebula hero behind the title + starfield texture, so the
+       top of every skill page has depth and each level has its own sky. */
+    background: url('/images/star-tile.png') repeat,
+        radial-gradient(
+            ellipse 950px 420px at 8% -6%,
+            var(--skill-glow, rgba(124, 92, 240, 0.2)),
+            transparent 60%
+        ),
+        radial-gradient(
+            ellipse 700px 320px at 92% -10%,
+            rgba(69, 216, 226, 0.09),
+            transparent 60%
+        ),
+        var(--obs-card);
+    border: 1px solid var(--obs-line);
     border-radius: 12px;
     padding: 10px 30px;
+    color: var(--obs-ink);
 }
 
 .domain {
-    border-width: 4px;
-    border-color: black;
+    border-width: 2px;
+    border-color: var(--obs-line-strong);
     border-style: solid;
 }
 
@@ -1988,6 +2100,21 @@ p {
 }
 
 .skill-link:hover {
-    border: 1px solid black;
+    border: 1px solid var(--obs-gold);
+}
+
+/* Modals inside the lesson page — observatory dark glass (they inherit a
+   white background from the global stylesheet otherwise, which would clash
+   with the ink text set on p above). */
+.modal-content {
+    background-color: var(--obs-card-solid) !important;
+    color: var(--obs-ink);
+    border: 1px solid var(--obs-line-strong);
+    border-radius: 14px;
+    box-shadow: 0 0 40px rgba(95, 49, 221, 0.25);
+}
+
+.modal-content .heading {
+    color: var(--obs-gold);
 }
 </style>

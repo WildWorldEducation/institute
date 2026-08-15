@@ -267,9 +267,15 @@ export default {
 
 <style scoped>
 .forum-header {
-    background-color: #f2edffcc;
+    /* Observatory dark glass. */
+    background: var(--obs-card, rgba(18, 21, 54, 0.92));
+    border: 1px solid var(--obs-line, rgba(124, 92, 240, 0.35));
     border-radius: 10px;
     padding: 10px;
+}
+
+.forum-header .secondary-heading {
+    color: var(--obs-gold, #ffc857) !important;
 }
 
 .nav-tabs {
@@ -382,13 +388,13 @@ export default {
 
 /* Modal Content/Box */
 :deep(.modal-content) {
-    background-color: #fefefe;
+    background: var(--obs-card-solid, #14173a);
+    color: var(--obs-ink, #e8e6ff);
     margin: 15% auto;
-    /* 15% from the top and centered */
     padding: 20px;
-    border: 1px solid #888;
+    border: 1px solid var(--obs-line-strong, rgba(124, 92, 240, 0.6));
+    border-radius: 12px;
     width: 300px;
-    /* Could be more or less, depending on screen size */
 }
 
 :deep(.modal-btn) {
@@ -399,7 +405,7 @@ export default {
 /* Style For dropdown div */
 :deep(.toggle-actions-bnt) {
     cursor: pointer;
-    background-color: #fefefe;
+    background: var(--obs-card-solid, #14173a);
     border-radius: 50px;
     width: 30px;
     height: 30px;
@@ -411,8 +417,8 @@ export default {
 }
 
 :deep(.toggle-actions-bnt:hover) {
-    outline: 1px solid gray;
-    background-color: white;
+    outline: 1px solid var(--obs-gold, #ffc857);
+    background: var(--obs-card-solid, #14173a);
 }
 
 :deep(.more-icon) {
@@ -421,7 +427,8 @@ export default {
 }
 
 :deep(.action-btns-div) {
-    background-color: white;
+    background: var(--obs-card-solid, #14173a);
+    border: 1px solid var(--obs-line-strong, rgba(124, 92, 240, 0.6));
     border-radius: 12px;
     display: flex;
     flex-direction: column;

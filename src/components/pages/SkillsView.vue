@@ -293,6 +293,7 @@ export default {
 </script>
 
 <template>
+    <div class="skills-page">
     <div id="legend">
         <div class="position-absolute container-fluid legend-div">
             <!-- Mobile -->
@@ -897,9 +898,32 @@ export default {
             </div>
         </div>
     </div>
+    </div>
 </template>
 
 <style scoped>
+/* Observatory backdrop for the collapsible skills list. */
+.skills-page {
+    min-height: 100vh;
+    background: url('/images/star-tile.png') repeat,
+        radial-gradient(
+            ellipse 1100px 480px at 12% -5%,
+            rgba(95, 49, 221, 0.2),
+            transparent 62%
+        ),
+        radial-gradient(
+            ellipse 800px 380px at 88% -8%,
+            rgba(69, 216, 226, 0.1),
+            transparent 60%
+        ),
+        linear-gradient(180deg, #0a0c26 0%, var(--obs-space, #0d1030) 55%, #1a1550 100%);
+    color: var(--obs-ink, #e8e6ff);
+}
+
+.skills-page .heading {
+    color: var(--obs-ink, #e8e6ff);
+}
+
 /* Tooltips */
 .info-panel {
     position: relative;

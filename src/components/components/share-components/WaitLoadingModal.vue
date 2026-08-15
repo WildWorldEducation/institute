@@ -1,9 +1,9 @@
 <script>
-import LoadingSpinner from './LoadingSpinner.vue';
+import MascotLoop from './MascotLoop.vue';
 
 export default {
     components: {
-        LoadingSpinner
+        MascotLoop
     }
 };
 </script>
@@ -14,9 +14,7 @@ export default {
         <!-- Confirm Modal -->
         <div class="modal-content loading-modal">
             <div class="d-flex flex-column gap-4 align-items-center">
-                <!-- Warn Triangle Icon -->
-                <LoadingSpinner />
-                <p>Please wait</p>
+                <MascotLoop slug="mascot-wait" message="Please wait" />
             </div>
         </div>
     </div>

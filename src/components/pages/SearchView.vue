@@ -165,17 +165,19 @@ export default {
 </script>
 
 <template>
+    <div class="search-page">
     <!-- Tutorial button -->
     <div
         v-if="sessionDetailsStore.isLoggedIn"
-        class="container-fluid d-flex info-btn"
+        class="info-btn"
     >
-        <button class="btn" @click="restartTutorial">
+        <button class="btn tutorial-btn" @click="restartTutorial" aria-label="restart tutorial"
+            title="Restart the tutorial">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 192 512"
-                width="20"
-                height="20"
+                width="16"
+                height="16"
                 class="primary-icon"
             >
                 <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
@@ -186,18 +188,23 @@ export default {
         </button>
     </div>
 
-    <!-- Image -->
-    <div class="text-center app-logo-wrapper">
-        <img
-            class="img-fluid"
-            src="/images/app-logo.jpg"
-            alt="icon of a skill tree"
-        />
+    <!-- Living emblem: ambient ping-pong loop, still image as poster -->
+    <div class="text-center app-logo-wrapper obs-rise obs-rise-1">
+        <video
+            class="img-fluid app-logo"
+            src="/images/emblem-loop.mp4"
+            poster="/images/app-logo.jpg"
+            autoplay
+            muted
+            loop
+            playsinline
+            aria-label="living constellation tree of knowledge"
+        ></video>
     </div>
 
     <div class="container">
         <!-- Generate recommended skills bar -->
-        <div class="row mb-4">
+        <div class="row mb-4 obs-rise obs-rise-2">
             <div class="col">
                 <RecommendedSkillsGenerator />
                 <!-- Tooltip -->
@@ -234,7 +241,7 @@ export default {
             </div>
         </div>
         <!--  Last Visited Skills -->
-        <div v-if="sessionDetailsStore.isLoggedIn" class="row">
+        <div v-if="sessionDetailsStore.isLoggedIn" class="row obs-rise obs-rise-3">
             <!--  Last Visited Skills / Mark Assessments -->
             <div class="col mb-2">
                 <div class="h-100">
@@ -315,24 +322,118 @@ export default {
             </div>
         </div>
     </div>
+    </div>
 </template>
 
 <style scoped>
-.info-btn {
-    position: absolute;
+/* Observatory page backdrop */
+.search-page {
+    position: relative;
+    min-height: 100vh;
+    padding-top: 1rem;
+    background: url('/images/star-tile.png') repeat,
+        radial-gradient(
+            ellipse 1100px 480px at 15% -5%,
+            rgba(95, 49, 221, 0.2),
+            transparent 62%
+        ),
+        radial-gradient(
+            ellipse 800px 380px at 85% -8%,
+            rgba(69, 216, 226, 0.1),
+            transparent 60%
+        ),
+        linear-gradient(
+        180deg,
+        #0a0c26 0%,
+        var(--obs-space) 55%,
+        #1a1550 100%
+    );
+    color: var(--obs-ink);
 }
 
-/* Image */
-.app-logo-wrapper img {
-    max-height: 250px;
+/* Tutorial restart button — a deliberate circular icon button, top right. */
+.info-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    z-index: 10;
+}
+
+.tutorial-btn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--obs-card);
+    border: 1px solid var(--obs-line);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.tutorial-btn svg path {
+    fill: var(--obs-ink-dim);
+}
+
+.tutorial-btn:hover {
+    border-color: var(--obs-gold);
+    box-shadow: 0 0 12px rgba(255, 200, 87, 0.35);
+}
+
+.tutorial-btn:hover svg path {
+    fill: var(--obs-gold);
+}
+
+/* Image — circular, melting into the space background. */
+.app-logo-wrapper {
+    position: relative;
+    padding-top: 1.5rem;
+}
+
+.app-logo {
+    max-height: 240px;
+    border-radius: 50%;
+    -webkit-mask-image: radial-gradient(
+        circle,
+        black 58%,
+        transparent 71%
+    );
+    mask-image: radial-gradient(circle, black 58%, transparent 71%);
+}
+
+/* Soft nebula glow behind the emblem. */
+.app-logo-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 340px;
+    height: 340px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(
+        circle,
+        rgba(95, 49, 221, 0.25) 0%,
+        rgba(69, 216, 226, 0.06) 45%,
+        transparent 70%
+    );
+    pointer-events: none;
 }
 
 /* Tooltips */
 .info-panel {
-    border-color: var(--primary-color);
+    border-color: var(--obs-line-strong);
     border-width: 2px;
     border-style: solid;
     width: fit-content;
+}
+
+/* Tutorial tooltips: dark glass so they read on the space backdrop */
+.explain-tool-tip {
+    background-color: var(--obs-card-solid);
+    color: var(--obs-ink);
+    border: 1px solid var(--obs-line-strong);
+    border-radius: 10px;
 }
 
 /* Modals */
@@ -357,16 +458,23 @@ export default {
     /* Black w/ opacity */
 }
 
-/* Modal Content/Box */
+/* Modal Content/Box — observatory dark glass */
 .modal-content {
-    background-color: #fefefe;
+    background-color: var(--obs-card-solid);
+    color: var(--obs-ink);
     margin: 5% auto;
     /* 5% from the top and centered */
     padding: 20px;
-    border: 1px solid #888;
+    border: 1px solid var(--obs-line-strong);
+    border-radius: 14px;
+    box-shadow: 0 0 40px rgba(95, 49, 221, 0.25);
     max-width: 520px;
     font-size: 18px;
     /* Could be more or less, depending on screen size */
+}
+
+.modal-content .heading {
+    color: var(--obs-gold);
 }
 
 /* Small devices (portrait phones) */

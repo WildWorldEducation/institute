@@ -451,7 +451,7 @@ export default {
 </template>
 
 <style scoped>
-/* The skill buttons */
+/* The skill buttons — observatory dark glass, level color on the border. */
 .skill-button {
     padding: 0px 10px;
     margin-bottom: 10px;
@@ -462,7 +462,8 @@ export default {
     height: 84px;
     font-size: 20px;
     font-weight: 500;
-    background-color: #f2edff;
+    background: var(--obs-card, rgba(18, 21, 54, 0.92));
+    color: var(--obs-ink, #e8e6ff);
     scroll-margin-top: 35vh;
 }
 
@@ -471,7 +472,7 @@ export default {
 }
 
 .skill-button:hover {
-    background-color: #e4def0;
+    background: rgba(124, 92, 240, 0.22);
 }
 
 .skill-button:active {
@@ -496,10 +497,10 @@ export default {
 .domains {
     width: 360px;
     height: 71px;
-    color: black !important;
+    color: var(--obs-ink, #e8e6ff) !important;
     font-size: 20px;
     font-weight: 400;
-    border-color: black;
+    border-color: var(--obs-line-strong, rgba(124, 92, 240, 0.6));
     background-position: right;
     flex-direction: row;
 }
@@ -526,7 +527,7 @@ export default {
 
 /* Background when mastered */
 .grade-school-level.mastered {
-    background-color: #d9fbf3;
+    background-color: rgba(255, 200, 87, 0.16);
 }
 
 /* Border */
@@ -536,7 +537,7 @@ export default {
 
 /* Background when mastered */
 .middle-school-level.mastered {
-    background-color: #99d899;
+    background-color: rgba(255, 200, 87, 0.16);
 }
 
 /* Border */
@@ -546,7 +547,7 @@ export default {
 
 /* Background when mastered */
 .high-school-level.mastered {
-    background-color: #ffe34c;
+    background-color: rgba(255, 200, 87, 0.16);
 }
 
 /* Border */
@@ -556,7 +557,7 @@ export default {
 
 /* Background when mastered */
 .college-level.mastered {
-    background-color: #ffd999;
+    background-color: rgba(255, 200, 87, 0.16);
 }
 
 /* Border */
@@ -566,15 +567,15 @@ export default {
 
 /* Background when mastered */
 .phd-level.mastered {
-    background-color: #ff9999;
+    background-color: rgba(255, 200, 87, 0.16);
 }
 
 .top-level-skills svg path {
-    fill: black;
+    fill: var(--obs-ink, #e8e6ff);
 }
 
 .user-name {
-    background-color: white;
+    background-color: var(--obs-card-solid, #14173a);
 }
 
 /* Locked, unlocked and mastered styling */

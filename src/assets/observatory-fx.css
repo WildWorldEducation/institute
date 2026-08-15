@@ -1,0 +1,245 @@
+/*
+ * Observatory FX — the Institute's shared loading + entrance language.
+ * Ported from RFab's "Transmission" loading-FX rulebook, translated to the
+ * observatory brand (deep indigo, starlight cyan, earned gold):
+ *   - loaders are DELAY-GATED (0.2s) so near-instant waits never flash one
+ *   - one-shot entrances, linear/ease-out easing, compositor-only properties
+ *   - end state = rest state (no pop at animation handoff)
+ *   - everything respects prefers-reduced-motion
+ */
+
+:root {
+    --obs-space: #0d1030;
+    --obs-space-2: #191650;
+    --obs-ink: #e8e6ff;
+    --obs-ink-dim: #a9a4d9;
+    --obs-gold: #ffc857;
+    --obs-cyan: #45d8e2;
+    --obs-purple: #5f31dd;
+    --obs-purple-soft: #7c5cf0;
+    --obs-card: rgba(18, 21, 54, 0.92);
+    --obs-card-solid: #14173a;
+    --obs-line: rgba(124, 92, 240, 0.35);
+    --obs-line-strong: rgba(124, 92, 240, 0.6);
+}
+
+/* The one true spin. */
+@keyframes obsSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes obsFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/*
+ * Section entrance — the observatory "materialize": a starlight take on
+ * RFab's digitize beam-in. Three layers, compositor-only:
+ *   the element flickers in with cyan/gold RGB-split shadows,
+ *   a ::before interlace veil ("static") fades out over it,
+ *   a ::after scanline sweeps top->bottom.
+ * End state = rest state (last keyframe drops every effect).
+ */
+@keyframes obsRise {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+        box-shadow: none;
+    }
+    8% {
+        opacity: 0.85;
+        transform: none;
+        box-shadow: -3px 0 0 rgba(69, 216, 226, 0.45),
+            3px 0 0 rgba(255, 200, 87, 0.45);
+    }
+    22% {
+        opacity: 0.55;
+    }
+    38% {
+        opacity: 1;
+        box-shadow: -1px 0 0 rgba(69, 216, 226, 0.25),
+            1px 0 0 rgba(255, 200, 87, 0.25);
+    }
+    100% {
+        opacity: 1;
+        transform: none;
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    }
+}
+
+@keyframes obsMatVeil {
+    0% {
+        opacity: 1;
+    }
+    45% {
+        opacity: 0.55;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes obsMatScan {
+    0% {
+        top: 0%;
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    85% {
+        top: 100%;
+        opacity: 1;
+    }
+    100% {
+        top: 100%;
+        opacity: 0;
+    }
+}
+
+/*
+ * Scan-ring loader: gold scan head with a cyan ghost trailing it — the
+ * branded replacement for every generic border spinner. Delay-gated.
+ */
+.obs-loader {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 3px solid rgba(69, 216, 226, 0.15);
+    border-top-color: var(--obs-gold);
+    border-right-color: rgba(69, 216, 226, 0.55);
+    box-shadow: 0 0 12px rgba(255, 200, 87, 0.3),
+        inset 0 0 8px rgba(69, 216, 226, 0.12);
+    animation: obsSpin 0.9s linear infinite,
+        obsFadeIn 0.15s ease 0.2s backwards;
+}
+
+.obs-loader--sm {
+    width: 22px;
+    height: 22px;
+    border-width: 2px;
+}
+
+/* One-shot section entrance + stagger helpers. Stagger classes set a
+   custom property so the veil/scanline pseudos share the same delay. */
+.obs-rise {
+    position: relative;
+    animation: obsRise 0.55s linear backwards;
+    animation-delay: var(--obs-mat-delay, 0s);
+}
+
+/* Interlace "static" veil that burns off. */
+.obs-rise::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    border-radius: inherit;
+    background: repeating-linear-gradient(
+            0deg,
+            rgba(69, 216, 226, 0.12) 0px,
+            rgba(69, 216, 226, 0.12) 1px,
+            transparent 1px,
+            transparent 3px
+        ),
+        rgba(13, 16, 48, 0.35);
+    animation: obsMatVeil 0.55s linear both;
+    animation-delay: var(--obs-mat-delay, 0s);
+}
+
+/* Scanline sweep. */
+.obs-rise::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 2px;
+    z-index: 4;
+    pointer-events: none;
+    background: linear-gradient(
+        90deg,
+        transparent 5%,
+        var(--obs-cyan) 35%,
+        var(--obs-gold) 65%,
+        transparent 95%
+    );
+    box-shadow: 0 0 10px var(--obs-cyan), 0 0 20px rgba(255, 200, 87, 0.4);
+    animation: obsMatScan 0.55s linear both;
+    animation-delay: var(--obs-mat-delay, 0s);
+}
+
+.obs-rise-1 {
+    --obs-mat-delay: 0.06s;
+}
+.obs-rise-2 {
+    --obs-mat-delay: 0.16s;
+}
+.obs-rise-3 {
+    --obs-mat-delay: 0.26s;
+}
+.obs-rise-4 {
+    --obs-mat-delay: 0.36s;
+}
+.obs-rise-5 {
+    --obs-mat-delay: 0.46s;
+}
+.obs-rise-6 {
+    --obs-mat-delay: 0.56s;
+}
+
+/* Dark glass panel — the standard observatory surface. */
+.obs-panel {
+    background: var(--obs-card);
+    border: 1px solid var(--obs-line);
+    border-radius: 14px;
+    color: var(--obs-ink);
+    backdrop-filter: blur(6px);
+}
+
+/* Space-gradient page backdrop for themed pages: starfield texture + two
+   soft nebula glows at the top so page tops never read flat. */
+.obs-page {
+    background: url('/images/star-tile.png') repeat,
+        radial-gradient(
+            ellipse 1100px 480px at 12% -5%,
+            rgba(95, 49, 221, 0.22),
+            transparent 62%
+        ),
+        radial-gradient(
+            ellipse 800px 380px at 88% -8%,
+            rgba(69, 216, 226, 0.1),
+            transparent 60%
+        ),
+        linear-gradient(180deg, #0a0c26 0%, var(--obs-space) 55%, #1a1550 100%);
+    color: var(--obs-ink);
+    min-height: 100%;
+}
+
+/* Entrances are killed for reduced-motion users and on coarse-pointer
+   (mobile) devices, per the loading-FX rulebook. */
+@media (prefers-reduced-motion: reduce), (hover: none) {
+    .obs-rise {
+        animation: none;
+    }
+    .obs-rise::before,
+    .obs-rise::after {
+        content: none;
+        animation: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .obs-loader {
+        animation-duration: 3s, 0.15s;
+        box-shadow: none;
+    }
+}

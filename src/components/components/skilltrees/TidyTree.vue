@@ -9,6 +9,21 @@ import JoystickControl from './JoystickControl.vue';
 
 import * as d3 from 'd3';
 import TidyTreeTooltip from './TidyTreeTooltip.vue';
+import {
+    OBS,
+    LOD,
+    hexToRgba,
+    sizeComp,
+    cardBlend,
+    starColor,
+    levelColor,
+    levelBorderColor,
+    starSprite,
+    nebulaSprite,
+    makeDustTile,
+    makeSpaceBackdrop,
+    subjectShape
+} from './observatoryTheme';
 
 export default {
     setup() {
@@ -76,6 +91,8 @@ export default {
                 'data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAMAAADDpiTIAAAB+FBMVEUAAAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD/AAD///+5InsqAAAApnRSTlMAAQIDBAUGBwgJCgsMDQ4PEBESExQVFxkaGxwdHyAjJCgpKisuMTI2ODlBQkhJSktOT1VXWF1eYWJkZWZnaGlvcHJzdHd4eXp8fX6AgYOFiouMkZKTlJWWmJmbnJ2en6CipaqrrK2usLGytLW2t7i5uru8vb6/wMHCw8TFxsnKzc/Q0dLV2Nna29zd3t/g4+Xm5+jp6uvs7fDx8vP09fb3+fr7/P3+vGYUqgAAAAFiS0dEp8C3KwMAAAi2SURBVHja7dxnd5VFGEZhSUBOCAQL9oLYG/besLegolEUbKjYQVARFAuCLVYUsSCgiDK/04TlFxUkWW/OO+eZufYvuNfsPXOSkHDYYQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHJIjhuyvkmln3Pjo2q92pTF+GV09cvV8+ytixsXPbE//Yuvy8/vsr4ITH/wxHZCtw/PsL55TntqTDsrukWPtL5qB23em/+Xn2w+3v1zO/SIdks0L7C/1K/9Fe9IE+G2R/UXSeT5NkMf67S+POWvThHlxwP7SmLc5TYI3Oz33vf+62Ptzc8yWNClemt5j/l+IvT/7/Z+k/5SWhvbfa/uj3f9xrgztv7f2R/Sfdp0W2n8v7Y/3/u/ng77I/ntof8j7P851of33zP6w/tNPR4f23yP7g77/+7k/tP/e2B/3/o//09rc0P57YX/k+z/GraH998D+0Pd/jE9i+8++P7r/lM4O7T/3/uDv/zhLYvvPuz/+/U9pS2z/WfeX4D/tOzq0/5z7C3j/x7k0tP+M+4u4/2PcHdt/tv2l+E9Px/afa38h7/8Y78b2n2l/Mfc/pc9i+8+zvyD/6bvY/rPsL+f9H/+9mtj+c+wv6f6P/fF9bP8Z9pflP22N7b/9/YX5T5/G9t/6/tL8pw2x/be9vzj/6fHY/lveX57/dEds/+3uL+r7v79ZGNt/q/sLvP9p71Bs/3uH+G/EB7H9t7m/xPc/pcWx/be4v8j7n9Lpsf23t79Q/5uC+9/EfzOuj+2/tf2l+t82ENv/tkr+r6h5XfLf1k9RuuW/lp8Cdev+p28GY/tvaX+x/tNlsf23tL/Y9z+9Htz/6+5/I7YfH9t/O/vL9b/vktj+29lf7vuf7o3tv5395d7/tCy4/2XufyNW9sf2v7Lf/W/CKzNj+29lP//8888///zzzz///PPPfwH+Xw3u/1X++eeff/75559//vnnn3/++eeff/75559//g/IquD+V/HPP//8888///zzzz///PPPP//8888///zzzz///z2/TnD/Hf75559//vnnn3/+J8Pq4P5X888///zzzz///PPPP//8888///zzzz///PPPP//8888///zzzz//6bXg/l/jn3/++eeff/75559//vnnn3/++eeff/755/+ArAnufw3//PPPP//8888///zzzz//Ezu/geD+B/jnn3/++eeff/75559//vnnn3/++eef/4OxNrj/tfzzzz///PPPP//8888///zzzz///PPPP//8888///z/gw2Dsf23sp9//vnnn3/++eeff/75559//vnnn3/+o/qfHdz/bP75559//vnnf7K8Hdz/2/zzzz///PPPP//8888///zzXwr967p2futmtbF/Zez92Xk4+P152P1vxOLg92ex+9+Ihfti35/o+3Nzwg+xzy/6/uy80a3ze2uW/QG4Ivj9ucL9b8Ssr2OfX/T92bmrW+/noP0R6HzXnfN7Z7b9Ibgp+PndxH8zNgc/v838N2JB8PNbwH8z7gv+9dN9vv5rxqbg92eT+9+IoT9in1/0/dlZOPXnt37Q/jjcGfz+3On+N+PJ4Of3JP/N2Bj8/Dby34zR4Oc3yn8zpvYH6e/MsT8YO4Of307+m7FrKg8ww3+gE31/drZN6RO6cY79wfg8xT7B6Puz894UfxvV9isafX92Vkz1D1JavkPR92fnnhT7BKPvz84lU/+PKa2+otH3Z+eoP1PoOxR9f34+SrFPMPr+7DzQjV+pavEVjb4/O2d15Zcq27tD0ffn5+PgJ/ixAppxS3f+sKK1VzT6/uwM/phC36Ho+/Nzf4p9h6Lvz86R21PoOxR9f36uT7FPMPr+7PS9n0K/otH352f+jth3KPr+/FyeYp9g9P35WZpiv6LR9+f/MuDZ2Hco+v78dN6KfYei78/PrHWx71D0/QpQgAIUoAAFKEABClCAAhSgAAUoQAEKUIACFKAABShAAQpQgAIUoAAFKEABTlABTlABTlABTlABTlABTlABTlABTlABTlABTlABTlABTlABTlABTlABTlABTlABTlABClCAAhSgAAUoQAEKUIACFKAABShAAQpQgAIUoAAFKEABClCAAhSgAAUoQAEKUIACFKAABShAAQpQgAIUoAAFKEABClCAAhSgAAUoQAEKUIACFKAABShAAQpQgAIUoAAFKEABClCAAhSgAAUoQAEKUIACFKAABShAAQpQgAIUoAAFKEABClCAAhSgAAUoQAEKUIACFKAABShAAQpQgAIUoAAFKEABClCAAhSgAAUoQAEKUIACFKAABShAAQpQgAIUoAAFKEABClCAAhSgAAUoQAEKUIACFKAABdjf+wxu6NoJru/YX/cb8PJ0++t+A5bZX/kbcK39dRfw25n21/0psGWG/XW/ATfbX3cBO46zv+5PgRH7634Ddh9jf90FDNtfdwHf9ttfdwEX2F/3V4LL7a/7DfjW/soLONX+uj8FrrG/7jfgIfvrLmCV/XUXMGp/3QX8Yn/dBfzZZ3/dBcy2v+7vBufYX/UbsK/P/qoL2Gl/3Z8CX9pf9xuwxv66C3jE/ro/BW6wv+434DT7qy5g+zT7q/4UWGF/3W/AhfZXXcAPM+yv+lNgif1VvwG/n2R/1W/AE/ZX/Qb8eor9VRdwj/1Vfwp83rG/5jdg73n2V13AbfZX/Snw3DT7a34Deu0/242+vwfu0PrJnN+Hc+0vjZnPTuL+zLW/PPqXTfjzc6b9RXLVrgl9/zTcZ3+hnL5lAj8/Ocf+cpm+6OdD/Px8uGN/0Rw7svvgx7fniZPtL555w1sP8vszS06wvwr6Llj+nzP8fsVFM+yviPlXj6we3bH/7ye/XLP0hgX218nQXPsBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAN3nLw3s+6qhCaLsAAAAAElFTkSuQmCC',
             currentNodeX: 0,
             currentNodeY: 0,
+            // Pre-rendered background starfield tile (observatory theme).
+            dustTile: null,
             visibleRangeX: 0,
             visibleRangeY: 0,
             iconDictionary: [],
@@ -129,6 +146,9 @@ export default {
             children: userSkills
         };
 
+        // Background starfield must exist before the first drawTree call.
+        this.dustTile = makeDustTile();
+
         this.getAlgorithm();
 
         // Set up the Hidden Canvas for Interactivity.
@@ -171,6 +191,13 @@ export default {
             var node = this.colToNode[colString];
 
             if (node && node.data.id) {
+                // In the star-map band a click flies to the star rather than
+                // opening the skill — you can't read a card that isn't drawn.
+                if (this.scale < LOD.CARD_FADE_START) {
+                    this.goToLocation(node);
+                    return;
+                }
+
                 // We clicked on something, lets set the color of the node
                 // we also have access to the data associated with it, which in
                 // this case is just its original index in the data array.
@@ -300,7 +327,9 @@ export default {
         // We have to construct the d3 zoom function and assign the zoom event
         this.d3Zoom = d3
             .zoom()
-            .scaleExtent([0.05, 4])
+            // Floor low enough to survey most of the galaxy at once — the
+            // zoom-compensated star sizes keep nodes visible down here.
+            .scaleExtent([0.02, 4])
             .on('zoom', ({ transform }) => {
                 this.transformData = transform;
                 this.drawTree(transform);
@@ -318,6 +347,11 @@ export default {
         // For the loading animation.
 
         this.isLoading = false;
+
+        this.startTwinkle();
+    },
+    beforeUnmount() {
+        if (this._twinkleRaf) cancelAnimationFrame(this._twinkleRaf);
     },
     methods: {
         getAlgorithm() {
@@ -364,44 +398,70 @@ export default {
         drawTree(transform) {
             this.nodes = this.root.descendants();
             this.transformData = transform;
-            // Zoom and pan.
-            this.context.save();
-            this.hiddenCanvasContext.save();
-            // Clear canvases.
-            this.context.clearRect(
-                0,
-                0,
-                this.context.canvas.width,
-                this.context.canvas.height
-            );
-            this.hiddenCanvasContext.clearRect(
-                0,
-                0,
-                this.hiddenCanvasContext.canvas.width,
-                this.hiddenCanvasContext.canvas.height
-            );
-            this.context.translate(transform.x, transform.y);
-            this.hiddenCanvasContext.translate(transform.x, transform.y);
-            this.context.scale(transform.k, transform.k);
-            this.hiddenCanvasContext.scale(transform.k, transform.k);
+            // Twinkle frames only repaint the stars: the backdrop and links
+            // are blitted from the static layer built on the last interactive
+            // draw, and the hidden hit-test canvas is left untouched. This is
+            // what keeps the shimmer cheap on the ~4k-node tree.
+            const drawHidden = !this._twinkleFrame;
 
             // For node labels to appear at correct zoom level.
             this.scale = transform.k;
             this.panX = transform.x;
             this.panY = transform.y;
 
-            // Draw links.
-            const links = this.root.links();
-            this.context.beginPath();
+            const w = this.context.canvas.width;
+            const h = this.context.canvas.height;
+            if (
+                !this._staticLayer ||
+                this._staticLayer.width !== w ||
+                this._staticLayer.height !== h
+            ) {
+                this._staticLayer = document.createElement('canvas');
+                this._staticLayer.width = w;
+                this._staticLayer.height = h;
+            }
 
-            for (const link of links) {
-                // Do not render parts of tree not in the canvas
-                // to improve performance.
-                if (!this.checkIfLinkInViews(link, transform)) {
-                    continue;
+            if (!this._twinkleFrame) {
+                // Rebuild the static layer: space backdrop + links.
+                const sctx = this._staticLayer.getContext('2d');
+                sctx.save();
+                sctx.clearRect(0, 0, w, h);
+                this.paintSpace(sctx, transform);
+                sctx.translate(transform.x, transform.y);
+                sctx.scale(transform.k, transform.k);
+                const links = this.root.links();
+                for (const link of links) {
+                    // Do not render parts of tree not in the canvas
+                    // to improve performance.
+                    if (!this.checkIfLinkInViews(link, transform)) {
+                        continue;
+                    }
+                    this.drawLink(link, sctx);
                 }
+                sctx.restore();
+            }
 
-                this.drawLink(link);
+            // Zoom and pan.
+            this.context.save();
+            if (drawHidden) this.hiddenCanvasContext.save();
+            // Clear canvases.
+            this.context.clearRect(0, 0, w, h);
+            if (drawHidden) {
+                this.hiddenCanvasContext.clearRect(
+                    0,
+                    0,
+                    this.hiddenCanvasContext.canvas.width,
+                    this.hiddenCanvasContext.canvas.height
+                );
+            }
+            // Backdrop + links land in one blit. (Never on the hidden canvas
+            // — that would break color picking.)
+            this.context.drawImage(this._staticLayer, 0, 0);
+            this.context.translate(transform.x, transform.y);
+            this.context.scale(transform.k, transform.k);
+            if (drawHidden) {
+                this.hiddenCanvasContext.translate(transform.x, transform.y);
+                this.hiddenCanvasContext.scale(transform.k, transform.k);
             }
 
             // Draw nodes.
@@ -437,15 +497,36 @@ export default {
                     this.colToNode[node.__pickColor] = node;
                 }
                 // On the hidden canvas each rectangle gets a unique color.
-                this.hiddenCanvasContext.fillStyle = node.__pickColor;
+                if (drawHidden) {
+                    this.hiddenCanvasContext.fillStyle = node.__pickColor;
+                }
 
                 this.drawNode(node);
             }
 
             this.context.restore();
-            this.hiddenCanvasContext.restore();
+            if (drawHidden) this.hiddenCanvasContext.restore();
         },
 
+        // Gentle star shimmer: a throttled rAF loop that redraws the visible
+        // canvas with a time-varying phase. It runs only while stars are on
+        // screen (card view has nothing to twinkle) and never touches the
+        // hidden hit-test canvas, which stays valid between interactions.
+        startTwinkle() {
+            const tick = (t) => {
+                this._twinkleRaf = requestAnimationFrame(tick);
+                if (t - (this._twinkleLast || 0) < 45) return; // ~22fps
+                this._twinkleLast = t;
+                if (this.isLoading) return;
+                if (!this.transformData || !this.transformData.k) return;
+                if (cardBlend(this.scale) >= 1) return;
+                this._twinkleT = t / 1000;
+                this._twinkleFrame = true;
+                this.drawTree(this.transformData);
+                this._twinkleFrame = false;
+            };
+            this._twinkleRaf = requestAnimationFrame(tick);
+        },
         drawNode(node) {
             // Make sure the nodes have solid outlines
             this.context.setLineDash([]);
@@ -455,20 +536,28 @@ export default {
             const isSearched =
                 node.data.skill_name === this.resultNode?.data.skill_name;
 
-            if (this.scale > 0.6) {
-                this.drawRoundRectNode(ctx1, node);
-            } else {
+            // Crossfade between the star map (far) and card view (near)
+            // instead of hard-switching, so zooming doesn't "pop".
+            const blend = cardBlend(this.scale);
+
+            if (blend < 1) {
+                ctx1.globalAlpha = 1 - blend;
                 this.drawNodeCircle(ctx1, node);
+                ctx1.globalAlpha = 1;
             }
 
-            // Drawing Image
-            if (this.scale >= 0.75 && this.iconDictionary) {
-                this.drawImage(node, ctx1);
-            }
+            if (blend > 0) {
+                ctx1.globalAlpha = blend;
+                this.drawRoundRectNode(ctx1, node);
 
-            // Drawing Text.
-            if (this.scale > 0.6) {
+                // Drawing Image
+                if (this.scale >= LOD.ICON_MIN && this.iconDictionary) {
+                    this.drawImage(node, ctx1);
+                }
+
+                // Drawing Text.
                 this.drawNodeText(node, ctx1, isSearched);
+                ctx1.globalAlpha = 1;
             }
 
             // If user currently searching for the node we draw addition details
@@ -476,42 +565,98 @@ export default {
                 this.drawPointingHand(node, ctx1);
             }
 
-            // Hidden context.
-            if (this.scale > 0.6) {
-                this.drawNodeOnHiddenCanvas(ctx2, node);
+            // Hidden context — always drawn (except on twinkle-only frames),
+            // so stars stay clickable and hoverable when zoomed out.
+            if (!this._twinkleFrame) {
+                this.drawNodeOnHiddenCanvas(ctx2, node, blend);
+            }
+        },
+        // Screen-space space backdrop: pre-rendered nebula/milky-way scene
+        // with a very slow drift, plus two parallax dust layers on top.
+        paintSpace(ctx, transform) {
+            const w = ctx.canvas.width;
+            const h = ctx.canvas.height;
+            const PAD = 100;
+            if (
+                !this.spaceBackdrop ||
+                this.spaceBackdrop.width !== w + PAD * 2 ||
+                this.spaceBackdrop.height !== h + PAD * 2
+            ) {
+                this.spaceBackdrop = makeSpaceBackdrop(w + PAD * 2, h + PAD * 2);
+            }
+            // Ping-pong the offset inside the padding so long pans never
+            // cause a visible wrap jump.
+            const pingPong = (v) => {
+                const m = (((v % (2 * PAD)) + 2 * PAD) % (2 * PAD));
+                return m < PAD ? m : 2 * PAD - m;
+            };
+            ctx.drawImage(
+                this.spaceBackdrop,
+                -pingPong(transform.x * 0.02),
+                -pingPong(transform.y * 0.02)
+            );
+
+            if (!this.dustTile) return;
+            const pattern = ctx.createPattern(this.dustTile, 'repeat');
+            const tile = this.dustTile.width;
+            // Two layers at different parallax factors for depth.
+            for (const [factor, alpha] of [
+                [0.05, 0.45],
+                [0.12, 0.9]
+            ]) {
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                ctx.translate(
+                    (transform.x * factor) % tile,
+                    (transform.y * factor) % tile
+                );
+                ctx.fillStyle = pattern;
+                ctx.fillRect(-tile, -tile, w + tile * 2, h + tile * 2);
+                ctx.restore();
             }
         },
 
-        drawLink(link) {
+        drawLink(link, ctx) {
+            const targetCtx = ctx || this.context;
             const linkGenerator = d3
                 .linkHorizontal()
                 .x((d) => d.y)
                 .y((d) => d.x)
-                .context(this.context);
+                .context(targetCtx);
+
+            // Widths (and dashes) are in world units, so compensate for zoom
+            // to keep lines a readable on-screen size — previously a 2px line
+            // rendered at 0.1px when zoomed out, which is why the far view
+            // looked like faint scratches.
+            const comp = sizeComp(this.scale);
 
             if (
                 (link.source.data.type == 'super' &&
                     link.target.data.position == 'end') ||
                 link.target.data.type == 'sub'
             ) {
-                this.context.setLineDash([5, 3]);
+                targetCtx.setLineDash([5 * comp, 3 * comp]);
             } else {
-                this.context.setLineDash([]);
+                targetCtx.setLineDash([]);
             }
 
-            this.context.beginPath();
+            targetCtx.beginPath();
             linkGenerator(link);
 
-            // If skill is mastered.
+            // Mastered paths are golden threads; the rest are faint
+            // constellation hairlines.
             if (link.target.data.is_mastered == 1) {
-                this.context.lineWidth = 5;
-                this.context.strokeStyle = '#228C22'; // Green
+                targetCtx.lineWidth = 6 * comp;
+                targetCtx.strokeStyle = hexToRgba(OBS.gold, 0.22);
+                targetCtx.stroke();
+                targetCtx.lineWidth = 2.2 * comp;
+                targetCtx.strokeStyle = OBS.gold;
             } else {
-                this.context.lineWidth = 2;
-                this.context.strokeStyle = '#D3D3D3'; // Default to light gray
+                targetCtx.lineWidth = 1.2 * comp;
+                targetCtx.strokeStyle = OBS.linkFaint;
             }
 
-            this.context.stroke();
+            targetCtx.stroke();
         },
         genColor() {
             var ret = [];
@@ -751,39 +896,14 @@ export default {
             );
         },
         // Return the hex code for each skill base on it education grade ( eg: primary school, high school ...)
+        // Delegates to the shared observatory theme so all tree variants agree.
         hexColor(skillLevel) {
-            switch (skillLevel) {
-                case 'college':
-                    return '#FFA500';
-                case 'grade_school':
-                    return '#40E0D0';
-                case 'high_school':
-                    return '#FFD700';
-                case 'middle_school':
-                    return '#33A133';
-                case 'phd':
-                    return '#FF0000';
-                default:
-                    break;
-            }
+            return levelColor(skillLevel);
         },
 
         // We using a darker color for node border when it is mastered
         hexBorderColor(skillLevel) {
-            switch (skillLevel) {
-                case 'college':
-                    return '#CC8400';
-                case 'grade_school':
-                    return '#33B3A6';
-                case 'high_school':
-                    return '#CCAC00';
-                case 'middle_school':
-                    return '#006400';
-                case 'phd':
-                    return '#CC0000';
-                default:
-                    break;
-            }
+            return levelBorderColor(skillLevel);
         },
         hexBackGroundColor(skillLevel) {
             const opacity = 0.7;
@@ -1540,89 +1660,156 @@ export default {
                 resData.map((icon) => [icon.url, icon.icon])
             );
         },
+        // Star shape comes from the node's root subject; cached on the node.
+        starShapeFor(node) {
+            if (node.__starShape === undefined) {
+                let ancestor = node;
+                while (ancestor.depth > 1) ancestor = ancestor.parent;
+                node.__starShape = subjectShape(
+                    ancestor.depth === 1 ? ancestor.data.skill_name : null
+                );
+            }
+            return node.__starShape;
+        },
+        // Per-star shimmer factor, phased by node id so the field twinkles
+        // asynchronously. 1 when the twinkle loop hasn't started.
+        twinkleFactor(node, isDomain) {
+            if (!this._twinkleT) return 1;
+            const id = node.data.id || 0;
+            const seed = id * 2.3999632;
+            if (isDomain) {
+                return 0.9 + 0.1 * Math.sin(this._twinkleT * 0.8 + seed);
+            }
+            const speed = 1.2 + (id % 5) * 0.3;
+            return 0.72 + 0.28 * Math.sin(this._twinkleT * speed + seed);
+        },
+        // Star-map rendering of a node (the far-zoom layer).
         drawNodeCircle(ctx, node) {
             const ctx1 = ctx;
+            const comp = sizeComp(this.scale);
+            const mastered = node.data.is_mastered == 1;
+            // Tree nodes don't reliably carry an unlocked flag; only dim a
+            // node when the data explicitly marks it locked.
+            const locked =
+                node.data.is_unlocked === 0 || node.data.is_accessible === 0;
+            const shape = this.starShapeFor(node);
 
-            // Node size
-            let radius;
+            // Core radius in world units, zoom-compensated to hold a steady
+            // on-screen size.
+            let coreR;
             if (node.data.type == 'sub') {
-                radius = 7.5;
+                coreR = 5 * comp;
             } else if (node.data.type == 'domain') {
-                radius = 12; // Make domain nodes slightly larger
+                coreR = 9 * comp;
             } else {
-                radius = 10;
+                coreR = 7 * comp;
             }
 
-            ctx1.beginPath();
-            ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
-
-            // Get the color associate with skill level
-            const skillColor = node.data.level
-                ? this.hexColor(node.data.level)
-                : '#000';
-
-            // Special styling for domain nodes
-            if (node.data.type == 'domain') {
-                // Use a semi-translucent fill for domain nodes
-                ctx1.fillStyle = 'rgba(220, 220, 220, 0.6)';
+            if (locked) {
+                // Barely-there dust: charted but unreachable. No twinkle.
+                ctx1.beginPath();
+                ctx1.arc(node.y, node.x, coreR * 0.5, 0, 2 * Math.PI);
+                ctx1.fillStyle = OBS.lockedStar;
                 ctx1.fill();
-                if (node.data.is_mastered == 1) {
-                    const outlineColor = '#228C22'; // Green
-                    ctx1.lineWidth = 2;
-                    ctx1.strokeStyle = outlineColor;
-                }
-                else {
-                    ctx1.lineWidth = 1.5;
-                    ctx1.strokeStyle = '#a0a0a0'; // Lighter border
-                }
-                ctx1.stroke();
                 return;
             }
 
-            // If mastered, make a solid shape.
-            if (node.data.is_mastered == 1) {
-                ctx1.fillStyle = '#228C22'; // Green
-                ctx1.fill();
-                const outlineColor = this.hexBorderColor(node.data.level);
-                ctx1.lineWidth = 2;
-                ctx1.strokeStyle = outlineColor;
-                ctx1.stroke();
+            const isDomain = node.data.type == 'domain';
+            const prevAlpha = ctx1.globalAlpha;
+            ctx1.globalAlpha = prevAlpha * this.twinkleFactor(node, isDomain);
+
+            // Domain nodes: a nebula cloud behind the subject's star, plus a
+            // constellation-style label. The real tree has ~230 domains at
+            // every depth, so root subjects get the big nebula treatment and
+            // sub-domains a smaller cloud.
+            if (isDomain) {
+                const nebR = (node.depth <= 1 ? 70 : 28) * comp;
+                ctx1.drawImage(
+                    nebulaSprite(OBS.purpleSoft),
+                    node.y - nebR,
+                    node.x - nebR,
+                    nebR * 2,
+                    nebR * 2
+                );
+                const sprite = mastered
+                    ? starSprite(OBS.gold, '#fff6e0', 0.55, shape)
+                    : starSprite(OBS.purpleSoft, '#efeaff', 0.45, shape);
+                const glowR = coreR * 3;
+                ctx1.drawImage(
+                    sprite,
+                    node.y - glowR,
+                    node.x - glowR,
+                    glowR * 2,
+                    glowR * 2
+                );
+                ctx1.globalAlpha = prevAlpha;
+                this.drawConstellationLabel(ctx1, node, coreR, comp);
+                return;
             }
-            // If not, just an outline.
-            else {
-                ctx1.lineWidth = 2;
-                ctx1.fillStyle = '#FFF';
-                ctx1.fill();
-                ctx1.strokeStyle = skillColor;
-                ctx1.stroke();
+
+            // Mastered skills burn gold; unmastered ones glimmer in their
+            // level color (the hues track stellar temperatures already).
+            let sprite;
+            let glowR;
+            if (mastered) {
+                sprite = starSprite(OBS.gold, '#fff6e0', 0.65, shape);
+                glowR = coreR * 3.2;
+            } else {
+                const color = starColor(node.data.level);
+                sprite = starSprite(color, color, 0.4, shape);
+                glowR = coreR * 2.2;
             }
+            ctx1.drawImage(
+                sprite,
+                node.y - glowR,
+                node.x - glowR,
+                glowR * 2,
+                glowR * 2
+            );
+            ctx1.globalAlpha = prevAlpha;
         },
-        drawNodeOnHiddenCanvas(ctx, node) {
+        // Domain names drawn like constellation names on a star chart.
+        // Root subjects label at any zoom; deeper domains only once you're
+        // close enough that ~200 of them won't collide into noise.
+        drawConstellationLabel(ctx1, node, coreR, comp) {
+            if (node.depth > 1 && this.scale < 0.2) return;
+            const name = (node.data.skill_name || '').toUpperCase();
+            if (!name) return;
+            ctx1.save();
+            ctx1.font = `600 ${11 * comp}px Verdana`;
+            ctx1.textAlign = 'center';
+            ctx1.direction = 'ltr';
+            ctx1.lineJoin = 'bevel';
+            ctx1.strokeStyle = hexToRgba(OBS.space, 0.85);
+            ctx1.lineWidth = 3 * comp;
+            ctx1.fillStyle = hexToRgba(OBS.inkDim, 0.9);
+            const labelY = node.x + coreR + 16 * comp;
+            ctx1.strokeText(name, node.y, labelY);
+            ctx1.fillText(name, node.y, labelY);
+            ctx1.restore();
+        },
+        drawNodeOnHiddenCanvas(ctx, node, blend) {
             const ctx2 = ctx;
 
             ctx2.beginPath();
-            ctx2.moveTo(node.y, node.x);
-            //ctx2.arc(node.y, node.x, 20, 0, 2 * Math.PI);
-            let xPosition = node.y;
-            if (node.data.children.length > 0) {
-                xPosition = xPosition - 180;
+            // Match whichever layer dominates visually: card geometry when
+            // zoomed in, a generous star-sized hit circle when zoomed out.
+            if (blend >= 0.5) {
+                ctx2.moveTo(node.y, node.x);
+                let xPosition = node.y;
+                if (node.data.children.length > 0) {
+                    xPosition = xPosition - 180;
+                }
+                ctx2.roundRect(xPosition, node.x - 20, 180, 40, 20);
+            } else {
+                const comp = sizeComp(this.scale);
+                ctx2.arc(node.y, node.x, 14 * comp, 0, 2 * Math.PI);
             }
-            ctx2.roundRect(xPosition, node.x - 20, 180, 40, 20);
             ctx2.fill();
         },
-        // Draw round rectangle node
+        // Draw round rectangle node — dark glass "star system card".
         drawRoundRectNode(ctx, node) {
             const ctx1 = ctx;
-
-            // Node size
-            let radius;
-            if (node.data.type == 'sub') {
-                radius = 7.5;
-            } else if (node.data.type == 'domain') {
-                radius = 12; // Make domain nodes slightly larger
-            } else {
-                radius = 10;
-            }
 
             ctx1.beginPath();
             let xPosition = node.y;
@@ -1634,45 +1821,45 @@ export default {
             // Get the color associate with skill level
             const skillColor = node.data.level
                 ? this.hexColor(node.data.level)
-                : '#000';
+                : OBS.inkDim;
 
-            // Special styling for domain nodes - semi-translucent with a different visual style
+            // Special styling for domain nodes - translucent nebula-tinted container
             if (node.data.type == 'domain') {
-                ctx1.fillStyle = 'rgba(230, 230, 230, 0.7)'; // Light semi-translucent fill
+                ctx1.fillStyle = hexToRgba(OBS.purpleSoft, 0.12);
                 ctx1.fill();
                 if (node.data.is_mastered == 1) {
-                    const outlineColor = '#228C22'; // Green
                     ctx1.lineWidth = 2;
-                    ctx1.strokeStyle = outlineColor;
-                }
-                else {
+                    ctx1.strokeStyle = OBS.gold;
+                } else {
                     ctx1.lineWidth = 1.5;
-                    ctx1.strokeStyle = '#b0b0b0'; // Lighter border
+                    ctx1.strokeStyle = hexToRgba(OBS.inkDim, 0.6);
                 }
                 ctx1.setLineDash([3, 2]); // Dotted line to visually indicate "container"
                 ctx1.stroke();
+                ctx1.setLineDash([]);
                 return;
             }
 
-            // If mastered, make a solid shape.
+            // Dark glass base for every card.
+            ctx1.fillStyle = OBS.card;
+            ctx1.fill();
+
+            // If mastered: gold-tinted glass with a glowing gold border.
             if (node.data.is_mastered == 1) {
-                ctx1.fillStyle = '#228C22'; // Green
+                ctx1.fillStyle = hexToRgba(OBS.gold, 0.13);
                 ctx1.fill();
-                const outlineColor = this.hexBorderColor(node.data.level);
-                ctx1.lineWidth = 2;
-                ctx1.strokeStyle = outlineColor;
+                ctx1.save();
+                ctx1.shadowColor = hexToRgba(OBS.gold, 0.55);
+                ctx1.shadowBlur = 14;
+                ctx1.lineWidth = 2.5;
+                ctx1.strokeStyle = OBS.gold;
                 ctx1.stroke();
+                ctx1.restore();
             }
-            // If not, just an outline.
+            // If not, a level-colored rim.
             else {
-                ctx1.lineWidth = 4;
-                if (node.data.type == 'domain') {
-                    ctx1.fillStyle = '#eee';
-                } else {
-                    ctx1.fillStyle = '#fff';
-                }
-                ctx1.fill();
-                ctx1.strokeStyle = skillColor;
+                ctx1.lineWidth = 2;
+                ctx1.strokeStyle = hexToRgba(skillColor, 0.85);
                 ctx1.stroke();
             }
         },
@@ -1707,7 +1894,7 @@ export default {
             if (node.data.type != 'domain') {
                 ctx1.beginPath();
                 // Background stroke
-                ctx1.strokeStyle = '#FFF';
+                ctx1.strokeStyle = hexToRgba(OBS.space, 0.9);
                 ctx1.lineWidth = 4;
                 // Font size
                 ctx1.font = '11px Verdana';
@@ -1716,7 +1903,7 @@ export default {
                 }
 
                 // High light the text if user search for it
-                ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
+                ctx1.fillStyle = isSearched ? OBS.cyan : OBS.ink;
                 ctx1.font = isSearched ? 'bold' : 'normal';
                 ctx1.direction = 'ltr';
 
@@ -1730,9 +1917,9 @@ export default {
                 ctx1.fillText(node.data.skill_name, xPosition, node.x + 4);
             } else {
                 ctx1.beginPath();
-                ctx1.strokeStyle = '#FFF';
+                ctx1.strokeStyle = hexToRgba(OBS.space, 0.9);
                 ctx1.lineWidth = 4;
-                ctx1.fillStyle = isSearched ? '#ff0000' : '#849cab';
+                ctx1.fillStyle = isSearched ? OBS.cyan : OBS.inkDim;
                 ctx1.direction = 'rtl';
 
                 let xPosition = node.y + 5;
@@ -1760,7 +1947,7 @@ export default {
 
             ctx1.beginPath();
             // Background stroke
-            ctx1.strokeStyle = '#FFF';
+            ctx1.strokeStyle = hexToRgba(OBS.space, 0.9);
             ctx1.lineWidth = 4;
             // Font size
             ctx1.font = '11px Verdana';
@@ -1769,7 +1956,7 @@ export default {
             }
 
             // High light the text if user search for it
-            ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
+            ctx1.fillStyle = isSearched ? OBS.cyan : OBS.ink;
             ctx1.font = isSearched ? 'bold' : 'normal';
             ctx1.direction = 'ltr';
 
@@ -1817,7 +2004,7 @@ export default {
 
             ctx1.beginPath();
             // Background stroke
-            ctx1.strokeStyle = '#FFF';
+            ctx1.strokeStyle = hexToRgba(OBS.space, 0.9);
             ctx1.lineWidth = 4;
             // Font size
             const largeSkillFontSize =
@@ -1829,7 +2016,7 @@ export default {
             }
 
             // High light the text if user search for it
-            ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
+            ctx1.fillStyle = isSearched ? OBS.cyan : OBS.ink;
             ctx1.font = isSearched ? 'bold' : 'normal';
             ctx1.direction = 'ltr';
 
@@ -1860,7 +2047,7 @@ export default {
         drawPointingHand(node, ctx) {
             const img = new Image();
             img.src = this.handIcon;
-            if (this.scale > 0.6) {
+            if (this.scale > LOD.CARD_FADE_START) {
                 if (node.children) {
                     ctx.drawImage(img, node.y + 6, node.x - 10, 20, 20);
                 } else {
@@ -1875,20 +2062,25 @@ export default {
             let path = this.iconDictionary[node.data.url];
 
             if (!path) {
-                path = this.defaultIconImage;
-                const img = new Image();
-
-                img.src = path;
-
+                // No icon for this skill: draw its star glyph instead of the
+                // old picture-placeholder PNG, which read as a broken image
+                // on the dark cards.
+                if (node.data.type == 'domain') return;
+                const color =
+                    node.data.is_mastered == 1
+                        ? OBS.gold
+                        : starColor(node.data.level);
+                const sprite = starSprite(
+                    color,
+                    '#ffffff',
+                    0.5,
+                    this.starShapeFor(node)
+                );
                 let xPosition = node.y + 2;
                 if (node.data.children.length > 0) {
                     xPosition = xPosition - 178;
                 }
-                ctx1.save();
-                this.roundedImage(ctx1, xPosition, node.x - 18, 36, 36, 20);
-                ctx1.clip();
-                ctx1.drawImage(img, xPosition + 7, node.x - 10, 20, 20);
-                ctx1.restore();
+                ctx1.drawImage(sprite, xPosition + 4, node.x - 14, 28, 28);
             }
             // Draw a default error image if skill do not have icon
             else {
@@ -1920,9 +2112,9 @@ export default {
             const ctx1 = ctx;
 
             // Domain node styling
-            ctx1.strokeStyle = '#FFF';
+            ctx1.strokeStyle = hexToRgba(OBS.space, 0.9);
             ctx1.lineWidth = 4;
-            ctx1.fillStyle = isSearched ? '#ff0000' : '#546673';
+            ctx1.fillStyle = isSearched ? OBS.cyan : OBS.inkDim;
             ctx1.direction = 'ltr';
             ctx1.font = '11px Verdana';
 
@@ -2026,12 +2218,16 @@ export default {
 .loader {
     width: 48px;
     height: 48px;
-    border: 5px solid var(--primary-color);
-    border-bottom-color: transparent;
+    /* Observatory scan-ring: gold head, cyan ghost, delay-gated so instant
+       loads never flash it. */
+    border: 3px solid rgba(69, 216, 226, 0.15);
+    border-top-color: var(--obs-gold, #ffc857);
+    border-right-color: rgba(69, 216, 226, 0.55);
     border-radius: 50%;
     display: inline-block;
     box-sizing: border-box;
-    animation: rotation 1s linear infinite;
+    box-shadow: 0 0 12px rgba(255, 200, 87, 0.3);
+    animation: rotation 0.9s linear infinite, obsFadeIn 0.15s ease 0.2s backwards;
 }
 
 @keyframes rotation {
@@ -2142,7 +2338,14 @@ input[type='button'] {
 
 canvas {
     cursor: pointer;
-    background-color: var(--skill-tree-background-color);
+    /* The observatory star map owns its background regardless of app theme —
+       drawTree paints the space gradient every frame; this just prevents any
+       light flash before the first draw. */
+    background-color: #0d1030;
+}
+
+#wrapper {
+    background-color: #0d1030;
 }
 
 .click-animation {

@@ -396,7 +396,7 @@ export default {
 
 <style>
 .source {
-    color: black !important;
+    color: var(--obs-ink, #e8e6ff) !important;
 }
 .primary-color {
     color: var(--primary-color);
@@ -406,7 +406,7 @@ export default {
     font-family: 'Poppins', sans-serif;
     font-size: 1rem;
     font-weight: lighter;
-    color: var(--secondary-heading-colour);
+    color: var(--obs-ink-dim, #a9a4d9);
 }
 
 .user-name-div {
@@ -441,8 +441,13 @@ export default {
 
 .forum-post {
     padding: 10px;
-    border-radius: 5px;
-    background-color: white;
+    border-radius: 8px;
+    background: var(--obs-card-solid, #14173a);
+    color: var(--obs-ink, #e8e6ff);
+}
+
+.forum-post a {
+    color: var(--obs-cyan, #45d8e2);
 }
 .vote-btn {
     background-color: transparent;

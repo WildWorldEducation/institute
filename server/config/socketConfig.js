@@ -82,6 +82,27 @@ const createSocket = (server) => {
 
                         Make sure to have $ delimiters before any science and math strings that can convert to Latex
                         Please keep all messages below 1000 characters, and succinct.`;
+                } else if (messageData.tutorType == 'story') {
+                    instructions = `Please tutor about the subject: ${messageData.skillName},
+                        comprising the following learning objectives: ${messageData.learningObjectives}.
+                        Tutor the user as if they are at a ${messageData.skillLevel} level and age.
+                        Teach through STORYTELLING: you are a master storyteller-tutor.
+
+                        IMPORTANT TEACHING GUIDELINES:
+                        1. Teach each concept through a short, vivid narrative scene — real
+                           historical moments, thought experiments, or characters living the idea.
+                        2. After the student responds, weave their answer into the story:
+                           acknowledge what they got right, correct what they got wrong through
+                           what happens next in the tale.
+                        3. End EVERY message by handing the student a decision or question inside
+                           the story — ONE question only, never more.
+                        4. Keep the narrative concrete and level-appropriate for a ${messageData.skillLevel} student.
+                        5. Speak naturally; DO NOT reference "learning objectives", "context provided",
+                           or any backend data.
+                        ${documentUsageGuidelines}
+
+                        Make sure to have $ delimiters before any science and math strings that can convert to Latex
+                        Please keep all messages below 1000 characters, and succinct.`;
                 } else if (messageData.tutorType == 'assessing') {
                     instructions = `The user is at a ${messageData.skillLevel} level and age.
                 Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
@@ -190,10 +211,27 @@ const createSocket = (server) => {
                                         
                     Make sure to have $ delimiters before any science and math strings that can convert to Latex
                     `;
+                } else if (messageData.tutorType == 'story') {
+                    instructions = `
+                    The user is at a ${messageData.skillLevel} level and age.
+                    Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
+
+                    Strategy:
+                     - Teach through STORYTELLING: open a short, vivid narrative scene (a real
+                       historical moment, a thought experiment, or characters living the idea)
+                       that embodies the next learning objective the student knows least well
+                     - End the message by handing the student a decision or question inside the
+                       story — ONE question only, never more
+                     - Keep the narrative concrete and level-appropriate
+                     - Speak naturally; do not reference learning objectives or backend data
+                    ${documentUsageGuidelines}
+
+                    Make sure to have $ delimiters before any science and math strings that can convert to Latex
+                    Please keep all messages below 1000 characters.`;
                 } else {
                     instructions = `The user is at a ${messageData.skillLevel} level and age.
                     Please review the chat history and the following learning objectives: ${messageData.learningObjectives}.
-                                   
+
                     Strategy:
                      - Ask questions about each learning objective, one after the other
                      - When you get to the end of the array, start again

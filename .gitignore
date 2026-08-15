@@ -49,5 +49,9 @@ benchmarks/graphs
 # in public/images/landing/ are the committed artifacts)
 scripts/_landing_raw/
 
+# Dev-harness fixtures captured from the live guest endpoints (~20MB; refetch
+# instructions in scripts/_dev_skilltree_harness.js)
+scripts/_fixture_*.json
+
 # ignore additional files using core.excludesFile
 # https://git-scm.com/docs/gitignore

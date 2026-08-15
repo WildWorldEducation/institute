@@ -41,12 +41,16 @@ export default {
 .loader {
     width: v-bind(widthCss);
     height: v-bind(heightCss);
-    border: v-bind(borderWidthCss) solid #fff;
-    border-bottom-color: v-bind(colorCss);
+    /* Observatory scan-ring: gold head, cyan ghost, delay-gated. */
+    border: v-bind(borderWidthCss) solid rgba(69, 216, 226, 0.15);
+    border-top-color: var(--obs-gold, #ffc857);
+    border-right-color: rgba(69, 216, 226, 0.55);
     border-radius: 50%;
     display: inline-block;
     box-sizing: border-box;
-    animation: rotation 1s linear infinite;
+    box-shadow: 0 0 10px rgba(255, 200, 87, 0.25);
+    animation: rotation 0.9s linear infinite,
+        obsFadeIn 0.15s ease 0.2s backwards;
 }
 
 @keyframes rotation {

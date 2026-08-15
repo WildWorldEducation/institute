@@ -234,7 +234,7 @@ export default {
                     class="collapse navbar-collapse flex-grow-0"
                     id="navbarSupportedContent"
                 >
-                    <ul class="navbar-nav d-flex bg-white rounded pt-2 pb-2">
+                    <ul class="navbar-nav d-flex obs-nav-pill rounded pt-2 pb-2">
                         <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
@@ -549,7 +549,10 @@ export default {
                                 >
                                     <img
                                         id="user-avatar"
-                                        :src="userDetailsStore.avatar"
+                                        :src="
+                                            userDetailsStore.avatar ||
+                                            '/images/observatory-avatar.png'
+                                        "
                                         alt="user avatar"
                                     />
                                 </a>
@@ -829,6 +832,14 @@ Themes
 }
 
 /* Navigation bar */
+/* Observatory header band: deep space behind the nav on every page, so the
+   themed pages have no white seam and light admin pages get a standard dark
+   header. */
+#navbar {
+    background: linear-gradient(180deg, #0a0c26 0%, #0d1030 100%);
+    border-bottom: 1px solid var(--obs-line, rgba(124, 92, 240, 0.35));
+}
+
 .nav-link {
     color: var(--primary-color);
     font-weight: 700;
@@ -837,6 +848,56 @@ Themes
     display: flex;
     flex-direction: row;
     align-items: baseline;
+}
+
+/* Observatory nav: dark glass pill that works over both the star map and
+   the remaining light admin pages. */
+.obs-nav-pill {
+    background: var(--obs-card, rgba(18, 21, 54, 0.92));
+    border: 1px solid var(--obs-line, rgba(124, 92, 240, 0.35));
+    backdrop-filter: blur(8px);
+    border-radius: 999px !important;
+    align-items: center;
+    padding: 4px 10px;
+    box-shadow: 0 0 24px rgba(13, 16, 48, 0.55);
+}
+
+.obs-nav-pill .nav-item {
+    display: flex;
+    align-items: center;
+}
+
+.obs-nav-pill .nav-link {
+    color: var(--obs-ink, #e8e6ff);
+    /* Star-chart typography: small caps, wide tracking. */
+    font-size: 13px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 8px 14px;
+    text-decoration: none !important;
+}
+
+.obs-nav-pill .nav-link:hover,
+.obs-nav-pill .nav-link:focus,
+.obs-nav-pill .nav-link.router-link-active,
+.obs-nav-pill .nav-link .active {
+    color: var(--obs-gold, #ffc857) !important;
+}
+
+.obs-nav-pill .dropdown-menu {
+    background: var(--obs-card-solid, #14173a);
+    border: 1px solid var(--obs-line-strong, rgba(124, 92, 240, 0.6));
+}
+
+.obs-nav-pill .dropdown-item {
+    color: var(--obs-ink, #e8e6ff);
+}
+
+.obs-nav-pill .dropdown-item:hover,
+.obs-nav-pill .dropdown-item:focus {
+    background: rgba(124, 92, 240, 0.18);
+    color: var(--obs-gold, #ffc857);
 }
 .logout-btn{
     cursor: pointer;
@@ -995,10 +1056,12 @@ p {
 #user-avatar {
     width: 40px;
     height: 40px;
-    border-radius: 8px;
+    border-radius: 50%;
+    border: 1px solid var(--obs-line-strong, rgba(124, 92, 240, 0.6));
+    object-fit: cover;
 }
 #user-avatar:hover {
-    border: 2px solid var(--fourth-colour);
+    border: 2px solid var(--obs-gold, #ffc857);
 }
 .router-view {
     height: calc(100% - 88px);
@@ -1200,10 +1263,18 @@ p {
 }
 
 .navbar.fixed-top .navbar-collapse {
-  background-color: white;
-  border-radius: 8px;
-  padding: 0 15px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* The glass pill styles itself — no white slab behind it. */
+  background-color: transparent;
+  border-radius: 999px;
+  padding: 0;
+  box-shadow: none;
+}
+
+/* On map pages the header floats transparent over the starfield; the pill
+   is the only chrome. */
+#navbar.fixed-top {
+  background: transparent;
+  border-bottom: 0;
 }
 
 #navbarSupportedContent {

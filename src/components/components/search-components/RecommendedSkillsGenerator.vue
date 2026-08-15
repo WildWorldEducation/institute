@@ -318,7 +318,8 @@ input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    -webkit-box-shadow: 0 0 0 30px var(--obs-card-solid) inset !important;
+    -webkit-text-fill-color: var(--obs-ink) !important;
 }
 
 .small-btn {
@@ -335,9 +336,15 @@ input:-webkit-autofill:active {
 .search-bar {
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--primary-color);
-    border-radius: 8px;
-    background-color: white;
+    border: 1px solid var(--obs-line-strong);
+    border-radius: 10px;
+    background: var(--obs-card);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-bar:focus-within {
+    border-color: var(--obs-cyan);
+    box-shadow: 0 0 14px rgba(69, 216, 226, 0.3);
 }
 
 .ai-tutor-processing {
@@ -347,9 +354,20 @@ input:-webkit-autofill:active {
     align-items: center;
     gap: 5px;
     border-radius: 25px;
-    border: 1px solid #acacac;
+    border: 1px solid var(--obs-line);
+    background: var(--obs-card);
+    color: var(--obs-ink-dim);
     padding: 5px 10px;
     margin-bottom: 15px;
+}
+
+.ai-tutor-processing svg {
+    fill: var(--obs-cyan);
+}
+
+/* Section heading over the dark backdrop */
+.tertiary-heading {
+    color: var(--obs-cyan) !important;
 }
 
 /* Phone view style */
@@ -366,17 +384,18 @@ input:-webkit-autofill:active {
     width: 100%;
     margin-top: 2px;
     background-color: inherit !important;
+    color: var(--obs-ink);
 }
 
 /* Search bar placeholder */
 ::placeholder {
-    color: black;
+    color: var(--obs-ink-dim);
     opacity: 1; /* Firefox */
 }
 
 ::-ms-input-placeholder {
     /* Edge 12 -18 */
-    color: black;
+    color: var(--obs-ink-dim);
 }
 
 /* Scrollbar */
@@ -409,7 +428,7 @@ input:-webkit-autofill:active {
 }
 
 .skill-link:hover {
-    border: 1px solid black;
+    border: 1px solid var(--obs-gold);
 }
 
 /* Level colors */

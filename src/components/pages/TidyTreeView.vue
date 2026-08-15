@@ -1998,11 +1998,16 @@ export default {
 
                 <div class="modal-body text-center pt-0">
                     <div class="app-logo-wrapper">
-                        <img
+                        <video
                             class="img-fluid"
-                            src="/images/app-logo.jpg"
-                            alt="icon of a skill tree"
-                        />
+                            src="/images/emblem-loop.mp4"
+                            poster="/images/app-logo.jpg"
+                            autoplay
+                            muted
+                            loop
+                            playsinline
+                            aria-label="living constellation tree of knowledge"
+                        ></video>
                     </div>
 
                     <div
@@ -2026,9 +2031,10 @@ export default {
     color: black!important;
 }
 
-.all-skills-btn {    
-     background-color: #228C22;
-    color: white;
+.all-skills-btn {
+    /* Observatory gold — matches the tree's mastered color. */
+    background-color: #ffc857;
+    color: #221c3f;
 }
 
 /* Intro search model */ /* Modal Content/Box */
@@ -2338,14 +2344,29 @@ export default {
 
 /* Modal Content/Box */
 .modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    /* 15% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
+    /* Observatory dark glass panel. */
+    background: var(--obs-card, rgba(18, 21, 54, 0.92));
+    color: var(--obs-ink, #e8e6ff);
+    backdrop-filter: blur(8px);
+    margin: 12% auto;
+    padding: 24px;
+    border: 1px solid var(--obs-line-strong, rgba(124, 92, 240, 0.6));
+    border-radius: 16px;
+    box-shadow: 0 0 40px rgba(95, 49, 221, 0.35),
+        0 0 80px rgba(13, 16, 48, 0.8);
     width: 520px;
     font-size: 18px;
-    /* Could be more or less, depending on screen size */
+    animation: obsRise 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
+}
+
+/* The constellation-tree art melts into the panel instead of sitting in a
+   hard-edged box: circular crop + a glow halo in the panel's own indigo. */
+.modal-content .app-logo-wrapper img,
+.modal-content .app-logo-wrapper video {
+    border-radius: 50%;
+    max-height: 220px;
+    box-shadow: 0 0 0 1px var(--obs-line, rgba(124, 92, 240, 0.35)),
+        0 0 35px rgba(95, 49, 221, 0.5), inset 0 0 40px #0d1030;
 }
 
 /* Small devices (portrait phones) */

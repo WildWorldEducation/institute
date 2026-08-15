@@ -321,7 +321,7 @@ export default {
                     viewBox="0 0 640 512"
                     height="20"
                     width="20"
-                    :fill="aiMode ? '#0f172a' : '#cbd5e1'"
+                    :fill="aiMode ? '#ffc857' : '#a9a4d9'"
                 >
                     <path
                         d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
@@ -369,10 +369,20 @@ export default {
 .search-bar {
     display: flex;
     flex-direction: column;
-    /* border: 1px solid #dce2f2; */
-    border: 1px solid var(--primary-color);
-    border-radius: 8px;
-    background-color: white;
+    /* Observatory dark glass. */
+    border: 1px solid var(--obs-line-strong, rgba(124, 92, 240, 0.6));
+    border-radius: 10px;
+    background: var(--obs-card, rgba(18, 21, 54, 0.92));
+    backdrop-filter: blur(6px);
+    transition: box-shadow 0.2s ease;
+}
+
+.search-bar:focus-within {
+    box-shadow: 0 0 14px rgba(69, 216, 226, 0.35);
+}
+
+.search-bar svg.me-2 {
+    fill: var(--obs-ink-dim, #a9a4d9);
 }
 
 .have-results {
@@ -386,6 +396,12 @@ export default {
     border: 0px;
     width: 100%;
     margin-top: 2px;
+    background: transparent;
+    color: var(--obs-ink, #e8e6ff);
+}
+
+.skill-tree-input::placeholder {
+    color: var(--obs-ink-dim, #a9a4d9);
 }
 
 .search-results {
@@ -394,12 +410,12 @@ export default {
     position: absolute;
     top: 0;
     left: -1px;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-    border-bottom: 1px solid var(--primary-color);
-    border-right: 1px solid var(--primary-color);
-    border-left: 1px solid var(--primary-color);
-    background-color: white;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-bottom: 1px solid var(--obs-line-strong, rgba(124, 92, 240, 0.6));
+    border-right: 1px solid var(--obs-line-strong, rgba(124, 92, 240, 0.6));
+    border-left: 1px solid var(--obs-line-strong, rgba(124, 92, 240, 0.6));
+    background: var(--obs-card-solid, #14173a);
     max-height: 400px;
     overflow-y: auto;
     z-index: 1000;
@@ -407,9 +423,9 @@ export default {
 }
 
 .result-row {
-    padding: 4px;
+    padding: 6px 8px;
     cursor: pointer;
-    color: #6e6e6e;
+    color: var(--obs-ink-dim, #a9a4d9);
     background-color: inherit;
     border: 0px;
     text-align: left;
@@ -417,18 +433,24 @@ export default {
 
 .result-row:hover,
 .result-row:focus {
-    background-color: #f3f5f6;
-    color: black;
+    background-color: rgba(124, 92, 240, 0.18);
+    color: var(--obs-ink, #e8e6ff);
 }
 
 .result-row:focus {
-    border: 1px solid #133b61;
+    border: 1px solid var(--obs-cyan, #45d8e2);
 }
 
 .focus-result {
-    border-left: 4px solid #8c6ce4;
-    background-color: #f3f5f6;
-    color: black;
+    border-left: 4px solid var(--obs-gold, #ffc857);
+    background-color: rgba(124, 92, 240, 0.18);
+    color: var(--obs-ink, #e8e6ff);
+}
+
+/* The matched substring injected via v-html. */
+:deep(.hightLight) {
+    color: var(--obs-cyan, #45d8e2);
+    font-weight: 600;
 }
 
 .robot-icon {

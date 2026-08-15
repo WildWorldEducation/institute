@@ -54,13 +54,13 @@ const { emitUsageEvent } = require('../utilities/rfabUsageTracker');
 /**
  * Get thread from Socratic AI tutor
  */
-router.post(
-    '/socratic/messages-list',
-    isAuthenticated,
-    async (req, res, next) => {
+// Shared messages-list handler; keyPrefix namespaces the thread per teaching
+// mode so the Story Tutor keeps its OWN memory (separate thread row — the
+// prefix rides in the skill_url column, no migration needed).
+const messagesListHandler = (keyPrefix) => async (req, res, next) => {
         try {
             const userId = req.body.userId;
-            const skillUrl = req.body.skillUrl;
+            const skillUrl = keyPrefix + req.body.skillUrl;
             const skillName = req.body.skillName;
             const skillLevel = req.body.skillLevel;
             const learningObjectives = req.body.learningObjectives;
@@ -152,8 +152,11 @@ router.post(
             res.json({ mess: 'something went wrong' });
             next(error);
         }
-    }
-);
+    };
+
+router.post('/socratic/messages-list', isAuthenticated, messagesListHandler(''));
+// Story tutor: same machinery, its own thread (separate memory from Socratic).
+router.post('/story/messages-list', isAuthenticated, messagesListHandler('story::'));
 
 /**
  * TTS for Socratic tutor message

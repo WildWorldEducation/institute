@@ -8,7 +8,8 @@ export default {
             thumbnail: '',
             topPosition: 0,
             leftPosition: 0,
-            fallbackImageUrl: '' // Add a fallback image path
+            // Observatory-themed placeholder for skills with no thumbnail.
+            fallbackImageUrl: '/images/skill-thumb-fallback.jpg'
         };
     },
     methods: {
@@ -27,6 +28,8 @@ export default {
                 });
         },
         snakeCaseToTitleCase(string) {
+            // Domain and root nodes carry no level.
+            if (!string) return '';
             const result = string.replace(/^_*(.)|_+(.)/g, (s, c, d) =>
                 c ? c.toUpperCase() : ' ' + d.toUpperCase()
             );
@@ -145,14 +148,17 @@ export default {
     position: absolute;
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
-    width: 48px;
-    height: 48px;
-    border: 5px solid var(--primary-color);
-    border-bottom-color: transparent;
+    width: 44px;
+    height: 44px;
+    /* Observatory scan-ring: gold head, cyan ghost, delay-gated. */
+    border: 3px solid rgba(69, 216, 226, 0.15);
+    border-top-color: var(--obs-gold, #ffc857);
+    border-right-color: rgba(69, 216, 226, 0.55);
     border-radius: 50%;
     display: inline-block;
     box-sizing: border-box;
-    animation: rotation 1s linear infinite;
+    box-shadow: 0 0 12px rgba(255, 200, 87, 0.3);
+    animation: rotation 0.9s linear infinite;
 }
 
 @keyframes rotation {
@@ -174,23 +180,25 @@ export default {
     gap: 0px;
     top: v-bind('topPosition');
     left: v-bind('leftPosition');
-    color: black;
+    color: var(--obs-ink, #e8e6ff);
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
     border-radius: 10px;
+    box-shadow: 0 0 30px rgba(13, 16, 48, 0.8);
 }
 
 .tooltip-skill-name {
-    color: black;
+    color: var(--obs-ink, #e8e6ff);
     margin-bottom: 0px;
     margin-left: 10px;
 }
 
 .tooltip-header {
-    background-color: white;
+    background: var(--obs-card-solid, #14173a);
     gap: 0px;
     width: 400px;
-    border: 2px solid #e8ecf4;
+    border: 1px solid var(--obs-line-strong, rgba(124, 92, 240, 0.6));
+    border-bottom: 0;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
 }
@@ -201,7 +209,10 @@ export default {
 }
 
 .tooltip-skill-introduction {
-    background-color: #e8ecf4ea;
+    background: var(--obs-card, rgba(18, 21, 54, 0.92));
+    color: var(--obs-ink-dim, #a9a4d9);
+    border: 1px solid var(--obs-line-strong, rgba(124, 92, 240, 0.6));
+    border-top: 0;
     padding: 10px 15px;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
@@ -217,7 +228,7 @@ export default {
 }
 
 .tooltip-skill-name-background {
-    background-color: #ffffff;
+    background: transparent;
     padding: 0px;
     display: flex;
     width: 100%;
