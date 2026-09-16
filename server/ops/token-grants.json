@@ -1,6 +1,6 @@
 [
     {
-        "id": "2026-09-16-kneil-rawlins-webhook-outage-bonus",
+        "id": "20260916-kneil-bonus",
         "userId": "01a0821f-2e6f-7aa7-8038-96d44b315b9a",
         "tokens": 600000,
         "reason": "Goodwill bonus: paid $70 across Sep 12-15 2026 and got no tokens because no Stripe webhook was configured. The 1,400,000 purchased tokens are credited by the reconciler; this is the bonus on top."

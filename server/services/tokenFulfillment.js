@@ -24,6 +24,7 @@ const query = util.promisify(conn.query).bind(conn);
 
 const stripe = Stripe(process.env.STRIPE_API_KEY || 'sk_test_unset_placeholder');
 
+const GRANT_ID_PREFIX = 'grant_';
 const RECONCILE_EVERY_MS = 3 * 60 * 1000;
 const RECONCILE_LOOKBACK_DAYS = 3;
 // First boot after the fix sweeps back to the Aug 9 2026 hardening deploy, which is
@@ -160,22 +161,16 @@ async function applyTokenGrants() {
     } catch (err) {
         return;
     }
-    await query(
-        `CREATE TABLE IF NOT EXISTS token_grants (
-            id VARCHAR(128) PRIMARY KEY,
-            user_id VARCHAR(64) NOT NULL,
-            tokens INT NOT NULL,
-            reason TEXT,
-            applied_at DATETIME NOT NULL
-        );`
-    );
+    // The prod DB user cannot CREATE tables, so a grant's once-only marker is a
+    // $0 user_receipts row keyed GRANT_ID_PREFIX + id (hidden from receipt lists).
     for (const grant of grants) {
         if (!grant.id || !grant.userId || !(grant.tokens > 0)) continue;
+        const markerId = GRANT_ID_PREFIX + grant.id;
         try {
             await query(
-                `INSERT INTO token_grants (id, user_id, tokens, reason, applied_at)
-                 VALUES (?, ?, ?, ?, ?);`,
-                [grant.id, grant.userId, grant.tokens, grant.reason || '', new Date()]
+                `INSERT INTO user_receipts (id, user_id, amount, url, date)
+                 VALUES (?, ?, 0, '', ?);`,
+                [markerId, grant.userId, new Date()]
             );
         } catch (err) {
             if (isDuplicateKeyError(err)) continue; // already applied
@@ -187,7 +182,7 @@ async function applyTokenGrants() {
             [grant.tokens, grant.userId]
         );
         if (!result.affectedRows) {
-            await query(`DELETE FROM token_grants WHERE id = ?;`, [grant.id]);
+            await query(`DELETE FROM user_receipts WHERE id = ?;`, [markerId]);
             console.error(`[tokens] grant ${grant.id}: no user ${grant.userId}`);
             continue;
         }
@@ -213,6 +208,7 @@ function startTokenFulfillment() {
 }
 
 module.exports = {
+    GRANT_ID_PREFIX,
     stripe,
     fulfillSession,
     isOurTokenSession,

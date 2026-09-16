@@ -19,6 +19,7 @@ const rateLimit = require('../middlewares/rateLimitMiddleware');
 // Stripe client + the one idempotent crediting path (webhook, return page and
 // reconciler all go through fulfillSession).
 const {
+    GRANT_ID_PREFIX,
     stripe,
     fulfillSession,
     isOurTokenSession
@@ -67,8 +68,8 @@ router.get('/get-receipts/:userId', isAuthenticated, async (req, res, next) => {
 
     try {
         const result = await query(
-            `SELECT url, date, amount FROM user_receipts WHERE user_id = ?;`,
-            [req.params.userId]
+            `SELECT url, date, amount FROM user_receipts WHERE user_id = ? AND id NOT LIKE ?;`,
+            [req.params.userId, `${GRANT_ID_PREFIX}%`]
         );
         res.json(result);
     } catch (err) {
