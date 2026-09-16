@@ -777,4 +777,6 @@ Server listening
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log('server listening on *:' + PORT);
+    // Credit paid token purchases even when no Stripe webhook is configured.
+    require('./services/tokenFulfillment').startTokenFulfillment();
 });

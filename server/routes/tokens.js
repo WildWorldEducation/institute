@@ -16,10 +16,13 @@ router.use(bodyParser.json());
 const isAuthenticated = require('../middlewares/authMiddleware');
 const rateLimit = require('../middlewares/rateLimitMiddleware');
 
-const Stripe = require('stripe');
-// Placeholder when unset so the app still boots in environments without Stripe
-// configured; real checkout/webhook calls fail-closed without a valid key.
-const stripe = Stripe(process.env.STRIPE_API_KEY || 'sk_test_unset_placeholder');
+// Stripe client + the one idempotent crediting path (webhook, return page and
+// reconciler all go through fulfillSession).
+const {
+    stripe,
+    fulfillSession,
+    isOurTokenSession
+} = require('../services/tokenFulfillment');
 
 // DB
 const conn = require('../config/db');
@@ -32,25 +35,16 @@ Helpers
 --------------------------------------------
 --------------------------------------------*/
 
-// Map Stripe amount_total (cents) -> tokens for individual user purchases.
-function userTokensForAmount(amountTotal) {
-    if (amountTotal == 1000) return 200000;
-    if (amountTotal == 2000) return 400000;
-    if (amountTotal == 5000) return 1000000;
-    return 0;
-}
-
-// Map Stripe amount_total (cents) -> tokens for tenant (school) purchases.
-function tenantTokensForAmount(amountTotal) {
-    if (amountTotal == 5000) return 1000000;
-    if (amountTotal == 10000) return 2000000;
-    if (amountTotal == 25000) return 5000000;
-    return 0;
-}
-
-// MariaDB/MySQL duplicate primary-key error.
-function isDuplicateKeyError(err) {
-    return !!err && (err.code === 'ER_DUP_ENTRY' || err.errno === 1062);
+// Credit the session the buyer just returned from. Never blocks the redirect:
+// the reconciler retries anything that fails here.
+async function fulfillFromReturn(sessionId) {
+    if (typeof sessionId !== 'string' || !sessionId.startsWith('cs_')) return;
+    try {
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+        if (isOurTokenSession(session)) await fulfillSession(session);
+    } catch (err) {
+        console.error('[tokens] fulfill on return failed:', err.message);
+    }
 }
 
 /*------------------------------------------
@@ -125,9 +119,10 @@ router.post(
     }
 );
 
-// Fulfillment is owned by POST /webhook. This route only redirects the buyer
-// back to the completed page after Stripe redirects them here.
+// Credit on return as well as by webhook/reconciler (all idempotent), so a buyer
+// sees their tokens immediately even if the webhook is missing or late.
 router.get('/success', async (req, res, next) => {
+    await fulfillFromReturn(req.query.session_id);
     res.redirect(`${process.env.BASE_URL}/tokens/completed`);
 });
 
@@ -201,9 +196,8 @@ router.post(
     }
 );
 
-// Fulfillment is owned by POST /webhook. This route only redirects the buyer
-// back to the completed page after Stripe redirects them here.
 router.get('/tenant/success', async (req, res, next) => {
+    await fulfillFromReturn(req.query.session_id);
     res.redirect(`${process.env.BASE_URL}/tokens/tenant/completed`);
 });
 
@@ -230,74 +224,13 @@ router.post('/webhook', async (req, res) => {
 
     const session = event.data.object;
 
-    // Only fulfill fully-paid sessions.
-    if (session.payment_status !== 'paid') {
+    // The Stripe account is shared with RFab; ignore sessions this site did not create.
+    if (!isOurTokenSession(session)) {
         return res.status(200).json({ received: true });
     }
 
     try {
-        const tenantId =
-            session.metadata && session.metadata.tenantId
-                ? session.metadata.tenantId
-                : null;
-        const buyerUserId = session.client_reference_id || null;
-
-        // Pull the charge for the receipt PK + details.
-        const paymentIntent = await stripe.paymentIntents.retrieve(
-            session.payment_intent
-        );
-        const charge = await stripe.charges.retrieve(
-            paymentIntent.latest_charge
-        );
-        const receipt_id = charge.id; // PK -> idempotency key
-        const receipt_url = charge.receipt_url;
-        const amount = charge.amount_captured;
-        const created = new Date(charge.created * 1000);
-
-        if (tenantId) {
-            // Insert the receipt FIRST for idempotency.
-            try {
-                await query(
-                    `INSERT INTO tenant_receipts (id, tenant_id, amount, url, date)
-                     VALUES (?, ?, ?, ?, ?);`,
-                    [receipt_id, tenantId, amount, receipt_url, created]
-                );
-            } catch (err) {
-                if (isDuplicateKeyError(err)) {
-                    // Already processed this charge — do not double-credit.
-                    return res.status(200).json({ received: true });
-                }
-                throw err;
-            }
-
-            const amountOfTokens = tenantTokensForAmount(session.amount_total);
-            await query(
-                `UPDATE tenants SET tokens = tokens + ? WHERE id = ?;`,
-                [amountOfTokens, tenantId]
-            );
-        } else if (buyerUserId) {
-            // Insert the receipt FIRST for idempotency.
-            try {
-                await query(
-                    `INSERT INTO user_receipts (id, user_id, amount, url, date)
-                     VALUES (?, ?, ?, ?, ?);`,
-                    [receipt_id, buyerUserId, amount, receipt_url, created]
-                );
-            } catch (err) {
-                if (isDuplicateKeyError(err)) {
-                    // Already processed this charge — do not double-credit.
-                    return res.status(200).json({ received: true });
-                }
-                throw err;
-            }
-
-            const amountOfTokens = userTokensForAmount(session.amount_total);
-            await query(
-                `UPDATE users SET tokens = tokens + ? WHERE id = ?;`,
-                [amountOfTokens, buyerUserId]
-            );
-        }
-
+        await fulfillSession(session);
         return res.status(200).json({ received: true });
     } catch (err) {
         console.error('Stripe webhook fulfillment error:', err);
