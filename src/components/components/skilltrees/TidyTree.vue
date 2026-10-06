@@ -8,6 +8,7 @@ import ZoomControl from './ZoomControl.vue';
 import JoystickControl from './JoystickControl.vue';
 
 import * as d3 from 'd3';
+import { markRaw } from 'vue';
 import TidyTreeTooltip from './TidyTreeTooltip.vue';
 import {
     OBS,
@@ -153,9 +154,9 @@ export default {
 
         // Set up the Hidden Canvas for Interactivity.
         let hiddenCanvas = document.getElementById('hidden-canvas');
-        this.hiddenCanvasContext = hiddenCanvas.getContext('2d', {
+        this.hiddenCanvasContext = markRaw(hiddenCanvas.getContext('2d', {
             willReadFrequently: true
-        });
+        }));
 
         hiddenCanvas.style.display = 'none';
 
@@ -348,7 +349,10 @@ export default {
 
         this.isLoading = false;
 
-        this.startTwinkle();
+        // Twinkle disabled (Oct 6 2026): redrawing ~4k stars ~22x/s froze the
+        // tab on large screens so clicks never landed. Re-enable only once it
+        // is proven cheap on a 2560px display.
+        // this.startTwinkle();
     },
     beforeUnmount() {
         if (this._twinkleRaf) cancelAnimationFrame(this._twinkleRaf);
@@ -361,7 +365,7 @@ export default {
                 children: this.skill.children
             };
 
-            this.root = d3.hierarchy(this.data);
+            this.root = markRaw(d3.hierarchy(this.data));
 
             // Node height and width
             // Height
@@ -391,12 +395,18 @@ export default {
             canvas.height = this.height;
             this.context = canvas.getContext('2d');
             let hiddenCanvas = document.getElementById('hidden-canvas');
-            this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
+            // The pick canvas must match the visible one, or clicks past
+            // 1500px (wide screens) hit nothing.
+            hiddenCanvas.width = this.width;
+            hiddenCanvas.height = this.height;
+            this.hiddenCanvasContext = markRaw(
+                hiddenCanvas.getContext('2d', { willReadFrequently: true })
+            );
 
             this.drawTree(d3.zoomIdentity);
         },
         drawTree(transform) {
-            this.nodes = this.root.descendants();
+            this.nodes = markRaw(this.root.descendants());
             this.transformData = transform;
             // Twinkle frames only repaint the stars: the backdrop and links
             // are blitted from the static layer built on the last interactive
@@ -1156,7 +1166,7 @@ export default {
 
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.
-            this.root = d3.hierarchy(this.data);
+            this.root = markRaw(d3.hierarchy(this.data));
 
             // Height is constant
             const dx = 24;
@@ -1254,7 +1264,7 @@ export default {
 
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.
-            this.root = d3.hierarchy(this.data);
+            this.root = markRaw(d3.hierarchy(this.data));
 
             // Node width and height
             // Height
@@ -1332,7 +1342,7 @@ export default {
 
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.
-            this.root = d3.hierarchy(this.data);
+            this.root = markRaw(d3.hierarchy(this.data));
 
             // Node width and height
             // Height
