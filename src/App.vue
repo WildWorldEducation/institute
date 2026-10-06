@@ -1069,6 +1069,7 @@ p {
 
 .signin-btn {
     border: 1px solid var(--primary-color);
+    color: var(--obs-ink, #e8e6ff);
 }
 .btn:disabled {
     background-color: #b0b0b0 !important;

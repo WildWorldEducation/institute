@@ -1852,13 +1852,14 @@ p {
 }
 
 ::v-deep(.mastery-requirements-section a) {
-    color: var(--obs-cyan);
+    color: var(--obs-cyan) !important;
 }
 
-::v-deep(.mastery-requirements-section li),
-::v-deep(.mastery-requirements-section span),
-::v-deep(.mastery-requirements-section strong) {
-    color: var(--obs-ink);
+/* Pasted rich text carries inline colours (e.g. color: rgb(13,13,13) from
+   Google Docs) that vanish on the dark theme: override every descendant. */
+::v-deep(.mastery-requirements-section *:not(a)) {
+    color: var(--obs-ink) !important;
+    background-color: transparent !important;
 }
 
 /* Page + section headings on the observatory backdrop (the globals carry
